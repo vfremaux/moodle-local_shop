@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/shop/db" VERSION="20160612" COMMENT="XMLDB file for Moodle local/shop"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_shop" COMMENT="Sales service instance">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="customerorganisationrequired" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="enduserorganisationrequired" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="endusermobilephonerequired" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="printtabbedcategories" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="defaultcustomersupportcourse" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="forcedownloadleaflet" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="allowtax" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="eula" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="eulaformat" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="catalogid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="paymodes" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="defaultpaymode" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="navsteps" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ix_unique_name" TYPE="unique" FIELDS="name"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_catalogid" UNIQUE="false" FIELDS="catalogid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_catalog" COMMENT="Product lines">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="salesconditions" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="salesconditionsformat" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="countryrestrictions" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="nom_unique" TYPE="unique" FIELDS="name"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_shop_catalogitem" COMMENT="Items in catalog">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="catalogid" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Product owner"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="6" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="code" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="shortname" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="notes" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="notesformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="eula" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="eula html"/>
+        <FIELD NAME="eulaformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="eula format"/>
+        <FIELD NAME="range1" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="price1" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="range2" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="price2" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="range3" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="price3" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="range4" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="price4" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="range5" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="price5" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="taxcode" TYPE="char" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="stock" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sold" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="AVAILABLE" SEQUENCE="false"/>
+        <FIELD NAME="maxdeliveryquant" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="onlyforloggedin" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="quantaddressesusers" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="do quantity affect users"/>
+        <FIELD NAME="renewable" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="is product renewable"/>
+        <FIELD NAME="isset" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="setid" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="showsdescriptioninset" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="showsnameinset" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="isoptioninbundle" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="bundleshowscontent" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="DEFAULT" SEQUENCE="false"/>
+        <FIELD NAME="productiondata" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="requireddata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="describes complementary data to ask to user"/>
+        <FIELD NAME="enablehandler" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false" COMMENT="enabled pre and post purchase handler"/>
+        <FIELD NAME="handlerparams" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="give params to handler"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="unique_code_in_catalogue" TYPE="unique" FIELDS="catalogid, code"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="categoryid" UNIQUE="false" FIELDS="categoryid"/>
+        <INDEX NAME="catalog_index" UNIQUE="false" FIELDS="catalogid"/>
+        <INDEX NAME="ix_userid" UNIQUE="false" FIELDS="userid" COMMENT="owner of the product"/>
+        <INDEX NAME="ix_setid" UNIQUE="false" FIELDS="setid" COMMENT="find quicker set components"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_catalogcategory" COMMENT="Product categories">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="catalogid" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="parentid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="descriptionformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_catalog_id" UNIQUE="false" FIELDS="catalogid, parentid"/>
+        <INDEX NAME="ix_parent" UNIQUE="false" FIELDS="parentid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_catalogshipping" COMMENT="Shipping per product">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="productcode" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="zoneid" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="value" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="formula" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="a" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="b" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="c" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="shipping_pk" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="unique_prod_zone" TYPE="unique" FIELDS="productcode, zoneid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_shop_catalogshipzone" COMMENT="Shipzone definitions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="catalogid" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="zonecode" TYPE="char" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="billscopeamount" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="taxid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="applicability" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ix_unique_zone_in_catalog" TYPE="unique" FIELDS="catalogid, zonecode"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_shipzone_tax_id" UNIQUE="false" FIELDS="taxid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_customer" COMMENT="Customers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="firstname" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="lastname" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="address" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="zip" TYPE="char" LENGTH="6" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="email" TYPE="char" LENGTH="80" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="city" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="country" TYPE="char" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="organisation" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="hasaccount" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_customer_user" UNIQUE="false" FIELDS="hasaccount"/>
+        <INDEX NAME="ix_country" UNIQUE="false" FIELDS="country"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_customer_owner" COMMENT="Customers ownership">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="customerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_uniq_customer_ownership" UNIQUE="false" FIELDS="userid, customerid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_bill" COMMENT="courseshop_bill table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="blockid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="shopid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" COMMENT="Bill ownership"/>
+        <FIELD NAME="idnumber" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="ordering" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="customerid" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="worktype" TYPE="char" LENGTH="5" NOTNULL="true" DEFAULT="PACK" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="PENDING" SEQUENCE="false"/>
+        <FIELD NAME="remotestatus" TYPE="char" LENGTH="10" NOTNULL="false" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="emissiondate" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="lastactiondate" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="assignedto" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timetodo" TYPE="float" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="untaxedamount" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="taxes" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="amount" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="EUR" SEQUENCE="false"/>
+        <FIELD NAME="convertedamount" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="transactionid" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="onlinetransactionid" TYPE="char" LENGTH="128" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="expectedpaiement" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="paiedamount" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="paymode" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="CHK" SEQUENCE="false"/>
+        <FIELD NAME="ignoretax" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="productiondata" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="paymentfee" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="productionfeedback" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="transactional_ordering" TYPE="unique" FIELDS="transactionid"/>
+        <KEY NAME="unique_ordering" TYPE="unique" FIELDS="ordering"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_user_id" UNIQUE="false" FIELDS="customerid"/>
+        <INDEX NAME="ix_shopid" UNIQUE="false" FIELDS="shopid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_billitem" COMMENT="courseshop_billitem table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="billid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="ordering" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="BILLING" SEQUENCE="false"/>
+        <FIELD NAME="itemcode" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="catalogitem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="abstract" TYPE="char" LENGTH="80" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="delay" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="unitcost" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="quantity" TYPE="float" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="totalprice" TYPE="number" LENGTH="10" NOTNULL="false" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
+        <FIELD NAME="taxcode" TYPE="char" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="bundleid" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="customerdata" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="productiondata" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="unique_ordering" UNIQUE="false" FIELDS="billid, ordering"/>
+        <INDEX NAME="bill_ix" UNIQUE="false" FIELDS="billid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_tax" COMMENT="courseshop_customer table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="country" TYPE="char" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="ratio" TYPE="float" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="formula" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_shop_product" COMMENT="courseshop_product table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="catalogitemid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="initialbillitemid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="currentbillitemid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="customerid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="contexttype" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="instanceid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="startdate" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="enddate" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="reference" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="productiondata" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_cs_product_catalogitem" UNIQUE="false" FIELDS="catalogitemid"/>
+        <INDEX NAME="ix_cs_product_customer" UNIQUE="false" FIELDS="customerid"/>
+        <INDEX NAME="ix_initialbillitemid" UNIQUE="false" FIELDS="initialbillitemid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shop_productevent" COMMENT="stores payment event on this product">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="productid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="billitemid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="datecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="ix_cs_product_id" UNIQUE="false" FIELDS="productid"/>
+        <INDEX NAME="ix_cs_product_billitem" UNIQUE="false" FIELDS="billitemid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_flowcontrol" COMMENT="flowcontrol table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="element" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="fromstate" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="tostate" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="flow_rule_is_unique" TYPE="unique" FIELDS="element, fromstate, tostate"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

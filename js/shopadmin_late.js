@@ -1,0 +1,1 @@
+updatetiprice(1);

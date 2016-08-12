@@ -1,0 +1,21 @@
+<?php
+$TTCprice = $portlet->get_taxed_price($portlet->preset, $portlet->taxcode);
+$portlet->total = $TTCprice * $portlet->preset;
+?>
+<tr id="producttotalcaption_<?php echo $portlet->shortname ?>">
+  <td class="shop-ordercaptioncell" colspan="3">
+     <?php echo $portlet->name ?>
+  </td>
+</tr>
+<tr id="producttotal_<?php echo $portlet->shortname ?>">
+  <td class="shop-ordercell">
+     <a title="<?php print_string('clearall', 'local_shop') ?>" href="Javascript:ajax_clear_product('<?php echo $CFG->wwwroot ?>', '<?php echo $theBlock->instance->id ?>', '<?php echo $portlet->shortname ?>')"><img src="<?php echo $OUTPUT->pix_url('t/delete')?>" /></a>
+     <input type="text" class="order-detail" id="id_<?php echo $portlet->shortname ?>" name="<?php echo $portlet->shortname ?>" value="<?php echo $portlet->preset ?>" size="3" onChange="ajax_update_product('<?php echo $portlet->shortname ?>', this)">
+  </td>
+  <td class="shop-ordercell">
+     <p>x <?php echo sprintf("%.2f", round($TTCprice, 2)) ?> <?php echo $portlet->currency ?> :
+  </td>
+  <td class="shop-ordercell">
+     <input type="text" class="order-detail" id="id_total_<?php echo $portlet->shortname ?>" name="<?php echo $portlet->shortname ?>_total" value="<?php echo $portlet->total ?>" size="10" disabled class="totals" >
+  </td>
+</tr>

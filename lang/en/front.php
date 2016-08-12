@@ -1,0 +1,217 @@
+<?php
+
+$string['FR'] = 'Shipping zone FRANCE';
+$string['EU'] = 'Shipping zone EUROPE';
+$string['Z2'] = 'Shipping zone MAGHREB';
+$string['Z3'] = 'Shipping zone AFRIQUE';
+$string['Z4'] = 'Shipping zone AMERIQUE';
+$string['Z5'] = 'Shipping zone ASIE';
+$string['Z6'] = 'Shipping zone OCEANIE';
+
+$string['accountnumber'] = 'Account number';
+$string['addparticipant'] = 'Add participant';
+$string['address'] = 'Address';
+$string['adminoptions'] = 'Administrator options: ';
+$string['agency'] = 'Agency';
+$string['alltaxes'] = 'Total taxes ';
+$string['amount'] = 'Amount';
+$string['askforshipping'] = 'Ask for shipping';
+$string['backtooutdoorsshop'] = 'Back to external store';
+$string['backtoshop'] = 'Back to store front';
+$string['bankid'] = 'Bank code';
+$string['bankaddress'] = 'Banking information';
+$string['bankcheck'] = 'Bank check (Euro zone only)';
+$string['banktransfer'] = 'Banck wired transfer';
+$string['bill'] = 'Bill';
+$string['billing'] = 'Billing';
+$string['both'] = 'All users';
+$string['buy'] = 'Buy';
+$string['byemailat'] = ' by mail at ';
+$string['byphoneat'] = ' by phone at ';
+$string['cancelorder'] = 'Cancel order';
+$string['cartsummary'] = 'Order summary';
+$string['cb'] = 'Credit card';
+$string['chooseparticipant'] = 'Choose participant';
+$string['clearall'] = 'Clear all units';
+$string['cbonpaypal'] = 'Credit card via Paypal';
+$string['code'] = 'Code';
+$string['confirm'] = 'Confirm';
+$string['confirmorder'] = 'Confirm order';
+$string['continue'] = 'Continue';
+$string['creditcards'] = 'Credit cards';
+$string['customer'] = 'M./Mr/Mrs ';
+$string['customerinfo'] = 'Customer information';
+$string['customerinformation'] = 'Your personal information';
+$string['customersupport'] = 'Customer support';
+$string['navsteps'] = 'Front navigation order';
+$string['defaultnavsteps'] = 'Default front office navigation';
+$string['configdefaultnavsteps'] = 'Some office owners may reorder the steps in the front process. Keep in mind some orders might NOT work correctly, f.e. trying to get payment before fhoc cart and customer are defined.';
+$string['confighideproductswhennotavailable'] = 'If enabled, non available products (for availability check reasons, but yet published for sale) will not be shown at all on front. If disabled, they still appear but shadowed and without the ordering button.';
+$string['dateformaterror'] = 'Invalid date format!';
+$string['deleteone'] = 'Delete just one';
+$string['deleteparticipant'] = 'Delete this participant';
+$string['delivery'] = 'Delivery';
+$string['designation'] = 'Designation';
+$string['disableallmode'] = 'Disable "all products view" (let connection check) ';
+$string['discount'] = 'Discount';
+$string['earthmailonprepay'] = 'Earth post parcel after pre payment';
+$string['email'] = 'Mail ';
+$string['emptyorder'] = 'Your basket is empty. You need choose some products to pursue.';
+$string['emptybill'] = 'Empty bill. No items.';
+$string['enableallmode'] = 'Enable "all products view" (override connection check) ';
+$string['existingmailpleaselogin'] = 'This mail address is already used. If you are owner of this account, <a href="{$a->wwwroot}/login/index.php">login</a>. You will driven back to the shop in connected mode';
+$string['finish'] = 'Finish';
+$string['for'] = 'for';
+$string['forinternetcustomersonly'] = 'for internet users only';
+$string['forquestionssendmailto'] = 'For all questions, please contact us at ';
+$string['freeordersignal'] = 'The amount of your order is null. You can finish your order and no payment will be required.';
+$string['getinvoice'] = 'Get the invoice';
+$string['givetransactioncodeforallrequest'] = 'Give this identifier for any communication with us';
+$string['gotoadminlink'] = 'Go to admin screens';
+$string['gotocustomerservice'] = 'Go to your customer service area';
+$string['help_informations'] = 'Information about your account';
+$string['here'] = 'here.';
+$string['hideproductswhennotavailable'] = 'Hide products if not available';
+$string['ifordering'] = 'If your ordering is over ';
+$string['intracommunautaryID'] = 'Intracomunitary Tax Identifier (VAT)';
+$string['instance'] = 'Product instance {$a}';
+$string['invoiceinformation'] = 'Invoicing';
+$string['ismorethan'] = 'For an order above';
+$string['isnotuser'] = 'Is not a {$a} user';
+$string['isuser'] = 'Is user';
+$string['key'] = 'Key';
+$string['fixaccount'] = 'Fixing User Account to {$a}';
+$string['knownaccount'] = 'Identified User Account';
+$string['launch'] = 'Launch the order';
+$string['launchorder'] = 'Launch order';
+$string['loggedin'] = 'Logged in';
+$string['loggedout'] = 'Logged out';
+$string['lostsession'] = 'We are sorry, but probably the elapsed time since you started this session was too long. We cannot continue this purchase process. We are driving you back to the shop entrance.';
+$string['mandatories'] = 'Mandatory fields';
+$string['mandatoryemail'] = 'E mail is mandatory';
+$string['mandatoryerror'] = 'This info is mandatory!';
+$string['mandatorylastname'] = 'Mandatory name';
+$string['maxdeliveryreached'] = 'Thisproduct cannot ne ordered in more quantity that you already choosed (per bill).';
+$string['mincharserror'] = 'Minimal chars required:';
+$string['missingdata'] = 'Important required data is missing. Ignoring entry.';
+$string['next'] = 'Next step';
+$string['newaccountinfo'] = 'Create your customer account';
+$string['noassignation'] = 'No participant assigned.';
+$string['noproductincategory'] = 'No product in category';
+$string['notallassigned'] = 'All your seats are not assigned. You may have order more units than really used. Please fix this before pursuing.';
+$string['notavailable'] = 'This product is not available for you at the moment (e.g. you may already own an active instance of it).';
+$string['objects'] = 'objects';
+$string['on'] = 'On ';
+$string['onlinepayment'] = 'Payment <br/>(online or offline)';
+$string['onlyfor'] = 'Only for users:';
+$string['onlynumerics'] = 'Numeric value only';
+$string['oneseat'] = 'One seat per order';
+$string['order'] = 'Order';
+$string['ordersummary'] = 'Order summary';
+$string['untaxedtotal'] = 'Untaxed total';
+$string['finaltotal'] = 'Order total';
+$string['orderID'] = 'Order ID : ';
+$string['orderingtotal'] = 'Order total :';
+$string['orderinput'] = 'Order input';
+$string['orderconfirm'] = 'Order placed';
+$string['orderinputadmin'] = ' Order input (admintrace)';
+$string['ordersheet'] = 'Online Order';
+$string['ordertempstatusadvice'] = '<span class="smalltext">This order will keep temporary status until the seller get an accountance bill ID.</span>';
+$string['ordertotal'] = 'Your total order';
+$string['participanthelper1'] = 'You can assign 1 participant to your order. ';
+$string['participanthelper1plural'] = 'You can assign up to {$a} participants to your order. ';
+$string['participanthelper2'] = 'Use the form above to add participants to the list. You may add less participants than seats allowed, if some of your learners are assigned to more than one seat. You can remove and add back people as often as you need in your current cart session until getting your lists accurate.';
+$string['participants'] = 'Participants';
+$string['passwordconfirmerror'] = 'Passwords do not match!';
+$string['payment'] = 'Payment ';
+$string['paymentmethod'] = 'Pay mode';
+$string['paymentmode'] = 'Pay mode ';
+$string['paymodedonotpatchtoresponse'] = 'The detected paymode of the respone is different to the registered paymode in order. Error.';
+$string['payto'] = 'Thanks pay to {$a}.<br/>Print the order form and send it to ';
+$string['plantcode'] = 'Plant code';
+$string['previous'] = 'Previous step';
+$string['procedure'] = 'Procedure';
+$string['productionbounceadvice'] = 'Order has already been processed once. It cannot be processed again. This is probably due to reloading this page. If you experience issues in getting your products, please contact our support.';
+$string['puttc'] = 'P.U. (T.I.)';
+$string['quantity'] = 'Quantity';
+$string['rates'] = 'Rate';
+$string['ref'] = 'Ref';
+$string['reference'] = 'Reference';
+$string['requireaddress'] = 'Address required';
+$string['requirecity'] = 'City required';
+$string['requirefirstname'] = 'Firstname required';
+$string['requirelastname'] = 'Lastname required';
+$string['requiremail'] = 'Mail required';
+$string['requirepaymode'] = 'Pay mode required';
+$string['requirezipcode'] = 'Zip required';
+$string['reset'] = 'Reset basket';
+$string['saverequirements'] = 'Save requirements';
+$string['sameuserexists'] = 'A user with email as {$a} exists already in this site? Maybe it\'s you. In that case, please login before ordering.';
+$string['seats'] = 'Seats';
+$string['seatassignation'] = 'Seat and roles assignation ({$a} seat(s))';
+$string['seatscomplete'] = 'All seats assigned for this product';
+$string['seesalesconditions'] = 'See our sales conditions';
+$string['selection'] = 'Selection';
+$string['sellercontact'] = 'For all information about your purchase, pleae contact us by mail ';
+$string['shipping'] = 'Shipping ';
+$string['shippingadded'] = 'Shipping added (calculation on next step)';
+$string['shopform'] = 'Shop form ';
+$string['specialdiscount'] = 'your got an <b>exceptional discount of</b>';
+$string['student'] = 'Learners';
+$string['subtotal'] = 'Subtotal';
+$string['supervisor'] = 'Supervisors';
+$string['supplyinstructions'] = '<b><span style="color:red">Choose pay mode</span></b>';
+$string['tax'] = 'Tax';
+$string['taxname'] = 'Tax';
+$string['taxratio'] = 'Ratio';
+$string['taxamount'] = 'Tax amount';
+$string['taxes'] = 'Taxes';
+$string['untaxedsubtotal'] = 'Untaxed Subtotal';
+$string['finaltotalprice'] = 'Final total';
+$string['taxessummary'] = 'Taxes summary';
+$string['teacher'] = 'Trainers';
+$string['testmode'] = 'Test mode';
+$string['totaldiscounted'] = 'Discounted total ';
+$string['totalpriceTTC'] = 'Total TI price ';
+$string['totals'] = 'Totals';
+$string['totaprice'] = 'Total price';
+$string['transactioncode'] = 'Transaction ID';
+$string['providetransactioncode'] = 'Provide this code in any communication with our sales service.';
+$string['transactionbounce'] = 'this transaction is not complete. You may confirm or cancel to finish the ordering process.';
+$string['unitprice'] = 'Unit price';
+$string['usedistinctinvoiceinfo'] = 'Use distinct invoice info';
+$string['vatcode'] = 'VAT code (EU only)';
+$string['viewlarger'] = 'View larger';
+$string['youcan'] = 'You can';
+$string['yougetdiscountof'] = 'You get discount of ';
+$string['yourorder'] = 'You order';
+$string['zipandcity'] = 'Zip and city';
+$string['configforcedownloadleaflet'] = 'Force download of leaflet';
+
+$string['transaction_input_tpl'] = '
+<h3><%%SELLER%%></h3>
+<h4>Customer ordering</h4>
+
+<p>An ordering has been input on <%%SERVER%%> by: 
+
+<p><u>Customer Identification:</u>
+<hr/>
+<b>Lastname:</b> <%%FIRSTNAME%%><br>
+<b>Firstname:</b> <%%LASTNAME%%><br>
+<b>Mail:</b> <%%MAIL%%><br>
+<b>City:</b> <%%CITY%%><br>
+<b>Country:</b> <%%COUNTRY%%><br>
+<hr/>
+<p><u>Order Summary</u>
+<hr/>
+<b>Total Ammount (untaxed):</b> <%%AMOUNT%%><br>
+<b>Total taxes:</b> <%%TAXES%%><br>
+<b>Total Taxed Amount:</b> <%%TTC%%><br>
+<b>Paymode:</b> <%%PAYMODE%%><br>
+<b>Number of items:</b> <%%ITEMS%%>
+<hr/>
+
+<p>Online order view (authorized persons only)
+<hr/>
+<a href="<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>">Watch this order in sales back-office</a>
+';
