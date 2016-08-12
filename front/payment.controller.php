@@ -80,7 +80,7 @@ class payment_controller extends front_controller_base {
             $bill->idnumber = '';
             $formatted = format_string($this->theshop->name);
             $bill->title = (empty($formatted)) ? get_string('defaultbilltitle', 'local_shop') : $formatted;
-            $bill->status = 'PLACED';
+            $bill->status = SHOP_BILL_PLACED;
             $bill->emissiondate = time();
             $bill->lastactiondate = time();
             $bill->worktype = 'PROD';

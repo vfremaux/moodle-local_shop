@@ -110,7 +110,7 @@ class production_controller extends front_controller_base {
                 mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Full production starting from '.$aFullBill->status.' ...');
             }
 
-            if ($aFullBill->status == 'PENDING' || $aFullBill->status == 'SOLDOUT' || $overriding) {
+            if ($aFullBill->status == SHOP_BILL_PENDING || $aFullBill->status == SHOP_BILL_SOLDOUT || $overriding) {
                 // when using the controller to finish a started production, do not
                 // preproduce again (paypal IPN finalization)
                 if ($this->interactive && $this->ipncall) {
@@ -118,7 +118,7 @@ class production_controller extends front_controller_base {
                 }
                 $productionfeedback = produce_prepay($aFullBill);
 
-                if ($aFullBill->status == 'SOLDOUT' || $overriding) {
+                if ($aFullBill->status == SHOP_BILL_SOLDOUT || $overriding) {
                     shop_trace("[{$aFullBill->transactionid}] ".'Production Controller : Post Pay process');
                     if ($this->interactive && $this->ipncall) {
                         mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Post Pay process');
@@ -129,9 +129,9 @@ class production_controller extends front_controller_base {
                         $productionfeedback->private .= '<br/>'.$productionfeedback2->private;
                         $productionfeedback->salesadmin .= '<br/>'.$productionfeedback2->salesadmin;
                         if ($overriding) {
-                            $aFullBill->status = 'PREPROD'; // Let replay for test
+                            $aFullBill->status = SHOP_BILL_PREPROD; // Let replay for test
                         } else {
-                            $aFullBill->status = 'COMPLETE'; // Let replay for test
+                            $aFullBill->status = SHOP_BILL_COMPLETE; // Let replay for test
                         }
                         if (!$holding) {
                             // If holding for repeatable tests, do not complete the bill.
