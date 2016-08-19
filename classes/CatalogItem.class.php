@@ -493,7 +493,7 @@ class CatalogItem extends ShopObject {
     }
 
     static function count($filter) {
-        parent::_count(self::$table, $filter);
+        return parent::_count(self::$table, $filter);
     }
 
     static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

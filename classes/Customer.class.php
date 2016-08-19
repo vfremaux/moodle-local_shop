@@ -77,6 +77,10 @@ class Customer extends ShopObject {
         }
     }
 
+    static function count($filter) {
+        return parent::_count(self::$table, $filter);
+    }
+
     static function get_instances_for_admin($theshop) {
         global $DB;
 

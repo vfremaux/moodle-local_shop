@@ -80,6 +80,10 @@ if ($data = $mform->get_data()) {
     $data->description = $data->description_editor['text'];
     $data->descriptionformat = $data->description_editor['format'];
 
+    if (empty($data->renewable)) {
+        $data->renewable = 0;
+    }
+
     if (empty($data->setid)) {
         $data->shortname = CatalogItem::compute_item_shortname($data);
 

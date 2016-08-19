@@ -14,7 +14,7 @@ $string['systempayDoorTransferText'] = 'This site is going to tranfer you to the
 $string['systempaysecreterror'] = 'Error in validating returned HMAC';
 $string['pluginname'] = 'System Pay PLUS Pay Mode';
 $string['systempayinfo'] = 'System Pay PLUS is a payment gateway developped by ATOS and has been adopted by several banks 
-such as SociÃ©tÃ© GÃ©nÃ©rale and Banques Populaires in France. Its setup needs setting up crypted certificates and description files on the server 
+such as Société Générale and Banques Populaires in France. Its setup needs setting up crypted certificates and description files on the server 
 that cannot be uploaded from the Web interface for security reasons. Please ask a Moodle Shop integrator to operate this setup for you and perform
 appropriate testing and service kick-off.';
 

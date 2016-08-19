@@ -88,6 +88,10 @@ if ($data = $mform->get_data()) {
     $data->eula = $data->eula_editor['text'];
     $data->eulaformat = $data->eula_editor['format'];
 
+    if (empty($data->renewable)) {
+        $data->renewable = 0;
+    }
+
     if (empty($data->itemid)) {
 
         $data->shortname = CatalogItem::compute_item_shortname($data);

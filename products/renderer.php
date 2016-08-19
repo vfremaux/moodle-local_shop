@@ -18,8 +18,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Shop;
+use local_shop\Tax;
 use local_shop\Category;
 
 /**
@@ -101,34 +103,38 @@ class shop_products_renderer {
             $str .= '<!--<th class="header c0">';
             $str .= get_string('sel', 'local_shop');
             $str .= '</th>-->';
-            $str .= '<th class="header c0">';
+            $str .= '<th class="header c0" rowspan="2">';
             $str .= get_string('image', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c1">';
             $str .= get_string('code', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c3">';
+            $str .= '<th class="header c2" span="6">';
             $str .= get_string('designation', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c4">';
+            $str .= '<th class="header c3">';
+            $str .= '</th>';
+            $str .= '</tr>';
+            $str .= '<tr class="shop-products-caption" valign="top">';
+            $str .= '<th class="header c1">';
             $str .= get_string('price', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c5">';
+            $str .= '<th class="header c2">';
             $str .= get_string('TTC', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c8">';
+            $str .= '<th class="header c3">';
             $str .= get_string('status', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c9">';
+            $str .= '<th class="header c4">';
             $str .= get_string('sales', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c10">';
+            $str .= '<th class="header c5">';
             $str .= get_string('stock', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c11">';
+            $str .= '<th class="header c6">';
             $str .= get_string('renewable', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c12">';
+            $str .= '<th class="header c7">';
             $str .= get_string('seats', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header lastcol" width="30">';
@@ -169,7 +175,8 @@ class shop_products_renderer {
             $str .= '<td class="amount cell '.$slaveclass.'" align="right">';
             $str .= implode('<br/>', $pricelines);
             $str .= '<br/>';
-            $str .= '('.$product->taxcode. ')';
+            $tax = new Tax($product->taxcode);
+            $str .= '<div title="'.$tax->title.'">('.$product->taxcode. ')</div>';
             $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'"align="right">';
             $str .= implode('<br/>', $taxedpricelines);
