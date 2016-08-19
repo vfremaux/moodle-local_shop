@@ -215,10 +215,10 @@ class CatalogItem extends ShopObject {
 
     // this will override existing elements
     function setElement($elm) {
-        $this->elements[$elm->code] = $elm;
+        $this->elements[$elm->id] = $elm;
     }
 
-    // this will override existing elements
+    // this will fetch an element by code.
     function getElement($code) {
         if (array_key_exists($code, $this->elements)) {
             return $this->elements[$elm->code];

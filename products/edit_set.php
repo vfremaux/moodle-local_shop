@@ -88,7 +88,7 @@ if ($data = $mform->get_data()) {
         $data->shortname = CatalogItem::compute_item_shortname($data);
 
         $data->setid = 0;
-        $DB->insert_record('local_shop_catalogitem', $data);
+        $data->id = $DB->insert_record('local_shop_catalogitem', $data);
 
         // We have items in the set. update relevant products.
         $productsinset = optional_param('productsinset', array(), PARAM_INT);

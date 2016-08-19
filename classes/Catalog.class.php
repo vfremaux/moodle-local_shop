@@ -122,7 +122,7 @@ class Catalog extends ShopObject {
     }
 
     /**
-     * get the full productline from cetegories
+     * get the full productline from categories
      *
      */
     function get_all_products(&$shopproducts) {
@@ -195,10 +195,15 @@ class Catalog extends ShopObject {
                     $categories[$key]->products[$ci->code] = $ci;
                 }
             }
+
+        }
+
+        // Complementary processing for sets : fetch set elements and eventual overrides.
+        if (!empty($shopproducts)) {
             foreach (array_values($shopproducts) as $ci) {
                 if ($ci->isset) {
-                    $set = array();
-                    // get set elements in master catalog (same set code)
+
+                    // Get set elements in master catalog (same set code).
                     if ($this->isslave) {
                         $sql = "
                           SELECT
@@ -237,7 +242,7 @@ class Catalog extends ShopObject {
                          ORDER BY
                         ci.shortname
                     ";
-                    $set = array();
+
                     if ($catalogitems = $DB->get_records_sql($sql)) {
                         foreach ($catalogitems as $cirec) {
                             $ci1 = new CatalogItem($cirec);
