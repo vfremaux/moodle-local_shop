@@ -427,9 +427,9 @@ class shop_products_renderer {
             $row[] = get_string($elm->status, 'local_shop');
 
             $commands = '';
-            $editseturl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $set->id));
+            $editelementurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $elm->id));
             $linklbl = get_string('editproduct', 'local_shop');
-            $commands .= '<a href="'.$editseturl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'"></a><br/>';
+            $commands .= '<a href="'.$editelementurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'"></a><br/>';
 
             $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteproduct', 'itemid' => $elm->id));
             $linklbl = get_string('removeset', 'local_shop');
