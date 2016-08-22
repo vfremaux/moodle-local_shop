@@ -34,7 +34,7 @@ class product_controller {
         $this->thecatalogue = $theCatalogue;
     }
 
-    public receive($cmd, $data = array()) {
+    public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
             $this->data = (object)$data;
@@ -66,7 +66,7 @@ class product_controller {
         }
     }
 
-    function process($cmd) {
+    public function process($cmd) {
 
         $this->prepare($cmd);
 

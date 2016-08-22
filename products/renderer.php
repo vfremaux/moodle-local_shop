@@ -523,7 +523,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    function catlinks() {
+    function catlinks($theCatalog) {
         global $OUTPUT;
 
         $categoryid = optional_param('categoryid', 0, PARAM_INT);
@@ -537,14 +537,16 @@ class shop_products_renderer {
         $str .= '<div class="left-links">';
         $catlinkurl = new moodle_url('/local/shop/products/category/view.php', array('view' => 'viewAllCategory', 'id' => $this->thecatalog->id));
         $str .= '<a href="'.$catlinkurl.'">'.get_string('edit_categories', 'local_shop').'</a> - ';
-        $producturl = new moodle_url('/local/shop/products/edit_product.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
-        $str .= '<a href="'.$producturl.'">'.get_string('newproduct', 'local_shop').'</a> - ';
-        $seturl = new moodle_url('/local/shop/products/edit_set.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
-        $str .= '<a href="'.$seturl.'">'.get_string('newset', 'local_shop').'</a> - ';
-        $bundleurl = new moodle_url('/local/shop/products/edit_bundle.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
-        $str .= '<a href="'.$bundleurl.'">'.get_string('newbundle', 'local_shop').'</a> - ';
-        $testurl = new moodle_url('/local/shop/unittests/index.php', array('id' => $this->theshop->id));
-        $str .= '<a href="'.$testurl.'">'.get_string('unittests', 'local_shop').'</a>';
+        if (Category::count(array('catalogid'=> $theCatalog->id))) {
+            $producturl = new moodle_url('/local/shop/products/edit_product.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
+            $str .= '<a href="'.$producturl.'">'.get_string('newproduct', 'local_shop').'</a> - ';
+            $seturl = new moodle_url('/local/shop/products/edit_set.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
+            $str .= '<a href="'.$seturl.'">'.get_string('newset', 'local_shop').'</a> - ';
+            $bundleurl = new moodle_url('/local/shop/products/edit_bundle.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
+            $str .= '<a href="'.$bundleurl.'">'.get_string('newbundle', 'local_shop').'</a> - ';
+            $testurl = new moodle_url('/local/shop/unittests/index.php', array('id' => $this->theshop->id));
+            $str .= '<a href="'.$testurl.'">'.get_string('unittests', 'local_shop').'</a>';
+        }
         $str .= '</div>';
 
         $str .= '<div class="right-links">';

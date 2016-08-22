@@ -162,4 +162,4 @@ if (count(array_keys($products)) == 0) {
 echo '</table>';
 echo '</form>';
 
-echo $renderer->catlinks();
+echo $renderer->catlinks($theCatalog);
