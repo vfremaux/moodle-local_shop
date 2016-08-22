@@ -110,6 +110,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
     function produce_postpay(&$data) {
         global $CFG, $DB;
 
+        $config = get_config('local_shop');
+
         $productionfeedback = new StdClass();
 
         if (!isset($data->actionparams['coursename'])) {
@@ -246,6 +248,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                             $product->startdate = $starttime;
                             $product->enddate = $endtime;
                             $product->reference = shop_generate_product_ref($data);
+                            $product->test = $config->test;
                             $itemproductiondata = array();
                             $itemproductiondata['courseid'] = $course->id;
                             $itemproductiondata['handler'] = 'STD_SETUP_ONE_COURSE_SESSION';
@@ -382,6 +385,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      * for products generated with this handler
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
+     *
+     * // TODO : Generalize to all logstores
      */
     function display_product_actions($pid, $params) {
         global $CFG, $COURSE, $DB;
@@ -392,19 +397,19 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
 
         $sqlparams = array($params['courseid'], $params['userid'], $params['starttime']);
 
-        $select = " course = ?  AND userid = ? AND time > ? ";
+        $select = " courseid = ?  AND userid = ? AND timecreated > ? ";
 
         if ($params['endtime']) {
             $sqlparams[] = $params['endtime'];
-            $select .= " AND time < ? ";
+            $select .= " AND timecreated < ? ";
         }
 
-        $hasentered = $DB->record_exists_select('log', " course = ? AND userid = ? ", $sqlparams);
+        $hasentered = $DB->record_exists_select('logstore_standard_log', $select, $sqlparams);
 
         if (!$hasentered) {
             $str = '';
             $freeassignstr = get_string('freeassign', 'shophandlers_std_setuponecoursesession');
-            $postprodurl = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $COURSE->id, 'pid' => $pid, 'method' => 'freeassign'));
+            $postprodurl = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $params['courseid'], 'pid' => $pid, 'method' => 'freeassign'));
             $str .= '<a href="'.$postprodurl.'">'.$freeassignstr.'</a>';
         } else {
             $str = get_string('nonmutable', 'local_shop');
@@ -421,6 +426,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         // first unenrol user from course
 
         $product->contexttype = 'user_enrolment';
+
+        // TODO : Finish processing
     }
 
     /**
@@ -438,7 +445,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $str .= '<div class="cs-product-value">'.$pinfo->coursename.'</div></div>';
         $str .= '<div><div class="cs-product-key">'.get_string('beneficiary', 'shophandlers_std_setuponecoursesession').'</div>';
         $u = $DB->get_record('user', array('id' => $pinfo->userid));
-        $str .= '<div class="cs-product-value"><a href="'.$CFG->wwwroot.'/user/view.php?id='.$u->id.'">'.fullname($u).'</a></div></div>';
+        $userurl = new moodle_url('/user/view.php', array('id' => $u->id));
+        $str .= '<div class="cs-product-value"><a href="'.$userurl.'">'.fullname($u).'</a></div></div>';
 
         $str .= '<div><div class="cs-product-key">'.get_string('role').'</div>';
         if ($pinfo->supervisor) {

@@ -47,7 +47,7 @@ class Shop_Form extends moodleform {
         $this->editoroptions = array('maxfiles' => 10, 'context' => context_system::instance(), 'subdirs' => true);
 
         // Adding title and description.
-        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'shop', 'local_shop'), 2));
+        $mform->addElement('header', 'general', get_string($this->_customdata['what'].'shop', 'local_shop'));
 
         $attributes = 'size="47" maxlength="200"';
         $attributesshort = 'size="30" maxlength="200"';
@@ -113,7 +113,8 @@ class Shop_Form extends moodleform {
             $mform->setDefault('currency', $config->defaultcurrency);
 
             // Choosing valid paymodes for this shop instance.
-            $mform->addElement('header', 'heading_paymodes', get_string('carefullchoice', 'local_shop'));
+            $mform->addElement('header', 'heading_paymodes', get_string('paymentmethods', 'local_shop'));
+            $mform->addElement('html', get_string('carefullchoice', 'local_shop'));
             $paymodes = shop_paymode::get_plugins($this);
             foreach ($paymodes as $pm) {
                 if ($pm->enabled) {
@@ -140,7 +141,7 @@ class Shop_Form extends moodleform {
             $mform->setDefault('customerorganisationrequired', 0);
 
             // default customer support course if
-            $courseoptions = $DB->get_records_menu('course', array('visible' => 1), 'fullname', 'shortname,fullname');
+            $courseoptions = $DB->get_records_menu('course', array('visible' => 1), 'fullname', 'id,fullname');
             $courseoptions[0] = get_string('none', 'local_shop');
             $mform->addElement('select', 'defaultcustomersupportcourse', get_string('configdefaultcustomersupportcourse', 'local_shop'), $courseoptions);
             $mform->setDefault('defaultcustomersupportcourse', 0);

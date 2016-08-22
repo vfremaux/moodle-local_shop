@@ -1250,15 +1250,19 @@ class shop_front_renderer {
 
         $str .= $OUTPUT->heading(get_string(str_replace('_', '', $role), 'local_shop'));  // remove pseudo roles markers
         if (!empty($roleassigns[$shortname][$role])) {
+            $str .= '<div class="shop-role-list-container">';
             $str .= '<table width="100%" class="shop-role-list">';
                 foreach ($roleassigns[$shortname][$role] as $participant) {
                     $str .= $this->assignation_row($participant, $role, $shortname, true);
                 }
             $str .= '</table>';
+            $str .= '</div>';
         } else {
+            $str .= '<div class="shop-role-list-container">';
             $str .= '<div class="shop-role-list">';
             $str .= get_string('noassignation', 'local_shop');
             $str .= '</div>';
+            $str.= '</div>';
         }
         if (@$SESSION->shoppingcart->assigns[$shortname] < $SESSION->shoppingcart->order[$shortname]) {
             $str .= $this->assignation_select($role, $shortname, true);

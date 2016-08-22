@@ -90,7 +90,7 @@ class shop_paymode_mercanet extends shop_paymode{
         */
         echo '<p><span class="shop-procedure-cancel">X</span> ';
         $cancelstr = get_string('cancel');
-        $cancelurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->theshop->id));
+        $cancelurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
         echo '<a href="'.$cancelurl.'" class="smalltext">'.$cancelstr.'</a>';
         echo '</div>';
     }
@@ -127,7 +127,7 @@ class shop_paymode_mercanet extends shop_paymode{
         // cancel shopping cart
         // unset($SESSION->shoppingcart);
 
-        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->theshop->id));
+        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
         redirect($redirecturl);
     }
 
@@ -183,10 +183,10 @@ class shop_paymode_mercanet extends shop_paymode{
                     shop_trace("[$transid] Mercanet : Transaction Pending for IPN confirmation, transferring to success end point");
 
                     if (empty($config->test)) {
-                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
+                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
                         redirect($redirecturl);
                     } else {
-                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
+                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
                         echo $OUTPUT->continue_button($continueurl, get_string('continueaftersuccess', 'shoppaymodes_mercanet'));
                     }
                 } elseif ($paydata['response_code'] == MRCNT_PAYMENT_REJECTED) {
@@ -219,7 +219,7 @@ class shop_paymode_mercanet extends shop_paymode{
             }
             if ($aFullBill->status == SHOP_BILL_SOLDOUT) {
                 if (empty($config->test)) {
-                    $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
                     redirect($redirecturl);
                 } else {
                     $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
@@ -294,6 +294,7 @@ class shop_paymode_mercanet extends shop_paymode{
                 } elseif ($paydata['response_code'] == MRCNT_PAYMENT_REJECTED) {
                     $aFullBill->status = SHOP_BILL_REFUSED;
                     $aFullBill->save(true);
+                    shop_trace("[$transid] Mercanet IPN Payment Rejected : ".$paydata['response_code']);
                     die;
                 } else {
                     $aFullBill->status = SHOP_BILL_FAILED;

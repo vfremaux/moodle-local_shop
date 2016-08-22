@@ -87,17 +87,20 @@ if ($data = $mform->get_data()) {
     if (empty($data->setid)) {
         $data->shortname = CatalogItem::compute_item_shortname($data);
 
-        $data->setid = 0;
+        $data->setid = 0; // We must care that setid deisgnates both local form Setid and Catalogitem setid field.
         $data->id = $DB->insert_record('local_shop_catalogitem', $data);
 
         // We have items in the set. update relevant products.
         $productsinset = optional_param('productsinset', array(), PARAM_INT);
         if (is_array($productsinset)) {
             foreach ($productsinset as $productid) {
-                $record = new StdClass;
-                $record->id = $productid;
-                $record->setid = $data->id;
-                $DB->update_record('local_shop_catalogitem', $record);
+                if ($productid != $data->id) {
+                    // Protect against self referencing.
+                    $record = new StdClass;
+                    $record->id = $productid;
+                    $record->setid = $data->id;
+                    $DB->update_record('local_shop_catalogitem', $record);
+                }
             }
         }
 
@@ -108,7 +111,7 @@ if ($data = $mform->get_data()) {
         }
     } else {
         $data->id = $data->setid;
-        $data->setid = 0;
+        $data->setid = 0; // We must care that setid deisgnates both local form Setid and Catalogitem setid field.
 
         // If set code as changed, we'd better recompute a new shortname.
         if (empty($data->shortname) || ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {

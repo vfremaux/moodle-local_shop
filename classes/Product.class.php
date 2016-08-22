@@ -39,6 +39,8 @@ class Product extends ShopObject {
     function __construct($idorrecord, $light = false) {
         global $DB;
 
+        $config = get_config('local_shop');
+
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
@@ -56,6 +58,7 @@ class Product extends ShopObject {
             $this->record->enddate = 0;
             $this->record->reference = '';
             $this->record->productiondata = '';
+            $this->record->test = $config->test;
 
             $this->save();
         }

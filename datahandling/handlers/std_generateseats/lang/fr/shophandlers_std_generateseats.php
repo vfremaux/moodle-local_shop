@@ -52,19 +52,19 @@ $string['productiondata_sales'] = '
 Identifiant : {$a}<br/>
 ';
 
-$string['productiondata_post_public'] = '
+$string['productiondata_created_public'] = '
 <p><b>Paiement enregistré</b></p>
 <p>Votre règlement a été validé. {$a} sièges à affecter ont été ajoutés à votre compte client.</p>
 ';
 
-$string['productiondata_assign_private'] = '
+$string['productiondata_created_private'] = '
 <p><b>Paiement enregistré</b></p>
 <p>Votre règlement a été validé. {$a} sièges à affecter ont été ajoutés à votre compte client. Vous pouvez les affecter en vous rendant
 sur votre espace support client.</p>
 <p><a href="{$a->customersupporturl}">Accéder directement à votre compte client</a></p>
 ';
 
-$string['productiondata_assign_sales'] = '
+$string['productiondata_created_sales'] = '
 <p><b>Paiement enregistré</b></p>
 <p>{$a->seats} sièges pont été ajoutés au compte client de {$a->username}.</p>
 ';

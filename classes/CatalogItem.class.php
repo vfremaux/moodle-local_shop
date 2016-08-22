@@ -67,9 +67,9 @@ class CatalogItem extends ShopObject {
 
             if ($this->isset) {
                 $this->elements = CatalogItem::get_instances(array('setid' => $this->id), 'code');
-                $catalog = new Catalog($this->catalogid);
+                $catalog = new Catalog($this->catalogid, true);
                 if (!empty($this->elements)) {
-                    foreach ($this->elements as $elm) {
+                    foreach ($this->elements as $elmid => $elm) {
                         $this->elements[$elm->id]->catalog = $catalog;
                         $this->elementsbycode[$elm->code] = $elm;
                     }

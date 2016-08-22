@@ -153,6 +153,8 @@ class shop_handler_std_generateseats extends shop_handler {
 
         // Add user to customer support on real purchase.
         if (!empty($data->actionparams['customersupport'])) {
+            $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
             shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay : Registering Customer Support");
             shop_register_customer_support($data->actionparams['customersupport'], $customeruser, $data->transactionid);
         }

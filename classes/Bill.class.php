@@ -60,6 +60,8 @@ class Bill extends ShopObject {
     function __construct($idorrecord, &$theShop = null, &$theCatalogue = null, &$theBlock = null, $light = false) {
         global $DB;
 
+        $config = get_config('local_shop');
+
         $this->thecatalogue = $theCatalogue;
         $this->theshop = $theShop;
         $this->theblock = $theBlock;
@@ -172,6 +174,7 @@ class Bill extends ShopObject {
             $this->record->ignoretax = 0;
             $this->record->paymentfee = 0;
             $this->record->productionfeedback = '';
+            $this->record->test = $config->test;
 
             $this->items = array();
 

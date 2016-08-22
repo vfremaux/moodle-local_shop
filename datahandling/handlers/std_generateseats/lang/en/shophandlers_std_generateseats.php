@@ -57,7 +57,7 @@ $string['productiondata_created_public'] = '
 $string['productiondata_created_private'] = '
 <p><b>Your payment has been received</b></p>
 <p>Your payment has been validated. {$a} unassigned seats have been added to your customer account. You may now browse into your customer area to use these seats.</p>
-<p><a href="{$a->customesupporturl}">Direct access to your customer account</a></p>
+<p><a href="{$a->customersupporturl}">Direct access to your customer account</a></p>
 ';
 
 $string['productiondata_created_sales'] = '
