@@ -125,3 +125,66 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
     return $newuser->id;
 }
+
+/**
+ * @param $participant a minimal object with essential user information
+ * @param $billitem a billitem
+ */
+function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
+    global $CFG, $DB;
+
+    if (!$customer = $DB->get_record('local_shop_customer', array('id' => $billitem->get_customerid()))) {
+        return false;
+    }
+    if (!$customeruser = $DB->get_record('user', array('id' => $customer->hasaccount))) {
+        return false;
+    }
+
+    $customercontext = context_user::instance($customer->hasaccount);
+    $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+
+    $participant->username = shop_generate_username($participant); // makes it unique
+
+    // Let cron generate passwords.
+    // $p->password = hash_internal_user_password(generate_password());
+
+    $participant->lang = $CFG->lang;
+    $participant->deleted = 0;
+    $participant->confirmed = 1;
+    $participant->timecreated = time();
+    $participant->timemodified = time();
+    $participant->mnethostid = $CFG->mnet_localhost_id;
+    if (!isset($participant->country)) {
+        $participant->country = $CFG->country;
+    }
+
+    if ($participant->id = $DB->insert_record('user', $participant)) {
+
+        // passwords will be created and sent out on cron.
+        $pref = new StdClass();
+        $pref->userid = $participant->id;
+        $pref->name = 'create_password';
+        $pref->value = 1;
+        $DB->insert_record('user_preferences', $pref);
+
+        $pref = new StdClass();
+        $pref->userid = $participant->id;
+        $pref->name = 'auth_forcepasswordchange';
+        $pref->value = 1;
+        $DB->insert_record('user_preferences', $pref);
+    }
+
+    // Assign role to customer for behalf on those users.
+    // Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to 
+    // sync the user delegation handling.
+    $usercontext = context_user::instance($participant->id);
+    $now = time();
+    role_assign($supervisorrole->id, $customer->hasaccount, $usercontext->id, '', 0, $now);
+
+    if ($participant->id) {
+        // Assign mirror role for behalf on those users.
+        role_assign($studentrole->id, $participant->id, $customercontext->id, '', 0, $now);
+    }
+
+    return $participant;
+}

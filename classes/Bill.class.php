@@ -16,6 +16,8 @@
 
 namespace local_shop;
 
+require_once($CFG->dirroot.'/local/shop/locallib.php');
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -130,7 +132,7 @@ class Bill extends ShopObject {
 
             if (empty($this->theblock)) {
                 if (!empty($this->record->blockid)) {
-                    $this->theblock = shop_get_block_instance($this->record->blockid);
+                    $this->theblock = \shop_get_block_instance($this->record->blockid);
                 }
             }
         } else {

@@ -482,7 +482,6 @@ class Catalog extends ShopObject {
     * @TODO : scan shoping cart and get role req info from products
     */
     function check_required_roles() {
-    
         return array('student', '_supervisor');
     }
 
@@ -506,9 +505,9 @@ class Catalog extends ShopObject {
                 $seats += 1;
             }
         }
-    
+
         $SESSION->shoppingcart->seats = $seats;
-        
+
         return $seats;
     }
 

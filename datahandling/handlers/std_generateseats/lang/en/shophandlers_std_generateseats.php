@@ -51,13 +51,23 @@ $string['productiondata_sales'] = '
 
 $string['productiondata_created_public'] = '
 <p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. {$a} unassigned seats have been added to your customer account.</p>
+<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your <a href="{$a->customersupporturl}">customer account</a>.</p>
 ';
 
 $string['productiondata_created_private'] = '
 <p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. {$a} unassigned seats have been added to your customer account. You may now browse into your customer area to use these seats.</p>
-<p><a href="{$a->customersupporturl}">Direct access to your customer account</a></p>
+<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your customer account. You may now browse into your customer area to use these seats.</p>
+<p><a href="{$a->customersupporturl}">Direct access to your customer support</a></p>
+';
+
+$string['productiondata_created_public_no_support'] = '
+<p><b>Your payment has been received</b></p>
+<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your customer account.</p>
+';
+
+$string['productiondata_created_private_no_support'] = '
+<p><b>Your payment has been received</b></p>
+<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your customer account. You may now browse into your customer area to use these seats.</p>
 ';
 
 $string['productiondata_created_sales'] = '
@@ -65,9 +75,9 @@ $string['productiondata_created_sales'] = '
 <p>Customer {$a->username} has been credited with {$a->seats} new unassigned seats.</p>
 ';
 
-$string['assignseat_title'] = 'Vous avez un nouveau cours sur {$a} !';
+$string['seatassigned_title'] = 'Vous avez un nouveau cours sur {$a} !';
 
-$string['assignseat_mail'] = '
+$string['seatassigned_mail'] = '
 <p>Your manager has enroled you in the course <a href="{$a->url}">{$a->course}</a>.</p>
 <p>You can connect and start the course using the login information you received in previous mail.</p>
 ';

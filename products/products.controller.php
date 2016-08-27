@@ -23,24 +23,32 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+
+use \local_shop\CatalogItem;
 
 class product_controller {
 
     protected $data;
 
-    protected $thecatalogue;
+    protected $thecatalog;
 
-    function __construct($theCatalogue) {
-        $this->thecatalogue = $theCatalogue;
+    function __construct($theCatalog) {
+        $this->thecatalog = $theCatalog;
     }
 
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the function shoudl get them from request
+     */
     public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
             $this->data = (object)$data;
+        } else {
+            $this->data = new StdClass;
         }
-
-        $data = new StdClass();
 
         switch ($cmd) {
             case 'delete' :
@@ -49,7 +57,7 @@ class product_controller {
             case 'deleteset' :
                 $this->data->setid = required_param('setid', PARAM_INT);
                 break;
-            case 'unlinkproduct' :
+            case 'unlink' :
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
             case 'makecopy':
@@ -66,9 +74,11 @@ class product_controller {
         }
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
-
-        $this->prepare($cmd);
 
         if ($cmd == 'delete') {
             $productidlist = $this->data->productid; // for unity operations
@@ -98,7 +108,7 @@ class product_controller {
                     $productidlist = '';
                 }
             }
-            $relatedids = implode("','", array_keys($theCatalog->getGroupMembers($this->thecatalog->groupid))); // this is as a security
+            $relatedids = implode("','", array_keys($this->thecatalog->getGroupMembers($this->thecatalog->groupid))); // this is as a security
             $DB->delete_records_select('local_shop_catalogitem', " id IN ('$productidlist') AND catalogid IN ('$relatedids') ");
         };
 
@@ -115,7 +125,7 @@ class product_controller {
             }
         }
 
-        if ($cmd == 'unlinkproduct') {
+        if ($cmd == 'unlink') {
             $itemid = required_param('itemid', PARAM_INT);
             $item = new CatalogItem($itemid);
             $item->unlink();

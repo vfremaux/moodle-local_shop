@@ -30,6 +30,8 @@ $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
 $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
 
+$SESSION->shop->categoryid = optional_param('categoryid', 0 + @$SESSION->shop->categoryid, PARAM_INT);
+
 if (!has_capability('local/shop:accessallowners', $context)) {
     $shopowner = $USER->id;
 } else {
@@ -44,14 +46,11 @@ $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 if ($action != '') {
    include_once($CFG->dirroot.'/local/shop/products/products.controller.php');
-   $controller = new product_controller($theCatalogue);
+   $controller = new product_controller($theCatalog);
    $controller->receive($action);
    $controller->process($action);
 }
-
 $products = array();
-
-$SESSION->shop->categoryid = optional_param('categoryid', 0 + @$SESSION->shop->categoryid, PARAM_INT);
 
 // if slave get entries in master catalog and then overrides whith local descriptions
 $masterproducts = array();

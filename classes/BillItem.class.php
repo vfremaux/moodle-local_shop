@@ -195,6 +195,10 @@ class BillItem extends ShopObject {
     }
 
     function get_customerid() {
+        if (empty($this->bill)) {
+            // rehydrates if necessary.
+            $this->bill = new Bill($this->billid);
+        }
         return $this->bill->customerid;
     }
 

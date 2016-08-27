@@ -26,7 +26,7 @@ $string['systempaytestcertificate'] = 'Test certificate';
 $string['systempayusesecure'] = 'Use 3D Secure service';
 
 $string['systempayinfo'] = 'System Pay PLUS is a payment gateway developped by ATOS and has been adopted by several banks 
-such as Société Générale and Banque Populaire in France. Its setup needs setting up crypted certificates and description files on the server 
+such as SociÃ©tÃ© GÃ©nÃ©rale and Banque Populaire in France. Its setup needs setting up crypted certificates and description files on the server 
 that cannot be uploaded from the Web interface for security reasons. Please ask a Moodle Shop integrator to operate this setup for you and perform
 appropriate testing and service kick-off.';
 

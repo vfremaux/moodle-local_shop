@@ -96,16 +96,7 @@ $PAGE->navbar->add(get_string('postproduction', 'local_shop'));
 $PAGE->set_pagelayout('admin');
 
 $productinfo = $product->extract_production_data();
-
-if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php')) {
-    print_error('errorbadhandler', 'local_shop');
-}
-
-require_once $CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php';
-
-$classname = 'shop_handler_'.$productinfo->handler;
-$handler = new $classname('');
-$methodname = 'postprod_'.$method;
+list($handler, $methodname) = $product->get_handler_info($method);
 
 $productinfo->url = $url;
 

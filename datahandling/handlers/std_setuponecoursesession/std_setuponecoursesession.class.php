@@ -159,56 +159,13 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $now = time();
         $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
         $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
-        $customercontext = context_user::instance($customer->hasaccount);
-        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
         if (!empty($data->productiondata->users)) {
             foreach ($data->productiondata->users as $roleshort => $participants) {
                 foreach ($participants as $p) {
                     if (!$user = $DB->get_record('user', array('email' => $p->email))) {
-                        $p->username = shop_generate_username($p); // makes it unique
-
-                        // Let cron generate passwords.
-                        // $p->password = hash_internal_user_password(generate_password());
-
-                        $p->lang = $CFG->lang;
-                        $p->deleted = 0;
-                        $p->confirmed = 1;
-                        $p->timecreated = time();
-                        $p->timemodified = time();
-                        $p->mnethostid = $CFG->mnet_localhost_id;
-                        if (!isset($p->country)) {
-                            $p->country = $CFG->country;
-                        }
-
-                        if ($p->id = $DB->insert_record('user', $p)) {
-                            shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Creating user [{$p->username}].");
-                            $courseusers[$roleshort][] = $p;
-
-                            // passwords will be created and sent out on cron.
-                            $pref = new StdClass();
-                            $pref->userid = $p->id;
-                            $pref->name = 'create_password';
-                            $pref->value = 1;
-                            $DB->insert_record('user_preferences', $pref);
-
-                            $pref = new StdClass();
-                            $pref->userid = $p->id;
-                            $pref->name = 'auth_forcepasswordchange';
-                            $pref->value = 1;
-                            $DB->insert_record('user_preferences', $pref);
-                        }
-
-                        // Assign role to customer for behalf on those users.
-                        // Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to 
-                        // sync the user delegation handling.
-                        $usercontext = context_user::instance($p->id);
-                        role_assign($supervisorrole->id, $customer->hasaccount, $usercontext->id, '', 0, $now);
-
-                        if ($p->id) {
-                            // Assign mirror role for behalf on those users.
-                            role_assign($studentrole->id, $p->id, $customercontext->id, '', 0, $now);
-                        }
+                        $courseusers[$roleshort][] = shop_create_moodle_user($p, $data, $supervisorrole);
+                        shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Creating user [{$p->username}].");
                     } else {
                         $courseusers[$roleshort][] = $user;
                         shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Registering existing user [{$user->username}].");
@@ -251,7 +208,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                             $product->test = $config->test;
                             $itemproductiondata = array();
                             $itemproductiondata['courseid'] = $course->id;
-                            $itemproductiondata['handler'] = 'STD_SETUP_ONE_COURSE_SESSION';
+                            $itemproductiondata['handler'] = 'std_setuponecoursesession';
                             $itemproductiondata['coursename'] = $coursename;
                             $itemproductiondata['userid'] = $u->id;
                             $itemproductiondata['starttime'] = $starttime;

@@ -524,11 +524,11 @@ class shop_products_renderer {
     }
 
     function catlinks($theCatalog) {
-        global $OUTPUT;
-
-        $categoryid = optional_param('categoryid', 0, PARAM_INT);
+        global $OUTPUT, $SESSION;
 
         $this->_check_context();
+
+        $categoryid = 0 + @$SESSION->shop->categoryid;
 
         $str = '';
 
@@ -572,7 +572,8 @@ class shop_products_renderer {
     function category_chooser($url, $theCatalog) {
         global $OUTPUT, $SESSION;
 
-        $SESSION->shop->categoryid = $current = optional_param('categoryid', 0, PARAM_INT);
+        // In case it was not done before, but it might.
+        $SESSION->shop->categoryid = $current = optional_param('categoryid', 0 + @$SESSION->shop->categoryid, PARAM_INT);
 
         $categories = Category::get_instances(array('catalogid' => $theCatalog->id));
 
