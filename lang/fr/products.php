@@ -5,6 +5,7 @@ Cette clef vous est donnée par un client. vous pouvez tenter une recherche en t
 ';
 $string['addbundle'] = 'Ajouter un lot';
 $string['addcategory'] = 'Ajouter une catégorie de produits';
+$string['addoverride'] = 'Surcharger l\'élément';
 $string['addproduct'] = 'Ajouter un produit';
 $string['addset'] = 'Ajouter un assemblage';
 $string['allcategories'] = 'Toutes les catégories';
@@ -12,6 +13,7 @@ $string['billorderingnumber'] = 'Le numéro d\'ordre de la facture';
 $string['customersnameonbill'] = 'Le nom du client mentionné sur la facture';
 $string['deletebundle'] = 'Supprimer un lot';
 $string['deletecategory'] = 'Supprimer une catégorie de produits';
+$string['deleteoverride'] = 'Supprimer la surcharge';
 $string['deleteproduct'] = 'Supprimer un produit';
 $string['deleteset'] = 'Supprimer un assemblage';
 $string['editbundle'] = 'Mettre à jour un lot';

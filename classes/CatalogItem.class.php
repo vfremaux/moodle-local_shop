@@ -227,6 +227,11 @@ class CatalogItem extends ShopObject {
         }
     }
 
+    // this will override existing elements
+    function deleteElement($elmid) {
+        unset($this->elements[$elmid]);
+    }
+
     /**
     *
     *
@@ -406,10 +411,12 @@ class CatalogItem extends ShopObject {
 
     /**
      * Apply() overrides the current instance with the elements of the override.
-     * Overriden attributes are shoosen to address the master question : Why using
-     * slave catalogs: master usecase is to internationalize or change some commercial
+     * Overriden attributes are choosen to address the master question : Why using
+     * slave catalogs: master usecase is to internationalize or change of some commercial
      * values for a special country/region. 
-     * Variant should not alter the effective nature of the product, not technical definition.
+     * Variant should not alter the effective nature of the product, nor technical definition.
+     *
+     * TODO : Check if still usefull
      */
     function apply(CatalogItem $override) {
 
@@ -444,12 +451,12 @@ class CatalogItem extends ShopObject {
         // Suboverride elements if any.
         if ($this->elements) {
             foreach($override->elements as $ovelm) {
-                if (in_array($this->elementsbycode($ovelm->code))) {
-                    $this->elements[$this->elementsbycode[$ovelm->code]]->apply($ovelm);
+                if (array_key_exists($ovelm->code, $this->elementsbycode)) {
+                    $this->elements[$this->elementsbycode[$ovelm->code]->id]->apply($ovelm);
                 } else {
                     // This should usually not happen as overrides should always be local copies of master records.
                     // This might accidentally happen when trying to apply the wrong way (f.e. master on local)
-                    throw new coding_exception('Unexpected unmatching override in CatalogItem '.$this->id);
+                    throw new \coding_exception('Unexpected unmatching override '.$ovelm->code.' in CatalogItem '.$this->id);
                 }
             }
         }

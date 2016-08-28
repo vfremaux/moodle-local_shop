@@ -149,33 +149,45 @@ class Product_Form extends catalogitemform {
         $mform->setDefault('showsnameinset', 1);
         $group[] = &$mform->createElement('checkbox', 'showsdescriptioninset', '', get_string('showdescriptioninset', 'local_shop'));
         $mform->setDefault('showsdescriptioninset', 1);
-
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
-        $handleropts['0'] = get_string('disabled', 'local_shop');
-        $handleropts['1'] = get_string('dedicated', 'local_shop');
-        $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
 
+        // This may need to be translated for localised catalogs.
         $mform->addElement('textarea', 'requireddata', get_string('requireddata', 'local_shop'), $attributes_specificdata);
         $mform->setType('requireddata', PARAM_TEXT);
         $mform->addHelpButton('requireddata', 'requireddata', 'local_shop');
 
-        $mform->addElement('select', 'enablehandler', get_string('enablehandler', 'local_shop'), $handleropts);
-        $mform->setType('enablehandler', PARAM_TEXT);
+        if (!$this->_customdata['catalog']->isslave) {
+            $handleropts['0'] = get_string('disabled', 'local_shop');
+            $handleropts['1'] = get_string('dedicated', 'local_shop');
+            $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
 
-        $mform->addElement('textarea', 'handlerparams', get_string('handlerparams', 'local_shop'), $attributes_handlerparams);
-        $mform->setType('handlerparams', PARAM_TEXT);
-        $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
+            $mform->addElement('select', 'enablehandler', get_string('enablehandler', 'local_shop'), $handleropts);
+            $mform->setType('enablehandler', PARAM_TEXT);
 
-        $seatmodeoptions[SHOP_QUANT_NO_SEATS] = get_string('no');
-        $seatmodeoptions[SHOP_QUANT_ONE_SEAT] = get_string('oneseat', 'local_shop');
-        $seatmodeoptions[SHOP_QUANT_AS_SEATS] = get_string('yes');
-        $mform->addElement('select', 'quantaddressesusers', get_string('quantaddressesusers', 'local_shop'), $seatmodeoptions);
-        $mform->setType('quantaddressesusers', PARAM_INT);
-        $mform->addHelpButton('quantaddressesusers', 'quantaddressesusers', 'local_shop');
+            $mform->addElement('textarea', 'handlerparams', get_string('handlerparams', 'local_shop'), $attributes_handlerparams);
+            $mform->setType('handlerparams', PARAM_TEXT);
+            $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
 
-        $mform->addElement('checkbox', 'renewable', get_string('renewable', 'local_shop'));
-        $mform->addHelpButton('renewable', 'renewable', 'local_shop');
-        $mform->disabledIf('renewable', 'enablehandler', 'eq', 0);
+            $seatmodeoptions[SHOP_QUANT_NO_SEATS] = get_string('no');
+            $seatmodeoptions[SHOP_QUANT_ONE_SEAT] = get_string('oneseat', 'local_shop');
+            $seatmodeoptions[SHOP_QUANT_AS_SEATS] = get_string('yes');
+            $mform->addElement('select', 'quantaddressesusers', get_string('quantaddressesusers', 'local_shop'), $seatmodeoptions);
+            $mform->setType('quantaddressesusers', PARAM_INT);
+            $mform->addHelpButton('quantaddressesusers', 'quantaddressesusers', 'local_shop');
+
+            $mform->addElement('checkbox', 'renewable', get_string('renewable', 'local_shop'));
+            $mform->addHelpButton('renewable', 'renewable', 'local_shop');
+            $mform->disabledIf('renewable', 'enablehandler', 'eq', 0);
+        } else {
+            $mform->addelement('hidden', 'enablehandler');
+            $mform->setType('enablehandler', PARAM_TEXT);
+            $mform->addelement('hidden', 'handlerparams');
+            $mform->setType('handlerparams', PARAM_TEXT);
+            $mform->addelement('hidden', 'quantaddressesusers');
+            $mform->setType('quantaddressesusers', PARAM_INT);
+            $mform->addelement('hidden', 'renewable');
+            $mform->setType('renewable', PARAM_BOOL);
+        }
 
         $mform->addElement('editor', 'eula_editor', get_string('eula', 'local_shop'), null, $this->editoroptions);
         $mform->setType('eula', PARAM_URL);

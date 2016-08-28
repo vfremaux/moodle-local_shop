@@ -24,14 +24,18 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 use \local_shop\CatalogItem;
+use \local_shop\Catalog;
 
 class product_controller {
 
     protected $data;
 
     protected $thecatalog;
+
+    protected $received = false;
 
     function __construct($theCatalog) {
         $this->thecatalog = $theCatalog;
@@ -61,7 +65,7 @@ class product_controller {
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
             case 'makecopy':
-                $this->data->masteritemid = required_param('itemid'); // Item id will be given as the remote master id (no local override).
+                $this->data->masteritemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
                 break;
             case 'freecopy' :
                 $this->data->localitemid = required_param('itemid', PARAM_INT);
@@ -72,6 +76,8 @@ class product_controller {
                 $this->data->shortname = optional_param('shortname', '', PARAM_TEXT);
                 $this->data->name = optional_param('name', '', PARAM_TEXT);
         }
+
+        $this->received = true;
     }
 
     /**
@@ -79,6 +85,10 @@ class product_controller {
      * @param string $cmd
      */
     public function process($cmd) {
+
+        if (!$this->received) {
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
 
         if ($cmd == 'delete') {
             $productidlist = $this->data->productid; // for unity operations
@@ -113,54 +123,47 @@ class product_controller {
         };
 
         if ($cmd == 'deleteset') {
-            $setid = required_param('setid', PARAM_INT);
 
             // If catalog is not independant, all copies should be removed.
             $setidlist = '';
             if ($this->thecatalog->groupid != '') {
 
                 // get setcode by Id
-                $item = new CatalogItem($setid);
+                $item = new CatalogItem($this->data->setid);
                 $item->fulldelete();
             }
         }
 
         if ($cmd == 'unlink') {
-            $itemid = required_param('itemid', PARAM_INT);
-            $item = new CatalogItem($itemid);
+            $item = new CatalogItem($this->data->itemid);
             $item->unlink();
         }
 
         /** ***** make a local physical clone of the master product in this slave catalog **** **/
         if ($cmd == 'makecopy') {
-            $masteritemid = required_param('itemid'); // Item id will be given as the remote master id (no local override).
-
             // get source item in master catalog
             $masterCatalog = new Catalog($this->thecatalog->groupid);
-            $item = new CatalogItem($masteritemid);
-            $item->catalogid = $this->thecatalog->id; // Binding to local catalog
-            $item->id = 0; // Ensure new record
-            $item->save();
+            $item = new CatalogItem($this->data->masteritemid);
+            if (empty(CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id)))) {
+                $item->catalogid = $this->thecatalog->id; // Binding to local catalog
+                $item->id = 0; // Ensure new record
+                $item->save();
+            }
             // Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
             // reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
         }
 
         /** **** Delete the local copy **** **/
         if ($cmd == 'freecopy') {
-            $localitemid = required_param('itemid', PARAM_INT);
-            $localitem = new CatalogItem($localitemid);
+            $localitem = new CatalogItem($this->data->localitemid);
             $localitem->delete();
         }
 
         /** ***** searches and filters the product list ***** **/
         if ($cmd == 'search') {
             $error = false;
-            $by = required_param('by', PARAM_TEXT);
-            $code = optional_param('code', '', PARAM_TEXT);
-            $shortname = optional_param('shortname', '', PARAM_TEXT);
-            $name = optional_param('name', '', PARAM_TEXT);
 
-            $results = CatalogItem::search($by, $code, $shortname, $name);
+            $results = CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
         }
     }
 }

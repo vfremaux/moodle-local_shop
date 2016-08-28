@@ -39,8 +39,11 @@ class Catalog extends ShopObject {
 
     var $categories;
 
+    var $ismaster;
+
+    var $isslave;
+
     function __construct($idorrecord, $light = false) {
-        global $DB;
 
         parent::__construct($idorrecord, self::$table);
 
@@ -48,6 +51,13 @@ class Catalog extends ShopObject {
 
             if ($light) return; // this builds a lightweight proxy of the Shop, without catalogue
 
+            if ($this->record->groupid) {
+                if ($this->record->id == $this->record->groupid) {
+                    $this->ismaster = 1;
+                } else {
+                    $this->isslave = 1;
+                }
+            }
             $this->categories = $this->get_categories();
 
         } else {
@@ -55,7 +65,7 @@ class Catalog extends ShopObject {
             $this->record->description = '';
             $this->record->descriptionformat = FORMAT_MOODLE;
             $this->record->isslave = 0;
-            $this->record->ismaster = 1;
+            $this->record->ismaster = 0;
             $this->record->salesconditions = '';
             $this->record->salesconditionsformat = FORMAT_MOODLE;
             $this->record->groupid = 0;
@@ -138,7 +148,7 @@ class Catalog extends ShopObject {
 
         $isloggedinclause = '';
         if (empty($SESSION->shopseeall)) {
-            $isloggedinclause = (isloggedin() && !isguestuser()) ? ' AND onlyforloggedin > -1  ' : ' AND onlyforloggedin < 1';
+            $isloggedinclause = (isloggedin() && !isguestuser()) ? ' AND ci.onlyforloggedin > -1  ' : ' AND ci.onlyforloggedin < 1';
         }
 
         $shopproducts = array();
@@ -157,7 +167,7 @@ class Catalog extends ShopObject {
                       ci.catalogid = '{$this->groupid}' AND
                       ci.categoryid = '{$aCategory->id}' AND
                       ci.status IN ('AVAILABLE','PROVIDING') AND
-                      ci.setid = 0 AND
+                      ci.setid = 0
                       $isloggedinclause
                    ORDER BY
                       ci.shortname
@@ -167,6 +177,7 @@ class Catalog extends ShopObject {
                     $ci = new CatalogItem($cirec);
                     $ci->thumb = $ci->get_thumb_url();
                     $ci->image = $ci->get_image_url();
+                    $ci->masterrecord = 1;
                     $shopproducts[$ci->code] = $ci;
                     $categories[$key]->products[$ci->code] = $ci;
                 }
@@ -191,11 +202,11 @@ class Catalog extends ShopObject {
                     $ci = new CatalogItem($cirec);
                     $ci->thumb = $ci->get_thumb_url();
                     $ci->image = $ci->get_image_url();
+                    $ci->masterrecord = 0;
                     $shopproducts[$ci->code] = $ci;
                     $categories[$key]->products[$ci->code] = $ci;
                 }
             }
-
         }
 
         // Complementary processing for sets : fetch set elements and eventual overrides.
@@ -225,6 +236,7 @@ class Catalog extends ShopObject {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
+                            $ci1->masterrecord = 1;
                             $ci->setElement($ci1);
                         }
                     }
@@ -248,7 +260,142 @@ class Catalog extends ShopObject {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
+                            $ci1->masterrecord = 0;
                             $ci->setElement($ci1);
+                        }
+                    }
+                    $shopproducts[$ci->code]->set = $ci;
+                }
+            }
+        }
+
+        return $categories;
+    }
+
+    /**
+     * get the full productline from categories
+     *
+     */
+    function get_all_products_for_admin(&$shopproducts) {
+        global $CFG, $SESSION, $DB, $OUTPUT;
+
+        $context = \context_system::instance();
+
+        $categories = $this->get_categories();
+
+        if (empty($categories)) {
+            return array();
+        }
+
+        $shopproducts = array();
+        foreach ($categories as $key => $aCategory) {
+            // get master catalog items
+            /**
+             * product might be standalone product or set or bundle
+             */
+            if ($this->isslave) {
+                $sql = "
+                   SELECT
+                      ci.*
+                   FROM
+                      {local_shop_catalogitem} as ci
+                   WHERE
+                      ci.catalogid = '{$this->groupid}' AND
+                      ci.categoryid = '{$aCategory->id}' AND
+                      ci.setid = 0
+                   ORDER BY
+                      ci.shortname
+                ";
+                $catalogitems = $DB->get_records_sql($sql);
+                foreach ($catalogitems as $cirec) {
+                    $ci = new CatalogItem($cirec);
+                    $ci->thumb = $ci->get_thumb_url();
+                    $ci->image = $ci->get_image_url();
+                    $ci->masterrecord = 1;
+                    $shopproducts[$ci->code] = $ci;
+                    $categories[$key]->products[$ci->code] = $ci;
+                }
+            }
+            // override with slave versions
+            $sql = "
+               SELECT
+                  ci.*
+               FROM
+                  {local_shop_catalogitem} as ci
+               WHERE
+                  catalogid = '{$this->id}' AND
+                  categoryid = '{$aCategory->id}' AND
+                  setid = 0
+               ORDER BY
+                  ci.shortname
+            ";
+            if ($catalogitems = $DB->get_records_sql($sql)) {
+                foreach ($catalogitems as $cirec) {
+                    $ci = new CatalogItem($cirec);
+                    $ci->thumb = $ci->get_thumb_url();
+                    $ci->image = $ci->get_image_url();
+                    $ci->masterrecord = 0;
+                    $shopproducts[$ci->code] = $ci;
+                    $categories[$key]->products[$ci->code] = $ci;
+                }
+            }
+        }
+
+        // Complementary processing for sets : fetch set elements and eventual overrides.
+        if (!empty($shopproducts)) {
+            $elementcodes = array();
+            foreach (array_values($shopproducts) as $ci) {
+                if ($ci->isset) {
+
+                    // Get set elements in master catalog (same set code).
+                    if ($this->isslave) {
+                        $sql = "
+                          SELECT
+                            ci.*
+                          FROM
+                            {local_shop_catalogitem} as ci,
+                            {local_shop_catalogitem} as cis
+                          WHERE
+                            ci.setid = cis.id AND
+                            cis.code = '{$ci->code}' AND
+                            ci.catalogid = '{$this->groupid}'
+                          ORDER BY
+                            ci.shortname
+                        ";
+                        $catalogitems = $DB->get_records_sql($sql);
+                        foreach ($catalogitems as $cirec) {
+                            // echo "Getting element $cirec->name from master <br/>";
+                            $ci1 = new CatalogItem($cirec);
+                            $ci1->thumb = $ci1->get_thumb_url();
+                            $ci1->image = $ci1->get_image_url();
+                            $ci1->masterrecord = 1;
+                            $ci->setElement($ci1);
+                            $elementcodes[$cirec->code] = $cirec->id;
+                        }
+                    }
+                    // override with local versions
+                    $sql = "
+                      SELECT
+                        ci.*
+                      FROM
+                        {local_shop_catalogitem} as ci
+                      WHERE
+                        ci.setid = '{$ci->id}' AND
+                        ci.catalogid = '{$this->id}'
+                      ORDER BY
+                        ci.shortname
+                    ";
+
+                    if ($catalogitems = $DB->get_records_sql($sql)) {
+                        foreach ($catalogitems as $cirec) {
+                            // echo "Getting element $cirec->name $cirec->code from override <br/>";
+                            $ci1 = new CatalogItem($cirec);
+                            $ci1->thumb = $ci1->get_thumb_url();
+                            $ci1->image = $ci1->get_image_url();
+                            $ci1->masterrecord = 0;
+                            $ci->setElement($ci1);
+                            // Remove master version of this product 
+                            $ci->deleteElement($elementcodes[$cirec->code]);
                         }
                     }
                     $shopproducts[$ci->code]->set = $ci;
@@ -569,8 +716,6 @@ class Catalog extends ShopObject {
 
         if ($instances = self::get_instances()) {
             foreach ($instances as $c) {
-                $instances[$c->id]->ismaster = $c->id == $c->groupid;
-                $instances[$c->id]->isslave = !empty($c->groupid) && $c->id != $c->groupid;
                 $instances[$c->id]->items = CatalogItem::count(array('catalogid' => $c->id));
             }
         }
