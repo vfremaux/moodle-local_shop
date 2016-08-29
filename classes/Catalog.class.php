@@ -132,6 +132,27 @@ class Catalog extends ShopObject {
     }
 
     /**
+     * Get eventual slaves catalogs attached to this catalogue
+     */
+    function get_slaves() {
+        global $DB;
+
+        if (!$this->ismaster) return array();
+
+        $select = ' id != groupid AND groupid = ? ';
+        $slaverecs = $DB->get_records_select('local_shop_catalog', $select, array($this->groupid), 'id,id');
+
+        $slaves = array();
+        if (!empty($slaverecs)) {
+            foreach($slaverecs as $s) {
+                $slaves[$s->id] = new Catalog($s->id);
+            }
+        }
+
+        return $slaves;
+    }
+
+    /**
      * get the full productline from categories
      *
      */
@@ -394,8 +415,10 @@ class Catalog extends ShopObject {
                             $ci1->image = $ci1->get_image_url();
                             $ci1->masterrecord = 0;
                             $ci->setElement($ci1);
-                            // Remove master version of this product 
-                            $ci->deleteElement($elementcodes[$cirec->code]);
+                            // Remove master version of this product
+                            if ($this->isslave) {
+                                $ci->deleteElement($elementcodes[$cirec->code]);
+                            }
                         }
                     }
                     $shopproducts[$ci->code]->set = $ci;

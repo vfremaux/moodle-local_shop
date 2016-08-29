@@ -159,7 +159,6 @@ $string['deletealllinkedproducts'] = 'Supprimer tous les produits liés';
 $string['deletebillitems'] = 'Supprimer des éléments';
 $string['deletebills'] = 'Supprimer factures';
 $string['deleteproduct'] = 'Supprimer le produit';
-$string['deleteset'] = 'Supprimer l\'assemblage';
 $string['description'] = 'Description :';
 $string['disabled'] = 'Désactivé';
 $string['discounts'] = 'Réglages des remises';

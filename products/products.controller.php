@@ -56,7 +56,7 @@ class product_controller {
 
         switch ($cmd) {
             case 'delete' :
-                $this->data->productid = required_param('items', PARAM_INT);
+                $this->data->productids = required_param_array('items', PARAM_INT);
                 break;
             case 'deleteset' :
                 $this->data->setid = required_param('setid', PARAM_INT);
@@ -91,55 +91,30 @@ class product_controller {
         }
 
         if ($cmd == 'delete') {
-            $productidlist = $this->data->productid; // for unity operations
-            $DB->delete_records_select('local_shop_catalogitem', " id IN ('$productidlist') ");
-            // catalog is not independant, delete in all group (by getting product code)
-            if ($this->thecatalog->groupid != '') {
-                // get product code so that all clones Id can be found
-                $theCode = $DB->get_field('local_shop_catalogitem', 'code', array('id' => $this->data->productid));
+            $productidlist = implode(',', $this->data->productids); // for unity operations
 
-                $groupid = $this->thecatalog->groupid;
-
-                $sql = "
-                   SELECT
-                      ci.id,
-                      ci.id
-                   FROM
-                      {local_shop_catalogitem} as ci,
-                      {local_shop_catalog} as c
-                   WHERE
-                      c.id = ci.catalogid AND
-                      ci.code = '$theCode' AND
-                      c.groupid = '$groupid'
-                ";
-                if ($products = $DB->get_records_sql_menu($sql)) {
-                    $productidlist = implode("','", array_values($products));
-                } else {
-                    $productidlist = '';
+            foreach ($this->data->productids as $ciid) {
+                $theitem = new CatalogItem($ciid);
+    
+                // If catalog is not independant, all copies should be removed.
+                if ($this->thecatalog->ismaster) {
+                    $slaves = $this->thecatalog->get_slaves();
+                    foreach ($slaves as $s) {
+                        $clone = $s->get_product_by_code($theitem->code);
+                        $clone->fulldelete();
+                    }
                 }
-            }
-            $relatedids = implode("','", array_keys($this->thecatalog->getGroupMembers($this->thecatalog->groupid))); // this is as a security
-            $DB->delete_records_select('local_shop_catalogitem', " id IN ('$productidlist') AND catalogid IN ('$relatedids') ");
-        };
-
-        if ($cmd == 'deleteset') {
-
-            // If catalog is not independant, all copies should be removed.
-            $setidlist = '';
-            if ($this->thecatalog->groupid != '') {
-
-                // get setcode by Id
-                $item = new CatalogItem($this->data->setid);
-                $item->fulldelete();
+                $theitem->fulldelete();
             }
         }
 
+        /** ***** We unlink a linked product ***** **/
         if ($cmd == 'unlink') {
             $item = new CatalogItem($this->data->itemid);
             $item->unlink();
         }
 
-        /** ***** make a local physical clone of the master product in this slave catalog **** **/
+        /** ***** make a local physical clone of the master product in this slave catalog ***** **/
         if ($cmd == 'makecopy') {
             // get source item in master catalog
             $masterCatalog = new Catalog($this->thecatalog->groupid);

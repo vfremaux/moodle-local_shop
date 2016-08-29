@@ -478,13 +478,14 @@ class CatalogItem extends ShopObject {
      * Deletes the catalogitem releasing elements as standard products.
      */
     function delete() {
-        $setid = $this->setid;
-
         $this->remove_content();
 
         parent::delete();
     }
 
+    /**
+     * Delete complete structure including elements
+     */
     function fulldelete() {
         $setid = $this->setid;
 

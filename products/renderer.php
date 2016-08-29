@@ -218,7 +218,7 @@ class shop_products_renderer {
                 $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a> ';
 
                 $deletestr = get_string('deleteproduct', 'local_shop');
-                $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteitems', 'itemid[]' => $product->id));
+                $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteitems', 'items[]' => $product->id));
                 $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$deletestr.'"></a>';
             }
 
@@ -273,7 +273,7 @@ class shop_products_renderer {
             $editseturl = new moodle_url('/local/shop/products/edit_set.php', array('setid' => $set->id));
             $str .= '<a href="'.$editseturl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.get_string('editset', 'local_shop').'"></a><br/>';
 
-            $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid' => $set->id));
+            $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $set->id));
             $linklbl = get_string('removeset', 'local_shop');
             $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'"></a><br/>';
 
@@ -354,17 +354,17 @@ class shop_products_renderer {
 
         if (!$this->thecatalog->isslave || (@$bundle->masterrecord == 0)) {
             // We cannot edit master records ghosts from the slave catalog.
-            $bundleediturl = new moodle_url('/local/shop/products/edit_bundle.php', array('itemid' => $bundle->id));
+            $editurl = new moodle_url('/local/shop/products/edit_bundle.php', array('itemid' => $bundle->id));
             $linklbl = get_string('editbundle', 'local_shop');
-            $str .= '<a href="'.$bundleediturl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'" /></a><br/>';
+            $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'" /></a><br/>';
 
-            $productviewurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlinkset', 'itemid' => $bundle->id));
+            $viewurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlinkset', 'itemid' => $bundle->id));
             $linklbl = get_string('deletebundle', 'local_shop');
-            $str .= '&nbsp;<a href="'.$productviewurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'" /></a><br/>';
+            $str .= '&nbsp;<a href="'.$viewurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'" /></a><br/>';
 
-            $bundledeleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid' => $bundle->id));
+            $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $bundle->id));
             $linklbl = get_string('deletealllinkedproducts', 'local_shop');
-            $str .= '&nbsp;<a href="'.$bundledeleteurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'" /></a><br/>';
+            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'" /></a><br/>';
         }
 
         if ($this->thecatalog->isslave) {
