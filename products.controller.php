@@ -20,7 +20,7 @@ defined('MOODLE_INTERNAL') || die();
  * Form for editing HTML block instances.
  *
  * @package     local_shop
- * @category    lcoal
+ * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

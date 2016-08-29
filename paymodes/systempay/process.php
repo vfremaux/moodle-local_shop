@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_systempay
  * @category   local
@@ -25,20 +23,18 @@ defined('MOODLE_INTERNAL') || die();
 
 // Get DATA param string from SystemPay API and redirect to shop
 
-// Return_Context : view=shop&id={$this->shopblock->instance->id}&pinned={$this->shopblock->pinned}
-
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/systempay/systempay.class.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
 
-// we cannot know yet which block instanceplays as infomation is in the mercanet
-// cryptic answer. Process() decodes cryptic answer and get this context information to 
-// go further.
-$blockinstance = null;
-$payhandler = new shop_paymode_systempay($blockinstance);
+$shopinstance = null;
+$payhandler = new shop_paymode_systempay($shopinstance);
 
-if ($_REQUEST['etat'] == 1) {
+if ($_REQUEST['vads_result'] != SP_PURCHASE_CANCELLED) {
+    // process all cases, including payment failure with this credit card, 
+    // so we can keep the order alive to be payed by another card.
     $payhandler->process();
 } else {
+    // explicit purchase cancellation on payment front end.
     $payhandler->cancel();
 }

@@ -178,10 +178,11 @@ class production_controller extends front_controller_base {
 
         $seller = new \StdClass;
         $seller->id = $DB->get_field('user', 'id', array('username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id));
-        $seller->firstname = $config->sellername;
-        $seller->lastname = '';
+        $seller->firstname = '';
+        $seller->lastname = $config->sellername;
         $seller->email = $config->sellermail;
         $seller->maildisplay = true;
+        $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
         // Complete seller with expected fields.
         $fields = get_all_user_name_fields();
@@ -227,11 +228,6 @@ class production_controller extends front_controller_base {
                                                                     ), '');
         $administratorViewUrl = $CFG->wwwroot . "/local/shop/bills/view.php?id={$aFullBill->shopid}&view=viewBill&billid={$aFullBill->id}&transid={$aFullBill->transactionid}";
         if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
-            $seller = new \StdClass;
-            $seller->firstname = $config->sellername;
-            $seller->lastname = '';
-            $seller->email = $config->sellermail;
-            $seller->maildisplay = true;
             $title = $SITE->shortname . ' : ' . get_string('orderconfirm', 'local_shop');
             if (!empty($productiondata->private)) {
                 $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->salesadmin, $salesnotification);

@@ -60,4 +60,8 @@ class Category extends ShopObject {
     static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
+
+    static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+        return parent::_count_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
+    }
 }

@@ -25,10 +25,15 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 require_once($CFG->dirroot.'/local/shop/locallib.php');
+require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+
+use \local_shop\Catalog;
 
 $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
 $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
+
+$SESSION->shop->categoryid = optional_param('categoryid', 0 + @$SESSION->shop->categoryid, PARAM_INT);
 
 if (!has_capability('local/shop:accessallowners', $context)) {
     $shopowner = $USER->id;
@@ -44,32 +49,34 @@ $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 if ($action != '') {
    include_once($CFG->dirroot.'/local/shop/products/products.controller.php');
-   $controller = new product_controller($theCatalogue);
+   $controller = new product_controller($theCatalog);
    $controller->receive($action);
    $controller->process($action);
 }
-
 $products = array();
 
-$SESSION->shop->categoryid = optional_param('categoryid', 0 + @$SESSION->shop->categoryid, PARAM_INT);
-
 // if slave get entries in master catalog and then overrides whith local descriptions
+/*
 $masterproducts = array();
-if ($localproducts = $theCatalog->get_products($order, $dir, @$SESSION->shop->categoryid)) {
-    if ($theCatalog->isslave) {
-        $masterCatalog = new Catalog($theCatalog->groupid);
-        if (!$masterproducts = $masterCatalog->get_products($order, $dir)) {
-            $masterproducts = array();
-        }
-        foreach ($localproducts as $code => $product) {
-            $localproducts[$code]->masterid = $masterproducts[$product->code]->id;
-        }
-    }
-} else {
+if (!$localproducts = $theCatalog->get_products($order, $dir, @$SESSION->shop->categoryid)) {
     $localproducts = array();
+}
+if ($theCatalog->isslave) {
+    $masterCatalog = new Catalog($theCatalog->groupid);
+    if (!$masterproducts = $masterCatalog->get_products($order, $dir)) {
+        $masterproducts = array();
+    }
+    foreach ($localproducts as $code => $product) {
+        $localproducts[$code]->masterid = $masterproducts[$product->code]->id;
+    }
 }
 
 $products = array_merge($masterproducts, $localproducts);
+*/
+$theCatalog->get_all_products_for_admin($products);
+if ($theCatalog->isslave) {
+    $masterCatalog = new Catalog($theCatalog->groupid);
+}
 
 echo $out;
 
@@ -97,7 +104,6 @@ if (count(array_keys($products)) == 0) {
     echo $renderer->product_admin_line(null);
 
     foreach (array_values($products) as $portlet) {
-
         $portlet->selector = 'productSelector';
         $portlet->catalog = $theCatalog;
 
@@ -116,12 +122,14 @@ if (count(array_keys($products)) == 0) {
         } else {
             // Product is either a set or a bundle.
 
+            /*
             if ($theCatalog->isslave) {
                 // Get the master pieace that has same code and replace master record overriden by local.
                 $masteritem = $masterCatalog->get_product_by_code($portlet->code);
                 $localitem = $portlet;
                 $portlet = $masteritem->apply($localitem);
             }
+            */
 
             if ($portlet->isset == PRODUCT_SET) {
                 // is a product set
@@ -162,4 +170,4 @@ if (count(array_keys($products)) == 0) {
 echo '</table>';
 echo '</form>';
 
-echo $renderer->catlinks();
+echo $renderer->catlinks($theCatalog);

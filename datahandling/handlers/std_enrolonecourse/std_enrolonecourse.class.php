@@ -134,6 +134,8 @@ class shop_handler_std_enrolonecourse extends shop_handler {
     function produce_postpay(&$data) {
         global $CFG, $DB, $USER;
 
+        $config = get_config('local_shop');
+
         $productionfeedback = new StdClass();
 
         // check for params validity (internals)
@@ -203,6 +205,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $product->enddate = $enddate;
         $product->reference = shop_generate_product_ref($data);
         $product->productiondata = Product::compile_production_data($data->actionparams);
+        $product->test = $config->test;
         $product->id = $DB->insert_record('local_shop_product', $product);
 
         // Record a productevent.
@@ -240,7 +243,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $group->id = $DB->insert_record('groups', $group);
         }
 
-        // Add all created users to group 
+        // Add all created users to group
 
         if (!$groupmember = $DB->get_record('groups_members', array('groupid' => $group->id, 'userid' => $USER->id))) {
             $groupmember = new StdClass();

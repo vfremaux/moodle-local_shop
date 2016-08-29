@@ -92,10 +92,10 @@ class Bundle_Form extends catalogitemform {
             }
             $mform->addElement('select', 'categoryid', get_string('section', 'local_shop'), $sectionopts);
             $mform->setType('categoryid', PARAM_INT);
+            $mform->addRule('categoryid', null, 'required');
         } else {
             $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
         }
-        $mform->addRule('categoryid', null, 'required');
 
         $this->add_document_assets();
 
