@@ -440,13 +440,16 @@ class shop_products_renderer {
                 $linklbl = get_string('editproduct', 'local_shop');
                 $commands .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'"></a><br/>';
 
-                $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteproduct', 'itemid' => $elm->id));
-                $linklbl = get_string('removeset', 'local_shop');
-                $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'"></a><br/>';
-    
-                $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlink', 'itemid' => $elm->id));
-                $linklbl = get_string('unlinkproduct', 'local_shop');
-                $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'"></a><br/>';
+                if (!$this->thecatalog->isslave) {
+                    // Only real products can be unlinked or deleted.
+                    $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteproduct', 'itemid' => $elm->id));
+                    $linklbl = get_string('removeset', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'"></a><br/>';
+        
+                    $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlink', 'itemid' => $elm->id));
+                    $linklbl = get_string('unlinkproduct', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'"></a><br/>';
+                }
             }
 
             if ($this->thecatalog->isslave) {
@@ -507,14 +510,17 @@ class shop_products_renderer {
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $elm->id));
                 $linklbl = get_string('editproduct', 'local_shop');
                 $commands .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'"></a><br/>';
-    
-                $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlinkproduct', 'productid' => $elm->id));
-                $linklbl = get_string('removeproductfrombundle', 'local_shop');
-                $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'" /></a><br/>';
-    
-                $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteitems', 'itemid[]' => $elm->id));
-                $linklbl = get_string('delete');
-                $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'" /></a><br/>';
+
+                if (!$this->thecatalog->isslave) {
+                    // Only real products can be unlinked or deleted.
+                    $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlinkproduct', 'productid' => $elm->id));
+                    $linklbl = get_string('removeproductfrombundle', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'" /></a><br/>';
+        
+                    $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteitems', 'itemid[]' => $elm->id));
+                    $linklbl = get_string('delete');
+                    $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'" /></a><br/>';
+                }
             }
 
             if ($this->thecatalog->isslave) {
