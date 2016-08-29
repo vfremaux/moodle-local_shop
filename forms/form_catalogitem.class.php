@@ -164,8 +164,11 @@ abstract class catalogitemform extends moodleform {
             $mform->setType('maxdeliveryquant', PARAM_INT);
         } else {
             $mform->addElement('hidden', 'stock');
+            $mform->setType('stock', PARAM_NUMBER);
             $mform->addElement('hidden', 'sold');
+            $mform->setType('sold', PARAM_NUMBER);
             $mform->addElement('hidden', 'maxdeliveryquant');
+            $mform->setType('maxdeliveryquant', PARAM_INT);
         }
     }
 

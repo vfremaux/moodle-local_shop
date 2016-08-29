@@ -42,7 +42,7 @@ if ($transid) {
     }
 } elseif ($billid) {
     require_login();
-    if (!$aFullBill = Bill::get_by_id($billid)) {
+    if (!$aFullBill = new Bill($billid)) {
         print_error('invalidbillid', 'local_shop', new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => 0 + @$theBlock->instance->id)));
     }
 

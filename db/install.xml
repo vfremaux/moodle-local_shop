@@ -224,6 +224,7 @@
         <FIELD NAME="productiondata" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="paymentfee" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="productionfeedback" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="test" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -287,6 +288,7 @@
         <FIELD NAME="enddate" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="reference" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="productiondata" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="test" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

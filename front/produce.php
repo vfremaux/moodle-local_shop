@@ -41,7 +41,7 @@ try {
 
 // in case session is lost, go to the public entrance of the shop
 if ((!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) && $action != 'navigate' && !empty($transid)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => $theBlock->id, 'view' => 'shop')));
+    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => @$theBlock->instance->id, 'view' => 'shop')));
 }
 
 /*

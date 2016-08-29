@@ -6,12 +6,14 @@ this key was given to you by a customer as a transaction reference. you can try 
 $string['addbundle'] = 'Add bundle';
 $string['addcategory'] = 'Add a product category';
 $string['addproduct'] = 'Add product';
+$string['addoverride'] = 'Override master definition';
 $string['addset'] = 'Add set';
 $string['allcategories'] = 'All categories';
 $string['billorderingnumber'] = 'Invoice ordering number';
 $string['customersnameonbill'] = 'The customer\'s name on invoice';
 $string['deletebundle'] = 'Delete bundle';
 $string['deletecategory'] = 'Delete a product category';
+$string['deleteoverride'] = 'Delete override';
 $string['deleteproduct'] = 'Delete product';
 $string['deleteset'] = 'Delete set';
 $string['editbundle'] = 'Update bundle';
