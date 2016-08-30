@@ -470,28 +470,27 @@ function shop_build_context() {
         try {
             $theShop = new Shop($SESSION->shop->shopid);
         } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->get_message());
+            print_error('objecterror', 'local_shop', $e->getMessage());
         }
     }
 
-    $theCatalog = new Catalog(null);
-    if ($theShop->id) {
-        try {
-            $theCatalog = new Catalog($theShop->catalogid);
-            $SESSION->shop->catalogid = $theCatalog->id;
-        } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->get_message());
-        }
-    } else {
-        $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
-        if (!empty($SESSION->shop->catalogid)) {
+    // Logic : forces session catalog to be operative, 
+    // Defaults to the current shop bound catalog. 
+    $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
+    if (empty($SESSION->shop->catalogid)) {
+        if ($theShop->id) {
             try {
-                $theCatalog = new Catalog($SESSION->shop->catalogid);
+                $theCatalog = new Catalog($theShop->catalogid);
                 $SESSION->shop->catalogid = $theCatalog->id;
             } catch (Exception $e) {
                 print_error('objecterror', 'local_shop', $e->get_message());
             }
         }
+    }
+    try {
+        $theCatalog = new Catalog($SESSION->shop->catalogid);
+    } catch (Exception $e) {
+        print_error('objecterror', 'local_shop', $e->get_message());
     }
 
     $theBlock = null;

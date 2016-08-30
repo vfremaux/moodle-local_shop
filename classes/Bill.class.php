@@ -16,6 +16,8 @@
 
 namespace local_shop;
 
+require_once($CFG->dirroot.'/local/shop/locallib.php');
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -59,6 +61,8 @@ class Bill extends ShopObject {
     // build a full bill plus billitems
     function __construct($idorrecord, &$theShop = null, &$theCatalogue = null, &$theBlock = null, $light = false) {
         global $DB;
+
+        $config = get_config('local_shop');
 
         $this->thecatalogue = $theCatalogue;
         $this->theshop = $theShop;
@@ -128,7 +132,7 @@ class Bill extends ShopObject {
 
             if (empty($this->theblock)) {
                 if (!empty($this->record->blockid)) {
-                    $this->theblock = shop_get_block_instance($this->record->blockid);
+                    $this->theblock = \shop_get_block_instance($this->record->blockid);
                 }
             }
         } else {
@@ -172,6 +176,7 @@ class Bill extends ShopObject {
             $this->record->ignoretax = 0;
             $this->record->paymentfee = 0;
             $this->record->productionfeedback = '';
+            $this->record->test = $config->test;
 
             $this->items = array();
 

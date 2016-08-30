@@ -193,7 +193,7 @@ function ajax_delete_user(wwwroot, ptmail) {
         },
         function(data, status) {
             $('#participantlist').html(data);
-    
+
             for (i = 0; i < roles.length; i++) {
                 for (j = 0; j < products.length; j++) {
                     $('#'+roles[i]+'list'+products[j]).html(ajax_waiter);

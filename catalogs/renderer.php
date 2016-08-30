@@ -28,6 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 
 class shop_catalogs_renderer {
 
+    /**
+     * @param object $catalog
+     */
     function catalog_admin_line($catalog) {
         global $CFG, $OUTPUT;
 
@@ -73,7 +76,7 @@ class shop_catalogs_renderer {
         $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"></a>';
         if ($catalog->is_not_used()) {
             $deleteurl = new moodle_url('/local/shop/index.php', array('catalogid' => $catalog->id, 'what' => 'deletecatalog'));
-            $str .= '<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('/t/delete').'"></a>';
+            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('/t/delete').'"></a>';
         }
         $str .= '</td>';
         $str .= '</tr>';
@@ -82,7 +85,8 @@ class shop_catalogs_renderer {
     }
 
     /**
-     *
+     * Prints an admin list of catalogs
+     * @param array $catalogs
      */
     function catalogs($catalogs) {
 

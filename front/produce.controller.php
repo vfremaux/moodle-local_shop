@@ -110,7 +110,7 @@ class production_controller extends front_controller_base {
                 mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Full production starting from '.$aFullBill->status.' ...');
             }
 
-            if ($aFullBill->status == 'PENDING' || $aFullBill->status == 'SOLDOUT' || $overriding) {
+            if ($aFullBill->status == SHOP_BILL_PENDING || $aFullBill->status == SHOP_BILL_SOLDOUT || $overriding) {
                 // when using the controller to finish a started production, do not
                 // preproduce again (paypal IPN finalization)
                 if ($this->interactive && $this->ipncall) {
@@ -118,7 +118,7 @@ class production_controller extends front_controller_base {
                 }
                 $productionfeedback = produce_prepay($aFullBill);
 
-                if ($aFullBill->status == 'SOLDOUT' || $overriding) {
+                if ($aFullBill->status == SHOP_BILL_SOLDOUT || $overriding) {
                     shop_trace("[{$aFullBill->transactionid}] ".'Production Controller : Post Pay process');
                     if ($this->interactive && $this->ipncall) {
                         mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Post Pay process');
@@ -129,9 +129,9 @@ class production_controller extends front_controller_base {
                         $productionfeedback->private .= '<br/>'.$productionfeedback2->private;
                         $productionfeedback->salesadmin .= '<br/>'.$productionfeedback2->salesadmin;
                         if ($overriding) {
-                            $aFullBill->status = 'PREPROD'; // Let replay for test
+                            $aFullBill->status = SHOP_BILL_PREPROD; // Let replay for test
                         } else {
-                            $aFullBill->status = 'COMPLETE'; // Let replay for test
+                            $aFullBill->status = SHOP_BILL_COMPLETE; // Let replay for test
                         }
                         if (!$holding) {
                             // If holding for repeatable tests, do not complete the bill.
@@ -178,10 +178,11 @@ class production_controller extends front_controller_base {
 
         $seller = new \StdClass;
         $seller->id = $DB->get_field('user', 'id', array('username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id));
-        $seller->firstname = $config->sellername;
-        $seller->lastname = '';
+        $seller->firstname = '';
+        $seller->lastname = $config->sellername;
         $seller->email = $config->sellermail;
         $seller->maildisplay = true;
+        $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
         // Complete seller with expected fields.
         $fields = get_all_user_name_fields();
@@ -227,11 +228,6 @@ class production_controller extends front_controller_base {
                                                                     ), '');
         $administratorViewUrl = $CFG->wwwroot . "/local/shop/bills/view.php?id={$aFullBill->shopid}&view=viewBill&billid={$aFullBill->id}&transid={$aFullBill->transactionid}";
         if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
-            $seller = new \StdClass;
-            $seller->firstname = $config->sellername;
-            $seller->lastname = '';
-            $seller->email = $config->sellermail;
-            $seller->maildisplay = true;
             $title = $SITE->shortname . ' : ' . get_string('orderconfirm', 'local_shop');
             if (!empty($productiondata->private)) {
                 $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->salesadmin, $salesnotification);

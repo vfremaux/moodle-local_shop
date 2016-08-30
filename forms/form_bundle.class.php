@@ -92,10 +92,10 @@ class Bundle_Form extends catalogitemform {
             }
             $mform->addElement('select', 'categoryid', get_string('section', 'local_shop'), $sectionopts);
             $mform->setType('categoryid', PARAM_INT);
+            $mform->addRule('categoryid', null, 'required');
         } else {
             $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
         }
-        $mform->addRule('categoryid', null, 'required');
 
         $this->add_document_assets();
 
@@ -104,7 +104,7 @@ class Bundle_Form extends catalogitemform {
 
         $statusopts = shop_get_status();
         $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
-        $mform->setType('status', PARAM_INT);
+        $mform->setType('status', PARAM_TEXT);
 
         $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
         $mform->setType('notes_editor', PARAM_CLEANHTML);

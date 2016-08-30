@@ -45,6 +45,13 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
+require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
+
+use \local_shop\Product;
+use \local_shop\CatalogItem;
+use \local_shop\Customer;
 
 $id = required_param('id', PARAM_INT); // The course id
 $productid = required_param('pid', PARAM_INT);
@@ -56,8 +63,10 @@ try {
     print_error('objecterror', 'local_shop', $e->get_message());
 }
 
+$customer = new Customer($product->customerid);
+
 try {
-    $catalogitem = new Catalogitem($product->catalogitemid);
+    $catalogitem = new CatalogItem($product->catalogitemid);
 } catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->get_message());
 }
@@ -75,23 +84,30 @@ $context = context_course::instance($id);
 $PAGE->set_context($context);
 require_course_login($course);
 
+if ($customer->hasaccount != $USER->id && !has_capability('local/shop:salesadmin', $context)) {
+    print_error(get_string('notowner', 'local_shop')));
+}
+
+// Page setup
+
 $PAGE->set_title(get_string('shop', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('postproduction', 'local_shop'));
 $PAGE->set_pagelayout('admin');
 
-$productinfo = shop_extract_production_data($product->productiondata);
-
-if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php')) {
-    print_error('errorbadhandler', 'local_shop');
-}
-
-require_once $CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php';
-
-$classname = 'shop_handler_'.$productinfo->handler;
-$handler = new $classname('');
-$methodname = 'postprod_'.$method;
+$productinfo = $product->extract_production_data();
+list($handler, $methodname) = $product->get_handler_info($method);
 
 $productinfo->url = $url;
 
-$handler->{$methodname}($product, $productinfo);
+$courseurl = new moodle_url('/course/view.php', array('id' => $id));
+
+if ($confirm = optional_param('confirm', false, PARAM_TEXT)) {
+    $handler->{$methodname}($product, $productinfo);
+    redirect($courseurl);
+}
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('productoperation', 'local_shop'));
+echo $mform->confirm(get_string('confirmoperation', 'local_shop'), $url.'&confirm=1', $courseurl);
+echo $OUTPUT->footer();

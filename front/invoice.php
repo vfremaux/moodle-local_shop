@@ -52,7 +52,7 @@ echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
 
 $aFullBill = Bill::get_by_transaction($transid);
 
-if ($aFullBill->status == 'SOLDOUT' || $aFullBill->status == 'COMPLETE') {
+if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_COMPLETE) {
 
     echo '<center>';
     echo $renderer->progress('BILL');

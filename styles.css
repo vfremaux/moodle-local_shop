@@ -261,11 +261,35 @@ shop-products-view th{
     font-size:0.9em;
 }
 
-.shop-setcontrols{
+.shop-controls,
+.shop-setcontrols {
     padding-left:8px;
     border-left:1px solid #D0D0D0;
     text-align:right;
     line-height:20px;
+    min-width:80px;
+    width:80px;
+}
+
+.shop-product-row td {
+    padding-left:8px;
+    padding-top:3px;
+    padding-bottom:3px;
+}
+
+.shop-catalog-admin {
+    border-collapse:collapse;
+}
+
+.shop-bundle-row .thumb img {
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+.shop-set-row,
+.shop-product-row,
+.shop-bundle-row {
+    border:5px solid white;
 }
 
 .shop-hidden{
@@ -306,8 +330,16 @@ SELECT.shop-error{
 .previewline { background-color : transparent ; color : #808080 }
 .suspendedline { background-color : #fefefe ; color : #A0A0A0 }
 .abandonnedline { background-color : #600000 ; color : #A00000 }
-.slaved { filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100) }
-.engraved { filter:progid:DXImageTransform.Microsoft.Engrave() progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100) }
+.slaved { 
+    opacity:0.5;
+    -moz-opacity:0.5;
+    filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100);
+}
+.engraved {
+    opacity:0.5;
+    -moz-opacity:0.5;
+    filter:progid:DXImageTransform.Microsoft.Engrave() progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100)
+}
 
 /* tabbedmenu */
 .tabtree .tabrow0 li.active * {
@@ -315,14 +347,15 @@ SELECT.shop-error{
     color: #000;
 }
 
-.shop-role-list,
-.shop-information-area{
-    padding:5px;
-    border-radius:5px;
-    border: 2px solid #A0A0A0;
+.shop-role-list-container,
+.shop-information-area {
+    border: 2px solid #a5a0cb;
+    border-radius: 15px;
+    padding: 15px;
+    margin:5px;
 }
 
-.shop-pricelist{
+.shop-pricelist {
     width:100%;
     font-size:0.9em;
     margin-bottom:10px;
