@@ -23,37 +23,49 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+
+use \local_shop\CatalogItem;
+use \local_shop\Catalog;
 
 class product_controller {
 
     protected $data;
 
-    protected $thecatalogue;
+    protected $thecatalog;
 
-    function __construct($theCatalogue) {
-        $this->thecatalogue = $theCatalogue;
+    protected $received = false;
+
+    function __construct($theCatalog) {
+        $this->thecatalog = $theCatalog;
     }
 
-    public receive($cmd, $data = array()) {
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the function shoudl get them from request
+     */
+    public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
             $this->data = (object)$data;
+        } else {
+            $this->data = new StdClass;
         }
-
-        $data = new StdClass();
 
         switch ($cmd) {
             case 'delete' :
-                $this->data->productid = required_param('items', PARAM_INT);
+                $this->data->productids = required_param_array('items', PARAM_INT);
                 break;
             case 'deleteset' :
                 $this->data->setid = required_param('setid', PARAM_INT);
                 break;
-            case 'unlinkproduct' :
+            case 'unlink' :
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
             case 'makecopy':
-                $this->data->masteritemid = required_param('itemid'); // Item id will be given as the remote master id (no local override).
+                $this->data->masteritemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
                 break;
             case 'freecopy' :
                 $this->data->localitemid = required_param('itemid', PARAM_INT);
@@ -64,93 +76,68 @@ class product_controller {
                 $this->data->shortname = optional_param('shortname', '', PARAM_TEXT);
                 $this->data->name = optional_param('name', '', PARAM_TEXT);
         }
+
+        $this->received = true;
     }
 
-    function process($cmd) {
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
+    public function process($cmd) {
 
-        $this->prepare($cmd);
+        if (!$this->received) {
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
 
         if ($cmd == 'delete') {
-            $productidlist = $this->data->productid; // for unity operations
-            $DB->delete_records_select('local_shop_catalogitem', " id IN ('$productidlist') ");
-            // catalog is not independant, delete in all group (by getting product code)
-            if ($this->thecatalog->groupid != '') {
-                // get product code so that all clones Id can be found
-                $theCode = $DB->get_field('local_shop_catalogitem', 'code', array('id' => $this->data->productid));
+            foreach ($this->data->productids as $ciid) {
+                $theitem = new CatalogItem($ciid);
 
-                $groupid = $this->thecatalog->groupid;
-
-                $sql = "
-                   SELECT
-                      ci.id,
-                      ci.id
-                   FROM
-                      {local_shop_catalogitem} as ci,
-                      {local_shop_catalog} as c
-                   WHERE
-                      c.id = ci.catalogid AND
-                      ci.code = '$theCode' AND
-                      c.groupid = '$groupid'
-                ";
-                if ($products = $DB->get_records_sql_menu($sql)) {
-                    $productidlist = implode("','", array_values($products));
-                } else {
-                    $productidlist = '';
+                // If catalog is not independant, all copies should be removed.
+                if ($this->thecatalog->ismaster) {
+                    $slaves = $this->thecatalog->get_slaves();
+                    foreach ($slaves as $s) {
+                        if ($clone = $s->get_product_by_code($theitem->code)) {
+                            $clone->fulldelete();
+                        }
+                    }
                 }
-            }
-            $relatedids = implode("','", array_keys($theCatalog->getGroupMembers($this->thecatalog->groupid))); // this is as a security
-            $DB->delete_records_select('local_shop_catalogitem', " id IN ('$productidlist') AND catalogid IN ('$relatedids') ");
-        };
-
-        if ($cmd == 'deleteset') {
-            $setid = required_param('setid', PARAM_INT);
-
-            // If catalog is not independant, all copies should be removed.
-            $setidlist = '';
-            if ($this->thecatalog->groupid != '') {
-
-                // get setcode by Id
-                $item = new CatalogItem($setid);
-                $item->fulldelete();
+                $theitem->fulldelete();
             }
         }
 
-        if ($cmd == 'unlinkproduct') {
-            $itemid = required_param('itemid', PARAM_INT);
-            $item = new CatalogItem($itemid);
+        /** ***** We unlink a linked product ***** **/
+        if ($cmd == 'unlink') {
+            $item = new CatalogItem($this->data->itemid);
             $item->unlink();
         }
 
-        /** ***** make a local physical clone of the master product in this slave catalog **** **/
+        /** ***** make a local physical clone of the master product in this slave catalog ***** **/
         if ($cmd == 'makecopy') {
-            $masteritemid = required_param('itemid'); // Item id will be given as the remote master id (no local override).
-
             // get source item in master catalog
             $masterCatalog = new Catalog($this->thecatalog->groupid);
-            $item = new CatalogItem($masteritemid);
-            $item->catalogid = $this->thecatalog->id; // Binding to local catalog
-            $item->id = 0; // Ensure new record
-            $item->save();
+            $item = new CatalogItem($this->data->masteritemid);
+            if (empty(CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id)))) {
+                $item->catalogid = $this->thecatalog->id; // Binding to local catalog
+                $item->id = 0; // Ensure new record
+                $item->save();
+            }
             // Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
             // reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
         }
 
         /** **** Delete the local copy **** **/
         if ($cmd == 'freecopy') {
-            $localitemid = required_param('itemid', PARAM_INT);
-            $localitem = new CatalogItem($localitemid);
+            $localitem = new CatalogItem($this->data->localitemid);
             $localitem->delete();
         }
 
         /** ***** searches and filters the product list ***** **/
         if ($cmd == 'search') {
             $error = false;
-            $by = required_param('by', PARAM_TEXT);
-            $code = optional_param('code', '', PARAM_TEXT);
-            $shortname = optional_param('shortname', '', PARAM_TEXT);
-            $name = optional_param('name', '', PARAM_TEXT);
 
-            $results = CatalogItem::search($by, $code, $shortname, $name);
+            $results = CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
         }
     }
 }

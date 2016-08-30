@@ -37,7 +37,7 @@ $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 // get all the shop session context objects
 list($theShop, $theCatalog, $theBlock) = shop_build_context();
 
-$bundleid = optional_param('bundleid', 0, PARAM_INT);
+$bundleid = optional_param('itemid', 0, PARAM_INT);
 
 // Security
 $context = context_system::instance();
@@ -79,6 +79,10 @@ if ($data = $mform->get_data()) {
     $data->description = $data->description_editor['text'];
     $data->descriptionformat = $data->description_editor['format'];
 
+    if (empty($data->renewable)) {
+        $data->renewable = 0;
+    }
+
     if (empty($data->bundleid)) {
 
         $data->shortname = CatalogItem::compute_item_shortname($data);
@@ -108,7 +112,7 @@ if ($data = $mform->get_data()) {
 
         // If bundle code as changed, we'd better recompute a new shortname.
         if (empty($data->shortname) || ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
-            $data->shortname = shop_compute_item_shortname($data);
+            $data->shortname = CatalogItem::compute_item_shortname($data);
         }
         
         if (!$data->id = $DB->update_record('local_shop_catalogitem', $data)) {
