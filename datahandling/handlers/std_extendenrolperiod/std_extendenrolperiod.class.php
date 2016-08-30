@@ -110,13 +110,13 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             return $productionfeedback;
         }
 
-        // Find existing product and add an event
-        // Register product        
+        // Find existing product and add an event.
+        // Register product
         $product = $DB->get_record('local_shop_product', array('reference' => $data->required['productcode']));
         $product->enddate = $endtime;
         $DB->update_record('local_shop_product', $product);
 
-        // record an event        
+        // Record an event.
         $productevent = new StdClass();
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
