@@ -371,7 +371,7 @@ class CatalogItem extends ShopObject {
 
         $fs = get_file_storage();
 
-        return $fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
+        return !$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
     }
 
     function check_availability() {
@@ -466,7 +466,7 @@ class CatalogItem extends ShopObject {
 
     function remove_content() {
         if (!$this->elements) {
-            $this->elements = CatalogItem::get_instances(array('setid' => $setid));
+            $this->elements = CatalogItem::get_instances(array('setid' => $this->id));
         }
 
         foreach ($this->elements as $elm) {
@@ -487,10 +487,8 @@ class CatalogItem extends ShopObject {
      * Delete complete structure including elements
      */
     function fulldelete() {
-        $setid = $this->setid;
-
-        if (!$this->elements) {
-            $this->elements = CatalogItem::get_instances(array('setid' => $setid));
+        if ($this->id && !$this->elements) {
+            $this->elements = CatalogItem::get_instances(array('setid' => $this->id));
         }
 
         foreach ($this->elements as $elm) {

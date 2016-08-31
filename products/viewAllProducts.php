@@ -100,7 +100,7 @@ if (count(array_keys($products)) == 0) {
     echo '<form name="selection" action="'.$formurl.'" method="get">';
     echo '<input type="hidden" name="view" value="viewAllProducts" />';
     echo '<input type="hidden" name="what" value="" />';
-    echo '<table width="100%">';
+    echo '<table width="100%" class="shop-catalog-admin">';
     echo $renderer->product_admin_line(null);
 
     foreach (array_values($products) as $portlet) {

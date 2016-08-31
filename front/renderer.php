@@ -107,7 +107,7 @@ class shop_front_renderer {
                 $state = 2;
             }
 
-            $icon = $stepicons[$step];
+            $icon = $stepicons[trim($step)];
             if (!empty($SESSION->shoppingcart->norequs) && ($icon == 'CONFIGURE') && ($iconstate == '_on')) {
                 $iconstate = '_dis';
             }

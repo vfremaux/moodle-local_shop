@@ -195,23 +195,43 @@ abstract class catalogitemform extends moodleform {
         $group[0] = & $mform->createElement('filepicker', 'leaflet', get_string('leaflet', 'local_shop'), $leafletfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearleaflet', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grleaflet', get_string('leaflet', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grleaflet', get_string('leaflet', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
         $group[0] = & $mform->createElement('filepicker', 'image', get_string('image', 'local_shop'), $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearimage', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grimage', get_string('image', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grimage', get_string('image', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ',false);
 
         $group = array();
         $group[0] = & $mform->createElement('filepicker', 'thumb', get_string('thumbnail', 'local_shop'), $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearthumb', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grthumb', get_string('thumbnail', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grthumb', get_string('thumbnail', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
         $group[0] = & $mform->createElement('filepicker', 'unit', get_string('unitpix', 'local_shop'), $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearunit', get_string('clear', 'local_shop'));
-        $mform->addGroup($group, 'grunit', get_string('unitpix', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grunit', get_string('unitpix', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+    }
+
+    protected function set_document_asset_data(&$defaults, $context) {
+        global $COURSE;
+
+        $draftitemid = file_get_submitted_draft_itemid('leaflet');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grleaflet = array('leaflet' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('image');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grimage = array('image' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('thumb');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grthumb = array('thumb' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('unit');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grunit = array('unit' => $draftitemid);
     }
 }

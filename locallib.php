@@ -470,7 +470,7 @@ function shop_build_context() {
         try {
             $theShop = new Shop($SESSION->shop->shopid);
         } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->get_message());
+            print_error('objecterror', 'local_shop', $e->getMessage());
         }
     }
 

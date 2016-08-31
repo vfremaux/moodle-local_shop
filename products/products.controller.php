@@ -91,17 +91,16 @@ class product_controller {
         }
 
         if ($cmd == 'delete') {
-            $productidlist = implode(',', $this->data->productids); // for unity operations
-
             foreach ($this->data->productids as $ciid) {
                 $theitem = new CatalogItem($ciid);
-    
+
                 // If catalog is not independant, all copies should be removed.
                 if ($this->thecatalog->ismaster) {
                     $slaves = $this->thecatalog->get_slaves();
                     foreach ($slaves as $s) {
-                        $clone = $s->get_product_by_code($theitem->code);
-                        $clone->fulldelete();
+                        if ($clone = $s->get_product_by_code($theitem->code)) {
+                            $clone->fulldelete();
+                        }
                     }
                 }
                 $theitem->fulldelete();

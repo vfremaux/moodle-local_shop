@@ -308,6 +308,11 @@ class Catalog extends ShopObject {
             return array();
         }
 
+        // Restrict to explicit category.
+        if (!empty($SESSION->shop->categoryid)) {
+            $categories = array($SESSION->shop->categoryid => $categories[$SESSION->shop->categoryid]);
+        }
+
         $shopproducts = array();
         foreach ($categories as $key => $aCategory) {
             // get master catalog items

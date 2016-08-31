@@ -223,21 +223,7 @@ class Product_Form extends catalogitemform {
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemeula', @$defaults->id);
         $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftid_editor);
 
-        $draftitemid = file_get_submitted_draft_itemid('leaflet');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->leaflet = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('image');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->image = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('thumb');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->thumb = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('unit');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->unit = $draftitemid;
+        $this->set_document_asset_data($defaults, $context);
 
         parent::set_data($defaults);
     }

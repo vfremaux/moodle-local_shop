@@ -104,7 +104,7 @@ class Bundle_Form extends catalogitemform {
 
         $statusopts = shop_get_status();
         $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
-        $mform->setType('status', PARAM_INT);
+        $mform->setType('status', PARAM_TEXT);
 
         $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
         $mform->setType('notes_editor', PARAM_CLEANHTML);
@@ -134,7 +134,7 @@ class Bundle_Form extends catalogitemform {
 
     function set_data($defaults) {
         global $COURSE;
-        
+
         $context = context_system::instance();
 
         $draftid_editor = file_get_submitted_draft_itemid('description_editor');
@@ -147,17 +147,7 @@ class Bundle_Form extends catalogitemform {
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemnotes', @$defaults->id);
         $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftid_editor);
 
-        $draftitemid = file_get_submitted_draft_itemid('image');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->image = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('thumb');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->thumb = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('unit');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->unit = $draftitemid;
+        $this->set_document_asset_data($defaults, $context);
 
         parent::set_data($defaults);
     }
