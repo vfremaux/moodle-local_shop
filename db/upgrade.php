@@ -68,5 +68,19 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016022900, 'local', 'shop');
     }
 
+    if ($result && $oldversion < 2016083100) { //New version in version.php
+
+        // Define table local_shop to be created.
+        $table = new xmldb_table('local_shop_catalogitem');
+
+        $field = new xmldb_field('password');
+        $field->set_attributes(XMLDB_TYPE_CHAR, '8', null, null, null, null, null, null, 'handlerparams');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016083100, 'local', 'shop');
+    }
+
     return $result;
 }

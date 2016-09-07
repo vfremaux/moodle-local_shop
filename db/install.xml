@@ -93,6 +93,7 @@
         <FIELD NAME="requireddata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="describes complementary data to ask to user"/>
         <FIELD NAME="enablehandler" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false" COMMENT="enabled pre and post purchase handler"/>
         <FIELD NAME="handlerparams" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="give params to handler"/>
+        <FIELD NAME="password" TYPE="char" SIZE="8" NOTNULL="false" SEQUENCE="false" COMMENT="Access password to the product"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -244,7 +245,7 @@
         <FIELD NAME="type" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="BILLING" SEQUENCE="false"/>
         <FIELD NAME="itemcode" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="catalogitem" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="abstract" TYPE="char" LENGTH="80" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="abstract" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="delay" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="unitcost" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>

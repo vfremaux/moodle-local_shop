@@ -26,8 +26,10 @@ require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/forms/form_category.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
 use local_shop\Catalog;
+use local_shop\Category;
 
 // get the block reference and key context.
 list($theShop, $theCatalog, $theBlock) = shop_build_context();
@@ -53,14 +55,26 @@ $PAGE->navbar->add(get_string('catalogue', 'local_shop'));
 $PAGE->navbar->add(format_string($theCatalog->name), new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
 $PAGE->navbar->add(get_string('addcategory', 'local_shop'));
 
+$allcats = Category::get_instances(array('catalogid' => $theCatalog->id));
+Category::filter_parentable($allcats, $categoryid);
+
+$allcatsmenu = array();
+if (!empty($allcats)) {
+    $allcatsmenu[0] = get_string('rootcategory', 'local_shop');
+    foreach ($allcats as $cid => $c) {
+        $allcatsmenu[$cid] = format_string($c->name);
+    }
+}
+
 if ($categoryid) {
     $category = $DB->get_record('local_shop_catalogcategory', array('id' => $categoryid));
-    $mform = new Category_Form('', array('what' => 'edit'));
+    $mform = new Category_Form('', array('what' => 'edit', 'parents' => $allcatsmenu));
     $category->categoryid = $category->id;
     $category->id = $theShop->id;
+
     $mform->set_data($category);
 } else {
-    $mform = new Category_Form('', array('what' => 'add'));
+    $mform = new Category_Form('', array('what' => 'add', 'parents' => $allcatsmenu));
     $formdata = new StdClass();
     $formdata->id = $theShop->id;
     $formdata->description = '';

@@ -16,6 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use local_shop\Category;
 use local_shop\Catalog;
 use local_shop\Tax;
 
@@ -320,19 +321,14 @@ class shop_front_renderer {
      * prints tabs for js activation of the category panel
      *
      */
-    function category_tabs(&$categories) {
-
-        $category = optional_param('category', null, PARAM_INT);
-        if ($category) {
-            $selected = 'catli'.$category;
-        }
+    function category_tabs(&$categories, $selected, $isactive, $isvisiblebranch) {
 
         $str = '';
 
         $catidsarr = array();
         foreach ($categories as $cat) {
-            if (empty($category)) {
-                $category = $cat->id;
+            if (empty($selected)) {
+                $selected = $cat->id;
             }
             $catidsarr[] = $cat->id;
         }
@@ -340,15 +336,31 @@ class shop_front_renderer {
 
         $rows[0] = array();
         foreach ($categories as $cat) {
+            /*
             if (empty($selected)) {
                 $selected = 'catli'.$cat->id;
             }
-            $categoryurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'category' => $cat->id, 'id' => $this->theshop->id, 'blockid' => $this->theblock->id));
+            */
+            $params = array('view' => 'shop', 'category' => $cat->id, 'shopid' => $this->theshop->id, 'blockid' => $this->theblock->id);
+            $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
             $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
             // $rows[0][] = new tabobject('catli'.$cat->id, "javascript:showcategory('.$cat->id.', \''.$catids.'\')", format_string($cat->name));
         }
 
-        $str .= print_tabs($rows, $selected, '', '', true);
+        if ($isvisiblebranch) {
+            $visibleclass = 'shop-category-visible';
+        } else {
+            $visibleclass = 'shop-category-hidden';
+        }
+
+        $str .= '<div class="'.$visibleclass.'">';
+
+        if ($isactive) {
+            $str .= print_tabs($rows, $selected, '', '', true);
+        } else {
+            $str .= print_tabs($rows, null, null, null, true);
+        }
+        $str .= '</div>';
 
         return $str;
     }
@@ -379,15 +391,36 @@ class shop_front_renderer {
         $withtabs = (@$this->theshop->printtabbedcategories == 1);
 
         if ($withtabs) {
-            $str .= $this->category_tabs($categories, $this->theblock->id);
+            $categoryid = optional_param('category', null, PARAM_INT);
+
+            // Get the tree branch below the category
+            if ($categoryid) {
+                $category = new Category($categoryid);
+                $branch = array_reverse($category->get_branch());
+            } else {
+                $branch = array_reverse(Category::get_first_branch($this->thecatalog->id, 0));
+            }
+
+            // Render all upper branch choices, with presected items in the active branch
+            while ($catid = array_shift($branch)) {
+                $cat = new Category($catid);
+                $levelcategories = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid), 'sortorder');
+                $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->id == $categoryid, true);
+
+                // Print childs.
+                if ($subs = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id), 'sortorder')) {
+                    $str .= $this->category_tabs($subs, null, false, $cat->id == $categoryid);
+                }
+            }
         }
 
         // print catalog product line on the active category if tabbed
         $catids = array_keys($categories);
-        $category = optional_param('category', array_keys($categories)[0], PARAM_INT);
+        $category = optional_param('category', $catids[0], PARAM_INT);
 
         $c = 0;
-        foreach ($categories as $cat) {
+        foreach ($levelcategories as $c) {
+            $cat = $categories[$c->id];
             if ($withtabs && ($category != $cat->id)) {
                 continue;
             }
@@ -462,11 +495,11 @@ class shop_front_renderer {
 
         $str .= '<div class="shop-front-productdef">';
         if (!empty($product->ispart)) {
-            $str .= '<h3 class="shop-front-partof">'.$product->name.'</h3>';
+            $str .= '<h3 class="shop-front-partof">'.format_string($product->name).'</h3>';
         } else {
-            $str .= '<h2>'.$product->name.'</h2>';
+            $str .= '<h2>'.format_string($product->name).'</h2>';
             if ($product->description) {
-                $str .= '<div class="shop-front-description">'.$product->description.'</div>';
+                $str .= '<div class="shop-front-description">'.format_text($product->description).'</div>';
             }
             if (!$product->available) {
                 $str .= '<div class="shop-not-available">'.get_string('notavailable', 'local_shop').'</div>';
@@ -499,7 +532,11 @@ class shop_front_renderer {
             if ($product->available) {
                 $str .= '<div class="shop-front-order">';
                 $buystr = get_string('buy', 'local_shop');
-                $disabled = ($product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset) ? 'disabled="disabled"' : '' ;
+                $disabled = ($product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset) ? 'disabled="disabled"' : '';
+                if ($product->password) {
+                   $str .= '<input type="text" id="ci-pass-'.$product->shortname.'" value="" maxlength="8" size="8" onkeypress="check_pass_code(\''.$CFG->wwwroot.'\', \''.$product->shortname.'\', this, event)" title="'.get_string('needspasscodetobuy', 'local_shop').'" /> <div id="ci-pass-status-'.$product->shortname.'" class="shop-pass-state"></div>';
+                   $disabled = 'disabled="disabled"';
+                }
                 $str .= '<input type="button" id="ci-'.$product->shortname.'" value="'.$buystr.'" onclick="ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')" '.$disabled.' />';
                 $str .= '<div class="shop-order-item" id="bag_'.$product->shortname.'">';
                 $str .= $this->units($product);
@@ -598,6 +635,10 @@ class shop_front_renderer {
         $str .= '<div class="shop-front-order">';
         $buystr = get_string('buy', 'local_shop');
         $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '' ;
+        if ($bundle->password) {
+           $str .= '<input type="text" id="ci-pass-'.$bundle->shortname.'" value="" maxlength="8" size="8" onkeypress="check_pass_code(\''.$CFG->wwwroot.'\', \''.$bundle->shortname.'\', this, event)" title="'.get_string('needspasscodetobuy', 'local_shop').'" /> <div id="ci-pass-status-'.$bundle->shortname.'" class="shop-pass-state"></div>';
+           $disabled = 'disabled="disabled"';
+        }
         $str .= '<input type="button" id="ci-'.$bundle->shortname.'" value="'.$buystr.'" onclick="ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')" '.$disabled.' />';
         $str .= '<div class="shop-order-item" id="bag_'.$bundle->shortname.'">';
         $str .= $this->units($bundle);

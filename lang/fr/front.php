@@ -95,6 +95,7 @@ $string['mandatoryerror'] = 'Champ obligatoires non renseignés : ';
 $string['mandatorylastname'] = 'Nom obligatoire';
 $string['maxdeliveryreached'] = 'Ce produit ne peut être acheté en plus d\'exemplaires (par commande) que vous venez de commander.';
 $string['mincharserror'] = 'Nombre de caractères minimum : ';
+$string['needspasscodetobuy'] = 'Vous devez entrer un code pour pouvoir acheter ce produit.';
 $string['next'] = 'Etape suivante';
 $string['newaccountinfo'] = 'Nouveau compte client';
 $string['noassignation'] = 'Aucun participant affecté.';

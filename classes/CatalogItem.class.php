@@ -498,6 +498,41 @@ class CatalogItem extends ShopObject {
         parent::delete();
     }
 
+    function clone_instance($inset = false) {
+        global $DB;
+
+        $oldid = $this->id;
+
+        $this->record->id = 0;
+        $this->record->code .= '1';
+        if (!$inset) {
+            $this->record->setid = 0; // Cloned is a real product.
+        } else {
+            $this->record->setid = $inset; // Should give the new set.
+        }
+        while ($DB->record_exists('local_shop_catalogitem', array('catalogid' => $this->catalogid, 'code' => $this->record->code))) {
+            $this->record->code .= '1';
+        }
+        $this->save();
+
+        // clone all attached files
+        $fs = get_file_storage();
+        $context = \context_system::instance();
+        $files = $DB->get_records('files', array('contextid' => $context->id, 'component' => 'local_shop', 'itemid' => $oldid));
+        foreach($files as $f) {
+            if ($f->filename == '.') continue; // Discard directories.
+            $oldfile = $fs->get_file_instance($f);
+            $newfile = new \StdClass;
+            $newfile->contextid = $context->id;
+            $newfile->component = 'local_shop';
+            $newfile->filearea = $f->filearea;
+            $newfile->itemid = $this->id;
+            $newfile->filepath = $f->filepath;
+            $newfile->filename = $f->filename;
+            $fs->create_file_from_storedfile($newfile, $oldfile);
+        }
+    }
+
     static function count($filter) {
         return parent::_count(self::$table, $filter);
     }

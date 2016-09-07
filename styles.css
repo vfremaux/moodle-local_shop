@@ -693,3 +693,15 @@ shop-order-paymode {
 .form-filter-menus form {
     display:inline;
 }
+
+.shop-pass-state {
+    display:inline-block;
+}
+
+.shop-category-visible {
+    display:block;
+}
+
+.shop-category-hidden {
+    display:none;
+}

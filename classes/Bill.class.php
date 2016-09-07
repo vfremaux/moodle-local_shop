@@ -226,7 +226,7 @@ class Bill extends ShopObject {
         // trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches
         if ($discountrate) {
             foreach ($this->items as $bi) {
-                $birec = new StdClass();
+                $birec = new \StdClass();
                 $birec->type = 'DISCOUNT';
                 $birec->itemcode = $bi->itemcode;
                 $birec->unitcost = - $bi->unitcost * $discountrate / 100;

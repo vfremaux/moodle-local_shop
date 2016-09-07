@@ -99,6 +99,7 @@ $string['missingdata'] = 'Important required data is missing. Ignoring entry.';
 $string['navsteps'] = 'Front navigation order';
 $string['newaccountinfo'] = 'Create your customer account';
 $string['next'] = 'Next step';
+$string['needspasscodetobuy'] = 'You need enter a pass code to buy this product';
 $string['noassignation'] = 'No participant assigned.';
 $string['noproductincategory'] = 'No product in category';
 $string['notallassigned'] = 'All your seats are not assigned. You may have order more units than really used. Please fix this before pursuing.';
