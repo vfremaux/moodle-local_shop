@@ -86,6 +86,12 @@ class customer_controller extends front_controller_base {
                             $customer->hasaccount = $USER->id;
                         }
 
+                        if (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) {
+                            // Store snapshot of current invoice info as default data for this customer
+                            $customer->invoiceinfo = serialize($SESSION->shoppingcart->invoiceinfo);
+                        } else {
+                            $customer->invoiceinfo = '';
+                        }
                         $SESSION->shoppingcart->customerinfo['id'] = $DB->insert_record('local_shop_customer', $customer);
                     } else {
                         $SESSION->shoppingcart->customerinfo['id'] = $customer->id;

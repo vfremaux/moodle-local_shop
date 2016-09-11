@@ -35,37 +35,31 @@ class shop_paymode_check extends shop_paymode {
     function print_payment_portlet(&$billdata) {
         global $CFG;
 
-        $config = get_config('local_shop');
-
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_check');
         echo '<blockquote>';
         echo shop_compile_mail_template('print_procedure_text', array( 'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
         echo shop_compile_mail_template('procedure_text', array(
-            'SELLER' => $config->sellername,
-               'ADDRESS' => $config->selleraddress,
-               'ZIP' => $config->sellerzip,
-               'CITY' => $config->sellercity,
-               'COUNTRY' => strtoupper($config->sellercountry),
+            'SELLER' => $this->_config->sellername,
+               'ADDRESS' => $this->_config->selleraddress,
+               'ZIP' => $this->_config->sellerzip,
+               'CITY' => $this->_config->sellercity,
+               'COUNTRY' => strtoupper($this->_config->sellercountry),
                'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
         echo '</blockquote>';
     }
 
     function print_invoice_info(&$billdata = null) {
-        global $CFG;
-
-        $config = get_config('local_shop');
-
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_check');
         echo '<blockquote>';
         echo shop_compile_mail_template('print_procedure_text_invoice', array( 'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
         echo shop_compile_mail_template('procedure_text_invoice', array(
-            'SELLER' => $config->sellername,
-               'ADDRESS' => $config->selleraddress,
-               'ZIP' => $config->sellerzip,
-               'CITY' => $config->sellercity,
-               'COUNTRY' => strtoupper($config->sellercountry),
+            'SELLER' => $this->_config->sellername,
+               'ADDRESS' => $this->_config->selleraddress,
+               'ZIP' => $this->_config->sellerzip,
+               'CITY' => $this->_config->sellercity,
+               'COUNTRY' => strtoupper($this->_config->sellercountry),
                'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
         echo '</blockquote>';
     }

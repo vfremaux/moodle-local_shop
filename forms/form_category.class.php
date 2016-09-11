@@ -57,6 +57,10 @@ class Category_Form extends moodleform {
         $mform->addElement('text', 'name', get_string('name'), '', $attributes);
         $mform->setType('name', PARAM_TEXT);
 
+        if (!empty($this->_customdata['parents'])) {
+            $mform->addElement('select', 'parentid', get_string('parentcategory', 'local_shop'), $this->_customdata['parents']);
+        }
+
         // Title and description.
         $mform->addElement('editor', 'description_editor', get_string('description'), null, $this->editoroptions);
         $mform->addHelpButton('description_editor', 'description', 'local_shop');

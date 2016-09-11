@@ -32,11 +32,6 @@ use local_shop\Catalog;
 // get the block reference and key context.
 list($theShop, $theCatalog, $theBlock) = shop_build_context();
 
-// Get the block reference and key context.
-
-$catalogid = required_param('id', PARAM_INT);
-$view = optional_param('view', 'viewAllCustomers', PARAM_TEXT);
-
 // Security.
 
 $context = context_system::instance();
@@ -44,15 +39,16 @@ $PAGE->set_context($context);
 
 require_login();
 require_capability('local/shop:salesadmin', $context);
-if (!preg_match('/viewAllCategories/', $view)) $view = 'viewAllCategories';
+
+$view = optional_param('view', 'viewAllCategories', PARAM_TEXT);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/category/view.php', array('id' => $catalogid));
+$url = new moodle_url('/local/shop/products/category/view.php', array('shopid' => $theShop->id));
 $PAGE->set_url($url);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php', array('id' => $catalogid)));
+$PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php', array('shopid' => $theShop->id)));
 $PAGE->navbar->add(get_string('category', 'local_shop'));
 
 $renderer = shop_get_renderer('products');

@@ -112,9 +112,9 @@ class shop_export_excel extends shop_export {
     */
     protected function __print_data() {
         global $CFG;
-        
-        $row = 1;    
-        
+
+        $row = 1;
+
         if (empty($this->data[0])) {
             return;
         }
@@ -123,10 +123,10 @@ class shop_export_excel extends shop_export {
             return;
         }
 
-        foreach ($this->data[0] as $rowid => $datarow) {    
+        foreach ($this->data[0] as $rowid => $datarow) {
             $i = 0;
             $dataarr = (array)$datarow;
-            foreach ($this->datadesc[0]['columns'] as $col) {    
+            foreach ($this->datadesc[0]['columns'] as $col) {
                 $isnumber = false;
                 if ($col['width'] == 0) continue;
                 if ($col['format'] == 'float') {
