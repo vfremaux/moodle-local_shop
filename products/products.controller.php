@@ -64,6 +64,9 @@ class product_controller {
             case 'unlink' :
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
+            case 'clone':
+                $this->data->itemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
+                break;
             case 'makecopy':
                 $this->data->masteritemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
                 break;
@@ -91,17 +94,16 @@ class product_controller {
         }
 
         if ($cmd == 'delete') {
-            $productidlist = implode(',', $this->data->productids); // for unity operations
-
             foreach ($this->data->productids as $ciid) {
                 $theitem = new CatalogItem($ciid);
-    
+
                 // If catalog is not independant, all copies should be removed.
                 if ($this->thecatalog->ismaster) {
                     $slaves = $this->thecatalog->get_slaves();
                     foreach ($slaves as $s) {
-                        $clone = $s->get_product_by_code($theitem->code);
-                        $clone->fulldelete();
+                        if ($clone = $s->get_product_by_code($theitem->code)) {
+                            $clone->fulldelete();
+                        }
                     }
                 }
                 $theitem->fulldelete();
@@ -112,6 +114,13 @@ class product_controller {
         if ($cmd == 'unlink') {
             $item = new CatalogItem($this->data->itemid);
             $item->unlink();
+        }
+
+        /** ****** Clone a product or a set/bundle element as a product ***** **/
+        if ($cmd == 'clone') {
+            $original = new CatalogItem($this->data->itemid);
+            $original->clone_instance();
+            redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
         }
 
         /** ***** make a local physical clone of the master product in this slave catalog ***** **/

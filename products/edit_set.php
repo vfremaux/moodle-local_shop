@@ -132,40 +132,40 @@ if ($data = $mform->get_data()) {
 
     $usercontext = context_user::instance($USER->id);
 
-    $filepickeritemid = $data->leaflet;
+    $filepickeritemid = $data->grleaflet['leaflet'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemleaflet', $data->id);
     }
 
-    if (!empty($data->clearleaflet)) {
+    if (!empty($data->grleaflet['clearleaflet'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemleaflet', $data->id);
     }
 
-    $filepickeritemid = $data->image;
+    $filepickeritemid = $data->grimage['image'];
     $usercontext = context_user::instance($USER->id);
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemimage', $data->id);
     }
 
-    if (!empty($data->clearimage)) {
+    if (!empty($data->grimage['clearimage'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemimage', $data->id);
     }
 
-    $filepickeritemid = $data->thumb;
+    $filepickeritemid = $data->grthumb['thumb'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemthumb', $data->id);
     }
 
-    if (!empty($data->clearthumb)) {
+    if (!empty($data->grthumb['clearthumb'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemthumb', $data->id);
     }
 
-    $filepickeritemid = $data->unit;
+    $filepickeritemid = $data->grunit['unit'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemunit', $data->id);
     }
 
-    if (!empty($data->clearunit)) {
+    if (!empty($data->grunit['clearunit'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemunit', $data->id);
     }
 

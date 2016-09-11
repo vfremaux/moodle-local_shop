@@ -40,7 +40,7 @@ class catalog_controller {
         if (!empty($data)) {
             $this->data = (object)$data;
         } else {
-            $this->data = new StdClass;
+            $this->data = new \StdClass;
         }
 
         switch ($cmd) {

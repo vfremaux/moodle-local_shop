@@ -64,7 +64,7 @@ class purchasereq_controller extends front_controller_base {
         } elseif ($cmd == 'navigate') {
             // Comming from further form.
             if ($back = optional_param('back', false, PARAM_BOOL)) {
-                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_prev_step('purchaserequ'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_prev_step('purchaserequ'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1)));
             } else {
                 // Going further silently.
                 redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('purchaserequ'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
