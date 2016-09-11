@@ -71,7 +71,7 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     foreach ($aFullBill->items as $biid => $bi) {
         if ($bi->type == 'BILLING') {
             echo $renderer->order_line($bi->catalogitem->shortname, $bi->quantity);
-        } else {
+        } elseif ($bi->type == 'SHIPPING') {
             echo $renderer->bill_line($bi);
         }
     }
@@ -104,8 +104,8 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
 
     echo $OUTPUT->box_start();
     echo $config->sellername.' ';
-    echo shop_compile_mail_template('postBillingMessage', array());
-    echo shop_compile_mail_template('pendingFollowUpText', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$aFullBill->paymode);
+    echo shop_compile_mail_template('post_billing_message', array(), '');
+    echo shop_compile_mail_template('pending_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$aFullBill->paymode);
     echo $OUTPUT->box_end();
 }
 

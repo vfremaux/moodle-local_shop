@@ -58,10 +58,12 @@ if ($action != '') {
 
 echo $out;
 
-echo $mainrenderer->currency_choice($cur, new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllbills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid)));
+$params = array('view' => 'viewAllbills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
+echo $mainrenderer->currency_choice($cur, new moodle_url('/local/shop/bills/view.php', $params));
 $curclause = " AND currency = '{$cur}' ";
 
-echo $mainrenderer->shop_choice(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllbills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid)), true);
+$params = array('view' => 'viewAllbills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
+echo $mainrenderer->shop_choice(new moodle_url('/local/shop/bills/view.php', $params), true);
 
 $samecurrency = true;
 if ($bills = Bill::get_instances($filter)) {
@@ -72,11 +74,12 @@ if ($bills = Bill::get_instances($filter)) {
         if ($billcurrency != $bill->currency) {
             $samecurrency = false;
         }
-          $billsbystate[$bill->status][$bill->id] = $bill;
+        $billsbystate[$bill->status][$bill->id] = $bill;
     }
 } else {
     $billsbystate = array();
 }
+
 echo $OUTPUT->heading_with_help(get_string('billing', 'local_shop'), 'billstates', 'local_shop');
 
 

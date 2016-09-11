@@ -36,6 +36,9 @@ class users_controller extends front_controller_base {
             } else {
                 redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('users'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
             }
+        } elseif ($cmd == 'back') {
+            // This can be decided into the user page.
+            redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_prev_step('users'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1)));
         }
     }
 }

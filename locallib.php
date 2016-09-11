@@ -457,7 +457,7 @@ function shop_get_supported_currencies() {
  * @returns three object refs if they are buildable, null for other.
  */
 function shop_build_context() {
-    global $SESSION;
+    global $SESSION, $DB;
 
     $theShop = new Shop(null);
 
@@ -470,8 +470,13 @@ function shop_build_context() {
         try {
             $theShop = new Shop($SESSION->shop->shopid);
         } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->get_message());
+            print_error('objecterror', 'local_shop', $e->getMessage());
         }
+    } else {
+        // shopid is null. get lowest available shop as default
+        $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
+        $shop = array_pop($shops);
+        $theShop = new Shop($shop->id);
     }
 
     // Logic : forces session catalog to be operative, 

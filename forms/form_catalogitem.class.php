@@ -181,6 +181,9 @@ abstract class catalogitemform extends moodleform {
         $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedout', 'local_shop'), -1);
         $mform->addGroup($radiogroup, 'loggedingroup', get_string('onlyfor', 'local_shop'), array(' '), false);
         $mform->setDefault('onlyforloggedin', 0);
+
+        $mform->addelement('text', 'password', get_string('productpassword', 'local_shop'), '', array('size' => 8, 'maxlength' => 8));
+        $mform->setType('password', PARAM_TEXT);
     }
 
     protected function add_document_assets() {
@@ -195,23 +198,52 @@ abstract class catalogitemform extends moodleform {
         $group[0] = & $mform->createElement('filepicker', 'leaflet', get_string('leaflet', 'local_shop'), $leafletfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearleaflet', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grleaflet', get_string('leaflet', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grleaflet', get_string('leaflet', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
         $group[0] = & $mform->createElement('filepicker', 'image', get_string('image', 'local_shop'), $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearimage', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grimage', get_string('image', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grimage', get_string('image', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ',false);
 
         $group = array();
         $group[0] = & $mform->createElement('filepicker', 'thumb', get_string('thumbnail', 'local_shop'), $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearthumb', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grthumb', get_string('thumbnail', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grthumb', get_string('thumbnail', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
         $group[0] = & $mform->createElement('filepicker', 'unit', get_string('unitpix', 'local_shop'), $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearunit', get_string('clear', 'local_shop'));
-        $mform->addGroup($group, 'grunit', get_string('unitpix', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), false);
+        $mform->addGroup($group, 'grunit', get_string('unitpix', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+
+        $mform->addElement('editor', 'eula_editor', get_string('eula', 'local_shop'), null, $this->editoroptions);
+        $mform->setType('eula', PARAM_URL);
+        $mform->addHelpButton('eula_editor', 'producteulas', 'local_shop');
+    }
+
+    protected function set_document_asset_data(&$defaults, $context) {
+        global $COURSE;
+
+        $draftitemid = file_get_submitted_draft_itemid('leaflet');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grleaflet = array('leaflet' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('image');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grimage = array('image' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('thumb');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grthumb = array('thumb' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('unit');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grunit = array('unit' => $draftitemid);
+
+        $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
+        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'eula_editor', @$defaults->id, array('subdirs' => true), $defaults->eula);
+        $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemeula', @$defaults->id);
+        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftid_editor);
     }
 }

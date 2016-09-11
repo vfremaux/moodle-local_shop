@@ -27,7 +27,7 @@ class shop_export_source_allbills {
 
     function get_data_description(&$params) {
         global $DB;
-        
+
         $catalogue = $DB->get_record('local_shop_catalog', array('id' => $params->config->catalogue));
         $desc['filename'] = get_string('allbillsfile', 'local_shop', $catalogue->name);
         $desc['title'] = get_string('allbills', 'local_shop');

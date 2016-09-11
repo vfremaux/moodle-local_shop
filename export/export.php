@@ -32,8 +32,8 @@ $blockcontext = context_block::instance($id);
 require_login();
 require_capability('block/shop:salesadmin', $blockcontext);
 
-$what = required_param('what', PARAM_TEXT);    
-$format = required_param('format', PARAM_TEXT);    
+$what = required_param('what', PARAM_TEXT);
+$format = required_param('format', PARAM_TEXT);
 
 if (file_exists($CFG->dirroot.'/local/shop/export/extractors/export_'.$what.'.php')) {
     require_once($CFG->dirroot.'/local/shop/export/extractors/export_'.$what.'.php');

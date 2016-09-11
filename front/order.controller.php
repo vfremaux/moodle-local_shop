@@ -37,7 +37,8 @@ class order_controller extends front_controller_base {
 
         if ($cmd == 'navigate') {
             if ($back = optional_param('back', false, PARAM_BOOL)) {
-                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('order'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+                $prev = $this->theshop->get_prev_step('order');
+                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1)));
             } else {
 
                 // register paymode

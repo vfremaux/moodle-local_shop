@@ -261,11 +261,35 @@ shop-products-view th{
     font-size:0.9em;
 }
 
-.shop-setcontrols{
+.shop-controls,
+.shop-setcontrols {
     padding-left:8px;
     border-left:1px solid #D0D0D0;
     text-align:right;
     line-height:20px;
+    min-width:80px;
+    width:80px;
+}
+
+.shop-product-row td {
+    padding-left:8px;
+    padding-top:3px;
+    padding-bottom:3px;
+}
+
+.shop-catalog-admin {
+    border-collapse:collapse;
+}
+
+.shop-bundle-row .thumb img {
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+.shop-set-row,
+.shop-product-row,
+.shop-bundle-row {
+    border:5px solid white;
 }
 
 .shop-hidden{
@@ -668,4 +692,16 @@ shop-order-paymode {
 .form-filter-menus div,
 .form-filter-menus form {
     display:inline;
+}
+
+.shop-pass-state {
+    display:inline-block;
+}
+
+.shop-category-visible {
+    display:block;
+}
+
+.shop-category-hidden {
+    display:none;
 }

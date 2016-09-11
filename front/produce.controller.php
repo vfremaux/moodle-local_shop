@@ -42,13 +42,20 @@ class production_controller extends front_controller_base {
     }
 
     function process($cmd, $holding = false) {
-        global $SESSION, $DB, $CFG, $SITE;
+        global $SESSION, $DB, $CFG, $SITE, $OUTPUT;
 
         $config = get_config('local_shop');
 
         if ($cmd == 'navigate') {
             // No back possible after production.
-            redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->abill->theshop->get_next_step('produce'), 'shopid' => $this->abill->theshop->id, 'blockid' => 0 + @$this->abill->theblock->id, 'transid' => $this->abill->transactionid)));
+            $params = array('view' => $this->abill->theshop->get_next_step('produce'), 'shopid' => $this->abill->theshop->id, 'blockid' => 0 + @$this->abill->theblock->id, 'transid' => $this->abill->transactionid);
+            $url = new \moodle_url('/local/shop/front/view.php', $params);
+            if (empty($SESSION->shoppingcart->debug)) {
+                redirect($url);
+            } else {
+                echo $OUTPUT->continue_button($url);
+                die;
+            }
         }
 
         $systemcontext = \context_system::instance();

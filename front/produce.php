@@ -60,10 +60,10 @@ if ($action != '') {
 }
 
 $supports = array();
-if ($config->sellermailsupport) $supports[] = get_string('byemailat', 'local_shop'). ' '. $config->sellermailsupport;
-if ($config->sellerphonesupport) $supports[] = get_string('byphoneat', 'local_shop'). ' '. $config->sellerphonesupport;
+if ($config->sellermailsupport) $supports[] = get_string('byemailat', 'local_shop').' '. $config->sellermailsupport;
+if ($config->sellerphonesupport) $supports[] = get_string('byphoneat', 'local_shop').' '. $config->sellerphonesupport;
 $supportstr = implode(' '.get_string('or', 'local_shop').' ', $supports);
-$supportstr = (empty($supportstr)) ? '(No support info)' : '';
+$supportstr = (empty($supportstr)) ? '(No support info)' : $supportstr;
 
 echo $out;
 
