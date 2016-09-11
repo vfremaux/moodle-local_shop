@@ -577,7 +577,7 @@ class shop_products_renderer {
         $str .= '<div id="local-shop-catlinks">';
 
         $str .= '<div class="left-links">';
-        $catlinkurl = new moodle_url('/local/shop/products/category/view.php', array('view' => 'viewAllCategory', 'catalogid' => $this->thecatalog->id));
+        $catlinkurl = new moodle_url('/local/shop/products/category/view.php', array('view' => 'viewAllCategories', 'catalogid' => $this->thecatalog->id));
         $str .= '<a href="'.$catlinkurl.'">'.get_string('edit_categories', 'local_shop').'</a> - ';
         if (Category::count(array('catalogid'=> $theCatalog->id))) {
             $producturl = new moodle_url('/local/shop/products/edit_product.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));

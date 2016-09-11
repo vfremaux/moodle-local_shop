@@ -38,7 +38,7 @@ if ($action != '') {
    $controller->process($action);
 }
 
-$url = new moodle_url('/local/shop/products/category/view.php', array('id' => $theCatalog->id, 'view' => 'viewAllCategory', 'order' => $order, 'dir' => $dir));
+$url = new moodle_url('/local/shop/products/category/view.php', array('id' => $theCatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir));
 
 $categoryCount = $DB->count_records_select('local_shop_catalogcategory', " catalogid = ? AND UPPER(name) NOT LIKE 'test%' ", array($theCatalog->id)); // eliminate tests
 

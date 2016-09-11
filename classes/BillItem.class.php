@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 
 /**
  * A Bill Item represents an order line with all the context that was there when 
@@ -56,22 +57,24 @@ class BillItem extends ShopObject {
 
         $this->bill = $bill;
 
-        parent::__construct($idorrec, self::$table);
-
         // here we make some assertions to check the billitem integrity
         parent::__construct($idorrec, self::$table);
 
         if (!empty($this->record->id)) {
-
             if (empty($this->bill)) {
                 $bill = new Bill($this->record->billid);
             }
 
-            assert(($this->record->unitcost * $this->record->quantity) == $this->record->totalprice);
+            if (!assert(($this->record->unitcost * $this->record->quantity) == $this->record->totalprice, " ({$this->record->unitcost} * {$this->record->quantity}) == {$this->record->totalprice} ")) {
+                print_object($this->record);
+                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            }
 
             // reydrates the original catalog item stored when bill was created.
             // This ensures getting exact prices from the moment, event if changed in catalog inbetween.
-            $this->catalogitem = unserialize(base64_decode($this->record->catalogitem));
+            $catalogitemdata = base64_decode($this->record->catalogitem);
+            $catalogitemdata = str_replace('block_shop_catalogitem', 'local_shop_catalogitem', $catalogitemdata);
+            $this->catalogitem = unserialize($catalogitemdata);
             $this->productiondata = unserialize(base64_decode($this->record->productiondata));
             $this->customerdata = unserialize(base64_decode($this->record->customerdata));
 
@@ -89,14 +92,13 @@ class BillItem extends ShopObject {
                 }
             }
         } else {
-
             if (empty($bill)) {
                 throw new \Exception('A bill is expected to build a new BillItem');
             }
 
             // Try whenever possible drive ordering from outside without DB calls.... 
             if ($ordering == -1) {
-                if ($maxordering = $DB->get_record_select('local_shop_billitem', " billid = ? AND ordering = (SELECT MAX(ordering) FROM {local_shop_billitem} WHERE billid = ?) ", array($bill->id, $bill->id))) {
+                if ($maxordering = $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $bill->id))) {
                     $this->ordering = $maxordering->ordering + 1;
                 } else {
                     $this->ordering = 1;

@@ -82,5 +82,67 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016083100, 'local', 'shop');
     }
 
+    if ($result && $oldversion < 2016090800) { //New version in version.php
+
+        // Define table local_shop to be created.
+        $table = new xmldb_table('local_shop');
+
+        $field = new xmldb_field('discountthreshold');
+        $field->set_attributes(XMLDB_TYPE_NUMBER, '10', null, XMLDB_NOTNULL, null, 0, 'allowtax');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('discountrate');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0, 'discountthreshold');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('discountrate2');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0, 'discountrate');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('discountrate3');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0, 'discountrate2');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016090800, 'local', 'shop');
+    }
+
+    if ($result && $oldversion < 2016090804) { //New version in version.php
+        // Purge a weird record.
+        $DB->delete_records_select('capabilities', " name LIKE 'local/shop:%' AND component = 'local_block'" );
+
+        upgrade_plugin_savepoint(true, 2016090804, 'local', 'shop');
+    }
+
+    if ($result && $oldversion < 2016091000) { //New version in version.php
+
+        // Add field to local_shop_customer.
+        $table = new xmldb_table('local_shop_customer');
+
+        $field = new xmldb_field('invoiceinfo');
+        $field->set_attributes(XMLDB_TYPE_TEXT, 'small', null, null, null, null, 'hasaccount');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add field to local_shop_customer.
+        $table = new xmldb_table('local_shop_bill');
+
+        $field = new xmldb_field('invoiceinfo');
+        $field->set_attributes(XMLDB_TYPE_TEXT, 'small', null, null, null, null, 'customerid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016091000, 'local', 'shop');
+    }
+
     return $result;
 }

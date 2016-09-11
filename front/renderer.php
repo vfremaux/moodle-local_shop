@@ -167,7 +167,7 @@ class shop_front_renderer {
         $str .= get_string('objects', 'local_shop');
         $str .= '</td></tr>';
 
-        $discountrate = shop_calculate_discountrate_for_user($amount, $this->context, $reason);
+        $discountrate = $this->theshop->calculate_discountrate_for_user($amount, $this->context, $reason);
 
         if ($discountrate) {
             $str .= '<tr>';
@@ -244,9 +244,11 @@ class shop_front_renderer {
     function customer_info(&$bill = null) {
         global $SESSION;
 
+        $usedistinctinvoiceinfo = false;
         if (empty($bill)) {
             if (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) {
                 $ci = $SESSION->shoppingcart->invoiceinfo;
+                $usedistinctinvoiceinfo = true;
             } else {
                 $ci = $SESSION->shoppingcart->customerinfo;
             }
@@ -254,7 +256,12 @@ class shop_front_renderer {
             $emissiondate = $SESSION->shoppingcart->emissiondate = time();
             $transid = $SESSION->shoppingcart->transid;
         } else {
-            $ci = (array)$bill->customer;
+            if (empty($bill->invoiceinfo)) {
+                $ci = (array)$bill->customer;
+            } else {
+                $ci = (array)unserialize($bill->invoiceinfo);
+                $usedistinctinvoiceinfo = true;
+            }
             $transid = $bill->transactionid;
             $emissiondate = $bill->emissiondate;
         }
@@ -268,26 +275,46 @@ class shop_front_renderer {
         $str .= '</td><td width="40%" valign="top" align="right">';
         $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($emissiondate);
         $str .= '</td></tr>';
+
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('organisation', 'local_shop').':</b> '.@$ci['organisation'];
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
+
+        if ($usedistinctinvoiceinfo) {
+            $str .= '<tr><td width="60%" valign="top">';
+            $str .= '<b>'.get_string('department').':</b> '.@$ci['department'];
+            $str .= '</td><td width="40%" valign="top">';
+            $str .= '</td></tr>';
+        }
+
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('customer', 'local_shop').':</b> '.$ci['lastname'].' '.$ci['firstname'];
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
+
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('city').': </b> '.$ci['zip'].' '.$ci['city'];
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
+
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('country').':</b> '.strtoupper($ci['country']);
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
+
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('email').':</b> '.@$ci['email'];
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
+
+        if ($usedistinctinvoiceinfo) {
+            $str .= '<tr><td width="60%" valign="top">';
+            $str .= '<b>'.get_string('vatcode', 'local_shop').':</b> '.@$ci['vatcode'];
+            $str .= '</td><td width="40%" valign="top">';
+            $str .= '</td></tr>';
+        }
+
         $str .= '</table>';
         $str .= '</div>';
 
@@ -321,7 +348,7 @@ class shop_front_renderer {
      * prints tabs for js activation of the category panel
      *
      */
-    function category_tabs(&$categories, $selected, $isactive, $isvisiblebranch) {
+    function category_tabs(&$categories, $selected, $parent, $isactive, $isvisiblebranch) {
 
         $str = '';
 
@@ -353,7 +380,7 @@ class shop_front_renderer {
             $visibleclass = 'shop-category-hidden';
         }
 
-        $str .= '<div class="'.$visibleclass.'">';
+        $str .= '<div class="'.$visibleclass.'" id="shop-cat-children-of-'.$parent.'">';
 
         if ($isactive) {
             $str .= print_tabs($rows, $selected, '', '', true);
@@ -405,11 +432,11 @@ class shop_front_renderer {
             while ($catid = array_shift($branch)) {
                 $cat = new Category($catid);
                 $levelcategories = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid), 'sortorder');
-                $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->id == $categoryid, true);
+                $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $cat->id == $categoryid, true);
 
                 // Print childs.
                 if ($subs = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id), 'sortorder')) {
-                    $str .= $this->category_tabs($subs, null, false, $cat->id == $categoryid);
+                    $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid);
                 }
             }
         }
@@ -900,6 +927,7 @@ class shop_front_renderer {
         $department = @$SESSION->shoppingcart->invoiceinfo['department'];
         $lastname = @$SESSION->shoppingcart->invoiceinfo['lastname'];
         $firstname = @$SESSION->shoppingcart->invoiceinfo['firstname'];
+        $email = @$SESSION->shoppingcart->invoiceinfo['email'];
         $address = @$SESSION->shoppingcart->invoiceinfo['address'];
         $zip = @$SESSION->shoppingcart->invoiceinfo['zip'];
         $city = @$SESSION->shoppingcart->invoiceinfo['city'];
@@ -913,6 +941,7 @@ class shop_front_renderer {
         $departmentclass = '';
         $countryclass = '';
         $addressclass = '';
+        $emailclass = '';
         $cityclass = '';
         $zipclass = '';
         $vatcodeclass = '';
@@ -968,6 +997,15 @@ class shop_front_renderer {
         $str.= '<input type="text" class="'.$firstnameclass.'" name="invoiceinfo::firstname" size="20" onchange="capitalizewords(this)" value="'.$firstname.'" />';
         $str.= '</td>';
         $str.= '</tr>';
+
+        $str .= '<tr valign="top">';
+        $str .= '<td align="right">';
+        $str .= get_string('email');
+        $str .= '</td>';
+        $str .= '<td align="left">';
+        $str .= '<input type="text" class="'.$emailclass.'" name="invoiceinfo::email" size="50" onchange="" value="'. $email .'" />';
+        $str .= '</td>';
+        $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
@@ -1482,30 +1520,43 @@ class shop_front_renderer {
         $config = get_config('local_shop');
 
         if (!is_null($bill)) {
-            $taxedtotal = $bill->amount;
-            $finaltaxedtotal = $bill->amount;
-            $finaluntaxedtotal = $bill->untaxedamount;
+            $taxedtotal = $bill->ordertaxed;
+            $finaltaxedtotal = $bill->finaltaxedtotal;
+            $finaluntaxedtotal = $bill->finaluntaxedtotal;
             $finaltaxestotal = $bill->taxes;
-            $discount = 0;
+            $discount = $bill->discount;
             $shippingtaxedvalue = 0;
-            $discountrate = shop_calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
+            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
 
+            /*
             foreach ($bill->items as $bi) {
-                if ($bi->itemcode == '_SHIPPING_') {
+                if ($bi->type == 'SHIPPING') {
                     $shippingtaxedvalue = 0 + $bi->totalprice;
                 }
-                if ($bi->itemcode == '_DISCOUNT_') {
+                if ($bi->type == 'DISCOUNT') {
                     $discount = 0 + $bi->totalprice;
                 }
                 $finalshippedtaxedtotal = $finaltaxedtotal + $shippingtaxedvalue;
             }
+            */
+            
         } else {
             $taxedtotal = $SESSION->shoppingcart->taxedtotal;
-            $discountrate = shop_calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-            $finaltaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
-            $finaluntaxedtotal = $SESSION->shoppingcart->finaluntaxedtotal;
-            $finaltaxestotal = @$SESSION->shoppingcart->finaltaxestotal;
+            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
             $discount = $SESSION->shoppingcart->discount;
+
+            $sessionfinaltaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
+            $sessionfinaluntaxedtotal = $SESSION->shoppingcart->finaluntaxedtotal;
+
+            if ($discountrate) {
+                $finaltaxedtotal = $taxedtotal * (1 - ($discountrate / 100));
+                $finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
+            } else {
+                $finaltaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
+                $finaluntaxedtotal = $SESSION->shoppingcart->finaluntaxedtotal;
+            }
+
+            $finaltaxestotal = @$SESSION->shoppingcart->finaltaxestotal;
             $shippingtaxedvalue = 0 + @$SESSION->shoppingcart->shipping->taxedvalue;
             $finalshippedtaxedtotal = $SESSION->shoppingcart->finalshippedtaxedtotal;
         }
@@ -1543,6 +1594,18 @@ class shop_front_renderer {
             $str .= '</td>';
             $str .= '</tr>';
 
+            $str .= '<tr valign="top">';
+            $str .= '<td width="40%" class="cell c0">';
+            $str .= '&nbsp;';
+            $str .= '</td>';
+            $str .= '<td width="40%" class="shop-totaltitle ratio cell c1">';
+            $str .= get_string('discountamount', 'local_shop').' :';
+            $str .= '</td>';
+            $str .= '<td width="20%" align="right" class="shop-totals ratio cell c2">';
+            $str .= '<b>'.sprintf("%0.2f", round($discount, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;</b>';
+            $str .= '</td>';
+            $str .= '</tr>';
+
             /*
             $str .= '<tr valign="top">';
             $str .= '<td width="40%" class="cell c0">';
@@ -1557,30 +1620,6 @@ class shop_front_renderer {
             $str .= '</tr>';
             */
         }
-    
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0">';
-        $str .= get_string('untaxedsubtotal', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">';
-        $str .= sprintf("%0.2f", round($finaluntaxedtotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0 shop-taxes">';
-        $str .= get_string('taxes', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol shop-taxes">';
-        $str .= sprintf("%0.2f", round($finaltaxestotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
@@ -1595,6 +1634,18 @@ class shop_front_renderer {
         } else {
             $str .= '<b>'.sprintf("%0.2f", round($finaltaxedtotal + $shippingtaxedvalue), 2).'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
         }
+        $str .= '</td>';
+        $str .= '</tr>';
+
+        $str .= '<tr valign="top">';
+        $str .= '<td width="40%" class="cell c0">';
+        $str .= get_string('untaxedsubtotal', 'local_shop');
+        $str .= '</td>';
+        $str .= '<td width="40%" class="cell c1">';
+        $str .= '&nbsp;';
+        $str .= '</td>';
+        $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">';
+        $str .= sprintf("%0.2f", round($finaluntaxedtotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1635,9 +1686,11 @@ class shop_front_renderer {
         $this->check_context();
 
         if (!empty($bill)) {
-            $taxes = $bill->taxelines;
+            $taxes = $bill->taxlines;
+            $finaltaxestotal = $bill->finaltaxestotal;
         } else {
             $taxes = $SESSION->shoppingcart->taxes;
+            $finaltaxestotal = $SESSION->shoppingcart->finaltaxestotal;
         }
 
         $str = '';
@@ -1670,10 +1723,23 @@ class shop_front_renderer {
                 $str .= $tax->ratio;
                 $str .= '</td>';
                 $str .= '<td align="right" style="text-align:right" class="cell c2 lastcoll">';
-                $str .= sprintf(round($tamount, 2)).'&nbsp;'.$this->theshop->get_currency('symbol');
+                $str .= sprintf("%0.2f", round($tamount, 2)).'&nbsp;'.$this->theshop->get_currency('symbol');
                 $str .= '</td>';
                 $str .= '</tr>';
             }
+
+            $str .= '<tr valign="top">';
+            $str .= '<td width="40%" class="cell c0 shop-taxes"><b>';
+            $str .= get_string('totaltaxes', 'local_shop');
+            $str .= '</b></td>';
+            $str .= '<td width="40%" class="cell c1">';
+            $str .= '&nbsp;';
+            $str .= '</td>';
+            $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol shop-taxes">';
+            $str .= sprintf("%0.2f", round($finaltaxestotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
+            $str .= '</td>';
+            $str .= '</tr>';
+
             $str .= '</table>';
         }
 
@@ -1801,7 +1867,7 @@ class shop_front_renderer {
             }
         }
 
-        $discountrate = shop_calculate_discountrate_for_user($SESSION->shoppingcart->taxedtotal, $this->context, $reason);
+        $discountrate = $this->theshop->calculate_discountrate_for_user($SESSION->shoppingcart->taxedtotal, $this->context, $reason);
         if ($discountrate) {
             $str .= '<tr>';
             $str .= '<td>';
@@ -2131,7 +2197,7 @@ class shop_front_renderer {
         */
 
         $str = '<div id="shop-loginbox">';
-        $thisurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $this->theshop->id, 'blockid' => (0 + @$this->theblock->instance->id)));
+        $thisurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'shopid' => $this->theshop->id, 'blockid' => (0 + @$this->theblock->instance->id)));
         $loginurl = new moodle_url('/login/index.php', array('wantsurl' => $thisurl));
         $str .= '<a href="'.$loginurl.'"><input type="button" class="shop-login-button" name="gologin" value="'.get_string('signin', 'local_shop').'" ></a>';
         $str .= '</div>';

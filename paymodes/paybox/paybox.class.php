@@ -37,13 +37,15 @@ class shop_paymode_paybox extends shop_paymode{
         echo '<p>Not implemeted Yet!</p> ';
     }
 
-    // prints a payment porlet in an order form
+    /**
+     * prints a payment porlet in an order form
+     */
     function print_invoice_info(&$billdata = null) {
-        echo get_string($this->name.'paymodeinvoiceinfo', $this->name, '', $CFG->dirroot.'/local/shop/paymodes/'.$this->name.'/lang/');
+        echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paybox', '');
     }
 
     function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', array('SUPPORT' => $this->_config->sellermailsupport), 'local_shop');
     }
 
     // processes a payment return
@@ -56,8 +58,6 @@ class shop_paymode_paybox extends shop_paymode{
     
     // provides global settings to add to shop settings when installed
     function settings(&$settings) {
-        global $CFG;
-
         $settings->add(new admin_setting_heading('local_shop_'.$this->name, get_string($this->name.'paymodeparams', 'local_shop'), ''));
 
     }

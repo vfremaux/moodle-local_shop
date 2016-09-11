@@ -36,7 +36,9 @@ Use local_shop\BillItem;
 class payment_controller extends front_controller_base {
 
     function process($cmd) {
-        global $SESSION, $DB, $USER;
+        global $SESSION, $DB, $USER, $OUTPUT;
+
+        $SESSION->shoppingcart->debug = optional_param('debug', @$SESSION->shoppingcart->debug, PARAM_BOOL);
 
         if ($cmd == 'place') {
 
@@ -59,10 +61,10 @@ class payment_controller extends front_controller_base {
                 if (isloggedin()) {
                     $customer->hasaccount = $USER->id;
                 }
-        
+
                 $customer->id = $DB->insert_record('local_shop_customer', $customer);
             }
-            
+
             // Invoice info.
             if ($oldbillrec = $DB->get_record('local_shop_bill', array('transactionid' => $SESSION->shoppingcart->transid))) {
                 $bill = new Bill($oldbillrec, $this->theshop, $this->thecatalog, $this->theblock, true);
@@ -72,7 +74,7 @@ class payment_controller extends front_controller_base {
             } else {
                 $bill = new Bill(null, $this->theshop, $this->thecatalog, $this->theblock, true);
             }
-        
+
             $bill->transactionid = $SESSION->shoppingcart->transid;
             $bill->blockid = 0 + @$this->theblock->id;
             $bill->onlinetransactionid = '';
@@ -132,7 +134,12 @@ class payment_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($back = optional_param('back', false, PARAM_BOOL)) {
                 $params = array('view' => $this->theshop->get_prev_step('payment'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
-                redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                $url = new \moodle_url('/local/shop/front/view.php', $params);
+                if (empty($SESSION->shoppingcart->debug)) {
+                    redirect($url);
+                } else {
+                    echo $OUTPUT->continue_button($url);
+                }
             } else {
                 confirm_sesskey();
                 // security. No one should be able to trigger this case from outside
@@ -142,10 +149,22 @@ class payment_controller extends front_controller_base {
                 $paymentplugin = \shop_paymode::get_instance($this->theshop, $aFullBill->paymode);
                 if ($interactivepayment = $paymentplugin->process($aFullBill)) {
                     $params = array('view' => $this->theshop->get_next_step('payment'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'what' => 'produce', 'transid' => $aFullBill->transactionid);
-                    redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                    $url = new \moodle_url('/local/shop/front/view.php', $params);
+                    if (empty($SESSION->shoppingcart->debug)) {
+                        redirect($url);
+                    } else {
+                        echo $OUTPUT->continue_button($url);
+                        die;
+                    }
                 } else {
                     $params = array('view' => $this->theshop->get_next_step('payment'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'what' => 'confirm', 'transid' => $aFullBill->transactionid);
-                    redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                    $url = new \moodle_url('/local/shop/front/view.php', $params);
+                    if (empty($SESSION->shoppingcart->debug)) {
+                        redirect($url);
+                    } else {
+                        echo $OUTPUT->continue_button($url);
+                        die;
+                    }
                 }
             }
         }

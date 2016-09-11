@@ -57,6 +57,9 @@ class Catalog extends ShopObject {
                 } else {
                     $this->isslave = 1;
                 }
+            } else {
+                $this->ismaster = 0;
+                $this->isslave = 0;
             }
             $this->categories = $this->get_categories();
 
@@ -174,26 +177,29 @@ class Catalog extends ShopObject {
 
         $shopproducts = array();
         foreach ($categories as $key => $aCategory) {
-            // get master catalog items
             /**
              * product might be standalone product or set or bundle
              */
             if ($this->isslave) {
+                // First get master definitions
                 $sql = "
                    SELECT
                       ci.*
                    FROM
                       {local_shop_catalogitem} as ci
                    WHERE
-                      ci.catalogid = '{$this->groupid}' AND
-                      ci.categoryid = '{$aCategory->id}' AND
+                      ci.catalogid = ? AND
+                      ci.categoryid = ? AND
                       ci.status IN ('AVAILABLE','PROVIDING') AND
                       ci.setid = 0
                       $isloggedinclause
                    ORDER BY
                       ci.shortname
                 ";
-                $catalogitems = $DB->get_records_sql($sql);
+                $params = array($this->groupid, $aCategory->id);
+                $catalogitems = $DB->get_records_sql($sql, $params);
+
+                // Build the master catalog structure
                 foreach ($catalogitems as $cirec) {
                     $ci = new CatalogItem($cirec);
                     $ci->thumb = $ci->get_thumb_url();
@@ -202,7 +208,12 @@ class Catalog extends ShopObject {
                     $shopproducts[$ci->code] = $ci;
                     $categories[$key]->products[$ci->code] = $ci;
                 }
+                $categoryclause = '';
+            } else {
+                $categoryclause =  " ci.categoryid = ? AND ";
+
             }
+
             // override with slave versions
             $sql = "
                SELECT
@@ -210,22 +221,31 @@ class Catalog extends ShopObject {
                FROM
                   {local_shop_catalogitem} as ci
                WHERE
-                  catalogid = '{$this->id}' AND
-                  categoryid = '{$aCategory->id}' AND
+                  catalogid = ? AND
+                  $categoryclause
                   ci.status IN ('AVAILABLE','PROVIDING') AND
                   setid = 0
                   $isloggedinclause
                ORDER BY
                   ci.shortname
             ";
-            if ($catalogitems = $DB->get_records_sql($sql)) {
+            $params = array($this->id);
+            if (!$this->isslave) {
+                $params[] = $aCategory->id;
+            }
+            if ($catalogitems = $DB->get_records_sql($sql, $params)) {
                 foreach ($catalogitems as $cirec) {
                     $ci = new CatalogItem($cirec);
                     $ci->thumb = $ci->get_thumb_url();
                     $ci->image = $ci->get_image_url();
                     $ci->masterrecord = 0;
-                    $shopproducts[$ci->code] = $ci;
-                    $categories[$key]->products[$ci->code] = $ci;
+                    if ($this->isslave) {
+                        $original = $shopproducts[$ci->code];
+                        $shopproducts[$ci->code] = $ci;
+                        $categories[$original->categoryid]->products[$ci->code] = $ci;
+                    } else {
+                        $categories[$key]->products[$ci->code] = $ci;
+                    }
                 }
             }
         }
