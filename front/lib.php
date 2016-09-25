@@ -152,7 +152,7 @@ function shop_validate_customer($theShop) {
 }
 
 /**
- * Checks 
+ * Checks
  */
 function shop_has_potential_account($email) {
     global $DB, $SESSION;
@@ -207,10 +207,10 @@ function shop_validate_invoicing() {
 }
 
 /**
-* checks purchased products and quantities and calculates the neaded amount of seats.
-* We need check in catalog definition id product is seat driven or not. If seat driven
-* the quantity adds to seat couts. If not, 1 seat is added to the seat count.
-*/
+ * checks purchased products and quantities and calculates the neaded amount of seats.
+ * We need check in catalog definition id product is seat driven or not. If seat driven
+ * the quantity adds to seat couts. If not, 1 seat is added to the seat count.
+ */
 function shop_check_assigned_seats($requiredroles) {
     global $SESSION;
 
@@ -273,7 +273,22 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 
         case 'endtime':
             if (!array_key_exists('endtime', $handlerdata->actionparams)) {
-                return 0;
+                if (!empty($data->renewable)) {
+                    if (!empty($handlerdata->actionparams['duration'])) {
+                        return $starttime + $handlerdata->actionparams['duration'] * DAYSECS;
+                    } else {
+                        // Ensure we have a non null product end time.
+                        return $starttime + (365 * DAYSECS);
+                    }
+                } else {
+                    // Product end time is null standing for illimited purchase.
+                    return 0;
+                }
+            }
+
+            // Relative forms of endtime.
+            if (is_numeric($handlerdata->actionparams['endtime'])) {
+                return $endtime;
             }
 
             if (preg_match('/\+(\d+))D/',$handlerdata->actionparams['endtime'], $matches)) {

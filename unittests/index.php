@@ -35,7 +35,7 @@ list($theShop, $theCatalog, $theBlock) = shop_build_context();
 
 $selected = array();
 
-// Security
+// Security.
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -43,13 +43,15 @@ require_login();
 require_capability('local/shop:salesadmin', $context);
 
 $action = optional_param('what', '', PARAM_ALPHA); // the action command
+
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/unittests/index.controller.php');
     $controller = new \local_shop\back\unittests_controller($theShop, $theCatalog, $theBlock);
+    $controller->receive($action);
     list($errors, $warnings, $messages) = $controller->process($action);
 }
 
-// make page header
+// make page header.
 
 $url = new moodle_url('/local/shop/unittests/index.php');
 $PAGE->set_url($url);

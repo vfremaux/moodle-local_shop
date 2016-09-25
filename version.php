@@ -26,12 +26,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016083100;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014110400;        // Requires this Moodle version
-$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics)
-$plugin->release = "2.8.0 (Build 2016083100)";
+$plugin->version   = 2016092100;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2014050800;        // Requires this Moodle version.
+$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
+$plugin->release = '2.7.0 (Build 2016092100)';
+$plugin->maturity = MATURITY_BETA;
 $plugin->dependencies = array('block_shop_access' => 2016022500, 'auth_ticket' => '2012060400');
 
-// Non Moodle fields
-// This fields will help overmanagement code builders without forcing upgrade to play
-$plugin->codeincrement = '2.8.0002';
+// Non Moodle attributes.
+$plugin->codeincrement = '2.7.0004';
+$plugin->privacy = 'unreleased';
