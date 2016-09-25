@@ -61,7 +61,7 @@ $renderer->order_short();
 $renderer->field_end();
 
 if ($config->test && !has_capability('local/shop:salesadmin', context_system::instance())) {
-    echo $OUTPUT->notification(get_string('testmodeactive', 'local_shop'));
+    echo $OUTPUT->notification(get_string('testmodeactive', 'localshop'));
 } else {
     $renderer->field_start(get_string('procedure', 'local_shop'), 'shop-information-area');
     echo $paymentplugin->print_payment_portlet($SESSION->shoppingcart);

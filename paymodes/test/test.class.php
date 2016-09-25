@@ -53,7 +53,7 @@ class shop_paymode_test extends shop_paymode{
         // This is interactive payment triggering immediately successfull payment.
         echo '<td>';
         echo '<form name="paymentform" action="'.$shopurl.'" >';
-        echo '<input type="hidden" name="shopid" value="'.$this->theshop->id.'">';
+        echo '<input type="hidden" name="id" value="'.$this->theshop->id.'">';
         echo '<input type="hidden" name="transid" value="'.$shoppingcart->transid.'" />';
         echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
         echo '<input type="hidden" name="view" value="payment" />';
@@ -66,7 +66,7 @@ class shop_paymode_test extends shop_paymode{
         // post check to activate production.
         echo '<td>';
         echo '<form name="paymentform" action="'.$shopurl.'" target="_blank">';
-        echo '<input type="hidden" name="shopid" value="'.$this->theshop->id.'">';
+        echo '<input type="hidden" name="id" value="'.$this->theshop->id.'">';
         echo '<input type="hidden" name="transid" value="'.$shoppingcart->transid.'" />';
         echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
         echo '<input type="hidden" name="what" value="navigate" />';
@@ -101,12 +101,13 @@ class shop_paymode_test extends shop_paymode{
     }
 
     function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        $config = get_config('local_shop');
+        echo shop_compile_mail_template('bill_complete_text', array(array('SUPPORT' => $config->sellermailsupport)), 'local_shop') ; 
     }
 
     // processes a payment return
     function process() {
-        global $OUTPUT;
+        global $DB, $OUTPUT;
 
         $delayed = optional_param('delayed', 0, PARAM_BOOL);
         $transid = required_param('transid', PARAM_TEXT);
@@ -139,7 +140,7 @@ class shop_paymode_test extends shop_paymode{
 
     // processes a payment asynchronous confirmation
     function process_ipn() {
-        global $CFG, $OUTPUT;
+        global $DB, $CFG, $OUTPUT;
 
         $transid = required_param('transid', PARAM_TEXT);
         $close = optional_param('finish', false, PARAM_BOOL);

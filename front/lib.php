@@ -310,3 +310,36 @@ function shop_generate_product_ref(&$anItem) {
 
     return $productref;
 }
+
+function shop_calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
+    global $CFG, $USER;
+
+    $config = get_config('local_shop');
+
+    if (is_null($user)) $user = $USER;
+
+    $discountrate = 0; // no discount as default
+
+    if ($thresholdcond = $config->discountthreshold && $config->discountrate && ($amount > $config->discountthreshold)) {
+        $discountrate = $config->discountrate;
+        $reason = get_string('ismorethan', 'local_shop');
+        $reason .= '<b>'.$config->discountthreshold.'&nbsp;</b><b>'.shop_currency($theBlock, 'symbol').'</b>'; 
+    }
+
+    if (isloggedin()) {
+        if ($usercond1 = has_capability('local/shop:discountagreed', $context, $USER->id)) {
+            $discountrate = $config->discountrate;
+            $reason = get_string('userdiscountagreed', 'local_shop');
+        }
+        if ($usercond2 = has_capability('local/shop:seconddiscountagreed', $context, $USER->id)) {
+            $discountrate = $config->discountrate2;
+            $reason = get_string('userdiscountagreed2', 'local_shop');
+        }
+        if ($usercond3 = has_capability('local/shop:thirddiscountagreed', $context, $USER->id)) {
+            $discountrate = $config->discountrate3;
+            $reason = get_string('userdiscountagreed3', 'local_shop');
+        }
+    }
+
+    return $discountrate;
+}

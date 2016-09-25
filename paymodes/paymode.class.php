@@ -43,8 +43,6 @@ abstract class shop_paymode {
 
     protected $theshop;
 
-    protected $_config;
-
     public $interactive; // after processing will tell if the transaction is handled in interactive mode
 
     public function __construct($name, &$shop, $enabled = true, $overridelocalconfirm = false) {
@@ -53,9 +51,6 @@ abstract class shop_paymode {
         $this->enabled = $enabled;
         $this->overridelocalconfirm = $overridelocalconfirm;
         $this->interactive = true;
-
-        // Optimisation. Get it once per instance.
-        $this->_config = get_config('local_shop');
     }
 
     public function is_instant_payment() {

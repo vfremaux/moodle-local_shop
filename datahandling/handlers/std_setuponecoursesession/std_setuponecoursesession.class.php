@@ -189,6 +189,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Enrolling $roleshort.");
 
                         foreach ($users as $u) {
+                            echo "enrol $enrol->id, $u->id, $role->id, $starttime, $endtime ";
                             $enrolplugin->enrol_user($enrol, $u->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
                             shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : $u->lastname $u->firstname ($u->username) enrolled.");
 
@@ -230,6 +231,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         }
                     }
                 } catch (Exception $exc) {
+                    print_object($exc);
                     shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Failure : enrolled failed with exception ({$exc->getMessage()}...");
                     $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_setuponecoursesession', 'Code : ROLE ASSIGN');
                     $productionfeedback->private = get_string('productiondata_failure_private', 'shophandlers_std_setuponecoursesession', $course->id);

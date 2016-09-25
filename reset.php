@@ -36,23 +36,21 @@ require_capability('local/shop:salesadmin', context_system::instance());
 
 // Prepare page.
 
-$url = new moodle_url('/local/shop/reset.php', array('shopid' => $theShop->id));
+$url = new moodle_url('/local/shop/reset.php', array('id' => $id));
 $PAGE->set_url($url);
 
-$context = context_system::instance();
 $PAGE->set_context($context);
 
 $PAGE->set_title('shop');
 $PAGE->set_heading('shop');
-$PAGE->navbar->add(get_string('salesservice', 'local_shop'), $CFG->wwwroot."/local/shop/index.php?shopid={$theShop->id}");
+$PAGE->navbar->add(get_string('salesservice', 'local_shop'), $CFG->wwwroot."/local/shop/index.php?id={$id}");
 $PAGE->navbar->add(get_string('reset', 'local_shop'));
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable('');
 
 $out = '';
 
-$mform = new ResetForm();
-
+$mform = new ResetForm($id);
 if ($mform->is_cancelled()) {
     redirect($url);
 } elseif ($data = $mform->get_data()) {
@@ -83,9 +81,6 @@ echo $OUTPUT->heading(get_string('reset', 'local_shop'));
 echo $OUTPUT->box_start();
 print_string('resetguide', 'local_shop');
 
-$formdata = new StdClass;
-$formdata->shopid = $theShop->id;
-$mform->set_data($formdata);
 $mform->display();
 echo $OUTPUT->box_end();
 

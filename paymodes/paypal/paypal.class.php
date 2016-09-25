@@ -103,7 +103,8 @@ class shop_paymode_paypal extends shop_paymode {
     }
 
     function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        $config = get_config('local_shop');
+        echo shop_compile_mail_template('bill_complete_text', '', 'local_shop');
     }
 
     /**
@@ -121,9 +122,12 @@ class shop_paymode_paypal extends shop_paymode {
     * Cancels the order and return to shop
     */ 
     function cancel() {
-        global $SESSION;
+        global $CFG;
 
         $transid = required_param('transid', PARAM_RAW);
+
+        // cancel shopping cart
+        unset($SESSION->shoppingcart);
 
         $aFullBill = Bill::get_by_transaction($transid);
         $aFullBill->onlinetransactionid = $transid;
@@ -131,9 +135,6 @@ class shop_paymode_paypal extends shop_paymode {
         $aFullBill->status = SHOP_BILL_CANCELLED;
         $aFullBill->save(true);
         shop_trace('Paypal Interactive Cancellation');
-
-        // Do not cancel shopping cart. User may need another payment method
-        // unset($SESSION->shoppingcart);
 
         redirect(new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->theshop->id)));
     }
@@ -167,6 +168,8 @@ class shop_paymode_paypal extends shop_paymode {
     // Processes a payment asynchronous confirmation
     function process_ipn() {
         global $CFG;
+
+        $config = get_config('local_shop');
 
         // get all input parms
         $transid = required_param('invoice', PARAM_TEXT);
@@ -202,7 +205,7 @@ class shop_paymode_paypal extends shop_paymode {
 
         $validationquery .= $querystring;
         // control for replicated notifications (normal operations)
-        if (empty($this->_config->test) && $DB->record_exists('shop_paypal_ipn', array('txnid' => $txnid))) {
+        if (empty($config->test) && $DB->record_exists('shop_paypal_ipn', array('txnid' => $txnid))) {
             shop_trace("[$transid] Paypal IPN : paypal event collision on $txnid");
             shop_email_paypal_error_to_admin("Paypal IPN : Transaction $txnid is being repeated.", $data);
             die;
@@ -225,13 +228,13 @@ class shop_paymode_paypal extends shop_paymode {
          * Warning : Paypal Sandbox may NOT activate any IPN back call.
          * See further faking answer solution for testing paypal.
          */
-        if (empty($this->_config->test)) {
+        if (empty($config->test)) {
             $paypalurl = 'https://www.paypal.com/cgi-bin/webscr';
         } else {
             $paypalurl = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
         }
 
-        if (empty($this->_config->test)) {
+        if (empty($config->test)) {
             // fetch the file on the consumer side and store it here through a CURL call
             $ch = curl_init("{$paypalurl}?$validationquery");
             shop_trace("[$transid] Paypal IPN : sending validation request: "."{$paypalurl}?$validationquery");
@@ -253,26 +256,26 @@ class shop_paymode_paypal extends shop_paymode {
                 if ($data->payment_status != "Completed" and $data->payment_status != "Pending") {
                     shop_email_paypal_error_to_admin("Paypal IPN : Status not completed nor pending. Check transaction with customer.", $data);
 
-                    if (!empty($this->_config->test)) {
+                    if (!empty($config->test)) {
                         mtrace("Paypal IPN : Status not completed nor pending. Check transaction with customer.");
                     } else {
                         shop_trace("[$transid] Paypal IPN : Status not completed nor pending. Check transaction with customer.");
                     }
                     die;
                 }
-                $sellerexpectedname = (empty($this->_config->test)) ? $this->_config->paypalsellername : $this->_config->paypalsellertestname;
+                $sellerexpectedname = (empty($config->test)) ? $config->paypalsellername : $config->paypalsellertestname;
                 if ($data->business != $sellerexpectedname) {   // Check that the business account is the one we want it to be
-                    shop_email_paypal_error_to_admin("Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)", $data);
-                    if (!empty($this->_config->test)) {
-                        mtrace("Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)");
+                    shop_email_paypal_error_to_admin("Paypal IPN : Business email is $data->business (not $config->paypalsellername)", $data);
+                    if (!empty($config->test)) {
+                        mtrace("Paypal IPN : Business email is $data->business (not $config->paypalsellername)");
                     } else {
-                        shop_trace("[$transid] Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)");
+                        shop_trace("[$transid] Paypal IPN : Business email is $data->business (not $config->paypalsellername)");
                     }
                     die;
                 }
                 $DB->set_field('shop_paypal_ipn', 'result', 'VERIFIED', array('txnid' => $txnid));
                 shop_trace("[$transid] Paypal IPN : Recording VERIFIED STATE on ".$txnid);
-                if (!empty($this->_config->test)) {
+                if (!empty($config->test)) {
                     mtrace('Paypal IPN : Recording VERIFIED STATE on '.$txnid);
                 }
                 // Bill has not yet been soldout through an IPN notification
@@ -296,7 +299,7 @@ class shop_paymode_paypal extends shop_paymode {
                 }
 
                 shop_trace("[$transid] Paypal IPN : End of transaction");
-                if (!empty($this->_config->test)) {
+                if (!empty($config->test)) {
                     mtrace('Paypal IPN : End of transaction');
                 }
             }

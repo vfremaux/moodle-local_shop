@@ -91,13 +91,7 @@ class shop_bills_renderer {
     function customer_info($bill) {
         global $SESSION, $DB;
 
-        if (!empty($bill->invoiceinfo)) {
-            $ci = unserialize($bill->invoiceinfo);
-            $useinvoiceinfo = true;
-        } else {
-            $ci = $DB->get_record('local_shop_customer', array('id' => $bill->customerid));
-            $useinvoiceinfo = false;
-        }
+        $ci = $DB->get_record('local_shop_customer', array('id' => $bill->customerid));
 
         $str = '';
 
@@ -112,46 +106,26 @@ class shop_bills_renderer {
         $str .= '<b>'.get_string('organisation', 'local_shop').':</b> '.$ci->organisation;
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
-
-        if ($useinvoiceinfo) {
-            $str .= '<tr><td width="60%" valign="top">';
-            $str .= '<b>'.get_string('department').':</b> '.$ci->department;
-            $str .= '</td><td width="40%" valign="top">';
-            $str .= '</td></tr>';
-        }
-
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('customer', 'local_shop').' :</b> '.$ci->lastname.' '.$ci->firstname;
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
-
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('address').' : </b> '.$ci->address;
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
-
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('city').' : </b> '.$ci->zip.' '.$ci->city;
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
-
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('country').' :</b> '.strtoupper($ci->country);
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
-
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('email').' :</b> '.$ci->email;
         $str .= '</td><td width="40%" valign="top">';
         $str .= '</td></tr>';
-
-        if ($useinvoiceinfo) {
-            $str .= '<tr><td width="60%" valign="top">';
-            $str .= '<b>'.get_string('vatcode', 'local_shop').' :</b> '.$ci->vatcode;
-            $str .= '</td><td width="40%" valign="top">';
-            $str .= '</td></tr>';
-        }
-
         $str .= '</table>';
         $str .= '</div>';
 

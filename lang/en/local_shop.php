@@ -421,7 +421,6 @@ $string['title'] = 'Title';
 $string['total'] = 'Total';
 $string['totalprice'] = 'Total amount';
 $string['totaltaxed'] = 'Total TI';
-$string['totaltaxes'] = 'Taxes (total)';
 $string['totaluntaxed'] = 'Total WT';
 $string['tracescan'] = 'Scann';
 $string['tracescandesc'] = 'Grep in trace for a single transaction';
@@ -536,6 +535,31 @@ $string['post_billing_message_tpl'] = '
 thanks you for your purchase. The order is actually pending for your payement... <br/><br/>
 ';
 
+$string['sales_feedback_tpl'] = '
+<h3><%%SELLER%%></h3>
+<h4>Customer order</h4>
+
+<p>You just ordered on the website : <%%SERVER%%>. </p>
+
+<p><u>Customer identification :</u> </p>
+<hr />
+<b>Firstname :</b> <%%FIRSTNAME%%><br />
+<b>Lastname :</b> <%%LASTNAME%%><br />
+<b>Mail :</b> <%%MAIL%%><br />
+<b>City :</b> <%%CITY%%><br />
+<b>Country :</b> <%%COUNTRY%%><br />
+<hr />
+<p><u>Order summary :</u> </p>
+<hr />
+<b>Total untaxed amount :</b> <%%AMOUNT%%><br />
+<b>Pat mode :</b> <%%PAYMODE%%><br />
+<b>Items :</b> <%%ITEMS%%> 
+<hr />
+<%%PRODUCTION_DATA%%>
+<hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
+. 
+';
+
 $string['search_bill_failed_tpl'] = '
 <h3 class="error">Search error</h3>
 <p>No bill matches your search criteria: </p>
@@ -580,23 +604,7 @@ $string['upload_success_tpl'] = '
 ';
 
 $string['bill_complete_text_tpl'] = '
-This order has been saved.<br/>
-';
-
-$string['discountrate_help'] = '
-A discount rate applied on the overall amount. May be applied inconditionally if customer has the local/shop:discountagreed capability on
-';
-
-$string['discountthreshold_help'] = '
-A threshold that triggers the effectivity of the discount
-';
-
-$string['discountrate2_help'] = '
-A discount rate applied when customer has the local/shop:seconddiscountagreed capability on
-';
-
-$string['discountrate3_help'] = '
-A discount rate applied when customer has the local/shop:thirddiscountagreed capability on
+This order is now saved.<br/>
 ';
 
 global $CFG;

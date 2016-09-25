@@ -28,24 +28,24 @@ require_once($CFG->libdir.'/formslib.php');
 
 class ResetForm extends moodleform {
 
+    var $blockid;
+
+    function __construct($blockid) {
+        $this->blockid = $blockid;
+        parent::__construct();
+    }
+
     // Define the form
     function definition () {
-        global $DB;
-
+        
         $mform =& $this->_form;
         //Accessibility: "Required" is bad legend text.
 
-        $shopoptions = array(0 => get_string('allshops', 'local_shop'));
-        $shops = $DB->get_records_menu('local_shop', array(), 'name', 'id,name');
-        if (!empty($shops)) {
-            // Add identified shops.
-            $shopoptions = array_merge($shopoptions, $shops);
-        }
+        // Add some extra hidden fields
+        $mform->addElement('hidden', 'id', $this->blockid);
+        $mform->setType('id', PARAM_INT);
 
         $mform->addElement('header', 'header1', get_string('resetitems', 'local_shop'));
-
-        $mform->addElement('select', 'shopid', get_string('shop', 'local_shop'), $shopoptions);
-        $mform->setType('shopid', PARAM_INT);
 
         $mform->addElement('checkbox', 'bills', get_string('resetbills', 'local_shop'));
 

@@ -72,14 +72,19 @@ class shop_controller extends front_controller_base {
                 $SESSION->shoppingcart->taxes[$ci->taxcode] += $ttc - $ht;
             }
 
-            $discountrate = $this->theshop->calculate_discountrate_for_user($SESSION->shoppingcart->untaxedtotal, $this->context, $reason);
+            $SESSION->shoppingcart->discount = 0;
+            $SESSION->shoppingcart->finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal;
+            $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal;
+            $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal;
+
+            $discountrate = shop_calculate_discountrate_for_user($SESSION->shoppingcart->untaxedtotal, $this->context, $reason);
             if ($discountrate) {
                 $discountmultiplier = $discountrate / 100;
-                $SESSION->shoppingcart->discount = $SESSION->shoppingcart->taxedtotal * $discountmultiplier;
-                $SESSION->shoppingcart->untaxeddiscount = $SESSION->shoppingcart->untaxedtotal * $discountmultiplier;
+                $SESSION->shoppingcart->untaxeddiscount = $discountmultiplier * $SESSION->shoppingcart->untaxedtotal;
                 $SESSION->shoppingcart->finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal * (1 - $discountmultiplier);
                 $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal * (1 - $discountmultiplier);
                 $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal * (1 - $discountmultiplier);
+                $SESSION->shoppingcart->discount = $SESSION->shoppingcart->finaltaxedtotal * $discountmultiplier;
 
                 // try one : apply discount to all tax lines
                 if (!empty($SESSION->shoppingcart->taxes)) {
@@ -87,11 +92,6 @@ class shop_controller extends front_controller_base {
                         $SESSION->shoppingcart->taxes[$tcode] *= 1 - $discountmultiplier;
                     }
                 }
-            } else {
-                $SESSION->shoppingcart->discount = 0;
-                $SESSION->shoppingcart->finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal;
-                $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal;
-                $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal;
             }
 
             redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('shop'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));

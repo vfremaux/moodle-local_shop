@@ -75,7 +75,7 @@ if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('coursemisconf');
 }
 
-$url = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $id, 'pid' => $productid, 'method' => $method));
+$url = new moodle_url('/local/shop/datahandling/postproduction.php', array('pid' => $productid, 'method' => $method));
 $PAGE->set_url($url);
 
 // Security.
@@ -85,7 +85,7 @@ $PAGE->set_context($context);
 require_course_login($course);
 
 if ($customer->hasaccount != $USER->id && !has_capability('local/shop:salesadmin', $context)) {
-    print_error(get_string('notowner', 'local_shop'));
+    print_error(get_string('notowner', 'local_shop')));
 }
 
 // Page setup
@@ -109,5 +109,5 @@ if ($confirm = optional_param('confirm', false, PARAM_TEXT)) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('productoperation', 'local_shop'));
-echo $OUTPUT->confirm(get_string('confirmoperation', 'local_shop'), $url.'&confirm=1', $courseurl);
+echo $mform->confirm(get_string('confirmoperation', 'local_shop'), $url.'&confirm=1', $courseurl);
 echo $OUTPUT->footer();

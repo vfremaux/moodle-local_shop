@@ -32,7 +32,6 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 class shop_paymode_freeorder extends shop_paymode {
 
     function __construct(&$shop) {
-        // NOT ENABLED AS NOT SELECTABLE METHOD
         parent::__construct('card', $shop, false);
     }
 

@@ -32,7 +32,6 @@ require_once $CFG->dirroot.'/local/shop/paymodes/paymode.class.php';
 class shop_paymode_card extends shop_paymode{
 
     function __construct(&$shop) {
-        // GENERIC PLUGIN. DO NOT ENABLE
         parent::__construct('card', $shop, false);
     }
 
@@ -55,8 +54,9 @@ class shop_paymode_card extends shop_paymode{
     // processes a payment asynchronoous confirmation
     function process_ipn() {
     }
-
+    
     // provides global settings to add to shop settings when installed
     function settings(&$settings) {
     }
+    
 }

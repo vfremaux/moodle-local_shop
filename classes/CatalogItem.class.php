@@ -66,7 +66,7 @@ class CatalogItem extends ShopObject {
             if ($light) return; // this builds a lightweight proxy of the Shop, without catalogue
 
             if ($this->isset) {
-                $this->elements = CatalogItem::get_instances(array('catalogid' => $this->catalogid, 'setid' => $this->id), 'code');
+                $this->elements = CatalogItem::get_instances(array('setid' => $this->id), 'code');
                 $catalog = new Catalog($this->catalogid, true);
                 if (!empty($this->elements)) {
                     foreach ($this->elements as $elmid => $elm) {
@@ -81,10 +81,8 @@ class CatalogItem extends ShopObject {
                 $pairs = explode('&', $this->record->handlerparams);
                 if (!empty($pairs)) {
                     foreach ($pairs as $p) {
-                        if (strpos($p, '=') !== false) {
-                            list($param,$value) = explode('=', $p);
-                            $this->handlerparams[$param] = $value;
-                        }
+                        list($param,$value) = explode('=', $p);
+                        $this->handlerparams[$param] = $value;
                     }
                 }
             }
