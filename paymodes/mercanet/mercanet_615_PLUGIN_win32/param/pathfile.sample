@@ -1,0 +1,47 @@
+#########################################################################
+#
+#	Pathfile 
+#
+#	Liste fichiers parametres utilises par le module de paiement
+#
+#########################################################################
+#
+#
+#-------------------------------------------------------------------------
+# Activation (YES) / Désactivation (NO) du mode DEBUG
+#-------------------------------------------------------------------------
+#
+DEBUG!NO!
+#
+# ------------------------------------------------------------------------
+# Chemin vers le répertoire des logos depuis le web alias  
+# Exemple pour le répertoire www.merchant.com/mercanet/payment/logo/
+# indiquer:
+# ------------------------------------------------------------------------
+#
+D_LOGO!/mercanet/payment/logo/!
+#
+# --------------------------------------------------------------------------
+#  Fichiers paramètres liés a l'api mercanet paiement	
+# --------------------------------------------------------------------------
+#
+# certificat du commercant
+#
+F_CERTIFICATE!c:\mercanet\payment\param\certif!
+# --------------------------------------------------------------------------
+#  Type du certificat php ou asp	
+# --------------------------------------------------------------------------
+F_CTYPE!php!
+#
+# fichier paramètre commercant
+#
+F_PARAM!c:\mercanet\payment\param\parmcom!
+#
+# fichier des paramètres mercanet
+#
+F_DEFAULT!c:\mercanet\payment\param\parmcom.mercanet!
+#
+#########################################################################
+# End of file
+#########################################################################
+

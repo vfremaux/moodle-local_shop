@@ -144,5 +144,37 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016091000, 'local', 'shop');
     }
 
+    if ($result && $oldversion < 2016092100) { //New version in version.php
+
+        // Add field to local_shop.
+        $table = new xmldb_table('local_shop');
+
+        $field = new xmldb_field('discountthreshold');
+        $field->set_attributes(XMLDB_TYPE_NUMBER, '10', null, null, null, 0, 'allowtax');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('discountrate');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '4', null, null, null, 0, 'discountthreshold');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('discountrate2');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '4', null, null, null, 0, 'discountrate');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('discountrate3');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '4', null, null, null, 0, 'discountrate2');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016092100, 'local', 'shop');
+    }
+
     return $result;
 }

@@ -68,7 +68,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                 // We guess if different non null id that the customer is using a new account. This should not really be possible
                 $customer->hasaccount = $USER->id;
                 $productionfeedback->public = get_string('fixaccount', 'local_shop', $USER->username);
-                $productionfeedback->private = get_string('fixnaccount', 'local_shop', $USER->username);
+                $productionfeedback->private = get_string('fixaccount', 'local_shop', $USER->username);
                 $productionfeedback->salesadmin = get_string('fixaccount', 'local_shop', $USER->username);
                 $DB->update_record('local_shop_customer', $customer);
             } else {
