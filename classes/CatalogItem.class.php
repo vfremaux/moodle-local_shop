@@ -194,7 +194,7 @@ class CatalogItem extends ShopObject {
         global $DB;
 
         if (empty($taxid)) $taxid = $this->taxcode;
-        
+
         unset($TAXCACHE);
         if (!isset($TAXCACHE)) {
             $TAXCACHE = array();

@@ -49,7 +49,9 @@ class product_controller {
     public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
+            // data is fed from outside.
             $this->data = (object)$data;
+            return;
         } else {
             $this->data = new StdClass;
         }

@@ -28,26 +28,44 @@ defined('MOODLE_INTERNAL') || die();
 
 class unittests_controller {
 
+    protected $data;
+
     var $theshop;
-    var $thecatalogue;
+
+    var $thecatalog;
+
     var $theblock;
 
-    function __construct($theShop, $theCatalogue, $theBlock) {
+    function __construct($theShop, $theCatalog, $theBlock) {
         $this->theshop = $theShop;
-        $this->thecatalogue = $theCatalogue;
+        $this->thecatalog = $theCatalog;
         $this->theblock = $theBlock;
+    }
+
+    function receive($cmd, $data = array()) {
+
+        if (!empty($data)) {
+            // data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'test' :
+                $this->data->selected = optional_param_array('sel', array(), PARAM_TEXT);
+        }
     }
 
     function process($action) {
         global $CFG;
 
-        /* 
-        * Performs consistancy test on all selected products and produces a report about what is OK and what is wrong.
-        * Only Catalog defined handler params are supported here. 
-        */
+        /**
+         * Performs consistancy test on all selected products and produces a report about what is OK and what is wrong.
+         * Only Catalog defined handler params are supported here. 
+         */
         if ($action == 'test') {
-
-            $selected = optional_param_array('sel', array(), PARAM_TEXT);
 
             include_once($CFG->dirroot.'/local/shop/datahandling/production.php');
 
@@ -55,9 +73,9 @@ class unittests_controller {
             $errors = array();
             $warnings = array();
 
-            $this->thecatalogue->get_all_products($products);
-            $this->theshop->thecatalogue = $this->thecatalogue;
-            produce_unittests($this->theshop, $products, $selected, $errors, $warnings, $messages);
+            $this->thecatalogue->get_all_products_for_admin($products);
+            $this->theshop->thecatalog = $this->thecatalog;
+            produce_unittests($this->theshop, $products, $this->data->selected, $errors, $warnings, $messages);
             return array($errors, $warnings, $messages);
         }
     }
