@@ -66,10 +66,10 @@ class CatalogItem extends ShopObject {
             if ($light) return; // this builds a lightweight proxy of the Shop, without catalogue
 
             if ($this->isset) {
-                $this->elements = CatalogItem::get_instances(array('setid' => $this->id), 'code');
-                $catalog = new Catalog($this->catalogid);
+                $this->elements = CatalogItem::get_instances(array('catalogid' => $this->catalogid, 'setid' => $this->id), 'code');
+                $catalog = new Catalog($this->catalogid, true);
                 if (!empty($this->elements)) {
-                    foreach ($this->elements as $elm) {
+                    foreach ($this->elements as $elmid => $elm) {
                         $this->elements[$elm->id]->catalog = $catalog;
                         $this->elementsbycode[$elm->code] = $elm;
                     }
@@ -81,8 +81,10 @@ class CatalogItem extends ShopObject {
                 $pairs = explode('&', $this->record->handlerparams);
                 if (!empty($pairs)) {
                     foreach ($pairs as $p) {
-                        list($param,$value) = explode('=', $p);
-                        $this->handlerparams[$param] = $value;
+                        if (strpos($p, '=') !== false) {
+                            list($param,$value) = explode('=', $p);
+                            $this->handlerparams[$param] = $value;
+                        }
                     }
                 }
             }
@@ -192,7 +194,7 @@ class CatalogItem extends ShopObject {
         global $DB;
 
         if (empty($taxid)) $taxid = $this->taxcode;
-        
+
         unset($TAXCACHE);
         if (!isset($TAXCACHE)) {
             $TAXCACHE = array();
@@ -215,16 +217,21 @@ class CatalogItem extends ShopObject {
 
     // this will override existing elements
     function setElement($elm) {
-        $this->elements[$elm->code] = $elm;
+        $this->elements[$elm->id] = $elm;
     }
 
-    // this will override existing elements
+    // this will fetch an element by code.
     function getElement($code) {
         if (array_key_exists($code, $this->elements)) {
             return $this->elements[$elm->code];
         } else {
             throw Exception('nosuchelement');
         }
+    }
+
+    // this will override existing elements
+    function deleteElement($elmid) {
+        unset($this->elements[$elmid]);
     }
 
     /**
@@ -366,7 +373,7 @@ class CatalogItem extends ShopObject {
 
         $fs = get_file_storage();
 
-        return $fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
+        return !$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
     }
 
     function check_availability() {
@@ -406,10 +413,12 @@ class CatalogItem extends ShopObject {
 
     /**
      * Apply() overrides the current instance with the elements of the override.
-     * Overriden attributes are shoosen to address the master question : Why using
-     * slave catalogs: master usecase is to internationalize or change some commercial
+     * Overriden attributes are choosen to address the master question : Why using
+     * slave catalogs: master usecase is to internationalize or change of some commercial
      * values for a special country/region. 
-     * Variant should not alter the effective nature of the product, not technical definition.
+     * Variant should not alter the effective nature of the product, nor technical definition.
+     *
+     * TODO : Check if still usefull
      */
     function apply(CatalogItem $override) {
 
@@ -444,12 +453,12 @@ class CatalogItem extends ShopObject {
         // Suboverride elements if any.
         if ($this->elements) {
             foreach($override->elements as $ovelm) {
-                if (in_array($this->elementsbycode($ovelm->code))) {
-                    $this->elements[$this->elementsbycode[$ovelm->code]]->apply($ovelm);
+                if (array_key_exists($ovelm->code, $this->elementsbycode)) {
+                    $this->elements[$this->elementsbycode[$ovelm->code]->id]->apply($ovelm);
                 } else {
                     // This should usually not happen as overrides should always be local copies of master records.
                     // This might accidentally happen when trying to apply the wrong way (f.e. master on local)
-                    throw new coding_exception('Unexpected unmatching override in CatalogItem '.$this->id);
+                    throw new \coding_exception('Unexpected unmatching override '.$ovelm->code.' in CatalogItem '.$this->id);
                 }
             }
         }
@@ -459,7 +468,7 @@ class CatalogItem extends ShopObject {
 
     function remove_content() {
         if (!$this->elements) {
-            $this->elements = CatalogItem::get_instances(array('setid' => $setid));
+            $this->elements = CatalogItem::get_instances(array('setid' => $this->id));
         }
 
         foreach ($this->elements as $elm) {
@@ -471,18 +480,17 @@ class CatalogItem extends ShopObject {
      * Deletes the catalogitem releasing elements as standard products.
      */
     function delete() {
-        $setid = $this->setid;
-
         $this->remove_content();
 
         parent::delete();
     }
 
+    /**
+     * Delete complete structure including elements
+     */
     function fulldelete() {
-        $setid = $this->setid;
-
-        if (!$this->elements) {
-            $this->elements = CatalogItem::get_instances(array('setid' => $setid));
+        if ($this->id && !$this->elements) {
+            $this->elements = CatalogItem::get_instances(array('setid' => $this->id));
         }
 
         foreach ($this->elements as $elm) {
@@ -492,8 +500,43 @@ class CatalogItem extends ShopObject {
         parent::delete();
     }
 
+    function clone_instance($inset = false) {
+        global $DB;
+
+        $oldid = $this->id;
+
+        $this->record->id = 0;
+        $this->record->code .= '1';
+        if (!$inset) {
+            $this->record->setid = 0; // Cloned is a real product.
+        } else {
+            $this->record->setid = $inset; // Should give the new set.
+        }
+        while ($DB->record_exists('local_shop_catalogitem', array('catalogid' => $this->catalogid, 'code' => $this->record->code))) {
+            $this->record->code .= '1';
+        }
+        $this->save();
+
+        // clone all attached files
+        $fs = get_file_storage();
+        $context = \context_system::instance();
+        $files = $DB->get_records('files', array('contextid' => $context->id, 'component' => 'local_shop', 'itemid' => $oldid));
+        foreach($files as $f) {
+            if ($f->filename == '.') continue; // Discard directories.
+            $oldfile = $fs->get_file_instance($f);
+            $newfile = new \StdClass;
+            $newfile->contextid = $context->id;
+            $newfile->component = 'local_shop';
+            $newfile->filearea = $f->filearea;
+            $newfile->itemid = $this->id;
+            $newfile->filepath = $f->filepath;
+            $newfile->filename = $f->filename;
+            $fs->create_file_from_storedfile($newfile, $oldfile);
+        }
+    }
+
     static function count($filter) {
-        parent::_count(self::$table, $filter);
+        return parent::_count(self::$table, $filter);
     }
 
     static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

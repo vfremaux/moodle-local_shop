@@ -79,31 +79,27 @@ if ($data = $mform->get_data()) {
 
     unset($data->id); // shop reference cannot be record id
 
-    if (empty($data->linked)) $data->linked = 'free';
-
-    if ($data->linked != 'free') {
-        if ($data->linked == 'master') {
-            $data->groupid = 0;
-        }
-    } else {
-        $data->groupid = 0;
-    }
-
     $data->descriptionformat = $data->description_editor['format'];
     $data->description = $data->description_editor['text'];
     $data->salesconditionsformat = $data->salesconditions_editor['format'];
     $data->salesconditions = $data->salesconditions_editor['text'];
 
     if (empty($data->catalogid)) {
+        // Creating new.
+        $data->groupid = 0;
         $data->id = $DB->insert_record('local_shop_catalog', $data);
         if ($data->linked == 'master') {
             $DB->set_field('local_shop_catalog', 'groupid', $data->id, array('id' => $data->id));
+        } elseif ($data->linked == 'slave') {
+            $DB->set_field('local_shop_catalog', 'groupid', $data->id, array('id' => $data->groupid));
         }
     } else {
+        // Updating.
         $data->id = $data->catalogid;
         // we need to release all old slaves if this catalog changes from master to standalone
         if ($oldcatalog = $DB->get_record('local_shop_catalog', array('id' => $data->id))) {
-            if (($oldcatalog->id == $oldcatalog->groupid) && $data->linked == 'free') {
+            if (($oldcatalog->id == $oldcatalog->groupid) && $data->linked != 'master') {
+                // We are dismitting as master catalog. All slaves should be released.
                 // get all slaves but not me
                 // TODO : may have further side effects, but we'll see later.
                 if ($oldslaves = $DB->get_records_select('local_shop_catalog', " groupid = ? AND groupid != id ", array($oldcatalog->id))) {
@@ -117,7 +113,7 @@ if ($data = $mform->get_data()) {
         $updateid = $DB->update_record('local_shop_catalog', $data);
 
         if ($data->linked == 'master') {
-            $DB->set_field('local_shop_catalog', 'groupid', $newid, array('id' => $newid));
+            $DB->set_field('local_shop_catalog', 'groupid', $updateid, array('id' => $updateid));
         }
 
     }

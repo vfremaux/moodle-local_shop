@@ -5,26 +5,28 @@ global $CFG;
 $string['handlername'] = 'Ajout de sièges non affectés';
 $string['pluginname'] = 'Ajout de sièges non affectés';
 
-$string['assignseat'] = 'Attribuer le siège';
+$string['assignavailableseat'] = 'Assigner un siège disponible';
 $string['assignedto'] = '<b>Attribué à :</b> {$a}';
-$string['incourse'] = '<b>Dans le module :</b> [{$a->shortname}] {$a->fullname}';
-$string['enabledcourses'] = 'Modules autorisés';
-$string['unassignseat'] = 'Libérer le siège';
-$string['assignseatlocked'] = '<span class="error">L\'assignation du siège est verrouillée par des activités de l\'utilisateur dans le cours.</span>';
 $string['assigninstructions'] = 'Ce siège est actuellement non assigné. vous pouvez choisir de l\'assigner à un apprenant sous votre responsablité. Si l\'apprenant est déjà inscrit dans ce cours, vous serez averti et pourrez à nouveau faire une nouvelle attribution.';
-$string['warningcustomersupportcoursedefaultstosettings'] = 'Le cours de support client est celui par défaut';
-$string['warningnocustomersupportcourse'] = 'Aucun espace client défini';
+$string['assignseat'] = 'Attribuer le siège';
+$string['assignseatlocked'] = '<span class="error">L\'assignation du siège est verrouillée par des activités de l\'utilisateur dans le cours.</span>';
+$string['backtocourse'] = 'Revenir à l\'espace client';
+$string['enabledcourses'] = 'Modules autorisés';
+$string['errornoallowedcourses'] = 'Le produit semble mal configuré et ne semble pas avoir de cours désigné pour affecter des apprenants';
 $string['errornocustomersupportcourse'] = 'Le cours espace client {$a} n\'existe pas';
 $string['errorsupervisorrole'] = 'Le rôle superviseur {$a} n\'existe pas';
-$string['warningsupervisordefaultstoteacher'] = 'Le rôle superviseur n\'est pas défini. "Enseignant non éditeur" est utilisé à la place.';
-$string['warningpacksizedefaultstoone'] = 'Le nombre de sièges n\'est pas défini, un siège par défaut';
-$string['warningonecoursenotexists'] = 'Certains cours ({$a}) définis dans la liste d\'autorisation n\'existent pas';
-$string['warningemptycourselist'] = 'Aucune liste de cours n\'est définie, les sièges générés pourront être assignés à tous les cours visible de la plate-forme.';
-$string['errornoallowedcourses'] = 'Le produit semble mal configuré et ne semble pas avoir de cours désigné pour affecter des apprenants';
-$string['backtocourse'] = 'Revenir à l\'espace client';
-$string['seatassigned'] = 'Bravo et merci ! Vous avez inscrit {$a->user} au cours {$a->course}. Une confirmation va être envoyée à votre apprenant. Ce produit peut être réattribué tant que votre apprenant ne s\'est pas manifesté dans le cours. Le produit sera consommé définitivement au premier signe d\'activité de votre apprenant dans le module.';
+$string['incourse'] = '<b>Dans le module :</b> [{$a->shortname}] {$a->fullname}';
 $string['seatalreadyassigned'] = 'Désolé ! Il semble que {$a->user} soit déjà inscrit dans le cours {$a->course}. Vous n\'allez pas "brûler" un siège pour ça ! Choisissez une nouvelle affectation pour ce siège.';
+$string['seatassigned'] = 'Bravo et merci ! Vous avez inscrit {$a->user} au cours {$a->course}. Une confirmation va être envoyée à votre apprenant. Ce produit peut être réattribué tant que votre apprenant ne s\'est pas manifesté dans le cours. Le produit sera consommé définitivement au premier signe d\'activité de votre apprenant dans le module.';
 $string['seatreleased'] = 'Ce siège est libéré. Vous pouvez le réassigner à une autre personne.';
+$string['supervisor'] = 'Superviseur de formation.';
+$string['unassignseat'] = 'Libérer le siège';
+$string['warningcustomersupportcoursedefaultstosettings'] = 'Le cours de support client est celui par défaut';
+$string['warningemptycourselist'] = 'Aucune liste de cours n\'est définie, les sièges générés pourront être assignés à tous les cours visible de la plate-forme.';
+$string['warningnocustomersupportcourse'] = 'Aucun espace client défini';
+$string['warningonecoursenotexists'] = 'Certains cours ({$a}) définis dans la liste d\'autorisation n\'existent pas';
+$string['warningpacksizedefaultstoone'] = 'Le nombre de sièges n\'est pas défini, un siège par défaut';
+$string['warningsupervisordefaultstoteacher'] = 'Le rôle superviseur n\'est pas défini. "Enseignant non éditeur" est utilisé à la place.';
 
 $string['productiondata_public'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme. Un courriel vous a été envoyé
@@ -52,26 +54,37 @@ $string['productiondata_sales'] = '
 Identifiant : {$a}<br/>
 ';
 
-$string['productiondata_post_public'] = '
+$string['productiondata_created_public'] = '
 <p><b>Paiement enregistré</b></p>
-<p>Votre règlement a été validé. {$a} sièges à affecter ont été ajoutés à votre compte client.</p>
+<p>Votre règlement a été validé. {$a->seats} sièges à affecter ont été ajoutés à votre <a href="{$a->customersupporturl}">compte client</a>.</p>
 ';
 
-$string['productiondata_assign_private'] = '
+$string['productiondata_created_private'] = '
 <p><b>Paiement enregistré</b></p>
-<p>Votre règlement a été validé. {$a} sièges à affecter ont été ajoutés à votre compte client. Vous pouvez les affecter en vous rendant
+<p>Votre règlement a été validé. {$a->seats} sièges à affecter ont été ajoutés à votre compte client. Vous pouvez les affecter en vous rendant
 sur votre espace support client.</p>
-<p><a href="{$a->customersupporturl}">Accéder directement à votre compte client</a></p>
+<p><a href="{$a->customersupporturl}">Accéder directement à votre support client</a></p>
 ';
 
-$string['productiondata_assign_sales'] = '
+$string['productiondata_created_public_no_support'] = '
+<p><b>Paiement enregistré</b></p>
+<p>Votre règlement a été validé. {$a->seats} sièges à affecter ont été ajoutés à votre compte client.</p>
+';
+
+$string['productiondata_created_private_no_support'] = '
+<p><b>Paiement enregistré</b></p>
+<p>Votre règlement a été validé. {$a->seats} sièges à affecter ont été ajoutés à votre compte client. Vous pouvez les affecter en vous rendant
+sur votre espace support client.</p>
+';
+
+$string['productiondata_created_sales'] = '
 <p><b>Paiement enregistré</b></p>
 <p>{$a->seats} sièges pont été ajoutés au compte client de {$a->username}.</p>
 ';
 
-$string['assignseat_title'] = 'You have a new course at {$a} !';
+$string['seatassigned_title'] = 'You have a new course at {$a} !';
 
-$string['assignseat_mail'] = '
+$string['seatassigned_mail'] = '
 <p>Votre référent vous a inscrit sur le cours <a href="{$a->url}">{$a->course}</a>.</p>
 <p>vous pouvez vous y connecter dès à présent avec les identifiants que vous avez reçu précédemment.</p>
 ';

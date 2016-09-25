@@ -33,11 +33,7 @@ class shop_paymode_publicmandate extends shop_paymode{
         
     // prints a payment porlet in an order form
     function print_payment_portlet(&$billdata) {
-        global $CFG;
-
         $proc = 1;
-
-        $config = get_config('local_shop');
 
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_publicmandate');
         echo shop_compile_mail_template('print_procedure_text', array(
@@ -46,10 +42,7 @@ class shop_paymode_publicmandate extends shop_paymode{
 
     // prints a payment porlet in an order form
     function print_invoice_info(&$billdata = null) {
-        global $CFG;
         $proc = 1;
-
-        $config = get_config('local_shop');
 
         echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_publicmandate');
         echo shop_compile_mail_template('print_procedure_text_invoice', array(
@@ -57,8 +50,7 @@ class shop_paymode_publicmandate extends shop_paymode{
     }
 
     function print_complete() {
-        $config = get_config('local_shop');
-        echo shop_compile_mail_template('bill_complete_text', array(array('SUPPORT' => $config->sellermailsupport)), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
     // processes a payment return

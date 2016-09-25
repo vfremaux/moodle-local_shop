@@ -179,7 +179,6 @@ function produce_unittests(&$theShop, &$products, $selected, &$errors, &$warning
             $catalogitem->defaultcustomersupportcourse = @$theShop->defaultcustomersupportcourse;
 
             $catalogitem->actionparams = $catalogitem->handlerparams;
-
             if (method_exists($handler, 'unit_test')) {
                 $handler->unit_test($catalogitem, $errors, $warnings, $messages);
             }

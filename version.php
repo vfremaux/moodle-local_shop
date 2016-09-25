@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Version details.
  *
  * @package    local_shop
  * @category   local
@@ -26,8 +26,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016022500;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2016022905;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2016051900;        // Requires this Moodle version
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics)
-$plugin->release = "3.1.0 (Build 2016022500)";
+$plugin->release = "3.1.0 (Build 2016022905)";
 $plugin->dependencies = array('block_shop_access' => 2016022500, 'auth_ticket' => '2012060400');
+
+// Non Moodle attributes.
+$plugin->codeincrement = '3.1.0000';

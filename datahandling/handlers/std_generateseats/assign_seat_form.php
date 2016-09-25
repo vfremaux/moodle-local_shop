@@ -35,7 +35,7 @@ class AssignSeatForm extends moodleform {
 
         // Get users that i am behalfed on.
         $usermenu = array();
-        if ($myusers = get_users_by_capability($mycontext, 'block/user_delegation:hasasbehalf', 'u.id, firstname, lastname')) {
+        if ($myusers = get_users_by_capability($mycontext, 'block/user_delegation:hasasbehalf', 'u.id,'.get_all_user_name_fields(true, 'u'))) {
             foreach ($myusers as $uid => $u) {
                 $usermenu[$uid] = fullname($u);
             }

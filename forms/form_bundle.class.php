@@ -62,6 +62,8 @@ class Bundle_Form extends catalogitemform {
         $attributes_description = 'cols="50" rows="8"';
         $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
 
+        $mform->addElement('header', 'h0', get_string('general'));
+
         $mform->addElement('text', 'code', get_string('code', 'local_shop'), $attributes);
         $mform->setType('code', PARAM_ALPHANUMEXT);
         $mform->addRule('code', null, 'required');
@@ -74,9 +76,34 @@ class Bundle_Form extends catalogitemform {
         $mform->setType('description_editor', PARAM_CLEANHTML);
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
 
+        if (!empty($config->multipleowners)) {
+            $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), 'hasaccount,firstname,lastname');
+
+            $ownersmenu = array('' => get_string('sitelevel', 'local_shop'));
+            if ($potentialowners) {
+                foreach($potentialowners as $accountid => $owner) {
+                    $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
+                }
+            }
+
+            $mform->addElement('select', 'userid', get_string('productowner', 'local_shop'), $ownersmenu);
+            $mform->setType('userid', PARAM_INT);
+        } else {
+            $mform->addElement('hidden', 'userid', 0);
+            $mform->setType('userid', PARAM_INT);
+        }
+
+        $statusopts = shop_get_status();
+        $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
+        $mform->setType('status', PARAM_TEXT);
+
+        $mform->addElement('header', 'h1', get_string('financials', 'local_shop'));
+
         $this->add_price_group();
 
         $this->add_tax_select();
+
+        $mform->addElement('header', 'h2', get_string('behaviour', 'local_shop'));
 
         $this->add_sales_params();
 
@@ -92,41 +119,23 @@ class Bundle_Form extends catalogitemform {
             }
             $mform->addElement('select', 'categoryid', get_string('section', 'local_shop'), $sectionopts);
             $mform->setType('categoryid', PARAM_INT);
+            $mform->addRule('categoryid', null, 'required');
         } else {
             $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
         }
-        $mform->addRule('categoryid', null, 'required');
-
-        $this->add_document_assets();
-
-        $mform->addElement('text', 'requireddata', get_string('requireddata', 'local_shop'), $attributes);
-        $mform->setType('requireddata', PARAM_TEXT);
-
-        $statusopts = shop_get_status();
-        $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
-        $mform->setType('status', PARAM_INT);
-
-        $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
-        $mform->setType('notes_editor', PARAM_CLEANHTML);
-        $mform->addHelpButton('notes_editor', 'description', 'local_shop');
-
-        /**
-        if (!$this->catalog->isslave) {
-            $setopts[0] = get_string('outofset', 'local_shop');
-            if (!empty($sets)) {
-                foreach ($sets as $set) {
-                    $setopts[$set->id] = $set->name;
-                }
-            }
-
-            $mform->addElement('select', 'setid', get_string('set', 'local_shop'), $setopts);
-        }
-        */
 
         $group = array();
         $group[] = &$mform->createElement('checkbox', 'shownameinset', '', get_string('shownameinset', 'local_shop'), 1);
         $group[] = &$mform->createElement('checkbox', 'showdescriptioninset', '', get_string('showdescriptioninset', 'local_shop'), 1);
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
+
+        $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));
+
+        $this->add_document_assets();
+
+        $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
+        $mform->setType('notes_editor', PARAM_CLEANHTML);
+        $mform->addHelpButton('notes_editor', 'description', 'local_shop');
 
         // Adding submit and reset button
         $this->add_action_buttons();
@@ -134,7 +143,7 @@ class Bundle_Form extends catalogitemform {
 
     function set_data($defaults) {
         global $COURSE;
-        
+
         $context = context_system::instance();
 
         $draftid_editor = file_get_submitted_draft_itemid('description_editor');
@@ -147,17 +156,7 @@ class Bundle_Form extends catalogitemform {
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemnotes', @$defaults->id);
         $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftid_editor);
 
-        $draftitemid = file_get_submitted_draft_itemid('image');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->image = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('thumb');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->thumb = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('unit');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->unit = $draftitemid;
+        $this->set_document_asset_data($defaults, $context);
 
         parent::set_data($defaults);
     }

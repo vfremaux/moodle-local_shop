@@ -69,7 +69,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
 
         $productionfeedback = new StdClass();
 
-        if (!isset($data->actionparams['certificate']) && !isset($data->actionparams['certificate'])) {
+        if (!isset($data->actionparams['certificate']) && !isset($data->actionparams['certificateid'])) {
         }
 
         if (isset($data->actionparams['certificateid'])) {

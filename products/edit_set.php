@@ -80,20 +80,27 @@ if ($data = $mform->get_data()) {
     $data->description = $data->description_editor['text'];
     $data->descriptionformat = $data->description_editor['format'];
 
+    if (empty($data->renewable)) {
+        $data->renewable = 0;
+    }
+
     if (empty($data->setid)) {
         $data->shortname = CatalogItem::compute_item_shortname($data);
 
-        $data->setid = 0;
-        $DB->insert_record('local_shop_catalogitem', $data);
+        $data->setid = 0; // We must care that setid deisgnates both local form Setid and Catalogitem setid field.
+        $data->id = $DB->insert_record('local_shop_catalogitem', $data);
 
         // We have items in the set. update relevant products.
         $productsinset = optional_param('productsinset', array(), PARAM_INT);
         if (is_array($productsinset)) {
             foreach ($productsinset as $productid) {
-                $record = new StdClass;
-                $record->id = $productid;
-                $record->setid = $data->id;
-                $DB->update_record('local_shop_catalogitem', $record);
+                if ($productid != $data->id) {
+                    // Protect against self referencing.
+                    $record = new StdClass;
+                    $record->id = $productid;
+                    $record->setid = $data->id;
+                    $DB->update_record('local_shop_catalogitem', $record);
+                }
             }
         }
 
@@ -104,7 +111,7 @@ if ($data = $mform->get_data()) {
         }
     } else {
         $data->id = $data->setid;
-        $data->setid = 0;
+        $data->setid = 0; // We must care that setid deisgnates both local form Setid and Catalogitem setid field.
 
         // If set code as changed, we'd better recompute a new shortname.
         if (empty($data->shortname) || ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
@@ -125,40 +132,40 @@ if ($data = $mform->get_data()) {
 
     $usercontext = context_user::instance($USER->id);
 
-    $filepickeritemid = $data->leaflet;
+    $filepickeritemid = $data->grleaflet['leaflet'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemleaflet', $data->id);
     }
 
-    if (!empty($data->clearleaflet)) {
+    if (!empty($data->grleaflet['clearleaflet'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemleaflet', $data->id);
     }
 
-    $filepickeritemid = $data->image;
+    $filepickeritemid = $data->grimage['image'];
     $usercontext = context_user::instance($USER->id);
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemimage', $data->id);
     }
 
-    if (!empty($data->clearimage)) {
+    if (!empty($data->grimage['clearimage'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemimage', $data->id);
     }
 
-    $filepickeritemid = $data->thumb;
+    $filepickeritemid = $data->grthumb['thumb'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemthumb', $data->id);
     }
 
-    if (!empty($data->clearthumb)) {
+    if (!empty($data->grthumb['clearthumb'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemthumb', $data->id);
     }
 
-    $filepickeritemid = $data->unit;
+    $filepickeritemid = $data->grunit['unit'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
         file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemunit', $data->id);
     }
 
-    if (!empty($data->clearunit)) {
+    if (!empty($data->grunit['clearunit'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemunit', $data->id);
     }
 

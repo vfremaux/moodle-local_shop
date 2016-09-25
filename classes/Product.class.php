@@ -30,14 +30,21 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 class Product extends ShopObject {
 
     static $table = 'local_shop_product';
 
-    // Build a full bill plus billitems.
+    /**
+     * Build a full product instance.
+     * @param mixed $idorrecord an integer product id or the full database record
+     * @param bool $light future use. Switch to light proxy object initialisation.
+     */
     function __construct($idorrecord, $light = false) {
         global $DB;
+
+        $config = get_config('local_shop');
 
         parent::__construct($idorrecord, self::$table);
 
@@ -56,11 +63,15 @@ class Product extends ShopObject {
             $this->record->enddate = 0;
             $this->record->reference = '';
             $this->record->productiondata = '';
+            $this->record->test = $config->test;
 
             $this->save();
         }
     }
 
+    /**
+     * Full deletes the product instance with all product events
+     */
     function delete() {
         // Delete all events linked to product
         $events = ProductEvent::get_instances(array('productid' => $this->id));
@@ -75,7 +86,7 @@ class Product extends ShopObject {
 
     /**
      * get info out of production data (in product)
-     *
+     * @return an object
      */
     function extract_production_data() {
 
@@ -172,6 +183,11 @@ class Product extends ShopObject {
         return $results;
     }
 
+    /**
+     * Provides a direct link to the concerned instance for a product.
+     * This may depend on the context type addressed by the product instance.
+     * @return string a moodle url.
+     */
     function get_instance_link() {
         global $DB;
 
@@ -221,5 +237,36 @@ class Product extends ShopObject {
         }
 
         return $link;
+    }
+
+    /**
+     * Gets back some information about handler and callable method for post prod operations
+     * @param string $method the product method name
+     * @return an array with an handler object instance and a callable method name
+     */
+    function get_handler_info($method) {
+        global $CFG;
+
+        $productinfo = $this->extract_production_data();
+
+        if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php')) {
+            print_error('errorbadhandler', 'local_shop');
+        }
+
+        require_once $CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php';
+
+        $classname = 'shop_handler_'.$productinfo->handler;
+        $handler = new $classname('');
+        $methodname = 'postprod_'.$method;
+        return array($handler, $methodname);
+    }
+
+    /**
+     * Retreives the current billitem object. The current bill item is the
+     * most recently involved billitem in the product instance.
+     * @return a BillItem object
+     */
+    function get_current_billitem() {
+        return new BillItem($this->currentbillitemid);
     }
 }

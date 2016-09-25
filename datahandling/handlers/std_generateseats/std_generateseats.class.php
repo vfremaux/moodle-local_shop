@@ -33,9 +33,13 @@ require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/group/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 Use local_shop\Product;
 Use local_shop\Shop;
+Use local_shop\Bill;
+Use local_shop\Customer;
 
 class shop_handler_std_generateseats extends shop_handler {
 
@@ -56,13 +60,13 @@ class shop_handler_std_generateseats extends shop_handler {
         }
 
         // If Customer already has account in incoming data we have nothing to do.
-        $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+        $customer = new Customer($data->get_customerid());
         if (isloggedin()) {
             if ($customer->hasaccount != $USER->id) {
                 // do it quick in this case. Actual user could authentify, so it is the legitimate account.
                 // We guess if different non null id that the customer is using a new account. This should not really be possible
                 $customer->hasaccount = $USER->id;
-                $DB->update_record('local_shop_customer', $customer);
+                $customer->save();
             } else {
                 $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
                 $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);
@@ -99,22 +103,35 @@ class shop_handler_std_generateseats extends shop_handler {
 
         $productionfeedback = new StdClass();
 
-        if (empty($data->actionparams['courselist'])) {
-            shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay : No courses");
-            return array();
+        $enabledcourses = array();
+
+        if (!empty($data->actionparams['supervisor'])) {
+            if (!$DB->get_record('role', array('shortname' => $data->actionparams['supervisor']))) {
+                shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : Supervisor role defined but not in database. Using teacher as default.");
+                $data->actionparams['supervisor'] = 'teacher';
+            }
+        } else {
+            shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : Supervisor role not defined. Using teacher as default.");
+            $data->actionparams['supervisor'] = 'teacher';
         }
 
-         $coursepatterns = explode(',', $data->actionparams['courselist']);
+        if (empty($data->actionparams['courselist'])) {
+            shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : No courses restriction");
+        } else {
+            // Prepare course list for productiondata
+            $coursepatterns = explode(',', $data->actionparams['courselist']);
 
-        $enabledcourses = array();
-        foreach ($coursepatterns as $cn) {
-            if ($allowedcourses = $DB->get_records_select('course', $DB->sql_like('shortname', ':shortname'), array('shortname' => $cn), 'shortname', 'id,shortname')) {
-                foreach ($allowedcourses as $c) {
-                    $enabledcourses[$c->shortname] = 1;
+            foreach ($coursepatterns as $cn) {
+                if ($allowedcourses = $DB->get_records_select('course', $DB->sql_like('shortname', ':shortname'), array('shortname' => $cn), 'shortname', 'id,shortname')) {
+                    foreach ($allowedcourses as $c) {
+                        $enabledcourses[$c->shortname] = 1;
+                    }
                 }
             }
         }
 
+        /*
+        // Empty course list should be accepted
         if (empty($enabledcourses)) {
             shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Error : No courses in course list. Possible product misconfiguration.");
             $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_generateseats', $shortname);
@@ -122,6 +139,7 @@ class shop_handler_std_generateseats extends shop_handler {
             $productionfeedback->salesadmin = get_string('productiondata_failure_sales', 'shophandlers_std_generateseats', $shortname);
             return $productionfeedback;
         }
+        */
 
            if (!isset($data->actionparams['packsize'])) {
             shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : Defaults to 1 unit pack");
@@ -140,7 +158,13 @@ class shop_handler_std_generateseats extends shop_handler {
             $product->startdate = '';
             $product->enddate = '';
             $product->reference = shop_generate_product_ref($data);
-            $product->productiondata = Product::compile_production_data(array('handler' => 'STD_GENERATE_SEATS', 'enabledcourses' => implode(',', array_keys($enabledcourses))));
+
+            $proddata = array();
+            $proddata['handler'] = 'std_generateseats';
+            $proddata['enabledcourses'] = implode(',', array_keys($enabledcourses));
+            $proddata['supervisor'] = $data->actionparams['supervisor'];
+            $product->productiondata = Product::compile_production_data($proddata);
+
             $product->id = $DB->insert_record('local_shop_product', $product);
 
             // Should we record a productevent.
@@ -153,15 +177,26 @@ class shop_handler_std_generateseats extends shop_handler {
 
         // Add user to customer support on real purchase.
         if (!empty($data->actionparams['customersupport'])) {
+            $customer = new Customer($data->get_customerid());
+            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
             shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay : Registering Customer Support");
             shop_register_customer_support($data->actionparams['customersupport'], $customeruser, $data->transactionid);
+
+            $supportid = $DB->get_field('course', 'id', array('shortname' => $data->actionparams['customersupport']));
+            $info = new Stdclass;
+            $info->username = $customeruser->username;
+            $info->seats = $data->quantity;
+            $info->customersupporturl = new moodle_url('/course/view.php', array('id' => $supportid));
+            $productionfeedback->public = get_string('productiondata_created_public', 'shophandlers_std_generateseats', $info);
+            $productionfeedback->private = get_string('productiondata_created_private', 'shophandlers_std_generateseats', $info);
+        } else {
+            $productionfeedback->public = get_string('productiondata_created_public_no_support', 'shophandlers_std_generateseats', $info);
+            $productionfeedback->private = get_string('productiondata_created_private_no_support', 'shophandlers_std_generateseats', $info);
         }
 
         unset($enabledcourses);
 
-        $productionfeedback->public = get_string('productiondata_created_public', 'shophandlers_std_generateseats');
-        $productionfeedback->private = get_string('productiondata_created_private', 'shophandlers_std_generateseats');
-        $productionfeedback->salesadmin = get_string('productiondata_created_sales', 'shophandlers_std_generateseats');
+        $productionfeedback->salesadmin = get_string('productiondata_created_sales', 'shophandlers_std_generateseats', $info);
 
         shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay : Complete.");
 
@@ -247,11 +282,17 @@ class shop_handler_std_generateseats extends shop_handler {
         return $str;
     }
 
-    function postprod_assignseat(&$product, &$productioninfo) {
+    /**
+     * @param object $product a Product instance
+     * @param object $productioninfo a data aggregate with production contextual data
+     */
+    function postprod_assignseat(Product &$product, &$productioninfo) {
         global $COURSE, $CFG, $OUTPUT, $DB, $USER, $SITE;
 
         require_once 'assign_seat_form.php';
 
+        /*
+        // Donot reject empty courselist
         if (empty($productioninfo->enabledcourses)) {
             echo $OUTPUT->header();
             echo $OUTPUT->box(get_string('errornoallowedcourses', 'shophandlers_std_generateseats'));
@@ -262,8 +303,10 @@ class shop_handler_std_generateseats extends shop_handler {
             echo $OUTPUT->footer();
             die;
         }
+        */
 
         $coursenames = explode(',', urldecode($productioninfo->enabledcourses));
+        $supervisorrole = $DB->get_record('role', array('shortname' => $productioninfo->supervisor));
         $allowedcourses = array();
         if (!empty($coursenames)) {
             foreach ($coursenames as $cn) {
@@ -273,6 +316,8 @@ class shop_handler_std_generateseats extends shop_handler {
                     }
                 }
             }
+        } else {
+            $allowedcourses = $DB->get_records('course', array(), 'fullname');
         }
 
         $mform = new AssignSeatForm($productioninfo->url, array('allowedcourses' => $allowedcourses));
@@ -283,90 +328,14 @@ class shop_handler_std_generateseats extends shop_handler {
 
         if ($data = $mform->get_data()) {
 
-            // Get role record
-            $role = $DB->get_record('role', array('shortname' => 'student'));
-            $supervisorrole = $DB->get_record('role', array('shortname' => 'teacher'));
-
-            // Get user to enrol record
-            $usertoenrol = $DB->get_record('user', array('id' => $data->userid));
-            $starttime = time();
-            $endtime = 0;
-
-            // Get target course
-            $course = $DB->get_record('course', array('id' => $data->courseid));
-            $coursecontext = context_course::instance($data->courseid);
-
-            // get bill information
-            $billid = $DB->get_field('local_shop_billitem', 'billid', array('id' => $product->currentbillitemid));
-            $bill = $DB->get_record('local_shop_bill', array('id' => $billid));
-            $billnumber = 'B'.sprintf('%010d', $bill->ordering);
-
-            $enrolname = 'manual';
-
-            if ($enrols = $DB->get_records('enrol', array('enrol' => $enrolname, 'courseid' => $data->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
-                $enrol = reset($enrols);
-                $enrolplugin = enrol_get_plugin($enrolname); // the enrol object instance
-            }
-
-            $a = new StdClass();
-            $a->user = fullname($usertoenrol);
-            $a->course = $course->fullname;
+            $data->supervisorrole = $supervisorrole;
+            $ret = $this->postprod_assignseat_worker($data, $product);
 
             echo $OUTPUT->header();
-            try {
-                echo $OUTPUT->heading(get_string('productpostprocess', 'local_shop'));
-                if (is_enrolled($coursecontext, $usertoenrol)) {
-                    echo $OUTPUT->notification(get_string('seatalreadyassigned', 'shophandlers_std_generateseats', $a));
-                } else {
-                    $enrolplugin->enrol_user($enrol, $usertoenrol->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
-                    echo $OUTPUT->notification(get_string('seatassigned', 'shophandlers_std_generateseats', $a));
-
-                    // Notify student user.
-                    $mailtitle = get_string('seatassigned_title', 'shophandlers_std_generateseats', $SITE->fullname);
-                    $a = new StdClass();
-                    $a->course = $course->fullname;
-                    $a->url = new moodle_url('/course/view.php', array('id' => $course->id));
-                    $mailcontent = get_string('seatassigned_mail', 'shophandlers_std_generateseats', $a);
-                    email_to_user($usertoenrol, $USER, $mailtitle, $mailcontent);
-                }
-
-                // Enrol customer in course for supervision id not yet inside. USER is our customer user.
-                if (!is_enrolled($coursecontext, $USER)) {
-                    $enrolplugin->enrol_user($enrol, $USER->id, $supervisorrole->id, $starttime, 0, ENROL_USER_ACTIVE);
-                }
-
-                // Check course has a group for the bill.
-                if (!$group = $DB->get_record('groups', array('courseid' => $course->id, 'name' => $billnumber))) {
-                    $group = new StdClass();
-                    $group->courseid = $course->id;
-                    $group->name = $billnumber;
-                    $group->description = get_string('shopproductcreated', 'local_shop');
-                    $group->descriptionformat = 0;
-                    $group->timecreated = time();
-                    $group->timemodified = time();
-                    $group->id = $DB->insert_record('groups', $group);
-
-                    // Invalidate the grouping cache for the course
-                    cache_helper::invalidate_by_definition('core', 'groupdata', array(), array($course->id));
-                }
-
-                // Put both users in group.
-                groups_add_member($group->id, $usertoenrol->id);
-                groups_add_member($group->id, $USER->id);
-
-                // Mark product with enrolment instance
-                $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $usertoenrol->id));
-                $product->instanceid = $ue->id;
-                $product->startdate = time();
-                $DB->update_record('local_shop_product', $product);
-            } catch (Exception $exc) {
-                echo $OUTPUT->heading(get_string('productpostprocess', 'local_shop'));
-                echo $OUTPUT->notification('Error in assign / Error process to be finished');
-            }
-            
+            echo $ret;
             echo $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$COURSE->id), get_string('backtocourse', 'shophandlers_std_generateseats'));
             echo $OUTPUT->footer();
-            return;
+            die;
         }
 
         $data = new StdClass();
@@ -379,6 +348,98 @@ class shop_handler_std_generateseats extends shop_handler {
         echo $OUTPUT->header();
         $mform->display();
         echo $OUTPUT->footer();
+        die;
+    }
+
+    function postprod_assignseat_worker($data, Product &$product) {
+        global $OUTPUT, $DB, $SITE, $USER;
+
+        // Get role record
+        // TODO : Generalize with _supervisor
+        $role = $DB->get_record('role', array('shortname' => 'student'));
+        $supervisorrole = $data->supervisor;
+
+        // Get user to enrol record
+        $usertoenrol = $DB->get_record('user', array('id' => $data->userid));
+        $starttime = time();
+        $endtime = 0;
+
+        // Get target course
+        $course = $DB->get_record('course', array('id' => $data->courseid));
+        $coursecontext = context_course::instance($data->courseid);
+
+        // get bill information
+        $billid = $DB->get_field('local_shop_billitem', 'billid', array('id' => $product->currentbillitemid));
+        $bill = new Bill($billid);
+        $billnumber = 'B'.sprintf('%010d', $bill->ordering);
+
+        $enrolname = 'manual';
+
+        if ($enrols = $DB->get_records('enrol', array('enrol' => $enrolname, 'courseid' => $data->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+            $enrol = reset($enrols);
+            $enrolplugin = enrol_get_plugin($enrolname); // the enrol object instance
+        }
+
+        $a = new StdClass();
+        $a->user = fullname($usertoenrol);
+        $a->course = $course->fullname;
+
+        try {
+            $ret = '';
+            $ret .= $OUTPUT->heading(get_string('productpostprocess', 'local_shop'));
+            if (is_enrolled($coursecontext, $usertoenrol)) {
+                $ret .= $OUTPUT->notification(get_string('seatalreadyassigned', 'shophandlers_std_generateseats', $a));
+                // Nothing to do.
+                return $ret;
+            } else {
+                $ret .= $OUTPUT->notification(get_string('seatassigned', 'shophandlers_std_generateseats', $a));
+
+                $enrolplugin->enrol_user($enrol, $usertoenrol->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
+
+                // Notify student user.
+                $mailtitle = get_string('seatassigned_title', 'shophandlers_std_generateseats', $SITE->fullname);
+                $a = new StdClass();
+                $a->course = $course->fullname;
+                $a->url = new moodle_url('/course/view.php', array('id' => $course->id));
+                $mailcontent = get_string('seatassigned_mail', 'shophandlers_std_generateseats', $a);
+                email_to_user($usertoenrol, $USER, $mailtitle, $mailcontent);
+            }
+
+            // Enrol customer in course for supervision id not yet inside. USER is our customer user.
+            if (!is_enrolled($coursecontext, $USER)) {
+                $enrolplugin->enrol_user($enrol, $USER->id, $supervisorrole->id, $starttime, 0, ENROL_USER_ACTIVE);
+            }
+
+            // Check course has a group for the bill.
+            if (!$group = $DB->get_record('groups', array('courseid' => $course->id, 'name' => $billnumber))) {
+                $group = new StdClass();
+                $group->courseid = $course->id;
+                $group->name = $billnumber;
+                $group->description = get_string('shopproductcreated', 'local_shop');
+                $group->descriptionformat = 0;
+                $group->timecreated = time();
+                $group->timemodified = time();
+                $group->id = $DB->insert_record('groups', $group);
+
+                // Invalidate the grouping cache for the course
+                cache_helper::invalidate_by_definition('core', 'groupdata', array(), array($course->id));
+            }
+
+            // Put both users in group.
+            groups_add_member($group->id, $usertoenrol->id);
+            groups_add_member($group->id, $USER->id);
+
+            // Mark product with enrolment instance
+            $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $usertoenrol->id));
+            $product->instanceid = $ue->id;
+            $product->startdate = time();
+            $product->save();
+        } catch (Exception $exc) {
+            $ret = '';
+            $ret .= $OUTPUT->heading(get_string('productpostprocess', 'local_shop'));
+            $ret .= $OUTPUT->notification('Error in assign / Error process to be finished');
+        }
+        return $ret;
     }
 
     function postprod_unassignseat(&$product, &$productioninfo) {

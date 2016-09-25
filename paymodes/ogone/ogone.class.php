@@ -65,15 +65,13 @@ class shop_paymode_ogone extends shop_paymode{
             'it' => 'it_IT'
         );
 
-        $config = get_config('local_shop');
-
         if ($shoppingcart->usedistinctinvoiceinfo) {
             $paymentinfo = $shoppingcart->invoicinginfo;
         } else {
             $paymentinfo = $shoppingcart->customerinfo;
         }
 
-        $mode = ($config->test) ? 'test' : 'prod';
+        $mode = ($this->_config->test) ? 'test' : 'prod';
 
         $accepturl = new moodle_url('/local/shop/paymodes/ogone/accept.php');
         $declineurl = new moodle_url('/local/shop/paymodes/ogone/decline.php');
@@ -83,7 +81,7 @@ class shop_paymode_ogone extends shop_paymode{
         echo '<form method="post" action="https://secure.ogone.com/ncol/'.$mode.'/orderstandard_utf8.asp" id=form1 name=form1>';
 
         $commanddata = array(
-            'PSPID' => $config->ogone_psid,
+            'PSPID' => $this->_config->ogone_psid,
             'ORDERID' => $shoppingcart->transid,
             'AMOUNT' => $shoppingcart->finalshippedtaxedtotal * 100,
             'CURRENCY' => $this->theshop->get_currency(),
@@ -107,7 +105,7 @@ class shop_paymode_ogone extends shop_paymode{
         }
 
         ksort($signdata);
-        $shabase = implode($config->ogone_secret_in, $signdata).$config->ogone_secret_in;
+        $shabase = implode($this->_config->ogone_secret_in, $signdata).$this->_config->ogone_secret_in;
         $shavalue = sha1($shabase);
 
         // <!-- vérification avant le paiement : voir Sécurité : vérification avant le paiement -->'
@@ -121,7 +119,7 @@ class shop_paymode_ogone extends shop_paymode{
         echo '<input type="hidden" name="TBLTXTCOLOR" value="">';
         echo '<input type="hidden" name="BUTTONBGCOLOR" value="">';
         echo '<input type="hidden" name="BUTTONTXTCOLOR" value="">';
-        echo '<input type="hidden" name="LOGO" value="'.$config->ogone_logourl.'">';
+        echo '<input type="hidden" name="LOGO" value="'.$this->_config->ogone_logourl.'">';
         echo '<input type="hidden" name="FONTTYPE" value="">';
 
         // <!-- redirection après la transaction : voir Feedback au client sur la transaction -->
@@ -143,8 +141,7 @@ class shop_paymode_ogone extends shop_paymode{
     }
 
     function print_complete() {
-        $config = get_config('local_shop');
-        echo shop_compile_mail_template('bill_complete_text', '', 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
     /**
@@ -191,9 +188,9 @@ class shop_paymode_ogone extends shop_paymode{
      * in the context.
      */
     function process_ipn() {
-        shop_trace('Ogone/Ingenico IPN Controller');
+        global $CFG;
 
-        $config = get_config('local_host');
+        shop_trace('Ogone/Ingenico IPN Controller');
 
         $acceptancecodes = array(OGONE_STATUS_PROCEEDED);
         $rejectcodes = array(OGONE_STATUS_REFUSED, OGONE_STATUS_PROCEEDING_REFUSED);
@@ -201,7 +198,7 @@ class shop_paymode_ogone extends shop_paymode{
 
         /*
          * Possibly liberalize in the future
-        if ($config->looseacceptance) {
+        if ($this->_config->looseacceptance) {
             $acceptancecodes[] = OGONE_STATUS_PROCEEDING;
         }
         */
@@ -250,7 +247,7 @@ class shop_paymode_ogone extends shop_paymode{
     
                 // Finishing
                 shop_trace("[{$aFullBill->transactionid}] Ogone/Ingenico IPN : End of transaction");
-                if (!empty($config->test)) {
+                if (!empty($this->_config->test)) {
                     // Verbose it to output in test mode
                     mtrace('Ogone/Ingenico IPN : End of transaction');
                 }
@@ -281,8 +278,8 @@ class shop_paymode_ogone extends shop_paymode{
             shop_trace('[ERROR] Ogone/Ingenico Data error on cancel. Cancelling at least the current session.');
         }
 
-        // cancel shopping cart
-        unset($SESSION->shoppingcart);
+        // do not cancel shopping cart. User may use another payment.
+        // unset($SESSION->shoppingcart);
 
         redirect(new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id)));
     }
@@ -363,7 +360,7 @@ class shop_paymode_ogone extends shop_paymode{
 
         ksort($checkdata);
 
-        $shabase = implode($config->ogone_secret_out, $checkdata).$config->ogone_secret_out;
+        $shabase = implode($this->_config->ogone_secret_out, $checkdata).$this->_config->ogone_secret_out;
         $shaout = sha1($shabase);
 
         if (!empty($_REQUEST['SHASIGN']) && $_REQUEST['SHASIGN'] == $shaout) {
@@ -375,18 +372,12 @@ class shop_paymode_ogone extends shop_paymode{
 
     // provides global settings to add to shop settings when installed
     function settings(&$settings) {
-        global $CFG;
 
         $settings->add(new admin_setting_heading('local_shop_'.$this->name, get_string($this->name.'paymodeparams', 'shoppaymodes_ogone'), ''));
-
         $settings->add(new admin_setting_configtext('local_shop/ogone_psid', get_string('psid', 'shoppaymodes_ogone'), get_string('configpsid', 'shoppaymodes_ogone'), ''));
-
         $settings->add(new admin_setting_configtext('local_shop/ogone_secret_in', get_string('secretin', 'shoppaymodes_ogone'), get_string('configsecretin', 'shoppaymodes_ogone'), ''));
-
         $settings->add(new admin_setting_configtext('local_shop/ogone_secret_out', get_string('secretout', 'shoppaymodes_ogone'), get_string('configsecretout', 'shoppaymodes_ogone'), ''));
-
         $settings->add(new admin_setting_configtext('local_shop/ogone_paramvar', get_string('paramvar', 'shoppaymodes_ogone'), get_string('configparamvar', 'shoppaymodes_ogone'), ''));
-
         $settings->add(new admin_setting_configtext('local_shop/ogone_logourl', get_string('logourl', 'shoppaymodes_ogone'), get_string('configlogourl', 'shoppaymodes_ogone'), ''));
 
     }

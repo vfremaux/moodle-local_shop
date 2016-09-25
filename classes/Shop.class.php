@@ -82,6 +82,10 @@ class Shop extends ShopObject {
             $this->record->defaultcustomersupportcourse = 1;
             $this->record->forcedownloadleaflet = 1;
             $this->record->allowtax = 1;
+            $this->record->discountthreshold = $config->discountthreshold;
+            $this->record->discountrate = $config->discountrate;
+            $this->record->discountrate2 = $config->discountrate2;
+            $this->record->discountrate3 = $config->discountrate3;
             $this->record->eula = '';
             $this->record->navsteps = $config->defaultnavsteps;
             $this->_build_nav_order();
@@ -200,8 +204,39 @@ class Shop extends ShopObject {
         return $shopurl;
     }
 
+    function calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
+        global $CFG, $USER;
+
+        if (is_null($user)) $user = $USER;
+
+        $discountrate = 0; // no discount as default
+
+        if ($thresholdcond = $this->record->discountthreshold && $this->record->discountrate && ($amount > $this->record->discountthreshold)) {
+            $discountrate = $this->record->discountrate;
+            $reason = get_string('ismorethan', 'local_shop');
+            $reason .= '<b>'.$this->record->discountthreshold.'&nbsp;</b><b>'.$this->get_currency('symbol').'</b>'; 
+        }
+
+        if (isloggedin()) {
+            if ($usercond1 = has_capability('local/shop:discountagreed', $context, $USER->id)) {
+                $discountrate = $this->record->discountrate;
+                $reason = get_string('userdiscountagreed', 'local_shop');
+            }
+            if ($usercond2 = has_capability('local/shop:seconddiscountagreed', $context, $USER->id)) {
+                $discountrate = $this->record->discountrate2;
+                $reason = get_string('userdiscountagreed2', 'local_shop');
+            }
+            if ($usercond3 = has_capability('local/shop:thirddiscountagreed', $context, $USER->id)) {
+                $discountrate = $this->record->discountrate3;
+                $reason = get_string('userdiscountagreed3', 'local_shop');
+            }
+        }
+
+        return $discountrate;
+    }
+
     static function count($filter) {
-        parent::_count(self::$table, $filter);
+        return parent::_count(self::$table, $filter);
     }
 
     static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

@@ -35,14 +35,28 @@ use local_shop\Catalog;
 
 class catalog_controller {
 
+    function receive($cmd, $data = array()) {
+
+        if (!empty($data)) {
+            $this->data = (object)$data;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'deletecatalog':
+                $this->data->catalogid = required_param('catalogid', PARAM_INT);
+                break;
+        }
+    }
+
     function process($cmd) {
         global $DB;
 
         if ($cmd == 'deletecatalog') {
-            $catalogid = required_param('catalogid', PARAM_INT);
-            $catalogidlist = $catalogid;
+            $catalogidlist = $this->data->catalogid;
             // if master catalog, must delete all slaves
-            $theCatalog = new Catalog($catalogid);
+            $theCatalog = new Catalog($this->data->catalogid);
             if ($theCatalog->ismaster) {
                 $catalogids = $DB->get_records_select_menu('local_shop_catalog', " groupid = '{$catalogid}' ", 'id', 'id,name');
                 $catalogidlist = implode("','", array_keys($catalogids));

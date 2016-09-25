@@ -457,7 +457,7 @@ function shop_get_supported_currencies() {
  * @returns three object refs if they are buildable, null for other.
  */
 function shop_build_context() {
-    global $SESSION;
+    global $SESSION, $DB;
 
     $theShop = new Shop(null);
 
@@ -470,28 +470,32 @@ function shop_build_context() {
         try {
             $theShop = new Shop($SESSION->shop->shopid);
         } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->get_message());
-        }
-    }
-
-    $theCatalog = new Catalog(null);
-    if ($theShop->id) {
-        try {
-            $theCatalog = new Catalog($theShop->catalogid);
-            $SESSION->shop->catalogid = $theCatalog->id;
-        } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->get_message());
+            print_error('objecterror', 'local_shop', $e->getMessage());
         }
     } else {
-        $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
-        if (!empty($SESSION->shop->catalogid)) {
+        // shopid is null. get lowest available shop as default
+        $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
+        $shop = array_pop($shops);
+        $theShop = new Shop($shop->id);
+    }
+
+    // Logic : forces session catalog to be operative, 
+    // Defaults to the current shop bound catalog. 
+    $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
+    if (empty($SESSION->shop->catalogid)) {
+        if ($theShop->id) {
             try {
-                $theCatalog = new Catalog($SESSION->shop->catalogid);
+                $theCatalog = new Catalog($theShop->catalogid);
                 $SESSION->shop->catalogid = $theCatalog->id;
             } catch (Exception $e) {
                 print_error('objecterror', 'local_shop', $e->get_message());
             }
         }
+    }
+    try {
+        $theCatalog = new Catalog($SESSION->shop->catalogid);
+    } catch (Exception $e) {
+        print_error('objecterror', 'local_shop', $e->get_message());
     }
 
     $theBlock = null;

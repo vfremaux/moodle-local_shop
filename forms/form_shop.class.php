@@ -47,7 +47,7 @@ class Shop_Form extends moodleform {
         $this->editoroptions = array('maxfiles' => 10, 'context' => context_system::instance(), 'subdirs' => true);
 
         // Adding title and description.
-        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'shop', 'local_shop'), 2));
+        $mform->addElement('header', 'general', get_string($this->_customdata['what'].'shop', 'local_shop'));
 
         $attributes = 'size="47" maxlength="200"';
         $attributesshort = 'size="30" maxlength="200"';
@@ -106,6 +106,23 @@ class Shop_Form extends moodleform {
             $mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'local_shop').':', array(' '), false);
             $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
+            // Discount application.
+            $mform->addElement('text', 'discountthreshold', get_string('discountthreshold', 'local_shop'), 0);
+            $mform->addHelpButton('discountthreshold', 'discountthreshold', 'local_shop');
+            $mform->setType('discountthreshold', PARAM_NUMBER);
+
+            $mform->addElement('text', 'discountrate', get_string('discountrate', 'local_shop'), 0);
+            $mform->addHelpButton('discountrate', 'discountrate', 'local_shop');
+            $mform->setType('discountrate', PARAM_INT);
+
+            $mform->addElement('text', 'discountrate2', get_string('discountrate2', 'local_shop'), 0);
+            $mform->addHelpButton('discountrate2', 'discountrate2', 'local_shop');
+            $mform->setType('discountrate2', PARAM_INT);
+
+            $mform->addElement('text', 'discountrate3', get_string('discountrate3', 'local_shop'), 0);
+            $mform->addHelpButton('discountrate3', 'discountrate3', 'local_shop');
+            $mform->setType('discountrate3', PARAM_INT);
+
             // Shop Currency
             $currencies = shop_get_supported_currencies();
             $mform->addElement('select', 'currency', get_string('currency', 'local_shop').':', $currencies);
@@ -113,7 +130,8 @@ class Shop_Form extends moodleform {
             $mform->setDefault('currency', $config->defaultcurrency);
 
             // Choosing valid paymodes for this shop instance.
-            $mform->addElement('header', 'heading_paymodes', get_string('carefullchoice', 'local_shop'));
+            $mform->addElement('header', 'heading_paymodes', get_string('paymentmethods', 'local_shop'));
+            $mform->addElement('html', get_string('carefullchoice', 'local_shop'));
             $paymodes = shop_paymode::get_plugins($this);
             foreach ($paymodes as $pm) {
                 if ($pm->enabled) {
@@ -140,7 +158,7 @@ class Shop_Form extends moodleform {
             $mform->setDefault('customerorganisationrequired', 0);
 
             // default customer support course if
-            $courseoptions = $DB->get_records_menu('course', array('visible' => 1), 'fullname', 'shortname,fullname');
+            $courseoptions = $DB->get_records_menu('course', array('visible' => 1), 'fullname', 'id,fullname');
             $courseoptions[0] = get_string('none', 'local_shop');
             $mform->addElement('select', 'defaultcustomersupportcourse', get_string('configdefaultcustomersupportcourse', 'local_shop'), $courseoptions);
             $mform->setDefault('defaultcustomersupportcourse', 0);

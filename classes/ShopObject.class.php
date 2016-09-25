@@ -136,8 +136,8 @@ class ShopObject{
         $records = $DB->get_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
         $instances = array();
         if ($records) {
+            $class = get_called_class();
             foreach ($records as $rec) {
-                $class = get_called_class();
                 $instances[$rec->id] = new $class($rec);
             }
         }

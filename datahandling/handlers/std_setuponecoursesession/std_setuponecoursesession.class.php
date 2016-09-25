@@ -110,6 +110,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
     function produce_postpay(&$data) {
         global $CFG, $DB;
 
+        $config = get_config('local_shop');
+
         $productionfeedback = new StdClass();
 
         if (!isset($data->actionparams['coursename'])) {
@@ -157,56 +159,13 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $now = time();
         $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
         $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
-        $customercontext = context_user::instance($customer->hasaccount);
-        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
         if (!empty($data->productiondata->users)) {
             foreach ($data->productiondata->users as $roleshort => $participants) {
                 foreach ($participants as $p) {
                     if (!$user = $DB->get_record('user', array('email' => $p->email))) {
-                        $p->username = shop_generate_username($p); // makes it unique
-
-                        // Let cron generate passwords.
-                        // $p->password = hash_internal_user_password(generate_password());
-
-                        $p->lang = $CFG->lang;
-                        $p->deleted = 0;
-                        $p->confirmed = 1;
-                        $p->timecreated = time();
-                        $p->timemodified = time();
-                        $p->mnethostid = $CFG->mnet_localhost_id;
-                        if (!isset($p->country)) {
-                            $p->country = $CFG->country;
-                        }
-
-                        if ($p->id = $DB->insert_record('user', $p)) {
-                            shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Creating user [{$p->username}].");
-                            $courseusers[$roleshort][] = $p;
-
-                            // passwords will be created and sent out on cron.
-                            $pref = new StdClass();
-                            $pref->userid = $p->id;
-                            $pref->name = 'create_password';
-                            $pref->value = 1;
-                            $DB->insert_record('user_preferences', $pref);
-
-                            $pref = new StdClass();
-                            $pref->userid = $p->id;
-                            $pref->name = 'auth_forcepasswordchange';
-                            $pref->value = 1;
-                            $DB->insert_record('user_preferences', $pref);
-                        }
-
-                        // Assign role to customer for behalf on those users.
-                        // Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to 
-                        // sync the user delegation handling.
-                        $usercontext = context_user::instance($p->id);
-                        role_assign($supervisorrole->id, $customer->hasaccount, $usercontext->id, '', 0, $now);
-
-                        if ($p->id) {
-                            // Assign mirror role for behalf on those users.
-                            role_assign($studentrole->id, $p->id, $customercontext->id, '', 0, $now);
-                        }
+                        $courseusers[$roleshort][] = shop_create_moodle_user($p, $data, $supervisorrole);
+                        shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Creating user [{$p->username}].");
                     } else {
                         $courseusers[$roleshort][] = $user;
                         shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Registering existing user [{$user->username}].");
@@ -230,7 +189,6 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Enrolling $roleshort.");
 
                         foreach ($users as $u) {
-                            echo "enrol $enrol->id, $u->id, $role->id, $starttime, $endtime ";
                             $enrolplugin->enrol_user($enrol, $u->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
                             shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : $u->lastname $u->firstname ($u->username) enrolled.");
 
@@ -246,9 +204,10 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                             $product->startdate = $starttime;
                             $product->enddate = $endtime;
                             $product->reference = shop_generate_product_ref($data);
+                            $product->test = $config->test;
                             $itemproductiondata = array();
                             $itemproductiondata['courseid'] = $course->id;
-                            $itemproductiondata['handler'] = 'STD_SETUP_ONE_COURSE_SESSION';
+                            $itemproductiondata['handler'] = 'std_setuponecoursesession';
                             $itemproductiondata['coursename'] = $coursename;
                             $itemproductiondata['userid'] = $u->id;
                             $itemproductiondata['starttime'] = $starttime;
@@ -271,7 +230,6 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         }
                     }
                 } catch (Exception $exc) {
-                    print_object($exc);
                     shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Failure : enrolled failed with exception ({$exc->getMessage()}...");
                     $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_setuponecoursesession', 'Code : ROLE ASSIGN');
                     $productionfeedback->private = get_string('productiondata_failure_private', 'shophandlers_std_setuponecoursesession', $course->id);
@@ -382,6 +340,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      * for products generated with this handler
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
+     *
+     * // TODO : Generalize to all logstores
      */
     function display_product_actions($pid, $params) {
         global $CFG, $COURSE, $DB;
@@ -392,19 +352,19 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
 
         $sqlparams = array($params['courseid'], $params['userid'], $params['starttime']);
 
-        $select = " course = ?  AND userid = ? AND time > ? ";
+        $select = " courseid = ?  AND userid = ? AND timecreated > ? ";
 
         if ($params['endtime']) {
             $sqlparams[] = $params['endtime'];
-            $select .= " AND time < ? ";
+            $select .= " AND timecreated < ? ";
         }
 
-        $hasentered = $DB->record_exists_select('log', " course = ? AND userid = ? ", $sqlparams);
+        $hasentered = $DB->record_exists_select('logstore_standard_log', $select, $sqlparams);
 
         if (!$hasentered) {
             $str = '';
             $freeassignstr = get_string('freeassign', 'shophandlers_std_setuponecoursesession');
-            $postprodurl = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $COURSE->id, 'pid' => $pid, 'method' => 'freeassign'));
+            $postprodurl = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $params['courseid'], 'pid' => $pid, 'method' => 'freeassign'));
             $str .= '<a href="'.$postprodurl.'">'.$freeassignstr.'</a>';
         } else {
             $str = get_string('nonmutable', 'local_shop');
@@ -421,6 +381,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         // first unenrol user from course
 
         $product->contexttype = 'user_enrolment';
+
+        // TODO : Finish processing
     }
 
     /**
@@ -438,7 +400,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $str .= '<div class="cs-product-value">'.$pinfo->coursename.'</div></div>';
         $str .= '<div><div class="cs-product-key">'.get_string('beneficiary', 'shophandlers_std_setuponecoursesession').'</div>';
         $u = $DB->get_record('user', array('id' => $pinfo->userid));
-        $str .= '<div class="cs-product-value"><a href="'.$CFG->wwwroot.'/user/view.php?id='.$u->id.'">'.fullname($u).'</a></div></div>';
+        $userurl = new moodle_url('/user/view.php', array('id' => $u->id));
+        $str .= '<div class="cs-product-value"><a href="'.$userurl.'">'.fullname($u).'</a></div></div>';
 
         $str .= '<div><div class="cs-product-key">'.get_string('role').'</div>';
         if ($pinfo->supervisor) {

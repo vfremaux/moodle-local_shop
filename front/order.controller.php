@@ -37,7 +37,8 @@ class order_controller extends front_controller_base {
 
         if ($cmd == 'navigate') {
             if ($back = optional_param('back', false, PARAM_BOOL)) {
-                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('order'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+                $prev = $this->theshop->get_prev_step('order');
+                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1)));
             } else {
 
                 // register paymode
@@ -67,10 +68,21 @@ class order_controller extends front_controller_base {
                 if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
                     $systemcontext = \context_system::instance();
                     $seller = new \StdClass;
-                    $seller->firstname = $config->sellername;
-                    $seller->lastname = '';
+                    $seller->firstname = '';
+                    $seller->lastname = $config->sellername;
                     $seller->email = $config->sellermail;
                     $seller->maildisplay = true;
+                    $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
+
+                    // Add other name fields required by fullname
+                    if ($morefields = get_all_user_name_fields(false)) {
+                        foreach ($morefields as $f) {
+                            if (!isset($seller->$f)) {
+                                $seller->$f = '';
+                            }
+                        }
+                    }
+
                     $title = $SITE->shortname . ' : ' . get_string('orderinput', 'local_shop');
                     $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $salesnotification, $salesnotification, '');
                     if ($sent) {

@@ -59,6 +59,8 @@ class Product_Form extends catalogitemform {
         // Adding title and description
         $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'product', 'local_shop')));
 
+        $mform->addElement('header', 'h0', get_string('general'));
+
         $context = context_system::instance();
 
         $maxfiles = 99;                // TODO: add some setting
@@ -102,9 +104,17 @@ class Product_Form extends catalogitemform {
             $mform->setType('userid', PARAM_INT);
         }
 
+        $statusopts = shop_get_status();
+        $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
+        $mform->setType('status', PARAM_TEXT);
+
+        $mform->addElement('header', 'h1', get_string('financials', 'local_shop'));
+
         $this->add_price_group();
 
         $this->add_tax_select();
+
+        $mform->addElement('header', 'h2', get_string('behaviour', 'local_shop'));
 
         $this->add_sales_params();
 
@@ -124,16 +134,6 @@ class Product_Form extends catalogitemform {
             $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
         }
 
-        $this->add_document_assets();
-
-        $statusopts = shop_get_status();
-        $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
-        $mform->setType('status', PARAM_TEXT);
-
-        $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
-        $mform->setType('notes_editor', PARAM_CLEANHTML);
-        $mform->addHelpButton('notes_editor', 'description', 'local_shop');
-
         if (!$this->_customdata['catalog']->isslave) {
             $setopts[0] = get_string('outofset', 'local_shop');
             if (!empty($sets)) {
@@ -144,42 +144,59 @@ class Product_Form extends catalogitemform {
             $mform->addElement('select', 'setid', get_string('set', 'local_shop'), $setopts);
         }
         $group = array();
-
         $group[] = &$mform->createElement('checkbox', 'showsnameinset', '', get_string('shownameinset', 'local_shop'));
         $mform->setDefault('showsnameinset', 1);
         $group[] = &$mform->createElement('checkbox', 'showsdescriptioninset', '', get_string('showdescriptioninset', 'local_shop'));
         $mform->setDefault('showsdescriptioninset', 1);
-
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
-        $handleropts['0'] = get_string('disabled', 'local_shop');
-        $handleropts['1'] = get_string('dedicated', 'local_shop');
-        $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
 
+        $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));
+
+        $this->add_document_assets();
+
+        $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
+        $mform->setType('notes_editor', PARAM_CLEANHTML);
+        $mform->addHelpButton('notes_editor', 'description', 'local_shop');
+
+        $mform->addElement('header', 'h4', get_string('automation', 'local_shop'));
+
+        // This may need to be translated for localised catalogs.
         $mform->addElement('textarea', 'requireddata', get_string('requireddata', 'local_shop'), $attributes_specificdata);
         $mform->setType('requireddata', PARAM_TEXT);
         $mform->addHelpButton('requireddata', 'requireddata', 'local_shop');
 
-        $mform->addElement('select', 'enablehandler', get_string('enablehandler', 'local_shop'), $handleropts);
-        $mform->setType('enablehandler', PARAM_TEXT);
+        if (!$this->_customdata['catalog']->isslave) {
+            $handleropts['0'] = get_string('disabled', 'local_shop');
+            $handleropts['1'] = get_string('dedicated', 'local_shop');
+            $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
 
-        $mform->addElement('textarea', 'handlerparams', get_string('handlerparams', 'local_shop'), $attributes_handlerparams);
-        $mform->setType('handlerparams', PARAM_TEXT);
-        $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
+            $mform->addElement('select', 'enablehandler', get_string('enablehandler', 'local_shop'), $handleropts);
+            $mform->setType('enablehandler', PARAM_TEXT);
 
-        $seatmodeoptions[SHOP_QUANT_NO_SEATS] = get_string('no');
-        $seatmodeoptions[SHOP_QUANT_ONE_SEAT] = get_string('oneseat', 'local_shop');
-        $seatmodeoptions[SHOP_QUANT_AS_SEATS] = get_string('yes');
-        $mform->addElement('select', 'quantaddressesusers', get_string('quantaddressesusers', 'local_shop'), $seatmodeoptions);
-        $mform->setType('quantaddressesusers', PARAM_INT);
-        $mform->addHelpButton('quantaddressesusers', 'quantaddressesusers', 'local_shop');
+            $mform->addElement('textarea', 'handlerparams', get_string('handlerparams', 'local_shop'), $attributes_handlerparams);
+            $mform->setType('handlerparams', PARAM_TEXT);
+            $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
 
-        $mform->addElement('checkbox', 'renewable', get_string('renewable', 'local_shop'));
-        $mform->addHelpButton('renewable', 'renewable', 'local_shop');
-        $mform->disabledIf('renewable', 'enablehandler', 'eq', 0);
+            $seatmodeoptions[SHOP_QUANT_NO_SEATS] = get_string('no');
+            $seatmodeoptions[SHOP_QUANT_ONE_SEAT] = get_string('oneseat', 'local_shop');
+            $seatmodeoptions[SHOP_QUANT_AS_SEATS] = get_string('yes');
+            $mform->addElement('select', 'quantaddressesusers', get_string('quantaddressesusers', 'local_shop'), $seatmodeoptions);
+            $mform->setType('quantaddressesusers', PARAM_INT);
+            $mform->addHelpButton('quantaddressesusers', 'quantaddressesusers', 'local_shop');
 
-        $mform->addElement('editor', 'eula_editor', get_string('eula', 'local_shop'), null, $this->editoroptions);
-        $mform->setType('eula', PARAM_URL);
-        $mform->addHelpButton('eula_editor', 'producteulas', 'local_shop');
+            $mform->addElement('checkbox', 'renewable', get_string('renewable', 'local_shop'));
+            $mform->addHelpButton('renewable', 'renewable', 'local_shop');
+            $mform->disabledIf('renewable', 'enablehandler', 'eq', 0);
+        } else {
+            $mform->addelement('hidden', 'enablehandler');
+            $mform->setType('enablehandler', PARAM_TEXT);
+            $mform->addelement('hidden', 'handlerparams');
+            $mform->setType('handlerparams', PARAM_TEXT);
+            $mform->addelement('hidden', 'quantaddressesusers');
+            $mform->setType('quantaddressesusers', PARAM_INT);
+            $mform->addelement('hidden', 'renewable');
+            $mform->setType('renewable', PARAM_BOOL);
+        }
 
         // Adding submit and reset button
         $buttonarray = array();
@@ -206,26 +223,7 @@ class Product_Form extends catalogitemform {
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemnotes', @$defaults->id);
         $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftid_editor);
 
-        $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'eula_editor', @$defaults->id, array('subdirs' => true), $defaults->eula);
-        $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemeula', @$defaults->id);
-        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftid_editor);
-
-        $draftitemid = file_get_submitted_draft_itemid('leaflet');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->leaflet = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('image');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->image = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('thumb');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->thumb = $draftitemid;
-
-        $draftitemid = file_get_submitted_draft_itemid('unit');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->productid, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->unit = $draftitemid;
+        $this->set_document_asset_data($defaults, $context);
 
         parent::set_data($defaults);
     }

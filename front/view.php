@@ -28,6 +28,7 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Shop;

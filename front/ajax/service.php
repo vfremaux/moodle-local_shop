@@ -262,4 +262,20 @@ if ($action == 'ordertotals') {
     $output = json_encode($output);
 }
 
+if ($action == 'checkpasscode') {
+    $shortname = required_param('productname', PARAM_TEXT);
+    $passcode = required_param('passcode', PARAM_TEXT);
+    $output = new StdClass;
+    if ($product = $theCatalog->get_product_by_shortname($shortname)) {
+        if ($passcode == $product->password) {
+            $output->status = 'passed';
+        } else {
+            $output->status = 'failed';
+        }
+    } else {
+        $output->status = 'product error';
+    }
+    $output = json_encode($output);
+}
+
 echo $output;

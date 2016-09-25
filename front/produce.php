@@ -41,7 +41,7 @@ try {
 
 // in case session is lost, go to the public entrance of the shop
 if ((!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) && $action != 'navigate' && !empty($transid)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => $theBlock->id, 'view' => 'shop')));
+    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => @$theBlock->instance->id, 'view' => 'shop')));
 }
 
 /*
@@ -60,10 +60,10 @@ if ($action != '') {
 }
 
 $supports = array();
-if ($config->sellermailsupport) $supports[] = get_string('byemailat', 'local_shop'). ' '. $config->sellermailsupport;
-if ($config->sellerphonesupport) $supports[] = get_string('byphoneat', 'local_shop'). ' '. $config->sellerphonesupport;
+if ($config->sellermailsupport) $supports[] = get_string('byemailat', 'local_shop').' '. $config->sellermailsupport;
+if ($config->sellerphonesupport) $supports[] = get_string('byphoneat', 'local_shop').' '. $config->sellerphonesupport;
 $supportstr = implode(' '.get_string('or', 'local_shop').' ', $supports);
-$supportstr = (empty($supportstr)) ? '(No support info)' : '';
+$supportstr = (empty($supportstr)) ? '(No support info)' : $supportstr;
 
 echo $out;
 

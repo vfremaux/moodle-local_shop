@@ -193,7 +193,7 @@ function ajax_delete_user(wwwroot, ptmail) {
         },
         function(data, status) {
             $('#participantlist').html(data);
-    
+
             for (i = 0; i < roles.length; i++) {
                 for (j = 0; j < products.length; j++) {
                     $('#'+roles[i]+'list'+products[j]).html(ajax_waiter);
@@ -492,6 +492,36 @@ function local_toggle_invoiceinfo(check) {
     } else {
         $('#shop-invoiceinfo-wrapper').css('display', 'none');
     }
+}
+
+function check_pass_code(wwwroot, productname, textinput, event) {
+    urlbase = wwwroot+'/local/shop/front/ajax/service.php';
+    ajax_waiter = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/ajaxloader.gif" />';
+    ajax_success = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/valid.png" />';
+    ajax_failure = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/invalid.png" />';
+
+    $('#ci-pass-status-'+productname).html(ajax_waiter);
+
+    var input = textinput.value + event.key;
+
+    $.post(
+        urlbase, 
+        {
+            id: '<?php echo $theShop->id ?>',
+            action: 'checkpasscode',
+            productname: productname,
+            passcode: input
+        },
+        function(data, status) {
+            dataobj = JSON.parse(data);
+            if (dataobj.status == 'passed') {
+                $('#ci-'+productname).attr('disabled', null);
+                $('#ci-pass-status-'+productname).html(ajax_success);
+            } else {
+                $('#ci-pass-status-'+productname).html(ajax_failure);
+            }
+        }
+    );
 }
 
 /*

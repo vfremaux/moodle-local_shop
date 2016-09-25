@@ -141,6 +141,7 @@ $string['configtvaeurope'] = 'European VAT number';
 $string['configuseshipping'] = 'Enables the shipping costs engine';
 $string['configusedelegation'] = 'If enabled, some users may get ownership of products and sales in the shop.';
 $string['configdefaultcustomersupportcourse'] = 'Default course for customer support';
+$string['confirmoperation'] = 'Confirm operation';
 $string['controls'] = 'Controls';
 $string['courseowner'] = 'Course Owner';
 $string['countrycodelist'] = 'Country codes list';
@@ -163,10 +164,8 @@ $string['defaultbilltitle'] = '{$a} Online Purchase';
 $string['deletealllinkedproducts'] = 'Delete all linked products';
 $string['deletebillitems'] = 'Delete bill items';
 $string['deletebills'] = 'Delete bills';
-$string['deletebundle'] = 'Delete bundle';
 $string['deletelocalversion'] = 'Delete local version';
 $string['deleteproduct'] = 'Delete product';
-$string['deleteset'] = 'Delete set';
 $string['description'] = 'Description:';
 $string['disabled'] = 'Disabled';
 $string['discounts'] = 'Discount settings';
@@ -295,6 +294,7 @@ $string['nosamecurrency'] = 'All bills have not the same curency. Sum is not con
 $string['notes'] = 'Notes:';
 $string['notrace'] = 'No trace for this transaction';
 $string['nonmutable'] = 'Non mutable product';
+$string['notowner'] = 'You are not owning this item';
 $string['num'] = 'N°';
 $string['objectexception'] = 'Object exception : {$a}';
 $string['oneday'] = 'a day';
@@ -309,6 +309,7 @@ $string['orderType_SERVICE'] = 'Service';
 $string['orders'] = 'Orders';
 $string['outofcategory'] = 'Out of category (root)';
 $string['outofset'] = 'Out of set';
+$string['paymentmethods'] = 'Pay modes';
 $string['pastetransactionid'] = 'Paste a transaction ID ';
 $string['picktransactionid'] = 'Pick a transaction ID ';
 $string['postproduction'] = 'Product action';
@@ -327,6 +328,7 @@ $string['productcode'] = 'Product code:';
 $string['productid'] = 'Product ID';
 $string['productline'] = 'Poduct line';
 $string['productname'] = 'Product name';
+$string['productoperation'] = 'Operation on your product';
 $string['productpostprocess'] = 'Post production product actions';
 $string['products'] = 'Products:';
 $string['profroma'] = 'Invoice';
@@ -412,13 +414,14 @@ $string['taxhelp_help'] = 'Taxes Help';
 $string['tax'] = 'Tax';
 $string['taxes'] = 'Taxes';
 $string['tendays'] = 'ten days';
-$string['testmodeactive'] = 'Moodle Shop is in test mode. We do not allow payments at the moment.';
+$string['testmodeactive'] = 'Moodle Shop is in test mode. We do not allow payments at the moment unless admin users for testing purpose.';
 $string['threemonths'] = 'three months';
 $string['thumbnail'] = 'Thumbnail:';
 $string['title'] = 'Title';
 $string['total'] = 'Total';
 $string['totalprice'] = 'Total amount';
 $string['totaltaxed'] = 'Total TI';
+$string['totaltaxes'] = 'Taxes (total)';
 $string['totaluntaxed'] = 'Total WT';
 $string['tracescan'] = 'Scann';
 $string['tracescandesc'] = 'Grep in trace for a single transaction';
@@ -442,6 +445,7 @@ $string['usedelegation'] = 'Use sales delegation';
 $string['userdiscountagreed'] = 'User discount lvl 1';
 $string['userdiscountagreed2'] = 'User discount lvl 2';
 $string['userdiscountagreed3'] = 'User discount lvl 3';
+$string['user_enrolment'] = 'User enrol';
 $string['vendorinfo'] = 'Information about vendor\'s identity';
 
 $string['noproducts'] = "
@@ -532,31 +536,6 @@ $string['post_billing_message_tpl'] = '
 thanks you for your purchase. The order is actually pending for your payement... <br/><br/>
 ';
 
-$string['sales_feedback_tpl'] = '
-<h3><%%SELLER%%></h3>
-<h4>Customer order</h4>
-
-<p>You just ordered on the website : <%%SERVER%%>. </p>
-
-<p><u>Customer identification :</u> </p>
-<hr />
-<b>Firstname :</b> <%%FIRSTNAME%%><br />
-<b>Lastname :</b> <%%LASTNAME%%><br />
-<b>Mail :</b> <%%MAIL%%><br />
-<b>City :</b> <%%CITY%%><br />
-<b>Country :</b> <%%COUNTRY%%><br />
-<hr />
-<p><u>Order summary :</u> </p>
-<hr />
-<b>Total untaxed amount :</b> <%%AMOUNT%%><br />
-<b>Pat mode :</b> <%%PAYMODE%%><br />
-<b>Items :</b> <%%ITEMS%%> 
-<hr />
-<%%PRODUCTION_DATA%%>
-<hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
-. 
-';
-
 $string['search_bill_failed_tpl'] = '
 <h3 class="error">Search error</h3>
 <p>No bill matches your search criteria: </p>
@@ -601,7 +580,23 @@ $string['upload_success_tpl'] = '
 ';
 
 $string['bill_complete_text_tpl'] = '
-This order is now saved.<br/>
+This order has been saved.<br/>
+';
+
+$string['discountrate_help'] = '
+A discount rate applied on the overall amount. May be applied inconditionally if customer has the local/shop:discountagreed capability on
+';
+
+$string['discountthreshold_help'] = '
+A threshold that triggers the effectivity of the discount
+';
+
+$string['discountrate2_help'] = '
+A discount rate applied when customer has the local/shop:seconddiscountagreed capability on
+';
+
+$string['discountrate3_help'] = '
+A discount rate applied when customer has the local/shop:thirddiscountagreed capability on
 ';
 
 global $CFG;
