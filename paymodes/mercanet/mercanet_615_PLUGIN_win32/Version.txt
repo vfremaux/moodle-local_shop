@@ -1,7 +1,0 @@
-api p614_PLUGIN_win64 créée le 15/01/10
-
-type d'api = PLUGIN
-OS = Windows Server 2003 R2 Enterprise x64
-version = p614
-processeur = i686
-package = 20100517
