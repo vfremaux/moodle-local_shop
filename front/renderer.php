@@ -1075,8 +1075,8 @@ class shop_front_renderer {
         return $str;
     }
 
-    function participant_row($participant = null) {
-        global $CFG, $OUTPUT, $SITE;
+    public function participant_row($participant = null) {
+        global $CFG, $OUTPUT, $SITE, $PAGE;
 
         $this->check_context();
 
@@ -1157,7 +1157,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function participant_blankrow() {
+    public function participant_blankrow() {
         global $CFG, $OUTPUT;
 
         $this->check_context();
@@ -1200,7 +1200,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function new_participant_row() {
+    public function new_participant_row() {
         global $CFG, $SESSION;
 
         $this->check_context();
@@ -1268,7 +1268,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function assignation_row($participant, $role, $shortname) {
+    public function assignation_row($participant, $role, $shortname) {
         global $CFG, $OUTPUT;
 
         $str = '';
@@ -1292,7 +1292,7 @@ class shop_front_renderer {
     * prints a user selector for a product/role list from declared
     * participants removing already assigned people.
     */
-    function assignation_select($role, $shortname) {
+    public function assignation_select($role, $shortname) {
         global $SESSION, $CFG;
 
         $str = '';
@@ -1318,7 +1318,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function role_list($role, $shortname) {
+    public function role_list($role, $shortname) {
         global $OUTPUT, $SESSION;
 
         $this->check_context();
@@ -1352,7 +1352,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function cart_summary() {
+    public function cart_summary() {
         global $SESSION, $CFG;
 
         $str = '';
@@ -1375,7 +1375,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function admin_options() {
+    public function admin_options() {
         global $OUTPUT, $SESSION, $DB;
 
         $this->check_context();
@@ -1414,7 +1414,7 @@ class shop_front_renderer {
      * @param array $options
      * @param boolean $return if true returns a string
      */
-    function order_line($shortname = null, $q = null, $options = null) {
+    public function order_line($shortname = null, $q = null, $options = null) {
         global $SESSION;
 
         $this->check_context();
@@ -1480,7 +1480,7 @@ class shop_front_renderer {
      * @param array $options
      * @param boolean $return if true returns a string
      */
-    function bill_line($billitem) {
+    public function bill_line($billitem) {
         global $SESSION;
 
         $str = '';
@@ -1512,7 +1512,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function full_order_totals($bill = null) {
+    public function full_order_totals($bill = null) {
         global $SESSION, $CFG;
 
         $this->check_context();
@@ -1605,20 +1605,6 @@ class shop_front_renderer {
             $str .= '<b>'.sprintf("%0.2f", round($discount, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;</b>';
             $str .= '</td>';
             $str .= '</tr>';
-
-            /*
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle cell c1">';
-            $str .= get_string('totaldiscounted', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" style="text-align:right" class="shop-totals cell c2">';
-            $str .= sprintf("%0.2f", round($finaltaxedtotal, 2)).'&nbsp;'.shop_currency($theBlock, 'symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
-            */
         }
 
         $str .= '<tr valign="top">';
@@ -1680,7 +1666,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function full_order_taxes(&$bill = null) {
+    public function full_order_taxes(&$bill = null) {
         global $SESSION, $CFG, $DB, $OUTPUT;
 
         $this->check_context();
@@ -1750,7 +1736,7 @@ class shop_front_renderer {
      * prints the payment block on GUI
      *
      */
-    function payment_block() {
+    public function payment_block() {
         global $SESSION, $OUTPUT, $USER, $CFG;
 
         $config = get_config('local_shop');
@@ -1769,7 +1755,7 @@ class shop_front_renderer {
         $str .= '</td></tr>';
         $str .= '<tr><td valign="top" align="left">';
 
-        // Checking  paymodes availability and creating radios
+        // Checking  paymodes availability and creating radios.
         if ($SESSION->shoppingcart->finalshippedtaxedtotal == 0) {
             $str .= '<input type="hidden" name="paymode" value="freeorder" />';
             $str .= '<em>'.get_string('freeordersignal', 'local_shop').'</em>';
@@ -1783,14 +1769,15 @@ class shop_front_renderer {
 
                 $paymodeplugin = shop_paymode::get_instance($theBlock, $var);
 
-                // user must be allowed to use non immediate payment methods.
+                // User must be allowed to use non immediate payment methods.
                 if (!$paymodeplugin->is_instant_payment()) {
-                    if (!has_capability('local/shop:paycheckoverride', $this->context) && !has_capability('local/shop:usenoninstantpayments', $this->context)) {
+                    if (!has_capability('local/shop:paycheckoverride', $this->context) &&
+                        !has_capability('local/shop:usenoninstantpayments', $this->context)) {
                         continue;
                     }
                 }
 
-                // if test payment, check if we are logged in and admin, or logged in from an admin behalf
+                // If test payment, check if we are logged in and admin, or logged in from an admin behalf.
 
                 if (($var == 'test') && (!$config->test)) {
                     if (!isloggedin()) continue;
@@ -1873,7 +1860,8 @@ class shop_front_renderer {
             $str .= '<td>';
             $str .= get_string('discount', 'local_shop');
             $str .= '</td><td>';
-            $str .= sprintf('%.2f', $SESSION->shoppingcart->taxedtotal * ($discountrate / 100)).' '.$this->theshop->get_currency('symbol'); // taxed value
+            // Taxed value.
+            $str .= sprintf('%.2f', $SESSION->shoppingcart->taxedtotal * ($discountrate / 100)).' '.$this->theshop->get_currency('symbol');
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -1898,7 +1886,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function field_start($legend, $class) {
+    public function field_start($legend, $class) {
         global $OUTPUT;
 
         $str = '';
@@ -1908,7 +1896,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function field_end() {
+    public function field_end() {
         return '</field></fieldset>';
     }
 
@@ -1916,7 +1904,7 @@ class shop_front_renderer {
      *
      * @see users.php
      */
-    function seat_roles_assignation_form(&$catalogentry, &$requiredroles, $shortname, $q) {
+    public function seat_roles_assignation_form(&$catalogentry, &$requiredroles, $shortname, $q) {
 
         $str = '';
 
@@ -1997,7 +1985,6 @@ class shop_front_renderer {
 
         $str = '';
 
-        
         // Samples for json programming
         /*
         $test = array(

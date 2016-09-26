@@ -57,6 +57,9 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configcheckbox('local_shop/test', get_string('testmode', 'local_shop'),
                        get_string('configtestmode', 'local_shop'), ''));
 
+    $settings->add(new admin_setting_configcheckbox('local_shop/testoverride', get_string('testoverride', 'local_shop'),
+                       get_string('configtestoverride', 'local_shop'), ''));
+
     $settings->add(new admin_setting_configcheckbox('local_shop/useshipping', get_string('useshipping', 'local_shop'),
                        get_string('configuseshipping', 'local_shop'), ''));
 

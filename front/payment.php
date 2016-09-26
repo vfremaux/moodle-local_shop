@@ -60,7 +60,7 @@ $renderer->field_start(get_string('ordersummary', 'local_shop'), 'shop-informati
 $renderer->order_short();
 $renderer->field_end();
 
-if ($config->test && !has_capability('local/shop:salesadmin', context_system::instance())) {
+if (!empty($config->test) && empty($config->testoverride) && !has_capability('local/shop:salesadmin', context_system::instance())) {
     echo $OUTPUT->notification(get_string('testmodeactive', 'local_shop'));
 } else {
     $renderer->field_start(get_string('procedure', 'local_shop'), 'shop-information-area');

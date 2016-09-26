@@ -51,7 +51,7 @@ if ($action) {
     list($errors, $warnings, $messages) = $controller->process($action);
 }
 
-// make page header.
+// Make page header.
 
 $url = new moodle_url('/local/shop/unittests/index.php');
 $PAGE->set_url($url);
@@ -98,7 +98,7 @@ if ($productline = $theCatalog->get_products()) {
     echo '<form name="testform" action="" method="post">';
     echo '<input type="hidden" name="what" value="test"/>';
 
-    // we need write the table by ourselves... 
+    // We need write the table by ourselves... 
     echo '<table width="'.$testtable->width.'" class="generaltable">';
     $i = 0;
     echo '<tr valign="top" class="row">';
