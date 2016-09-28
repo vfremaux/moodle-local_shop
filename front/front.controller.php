@@ -14,16 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
 
 abstract class front_controller_base {
 
@@ -35,7 +34,7 @@ abstract class front_controller_base {
 
     protected $context;
 
-    function __construct(&$theShop, &$theCatalog, &$theBlock = null) {
+    public function __construct(&$theShop, &$theCatalog, &$theBlock = null) {
         $this->theshop = $theShop;
         $this->thecatalog = $theCatalog;
         $this->theblock = $theBlock;
@@ -47,5 +46,5 @@ abstract class front_controller_base {
         }
     }
 
-    abstract function process($cmd); 
+    abstract public function process($cmd);
 }

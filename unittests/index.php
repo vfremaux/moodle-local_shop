@@ -82,12 +82,12 @@ if ($productline = $theCatalog->get_products()) {
     $productparamsstr = get_string('handlerparams', 'local_shop');
     $productrequirementsstr = get_string('requiredparams', 'local_shop');
 
-    $testtable->width = "100%"; 
-    $testtable->size = array('5%', '10%', '20%', '25%', '20%', '20%'); 
+    $testtable->width = "100%";
+    $testtable->size = array('5%', '10%', '20%', '25%', '20%', '20%');
     $testtable->head = array("", "<b>$productcodestr</b>", "<b>$productnamestr</b>", "<b>$productdescstr</b>", "<b>$productparamsstr</b>", "<b>$productrequirementsstr</b>");
 
     foreach ($productline as $productcode => $catalogitem) {
-        $presel = (in_array($productcode, $selected)) ? ' checked="checked" ' : '' ; 
+        $presel = (in_array($productcode, $selected)) ? ' checked="checked" ' : '' ;
         $selbox = '<input type="checkbox" name="sel[]" value="'.$productcode.'" '.$presel.' >';
         $producturl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $catalogitem->id));
         $productlink = '<a href="'.$producturl.'">'.format_string($catalogitem->name).'</a>';
@@ -98,7 +98,7 @@ if ($productline = $theCatalog->get_products()) {
     echo '<form name="testform" action="" method="post">';
     echo '<input type="hidden" name="what" value="test"/>';
 
-    // We need write the table by ourselves... 
+    // We need write the table by ourselves...
     echo '<table width="'.$testtable->width.'" class="generaltable">';
     $i = 0;
     echo '<tr valign="top" class="row">';

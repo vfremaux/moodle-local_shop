@@ -15,27 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Defines form to add or edit a catalog
  *
- * Defines form to add a new project
- *
- * @package    block-prf-catalogue
- * @subpackage classes
- * @reviewer   Valery Fremaux <valery.fremaux@club-internet.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
- *
+ * @package     local_shop
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @caopyright  (C) 2016 Valery Fremaux (http://www.mylearningfactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 
-// Security
-if (!defined('MOODLE_INTERNAL')) die("You are not authorized to run this file directly");
+// Security.
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
 class Catalog_Form extends moodleform {
 
-    public $editoroptions;
+    protected $editoroptions;
 
-    function definition() {
+    public function definition() {
         global $CFG, $OUTPUT, $DB, $COURSE;
 
         $context = context_system::instance();
@@ -44,7 +43,6 @@ class Catalog_Form extends moodleform {
         $maxbytes = $COURSE->maxbytes; // TODO: add some setting
         $this->editoroptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes, 'context' => $context);
 
-        // Setting variables
         $mform =& $this->_form;
 
         // Adding title and description.
@@ -67,17 +65,20 @@ class Catalog_Form extends moodleform {
         $mform->addRule('name', null, 'required');
         $mform->setType('name', PARAM_TEXT);
 
-        $mform->addElement('editor', 'description_editor', get_string('description', 'local_shop'), null, $this->editoroptions);
+        $label = get_string('description', 'local_shop');
+        $mform->addElement('editor', 'description_editor', $label, null, $this->editoroptions);
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
         $mform->addRule('description_editor', null, 'required');
 
-        $mform->addElement('editor', 'salesconditions_editor', get_string('salesconditions', 'local_shop'), null, $this->editoroptions);
+        $label = get_string('salesconditions', 'local_shop');
+        $mform->addElement('editor', 'salesconditions_editor', $label, null, $this->editoroptions);
 
-        $mform->addElement('text', 'countryrestrictions', get_string('countrycodelist', 'local_shop'), $attributes);
+        $label = get_string('countrycodelist', 'local_shop');
+        $mform->addElement('text', 'countryrestrictions', $label, $attributes);
         $mform->addHelpButton('countryrestrictions', 'countryrestrictions', 'local_shop');
         $mform->setType('countryrestrictions', PARAM_TEXT);
 
-        // Add catalog mode settings
+        // Add catalog mode settings.
 
         $sql = "
            SELECT DISTINCT
@@ -104,28 +105,30 @@ class Catalog_Form extends moodleform {
         $mform->addGroup($linkedarray, 'linkedarray', '', array(' '), false);
         $mform->setDefault('linked', 'free');
 
-        // Adding submit and reset button
+        // Adding submit and reset button.
         $this->add_action_buttons();
     }
 
-    function validation($data, $files = array()) {
-    }
-
-    function set_data($defaults) {
+    public function set_data($defaults) {
 
         $context = context_system::instance();
 
         $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', $defaults->id, array('subdirs' => true), $defaults->description);
-        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop', 'catalogdescription', $defaults->id);
+        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', $defaults->id,
+                                               array('subdirs' => true), $defaults->description);
+        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogdescription', $defaults->id);
         $defaults->description_editor = array('text' => $currenttext, 'format' => $defaults->descriptionformat, 'itemid' => $draftid_editor);
 
         $draftid_editor = file_get_submitted_draft_itemid('salesconditions_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'salesconditions_editor', $defaults->id, array('subdirs' => true), $defaults->salesconditions);
-        $defaults = file_prepare_standard_editor($defaults, 'salesconditions', $this->editoroptions, $context, 'local_shop', 'catalogsalesconditions', $defaults->id);
-        $defaults->salesconditions_editor = array('text' => $currenttext, 'format' => $defaults->salesconditionsformat, 'itemid' => $draftid_editor);
+        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'salesconditions_editor', $defaults->id,
+                                               array('subdirs' => true), $defaults->salesconditions);
+        $defaults = file_prepare_standard_editor($defaults, 'salesconditions', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogsalesconditions', $defaults->id);
+        $defaults->salesconditions_editor = array('text' => $currenttext,
+                                                  'format' => $defaults->salesconditionsformat,
+                                                  'itemid' => $draftid_editor);
 
         parent::set_data($defaults);
-
     }
 }

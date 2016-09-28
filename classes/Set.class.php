@@ -35,12 +35,12 @@ class Set extends ShopObject {
 
     static $table = 'local_shop_catalogitem';
 
-    function __construct($recordorid) {
+    public function __construct($recordorid) {
         parent::__construct($recordorid, self::$table);
     }
 
     // Get the accurate price against quantity ranges.
-    function get_price($q) {
+    public function get_price($q) {
         if ($this->catalogitem->range1) {
             if ($q < $this->catalogitem->range1) {
                 return $this->catalogitem->price1;
@@ -80,10 +80,10 @@ class Set extends ShopObject {
         }
     }
 
-    function get_taxed_price($q, $tax) {
+    public function get_taxed_price($q, $tax) {
         static $TAXCACHE;
         global $DB;
-        
+
         if (!isset($TAXCACHE)) {
             $TAXCACHE = array();
         }

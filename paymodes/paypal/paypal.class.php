@@ -32,19 +32,20 @@ Use \local_shop\Shop;
 
 class shop_paymode_paypal extends shop_paymode {
 
-    function __construct(&$shop) {
+    public function __construct(&$shop) {
         parent::__construct('paypal', $shop, true, true);
     }
 
-    function is_instant_payment() {
+    public function is_instant_payment() {
         return true;
     }
 
-    // prints a payment porlet in an order form
     /**
+     * Prints a payment porlet in an order form.
+     *
      * @param object $portlet a data stub that contains required information for the portlet raster
      */
-    function print_payment_portlet(&$shoppingcart) {
+    public function print_payment_portlet(&$shoppingcart) {
         global $CFG;
 
         if ($shoppingcart->usedistinctinvoiceinfo) {
@@ -69,8 +70,8 @@ class shop_paymode_paypal extends shop_paymode {
         $portlet->city = $paymentinfo['city'];
         $portlet->country = $paymentinfo['country'];
         $portlet->zip = $paymentinfo['zip'];
-        $portlet->email = $shoppingcart->customerinfo['email']; // invoicing info has no mail
-        $portlet->transid = $shoppingcart->transid; // no need special format for online transaction id here.
+        $portlet->email = $shoppingcart->customerinfo['email']; // Invoicing info has no mail.
+        $portlet->transid = $shoppingcart->transid; // No need special format for online transaction id here.
         $portlet->shipping = @$shoppingcart->shipping;
         $portlet->currency = $this->theshop->get_currency();
         $portlet->return_url = $CFG->wwwroot.'/local/shop/paymodes/paypal/process.php?id='.$this->theshop->id.'&transid='.$portlet->transid;
@@ -98,29 +99,18 @@ class shop_paymode_paypal extends shop_paymode {
     /**
      * prints a payment porlet in an order form
      */
-    function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info(&$billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paypal', '');
     }
 
-    function print_complete() {
+    public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
     /**
-    * guesses it is a paypal transaction 
-    *
-    function identify_transaction(&$transid, &$cmd) {
-        $action = optional_param('what', '', PARAM_TEXT);
-        if ($action == 'paypalback' || $action == 'paypalbackasync') {
-            $transid = required_param('invoice', PARAM_TEXT);
-        }
-    }
-    */
-
-    /**
-    * Cancels the order and return to shop
-    */ 
-    function cancel() {
+     * Cancels the order and return to shop
+     */
+    public function cancel() {
         global $SESSION;
 
         $transid = required_param('transid', PARAM_RAW);
@@ -132,8 +122,7 @@ class shop_paymode_paypal extends shop_paymode {
         $aFullBill->save(true);
         shop_trace('Paypal Interactive Cancellation');
 
-        // Do not cancel shopping cart. User may need another payment method
-        // unset($SESSION->shoppingcart);
+        // Do not cancel shopping cart. User may need another payment method.
 
         redirect(new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->theshop->id)));
     }
@@ -143,7 +132,7 @@ class shop_paymode_paypal extends shop_paymode {
      * In thje Paypal process, the payment processing only can be performed
      * waiting for an IPN call that needs answer back to Paypal and acknowledge (VERIFIED)
      */
-    function process() {
+    public function process() {
         shop_trace('Paypal Return Controller');
 
         $transid = required_param('transid', PARAM_RAW);
@@ -152,10 +141,12 @@ class shop_paymode_paypal extends shop_paymode {
 
         $this->theshop = $aFullBill->theshop;
 
-        // bill could already be SOLDOUT by IPN    so do nothing
-        // process it only if needind to process.
+        /*
+         * bill could already be SOLDOUT by IPN    so do nothing
+         * process it only if needind to process.
+         */
         if ($aFullBill->status == SHOP_BILL_PLACED) {
-            // Bill has not yet been soldout nor produced by an IPN notification
+            // Bill has not yet been soldout nor produced by an IPN notification.
             $aFullBill->status = SHOP_BILL_PENDING;
             $aFullBill->save(true);
 
@@ -164,13 +155,13 @@ class shop_paymode_paypal extends shop_paymode {
         }
     }
 
-    // Processes a payment asynchronous confirmation
-    function process_ipn() {
+    // Processes a payment asynchronous confirmation.
+    public function process_ipn() {
         global $CFG;
 
-        // get all input parms
+        // Get all input parms.
         $transid = required_param('invoice', PARAM_TEXT);
-        list($instanceid) = required_param('custom', PARAM_TEXT); // get the shopid. Not sure its needed any more
+        list($instanceid) = required_param('custom', PARAM_TEXT); // Get the shopid. Not sure its needed any more.
 
         if (empty($transid)) {
             shop_trace("[ERROR] Paypal IPN : Empty Transaction ID");
@@ -201,7 +192,7 @@ class shop_paymode_paypal extends shop_paymode {
         }
 
         $validationquery .= $querystring;
-        // control for replicated notifications (normal operations)
+        // Control for replicated notifications (normal operations).
         if (empty($this->_config->test) && $DB->record_exists('shop_paypal_ipn', array('txnid' => $txnid))) {
             shop_trace("[$transid] Paypal IPN : paypal event collision on $txnid");
             shop_email_paypal_error_to_admin("Paypal IPN : Transaction $txnid is being repeated.", $data);
@@ -232,7 +223,7 @@ class shop_paymode_paypal extends shop_paymode {
         }
 
         if (empty($this->_config->test)) {
-            // fetch the file on the consumer side and store it here through a CURL call
+            // Fetch the file on the consumer side and store it here through a CURL call.
             $ch = curl_init("{$paypalurl}?$validationquery");
             shop_trace("[$transid] Paypal IPN : sending validation request: "."{$paypalurl}?$validationquery");
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
@@ -246,7 +237,7 @@ class shop_paymode_paypal extends shop_paymode {
         } else {
             // We fake an IPN validation in test mode.
             shop_trace("[$transid] Paypal IPN : faking validation request for test: "."{$paypalurl}?$validationquery");
-            $rawresponse = 'VERIFIED'; // just for testing end of procedure
+            $rawresponse = 'VERIFIED'; // Just for testing end of procedure.
         }
         if ($rawresponse) {
             if ($rawresponse == 'VERIFIED') {
@@ -261,7 +252,7 @@ class shop_paymode_paypal extends shop_paymode {
                     die;
                 }
                 $sellerexpectedname = (empty($this->_config->test)) ? $this->_config->paypalsellername : $this->_config->paypalsellertestname;
-                if ($data->business != $sellerexpectedname) {   // Check that the business account is the one we want it to be
+                if ($data->business != $sellerexpectedname) {   // Check that the business account is the one we want it to be.
                     shop_email_paypal_error_to_admin("Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)", $data);
                     if (!empty($this->_config->test)) {
                         mtrace("Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)");
@@ -275,10 +266,12 @@ class shop_paymode_paypal extends shop_paymode {
                 if (!empty($this->_config->test)) {
                     mtrace('Paypal IPN : Recording VERIFIED STATE on '.$txnid);
                 }
-                // Bill has not yet been soldout through an IPN notification
-                // sold it out and update both DB and memory record
+                /*
+                 * Bill has not yet been soldout through an IPN notification
+                 * sold it out and update both DB and memory record
+                 */
                 if ($aFullBill->status != SHOP_BILL_SOLDOUT) {
-                    // stores the back code of paypal
+                    // Stores the back code of paypal.
                     $tx = required_param('invoice', PARAM_TEXT);
                     $aFullBill->onlinetransactionid = $tx;
                     $aFullBill->paymode = 'paypal';
@@ -287,7 +280,7 @@ class shop_paymode_paypal extends shop_paymode {
                     $aFullBill->save(true);
 
                     shop_trace("[$transid] Paypal IPN Start Production");
-                    // perform final production
+                    // Perform final production.
                     $action = 'produce';
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
                     $controller = new \local_shop\front\production_controller($aFullBill);
@@ -305,21 +298,28 @@ class shop_paymode_paypal extends shop_paymode {
         }
     }
 
-    // provides global settings to add to shop settings when installed
-    function settings(&$settings) {
+    /**
+     * provides global settings to add to shop settings when installed
+     */
+    public function settings(&$settings) {
 
-        $settings->add(new admin_setting_heading('local_shop_'.$this->name, get_string($this->name.'paymodeparams', 'shoppaymodes_paypal', $this->name), ''));
+        $label = get_string($this->name.'paymodeparams', 'shoppaymodes_paypal', $this->name);
+        $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, ''));
 
-        $settings->add(new admin_setting_configtext('local_shop/paypalsellertestname', get_string('paypalsellertestname', 'shoppaymodes_paypal'),
+        $label = get_string('paypalsellertestname', 'shoppaymodes_paypal');
+        $settings->add(new admin_setting_configtext('local_shop/paypalsellertestname', $label,
                            get_string('configpaypalsellername', 'shoppaymodes_paypal'), '', PARAM_TEXT));
 
-        $settings->add(new admin_setting_configtext('local_shop/paypalsellertestitemname', get_string('sellertestitemname', 'shoppaymodes_paypal'),
+        $label = get_string('sellertestitemname', 'shoppaymodes_paypal');
+        $settings->add(new admin_setting_configtext('local_shop/paypalsellertestitemname', $label,
                            get_string('configselleritemname', 'shoppaymodes_paypal'), '', PARAM_TEXT));
 
-        $settings->add(new admin_setting_configtext('local_shop/paypalsellername', get_string('paypalsellername', 'shoppaymodes_paypal'),
+        $label = get_string('paypalsellername', 'shoppaymodes_paypal');
+        $settings->add(new admin_setting_configtext('local_shop/paypalsellername', $label,
                            get_string('configpaypalsellername', 'shoppaymodes_paypal'), '', PARAM_TEXT));
 
-        $settings->add(new admin_setting_configtext('local_shop/paypalselleritemname', get_string('selleritemname', 'shoppaymodes_paypal'),
+        $label = get_string('selleritemname', 'shoppaymodes_paypal');
+        $settings->add(new admin_setting_configtext('local_shop/paypalselleritemname', $label,
                            get_string('configselleritemname', 'shoppaymodes_paypal'), '', PARAM_TEXT));
     }
 }

@@ -14,18 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 class shop_instances_renderer {
 
-    function instance_admin_line($instance) {
+    public function instance_admin_line($instance) {
         global $OUTPUT, $CFG;
 
         $str = '';
@@ -85,7 +84,7 @@ class shop_instances_renderer {
             $str .= '<td class="amount cell '.$slaveclass.'"align="right">';
             $str .= implode('<br/>', $taxedpricelines);
             $str .= '<br/>';
-            $str .= '</td>'; 
+            $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             switch ($product->quantaddressesusers) {
 
@@ -120,7 +119,7 @@ class shop_instances_renderer {
         return $str;
     }
 
-    function global_commands() {
+    public function global_commands() {
         $str = '';
 
         $str .= '<table width="100%">';
@@ -134,5 +133,4 @@ class shop_instances_renderer {
 
         return $str;
     }
-
 }

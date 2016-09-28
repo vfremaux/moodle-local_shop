@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 define('NO_HANDLER', 0);
 define('EMPTY_HANDLER', '');
@@ -49,7 +48,7 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
 
     if ($enrols = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
         $enrol = reset($enrols);
-        $enrolplugin = enrol_get_plugin('manual'); // the enrol object instance
+        $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
     } else {
         shop_trace("[{$transactionid}] Production Process Error : Customer support enrol failed // no enrol plugin.");
         return false;
@@ -76,7 +75,7 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
 function shop_create_customer_user(&$data, &$customer, &$newuser) {
     global $CFG, $DB;
 
-    // Create Moodle User but no assignation
+    // Create Moodle User but no assignation.
     $newuser = new StdClass();
     $newuser->username = shop_generate_username($data->customer);
     $customer->password = generate_password(8);
@@ -104,7 +103,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
     $data->user = get_complete_user_data('username', $newuser->username);
 
-    // this will force cron to generate a password and send it to user's email 
+    // This will force cron to generate a password and send it to user's email.
     set_user_preference('create_password', 1, $data->user->id);
 
     if (!empty($CFG->{'auth_'.$newuser->auth.'_forcechangepassword'})) {
@@ -112,7 +111,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     }
     update_internal_user_password($data->user, $customer->password);
 
-    // bind customer record to Moodle userid
+    // Bind customer record to Moodle userid.
     $customer->hasaccount = $newuser->id;
     $DB->update_record('local_shop_customer', $customer);
 
@@ -174,9 +173,11 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
         $DB->insert_record('user_preferences', $pref);
     }
 
-    // Assign role to customer for behalf on those users.
-    // Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to 
-    // sync the user delegation handling.
+    /*
+     * Assign role to customer for behalf on those users.
+     * Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to
+     * sync the user delegation handling.
+     */
     $usercontext = context_user::instance($participant->id);
     $now = time();
     role_assign($supervisorrole->id, $customer->hasaccount, $usercontext->id, '', 0, $now);

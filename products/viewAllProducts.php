@@ -153,8 +153,10 @@ if (count(array_keys($products)) == 0) {
                     $bundlePrice = 0;
                     $bundleTTCPrice = 0;
                 }
-                // update bundle price in database for other applications. Note that only visible product entry 
-                // is updated.
+                /*
+                 * update bundle price in database for other applications. Note that only visible product entry
+                 * is updated.
+                 */
                 $record = new StdClass;
                 $record->id = $portlet->id;
                 $record->price1 = $bundlePrice;

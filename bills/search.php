@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(defined('MOODLE_INTERNAL')) || die;
-
 /**
  * Form for editing HTML block instances.
  *
@@ -26,9 +24,11 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
-    include $CFG->dirroot.'/local/shop/bills/search.controller.php';
+    include($CFG->dirroot.'/local/shop/bills/search.controller.php');
     $controller = new \local_shop\bills\search_controller($theShop);
     $bills = $controller->process($action);
 }
@@ -45,9 +45,9 @@ function searchBy(criteria) {
 }
 </script>
 
-<?php 
+<?php
 
-echo $OUTPUT->heading(get_string('billsearch', 'local_shop'), 3); 
+echo $OUTPUT->heading(get_string('billsearch', 'local_shop'), 3);
 
 if (empty($bills)) {
     print_string('errorsearchbillfailed', 'local_shop');
@@ -127,9 +127,11 @@ else {
     <tr>
         <td align="center">
             <?php echo $OUTPUT->heading(get_string('oremissiondate', 'local_shop'), 3) ?>
-            <?php print_string('from (date)', 'local_shop') ?> 
-            <input type="text" name="dateFrom" width="10" maxlength="10"> 
-            <?php print_string('hour', 'local_shop') ?> <input type="text" name="timeFrom" width="10" maxlength="10"> <?php print_string('until', 'local_shop') ?>
+            <?php print_string('from (date)', 'local_shop') ?>
+            <input type="text" name="dateFrom" width="10" maxlength="10">
+            <?php print_string('hour', 'local_shop') ?>
+            <input type="text" name="timeFrom" width="10" maxlength="10">
+            <?php print_string('until', 'local_shop') ?>
             <select name="during">
                 <option value="h"><?php print_string('onehour', 'local_shop') ?></option>
                 <option value="d"><?php print_string('oneday', 'local_shop') ?></option>

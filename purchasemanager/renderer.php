@@ -109,14 +109,14 @@ class shop_purchasemanager_renderer {
             $pstart = date('Y/m/d h:i', $product->startdate);
             if ($product->renewable) {
                 if (time() > $product->enddate) {
-                    // expired
+                    // Expired.
                     $statusclass = 'cs-product-expired';
                     $expiredcount++;
-                } elseif (time() > $product->enddate - DAYSECS * 3) {
-                    // expiring
+                } else if (time() > $product->enddate - DAYSECS * 3) {
+                    // Expiring.
                     $statusclass = 'cs-product-expiring';
                 } else {
-                    // running
+                    // Running.
                     $statusclass = 'cs-product-running';
                     $runningcount++;
                 }

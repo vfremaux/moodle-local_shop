@@ -27,26 +27,26 @@ require_once $CFG->dirroot.'/local/shop/export/exportlib.php';
 
 class shop_export_excel extends shop_export {
 
-    var $workbook = array();
+    protected $workbook = array();
 
-    var $worksheets = array();
+    protected $worksheets = array();
 
-    var $xls_formats = array();
+    protected $xls_formats = array();
 
-    function __construct($data, $datadesc, $options) {
+    public function __construct($data, $datadesc, $options) {
         parent::__construct($data, $datadesc, $options);
     }
 
     /**
-    *
-    *
-    */
-    function open_export() {
+     *
+     *
+     */
+    public function open_export() {
         global $CFG;
 
         require_once($CFG->libdir.'/excellib.class.php');
 
-        // generate XLS
+        // Generate XLS.
 
         $this->workbook = new MoodleExcelWorkbook("-");
         if (!$this->workbook) {
@@ -74,15 +74,15 @@ class shop_export_excel extends shop_export {
                 $i++;
             }
         }
-        
+
         $this->setup_xls_formats();
     }
 
     /**
-    * a raster for xls printing of a report structure header
-    * with all the relevant data about a user.
-    *
-    */
+     * a raster for xls printing of a report structure header
+     * with all the relevant data about a user.
+     *
+     */
     protected function __print_header() {
         global $CFG;
 
@@ -106,10 +106,10 @@ class shop_export_excel extends shop_export {
     }
 
     /**
-    * a raster for xls printing of a data table
-    * with all the relevant data about a user.
-    *
-    */
+     * a raster for xls printing of a data table
+     * with all the relevant data about a user.
+     *
+     */
     protected function __print_data() {
         global $CFG;
 
@@ -128,7 +128,9 @@ class shop_export_excel extends shop_export {
             $dataarr = (array)$datarow;
             foreach ($this->datadesc[0]['columns'] as $col) {
                 $isnumber = false;
-                if ($col['width'] == 0) continue;
+                if ($col['width'] == 0) {
+                    continue;
+                }
                 if ($col['format'] == 'float') {
                     $isnumber = true;
                     $col['format'] = 'smalltext';
@@ -158,32 +160,34 @@ class shop_export_excel extends shop_export {
     }
 
     /**
-    *
-    *
-    */    
+     *
+     *
+     */
     function render() {
         $this->__print_header();
         $this->__print_data();
     }
-    
+
     /**
-    * Terminates all operations
-    *
-    */
+     * Terminates all operations
+     *
+     */
     function close_export() {
         $this->workbook->close();
     }
 
     /**
-    * sets up a set fo formats
-    * @param object $workbook
-    * @return array of usable formats keyed by a label
-    *
-    */
+     * sets up a set fo formats
+     * @param object $workbook
+     * @return array of usable formats keyed by a label
+     *
+     */
     function setup_xls_formats() {
-        
-        if (!$this->workbook) print_error('errorexcelcreation', 'local_shop');
-        
+
+        if (!$this->workbook) {
+            print_error('errorexcelcreation', 'local_shop');
+        }
+
         $formats = array();
 
         $formats['title'] = $this->workbook->add_format();
@@ -198,7 +202,7 @@ class shop_export_excel extends shop_export {
         $formats['bold'] = $this->workbook->add_format();
         $formats['bold']->set_bold(1);
 
-        // normal text
+        // Normal text.
         $formats['largetext'] = $this->workbook->add_format();
         $formats['largetext']->set_size(14);
 
@@ -215,7 +219,7 @@ class shop_export_excel extends shop_export {
         $formats['date'] = $this->workbook->add_format();
         $formats['date']->set_size(9);
         $formats['date']->set_num_format('aaaa/mm/dd hh:mm');
-        
+
         $this->xls_formats = $formats;
     }
 }

@@ -1,9 +1,23 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addshipping'] = 'Ajouter un frais de port';
 $string['addshippingzone'] = 'Nouvelle zone';
-$string['applicability'] = 'Formule d\'applicabilité'; 
-$string['applicability_desc'] = 'Une formule qui active ou inhibe l\'application du port'; 
+$string['applicability'] = 'Formule d\'applicabilité';
+$string['applicability_desc'] = 'Une formule qui active ou inhibe l\'application du port';
 $string['billscopeamount'] = 'Part affectée';
 $string['billscopeamount_desc'] = 'Part du montant de facture affecté par le port.';
 $string['deleteshipping'] = 'Supprimer un frais de port';
@@ -28,7 +42,7 @@ $string['zoneid'] = 'Zone de port ';
 $string['shippingfixedvalue_help'] = '
 # Port fixe
 
-Lorsque vous pouvez réduire le coût de port à une valuer fixe et simple, Utilisez ce champ pour donner la valeur de port pour le produit 
+Lorsque vous pouvez réduire le coût de port à une valuer fixe et simple, Utilisez ce champ pour donner la valeur de port pour le produit
 concerné en devise par défaut de la boutique associée.
 ';
 

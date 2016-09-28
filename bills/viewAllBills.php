@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -25,6 +23,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
@@ -82,8 +82,7 @@ if ($bills = Bill::get_instances($filter)) {
 
 echo $OUTPUT->heading_with_help(get_string('billing', 'local_shop'), 'billstates', 'local_shop');
 
-
-// print tabs
+// Print tabs.
 $total = new StdClass;
 $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $curclause");
 $total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $curclause");
@@ -106,7 +105,7 @@ $rows[0][] = new tabobject('ALL', "$url&status=ALL&cur=$cur", get_string('bill_A
 
 print_tabs($rows, $status);
 
-// print bills
+// Print bills.
 
 $subtotal = 0;
 if (empty($billsbystate)) {
@@ -137,7 +136,7 @@ if (empty($billsbystate)) {
         <td colspan="2" class="groupSubtotal">
         </td>
         <td colspan="3" align="right" class="groupsubtotal">
-            <?php 
+            <?php
             if ($samecurrency) {
                 echo sprintf('%.2f', round($subtotal, 2));
                 echo ' ';
@@ -153,6 +152,9 @@ if (empty($billsbystate)) {
     }
     echo '</table>';
 }
+
+$excelurl = new moodle_url('/local/shop/export/export.php', array('what' => 'allbills', 'format' => 'excel'));
+$billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id);
 ?>
 
 <table width="100%">
@@ -160,8 +162,8 @@ if (empty($billsbystate)) {
       <td align="left">
       </td>
       <td align="right">
-         <a href="<?php echo $CFG->wwwroot."/local/shop/export/export.php?what=allbills&format=excel" ?>" target="_blanck"><?php print_string('exportasxls', 'local_shop') ?></a>
-          - <a href="<?php echo $CFG->wwwroot.'/local/shop/bills/edit_bill.php' ?>"><?php print_string('newbill', 'local_shop') ?></a>
+         <a href="<?php echo ''.$excelurl ?>" target="_blanck"><?php print_string('exportasxls', 'local_shop') ?></a>
+          - <a href="<?php echo ''.$billurl ?>"><?php print_string('newbill', 'local_shop') ?></a>
       </td>
    </tr>
 </table>

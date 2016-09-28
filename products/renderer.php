@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package     local_shop
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -24,14 +32,6 @@ use local_shop\Shop;
 use local_shop\Tax;
 use local_shop\Category;
 
-/**
- * @package     local_shop
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 class shop_products_renderer {
 
     protected $theshop;
@@ -40,10 +40,10 @@ class shop_products_renderer {
 
     protected $theblock;
 
-    function load_context(&$theShop, &$theCatalog, &$theBlock = null) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
+    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
     }
 
     private function _check_context() {
@@ -52,7 +52,7 @@ class shop_products_renderer {
         }
     }
 
-    function catalog_header() {
+    public function catalog_header() {
 
         $this->_check_context();
 
@@ -66,7 +66,7 @@ class shop_products_renderer {
 
         if ($this->thecatalog->ismaster) {
             $str .= get_string('master', 'local_shop');
-        } elseif ($this->thecatalog->isslave) {
+        } else if ($this->thecatalog->isslave) {
             $str .= get_string('slave', 'local_shop');
         } else {
             $str .= get_string('standalone', 'local_shop');
@@ -90,7 +90,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    function product_admin_line($product, $return = false) {
+    public function product_admin_line($product, $return = false) {
         global $OUTPUT, $CFG;
 
         $this->_check_context();
@@ -183,13 +183,13 @@ class shop_products_renderer {
             $str .= '<td class="amount cell '.$slaveclass.'"align="left" colspan="2">';
             $str .= implode('<br/>', $taxedpricelines);
             $str .= '<br/>';
-            $str .= '</td>'; 
+            $str .= '</td>';
             $str .= '<td class="status cell '.$slaveclass.'" align="right">';
             $str .= get_string($product->status, 'local_shop');
             $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             $str .= $product->sold;
-            $str .= '</td>'; 
+            $str .= '</td>';
             $str.= '<td class="amount cell '.$slaveclass.'" align="center">';
             $str .= $product->stock;
             $str .= '</td>';
@@ -198,11 +198,11 @@ class shop_products_renderer {
             $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             switch ($product->quantaddressesusers) {
-    
+
                 case SHOP_QUANT_NO_SEATS:
                     $str .= get_string('no');
                     break;
-    
+
                 case SHOP_QUANT_ONE_SEAT:
                     $str .= get_string('oneseat', 'local_shop');
                     break;
@@ -250,7 +250,7 @@ class shop_products_renderer {
     /**
      * Prints an administration line for a product set
      */
-    function set_admin_line($set) {
+    public function set_admin_line($set) {
         global $OUTPUT;
 
         $this->_check_context();
@@ -315,7 +315,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    function bundle_admin_line($bundle) {
+    public function bundle_admin_line($bundle) {
         global $OUTPUT;
 
         $this->_check_context();
@@ -417,7 +417,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    function set_admin_elements($set) {
+    public function set_admin_elements($set) {
         global $OUTPUT;
 
         $codestr = get_string('code', 'local_shop');
@@ -493,7 +493,7 @@ class shop_products_renderer {
     }
 
 
-    function bundle_admin_elements($bundle) {
+    public function bundle_admin_elements($bundle) {
         global $OUTPUT;
 
         $codestr = get_string('code', 'local_shop');
@@ -537,7 +537,7 @@ class shop_products_renderer {
                     $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlinkproduct', 'productid' => $elm->id));
                     $linklbl = get_string('removeproductfrombundle', 'local_shop');
                     $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'" /></a>';
-        
+
                     $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteitems', 'itemid[]' => $elm->id));
                     $linklbl = get_string('delete');
                     $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'" /></a>';
@@ -565,7 +565,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    function catlinks($theCatalog) {
+    public function catlinks($theCatalog) {
         global $OUTPUT, $SESSION;
 
         $this->_check_context();
@@ -611,7 +611,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    function category_chooser($url, $theCatalog) {
+    public function category_chooser($url, $theCatalog) {
         global $OUTPUT, $SESSION;
 
         // In case it was not done before, but it might.
@@ -648,7 +648,7 @@ class shop_products_renderer {
         }
     }
 
-    function categories($categories) {
+    public function categories($categories) {
         $order = optional_param('order', 'name', PARAM_ALPHA);
         $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
 
@@ -670,7 +670,7 @@ class shop_products_renderer {
 
         echo html_writer::table($table);
     }
-    
+
     protected function category_add_row(&$table, $category, $order, $dir) {
         global $OUTPUT, $DB;
         static $indentarr = array();
@@ -721,7 +721,7 @@ class shop_products_renderer {
         $table->data[] = $row;
 
         if ($subs) {
-            foreach($subs as $s) {
+            foreach ($subs as $s) {
                 array_push($indentarr, '&nbsp;&nbsp;&nbsp;');
                 $this->category_add_row($table, $s, $order, $dir);
                 array_pop($indentarr);

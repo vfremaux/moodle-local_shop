@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Defines form to add a new project
  *
@@ -26,6 +24,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
@@ -35,67 +35,24 @@ use local_shop\Tax;
 
 class Bundle_Form extends catalogitemform {
 
-    public $editoroptions;
-    public $attributesshort;
-
     function definition() {
         global $CFG, $OUTPUT, $COURSE, $DB;
 
-        // Setting variables
+        // Setting variables.
+
         $mform =& $this->_form;
-
-        $context = context_system::instance();
-
-        $maxfiles = 99;                // TODO: add some setting
-        $maxbytes = $COURSE->maxbytes; // TODO: add some setting
-        $this->editoroptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes, 'context' => $context);
-
-        // Adding title and description
-        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'bundle', 'local_shop')));
 
         $mform->addElement('hidden', 'bundleid');
         $mform->setType('bundleid', PARAM_INT);
 
-        // Adding fieldset
-        $attributes = 'size="50" maxlength="200"';
-        $this->attributesshort = 'size="24" maxlength="24"';
-        $attributes_description = 'cols="50" rows="8"';
-        $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
+        $context = context_system::instance();
+
+        // Adding title and description
+        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'bundle', 'local_shop')));
 
         $mform->addElement('header', 'h0', get_string('general'));
 
-        $mform->addElement('text', 'code', get_string('code', 'local_shop'), $attributes);
-        $mform->setType('code', PARAM_ALPHANUMEXT);
-        $mform->addRule('code', null, 'required');
-
-        $mform->addElement('text', 'name', get_string('name', 'local_shop'), $attributes);
-        $mform->setType('name', PARAM_TEXT);
-        $mform->addRule('name', null, 'required');
-
-        $mform->addElement('editor', 'description_editor', get_string('description'), null, $this->editoroptions);
-        $mform->setType('description_editor', PARAM_CLEANHTML);
-        $mform->addHelpButton('description_editor', 'description', 'local_shop');
-
-        if (!empty($config->multipleowners)) {
-            $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), 'hasaccount,firstname,lastname');
-
-            $ownersmenu = array('' => get_string('sitelevel', 'local_shop'));
-            if ($potentialowners) {
-                foreach($potentialowners as $accountid => $owner) {
-                    $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
-                }
-            }
-
-            $mform->addElement('select', 'userid', get_string('productowner', 'local_shop'), $ownersmenu);
-            $mform->setType('userid', PARAM_INT);
-        } else {
-            $mform->addElement('hidden', 'userid', 0);
-            $mform->setType('userid', PARAM_INT);
-        }
-
-        $statusopts = shop_get_status();
-        $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
-        $mform->setType('status', PARAM_TEXT);
+        $this->add_standard_name_elements();
 
         $mform->addElement('header', 'h1', get_string('financials', 'local_shop'));
 
@@ -108,10 +65,6 @@ class Bundle_Form extends catalogitemform {
         $this->add_sales_params();
 
         $this->add_target_market();
-
-        //$group[] = &$mform->createElement('checkbox', 'showdescriptioninset', '', get_string('showdescriptioninset', 'local_shop'), 1);
-        // $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
-
 
         if ($cats = $this->_customdata['catalog']->get_categories()) {
             foreach ($cats as $cat) {
@@ -133,31 +86,14 @@ class Bundle_Form extends catalogitemform {
 
         $this->add_document_assets();
 
-        $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
-        $mform->setType('notes_editor', PARAM_CLEANHTML);
-        $mform->addHelpButton('notes_editor', 'description', 'local_shop');
-
-        // Adding submit and reset button
+        // Adding submit and reset button.
         $this->add_action_buttons();
     }
 
     function set_data($defaults) {
-        global $COURSE;
-
         $context = context_system::instance();
-
-        $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', @$defaults->id, array('subdirs' => true), $defaults->description);
-        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop', 'catalogdescription', @$defaults->id);
-        $defaults->description_editor = array('text' => $currenttext, 'format' => $defaults->descriptionformat, 'itemid' => $draftid_editor);
-
-        $draftid_editor = file_get_submitted_draft_itemid('notes_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'notes_editor', @$defaults->id, array('subdirs' => true), $defaults->notes);
-        $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemnotes', @$defaults->id);
-        $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftid_editor);
-
+        $this->set_name_data($defaults, $context);
         $this->set_document_asset_data($defaults, $context);
-
         parent::set_data($defaults);
     }
 }

@@ -14,16 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-/**
+/*
  * Standard upgrade handler.
  * @param int $oldversion
  */
@@ -31,10 +30,11 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
     global $CFG, $THEME, $DB;
 
     $result = true;
-    
+
     $dbman = $DB->get_manager();
 
-    if ($result && $oldversion < 2016022900) { //New version in version.php
+    if ($result && $oldversion < 2016022900) {
+        // New version in version.php.
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop');
@@ -68,7 +68,8 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016022900, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016083100) { //New version in version.php
+    if ($result && $oldversion < 2016083100) {
+        // New version in version.php
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop_catalogitem');
@@ -82,7 +83,8 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016083100, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016090800) { //New version in version.php
+    if ($result && $oldversion < 2016090800) {
+        //New version in version.php.
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop');
@@ -114,14 +116,16 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016090800, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016090804) { //New version in version.php
+    if ($result && $oldversion < 2016090804) {
+        // New version in version.php.
         // Purge a weird record.
         $DB->delete_records_select('capabilities', " name LIKE 'local/shop:%' AND component = 'local_block'" );
 
         upgrade_plugin_savepoint(true, 2016090804, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016091000) { //New version in version.php
+    if ($result && $oldversion < 2016091000) {
+        // New version in version.php.
 
         // Add field to local_shop_customer.
         $table = new xmldb_table('local_shop_customer');
@@ -144,7 +148,8 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016091000, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016092100) { //New version in version.php
+    if ($result && $oldversion < 2016092100) {
+        // New version in version.php.
 
         // Add field to local_shop.
         $table = new xmldb_table('local_shop');

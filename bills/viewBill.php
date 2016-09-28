@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -25,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
@@ -59,11 +58,11 @@ echo $OUTPUT->box_start('', 'billpanel');
 <table class="generaltable" width="100%">
 <tr>
    <td valign="top" style="padding : 2px" colspan="5" class="billListTitle">
-      <h1><?php 
+      <h1><?php
               if ($aFullBill->status == 'PENDING' || $aFullBill->status == 'PLACED') {
-                  print_string('order', 'local_shop'); 
+                  print_string('order', 'local_shop');
               } else {
-                  print_string('bill', 'local_shop'); 
+                  print_string('bill', 'local_shop');
               }
               ?> <span class="titleData">B-<?php echo date('Ymd', $aFullBill->emissiondate); ?>-<?php echo $aFullBill->id; ?></span></h1><br/>
       <?php echo userdate($aFullBill->emissiondate) ?>
@@ -119,7 +118,7 @@ if ($aFullBill->transactionid == '') {
 
 echo $renderer->customer_info($aFullBill, true);
 
-echo $OUTPUT->heading(get_string('order', 'local_shop'), 2); 
+echo $OUTPUT->heading(get_string('order', 'local_shop'), 2);
 
 echo '<table class="generaltable" width="100%">';
 if (count($aFullBill->items) == 0) {

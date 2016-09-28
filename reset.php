@@ -55,7 +55,7 @@ $mform = new ResetForm();
 
 if ($mform->is_cancelled()) {
     redirect($url);
-} elseif ($data = $mform->get_data()) {
+} else if ($data = $mform->get_data()) {
     if (!empty($data->bills) || !empty($data->customers) || !empty($data->catalogs)) {
         $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
         $DB->delete_records('local_shop_bill', null);

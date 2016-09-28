@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * Controller for the customer screen responses.
  *
  * @package     local_shop
  * @categroy    local
@@ -28,12 +26,13 @@ defined('MOODLE_INTERNAL') || die();
  * @usecase deletecustomer
  * @usecase addcustomer
  */
+defined('MOODLE_INTERNAL') || die();
 
 class customers_controller {
 
     function process($cmd) {
 
-        // ********** Delete customers ****************************** //
+        // Delete customers ******************************.
 
         if ($cmd == 'deletecustomer') {
             $customerids = required_param_array('customerid', PARAM_INT);
@@ -45,7 +44,7 @@ class customers_controller {
             }
         }
 
-        // ********** adding manually a customer record *********** //
+        // Adding manually a customer record ***********.
 
         if ($cmd == 'addcustomer') {
             $customer = new StdClass();
@@ -59,14 +58,13 @@ class customers_controller {
             $newid = $DB->insert_record('local_shop_customer', $customer);
         }
 
-        // ???
         if ($cmd == "sellout") {
             $billid = required_param('billid', PARAM_INT);
             $DB->set_field('local_shop_bill', 'status', 'SOLDOUT', array('id' => $billid));
         }
-    
-        // ****************** unmark a product ***************** //
-    
+
+        // Unmark a product *****************.
+
         if ($cmd == "unmark") {
             $billid = required_param('billid', PARAM_INT);
             $DB->set_field('local_shop_bill', 'status', 'PENDING', array('id' => $billid));

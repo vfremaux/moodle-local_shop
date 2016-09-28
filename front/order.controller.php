@@ -14,55 +14,57 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 class order_controller extends front_controller_base {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $SESSION, $CFG, $SITE, $DB;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         $config = get_config('local_shop');
 
         if ($cmd == 'navigate') {
             if ($back = optional_param('back', false, PARAM_BOOL)) {
                 $prev = $this->theshop->get_prev_step('order');
-                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1)));
+                $params = array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
+                redirect(new \moodle_url('/local/shop/front/view.php', $params));
             } else {
 
-                // register paymode
-                $SESSION->shoppingcart->paymode = required_param('paymode', PARAM_TEXT);
+                // Register paymode.
+                $shoppingcart->paymode = required_param('paymode', PARAM_TEXT);
 
                 $items = 0;
-                foreach ($SESSION->shoppingcart->order as $shortname => $quant) {
+                foreach ($shoppingcart->order as $shortname => $quant) {
                     $items += $quant;
                 }
 
-                $salesnotification = shop_compile_mail_template('transaction_input', array('TRANSACTION' => $SESSION->shoppingcart->transid,
+                $salesnotification = shop_compile_mail_template('transaction_input', array('TRANSACTION' => $shoppingcart->transid,
                                                                            'SERVER' => $SITE->fullname,
                                                                            'SERVER_URL' => $CFG->wwwroot,
                                                                            'SELLER' => $config->sellername,
-                                                                           'FIRSTNAME' => $SESSION->shoppingcart->customerinfo['firstname'],
-                                                                           'LASTNAME' => $SESSION->shoppingcart->customerinfo['lastname'],
-                                                                           'MAIL' => $SESSION->shoppingcart->customerinfo['email'],
-                                                                           'CITY' => $SESSION->shoppingcart->customerinfo['city'],
-                                                                           'COUNTRY' => $SESSION->shoppingcart->customerinfo['country'],
-                                                                           'PAYMODE' => $SESSION->shoppingcart->paymode,
+                                                                           'FIRSTNAME' => $shoppingcart->customerinfo['firstname'],
+                                                                           'LASTNAME' => $shoppingcart->customerinfo['lastname'],
+                                                                           'MAIL' => $shoppingcart->customerinfo['email'],
+                                                                           'CITY' => $shoppingcart->customerinfo['city'],
+                                                                           'COUNTRY' => $shoppingcart->customerinfo['country'],
+                                                                           'PAYMODE' => $shoppingcart->paymode,
                                                                            'ITEMS' => $items,
-                                                                           'AMOUNT' => sprintf("%.2f", round($SESSION->shoppingcart->untaxedtotal, 2)),
-                                                                           'TAXES' => sprintf("%.2f", round($SESSION->shoppingcart->taxestotal, 2)),
-                                                                           'TTC' => sprintf("%.2f", round($SESSION->shoppingcart->taxedtotal, 2))
+                                                                           'AMOUNT' => sprintf("%.2f", round($shoppingcart->untaxedtotal, 2)),
+                                                                           'TAXES' => sprintf("%.2f", round($shoppingcart->taxestotal, 2)),
+                                                                           'TTC' => sprintf("%.2f", round($shoppingcart->taxedtotal, 2))
                                                                             ), '');
 
                 if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
@@ -74,7 +76,7 @@ class order_controller extends front_controller_base {
                     $seller->maildisplay = true;
                     $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
-                    // Add other name fields required by fullname
+                    // Add other name fields required by fullname.
                     if ($morefields = get_all_user_name_fields(false)) {
                         foreach ($morefields as $f) {
                             if (!isset($seller->$f)) {
@@ -92,7 +94,9 @@ class order_controller extends front_controller_base {
                     }
                 }
 
-                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('order'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'what' => 'place')));
+                $next = $this->theshop->get_next_step('order');
+                $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'what' => 'place');
+                redirect(new \moodle_url('/local/shop/front/view.php', $params));
             }
         }
     }

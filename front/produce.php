@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
@@ -29,7 +28,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
 Use \local_shop\Bill;
 
-// resolving invoice identity and command
+// Resolving invoice identity and command.
 
 $action = optional_param('what', '', PARAM_TEXT);
 $transid = optional_param('transid', @$SESSION->shoppingcart->transid, PARAM_TEXT);
@@ -39,7 +38,7 @@ try {
     die("Transaction exception ");
 }
 
-// in case session is lost, go to the public entrance of the shop
+// In case session is lost, go to the public entrance of the shop.
 if ((!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) && $action != 'navigate' && !empty($transid)) {
     redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => @$theBlock->instance->id, 'view' => 'shop')));
 }
@@ -47,13 +46,13 @@ if ((!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerin
 /*
  * All payment process (internal or external) is supposed to be done here !!
  * produce is only for giving interactive answer to user, and produce interactively if invoice is soldout
- * $payplugin->process($cmd, $aFullBill, $theBlock); 
+ * $payplugin->process($cmd, $aFullBill, $theBlock);
  */
 
 $return = 0;
 $interactive = true;
 if ($action != '') {
-    $instanceid = $theShop->id; // unify interactive and non interactive processing
+    $instanceid = $theShop->id; // Unify interactive and non interactive processing.
     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
     $controller = new \local_shop\front\production_controller($aFullBill, false, $interactive);
     $result = $controller->process($action);
@@ -74,7 +73,7 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
 
     echo $renderer->progress('PRODUCE');
 
-    // controller tells us we already produced that
+    // Controller tells us we already produced that.
     if ($return == -1) {
         echo $OUTPUT->box_start('shop-notification');
         echo $OUTPUT->notification(get_string('productionbounceadvice', 'local_shop'), 'shop-notice');
@@ -92,7 +91,7 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     echo $OUTPUT->box_end();
     echo $OUTPUT->box_end();
 
-    // a specific report
+    // A specific report.
     if (!empty($aFullBill->onlinefeedback->public)) {
         echo $OUTPUT->box_start('shop-message-hidden', 'shop-notification-result');
         echo $aFullBill->onlinefeedback->public;
@@ -123,26 +122,10 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     echo $OUTPUT->box_end();
 
     echo $renderer->printable_bill_link($aFullBill->id, $aFullBill->transactionid, $theShop->id);
-
 }
 
-// if testing the shop, provide a manual link to generate the paypal_ipn call.
+// If testing the shop, provide a manual link to generate the paypal_ipn call.
 if ($config->test && $aFullBill->paymode == 'paypal') {
     require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
     paypal_print_test_ipn_link($aFullBill->id, $SESSION->shoppingcart->transid, $theShop->id);
 }
-
-/*
-$formurl = new moodle_url('/local/shop/front/view.php');
-echo '<form action="'.$formurl.'" method="post" >';
-echo '<p align="center">';
-echo '<input type="hidden" name="view" value="invoice" />';
-echo '<input type="hidden" name="id" value="'.$theShop->id.'" />';
-echo '<input type="hidden" name="blockid" value="'.$theBlock->instance->id.'" />';
-echo '<input type="hidden" name="transid" value="'.$aFullBill->transactionid.'" />';
-echo '<input type="hidden" name="what" value="navigate" />';
-// echo '<input type="submit" name="back" value="'.get_string('previous', 'local_shop').'" />';
-echo '&nbsp;<input type="submit" name="go" class="shop-next-button" value="'.get_string('finish', 'local_shop').'" />';
-echo '</p>';
-echo '</form>';
-*/

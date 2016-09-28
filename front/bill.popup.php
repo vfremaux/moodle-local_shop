@@ -21,7 +21,6 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
@@ -32,23 +31,30 @@ use \local_shop\Bill;
 
 $config = get_config('local_shop');
 
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 $transid = required_param('transid', PARAM_TEXT);
 $billid = required_param('billid', PARAM_INT);
 
 if ($transid) {
     if (!$aFullBill = Bill::get_by_transaction($transid)) {
-        print_error('invalidtransid', 'local_shop', new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => 0 + @$theblock->instance->id)));
+        $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
+        $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+        print_error('invalidtransid', 'local_shop', $viewurl);
     }
-} elseif ($billid) {
+} else if ($billid) {
     require_login();
     if (!$aFullBill = new Bill($billid)) {
-        print_error('invalidbillid', 'local_shop', new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => 0 + @$theBlock->instance->id)));
+        $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
+        $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+        print_error('invalidbillid', 'local_shop', $viewurl);
     }
 
     $systemcontext = context_system::instance();
-    if (($aFullBill->customer->hasaccount != $USER->id) && !has_any_capability(array('local/shop:salesadmin', 'moodle/site:config'), $systemcontext)) {
-        print_error('errornotownedbill', 'local_shop', new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $id, 'blockid' => $blockid)));
+    if (($aFullBill->customer->hasaccount != $USER->id) &&
+            !has_any_capability(array('local/shop:salesadmin', 'moodle/site:config'), $systemcontext)) {
+        $params = array('view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->instance->id);
+        $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+        print_error('errornotownedbill', 'local_shop', $viewurl);
     }
 
     $realized = array('SOLDOUT', 'COMPLETE', 'PARTIAL');
@@ -57,16 +63,16 @@ if ($transid) {
 
 $usercontext = context_user::instance($aFullBill->customeruser->id);
 
-$url = new moodle_url('/local/shop/front/bill.popup.php', array('transid' => $transid, 'billid' => $billid, 'id' => $theShop->id));
+$params = array('transid' => $transid, 'billid' => $billid, 'id' => $theshop->id);
+$url = new moodle_url('/local/shop/front/bill.popup.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($usercontext);
 $PAGE->set_pagelayout('popup');
 
-// get active catalog from block 
-
+// get active catalog from block.
 
 $renderer = shop_get_renderer();
-$renderer->load_context($theShop, $theBlock);
+$renderer->load_context($theshop, $theblock);
 
 $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL);
 
@@ -86,8 +92,6 @@ echo '<div style="max-width:780px">';
 
 $aFullBill->withlogo = true;
 echo $renderer->invoice_header($aFullBill);
-
-// echo $renderer->customer_info($bill);
 
 echo '<div id="order" style="margin-top:20px">';
 
@@ -114,17 +118,20 @@ require_once $CFG->dirroot.'/local/shop/paymodes/'.$aFullBill->paymode.'/'.$aFul
 $classname = 'shop_paymode_'.$aFullBill->paymode;
 
 echo '<div id="shop-order-paymode">';
-$pm = new $classname($theShop);
+$pm = new $classname($theshop);
 $pm->print_name();
 echo '</div>';
 
 echo '<div id="order-mailto">';
 echo $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2);
-echo '<p>'.get_string('forquestionssendmailto', 'local_shop').' : <a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';
+echo '<p>'.get_string('forquestionssendmailto', 'local_shop').' :';
+echo ' <a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';
 echo '</div>';
 echo '</div>';
 
 echo '<center>';
-echo '<a href="#" onclick="window.print();return false;"><input type="button" value="'.get_string('printorderlink', 'local_shop').'" /></a>';
+echo '<a href="#" onclick="window.print();return false;">';
+echo '<input type="button" value="'.get_string('printorderlink', 'local_shop').'" />';
+echo '</a>';
 echo '</center>';
 echo $OUTPUT->footer();

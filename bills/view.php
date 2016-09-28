@@ -35,8 +35,9 @@ use \local_shop\Shop;
 use \local_shop\Catalog;
 use \local_shop\Bill;
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $PAGE->requires->js('/local/shop/js/bills.js');
 
@@ -44,11 +45,12 @@ $view = optional_param('view', '', PARAM_TEXT);
 $billid = optional_param('billid', '', PARAM_TEXT);
 
 // Security.
+
 $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-// make page header and navigation
+// Make page header and navigation.
 
 $url = new moodle_url('/local/shop/bills/view.php', array('view' => $view));
 $PAGE->set_url($url);
@@ -60,28 +62,26 @@ $PAGE->set_pagelayout('admin');
 if ($view == 'viewBill') {
     $billIDnumber = $billid;
     if ($idnumber = $DB->get_field('local_shop_bill', 'idnumber', array('id' => $billid))) {
-        $billIDnumber .= " {$idnumber}"; 
+        $billIDnumber .= " {$idnumber}";
     }
     $PAGE->navbar->add(get_string('bill', 'local_shop', $billIDnumber));
 
-    $url = new moodle_url('/local/shop/bills/view.php', array('id' => $theShop->id, 'view' => 'viewBill', 'billid' => $billid));
+    $url = new moodle_url('/local/shop/bills/view.php', array('id' => $theshop->id, 'view' => 'viewBill', 'billid' => $billid));
 } else {
-    $url = new moodle_url('/local/shop/bills/view.php', array('id' => $theShop->id, 'view' => $view));
+    $url = new moodle_url('/local/shop/bills/view.php', array('id' => $theshop->id, 'view' => $view));
 }
 
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 $renderer = shop_get_renderer('bills');
-$renderer->load_context($theShop, $theCatalog, $theBlock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 $mainrenderer = $PAGE->get_renderer('local_shop');
 
 $out = $OUTPUT->header();
 
-// make page content
+// Make page content.
 
 include_once($CFG->dirroot."/local/shop/bills/{$view}.php");
-
-// make footer
 
 echo $OUTPUT->footer();

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
@@ -23,11 +21,13 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/form/group.php');
 
-// register this new element in QuickForm
-$GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['choosefile'] = array($CFG->dirroot.'/local/shop/forms/formelement_choosefile.php','HTML_QuickForm_group');
+// register this new element in QuickForm.
+$quickformregister = array($CFG->dirroot.'/local/shop/forms/formelement_choosefile.php','HTML_QuickForm_group');
+$GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['choosefile'] = $quickformregister;
 
 /**
  * Class for an element used to choose a file from the course files folder.
@@ -36,8 +36,7 @@ $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['choosefile'] = array($CFG->dirroot.'/l
  * @author Valery Fremaux <valery.fremaux@club-internet.fr>
  * @access public
  */
-class MoodleQuickForm_choosefile extends MoodleQuickForm_group
-{
+class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
     /**
     * Options for element :
     *
@@ -48,14 +47,16 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group
     * options => string List of additional options for popup window
     */
     var $_options = array('blockid' => null,
-                         'height' => 500, 'width' => 750, 'options' => 'none');
+                          'height' => 500,
+                          'width' => 750,
+                          'options' => 'none');
 
    /**
     * These complement separators, they are appended to the resultant HTML
     * @access   private
     * @var      array
     */
-    var $_wrap = array('', '');
+    protected $_wrap = array('', '');
 
    /**
     * Class constructor
@@ -66,8 +67,7 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group
     * @param    array   Options to control the element's display
     * @param    mixed   Either a typical HTML attribute string or an associative array
     */
-    function MoodleQuickForm_choosefile($elementName = null, $elementLabel = null, $options = array(), $attributes = null)
-    {
+    function MoodleQuickForm_choosefile($elementName = null, $elementLabel = null, $options = array(), $attributes = null) {
         $this->HTML_QuickForm_element($elementName, $elementLabel, $attributes);
         $this->_appendName = true;
         $this->_type = 'choosefile';
@@ -174,6 +174,5 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group
         }
         return parent::onQuickFormEvent($event, $arg, $caller);
 
-    } // end func onQuickFormEvent
-
+    }
 }

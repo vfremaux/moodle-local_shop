@@ -68,7 +68,7 @@ function showcategory(catid, allids) {
         if (c == 0) {
             $(tohidetabid).addClass('first');
         }
-        
+
         if (c == allidsarr.length - 1) {
             $(tohidetabid).addClass('last');
         }
@@ -92,7 +92,7 @@ function ajax_add_user(wwwroot, formobj) {
     // kind a very simple serialize/unserialize
     rolelist = '<?php echo implode(',', $requiredroles); ?>';
     roles = rolelist.split(',');
-    <?php if (isset($SESSION->shoppingcart->order)) { 
+    <?php if (isset($SESSION->shoppingcart->order)) {
         echo 'productlist = \''.implode(',', array_keys($SESSION->shoppingcart->order))."';\n";
     } else {
         echo "productlist = '';\n";
@@ -106,15 +106,15 @@ function ajax_add_user(wwwroot, formobj) {
     pt.city = formobj.city.value;
     <?php if (!empty($theShop->enduserorganisationrequired)) { ?>
         pt.institution = formobj.institution.value;
-    <?php } 
+    <?php }
     if (!empty($theShop->endusermobilephonerequired)) { ?>
         pt.phone2 = formobj.phone2.value;
     <?php } ?>
-    
+
     $('#participantlist').html(ajax_waiter);
-    
+
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'addparticipant',
@@ -130,7 +130,7 @@ function ajax_add_user(wwwroot, formobj) {
             // formobj.city.value = '';
 <?php if (!empty($theShop->enduserorganisationrequired)) { ?>
             // formobj.institution.value = '';
-<?php 
+<?php
 }
 if (!empty($theShop->endusermobilephonerequired)) {
 ?>
@@ -144,7 +144,7 @@ if (!empty($theShop->endusermobilephonerequired)) {
             }
 
             $.post(
-                urlbase, 
+                urlbase,
                 {
                     id: '<?php echo $theShop->id ?>',
                     action: 'assignalllistobj',
@@ -166,7 +166,6 @@ if (!empty($theShop->endusermobilephonerequired)) {
     );
 }
 
-
 function ajax_delete_user(wwwroot, ptmail) {
 
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
@@ -175,7 +174,7 @@ function ajax_delete_user(wwwroot, ptmail) {
     // kind a very simple serialize/unserialize
     rolelist = '<?php echo implode(',', $requiredroles); ?>';
     roles = rolelist.split(',');
-    <?php if (isset($SESSION->shoppingcart->order)) { 
+    <?php if (isset($SESSION->shoppingcart->order)) {
         echo 'productlist = \''.implode(',', array_keys($SESSION->shoppingcart->order))."';\n";
     } else {
         echo "productlist = '';\n";
@@ -184,7 +183,7 @@ function ajax_delete_user(wwwroot, ptmail) {
 
     $('#participantlist').html(ajax_waiter);
 
-    $.post(urlbase, 
+    $.post(urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'deleteparticipant',
@@ -201,7 +200,7 @@ function ajax_delete_user(wwwroot, ptmail) {
             }
 
             $.post(
-                urlbase, 
+                urlbase,
                 {
                     id: '<?php echo $theShop->id ?>',
                     action: 'assignalllistobj',
@@ -234,9 +233,9 @@ function ajax_add_assign(wwwroot, assignrole, product, selectobj) {
         role = requiredroles[rix];
         $('#'+role+'list'+product).html(ajax_waiter);
     }
-            
+
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'addassign',
@@ -250,7 +249,7 @@ function ajax_add_assign(wwwroot, assignrole, product, selectobj) {
                 role = requiredroles[rix];
                 $('#'+role+'list'+product).html(rolestubs.content[role]);
             }
-            
+
             // this need be done on positive return or we might unsync
             assigned++;
             if (assigned < required) {
@@ -278,9 +277,9 @@ function ajax_delete_assign(wwwroot, assignrole, product, email) {
         role = requiredroles[rix];
         $('#'+role+'list'+product).html(ajax_waiter);
     }
-        
+
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'deleteassign',
@@ -309,7 +308,6 @@ function ajax_delete_assign(wwwroot, assignrole, product, email) {
             }
         }
     );
-
 }
 
 // this early loads from server
@@ -326,7 +324,7 @@ function ajax_add_unit(wwwroot, id, productname, maxquant) {
     $('#bag_'+productname).html(ajax_waiter);
 
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'addunit',
@@ -360,7 +358,7 @@ function ajax_delete_unit(wwwroot, id, productname) {
     $('#bag_'+productname).html(ajax_waiter);
 
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'deleteunit',
@@ -393,7 +391,7 @@ function ajax_update_totals(wwwroot, id) {
     $('#shop-ordertotals').html(ajax_waiter);
 
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: id,
             action: 'ordertotals'
@@ -411,7 +409,7 @@ function ajax_update_details(wwwroot, id) {
 
     $('#order-detail').html(ajax_waiter);
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: id,
             action: 'orderdetails'
@@ -428,12 +426,12 @@ function ajax_clear_product(wwwroot, id, productname) {
     ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
     $('#bag_'+productname).html(ajax_waiter);
-    
+
     $('#id_'+productname).val(0);
     $('#id_total_'+productname).val(0);
 
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'deleteunit',
@@ -463,7 +461,7 @@ function ajax_update_product(wwwroot, id, productname, maxquant) {
     $('#bag_'+productname).html(ajax_waiter);
 
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'setunits',
@@ -505,7 +503,7 @@ function check_pass_code(wwwroot, productname, textinput, event) {
     var input = textinput.value + event.key;
 
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: '<?php echo $theShop->id ?>',
             action: 'checkpasscode',
@@ -526,12 +524,11 @@ function check_pass_code(wwwroot, productname, textinput, event) {
 
 /*
 window.setTimeoutOrig = window.setTimeout;
-window.setTimeout     = function(f,del) 
- { 
+window.setTimeout     = function(f,del) {
    var l_stack = Error().stack.toString();
-   if (l_stack.indexOf('kis.scr.kaspersky-labs.com') > 0) 
+   if (l_stack.indexOf('kis.scr.kaspersky-labs.com') > 0)
       { return 0; }
 
-   window.setTimeoutOrig(f,del); 
+   window.setTimeoutOrig(f,del);
  }
 */

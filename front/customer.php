@@ -14,17 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-/**
- * This shop step will collect all needed users information, that is, 
+/*
+ * This shop step will collect all needed users information, that is,
  * - information about customer identity
  * - information about billing identify if different from customer
  * - information about learners if some products operate in seat mode or are courses
@@ -36,7 +35,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theShop->id);
 
-// in case session is lost, go to the public entrance of the shop
+// In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || empty($SESSION->shoppingcart->order)) {
     redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'view' => 'shop')));
 }
@@ -117,15 +116,5 @@ $options['inform'] = true;
 
 echo $renderer->action_form('customer', $options);
 
-/*
-echo '<p align="center">';
-echo '<input type="hidden" name="view" value="customer" />';
-echo '<input type="hidden" name="id" value="'.$theShop->id.'" />';
-echo '<input type="hidden" name="blockid" value="'.(0 + @$theBlock->instance->id).'" />';
-echo '<input type="hidden" name="what" value="navigate" />';
-echo '<input type="submit" name="back" value="'.get_string('previous', 'local_shop').'" />';
-echo '&nbsp;<input type="submit" name="go" value="'.get_string('next', 'local_shop').'" />';
-echo '</p>';
-*/
 echo '</form>';
 echo '</div>';

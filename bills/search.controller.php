@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\bills;
-
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Form for editing HTML block instances.
  *
@@ -28,12 +24,16 @@ defined('MOODLE_INTERNAL') || die;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shop\bills;
+
+defined('MOODLE_INTERNAL') || die;
+
 class search_controller {
 
     var $theshop;
 
-    function __construct($theShop) {
-        $this->theshop = $theShop;
+    function __construct($theshop) {
+        $this->theshop = $theshop;
     }
 
     function process($cmd) {
@@ -47,7 +47,7 @@ class search_controller {
             $customername = optional_param('customername', '', PARAM_TEXT);
             $datefrom = optional_param('datefrom', '', PARAM_INT);
             $during = optional_param('during', '', PARAM_TEXT);
-        
+
             switch ($by) {
                 case 'id':
                    $whereclause = " id = '{$billid}' ";
@@ -81,7 +81,8 @@ class search_controller {
                         $billRecord = array_pop($bills);
                         $billid = $billRecord->id;
                         // one only result. Switch directly to intranet/bills/viewBill with adequate Id.
-                        redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'id' => $this->theShop->id, 'billid' => $billid)));
+                        $params = array('view' => 'viewBill', 'id' => $this->theShop->id, 'billid' => $billid);
+                        redirect(new moodle_url('/local/shop/bills/view.php', $params));
                     }
                     return $bill;
                 }

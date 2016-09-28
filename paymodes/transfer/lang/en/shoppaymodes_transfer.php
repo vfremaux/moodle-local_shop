@@ -21,7 +21,7 @@ $string['pending_followup_text_tpl'] = '
 
 $string['print_procedure_tpl'] = '
 <p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Order a fund transfer from your banking agency to:<br>
-   
+
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>
 
 <p><b><u>Banking</u>:</b> <em><%%BANKING%%></em><br>
@@ -57,7 +57,7 @@ $string['print_procedure_tpl'] = '
       </tr>
    </table>
    </center></p>
-   
+
    <p><center><table class="generaltable shop-table">
       <tr>
          <th class="header">

@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['FR'] = 'Shipping zone FRANCE';
 $string['EU'] = 'Shipping zone EUROPE';
@@ -194,7 +208,7 @@ $string['transaction_input_tpl'] = '
 <h3><%%SELLER%%></h3>
 <h4>Customer ordering</h4>
 
-<p>An ordering has been input on <%%SERVER%%> by: 
+<p>An ordering has been input on <%%SERVER%%> by:
 
 <p><u>Customer Identification:</u>
 <hr/>
@@ -236,9 +250,8 @@ $string['sales_feedback_tpl'] = '
 <hr />
 <b>Total untaxed amount :</b> <%%AMOUNT%%><br />
 <b>Pat mode :</b> <%%PAYMODE%%><br />
-<b>Items :</b> <%%ITEMS%%> 
+<b>Items :</b> <%%ITEMS%%>
 <hr />
 <%%PRODUCTION_DATA%%>
 <hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
-. 
 ';

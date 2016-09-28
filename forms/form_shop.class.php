@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * Defines form to add a new shop
@@ -27,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
@@ -34,9 +33,9 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
 class Shop_Form extends moodleform {
 
-    var $editoroptions;
+    protected $editoroptions;
 
-    function definition() {
+    public function definition() {
         global $CFG, $OUTPUT, $DB;
 
         // Setting variables.
@@ -62,7 +61,7 @@ class Shop_Form extends moodleform {
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 
-        // The shopid
+        // The shopid.
         $mform->addElement('hidden', 'shopid');
         $mform->setType('shopid', PARAM_INT);
 
@@ -145,26 +144,31 @@ class Shop_Form extends moodleform {
             $mform->setType('forcedownloadleaflet', PARAM_BOOL);
 
             $yesnochoices = array('0' => get_string('no'), '1' => get_string('yes'));
-            $mform->addElement('select', 'customerorganisationrequired', get_string('configcustomerorganisationrequired', 'local_shop'), $yesnochoices);
+            $label = get_string('configcustomerorganisationrequired', 'local_shop');
+            $mform->addElement('select', 'customerorganisationrequired', $label, $yesnochoices);
             $mform->setDefault('customerorganisationrequired', 1);
 
-            $mform->addElement('select', 'enduserorganisationrequired', get_string('configenduserorganisationrequired', 'local_shop'), $yesnochoices);
+            $label = get_string('configenduserorganisationrequired', 'local_shop');
+            $mform->addElement('select', 'enduserorganisationrequired', $label, $yesnochoices);
             $mform->setDefault('enduserorganisationrequired', 0);
 
-            $mform->addElement('select', 'endusermobilephonerequired', get_string('configendusermobilephonerequired', 'local_shop'), $yesnochoices);
+            $label = get_string('configendusermobilephonerequired', 'local_shop');
+            $mform->addElement('select', 'endusermobilephonerequired', $label, $yesnochoices);
             $mform->setDefault('endusermobilephonerequired', 0);
 
-            $mform->addElement('select', 'printtabbedcategories', get_string('configprinttabbedcategories', 'local_shop'), $yesnochoices);
+            $label = get_string('configprinttabbedcategories', 'local_shop');
+            $mform->addElement('select', 'printtabbedcategories', $label, $yesnochoices);
             $mform->setDefault('customerorganisationrequired', 0);
 
             // default customer support course if
             $courseoptions = $DB->get_records_menu('course', array('visible' => 1), 'fullname', 'id,fullname');
             $courseoptions[0] = get_string('none', 'local_shop');
-            $mform->addElement('select', 'defaultcustomersupportcourse', get_string('configdefaultcustomersupportcourse', 'local_shop'), $courseoptions);
+            $label = get_string('configdefaultcustomersupportcourse', 'local_shop');
+            $mform->addElement('select', 'defaultcustomersupportcourse', $label, $courseoptions);
             $mform->setDefault('defaultcustomersupportcourse', 0);
 
             $mform->addElement('editor', 'eula_editor', get_string('configeula', 'local_shop'), null, $this->editoroptions);
-            $mform->setType('eula', PARAM_CLEANHTML); // XSS is prevented when printing the block contents and serving files
+            $mform->setType('eula', PARAM_CLEANHTML); // XSS is prevented when printing the block contents and serving files.
 
             // Adding submit and reset button.
             $this->add_action_buttons();
@@ -175,24 +179,27 @@ class Shop_Form extends moodleform {
 
     }
 
-    function validation($data, $files = array()) {
-    }
-
-    function set_data($defaults) {
+    public function set_data($defaults) {
         $context = context_system::instance();
 
         $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', $defaults->id, $this->editoroptions, $defaults->description);
-        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop', 'description', $defaults->id);
-        $defaults->description_editor = array('text' => $currenttext, 'format' => $defaults->descriptionformat, 'itemid' => $draftid_editor);
+        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor',
+                                               $defaults->id, $this->editoroptions, $defaults->description);
+        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
+                                                 'description', $defaults->id);
+        $defaults->description_editor = array('text' => $currenttext,
+                                              'format' => $defaults->descriptionformat,
+                                              'itemid' => $draftid_editor);
 
         $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'eula_editor', $defaults->id, $this->editoroptions, $defaults->eula);
-        $defaults = file_prepare_standard_editor($defaults, 'eula', $this->editoroptions, $context, 'local_shop', 'eula', $defaults->id);
-        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftid_editor);
+        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'eula_editor', $defaults->id,
+                                               $this->editoroptions, $defaults->eula);
+        $defaults = file_prepare_standard_editor($defaults, 'eula', $this->editoroptions, $context, 'local_shop',
+                                                 'eula', $defaults->id);
+        $defaults->eula_editor = array('text' => $currenttext,
+                                       'format' => $defaults->eulaformat,
+                                       'itemid' => $draftid_editor);
 
         parent::set_data($defaults);
     }
-
-
 }

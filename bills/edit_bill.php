@@ -34,7 +34,7 @@ use local_shop\Catalog;
 
 $PAGE->requires->js('/local/shop/js/bills.js');
 
-// get all the shop session context objects
+// get all the shop session context objects.
 list($theShop, $theCatalog, $theBlock) = shop_build_context();
 
 $config = get_config('local_shop');
@@ -67,8 +67,8 @@ if ($billid) {
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills')));
 }
-if ($bill = $mform->get_data()) {
 
+if ($bill = $mform->get_data()) {
     $now = time();
 
     if (!empty($bill->billid)) {

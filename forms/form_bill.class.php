@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * Defines form to add a new billitem
@@ -27,6 +25,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
@@ -36,11 +36,11 @@ use local_shop\Customer;
 
 class Bill_Form extends moodleform {
 
-    function definition() {
+    public function definition() {
         global $CFG, $OUTPUT, $DB;
 
         $strrequired = get_string('required', 'local_shop');
-        
+
         $config = get_config('local_shop');
 
         // Setting variables.
@@ -64,7 +64,7 @@ class Bill_Form extends moodleform {
 
         $customers = Customer::get_instances();
 
-        //getting the full name of customers.
+        // Getting the full name of customers.
         $fullname_custo_select = array();
         $fullname_custo_select['0'] = get_string('choosecustomer', 'local_shop');
 
@@ -72,7 +72,7 @@ class Bill_Form extends moodleform {
             $fullname_custo_select[$customer->id] = $customer->lastname.' '.$customer->firstname;
         }
 
-        //select user whithout customer account.
+        // Select user whithout customer account.
         $sqluser = "
             SELECT
                 u.id,
@@ -95,7 +95,7 @@ class Bill_Form extends moodleform {
         $userarray = array();
         $userarray[] = &$mform->createElement('select', 'userid', get_string('customers', 'local_shop'), $fullname_custo_select, $attributesjscustomer);
         $userarray[] = &$mform->createElement('select', 'useraccountid', get_string('users'), $fullname_user_select, $attributesjsuser);
-        $mform->addGroup($userarray, 'selectar', get_string('pickuser', 'local_shop'), '&nbsp;'. get_string('or', 'local_shop').'&nbsp;', false); 
+        $mform->addGroup($userarray, 'selectar', get_string('pickuser', 'local_shop'), '&nbsp;'. get_string('or', 'local_shop').'&nbsp;', false);
         $mform->addHelpButton('selectar', 'customer_account', 'local_shop');
 
         $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop').':');
@@ -111,8 +111,8 @@ class Bill_Form extends moodleform {
         $billeditors = get_users_by_capability($context, 'block/shop:beassigned', 'u.id, firstname, lastname');
         $editoropt = array();
         if ($billeditors) {
-            foreach ($billeditors as $billeditor) { 
-            $editoropt[$billeditor->id] = fullname($billeditor);
+            foreach ($billeditors as $billeditor) {
+                $editoropt[$billeditor->id] = fullname($billeditor);
             }
         }
         $mform->addElement('select', 'assignedto', get_string('assignedto', 'local_shop').':', $editoropt);
@@ -128,7 +128,6 @@ class Bill_Form extends moodleform {
 
         $worktypes = shop_get_bill_worktypes();
         $mform->addElement('select', 'worktype', get_string('worktype', 'local_shop').':', $worktypes);
-
 
         $currencies = shop_get_supported_currencies();
         $mform->addElement('select', 'currency', get_string('currency', 'local_shop').':', $currencies);

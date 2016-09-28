@@ -189,8 +189,8 @@ $string['error'] = 'Error: ';
 $string['eulaheading'] = 'End User Licence Agreement';
 $string['eulaagree'] = 'Confirm agreement to EULA';
 $string['eula_help'] = 'Please read and validate the following End User Licence Agreement before any purchase on {$a}. Confirming the form will provide acceptance of the herein conditions.';
-$string['warning'] = 'Warning: ';
-$string['message'] = 'Message: ';
+$string['warning'] = 'Warning:';
+$string['message'] = 'Message:';
 $string['usinghandler'] = 'Using handler {$a}';
 $string['editcatalog'] = 'Update catalog definition';
 $string['erroraddbill'] = 'Could not add bill record';
@@ -274,7 +274,7 @@ $string['leafletlink'] = 'Download the leaflet';
 $string['leafleturl'] = 'Leaflet URL:';
 $string['link'] = 'Link ';
 $string['login'] = 'You have a customer account ';
-$string['manybillsasresult'] = 'Several bills are matching your actual criterias. Choose in ';
+$string['manybillsasresult'] = 'Several bills are matching your actual criterias. Choose in&nbsp;';
 $string['manageshipping'] = 'Manage shipping';
 $string['managetaxes'] = 'Manage taxes';
 $string['manageshippingdesc'] = 'Manages shipping definitions';
@@ -416,7 +416,7 @@ $string['tax'] = 'Tax';
 $string['taxes'] = 'Taxes';
 $string['tendays'] = 'ten days';
 $string['testmodeactive'] = 'Moodle Shop is in test mode. We do not allow payments at the moment unless admin users for testing purpose.';
-$strin['testoverride'] = 'Test lock override';
+$string['testoverride'] = 'Test lock override';
 $string['threemonths'] = 'three months';
 $string['thumbnail'] = 'Thumbnail:';
 $string['title'] = 'Title';
@@ -452,7 +452,7 @@ $string['vendorinfo'] = 'Information about vendor\'s identity';
 
 $string['noproducts'] = "
 <h3>Empty catalog</h3>
-<p>The product line is empty. 
+<p>The product line is empty.
 ";
 
 $string['countryrestrictions_help'] = '
@@ -494,7 +494,7 @@ $string['no_bill_attachements_tpl'] = '
 
 $string['no_bills_in_account_tpl'] = '
 <h3>No bills</h3>
-<pThere is no bills in this account.</p> 
+<pThere is no bills in this account.</p>
 ';
 
 $string['no_categories_tpl'] = '
@@ -503,7 +503,7 @@ $string['no_categories_tpl'] = '
 
 $string['no_orders_in_account_tpl'] = '
 <h3>No orders</h3>
-<p>You may manually add an order using the "Add order" link beneath.</p> 
+<p>You may manually add an order using the "Add order" link beneath.</p>
 ';
 
 $string['no_products_in_set_tpl'] = '
@@ -614,7 +614,7 @@ include($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
 
 // currencies
 
-$string['currency'] = 'Currency ';
+$string['currency'] = 'Currency';
 $string['EUR'] = 'Euro';
 $string['CHF'] = 'Swiss franc';
 $string['USD'] = 'US dollar';
@@ -632,7 +632,7 @@ $string['MAD'] = 'Dinar (Marocco, internal market)';
 
 $string['EURsymb'] = '&euro;';
 $string['CHFsymb'] = 'CHF';
-$string['USDsymb'] = '$ (US) ';
+$string['USDsymb'] = '$ (US)';
 $string['CADsymb'] = '$ (CA)';
 $string['AUDsymb'] = '$ (AU)';
 $string['GPBsymb'] = '£';

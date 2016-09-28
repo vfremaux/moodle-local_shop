@@ -69,7 +69,7 @@ class Bill extends ShopObject {
     protected $finaltaxedtotal;
 
     /**
-     * the overal taxes 
+     * the overal taxes
      * this is stored into the $bill->record->taxes attribute in db
      */
     protected $finaltaxestotal;
@@ -241,7 +241,7 @@ class Bill extends ShopObject {
 
     /**
      * Adds a BillItem object to item list
-     * Order amounts are updated in order for the discount check to 
+     * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
      */
     function add_item(BillItem $bi) {
@@ -256,7 +256,7 @@ class Bill extends ShopObject {
 
     /**
      * Adds an item from a DB record makin a BillItem instance
-     * Order amounts are updated in order for the discount check to 
+     * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
      */
     function add_item_data($birec, $ordering = -1) {
@@ -301,10 +301,10 @@ class Bill extends ShopObject {
 
         $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, $reason);
 
-        // trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches
+        // Trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches.
         if ($discountrate) {
 
-            // Reset all discount data
+            // Reset all discount data.
             $this->discount = 0;
             $DB->delete_records('local_shop_billitem', array('billid' => $this->id, 'type' => 'DISCOUNT'));
 
@@ -349,7 +349,7 @@ class Bill extends ShopObject {
             $this->recalculate();
         }
 
-        $billid = parent::save(); // parent has recorded id into our record.
+        $billid = parent::save(); // Parent has recorded id into our record.
 
         // Performance optimisation when no change in Bill construction.
         if ($stateonly) {
@@ -365,8 +365,8 @@ class Bill extends ShopObject {
     }
 
     /**
-    * delete all taxlines
-    */
+     * delete all taxlines
+     */
     function reset_taxlines() {
 
         if (empty($this->items)) {
@@ -394,7 +394,7 @@ class Bill extends ShopObject {
 
             $billitem = new BillItem($itemrec, $this);
 
-            // deroute some special types
+            // Deroute some special types.
             if ($billitem->type == 'SHIPPING') {
                 $this->shipping = $itemrec->totalprice; // taxed
                 continue;
@@ -403,7 +403,7 @@ class Bill extends ShopObject {
                 continue;
             }
 
-            // If standard BILLING line, aggregate to ordetotals
+            // If standard BILLING line, aggregate to ordetotals.
             $this->orderuntaxed += $itemrec->unitcost * $itemrec->quantity;
             $this->ordertaxed += $billitem->get_taxed_price() * $itemrec->quantity;
             $taxamount = $billitem->get_tax_amount() * $itemrec->quantity;

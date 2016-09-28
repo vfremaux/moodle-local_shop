@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  *
  * @package    local_shop
@@ -27,8 +25,10 @@ defined('MOODLE_INTERNAL') || die();
  * This file is a library for production handling. Productino handling occurs
  * when order have been placed (prepay) or after order has been payed out
  * to register product records and trigger some moodle internal actions
- * if required 
+ * if required.
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
 function produce_prepay(&$aFullBill) {
@@ -41,8 +41,11 @@ function produce_prepay(&$aFullBill) {
 
     if (!empty($aFullBill->items)) {
         foreach ($aFullBill->items as $anItem) {
-            // this refreshes some catalogitem information at production time
-            if ($anItem->type != 'BILLING') continue; // pseudo items like discount or shipping. Do not try to produce them
+            // This refreshes some catalogitem information at production time.
+            if ($anItem->type != 'BILLING') {
+                // Pseudo items like discount or shipping. Do not try to produce them.
+                continue;
+            }
             $catalogitem = $aFullBill->thecatalogue->get_product_by_code($anItem->catalogitem->code);
             $anItem->transactionid = $aFullBill->transactionid;
             $anItem->customer = $aFullBill->customer;
@@ -51,7 +54,7 @@ function produce_prepay(&$aFullBill) {
             $handler = $catalogitem->get_handler();
 
             if ($handler === false) {
-                // the handler exists but is disabled.
+                // The handler exists but is disabled.
                 shop_trace("[{$aFullBill->transactionid}] Prepay Production : Handler disabled for {$anItem->itemcode}");
                 continue;
             }
@@ -76,7 +79,7 @@ function produce_prepay(&$aFullBill) {
 }
 
 /*
-* production handler that is called after paiement is complete
+* Production handler that is called after paiement is complete
 */
 function produce_postpay(&$aFullBill) {
     global $CFG, $DB;
@@ -90,7 +93,10 @@ function produce_postpay(&$aFullBill) {
 
     foreach ($aFullBill->items as $anItem) {
 
-        if ($anItem->type != 'BILLING') continue; // pseudo items like discount or shipping. Do not try to produce them
+        if ($anItem->type != 'BILLING') {
+            // Pseudo items like discount or shipping. Do not try to produce them.
+            continue;
+        }
         $catalogitem = $aFullBill->thecatalogue->get_product_by_code($anItem->catalogitem->code);
         $anItem->transactionid = $aFullBill->transactionid;
         $anItem->customer = $aFullBill->customer;
@@ -98,7 +104,7 @@ function produce_postpay(&$aFullBill) {
         $handler = $catalogitem->get_handler();
 
         if ($handler === false) {
-            // the handler exists but is disabled.
+            // The handler exists but is disabled.
             shop_trace("[{$aFullBill->transactionid}] Prepay Production : Handler disabled for {$anItem->itemcode}");
             continue;
         }
@@ -126,7 +132,7 @@ function produce_postpay(&$aFullBill) {
         }
     }
 
-    // set the final COMPLETE status if has worked
+    // Set the final COMPLETE status if has worked.
     if ($hasworked) {
         // $DB->set_field('local_shop_bill', 'status', 'COMPLETE', array('id' => $aFullBill->id));
     }
@@ -150,16 +156,18 @@ function shop_aggregate_production(&$abill, $productiondata, $interactive = fals
     $abill->productionfeedback = base64_encode(json_encode($previousdata));
     $abill->save(true);
 
-    // if interactive, we need all productionfeedback accumulated to sync the recorded information so we can print it out to
-    // actual user on transaction feedback.
+    /*
+     * If interactive, we need all productionfeedback accumulated to sync the recorded information so we can print it out to
+     * actual user on transaction feedback.
+     */
     if ($interactive) @$abill->onlinefeedback = $previousdata;
 }
 
 /**
-* this runs a similar process than prepay, but only calling unit tests
-*
-*/
-function produce_unittests(&$theShop, &$products, $selected, &$errors, &$warnings, &$messages) {
+ * this runs a similar process than prepay, but only calling unit tests
+ * @param object &$theshop
+ */
+function produce_unittests(&$theshop, &$products, $selected, &$errors, &$warnings, &$messages) {
     global $CFG, $DB;
 
     foreach ($products as $ci) {
@@ -167,16 +175,16 @@ function produce_unittests(&$theShop, &$products, $selected, &$errors, &$warning
             continue;
         }
 
-        $catalogitem = $theShop->thecatalogue->get_product_by_code($ci->code);
+        $catalogitem = $theshop->thecatalogue->get_product_by_code($ci->code);
         $handler = $catalogitem->get_handler();
 
         if ($handler === false) {
-            // the handler exists but is disabled.
+            // The handler exists but is disabled.
             continue;
         }
 
         if (!is_null($handler)) {
-            $catalogitem->defaultcustomersupportcourse = @$theShop->defaultcustomersupportcourse;
+            $catalogitem->defaultcustomersupportcourse = @$theshop->defaultcustomersupportcourse;
 
             $catalogitem->actionparams = $catalogitem->handlerparams;
 

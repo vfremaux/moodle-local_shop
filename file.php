@@ -109,7 +109,7 @@ function shop_html_header($wdir, $formfield="") {
         </script>
 
         <?php
-        } elseif (count($chooseparts)==1) {
+        } else if (count($chooseparts) == 1) {
         ?>
         <script type="text/javascript">
         //<![CDATA[
@@ -306,7 +306,7 @@ switch ($action) {
             $name = clean_filename($name);
             if (file_exists($basedir.$wdir.'/'.$name)) {
                 echo "<center>Error: $name already exists!</center>";
-            } elseif (!rename($basedir.$wdir."/".$oldname, $basedir.$wdir.'/'.$name)) {
+            } else if (!rename($basedir.$wdir."/".$oldname, $basedir.$wdir.'/'.$name)) {
                 echo "<p align=\"center\">Error: could not rename $oldname to $name</p>";
             } else {
                 //file was renamed now update resources if needed
@@ -355,7 +355,7 @@ switch ($action) {
             $name = clean_filename($name);
             if (file_exists("{$basedir}{$wdir}/{$name}")) {
                 echo "Error: $name already exists!";
-            } elseif (! make_upload_directory("/shop/{$id}/{$wdir}/{$name}")) {
+            } else if (! make_upload_directory("/shop/{$id}/{$wdir}/{$name}")) {
                 echo "Error: could not create $name";
             }
             shop_displaydir($wdir);
@@ -777,7 +777,7 @@ function shop_displaydir ($wdir) {
                 shop_print_cell('right', $filedate, 'date');
                 if ($wdir.$dir === '/moddata') {
                     shop_print_cell();
-                } else { 
+                } else {
                     shop_print_cell("right", "<a href=\"file.php?id={$id}&amp;wdir=$wdir&amp;file=$filesafe&amp;action=rename&amp;choose=$choose\">$strrename</a>", 'commands');
                 }
             }
@@ -826,7 +826,7 @@ function shop_displaydir ($wdir) {
 
             if ($icon == "text.gif" || $icon == "html.gif") {
                 $edittext .= "<a href=\"file.php?id=$id&amp;wdir=$wdir&amp;file=$fileurl&amp;action=edit&amp;choose=$choose\">$stredit</a>";
-            } elseif ($icon == "zip.gif") {
+            } else if ($icon == "zip.gif") {
                 $edittext .= "<a href=\"file.php?id=$id&amp;wdir=$wdir&amp;file=$fileurl&amp;action=unzip&amp;sesskey=$USER->sesskey&amp;choose=$choose\">$strunzip</a>&nbsp;";
                 $edittext .= "<a href=\"file.php?id=$id&amp;wdir=$wdir&amp;file=$fileurl&amp;action=listzip&amp;sesskey=$USER->sesskey&amp;choose=$choose\">$strlist</a> ";
                 if (!empty($CFG->backup_version) and has_capability('moodle/site:restore', context_course::instance($id))) {
@@ -841,7 +841,6 @@ function shop_displaydir ($wdir) {
     }
     echo "</table>";
     echo "<hr />";
-    //echo "<hr width=\"640\" align=\"center\" noshade=\"noshade\" size=\"1\" />";
 
     echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"2\" width=\"640\">";
     echo "<tr><td>";

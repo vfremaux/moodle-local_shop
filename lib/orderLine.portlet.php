@@ -1,7 +1,30 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// hide discount individual lines
-if ($portlet->type == 'DISCOUNT') return;
+/**
+ * @package    local_shop
+ * @category   local
+ * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// Hide discount individual lines.
+if ($portlet->type == 'DISCOUNT') {
+    return;
+}
 
 if ($portlet->type == 'BILLING') {
     $rowcount = (0 + @$rowcount + 1) % 2;
@@ -25,7 +48,7 @@ if ($portlet->type == 'BILLING') {
   </td>
 </tr>
 <?php
-} elseif ($portlet->type == 'COMMENT') {
+} else if ($portlet->type == 'COMMENT') {
 ?>
 <tr class="<?php echo $rowclass ?>">
   <td valign="top" class="billlinecomment" colspan="5">
@@ -54,14 +77,14 @@ if (!empty($requireddata)) {
             echo ' <span style="color:red"><sup>*</sup></span>: ';
         }
         switch ($fieldtype) {
-            case 'textfield' : 
+            case 'textfield' :
                 echo "<input type=\"text\" name=\"required_{$label}_{$fieldname}\" size=\"40\" onchange=\"listen_to_required_changes()\" />";
                 break;
-            case 'checkbox' : 
+            case 'checkbox' :
                 echo "<input type=\"checkbox\" name=\"required_{$label}_{$fieldname}\" value=\"0\"  onchange=\"listen_to_required_changes()\" /> ".get_string('no');
                 echo " - <input type=\"checkbox\" name=\"required_{$label}_{$fieldname}\" value=\"1\"  onchange=\"listen_to_required_changes()\" /> ".get_string('yes');
                 break;
-            case 'textarea' : 
+            case 'textarea' :
                 echo "<textarea name=\"required_{$label}_{$fieldname}\" rows=\"5\" cols=\"30\"  onchange=\"listen_to_required_changes()\"></textarea>";
                 break;
         }

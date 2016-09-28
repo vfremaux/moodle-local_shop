@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
@@ -23,12 +21,13 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
 class ProductShipping_Form extends moodleform {
 
-    function definition() {
+    public function definition() {
         global $CFG, $OUTPUT;
 
         $codeattributes = 'size="10" maxlength="10"';
@@ -42,7 +41,7 @@ class ProductShipping_Form extends moodleform {
         $mform->addElement('select', 'productcode', get_string('productcode', 'local_shop'), $this->_customdata['products']);
         $mform->addRule('productcode', null, 'required');
 
-        $mform->addElement('select', 'zoneid', get_string('shippingzone', 'local_shop'), $this->_customdata['shippingzones']); 
+        $mform->addElement('select', 'zoneid', get_string('shippingzone', 'local_shop'), $this->_customdata['shippingzones']);
         $mform->addRule('zoneid', null, 'required');
 
         $mform->addElement('text', 'value', get_string('shippingfixedvalue', 'local_shop'));
@@ -66,15 +65,12 @@ class ProductShipping_Form extends moodleform {
         $mform->setAdvanced('c');
         $mform->setType('c', PARAM_NUMBER);
 
-        // Adding submit and reset button
+        // Adding submit and reset button.
 
         $this->add_action_buttons(true);
-    } 
-
-    function validation($data, $files = array()) {
     }
 
-    function freeze($field) {
+    public function freeze($field) {
         $mform = $this->_form;
         $mform->freeze($field);
     }

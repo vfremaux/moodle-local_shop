@@ -36,8 +36,8 @@ $PAGE->set_context($context);
 
 $config = get_config('local_shop');
 
-$id = optional_param('id', 0, PARAM_INT); // Shop current shop id 
-$shopid = optional_param('shopid', 0, PARAM_INT); // Shop current shop id 
+$id = optional_param('id', 0, PARAM_INT); // Shop current shop id
+$shopid = optional_param('shopid', 0, PARAM_INT); // Shop current shop id
 $url = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $id));
 
 // Security.

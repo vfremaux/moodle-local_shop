@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['searchforakeyinstructions'] = '
 Cette clef vous est donnée par un client. vous pouvez tenter une recherche en tapant les quelques premiers chiffres de la clef
@@ -58,7 +72,7 @@ $string['handlerparams_help'] = '
 
 Certains gestionnaires d\'action génériques prennent des paramètres. Ce champ permet de passer des valeurs spécifiques selon l\'instance de produit. Par exemple, un gestionnaire d\'action générique qui donne l\'accès étudiant Ã un cours a besoin de connaitre l\'id ou le nom du cours qui est concerné. Ce champ permettra de le spécifier produit par produit.
 
-La forme générale des paramètres est une liste de paramètres nommés "à la façon" d\'une URL : 
+La forme générale des paramètres est une liste de paramètres nommés "à la façon" d\'une URL :
 `param1=value1&param2=value2...`
 
 Certains paramètres sont systématiques à tous les gestionnaires standard :
@@ -130,22 +144,22 @@ Le nom abrégé du rôle à assigner.
 $string['renewable_help'] = '
 Lorsqu\'un produit est marqué comme renouvelable, cela suppose qu\'une durée de vie du produit a pu être définie, comptée à partir de la date d\'achat (en général).
 Ceci doit être géré par le gestionnaire d\'achat lié au produit, et paramétré en interne par des paramètres du gesitonnaire. Tous les gestionnaires standard ne
-supportent pas nécessairement la notion de durée. Lorsque cette option est utilisée, les interfaces clientes activeront les notifications du cycle de vie du produit, 
+supportent pas nécessairement la notion de durée. Lorsque cette option est utilisée, les interfaces clientes activeront les notifications du cycle de vie du produit,
 et permettront de renouveller l\'achat du même produit pour en étendre la durée. Le client devra alors fournir son code produit disponible dans son interface de support client.
 ';
 
 $string['producteulas_help'] = '
-Les termes de licence spécifique de chaque produit du panier seront aggrégés en une présentation globale de conditions de vente juste 
+Les termes de licence spécifique de chaque produit du panier seront aggrégés en une présentation globale de conditions de vente juste
 avant la phase de confirmation de prise de commande.
 ';
 
 $string['requireddata_help'] = '
-Certains gestionnaires nécessitent de récolter des données du client. 
+Certains gestionnaires nécessitent de récolter des données du client.
 
 La définition de ce formulaire utilise une syntaxe JSON pour définir les informations
 attendues et les élements de formulaire à utiliser dans la boutique.
 
-La description adopte la structure suivante : 
+La description adopte la structure suivante :
 
     array(
         array(\'field\' => \'the_field_name\',
@@ -170,7 +184,7 @@ L\'expression résultante est :
  {"field":"template_sample","label":"Model (sample)","type":"select","desc":"Course template (sample)",
            "options":{"MOD1":"Model1","MOD2":"Model2"}}]
 
-Vous pouvez utiliser un service en ligne comme http://www.objgen.com/json pour 
+Vous pouvez utiliser un service en ligne comme http://www.objgen.com/json pour
 vous faciliter le formatage de la structure.
 
 ';

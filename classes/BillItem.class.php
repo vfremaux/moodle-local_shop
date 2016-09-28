@@ -33,7 +33,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 
 /**
- * A Bill Item represents an order line with all the context that was there when 
+ * A Bill Item represents an order line with all the context that was there when
  * it was created. It stores a freezed image of the catalog item (may be even disconnected from
  * deleted catalogs) for reference to a stable price table.
  *
@@ -46,13 +46,13 @@ class BillItem extends ShopObject {
 
     public $catalogitem;
 
-    var $productiondata;
+    protected $productiondata;
 
-    var $customerdata;
+    protected $customerdata;
 
-    var $actionparams; // parameters decoded from handler params
+    protected $actionparams; // parameters decoded from handler params
 
-    function __construct($idorrec, &$bill = null, $ordering = -1) {
+    public function __construct($idorrec, &$bill = null, $ordering = -1) {
         global $DB;
 
         $this->bill = $bill;
@@ -70,8 +70,10 @@ class BillItem extends ShopObject {
                 debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             }
 
-            // reydrates the original catalog item stored when bill was created.
-            // This ensures getting exact prices from the moment, event if changed in catalog inbetween.
+            /*
+             * Reydrates the original catalog item stored when bill was created.
+             * This ensures getting exact prices from the moment, event if changed in catalog inbetween.
+             */
             $catalogitemdata = base64_decode($this->record->catalogitem);
             $catalogitemdata = str_replace('block_shop_catalogitem', 'local_shop_catalogitem', $catalogitemdata);
             $this->catalogitem = unserialize($catalogitemdata);
@@ -96,7 +98,7 @@ class BillItem extends ShopObject {
                 throw new \Exception('A bill is expected to build a new BillItem');
             }
 
-            // Try whenever possible drive ordering from outside without DB calls.... 
+            // Try whenever possible drive ordering from outside without DB calls....
             if ($ordering == -1) {
                 if ($maxordering = $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $bill->id))) {
                     $this->ordering = $maxordering->ordering + 1;
@@ -106,8 +108,10 @@ class BillItem extends ShopObject {
             } else {
                 $this->ordering = $ordering;
             }
-            // first creation of a record
-            // itemcode is NOT a legacy record field, but comes from shopping front
+            /*
+             * first creation of a record
+             * itemcode is NOT a legacy record field, but comes from shopping front
+             */
             $this->record->type = $idorrec->type;
 
             if ($idorrec->type != 'BILLING') {
@@ -134,8 +138,8 @@ class BillItem extends ShopObject {
                 $this->record->quantity = $idorrec->quantity;
                 $this->record->abstract = $this->catalogitem->name;
                 $this->record->description = $this->catalogitem->description;
-                $this->productiondata = $idorrec->productiondata; // this gets production data from shop front end. Essentially user definitions;
-                $this->productiondata->handlerparams = $this->catalogitem->handlerparams; // this adds a freezed copy of original handler params.
+                $this->productiondata = $idorrec->productiondata; // This gets production data from shop front end. Essentially user definitions;
+                $this->productiondata->handlerparams = $this->catalogitem->handlerparams; // This adds a freezed copy of original handler params.
                 if (!empty($this->productiondata->handlerparams)) {
                     if (is_array($this->productiondata->handlerparams)) {
                         $this->actionparams = $this->productiondata->handlerparams;
@@ -149,24 +153,24 @@ class BillItem extends ShopObject {
                         }
                     }
                 }
-    
-                $this->productiondata->catalogitemdata = $this->catalogitem->productiondata; // this passes some production params from catalog.
+
+                $this->productiondata->catalogitemdata = $this->catalogitem->productiondata; // This passes some production params from catalog.
                 $this->customerdata = $idorrec->customerdata;
-    
-                // deshydrates sub structures in record for storage
+
+                // Deshydrates sub structures in record for storage.
                 $this->record->catalogitem = base64_encode(serialize($this->catalogitem));
                 $this->record->productiondata = base64_encode(serialize($this->productiondata));
-                $this->record->customerdata = base64_encode(serialize($this->customerdata)); // customer data comes from product requirements
+                $this->record->customerdata = base64_encode(serialize($this->customerdata)); // Customer data comes from product requirements.
             }
         }
     }
 
-    function move($dir, $z) {
+    public function move($dir, $z) {
        global $DB;
 
        $sql = "
-          UPDATE 
-             {local_shop_billitem} 
+          UPDATE
+             {local_shop_billitem}
           SET
              ordering = ordering + $dir
           WHERE
@@ -176,27 +180,27 @@ class BillItem extends ShopObject {
        $DB->execute($sql, array($z, $this->id));
     }
 
-    function get_price() {
+    public function get_price() {
         return $this->catalogitem->get_price($this->record->quantity);
     }
-    
-    function get_taxed_price() {
+
+    public function get_taxed_price() {
         return $this->catalogitem->get_taxed_price($this->record->quantity);
     }
 
-    function get_tax_amount() {
+    public function get_tax_amount() {
         return $this->catalogitem->get_taxed_price($this->record->quantity) - $this->catalogitem->get_price($this->record->quantity);
     }
 
-    function get_totaltax() {
+    public function get_totaltax() {
         return $this->get_tax_amount() * $this->record->quantity;
     }
 
-    function get_totaltaxed() {
+    public function get_totaltaxed() {
         return $this->get_taxed_price($this->record->quantity) * $this->record->quantity;
     }
 
-    function get_customerid() {
+    public function get_customerid() {
         if (empty($this->bill)) {
             // rehydrates if necessary.
             $this->bill = new Bill($this->billid);
@@ -204,11 +208,11 @@ class BillItem extends ShopObject {
         return $this->bill->customerid;
     }
 
-    function save() {
+    public function save() {
         parent::save();
     }
 
-    function delete() {
+    public function delete() {
         // Delete products currently attached to.
         $products = Product::get_instances(array('currentbillitemid' => $this->id));
         if ($products) {
@@ -220,7 +224,7 @@ class BillItem extends ShopObject {
         parent::delete();
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 }

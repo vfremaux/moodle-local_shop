@@ -112,7 +112,7 @@ if ($action == 'addassign') {
     $ptid = required_param('participantid', PARAM_TEXT);
     $role = required_param('role', PARAM_TEXT);
     $shortname = required_param('product', PARAM_TEXT);
-    
+
     if (!isset($SESSION->shoppingcart->users)) {
         $SESSION->shoppingcart->users = array();
     }

@@ -22,7 +22,7 @@ pas à contacter notre service commercial.</p>
 
 $string['print_procedure_text_tpl'] = '
 <p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées suivantes :<br>
-   
+
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>
 
 <p><b><u>Domiciliation bancaire</u> :</b> <em><%%BANKING%%></em><br>
@@ -58,8 +58,7 @@ $string['print_procedure_text_tpl'] = '
       </tr>
    </table>
    </center></p>
-   
-   
+
    <p><center><table border="0" cellspacing="5" class="width500">
       <tr>
          <td class="colhead">
@@ -92,7 +91,7 @@ $string['print_procedure_text_tpl'] = '
 
 $string['print_procedure_text_invoice_tpl'] = '
 <p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées suivantes :<br>
-   
+
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>
 
 <p><b><u>Domiciliation bancaire</u> :</b> <em><%%BANKING%%></em><br>
@@ -128,7 +127,7 @@ $string['print_procedure_text_invoice_tpl'] = '
       </tr>
    </table>
    <br>
-   
+
    <p><table border="0" cellspacing="5" class="width500">
       <tr>
          <td class="colhead">

@@ -21,8 +21,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * This script is a simple tool for salesadmins for 
+/*
+ * This script is a simple tool for salesadmins for
  * extracting and inspecting a transaton backtrace.
  * It is provided for problem or claim solving.
  */
@@ -38,6 +38,7 @@ $id = required_param('id', PARAM_INT);
 $theShop = new Shop($id);
 
 // Security.
+
 $context = context_system::instance();
 require_capability('local/shop:salesadmin', $context);
 

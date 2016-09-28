@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
@@ -32,7 +31,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 $transid = required_param('transid', PARAM_RAW);
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/invoice.controller.php');
-    $controller = new \local_shop\front\invoice_controller($theShop, $theCatalog, $theBlock);
+    $controller = new \local_shop\front\invoice_controller($theshop, $thecatalog, $theblock);
     $result = $controller->process($action);
 }
 
@@ -44,11 +43,11 @@ $supportstr = (empty($supportstr)) ? '(No support info)' : '';
 
 echo $out;
 
-// Start ptinting page 
+// Start ptinting page.
 
 echo $OUTPUT->box_start('', 'shop-invoice');
 
-echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 $aFullBill = Bill::get_by_transaction($transid);
 
@@ -71,7 +70,7 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     foreach ($aFullBill->items as $biid => $bi) {
         if ($bi->type == 'BILLING') {
             echo $renderer->order_line($bi->catalogitem->shortname, $bi->quantity);
-        } elseif ($bi->type == 'SHIPPING') {
+        } else if ($bi->type == 'SHIPPING') {
             echo $renderer->bill_line($bi);
         }
     }
@@ -87,11 +86,11 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     $classname = 'shop_paymode_'.$aFullBill->paymode;
 
     echo '<div id="shop-order-paymode">';
-    $pm = new $classname($theShop);
+    $pm = new $classname($theshop);
     $pm->print_name();
     echo '</div>';
 
-    // a specific report
+    // A specific report.
     if (!empty($aFullBill->productiondata->public)) {
         echo $OUTPUT->box_start();
         echo $aFullBill->productiondata->public;
@@ -111,7 +110,7 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
 
 echo $renderer->printable_bill_link($aFullBill);
 
-// if testing the shop, provide a manual link to generate the paypal_ipn call
+// If testing the shop, provide a manual link to generate the paypal_ipn call.
 if ($config->test && $aFullBill->paymode == 'paypal') {
     require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
     paypal_print_test_ipn_link($aFullBill->id, $transid, $id, $pinned);
@@ -127,19 +126,12 @@ $options['inform'] = true;
 $options['transid'] = $aFullBill->transactionid;
 echo $renderer->action_form('invoice', $options);
 
-/*
-echo '<p align="center">';
-echo '<input type="hidden" name="view" value="invoice" />';
-echo '<input type="hidden" name="id" value="'.$id.'" />';
-echo '<input type="hidden" name="blockid" value="'.$blockid.'" />';
-echo '<input type="hidden" name="what" value="navigate" />';
-// echo '<input type="submit" name="back" value="'.get_string('previous', 'local_shop').'" />';
-echo '&nbsp;<input type="submit" name="go" class="shop-next-button" value="'.get_string('backtoshop', 'local_shop').'" />';
-*/
-
-// if we are sure the customer has a customer account
-if (!empty($theShop->defaultcustomersupportcourse) && $SESSION->shoppingcart->customerinfo->hasaccount) {
-    echo '&nbsp;<input type="submit" name="customerservice" class="shop-next-button" value="'.get_string('gotocustomerservice', 'local_shop').'" />';
+// If we are sure the customer has a customer account.
+if (!empty($theshop->defaultcustomersupportcourse) && $SESSION->shoppingcart->customerinfo->hasaccount) {
+    echo '&nbsp;<input type="submit"
+                       name="customerservice"
+                       class="shop-next-button"
+                       value="'.get_string('gotocustomerservice', 'local_shop').'" />';
 }
 
 echo '</p>';

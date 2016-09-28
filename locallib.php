@@ -100,10 +100,10 @@ function shop_get_block_instance($instanceid) {
     if (!$instance = $DB->get_record('block_instances', array('id' => $instanceid))) {
         print_error('errorinvalidblock', 'local_shop');
     }
-    if (!$theBlock = block_instance('shop_access', $instance)) {
+    if (!$theblock = block_instance('shop_access', $instance)) {
         print_error('errorbadblockinstance', 'local_shop');
     }
-    return $theBlock;
+    return $theblock;
 }
 
 /**
@@ -459,7 +459,7 @@ function shop_get_supported_currencies() {
 function shop_build_context() {
     global $SESSION, $DB;
 
-    $theShop = new Shop(null);
+    $theshop = new Shop(null);
 
     if (!isset($SESSION->shop)) {
         $SESSION->shop = new StdClass;
@@ -468,42 +468,44 @@ function shop_build_context() {
     $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
     if ($SESSION->shop->shopid) {
         try {
-            $theShop = new Shop($SESSION->shop->shopid);
+            $theshop = new Shop($SESSION->shop->shopid);
         } catch (Exception $e) {
             print_error('objecterror', 'local_shop', $e->getMessage());
         }
     } else {
-        // shopid is null. get lowest available shop as default
+        // Shopid is null. get lowest available shop as default.
         $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
         $shop = array_pop($shops);
-        $theShop = new Shop($shop->id);
+        $theshop = new Shop($shop->id);
     }
 
-    // Logic : forces session catalog to be operative, 
-    // Defaults to the current shop bound catalog. 
+    /*
+     * Logic : forces session catalog to be operative,
+     * Defaults to the current shop bound catalog.
+     */
     $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
     if (empty($SESSION->shop->catalogid)) {
-        if ($theShop->id) {
+        if ($theshop->id) {
             try {
-                $theCatalog = new Catalog($theShop->catalogid);
-                $SESSION->shop->catalogid = $theCatalog->id;
+                $thecatalog = new Catalog($theshop->catalogid);
+                $SESSION->shop->catalogid = $thecatalog->id;
             } catch (Exception $e) {
                 print_error('objecterror', 'local_shop', $e->get_message());
             }
         }
     }
     try {
-        $theCatalog = new Catalog($SESSION->shop->catalogid);
+        $thecatalog = new Catalog($SESSION->shop->catalogid);
     } catch (Exception $e) {
         print_error('objecterror', 'local_shop', $e->get_message());
     }
 
-    $theBlock = null;
+    $theblock = null;
     $SESSION->shop->blockid = optional_param('blockid', @$SESSION->shop->blockid, PARAM_INT);
     if (!empty($SESSION->shop->blockid)) {
-        $theBlock = shop_get_block_instance($SESSION->shop->blockid);
+        $theblock = shop_get_block_instance($SESSION->shop->blockid);
     }
-    return array($theShop, $theCatalog, $theBlock);
+    return array($theshop, $thecatalog, $theblock);
 }
 
 /**
@@ -611,7 +613,7 @@ function shop_get_string($identifier, $subplugin, $a = '', $lang = '') {
  *
  *
  */
-function shop_get_full_bill($transid, &$theShop, &$theBlock) {
+function shop_get_full_bill($transid, &$theshop, &$theblock) {
     global $CFG, $DB;
 
     include_once $CFG->dirroot.'/local/shop/classes/Bill.class.php';
@@ -619,9 +621,9 @@ function shop_get_full_bill($transid, &$theShop, &$theBlock) {
     if (!$transid) return false;
 
     $billrec = $DB->get_record('local_shop_bill', array('transactionid' => $transid));
-    $theCatalog = new Catalog($theShop->catalogid);
+    $thecatalog = new Catalog($theshop->catalogid);
 
-    $bill = new Bill($billrec, $theShop, $theCatalog, $theBlock);
+    $bill = new Bill($billrec, $theshop, $thecatalog, $theblock);
 
     return $bill;
 }

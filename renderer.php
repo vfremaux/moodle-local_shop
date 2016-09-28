@@ -97,7 +97,7 @@ class local_shop_renderer extends plugin_renderer_base {
         }
 
         $sql = "
-            SELECT 
+            SELECT
                 c.id,
                 c.firstname,
                 c.lastname,

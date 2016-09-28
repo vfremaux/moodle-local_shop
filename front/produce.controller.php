@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/auth/ticket/lib.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/production.php');
@@ -31,24 +31,28 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 class production_controller extends front_controller_base {
 
-    var $ipncall;
-    var $interactive;
-    var $abill;
+    protected $ipncall;
+    public $interactive;
+    protected $abill;
 
-    function __construct(&$aFullBill, $ipncall = false, $interactive = false) {
+    public function __construct(&$aFullBill, $ipncall = false, $interactive = false) {
         $this->abill = $aFullBill;
         $this->ipncall = $ipncall;
         $this->interactive = $interactive;
     }
 
-    function process($cmd, $holding = false) {
+    public function process($cmd, $holding = false) {
         global $SESSION, $DB, $CFG, $SITE, $OUTPUT;
 
         $config = get_config('local_shop');
 
         if ($cmd == 'navigate') {
             // No back possible after production.
-            $params = array('view' => $this->abill->theshop->get_next_step('produce'), 'shopid' => $this->abill->theshop->id, 'blockid' => 0 + @$this->abill->theblock->id, 'transid' => $this->abill->transactionid);
+            $next = $this->abill->theshop->get_next_step('produce');
+            $params = array('view' => $next,
+                            'shopid' => $this->abill->theshop->id,
+                            'blockid' => 0 + @$this->abill->theblock->id,
+                            'transid' => $this->abill->transactionid);
             $url = new \moodle_url('/local/shop/front/view.php', $params);
             if (empty($SESSION->shoppingcart->debug)) {
                 redirect($url);
@@ -60,10 +64,10 @@ class production_controller extends front_controller_base {
 
         $systemcontext = \context_system::instance();
 
-        // Simpler to handle in code
+        // Simpler to handle in code.
         $aFullBill = $this->abill;
 
-        // trap any non defined command here (increase security).
+        // Trap any non defined command here (increase security).
         if ($cmd != 'produce' && $cmd != 'confirm') {
             return;
         }
@@ -73,7 +77,8 @@ class production_controller extends front_controller_base {
          * - this is a free order (paymode has been detected as freeorder)
          * - the user is logged in and has special payment override capability
          */
-        $paycheckoverride = (isloggedin() && has_capability('local/shop:paycheckoverride', $systemcontext)) || ($aFullBill->paymode == 'freeorder');
+        $paycheckoverride = (isloggedin() && has_capability('local/shop:paycheckoverride', $systemcontext)) ||
+                ($aFullBill->paymode == 'freeorder');
         $overriding = false;
 
         if ($cmd == 'confirm') {
@@ -83,9 +88,11 @@ class production_controller extends front_controller_base {
                 $cmd = 'produce';
                 $overriding = true;
             } else {
-        
-                // a more direct resolution when paiement is not performed online
-                // we can perform pre_pay operations
+
+                /*
+                 * A more direct resolution when paiement is not performed online
+                 * we can perform pre_pay operations
+                 */
                 shop_trace("[{$aFullBill->transactionid}] ".'Order confirm (offline payments, bill is expected to be PENDING)');
                 shop_trace("[{$aFullBill->transactionid}] ".'Production starting ...');
                 shop_trace("[{$aFullBill->transactionid}] ".'Production Controller : Pre Pay process');
@@ -100,26 +107,30 @@ class production_controller extends front_controller_base {
                     mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Pre Pay process');
                 }
                 $productionfeedback = produce_prepay($aFullBill);
-                // log new production data into bill record
-                // the first producing procedure stores production data.
-                // if interactive shopback process comes later, we just have production
-                // data to display to user.
+                /*
+                 * log new production data into bill record
+                 * the first producing procedure stores production data.
+                 * if interactive shopback process comes later, we just have production
+                 * data to display to user.
+                 */
                 shop_aggregate_production($aFullBill, $productionfeedback, $this->interactive);
-                // all has been finished
+                // all has been finished.
                 unset($SESSION->shoppingcart);
             }
         }
         if ($cmd == 'produce') {
 
-            // start production
+            // Start production.
             shop_trace("[{$aFullBill->transactionid}] ".'Production Controller : Full production starting from '.$aFullBill->status.' ...');
             if ($this->interactive && $this->ipncall) {
                 mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Full production starting from '.$aFullBill->status.' ...');
             }
 
             if ($aFullBill->status == SHOP_BILL_PENDING || $aFullBill->status == SHOP_BILL_SOLDOUT || $overriding) {
-                // when using the controller to finish a started production, do not
-                // preproduce again (paypal IPN finalization)
+                /*
+                 * when using the controller to finish a started production, do not
+                 * preproduce again (paypal IPN finalization)
+                 */
                 if ($this->interactive && $this->ipncall) {
                     mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Pre Pay process');
                 }
@@ -136,9 +147,9 @@ class production_controller extends front_controller_base {
                         $productionfeedback->private .= '<br/>'.$productionfeedback2->private;
                         $productionfeedback->salesadmin .= '<br/>'.$productionfeedback2->salesadmin;
                         if ($overriding) {
-                            $aFullBill->status = SHOP_BILL_PREPROD; // Let replay for test
+                            $aFullBill->status = SHOP_BILL_PREPROD; // Let replay for test.
                         } else {
-                            $aFullBill->status = SHOP_BILL_COMPLETE; // Let replay for test
+                            $aFullBill->status = SHOP_BILL_COMPLETE; // Let replay for test.
                         }
                         if (!$holding) {
                             // If holding for repeatable tests, do not complete the bill.
@@ -146,10 +157,12 @@ class production_controller extends front_controller_base {
                         }
                     }
                 }
-                // log new production data into bill record
-                // the first producing procedure stores production data.
-                // if interactive shopback process comes later, we just have production
-                // data to display to user.
+                /*
+                 * log new production data into bill record
+                 * the first producing procedure stores production data.
+                 * if interactive shopback process comes later, we just have production
+                 * data to display to user.
+                 */
                 shop_aggregate_production($aFullBill, $productionfeedback, $this->interactive);
             } else {
                 $productionfeedback = new \StdClass;
@@ -165,10 +178,12 @@ class production_controller extends front_controller_base {
             mtrace($productionfeedback->public);
             mtrace($productionfeedback->private);
         }
-        // notify end user
-        // feedback customer with mail confirmation.
+
+        // Notify end user.
+        // Feedback customer with mail confirmation.
         $customer = $DB->get_record('local_shop_customer', array('id' => $aFullBill->customerid));
 
+        $paymodename = get_string($aFullBill->paymode, 'shoppaymodes_'.$aFullBill->paymode);
         $notification  = shop_compile_mail_template('sales_feedback', array('SERVER' => $SITE->shortname,
                                                                    'SERVER_URL' => $CFG->wwwroot,
                                                                    'SELLER' => $config->sellername,
@@ -178,10 +193,15 @@ class production_controller extends front_controller_base {
                                                                    'CITY' => $customer->city,
                                                                    'COUNTRY' => $customer->country,
                                                                    'ITEMS' => $aFullBill->itemcount,
-                                                                   'PAYMODE' => get_string($aFullBill->paymode, 'shoppaymodes_'.$aFullBill->paymode),
-                                                                   'AMOUNT' => sprintf("%.2f", round($aFullBill->amount, 2))), 
+                                                                   'PAYMODE' => $paymodename,
+                                                                   'AMOUNT' => sprintf("%.2f", round($aFullBill->amount, 2))),
                                                  '');
-        $customerBillViewUrl = $CFG->wwwroot."/local/shop/front/view.php?id={$aFullBill->shopid}&blockid={$aFullBill->blockid}&view=bill&billid={$aFullBill->id}&transid={$aFullBill->transactionid}";
+        $params = array('id' => $aFullBill->shopid,
+                        'blockid' => $aFullBill->blockid
+                        'view' => 'bill',
+                        'billid' => $aFullBill->id,
+                        'transid' =>, $aFullBill->transactionid);
+        $customerBillViewUrl = new moodle_url('/local/shop/front/view.php', $params);
 
         $seller = new \StdClass;
         $seller->id = $DB->get_field('user', 'id', array('username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id));
@@ -216,6 +236,7 @@ class production_controller extends front_controller_base {
         if ($this->interactive && $this->ipncall) {
             mtrace("[{$aFullBill->transactionid}] ".'Production Controller : Transaction notified to customer');
         }
+
         /* notify sales forces and administrator */
         // Send final notification by mail if something has been done the sales administrators users should know.
         $salesnotification = shop_compile_mail_template('transaction_confirm', array('TRANSACTION' => $aFullBill->transactionid,
@@ -233,15 +254,19 @@ class production_controller extends front_controller_base {
                                                                    'TAXES' => sprintf("%.2f", round($aFullBill->taxes, 2)),
                                                                    'TTC' => sprintf("%.2f", round($aFullBill->amount, 2))
                                                                     ), '');
-        $administratorViewUrl = $CFG->wwwroot . "/local/shop/bills/view.php?id={$aFullBill->shopid}&view=viewBill&billid={$aFullBill->id}&transid={$aFullBill->transactionid}";
+        $params = array('id' => $aFullBill->shopid,
+                        'view' => 'viewBill',
+                        'billid' => $aFullBill->id,
+                        'transid' => $aFullBill->transactionid);
+        $administratorViewUrl = new moodle_url('/local/shop/bills/view.php', $params);;
         if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
-            $title = $SITE->shortname . ' : ' . get_string('orderconfirm', 'local_shop');
+            $title = $SITE->shortname.' : '.get_string('orderconfirm', 'local_shop');
             if (!empty($productiondata->private)) {
-                $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->salesadmin, $salesnotification);
+                $sn = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->salesadmin, $salesnotification);
             } else {
-                $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);
+                $sn = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);
             }
-            $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $sentnotification, $sentnotification, $administratorViewUrl);
+            $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $sn, $sn, $administratorViewUrl);
             if ($sent) {
                 shop_trace("[{$aFullBill->transactionid}] Production Controller : shop Transaction Confirm Notification to sales");
             } else {
@@ -251,7 +276,7 @@ class production_controller extends front_controller_base {
             shop_trace("[{$aFullBill->transactionid}] ".'Production Controller : No sales role defined');
         }
 
-        // final destruction of the shopping session
+        // Final destruction of the shopping session.
 
         if (!empty($this->interactive)) {
             if (!$holding) {

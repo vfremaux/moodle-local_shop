@@ -92,7 +92,7 @@ class Catalog extends ShopObject {
             FROM
                 {".self::$table."}
             WHERE
-                groupid IS NOT NULL AND 
+                groupid IS NOT NULL AND
                 groupid = ?
             ORDER BY
                 ismaster DESC
@@ -467,7 +467,7 @@ class Catalog extends ShopObject {
 
     /**
      * Queries a catalog to find a complete catalog item instance
-     * @param string $shortname the shortname of the product 
+     * @param string $shortname the shortname of the product
      * @return a CatalogItem object
      */
     function get_product_by_shortname($shortname) {
@@ -558,33 +558,32 @@ class Catalog extends ShopObject {
                     $applicable = $defaultzone;
                     break;
                 }
-                // in spite of shipzones found in the way, none applicable
+                // In spite of shipzones found in the way, none applicable.
                 shop_trace("[{$transactionid}] No shipzone applicable for [$country][$zipcode]");
-                // echo "no shipzone applicable ";
                 $return->value = 0;
                 return $return;
             }
         }
         shop_trace("[{$transactionid}] shop Shipping : Found applicable zone $applicable->zonecode ");
-        // checking bill scope shipping for zone 
+        // Checking bill scope shipping for zone.
         if ($applicable->billscopeamount != 0) {
             shop_trace("[{$transactionid}] shop Shipping : Using bill scope amount ");
             $return->value = $applicable->billscopeamount;
             $return->code = 'SHIP_';
             $return->taxcode = $applicable->taxid;
-            // calculate tax amounts
-               $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
-               return $return;
+            // Calculate tax amounts.
+            $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
+            return $return;
         }
         shop_trace("[{$transactionid}] shop Shipping : Examinating shippings");
-        // examinating products
+        // Examinating products.
         if ($shippings = $DB->get_records('local_shop_catalogshipping', array('zoneid' => $applicable->id))) {
             $return->code = 'SHIP_';
             $return->taxcode = $applicable->taxid;
             $return->value = 0;
             foreach ($shippings as $sh) {
                 $shippedproduct = $DB->get_record('local_shop_catalogitem', array('code' => $sh->productcode));
-                // must be a valid product in order AND have some items required
+                // Must be a valid product in order AND have some items required.
                 if (array_key_exists($shippedproduct->shortname, $order) && $order[$shippedproduct->shortname] > 0) {
                     if ($sh->value > 0) {
                         $return->value += $sh->value;
@@ -611,9 +610,8 @@ class Catalog extends ShopObject {
                }
                return $return;
         }
-        // void return if no shipping solution
+        // Void return if no shipping solution.
         shop_trace("[{$transactionid}] shop Shipping : No shipping solution");
-        // echo "no shipping solution";
         $return->value = 0;
         return $return;
     }
@@ -634,10 +632,10 @@ class Catalog extends ShopObject {
      */
     function get_products_by_code($order = 'code', $dir = 'ASC', $masterrecords = 0, $nosets = false, $userid = null) {
         global $DB;
-    
+
         $nosetsql = ($nosets) ? " NOT (setid != 0 AND isset = 0) AND " : '' ;
         $useridsql = (is_null($userid)) ? '' : ' AND ci.userid = ? ';
-    
+
         $sql = "
             SELECT
                ci.code as code,
@@ -696,7 +694,7 @@ class Catalog extends ShopObject {
             $product = $this->get_product_by_shortname($shortname);
             if ($product->quantaddressesusers == SHOP_QUANT_AS_SEATS) {
                 $seats += $quantity;
-            } elseif ($product->quantaddressesusers == SHOP_QUANT_ONE_SEAT) {
+            } else if ($product->quantaddressesusers == SHOP_QUANT_ONE_SEAT) {
                 $seats += 1;
             }
         }

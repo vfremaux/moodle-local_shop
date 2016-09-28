@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 ?>
 <table class="shop-article" width="100%">
@@ -41,25 +41,25 @@ if ($portlet->image != '') {
         </td>
     </tr>
     <tr>
-        <td class="shop-productcontent">         
-         <?php echo format_string($portlet->description) ?>         
+        <td class="shop-productcontent">
+         <?php echo format_string($portlet->description) ?>
         </td>
    </tr>
    <tr>
            <td>
             <?php
-            
+
             function bundle_subportlet($portlet) {
                 global $CFG, $OUTPUT;
-                
+
                 include $CFG->dirroot.'/local/shop/lib/productBlock.portlet.php';
             }
-            
+
             $TTCprice = 0;
             foreach ($portlet->set as $subportlet) {
                 $subportlet->TTCprice = shop_calculate_taxed($subportlet->price1, $subportlet->taxcode);
                 $TTCprice += $subportlet->TTCprice;
-                $subportlet->noorder = true; // Bundle can only be purchased as a group
+                $subportlet->noorder = true; // Bundle can only be purchased as a group.
                 bundle_subportlet($subportlet);
             }
             ?>

@@ -64,7 +64,7 @@ e.g. a hanlder that enrols a student in a paied for course needs to know the cou
 Some handlers may require mandatory values, and optional params. You can use the "Test products" feature to check the integrity of your
 products tunning before publishing them.
 
-The general form of the parameters is an url encoded like string: 
+The general form of the parameters is an url encoded like string:
 
    `param1=value1&param2=value2...`
 
@@ -154,7 +154,7 @@ the shortname of the role to assign. A capability check will be performed on pro
 
 $string['renewable_help'] = '
 When a product is set as renewable, it may be defined with a product duration from the purchase date. This should be handled
-by the product purchase handler and setup through an internal handler parameter. All handlers do not support duration. When enabled, 
+by the product purchase handler and setup through an internal handler parameter. All handlers do not support duration. When enabled,
 the customer account interfaces will support product end of period notification, and purchasing agin the product with a reference code
 will extend the period on the same product instance.
 ';
@@ -163,12 +163,12 @@ $string['producteulas_help'] = 'Eulas for each purchased product will be aggrega
 pre-order validation.
 ';
 
-$string['requireddata_help'] = 'some hanlders need some data to be requested from the customer for each instance. 
+$string['requireddata_help'] = 'some hanlders need some data to be requested from the customer for each instance.
 
 this required data uses a JSON format for defining an array of form widgets that will need to be pused to the
 front office.
 
-The object expressions adopt the following structure : 
+The object expressions adopt the following structure :
 
     array(
         \'p0\': array(\'field\' => \'the_field_name\',
@@ -186,7 +186,7 @@ The object expressions adopt the following structure :
                \'desc\' => \'Course template (sample)\',
                \'options\' => array(\'MOD1\' => \'Model1\', \'MOD2\' => \'Model2\')));
 
-the resuting expression is : 
+the resuting expression is :
 
 [{"field":"the_field_name","label":"some visible name","type":"textfield","desc":"some desc","attrs":{"size":80}},
  {"field":"description_sample","label":"Description (sample)","type":"textarea","desc":"Short Description (sample)"},

@@ -29,7 +29,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
 use \local_shop\Bill;
 
-// get all context information
+// Get all context information.
 
 $config = get_config('local_shop');
 
@@ -38,9 +38,7 @@ list($theShop, $theCatalog, $theBlock) = shop_build_context();
 $renderer = shop_get_renderer('front');
 $renderer->load_context($theShop, $theBlock);
 
-// Security
-
-// require_login();
+// Security.
 
 // invoke controller.
 
@@ -50,10 +48,13 @@ $transid = required_param('transid', PARAM_TEXT);
 try {
     $aFullBill = Bill::get_by_transaction($transid);
 } catch(Exception $e) {
-    print_error('invalidbillid', 'local_shop', new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id))));
+    $params = array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id);
+    $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+    print_error('invalidbillid', 'local_shop', $viewurl));
 }
 
-$url = new moodle_url('/local/shop/front/order.popup.php', array('shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id), 'transid' => $transid));
+$params = array('shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id), 'transid' => $transid);
+$url = new moodle_url('/local/shop/front/order.popup.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('popup');
@@ -93,7 +94,8 @@ echo '<div style="max-width:780px">';
    </tr>
    <tr>
       <td width="60%" valign="top">
-         <b><?php echo get_string('customer', 'local_shop') ?>: </b> <?php echo $aFullBill->customer->lastname ?> <?php echo $aFullBill->customer->firstname ?>
+         <b><?php echo get_string('customer', 'local_shop') ?>: </b> <?php echo $aFullBill->customer->lastname ?>
+         <?php echo $aFullBill->customer->firstname ?>
       </td>
    </tr>
    <tr>

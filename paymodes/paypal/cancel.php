@@ -21,17 +21,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-//Get return parms and redirect to shop
+// Get return parms and redirect to shop.
 
-// Return_Context : id={$this->theshop->id}
+include('../../../../config.php');
+require_once($CFG->dirroot.'/local/shop/paymodes/paypal/paypal.class.php');
+require_once($CFG->dirroot.'/local/shop/front/lib.php');
 
-include '../../../../config.php';
-require_once $CFG->dirroot.'/local/shop/paymodes/paypal/paypal.class.php';
-require_once $CFG->dirroot.'/local/shop/front/lib.php';
-
-// we cannot know yet which block instanceplays as infomation is in the mercanet
-// cryptic answer. Cancel() decodes crytpic answer and get this context information to 
-// go further.
+/*
+ * we cannot know yet which block instanceplays as infomation is in the mercanet
+ * cryptic answer. Cancel() decodes crytpic answer and get this context information to
+ * go further.
+ */
 $shopinstance = null;
 $payhandler = new shop_paymode_paypal($shopinstance);
 $payhandler->cancel();

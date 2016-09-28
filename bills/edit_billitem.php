@@ -38,7 +38,7 @@ use local_shop\Tax;
 
 // Get the block reference and key context.
 
-// get all the shop session context objects
+// get all the shop session context objects.
 list($theShop, $theCatalog, $theBlock) = shop_build_context();
 
 // Security.

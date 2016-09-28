@@ -207,7 +207,7 @@ class shop_shipzones_renderer {
             $row[] = $z->tax;
             $row[] = $z->entries;
             $row[] = $z->applicability;
-    
+
             if ($z->entries == 0) {
                 $indexurl = new moodle_url('/local/shop/shipzones/index.php', array('what' => 'delete', 'zoneid[]' => $z->id));
                 $commands = '<a href="'.$indexurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
@@ -221,10 +221,10 @@ class shop_shipzones_renderer {
             }
             $zoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', array('what' => 'update', 'item' => $z->id));
             $commands .= ' <a href="'.$zoneurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
-    
+
             $row[] = $commands;
         }
-    
+
         echo $OUTPUT->table($table);
     }
 }

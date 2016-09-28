@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 if ($cmd == 'addcatalog') {
-} elseif ($cmd == 'updatecatalog') {
+} else if ($cmd == 'updatecatalog') {
     $catalog->id = required_param('item', PARAM_INT);
     $catalog->name = required_param('name', PARAM_TEXT);
     $catalog->description = optional_param('description', '', PARAM_CLEANHTML);
@@ -38,7 +38,7 @@ if ($cmd == 'addcatalog') {
     if ($catalog->linked != 'free') {
         if ($catalog->linked == 'master') {
             $groupidvalue = $id;
-        } elseif ($catalog->linked == 'slave') {
+        } else if ($catalog->linked == 'slave') {
             $groupidvalue = $catalog->groupid;
         }
         $sql = "

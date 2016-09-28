@@ -148,7 +148,7 @@ class shop_customers_renderer {
                 $markstr = get_string('mark', 'local_shop');
                 $url = new moodle_url('/local/shop/view.php', array('view' => 'viewCustomer', 'what' => 'sellout', 'billid' => $portlet->id, 'customer' => $portlet->userid));
                 $row[] = '<a href="'.$url.'" alt="'.$markstr.'"><img src="'.$OUTPUT->pix_url('mark', 'local_shop').'"/></a>';
-            } elseif ($portlet->status == 'SOLDOUT') {
+            } else if ($portlet->status == 'SOLDOUT') {
                 $url = new moodle_url('/local/shop/view.php', array('view' => 'viewCustomer', 'what' => 'unmark', 'billid' => $portlet->id, 'customer' => $portlet->userid));
                 $row[] = '<a href="'.$url.'" alt="'.$unmarkstr.'"><img src="'.$OUTPUT->pix_url('unmark', 'local_shop').'" ></a>';
             }

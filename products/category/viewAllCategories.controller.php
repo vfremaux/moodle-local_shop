@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\products;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -25,10 +21,13 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\products;
+
+defined('MOODLE_INTERNAL') || die();
 
 class category_controller {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $DB;
 
         //Delete a category
@@ -36,30 +35,27 @@ class category_controller {
             $categoryids = required_param_array('categoryids', PARAM_INT);
             $categoryidlist = implode("','", $categoryids);
             $DB->delete_records_select('local_shop_catalogcategory', " id IN ('$categoryidlist') ");
-        }
 
-        /******************************* Raises a question in the list ****************/
-        elseif ($cmd == 'up') {
+        // Raises a question in the list ****************.
+        } else if ($cmd == 'up') {
             $cid = required_param('categoryid', PARAM_INT);
 
             shop_list_up($shop, $cid, 'local_shop_catalogcategory');
-        }
 
-        /******************************* Lowers a question in the list ****************/
-        elseif ($cmd == 'down') {
+
+        // Lowers a question in the list ****************.
+        } else if ($cmd == 'down') {
             $cid = required_param('categoryid', PARAM_INT);
 
             shop_list_down($shop, $cid, 'local_shop_catalogcategory');
-        }
 
-        /******************************* Show a category ****************/
-        elseif ($cmd == 'show') {
+        // Show a category ****************.
+        } else if ($cmd == 'show') {
             $cid = required_param('categoryid', PARAM_INT);
             $DB->set_field('local_shop_catalogcategory', 'visible', 1, array('id' => $cid));
-        }
 
-        /******************************* Hide a category ****************/
-        elseif ($cmd == 'hide') {
+        // Hide a category ****************.
+        } else if ($cmd == 'hide') {
             $cid = required_param('categoryid', PARAM_INT);
             $DB->set_field('local_shop_catalogcategory', 'visible', 0, array('id' => $cid));
         }

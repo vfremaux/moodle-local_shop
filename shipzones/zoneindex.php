@@ -72,7 +72,7 @@ $renderer->load_context($theCatalog);
 
 echo $OUTPUT->header();
 
-// if slave get entries in master catalog and then overrides whith local descriptions
+// If slave get entries in master catalog and then overrides whith local descriptions.
 echo $OUTPUT->heading(format_string($theCatalog->name));
 
 echo $renderer->catalog_data($theCatalog);
@@ -94,7 +94,7 @@ $addshippingurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', arra
 echo '<div class="addlink"><a href="'.$addshippingurl.'">'.$addshippingstr.'</a></div>';
 
 echo '<br/><center>';
-echo $OUTPUT->single_button(new moodle_url('/local/shop/shipzones/index.php'), get_string('backtoshopadmin', 'local_shop'), 'get'); 
+echo $OUTPUT->single_button(new moodle_url('/local/shop/shipzones/index.php'), get_string('backtoshopadmin', 'local_shop'), 'get');
 echo '</center><br/>';
 
 echo $OUTPUT->footer();

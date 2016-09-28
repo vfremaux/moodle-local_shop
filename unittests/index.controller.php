@@ -30,19 +30,19 @@ class unittests_controller {
 
     protected $data;
 
-    var $theshop;
+    protected $theshop;
 
-    var $thecatalog;
+    protected $thecatalog;
 
-    var $theblock;
+    protected $theblock;
 
-    function __construct($theShop, $theCatalog, $theBlock) {
+    public function __construct($theShop, $theCatalog, $theBlock) {
         $this->theshop = $theShop;
         $this->thecatalog = $theCatalog;
         $this->theblock = $theBlock;
     }
 
-    function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
             // data is fed from outside.
@@ -58,12 +58,12 @@ class unittests_controller {
         }
     }
 
-    function process($action) {
+    public function process($action) {
         global $CFG;
 
         /**
          * Performs consistancy test on all selected products and produces a report about what is OK and what is wrong.
-         * Only Catalog defined handler params are supported here. 
+         * Only Catalog defined handler params are supported here.
          */
         if ($action == 'test') {
 

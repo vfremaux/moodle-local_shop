@@ -32,17 +32,19 @@ require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
 class Category extends ShopObject {
 
-    static $table = 'local_shop_catalogcategory';
+    protected static $table = 'local_shop_catalogcategory';
 
-    var $thecatalog;
+    protected $thecatalog;
 
-    function __construct($idorrecord, $light = false) {
+    public function __construct($idorrecord, $light = false) {
         global $DB;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the Bill, without items
+            if ($light) {
+                return; // This builds a lightweight proxy of the Bill, without items.
+            }
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -53,7 +55,7 @@ class Category extends ShopObject {
         }
     }
 
-    function get_branch() {
+    public function get_branch() {
         global $DB;
 
         $branch = array($this->id);
@@ -71,7 +73,7 @@ class Category extends ShopObject {
      * @param int $catalogid
      * @param int $categoryid the current iteration parent
      */
-    static function get_first_branch($catalogid, $categoryid = 0) {
+    public static function get_first_branch($catalogid, $categoryid = 0) {
         global $DB;
 
         $branch = array();
@@ -85,27 +87,31 @@ class Category extends ShopObject {
         return $branch;
     }
 
-    function delete() {
+    public function delete() {
         parent::delete();
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_count_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
     /**
-     * Geven a set of categories, and a current categoryid, 
+     * Geven a set of categories, and a current categoryid,
      * filter out all categories that are NOT parentable
      */
-    static function filter_parentable(&$categories, $currentcat = 0) {
+    public static function filter_parentable(&$categories, $currentcat = 0) {
         global $DB;
 
-        if (empty($categories)) return;
-        if (!$currentcat) return;
+        if (empty($categories)) {
+            return;
+        }
+        if (!$currentcat) {
+            return;
+        }
 
         foreach ($categories as $c) {
 

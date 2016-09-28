@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/country.php');
@@ -32,20 +31,20 @@ use local_shop\Tax;
 
 class ShippingZone_Form extends moodleform {
 
-    function definition() {
+    public function definition() {
         global $CFG, $OUTPUT;
 
         $codeattributes = 'size="10" maxlength="10"';
         $applicattributes = 'size="50"';
 
-        // Setting variables
+        // Setting variables.
         $mform =& $this->_form;
 
-        $mform->addElement('hidden', 'zoneid'); // Shipzone id
+        $mform->addElement('hidden', 'zoneid'); // Shipzone ID.
         $mform->setType('zoneid', PARAM_INT);
 
-        // Title and description
-        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'shippingzone', 'local_shop'))); 
+        // Title and description.
+        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'shippingzone', 'local_shop')));
 
         $mform->addElement('text', 'zonecode', get_string('zonecode', 'local_shop'), $codeattributes); // Shipzone code
         $mform->addRule('zonecode', null, 'required');
@@ -63,12 +62,13 @@ class ShippingZone_Form extends moodleform {
         foreach ($taxes as $t) {
             $taxoptions[$t->id] = $t->title;
         }
-        $mform->addElement('select', 'taxid', get_string('tax', 'local_shop'), $taxoptions); // Bill scope amount when bill applied
+        $mform->addElement('select', 'taxid', get_string('tax', 'local_shop'), $taxoptions); // Bill scope amount when bill applied.
 
-        $mform->addElement('text', 'applicability', get_string('applicability', 'local_shop'), $applicattributes); // the formula used to check application of shipping zone
+        // The formula used to check application of shipping zone.
+        $mform->addElement('text', 'applicability', get_string('applicability', 'local_shop'), $applicattributes);
         $mform->setType('applicability', PARAM_TEXT);
 
-        // Adding submit and reset button
+        // Adding submit and reset button.
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'go_submit', get_string('submit'));
         $buttonarray[] = &$mform->createElement('cancel', 'go_cancel', get_string('cancel'));
@@ -76,6 +76,4 @@ class ShippingZone_Form extends moodleform {
         $mform->closeHeaderBefore('buttonar');
     }
 
-    function validation($data, $files = array()) {
-    }
 }

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_transfer
  * @category   local
@@ -23,16 +21,18 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
 class shop_paymode_transfer extends shop_paymode{
 
-    function __construct(&$shopblockinstance) {
+    public function __construct(&$shopblockinstance) {
         parent::__construct('transfer', $shopblockinstance);
     }
-        
-    // prints a payment porlet in an order form
-    function print_payment_portlet(&$billdata) {
+
+    // Prints a payment porlet in an order form.
+    public function print_payment_portlet(&$billdata) {
         global $CFG;
         $proc = 1;
 
@@ -56,8 +56,8 @@ class shop_paymode_transfer extends shop_paymode{
             'PROC_ORDER' => $proc++  ), 'shoppaymodes_transfer');
     }
 
-    // prints a payment porlet in an order form
-    function print_invoice_info(&$billdata = null) {
+    // Prints a payment porlet in an order form.
+    public function print_invoice_info(&$billdata = null) {
         global $CFG;
         $proc = 1;
 
@@ -81,20 +81,21 @@ class shop_paymode_transfer extends shop_paymode{
             'PROC_ORDER' => $proc++  ), 'shoppaymodes_transfer');
     }
 
-    function print_complete() {
+    public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array());
     }
 
-    // processes a payment return
-    function process() {
+    // Processes a payment return.
+    public function process() {
+        // Void
     }
 
-    // processes a payment asynchronoous confirmation
-    function process_ipn() {
-        // no IPN for offline payment.
+    // Processes a payment asynchronoous confirmation.
+    public function process_ipn() {
+        // No IPN for offline payment.
     }
-    
-    // provides global settings to add to shop settings when installed
+
+    // Provides global settings to add to shop settings when installed.
     function settings(&$settings) {
     }
 }

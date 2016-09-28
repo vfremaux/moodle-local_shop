@@ -14,22 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class shop_controller extends front_controller_base {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $SESSION;
 
         if ($cmd == 'import') {
@@ -42,10 +41,10 @@ class shop_controller extends front_controller_base {
                 }
                 $SESSION->shoppingcart->order[$inputkey] = optional_param($inputkey, 0, PARAM_INT);
             }
-        } elseif ($cmd == 'clearall') {
+        } else if ($cmd == 'clearall') {
             unset($SESSION->shoppingcart);
             redirect(new \moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
-        } elseif ($cmd == 'navigate') {
+        } else if ($cmd == 'navigate') {
 
             // precalculates some sums
             $SESSION->shoppingcart->untaxedtotal = 0;
@@ -54,7 +53,7 @@ class shop_controller extends front_controller_base {
 
             // reset all existing taxes counters
             if (!empty($SESSION->shoppingcart->taxes)) {
-                foreach($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
+                foreach ($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
                     $SESSION->shoppingcart->taxes[$tcode] = 0;
                 }
             }
@@ -81,9 +80,9 @@ class shop_controller extends front_controller_base {
                 $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal * (1 - $discountmultiplier);
                 $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal * (1 - $discountmultiplier);
 
-                // try one : apply discount to all tax lines
+                // Try one : apply discount to all tax lines.
                 if (!empty($SESSION->shoppingcart->taxes)) {
-                    foreach($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
+                    foreach ($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
                         $SESSION->shoppingcart->taxes[$tcode] *= 1 - $discountmultiplier;
                     }
                 }
@@ -94,7 +93,9 @@ class shop_controller extends front_controller_base {
                 $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal;
             }
 
-            redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('shop'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+            $next = $this->theshop->get_next_step('shop');
+            $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            redirect(new \moodle_url('/local/shop/front/view.php', $params));
         }
     }
 }

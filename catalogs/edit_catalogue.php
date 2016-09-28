@@ -90,7 +90,7 @@ if ($data = $mform->get_data()) {
         $data->id = $DB->insert_record('local_shop_catalog', $data);
         if ($data->linked == 'master') {
             $DB->set_field('local_shop_catalog', 'groupid', $data->id, array('id' => $data->id));
-        } elseif ($data->linked == 'slave') {
+        } else if ($data->linked == 'slave') {
             $DB->set_field('local_shop_catalog', 'groupid', $data->id, array('id' => $data->groupid));
         }
     } else {

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
@@ -33,7 +32,7 @@ class ResetForm extends moodleform {
         global $DB;
 
         $mform =& $this->_form;
-        //Accessibility: "Required" is bad legend text.
+        // Accessibility: "Required" is bad legend text.
 
         $shopoptions = array(0 => get_string('allshops', 'local_shop'));
         $shops = $DB->get_records_menu('local_shop', array(), 'name', 'id,name');
@@ -58,5 +57,4 @@ class ResetForm extends moodleform {
 
         $this->add_action_buttons(true, get_string('reset', 'local_shop'));
     }
-
 }

@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addbill'] = 'Ajouter une facture';
 $string['actualstate'] = 'Etat actuel';
@@ -80,7 +94,7 @@ L\'adresse de courriel saisie doit être dans un format valide (exemple : client
 // tax help
 
 $string['taxhelp_help'] = '
-# L\'association d\'un code taxe à un code produit 
+# L\'association d\'un code taxe à un code produit
 
 Un produit doit être obligatoirement associé à un code taxe
 
@@ -104,137 +118,137 @@ La saisie de textes fonctionne dans Moodle à peu près de la façon dont vous l
       <th>
         Nom
       </th>
-      
+
       <th>
         Dessin
       </th>
-      
+
       <th>
         Ce qu\'il faut taper
       </th>
     </tr>
-    
+
     <tr>
       <td>
         sourire
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/smiley.gif" class="icon" />
       </td>
-      
+
       <td>
         :-)
       </td>
     </tr>
-    
+
     <tr>
       <td>
         triste
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/sad.gif" class="icon" />
       </td>
-      
+
       <td>
         :-(
       </td>
     </tr>
-    
+
     <tr>
       <td>
         très content
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/biggrin.gif" class="icon" />
       </td>
-      
+
       <td>
         :-D
       </td>
     </tr>
-    
+
     <tr>
       <td>
         clin d\'oeil
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/wink.gif" class="icon" />
       </td>
-      
+
       <td>
         ;-)
       </td>
     </tr>
-    
+
     <tr>
       <td>
         confus
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/mixed.gif" class="icon" />
       </td>
-      
+
       <td>
         :-/
       </td>
     </tr>
-    
+
     <tr>
       <td>
         choqué
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/wideeyes.gif" class="icon" />
       </td>
-      
+
       <td>
         8-)
       </td>
     </tr>
-    
+
     <tr>
       <td>
         langue
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/tongueout.gif" class="icon" />
       </td>
-      
+
       <td>
         :-P
       </td>
     </tr>
-    
+
     <tr>
       <td>
         surprise
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/surprise.gif" class="icon" />
       </td>
-      
+
       <td>
         8-o
       </td>
     </tr>
-    
+
     <tr>
       <td>
         cool
       </td>
-      
+
       <td>
         <img alt="" src="pix/s/cool.gif" class="icon" />
       </td>
-      
+
       <td>
         B-)
       </td>
@@ -248,7 +262,7 @@ La saisie de textes fonctionne dans Moodle à peu près de la façon dont vous l
   <p>
     Tout texte commençant par <strong>www.</strong> ou par <strong>http://</strong> est automatiquement converti en un lien cliquable.
   </p>
-  
+
   <p>
     Par exemple : <a href="http://www.google.com/">www.google.com</a> or <a href="http://moodle.org/">http://moodle.org</a>
   </p>
@@ -260,53 +274,53 @@ La saisie de textes fonctionne dans Moodle à peu près de la façon dont vous l
   <p>
     Vous pouvez utiliser quelques balises HTML pour rendre vos textes plus clairs et structurés.
   </p>
-  
+
   <table border="0" cellpadding="5" cellspacing="5">
     <tr>
       <th scope="col">
         Balises HTML
       </th>
-      
+
       <th scope="col">
         Effet produit
       </th>
     </tr>
-    
+
     <tr>
       <td>
         <b> gras </b>
       </td>
-      
+
       <td>
         <strong>texte en caractères gras</strong>
       </td>
     </tr>
-    
+
     <tr>
       <td>
         <i> italique </i>
       </td>
-      
+
       <td>
         <em>texte en caractères italiques</em>
       </td>
     </tr>
-    
+
     <tr>
       <td>
         <u> souligné </u>
       </td>
-      
+
       <td>
         <u>texte souligné</u>
       </td>
     </tr>
-    
+
     <tr>
       <td>
         <font color="green"> exemple </font>
       </td>
-      
+
       <td>
         <font color="green">texte en couleur verte</font>
       </td>
@@ -314,19 +328,19 @@ La saisie de textes fonctionne dans Moodle à peu près de la façon dont vous l
   </table>
 </div>';
 
-// lettering
+// Lettering.
 
 $string['lettering_help'] = '## Boutique en ligne
 
 ### Lettrage de facture
 
-Le lettrage de facture permet d\'enregistrer la correspondance entre les factures en ligne de la boutique et un logiciel de facuration externe. 
+Le lettrage de facture permet d\'enregistrer la correspondance entre les factures en ligne de la boutique et un logiciel de facuration externe.
 
 Selon les législations, des obligations légales contraignent la numérotation des factures. La boutique en ligne Moodle enregistre des factures en ligne poru la seule activité de vente sur Moodle. Il est indispensable de pouvoir effectuer la correspondance entre les transactions en ligne et les factures "officiellement" établies dans un logiciel de comptabilité.
 
 Le lettrage ne peut accepter plusieurs références identiques, et ce quelque soit le catalogue utilisé par la boutique.';
 
-// customer_account
+// Customer_account.
 
 $string['customer_account_help'] = '
 # Aide sur l\'assignation d\'une facture à un compte client
@@ -337,7 +351,7 @@ Choisissez un compte client déja créer, ou un compte utilisateur de la platefo
 
 Si un compte utilisateur est sélectionné, un compte client est automatiquement créé et la facture sera automatiquement assignée à ce nouveau compte client.';
 
-// formula_creation
+// Formula_creation.
 
 $string['formula_creation_help'] = '
 # Edition de formule du prix TTC
@@ -348,27 +362,28 @@ Cette formule doit intégrer les variables du prix TTC ($TTC), du prix HT ($HT),
 
 Exemple : $TTC = $HT + ($HT*$TR/100)';
 
-// allowtax
+// Allow tax.
 
 $string['allowtax_help'] = '
-# Aide sur l\'activation de taxe 
+# Aide sur l\'activation de taxe
 
 Vous pouvez désactiver la prise en compte de taxe pour une facture.
 
 Si vous ne prenez pas en compte les taxes, il n\'y aura pas de taxe prise en compte pour le montant total de la facture.';
 
-// bill_assignation
+// Bill assignation.
 
 $string['bill_assignation_help'] = '
-# Aide sur l\'attribution du traitement d\'une facture 
+# Aide sur l\'attribution du traitement d\'une facture
 
 Un traitement de facture doit être assigné à un utilisateur qui possède les droits appropriés.
 
 Sélectionnez l\'utilisateur auquel vous voulez assigné le traitement de la facture.';
 
-// billstates
+// Bill states.
 
-$string['billstates_help'] = '## Boutique en ligne Moodle
+$string['billstates_help'] = '
+## Boutique en ligne Moodle
 
 ### Etats des factures/commandes
 

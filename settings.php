@@ -14,30 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/local/shop/paymodes/paymode.class.php';
 require_once $CFG->dirroot.'/local/shop/locallib.php';
 
-// settings default init
+// Settings default init.
 if (is_dir($CFG->dirroot.'/local/adminsettings')) {
-    // Integration driven code 
+    // Integration driven code.
     require_once($CFG->dirroot.'/local/adminsettings/lib.php');
     list($hasconfig, $hassiteconfig, $capability) = local_adminsettings_access();
 } else {
-    // Standard Moodle code
+    // Standard Moodle code.
     $capability = 'moodle/site:config';
     $hasconfig = $hassiteconfig = has_capability($capability, context_system::instance());
 }
 
-if ($hassiteconfig) { 
+if ($hassiteconfig) {
 
     $settings = new admin_settingpage('local_shop', get_string('pluginname', 'local_shop'));
     $ADMIN->add('localplugins', $settings);

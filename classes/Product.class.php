@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -27,6 +23,9 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
@@ -34,14 +33,14 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 class Product extends ShopObject {
 
-    static $table = 'local_shop_product';
+    protected static $table = 'local_shop_product';
 
     /**
      * Build a full product instance.
      * @param mixed $idorrecord an integer product id or the full database record
      * @param bool $light future use. Switch to light proxy object initialisation.
      */
-    function __construct($idorrecord, $light = false) {
+    public function __construct($idorrecord, $light = false) {
         global $DB;
 
         $config = get_config('local_shop');
@@ -49,7 +48,7 @@ class Product extends ShopObject {
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the Bill, without items
+            if ($light) return; // This builds a lightweight proxy of the Bill, without items.
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -72,8 +71,8 @@ class Product extends ShopObject {
     /**
      * Full deletes the product instance with all product events
      */
-    function delete() {
-        // Delete all events linked to product
+    public function delete() {
+        // Delete all events linked to product.
         $events = ProductEvent::get_instances(array('productid' => $this->id));
         if ($events) {
             foreach ($events as $e) {
@@ -88,7 +87,7 @@ class Product extends ShopObject {
      * get info out of production data (in product)
      * @return an object
      */
-    function extract_production_data() {
+    public function extract_production_data() {
 
         $info = new \StdClass();
 
@@ -109,21 +108,21 @@ class Product extends ShopObject {
      * @param array $data3 a stub of params as an array
      * @return string
      */
-    static function compile_production_data($data1, $data2 = null, $data3 = null) {
+    public static function compile_production_data($data1, $data2 = null, $data3 = null) {
 
         $pairs = array();
         foreach ($data1 as $key => $value) {
             $pairs[] = "$key=".urlencode($value);
         }
 
-        // aggregates $data2 if given
+        // Aggregates $data2 if given.
         if (is_array($data2)) {
             foreach ($data2 as $key => $value) {
                 $pairs[] = "$key=".urlencode($value);
             }
         }
-    
-        // aggregates $data3 if given
+
+        // Aggregates $data3 if given.
         if (is_array($data3)) {
             foreach ($data3 as $key => $value) {
                 $pairs[] = "$key=".urlencode($value);
@@ -133,15 +132,15 @@ class Product extends ShopObject {
         return implode('&', $pairs);
     }
 
-    static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_count_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    static function get_instances_on_context($filter, $order = '', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances_on_context($filter, $order = '', $limitfrom = 0, $limitnum = '') {
         global $DB;
 
         $filterclause = '';
@@ -188,7 +187,7 @@ class Product extends ShopObject {
      * This may depend on the context type addressed by the product instance.
      * @return string a moodle url.
      */
-    function get_instance_link() {
+    public function get_instance_link() {
         global $DB;
 
         $link = '';
@@ -244,7 +243,7 @@ class Product extends ShopObject {
      * @param string $method the product method name
      * @return an array with an handler object instance and a callable method name
      */
-    function get_handler_info($method) {
+    public function get_handler_info($method) {
         global $CFG;
 
         $productinfo = $this->extract_production_data();
@@ -266,7 +265,7 @@ class Product extends ShopObject {
      * most recently involved billitem in the product instance.
      * @return a BillItem object
      */
-    function get_current_billitem() {
+    public function get_current_billitem() {
         return new BillItem($this->currentbillitemid);
     }
 }

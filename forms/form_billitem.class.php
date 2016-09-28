@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Defines form to add a new billitem
  *
@@ -25,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
@@ -35,13 +34,13 @@ class BillItem_Form extends moodleform {
 
     private $bill;
 
-    function __construct($mode, $bill, $action) {
+    public function __construct($mode, $bill, $action) {
         $this->mode = $mode;
         $this->bill = $bill;
         parent::__construct($action);
     }
 
-    function definition() {
+    public function definition() {
         global $CFG, $OUTPUT, $DB;
 
         $config = get_config('local_shop');
@@ -52,8 +51,6 @@ class BillItem_Form extends moodleform {
         // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string($this->mode.'billitem', 'local_shop')));
 
-        // $error_float = print_string('error_costNotAFloat', 'local_shop');
-        // print_string("error_quantityNotAFloat");
         $js = "
             <script type=\"text/javascript\">
             function calculatePrice() {
@@ -69,7 +66,7 @@ class BillItem_Form extends moodleform {
                     document.billItem.quantity.value = \"1\";
                     exit();
                 };
-                var priceDisplay = document.getElementById('totalPrice'); 
+                var priceDisplay = document.getElementById('totalPrice');
                 var price = new Number(cost * quantity);
                 priceDisplay.innerHTML = price.toFixed(\"2\");
             }
@@ -83,7 +80,9 @@ class BillItem_Form extends moodleform {
         $attributes = 'size="50" maxlength="200"';
         $attributesshort = 'size="24" maxlength="24"';
         $attributes_description = 'cols="50" rows="8"';
-        $mform->addElement('static', 'billtitle', get_string('order', 'local_shop'), 'ORD-'.date('Ymd', $this->bill->emissiondate).'-'.$this->bill->id);
+        $label = get_string('order', 'local_shop');
+        $billcode = 'ORD-'.date('Ymd', $this->bill->emissiondate).'-'.$this->bill->id;
+        $mform->addElement('static', 'billtitle', $label, $billcode);
 
         $lastordering = $DB->get_field_sql('SELECT max(ordering) from {local_shop_bill}');
         $lastordering = $lastordering + 1;

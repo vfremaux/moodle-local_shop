@@ -30,18 +30,21 @@ class Category_Form extends moodleform {
 
     public $editoroptions;
 
-    function definition() {
+    public function definition() {
         global $CFG, $COURSE, $OUTPUT;
 
         $attributes = array('size' => 47,  'maxlength' => 200);
 
         $context = context_system::instance();
 
-        $maxfiles = 99;                // TODO: add some setting
-        $maxbytes = $COURSE->maxbytes; // TODO: add some setting    
-        $this->editoroptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes, 'context' => $context);
+        $maxfiles = 99;                // TODO: add some settings.
+        $maxbytes = $COURSE->maxbytes; // TODO: add some settings.
+        $this->editoroptions = array('trusttext' => true,
+                                     'subdirs' => false,
+                                     'maxfiles' => $maxfiles,
+                                     'maxbytes' => $maxbytes,
+                                     'context' => $context);
 
-        // Setting variables.
         $mform =& $this->_form;
 
         // The shop id.
@@ -76,19 +79,19 @@ class Category_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    function validation($data, $files = array()) {
-    }
-
-    function set_data($defaults) {
+    public function set_data($defaults) {
 
         $context = context_system::instance();
 
         $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', @$defaults->id, array('subdirs' => true), $defaults->description);
-        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop', 'categorydescription', @$defaults->id);
-        $defaults->description = array('text' => $currenttext, 'format' => $defaults->descriptionformat, 'itemid' => $draftid_editor);
+        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', @$defaults->id,
+                                               array('subdirs' => true), $defaults->description);
+        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
+                                                 'categorydescription', @$defaults->id);
+        $defaults->description = array('text' => $currenttext,
+                                       'format' => $defaults->descriptionformat,
+                                       'itemid' => $draftid_editor);
 
         parent::set_data($defaults);
-
     }
 }

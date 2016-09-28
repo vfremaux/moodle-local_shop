@@ -185,10 +185,10 @@ class CatalogItem extends ShopObject {
                 }
             }
         }
-        
+
         return $prices;
     }
-    
+
     function get_taxed_price($q, $taxid = 0) {
         static $TAXCACHE;
         global $DB;
@@ -229,16 +229,18 @@ class CatalogItem extends ShopObject {
         }
     }
 
-    // this will override existing elements
-    function deleteElement($elmid) {
+    /**
+     * This will override existing elements
+     */
+    public function deleteElement($elmid) {
         unset($this->elements[$elmid]);
     }
 
     /**
-    *
-    *
-    */
-    function get_sales_unit_url() {
+     *
+     *
+     */
+    public function get_sales_unit_url() {
         global $CFG, $OUTPUT;
 
         $context = \context_system::instance();
@@ -258,7 +260,7 @@ class CatalogItem extends ShopObject {
     *
     *
     */
-    function get_image_url() {
+    public function get_image_url() {
         global $CFG, $OUTPUT;
 
         $context = \context_system::instance();
@@ -277,7 +279,7 @@ class CatalogItem extends ShopObject {
     *
     *
     */
-    function get_thumb_url() {
+    public function get_thumb_url() {
         global $CFG, $OUTPUT;
 
         $context = \context_system::instance();
@@ -296,7 +298,7 @@ class CatalogItem extends ShopObject {
     /**
      * Gets a suitable handler object for this catalog item
      */
-    function get_handler() {
+    public function get_handler() {
         global $CFG;
 
         $enablehandler = $this->enablehandler;
@@ -306,7 +308,7 @@ class CatalogItem extends ShopObject {
 
         if (empty($enablehandler)) {
             return false;
-        } elseif ($enablehandler == SPECIFIC_HANDLER) {
+        } else if ($enablehandler == SPECIFIC_HANDLER) {
             $thehandler = $anItem->itemcode;
         } else {
             $thehandler = $enablehandler;
@@ -321,7 +323,7 @@ class CatalogItem extends ShopObject {
         return $handler;
     }
 
-    function get_shippings() {
+    public function get_shippings() {
         global $DB;
 
         $sql = "
@@ -339,7 +341,7 @@ class CatalogItem extends ShopObject {
         return $DB->get_records($sql, array($this->id));
     }
 
-    function get_shipping_zones() {
+    public function get_shipping_zones() {
         global $DB;
 
         $sql = "
@@ -362,13 +364,13 @@ class CatalogItem extends ShopObject {
         return $DB->get_records($sql, array($this->id));
     }
 
-    function unlink() {
+    public function unlink() {
         global $DB;
 
         $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
     }
 
-    function has_leaflet() {
+    public function has_leaflet() {
         $context = \context_system::instance();
 
         $fs = get_file_storage();
@@ -376,11 +378,11 @@ class CatalogItem extends ShopObject {
         return !$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
     }
 
-    function check_availability() {
+    public function check_availability() {
 
         $config = get_config('local_shop');
 
-        // Check if product has handler and is available
+        // Check if product has handler and is available.
         if ($this->enablehandler) {
             $handler = $this->get_handler();
             if ($handler && !$handler->is_available($this)) {
@@ -395,7 +397,7 @@ class CatalogItem extends ShopObject {
         }
     }
 
-    function get_leaflet_url() {
+    public function get_leaflet_url() {
         global $OUTPUT;
 
         $context = \context_system::instance();
@@ -415,14 +417,14 @@ class CatalogItem extends ShopObject {
      * Apply() overrides the current instance with the elements of the override.
      * Overriden attributes are choosen to address the master question : Why using
      * slave catalogs: master usecase is to internationalize or change of some commercial
-     * values for a special country/region. 
+     * values for a special country/region.
      * Variant should not alter the effective nature of the product, nor technical definition.
      *
      * TODO : Check if still usefull
      */
-    function apply(CatalogItem $override) {
+    public function apply(CatalogItem $override) {
 
-        // Override some attributes (textual)
+        // Override some attributes (textual).
         $this->name = $override->name;
         $this->description = $override->description;
         $this->descriptionformat = $override->descriptionformat;

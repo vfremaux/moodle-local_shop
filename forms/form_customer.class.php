@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -33,10 +32,10 @@ use local_shop\Catalog;
 
 class Customer_Form extends moodleform {
 
-    function definition() {
+    public function definition() {
         global $CFG, $OUTPUT;
 
-        include $CFG->dirroot.'/local/shop/country.php';
+        include($CFG->dirroot.'/local/shop/country.php');
 
         // Setting variables.
         $mform =& $this->_form;
@@ -79,7 +78,7 @@ class Customer_Form extends moodleform {
         Catalog::process_merged_country_restrictions($choices);
         $choices = array_merge(array('' => get_string('selectacountry').'...'), $choices);
 
-        $mform->addElement('select', 'country', get_string('taxcountry', 'local_shop'), $choices); 
+        $mform->addElement('select', 'country', get_string('taxcountry', 'local_shop'), $choices);
         $mform->addRule('country', null, 'required');
 
         $mform->addElement('text', 'organisation', get_string('organisation', 'local_shop'));
@@ -89,7 +88,7 @@ class Customer_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    function validation($data, $files = array()) {
+    public function validation($data, $files = array()) {
         global $DB;
 
         $errors = array();
