@@ -2335,8 +2335,8 @@ class shop_front_renderer {
     public function login_form() {
 
         $str = '<div id="shop-loginbox">';
-        $params = array('view' => 'customer', 'shopid' => $this->theshop->id, 'blockid' => (0 + @$this->theblock->instance->id);
-        $thisurl = new moodle_url('/local/shop/front/view.php', $params));
+        $params = array('view' => 'customer', 'shopid' => $this->theshop->id, 'blockid' => (0 + @$this->theblock->instance->id));
+        $thisurl = new moodle_url('/local/shop/front/view.php', $params);
         $loginurl = new moodle_url('/login/index.php', array('wantsurl' => $thisurl));
         $str .= '<a href="'.$loginurl.'">';
         $str .= '<input type="button"
