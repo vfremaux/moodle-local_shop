@@ -48,9 +48,9 @@ $transid = required_param('transid', PARAM_TEXT);
 try {
     $aFullBill = Bill::get_by_transaction($transid);
 } catch(Exception $e) {
-    $params = array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id);
+    $params = array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id));
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-    print_error('invalidbillid', 'local_shop', $viewurl));
+    print_error('invalidbillid', 'local_shop', $viewurl);
 }
 
 $params = array('shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id), 'transid' => $transid);

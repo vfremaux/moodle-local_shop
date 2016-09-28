@@ -154,7 +154,7 @@ if (empty($billsbystate)) {
 }
 
 $excelurl = new moodle_url('/local/shop/export/export.php', array('what' => 'allbills', 'format' => 'excel'));
-$billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id);
+$billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
 ?>
 
 <table width="100%">

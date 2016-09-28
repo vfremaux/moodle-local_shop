@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>paymodes/paypalapi/paypal-rest-api</location>
+    <name>Paypal API</name>
+    <license>SDK/Apache2</license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>paymodes/mercanet/mercanet_615_PLUGIN_linux32</location>
+    <name>Mercanet API</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>paymodes/mercanet/mercanet_615_PLUGIN_linux64</location>
+    <name>Mercanet API</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>paymodes/mercanet/mercanet_615_PLUGIN_win32</location>
+    <name>Mercanet API</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+</libraries>

@@ -31,9 +31,9 @@ $billid = optional_param('billid', null, PARAM_INT);
 
 if ($transid) {
     if (!$bill = Bill::get_by_transaction($transid)) {
-        $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id);
+        $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-        print_error('invalidtransid', 'local_shop', $viewurl));
+        print_error('invalidtransid', 'local_shop', $viewurl);
     }
 }
 

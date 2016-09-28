@@ -394,7 +394,7 @@ class shop_bills_renderer {
         $str .= '<td width="200" rowspan="4">';
         $str .= '<img src="'.$bundle->thumb.'" vspace="10" border="0"><br>';
         if ($bundle->image != '') {
-            $imageurl = new moodle_url('/local/shop/photo.php', array('img' => $bundle->image);
+            $imageurl = new moodle_url('/local/shop/photo.php', array('img' => $bundle->image));
             $str .= '<a href="javascript:openPopup(\''.$imageurl.'\')">'.get_string('viewlarger', 'local_shop').'</a>';
         }
         $str .= '</td>';
@@ -652,13 +652,14 @@ class shop_bills_renderer {
 
         $checked = (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) ? 'checked="checked"' : '';
 
-        $str .= $OUTPUT->heading(get_string('customerinformation', 'local_shop');
-        $str .= ' <input type="checkbox"
+        $heading = get_string('customerinformation', 'local_shop');
+        $heading .= ' <input type="checkbox"
                          value="1"
                          name="usedistinctinvoiceinfo"
                          onchange="local_toggle_invoiceinfo(this)"
                          '.$checked.' />';
-        $str .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>' );
+        $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
+        $str .= $OUTPUT->heading($heading);
         if (isloggedin()) {
             $lastname = $USER->lastname;
             $firstname = $USER->firstname;

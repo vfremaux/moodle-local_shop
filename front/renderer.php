@@ -883,7 +883,7 @@ class shop_front_renderer {
             }
         } else {
             $lastname = @$shoppingcart->customerinfo['lastname'];
-            $firstname = @shoppingcart->customerinfo['firstname'];
+            $firstname = @$shoppingcart->customerinfo['firstname'];
             $organisation = @$shoppingcart->customerinfo['organisation'];
             $country = @$shoppingcart->customerinfo['country'];
             $address = @$shoppingcart->customerinfo['address'];

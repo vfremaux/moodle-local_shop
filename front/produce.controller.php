@@ -197,10 +197,10 @@ class production_controller extends front_controller_base {
                                                                    'AMOUNT' => sprintf("%.2f", round($aFullBill->amount, 2))),
                                                  '');
         $params = array('id' => $aFullBill->shopid,
-                        'blockid' => $aFullBill->blockid
+                        'blockid' => $aFullBill->blockid,
                         'view' => 'bill',
                         'billid' => $aFullBill->id,
-                        'transid' =>, $aFullBill->transactionid);
+                        'transid' => $aFullBill->transactionid);
         $customerBillViewUrl = new moodle_url('/local/shop/front/view.php', $params);
 
         $seller = new \StdClass;
