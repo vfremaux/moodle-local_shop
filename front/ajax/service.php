@@ -32,12 +32,12 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('embedded');
 
 $shopid = required_param('id', PARAM_INT);
-$theShop = new Shop($shopid);
-$theCatalog = new Catalog($theShop->catalogid);
+$theshop = new Shop($shopid);
+$thecatalog = new Catalog($theshop->catalogid);
 
 $renderer = shop_get_renderer();
-$theBlock = null;
-$renderer->load_context($theShop, $theBlock);
+$theblock = null;
+$renderer->load_context($theshop, $theblock);
 
 $output = '';
 
@@ -70,7 +70,7 @@ if ($action == 'addparticipant') {
 // -----------------------------------------------------------------------------------//
 if ($action == 'deleteparticipant') {
     $ptid = required_param('participantid', PARAM_TEXT);
-    $requiredroles = $theCatalog->check_required_roles();
+    $requiredroles = $thecatalog->check_required_roles();
 
     if (isset($SESSION->shoppingcart->participants[$ptid])) {
         unset($SESSION->shoppingcart->participants[$ptid]);
@@ -139,7 +139,7 @@ if ($action == 'assignlist') {
 }
 // -----------------------------------------------------------------------------------//
 if ($action == 'assignlistobj') {
-    $requiredroles = $theCatalog->check_required_roles();
+    $requiredroles = $thecatalog->check_required_roles();
 
     $shortname = required_param('product', PARAM_TEXT);
     $a = new StdClass;
@@ -153,7 +153,7 @@ if ($action == 'assignlistobj') {
 
 // -----------------------------------------------------------------------------------//
 if ($action == 'assignalllistobj') {
-    $requiredroles = $theCatalog->check_required_roles();
+    $requiredroles = $thecatalog->check_required_roles();
 
     $a = new StdClass;
     foreach ($requiredroles as $role) {
@@ -168,7 +168,7 @@ if ($action == 'assignalllistobj') {
 if ($action == 'addunit') {
     $shortname = required_param('productname', PARAM_TEXT);
     @$SESSION->shoppingcart->order[$shortname]++;
-    $product = $theCatalog->get_product_by_shortname($shortname);
+    $product = $thecatalog->get_product_by_shortname($shortname);
     $output = new StdClass();
     $output->html = $renderer->units($product);
     $output->quant = $SESSION->shoppingcart->order[$shortname];
@@ -178,7 +178,7 @@ if ($action == 'addunit') {
 if ($action == 'setunits') {
     $shortname = required_param('productname', PARAM_TEXT);
     $quant = required_param('quant', PARAM_INT);
-    $product = $theCatalog->get_product_by_shortname($shortname);
+    $product = $thecatalog->get_product_by_shortname($shortname);
 
     if ($product->maxdeliveryquant) {
         if ($quant > $product->maxdeliveryquant) {
@@ -187,7 +187,7 @@ if ($action == 'setunits') {
     }
     @$SESSION->shoppingcart->order[$shortname] = $quant;
 
-    $theBlock->view = 'shop'; // we are necessarily in shop
+    $theblock->view = 'shop'; // we are necessarily in shop
     $output = new StdClass();
     $output->html = $renderer->units($product);
     $output->quant = $SESSION->shoppingcart->order[$shortname];
@@ -206,9 +206,9 @@ if ($action == 'deleteunit') {
         unset($SESSION->shoppingcart->order[$shortname]);
     }
 
-    $catalogitem = $theCatalog->get_product_by_shortname($shortname);
+    $catalogitem = $thecatalog->get_product_by_shortname($shortname);
 
-    $requiredroles = $theCatalog->check_required_roles();
+    $requiredroles = $thecatalog->check_required_roles();
 
     if ($catalogitem->quantaddressesusers) {
         // if seat based, remove last assign per unit removed
@@ -249,16 +249,16 @@ if ($action == 'updateproduct') {
 }
 
 if ($action == 'orderdetails') {
-    $categories = $theCatalog->get_all_products($fooproducts); // loads categories with products
+    $categories = $thecatalog->get_all_products($fooproducts); // loads categories with products
     $output = new StdClass;
     $output->html = $renderer->order_detail($categories);
     $output = json_encode($output);
 }
 
 if ($action == 'ordertotals') {
-    $theCatalog->get_all_products($fooproducts); // loads categories with products
+    $thecatalog->get_all_products($fooproducts); // loads categories with products
     $output = new StdClass;
-    $output->html = $renderer->order_totals($theCatalog);
+    $output->html = $renderer->order_totals($thecatalog);
     $output = json_encode($output);
 }
 
@@ -266,7 +266,7 @@ if ($action == 'checkpasscode') {
     $shortname = required_param('productname', PARAM_TEXT);
     $passcode = required_param('passcode', PARAM_TEXT);
     $output = new StdClass;
-    if ($product = $theCatalog->get_product_by_shortname($shortname)) {
+    if ($product = $thecatalog->get_product_by_shortname($shortname)) {
         if ($passcode == $product->password) {
             $output->status = 'passed';
         } else {

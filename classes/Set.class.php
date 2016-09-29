@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A set is a group of products that are displayed alltogether.
+ * this is an helper class.
  *
  * @package     local_shop
  * @category    local
@@ -28,12 +25,17 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
+
+
 /**
  * A Set is a set of products that may propose variants for a single product type.
  */
 class Set extends ShopObject {
 
-    static $table = 'local_shop_catalogitem';
+    protected static $table = 'local_shop_catalogitem';
 
     public function __construct($recordorid) {
         parent::__construct($recordorid, self::$table);
@@ -81,22 +83,22 @@ class Set extends ShopObject {
     }
 
     public function get_taxed_price($q, $tax) {
-        static $TAXCACHE;
+        static $taxcache;
         global $DB;
 
-        if (!isset($TAXCACHE)) {
-            $TAXCACHE = array();
+        if (!isset($taxcache)) {
+            $taxcache = array();
         }
-        if (!array_key_exists($taxid, $TAXCACHE)) {
-            if ($TAXCACHE[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
-                if (empty($TAXCACHE[$taxid]->formula)) $TAXCACHE[$taxid]->formula = '$TTC = $HT';
+        if (!array_key_exists($taxid, $taxcache)) {
+            if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+                if (empty($taxcache[$taxid]->formula)) $taxcache[$taxid]->formula = '$ttc = $ht';
             } else {
                 return $htprice;
             }
         }
-        $HT = $this->get_price($q);
-        $TR = $TAXCACHE[$taxid]->ratio;
-        eval($TAXCACHE[$taxid]->formula.';');
-        return $TTC;
+        $ht = $this->get_price($q);
+        $tr = $taxcache[$taxid]->ratio;
+        eval($taxcache[$taxid]->formula.';');
+        return $ttc;
     }
 }

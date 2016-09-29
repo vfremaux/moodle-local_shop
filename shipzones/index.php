@@ -34,7 +34,7 @@ use local_shop\Catalog;
 use local_shop\CatalogShipZone;
 
 // Get the block reference and key context.
-list($theShop, $thecatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 

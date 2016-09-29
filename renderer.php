@@ -224,7 +224,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function main_menu($theShop) {
+    function main_menu($theshop) {
         $str = '<table class="shop-main-menu">';
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
@@ -282,7 +282,7 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= '</tr>';
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theShop->id));
+        $linkurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));
         $str .= '<a href="'.$linkurl.'">'.get_string('scantrace', 'local_shop').'</a>';
         $str .= '</td>';
         $str .= '<td width="75%">';
@@ -302,7 +302,7 @@ class local_shop_renderer extends plugin_renderer_base {
         }
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
-        $reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theShop->id));
+        $reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
         $str .= '<a href="'.$reseturl.'">'.get_string('reset', 'local_shop').'</a>';
         $str .= '</td>';
         $str .= '<td>';

@@ -33,10 +33,10 @@ use \local_shop\Bill;
 
 $config = get_config('local_shop');
 
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $renderer = shop_get_renderer('front');
-$renderer->load_context($theShop, $theBlock);
+$renderer->load_context($theshop, $theblock);
 
 // Security.
 
@@ -46,14 +46,14 @@ $action = optional_param('what', '', PARAM_TEXT);
 $transid = required_param('transid', PARAM_TEXT);
 
 try {
-    $aFullBill = Bill::get_by_transaction($transid);
+    $afullbill = Bill::get_by_transaction($transid);
 } catch(Exception $e) {
-    $params = array('view' => 'shop', 'shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id));
+    $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id));
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
     print_error('invalidbillid', 'local_shop', $viewurl);
 }
 
-$params = array('shopid' => $theShop->id, 'blockid' => (0 + @$theBlock->instance->id), 'transid' => $transid);
+$params = array('shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id), 'transid' => $transid);
 $url = new moodle_url('/local/shop/front/order.popup.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
@@ -72,7 +72,7 @@ echo '<div style="max-width:780px">';
     <tr>
         <td colspan="2" align="center">
         <?php
-        $headerstring = ($aFullBill->idnumber) ? get_string('bill', 'local_shop') : get_string('ordersheet', 'local_shop') ;
+        $headerstring = ($afullbill->idnumber) ? get_string('bill', 'local_shop') : get_string('ordersheet', 'local_shop') ;
         echo $OUTPUT->heading($headerstring, 1);
         ?>
         </td>
@@ -84,7 +84,7 @@ echo '<div style="max-width:780px">';
          <span class="smaltext"><?php echo get_string('providetransactioncode', 'local_shop') ?></span>
       </td>
       <td width="40%" align="right" rowspan="5" class="order-preview-seller-address">
-         <b><?php echo get_string('on', 'local_shop') ?>:</b> <?php echo userdate($aFullBill->emissiondate) ?><br />
+         <b><?php echo get_string('on', 'local_shop') ?>:</b> <?php echo userdate($afullbill->emissiondate) ?><br />
          <br />
          <b><?php echo $config->sellername ?></b><br />
          <b><?php echo $config->selleraddress ?></b><br />
@@ -94,19 +94,19 @@ echo '<div style="max-width:780px">';
    </tr>
    <tr>
       <td width="60%" valign="top">
-         <b><?php echo get_string('customer', 'local_shop') ?>: </b> <?php echo $aFullBill->customer->lastname ?>
-         <?php echo $aFullBill->customer->firstname ?>
+         <b><?php echo get_string('customer', 'local_shop') ?>: </b> <?php echo $afullbill->customer->lastname ?>
+         <?php echo $afullbill->customer->firstname ?>
       </td>
    </tr>
    <tr>
       <td width="60%" valign="top">
          <b><?php echo get_string('city') ?>: </b>
-         <?php echo $aFullBill->customer->zip ?> <?php echo $aFullBill->customer->city ?>
+         <?php echo $afullbill->customer->zip ?> <?php echo $afullbill->customer->city ?>
       </td>
    </tr>
    <tr>
       <td width="60%" valign="top">
-         <b><?php echo get_string('country') ?>: </b> <?php echo  strtoupper($aFullBill->customer->country) ?>
+         <b><?php echo get_string('country') ?>: </b> <?php echo  strtoupper($afullbill->customer->country) ?>
       </td>
       <td>
       &nbsp;
@@ -114,7 +114,7 @@ echo '<div style="max-width:780px">';
    </tr>
    <tr>
       <td width="60%" valign="top">
-         <b><?php echo get_string('email') ?>: </b> <?php echo $aFullBill->customer->email ?>
+         <b><?php echo get_string('email') ?>: </b> <?php echo $afullbill->customer->email ?>
       </td>
    </tr>
    <tr>
@@ -132,7 +132,7 @@ echo '<div style="max-width:780px">';
 <?php
 echo '<table>';
 echo $renderer->order_line(null);
-foreach ($aFullBill->items as $item) {
+foreach ($afullbill->items as $item) {
     echo $renderer->order_line($item->catalogitem->shortname);
 }
 echo '</table>';
@@ -142,12 +142,12 @@ echo $renderer->full_order_taxes();
 
 echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
-require_once $CFG->dirroot.'/local/shop/paymodes/'.$aFullBill->paymode.'/'.$aFullBill->paymode.'.class.php';
+require_once $CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php';
 
-$classname = 'shop_paymode_'.$aFullBill->paymode;
+$classname = 'shop_paymode_'.$afullbill->paymode;
 
 echo '<div id="shop-order-paymode">';
-$pm = new $classname($theShop);
+$pm = new $classname($theshop);
 $pm->print_name();
 echo '</div>';
 

@@ -29,13 +29,13 @@ header("Content-type: text/javascript");
 header("Cache-Control: No-cache");
 
 // get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $context = context_system::instance();
 $PAGE->set_context($context);
 
-$categories = $theCatalog->get_categories();
-$shopproducts = $theCatalog->get_all_products($categories);
+$categories = $thecatalog->get_categories();
+$shopproducts = $thecatalog->get_all_products($categories);
 
 $units = 0;
 if (isset($SESSION->shoppingcart->order)) {
@@ -45,8 +45,8 @@ if (isset($SESSION->shoppingcart->order)) {
 }
 
 // calculates and updates the seat count
-$requiredroles = $theCatalog->check_required_roles();
-$required = $theCatalog->check_required_seats();
+$requiredroles = $thecatalog->check_required_roles();
+$required = $thecatalog->check_required_seats();
 $assigned = shop_check_assigned_seats($requiredroles);
 ?>
 
@@ -104,10 +104,10 @@ function ajax_add_user(wwwroot, formobj) {
     pt.firstname = formobj.firstname.value;
     pt.email = formobj.email.value;
     pt.city = formobj.city.value;
-    <?php if (!empty($theShop->enduserorganisationrequired)) { ?>
+    <?php if (!empty($theshop->enduserorganisationrequired)) { ?>
         pt.institution = formobj.institution.value;
     <?php }
-    if (!empty($theShop->endusermobilephonerequired)) { ?>
+    if (!empty($theshop->endusermobilephonerequired)) { ?>
         pt.phone2 = formobj.phone2.value;
     <?php } ?>
 
@@ -116,7 +116,7 @@ function ajax_add_user(wwwroot, formobj) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'addparticipant',
             participant: JSON.stringify(pt),
             roles: JSON.stringify(roles)
@@ -128,11 +128,11 @@ function ajax_add_user(wwwroot, formobj) {
             formobj.email.value = '';
             // Keep city and institution values to speed up input
             // formobj.city.value = '';
-<?php if (!empty($theShop->enduserorganisationrequired)) { ?>
+<?php if (!empty($theshop->enduserorganisationrequired)) { ?>
             // formobj.institution.value = '';
 <?php
 }
-if (!empty($theShop->endusermobilephonerequired)) {
+if (!empty($theshop->endusermobilephonerequired)) {
 ?>
             formobj.phone2.value = '';
 <?php } ?>
@@ -146,7 +146,7 @@ if (!empty($theShop->endusermobilephonerequired)) {
             $.post(
                 urlbase,
                 {
-                    id: '<?php echo $theShop->id ?>',
+                    id: '<?php echo $theshop->id ?>',
                     action: 'assignalllistobj',
                 },
                 function(data, status) {
@@ -185,7 +185,7 @@ function ajax_delete_user(wwwroot, ptmail) {
 
     $.post(urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteparticipant',
             participantid: ptmail,
             roles: JSON.stringify(roles)
@@ -202,7 +202,7 @@ function ajax_delete_user(wwwroot, ptmail) {
             $.post(
                 urlbase,
                 {
-                    id: '<?php echo $theShop->id ?>',
+                    id: '<?php echo $theshop->id ?>',
                     action: 'assignalllistobj',
                 },
                 function(data, status) {
@@ -227,7 +227,7 @@ function ajax_add_assign(wwwroot, assignrole, product, selectobj) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
     ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /></center></div>';
 
-    requiredroles = JSON.parse('<?php echo json_encode($theCatalog->check_required_roles()); ?>');
+    requiredroles = JSON.parse('<?php echo json_encode($thecatalog->check_required_roles()); ?>');
 
     for (rix in requiredroles) {
         role = requiredroles[rix];
@@ -237,7 +237,7 @@ function ajax_add_assign(wwwroot, assignrole, product, selectobj) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'addassign',
             role:assignrole,
             product: product,
@@ -271,7 +271,7 @@ function ajax_delete_assign(wwwroot, assignrole, product, email) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
     ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
-    requiredroles = JSON.parse('<?php echo json_encode($theCatalog->check_required_roles()); ?>');
+    requiredroles = JSON.parse('<?php echo json_encode($thecatalog->check_required_roles()); ?>');
 
     for (rix in requiredroles) {
         role = requiredroles[rix];
@@ -281,7 +281,7 @@ function ajax_delete_assign(wwwroot, assignrole, product, email) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteassign',
             role: assignrole,
             product: product,
@@ -326,7 +326,7 @@ function ajax_add_unit(wwwroot, id, productname, maxquant) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'addunit',
             productname: productname
         },
@@ -360,7 +360,7 @@ function ajax_delete_unit(wwwroot, id, productname) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteunit',
             productname: productname,
             clearall: 0
@@ -433,7 +433,7 @@ function ajax_clear_product(wwwroot, id, productname) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteunit',
             productname: productname,
             clearall: 1
@@ -463,7 +463,7 @@ function ajax_update_product(wwwroot, id, productname, maxquant) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'setunits',
             productname: productname,
             quant: currentval
@@ -505,7 +505,7 @@ function check_pass_code(wwwroot, productname, textinput, event) {
     $.post(
         urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'checkpasscode',
             productname: productname,
             passcode: input

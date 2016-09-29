@@ -57,7 +57,7 @@ class customer_controller extends front_controller_base {
             }
 
             if (!empty($config->hasshipping)) {
-                $shoppingcart->shipping = $theCatalog->calculate_shipping();
+                $shoppingcart->shipping = $thecatalog->calculate_shipping();
                 $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal + $shoppingcart->shipping->value;
             } else {
                 // This is the last final payable amount.

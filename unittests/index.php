@@ -29,7 +29,7 @@ require_once($CFG->dirroot.'/local/shop/unittests/index.controller.php');
 use local_shop\Shop;
 
 // get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Get block information.
 
@@ -46,7 +46,7 @@ $action = optional_param('what', '', PARAM_ALPHA); // the action command
 
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/unittests/index.controller.php');
-    $controller = new \local_shop\back\unittests_controller($theShop, $theCatalog, $theBlock);
+    $controller = new \local_shop\back\unittests_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
     list($errors, $warnings, $messages) = $controller->process($action);
 }
@@ -59,7 +59,7 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
 $PAGE->navbar->add(get_string('catalogues', 'local_shop'));
-$PAGE->navbar->add($theCatalog->name, new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+$PAGE->navbar->add($thecatalog->name, new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
 $PAGE->navbar->add(get_string('unittests', 'local_shop'));
 $PAGE->set_pagelayout('admin');
 
@@ -73,7 +73,7 @@ $messagestr = get_string('message', 'local_shop');
 
 echo '<center>';
 
-if ($productline = $theCatalog->get_products()) {
+if ($productline = $thecatalog->get_products()) {
     $testtable = new html_table();
 
     $productcodestr = get_string('code', 'local_shop');

@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A bill item is a single order line.
  *
  * @package     local_shop
  * @category    local
@@ -27,6 +23,9 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
@@ -40,7 +39,7 @@ require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
  */
 class BillItem extends ShopObject {
 
-    static $table = 'local_shop_billitem';
+    protected static $table = 'local_shop_billitem';
 
     protected $bill;
 
@@ -57,7 +56,7 @@ class BillItem extends ShopObject {
 
         $this->bill = $bill;
 
-        // here we make some assertions to check the billitem integrity
+        // Here we make some assertions to check the billitem integrity.
         parent::__construct($idorrec, self::$table);
 
         if (!empty($this->record->id)) {
@@ -66,7 +65,6 @@ class BillItem extends ShopObject {
             }
 
             if (!assert(($this->record->unitcost * $this->record->quantity) == $this->record->totalprice, " ({$this->record->unitcost} * {$this->record->quantity}) == {$this->record->totalprice} ")) {
-                print_object($this->record);
                 debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             }
 
@@ -138,7 +136,7 @@ class BillItem extends ShopObject {
                 $this->record->quantity = $idorrec->quantity;
                 $this->record->abstract = $this->catalogitem->name;
                 $this->record->description = $this->catalogitem->description;
-                $this->productiondata = $idorrec->productiondata; // This gets production data from shop front end. Essentially user definitions;
+                $this->productiondata = $idorrec->productiondata; // This gets production data from shop front end. Essentially user definitions.
                 $this->productiondata->handlerparams = $this->catalogitem->handlerparams; // This adds a freezed copy of original handler params.
                 if (!empty($this->productiondata->handlerparams)) {
                     if (is_array($this->productiondata->handlerparams)) {

@@ -34,8 +34,8 @@ use local_shop\Catalog;
 
 $PAGE->requires->js('/local/shop/js/bills.js');
 
-// get all the shop session context objects.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $config = get_config('local_shop');
 
@@ -54,11 +54,11 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($billid) {
-    $bill = new Bill($billid, $theShop, $theCatalog, $theBlock);
+    $bill = new Bill($billid, $theshop, $thecatalog, $theblock);
     $mform = new Bill_Form('', array('what' => 'edit'));
     $mform->set_data($bill);
 } else {
-    $bill = new Bill(null, $theShop, $theCatalog, $theBlock);
+    $bill = new Bill(null, $theshop, $thecatalog, $theblock);
     $mform = new Bill_Form('', array('what' => 'add'));
     $bill->autobill = 0;
     $mform->set_data($bill);
@@ -83,7 +83,7 @@ if ($bill = $mform->get_data()) {
     $bill->lastactiondate = $now;
 
     if (empty($bill->currency)) {
-        $bill->currency = $theShop->defaultcurrency;
+        $bill->currency = $theshop->defaultcurrency;
     }
 
     $shipping = new StdClass;

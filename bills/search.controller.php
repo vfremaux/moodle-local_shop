@@ -30,13 +30,13 @@ defined('MOODLE_INTERNAL') || die;
 
 class search_controller {
 
-    var $theshop;
+    protected $theshop;
 
-    function __construct($theshop) {
+    public function __construct($theshop) {
         $this->theshop = $theshop;
     }
 
-    function process($cmd) {
+    public function process($cmd) {
         global $DB;
 
         if ($cmd == 'search') {
@@ -50,19 +50,19 @@ class search_controller {
 
             switch ($by) {
                 case 'id':
-                   $whereclause = " id = '{$billid}' ";
-                   break;
+                    $whereclause = " id = '{$billid}' ";
+                    break;
                 case "name":
-                   $whereclause = " UPPER(lastname) LIKE '{$customername}%' ";
-                   break;
+                    $whereclause = " UPPER(lastname) LIKE '{$customername}%' ";
+                    break;
                 case "key":
-                   $whereclause = " UPPER(transactionid) LIKE '{$billkey}%' ";
-                   break;
+                    $whereclause = " UPPER(transactionid) LIKE '{$billkey}%' ";
+                    break;
                 case "date":
-                   $whereclause = " emissiondate > '{$datefrom}' ";
-                   break;
+                    $whereclause = " emissiondate > '{$datefrom}' ";
+                    break;
                 default:
-                   $error = true;
+                    $error = true;
             }
             if (!$error) {
                 $sql = "
@@ -78,10 +78,10 @@ class search_controller {
                 if ($bills = $DB->get_records->sql($sql)) {
 
                     if (count($bills) == 1) {
-                        $billRecord = array_pop($bills);
-                        $billid = $billRecord->id;
-                        // one only result. Switch directly to intranet/bills/viewBill with adequate Id.
-                        $params = array('view' => 'viewBill', 'id' => $this->theShop->id, 'billid' => $billid);
+                        $billrecord = array_pop($bills);
+                        $billid = $billrecord->id;
+                        // One only result. Switch directly to intranet/bills/viewBill with adequate Id.
+                        $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $billid);
                         redirect(new moodle_url('/local/shop/bills/view.php', $params));
                     }
                     return $bill;

@@ -115,11 +115,11 @@ class shop_paymode_paypal extends shop_paymode {
 
         $transid = required_param('transid', PARAM_RAW);
 
-        $aFullBill = Bill::get_by_transaction($transid);
-        $aFullBill->onlinetransactionid = $transid;
-        $aFullBill->paymode = 'paypal';
-        $aFullBill->status = SHOP_BILL_CANCELLED;
-        $aFullBill->save(true);
+        $afullbill = Bill::get_by_transaction($transid);
+        $afullbill->onlinetransactionid = $transid;
+        $afullbill->paymode = 'paypal';
+        $afullbill->status = SHOP_BILL_CANCELLED;
+        $afullbill->save(true);
         shop_trace('Paypal Interactive Cancellation');
 
         // Do not cancel shopping cart. User may need another payment method.
@@ -137,18 +137,18 @@ class shop_paymode_paypal extends shop_paymode {
 
         $transid = required_param('transid', PARAM_RAW);
 
-        $aFullBill = Bill::get_by_transaction($transid);
+        $afullbill = Bill::get_by_transaction($transid);
 
-        $this->theshop = $aFullBill->theshop;
+        $this->theshop = $afullbill->theshop;
 
         /*
          * bill could already be SOLDOUT by IPN    so do nothing
          * process it only if needind to process.
          */
-        if ($aFullBill->status == SHOP_BILL_PLACED) {
+        if ($afullbill->status == SHOP_BILL_PLACED) {
             // Bill has not yet been soldout nor produced by an IPN notification.
-            $aFullBill->status = SHOP_BILL_PENDING;
-            $aFullBill->save(true);
+            $afullbill->status = SHOP_BILL_PENDING;
+            $afullbill->save(true);
 
             shop_trace("[$transid] Paypal Return Controller Complete : Redirecting");
             redirect(new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'transid' => $transid)));
@@ -168,13 +168,13 @@ class shop_paymode_paypal extends shop_paymode {
             die;
         }
 
-        if (!$aFullBill = Bill::get_by_transaction($transid)) {
+        if (!$afullbill = Bill::get_by_transaction($transid)) {
             shop_trace("[$transid] Paypal IPN ERROR : No such order");
             die;
         }
 
         // Pass reference from bill.
-        $this->theshop = $aFullBill->theshop;
+        $this->theshop = $afullbill->theshop;
 
         $txnid = required_param('txn_id', PARAM_TEXT);
         $data = new StdClass;
@@ -270,20 +270,20 @@ class shop_paymode_paypal extends shop_paymode {
                  * Bill has not yet been soldout through an IPN notification
                  * sold it out and update both DB and memory record
                  */
-                if ($aFullBill->status != SHOP_BILL_SOLDOUT) {
+                if ($afullbill->status != SHOP_BILL_SOLDOUT) {
                     // Stores the back code of paypal.
                     $tx = required_param('invoice', PARAM_TEXT);
-                    $aFullBill->onlinetransactionid = $tx;
-                    $aFullBill->paymode = 'paypal';
-                    $aFullBill->status = SHOP_BILL_SOLDOUT;
-                    $aFullBill->paymentfee = 0 + @$data->mc_fee;
-                    $aFullBill->save(true);
+                    $afullbill->onlinetransactionid = $tx;
+                    $afullbill->paymode = 'paypal';
+                    $afullbill->status = SHOP_BILL_SOLDOUT;
+                    $afullbill->paymentfee = 0 + @$data->mc_fee;
+                    $afullbill->save(true);
 
                     shop_trace("[$transid] Paypal IPN Start Production");
                     // Perform final production.
                     $action = 'produce';
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
-                    $controller = new \local_shop\front\production_controller($aFullBill);
+                    $controller = new \local_shop\front\production_controller($afullbill);
                     $controller->process($action);
                     shop_trace("[{$transid}] Paypal IPN End Production");
                 }

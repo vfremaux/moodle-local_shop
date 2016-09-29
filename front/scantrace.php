@@ -35,7 +35,7 @@ use \local_shop\Shop;
 
 $transid = optional_param('transid', '', PARAM_TEXT);
 $id = required_param('id', PARAM_INT);
-$theShop = new Shop($id);
+$theshop = new Shop($id);
 
 // Security.
 
@@ -94,7 +94,7 @@ if ($transid) {
 }
 echo '<br/>';
 echo '<center>';
-$options['id'] = $theShop->id;
+$options['id'] = $theshop->id;
 echo $OUTPUT->single_button(new moodle_url('/local/shop/index.php', $options), get_string('backtoshopadmin', 'local_shop'), 'get');
 $options['view'] = 'shop';
 echo $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), get_string('backtoshop', 'local_shop'), 'get');

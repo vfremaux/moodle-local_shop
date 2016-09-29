@@ -36,8 +36,8 @@ class shop_shipzones_renderer {
 
     protected $thecatalog;
 
-    function load_context(&$theCatalog) {
-        $this->thecatalog = $theCatalog;
+    function load_context(&$thecatalog) {
+        $this->thecatalog = $thecatalog;
     }
 
     protected function _check_context() {

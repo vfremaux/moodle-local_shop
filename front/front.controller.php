@@ -34,13 +34,13 @@ abstract class front_controller_base {
 
     protected $context;
 
-    public function __construct(&$theShop, &$theCatalog, &$theBlock = null) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
+    public function __construct(&$theshop, &$thecatalog, &$theblock = null) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
 
-        if (!empty($theBlock->instance->id)) {
-            $this->context = \context_block::instance($theBlock->instance->id);
+        if (!empty($theblock->instance->id)) {
+            $this->context = \context_block::instance($theblock->instance->id);
         } else {
             $this->context = \context_system::instance();
         }

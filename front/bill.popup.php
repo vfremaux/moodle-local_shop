@@ -36,21 +36,21 @@ $transid = required_param('transid', PARAM_TEXT);
 $billid = required_param('billid', PARAM_INT);
 
 if ($transid) {
-    if (!$aFullBill = Bill::get_by_transaction($transid)) {
+    if (!$afullbill = Bill::get_by_transaction($transid)) {
         $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         print_error('invalidtransid', 'local_shop', $viewurl);
     }
 } else if ($billid) {
     require_login();
-    if (!$aFullBill = new Bill($billid)) {
+    if (!$afullbill = new Bill($billid)) {
         $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         print_error('invalidbillid', 'local_shop', $viewurl);
     }
 
     $systemcontext = context_system::instance();
-    if (($aFullBill->customer->hasaccount != $USER->id) &&
+    if (($afullbill->customer->hasaccount != $USER->id) &&
             !has_any_capability(array('local/shop:salesadmin', 'moodle/site:config'), $systemcontext)) {
         $params = array('view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->instance->id);
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
@@ -58,10 +58,10 @@ if ($transid) {
     }
 
     $realized = array('SOLDOUT', 'COMPLETE', 'PARTIAL');
-    $printcommand = (in_array($aFullBill->status, $realized)) ? 'printbilllink' : 'printorderlink';
+    $printcommand = (in_array($afullbill->status, $realized)) ? 'printbilllink' : 'printorderlink';
 }
 
-$usercontext = context_user::instance($aFullBill->customeruser->id);
+$usercontext = context_user::instance($afullbill->customeruser->id);
 
 $params = array('transid' => $transid, 'billid' => $billid, 'id' => $theshop->id);
 $url = new moodle_url('/local/shop/front/bill.popup.php', $params);
@@ -76,11 +76,11 @@ $renderer->load_context($theshop, $theblock);
 
 $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL);
 
-if (!in_array($aFullBill->status, $realized)) {
+if (!in_array($afullbill->status, $realized)) {
     $headerstring = get_string('ordersheet', 'local_shop');
     print_string('ordertempstatusadvice', 'local_shop');
 } else {
-    if (empty($aFullBill->idnumber)) {
+    if (empty($afullbill->idnumber)) {
         $headerstring = get_string('proformabill', 'local_shop');
     } else {
         $headerstring = get_string('bill', 'local_shop');
@@ -90,8 +90,8 @@ if (!in_array($aFullBill->status, $realized)) {
 echo $OUTPUT->header();
 echo '<div style="max-width:780px">';
 
-$aFullBill->withlogo = true;
-echo $renderer->invoice_header($aFullBill);
+$afullbill->withlogo = true;
+echo $renderer->invoice_header($afullbill);
 
 echo '<div id="order" style="margin-top:20px">';
 
@@ -99,7 +99,7 @@ echo '<table cellspacing="5" class="generaltable" width="100%">';
 echo $renderer->order_line(null);
 $hasrequireddata = array();
 
-foreach ($aFullBill->items as $biid => $bi) {
+foreach ($afullbill->items as $biid => $bi) {
     if ($bi->type == 'BILLING') {
         echo $renderer->order_line($bi->catalogitem->shortname, $bi->quantity);
     } else {
@@ -108,14 +108,14 @@ foreach ($aFullBill->items as $biid => $bi) {
 }
 echo '</table>';
 
-echo $renderer->full_order_totals($aFullBill);
-echo $renderer->full_order_taxes($aFullBill);
+echo $renderer->full_order_totals($afullbill);
+echo $renderer->full_order_taxes($afullbill);
 
 echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
-require_once $CFG->dirroot.'/local/shop/paymodes/'.$aFullBill->paymode.'/'.$aFullBill->paymode.'.class.php';
+require_once $CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php';
 
-$classname = 'shop_paymode_'.$aFullBill->paymode;
+$classname = 'shop_paymode_'.$afullbill->paymode;
 
 echo '<div id="shop-order-paymode">';
 $pm = new $classname($theshop);

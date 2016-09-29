@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\catalogs;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * Controller for catalogs.
  *
  * @package     local_shop
  * @category    local
@@ -27,15 +23,18 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\catalogs;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 use local_shop\Catalog;
 
-// Note that other use cases are handled by the edit_catalogue.php script
+// Note that other use cases are handled by the edit_catalogue.php script.
 
 class catalog_controller {
 
-    function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
             $this->data = (object)$data;
@@ -50,18 +49,18 @@ class catalog_controller {
         }
     }
 
-    function process($cmd) {
+    public function process($cmd) {
         global $DB;
 
         if ($cmd == 'deletecatalog') {
             $catalogidlist = $this->data->catalogid;
-            // if master catalog, must delete all slaves
-            $theCatalog = new Catalog($this->data->catalogid);
-            if ($theCatalog->ismaster) {
+            // If master catalog, must delete all slaves.
+            $thecatalog = new Catalog($this->data->catalogid);
+            if ($thecatalog->ismaster) {
                 $catalogids = $DB->get_records_select_menu('local_shop_catalog', " groupid = '{$catalogid}' ", 'id', 'id,name');
                 $catalogidlist = implode("','", array_keys($catalogids));
             }
-            // deletes products entries in candidate catalogs
+            // Deletes products entries in candidate catalogs.
             $DB->delete_records_select('local_shop_catalogitem', " catalogid IN ('$catalogidlist') ");
             $DB->delete_records_select('local_shop_catalogcategory', " catalogid IN ('$catalogidlist') ");
             $DB->delete_records_select('local_shop_catalog', " id IN ('$catalogidlist') ");

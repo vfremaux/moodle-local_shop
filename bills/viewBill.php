@@ -43,7 +43,7 @@ if ($action != '') {
     $controller->process($action);
 }
 
-$aFullBill = new Bill($billid); // Complete bill data
+$afullbill = new Bill($billid); // Complete bill data.
 
 echo $out;
 echo $OUTPUT->box_start('', 'billpanel');
@@ -59,23 +59,25 @@ echo $OUTPUT->box_start('', 'billpanel');
 <tr>
    <td valign="top" style="padding : 2px" colspan="5" class="billListTitle">
       <h1><?php
-              if ($aFullBill->status == 'PENDING' || $aFullBill->status == 'PLACED') {
+              if ($afullbill->status == 'PENDING' || $afullbill->status == 'PLACED') {
                   print_string('order', 'local_shop');
               } else {
                   print_string('bill', 'local_shop');
               }
-              ?> <span class="titleData">B-<?php echo date('Ymd', $aFullBill->emissiondate); ?>-<?php echo $aFullBill->id; ?></span></h1><br/>
-      <?php echo userdate($aFullBill->emissiondate) ?>
+              $billunique = 'B-'.date('Ymd', $afullbill->emissiondate).'-'.$afullbill->id;
+              echo '<span class="titleData">'.$billunique.'</span></h1><br/>';
+              echo userdate($afullbill->emissiondate);
+    ?>
    </td>
    <td colspan="3">
        <b><?php print_string('transactionid', 'local_shop') ?>: </b><br />
-       <div id="transactionid"><?php echo $aFullBill->transactionid ?></div><br />
+       <div id="transactionid"><?php echo $afullbill->transactionid ?></div><br />
 <?php
-if ($aFullBill->onlinetransactionid != '') {
+if ($afullbill->onlinetransactionid != '') {
     echo '<b>'.get_string('paimentcode', 'local_shop').'</b><br />';
-    echo '<div id="transactionid">'.$aFullBill->onlinetransactionid.'</div>';
+    echo '<div id="transactionid">'.$afullbill->onlinetransactionid.'</div>';
 }
-if ($aFullBill->transactionid == '') {
+if ($afullbill->transactionid == '') {
     echo get_string('nocodegenerated', 'local_shop').'<br/>';
     echo '<a href="'.$url.'&cmd=generatecode">'.get_string('generateacode', 'local_shop').'</a>';
 }
@@ -86,7 +88,7 @@ if ($aFullBill->transactionid == '') {
            <?php echo $OUTPUT->help_icon('lettering', 'local_shop'); ?>
            <br/>
            <?php
-        if ($aFullBill->status == 'PENDING' || $aFullBill->status == 'PLACED' || $aFullBill->status == 'WORKING') {
+        if ($afullbill->status == 'PENDING' || $afullbill->status == 'PLACED' || $afullbill->status == 'WORKING') {
             print_string('noletteringaspending', 'local_shop');
             echo '<br/>';
         } else {
@@ -97,36 +99,38 @@ if ($aFullBill->transactionid == '') {
            <form name="billletteringform" action="" method="post" >
            <input type="hidden" name="view" value="viewBill" />
            <input type="hidden" name="id" value="<?php p($id) ?>" />
-           <input type="hidden" name="billid" value="<?php p($aFullBillid) ?>" />
+           <input type="hidden" name="billid" value="<?php p($afullbillid) ?>" />
            <input type="hidden" name="what" value="reclettering" />
-           <input type="text" name="idnumber" value="<?php echo $aFullBill->idnumber ?>" />
+           <input type="text" name="idnumber" value="<?php echo $afullbill->idnumber ?>" />
            <input type="submit" name="go_lettering" value="<?php print_string('updatelettering', 'local_shop') ?>" />
            </form><br/>
            <?php
            }
            ?>
-           <b><?php print_string('paymodes', 'local_shop') ?>: </b><?php echo get_string($aFullBill->paymode, 'shoppaymodes_'.$aFullBill->paymode) ?>
+           <b><?php print_string('paymodes', 'local_shop') ?>: </b>
+           <?php echo get_string($afullbill->paymode, 'shoppaymodes_'.$afullbill->paymode) ?>
     </td>
 </tr>
 <tr>
    <td valign="top" style="padding : 2px" colspan="10" class="billTitle">
-      <h1><?php print_string('title', 'local_shop') ?> : <span class="titleData"><?php echo $aFullBill->title ?></span></h1>
+      <h1><?php print_string('title', 'local_shop') ?> : <span class="titleData">
+      <?php echo $afullbill->title ?></span></h1>
    </td>
 </tr>
 </table>
 <?php
 
-echo $renderer->customer_info($aFullBill, true);
+echo $renderer->customer_info($afullbill, true);
 
 echo $OUTPUT->heading(get_string('order', 'local_shop'), 2);
 
 echo '<table class="generaltable" width="100%">';
-if (count($aFullBill->items) == 0) {
+if (count($afullbill->items) == 0) {
     echo $renderer->no_items();
 } else {
     echo $renderer->billitem_line(null);
-    if ($aFullBill->items) {
-        foreach ($aFullBill->items as $portlet) {
+    if ($afullbill->items) {
+        foreach ($afullbill->items as $portlet) {
             if (($action == 'relocating') && ($portlet->ordering <= $z)) {
                 echo $renderer->relocate_box($portlet->id, $portlet->ordering, $z, $relocated);
             }
@@ -141,17 +145,17 @@ if (count($aFullBill->items) == 0) {
 }
 echo '</table>';
 
-echo $renderer->full_bill_totals($aFullBill);
-echo $renderer->full_bill_taxes($aFullBill);
+echo $renderer->full_bill_totals($afullbill);
+echo $renderer->full_bill_taxes($afullbill);
 
 echo '<div class="shop-bills-flowcontrol">';
-echo $renderer->flow_controller($aFullBill->status, $url);
+echo $renderer->flow_controller($afullbill->status, $url);
 echo '</div>';
 
 echo '<div class="shop-bills-attachments">';
-echo $renderer->attachments($aFullBill);
+echo $renderer->attachments($afullbill);
 echo '</div>';
 
-echo $renderer->bill_controls($aFullBill);
+echo $renderer->bill_controls($afullbill);
 
 echo $OUTPUT->box_end();

@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * Master view for customer management
  *
  * @package    local_shop
@@ -32,8 +31,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
 use local_shop\Shop;
 
-// get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get the shop reference and key context.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $view = optional_param('view', 'viewAllCustomers', PARAM_TEXT);
 
@@ -43,7 +42,8 @@ $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-if (!preg_match('/viewAllCustomers|viewCustomer/', $view) || !file_exists($CFG->dirroot."/local/shop/customers/{$view}.php")) {
+if (!preg_match('/viewAllCustomers|viewCustomer/', $view) ||
+        !file_exists($CFG->dirroot."/local/shop/customers/{$view}.php")) {
     print_error('errorbadview', 'local_shop');
 }
 
@@ -61,10 +61,10 @@ if ($view == 'viewCustomer') {
     $PAGE->navbar->add(get_string('customer', 'local_shop'));
 }
 
-// Getting needed renderers
+// Getting needed renderers.
 $mainrenderer = $PAGE->get_renderer('local_shop');
 $renderer = shop_get_renderer('customers');
-$renderer->load_context($theShop);
+$renderer->load_context($theshop);
 
 // Make page content.
 

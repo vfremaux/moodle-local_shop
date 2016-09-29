@@ -36,7 +36,7 @@ $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 
 // Get all the shop session context objects.
 
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $bundleid = optional_param('itemid', 0, PARAM_INT);
 
@@ -56,13 +56,13 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($bundleid) {
     $bundle = $DB->get_record('local_shop_catalogitem', array('id' => $bundleid));
-    $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $theCatalog));
+    $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $thecatalog));
     $bundle->bundleid = $bundleid;
     unset($bundle->id);
     $mform->set_data($bundle);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Bundle_Form('', array('what' => 'add', 'catalog' => $theCatalog));
+    $mform = new Bundle_Form('', array('what' => 'add', 'catalog' => $thecatalog));
     $bundlerec = $item->record;
     $bundlerec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($bundlerec);
@@ -75,7 +75,7 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
     global $USER;
 
-    $data->catalogid = $theCatalog->id;
+    $data->catalogid = $thecatalog->id;
     $data->isset = PRODUCT_BUNDLE;
 
     $data->description = $data->description_editor['text'];
@@ -104,8 +104,8 @@ if ($data = $mform->get_data()) {
             }
         }
         // If slave catalogue must insert a master copy.
-        if ($theCatalog->isslave) {
-            $data->catalogid = $theCatalog->groupid;
+        if ($thecatalog->isslave) {
+            $data->catalogid = $thecatalog->groupid;
             $DB->insert_record('local_shop_catalogitem', $data);
         }
     } else {

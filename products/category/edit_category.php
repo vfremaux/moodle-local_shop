@@ -32,7 +32,7 @@ use local_shop\Catalog;
 use local_shop\Category;
 
 // get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // get the block reference and key context
 
@@ -52,10 +52,10 @@ $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('catalogue', 'local_shop'));
-$PAGE->navbar->add(format_string($theCatalog->name), new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+$PAGE->navbar->add(format_string($thecatalog->name), new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
 $PAGE->navbar->add(get_string('addcategory', 'local_shop'));
 
-$allcats = Category::get_instances(array('catalogid' => $theCatalog->id));
+$allcats = Category::get_instances(array('catalogid' => $thecatalog->id));
 Category::filter_parentable($allcats, $categoryid);
 
 $allcatsmenu = array();
@@ -70,19 +70,19 @@ if ($categoryid) {
     $category = $DB->get_record('local_shop_catalogcategory', array('id' => $categoryid));
     $mform = new Category_Form('', array('what' => 'edit', 'parents' => $allcatsmenu));
     $category->categoryid = $category->id;
-    $category->id = $theShop->id;
+    $category->id = $theshop->id;
 
     $mform->set_data($category);
 } else {
     $mform = new Category_Form('', array('what' => 'add', 'parents' => $allcatsmenu));
     $formdata = new StdClass();
-    $formdata->id = $theShop->id;
+    $formdata->id = $theshop->id;
     $formdata->description = '';
     $formdata->descriptionformat = FORMAT_MOODLE;
     $mform->set_data($formdata);
 }
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', array('id' => $theShop->id, 'view' => 'viewAllProducts')));
+    redirect(new moodle_url('/local/shop/products/view.php', array('id' => $theshop->id, 'view' => 'viewAllProducts')));
 }
 if ($data = $mform->get_data()) {
 
@@ -90,9 +90,9 @@ if ($data = $mform->get_data()) {
         $data->visible = 0;
     }
 
-    $data->catalogid = $theCatalog->id;
+    $data->catalogid = $thecatalog->id;
 
-    $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', array('catalogid' => $theCatalog->id));
+    $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', array('catalogid' => $thecatalog->id));
 
     $data->description = $data->description_editor['text'];
     $data->descriptionformat = 0 + $data->description_editor['format'];
@@ -113,8 +113,8 @@ if ($data = $mform->get_data()) {
             }
         }
         // If slave catalogue must insert a master copy.
-        if ($theCatalog->isslave) {
-            $data->catalogid = $theCatalog->groupid;
+        if ($thecatalog->isslave) {
+            $data->catalogid = $thecatalog->groupid;
             $DB->insert_record('local_shop_catalogcategory', $data);
         }
     } else {
@@ -129,7 +129,7 @@ if ($data = $mform->get_data()) {
     $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'categorydescription', $data->id, array('subdirs' => true), $data->description);
     $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop', 'categorydescription', $data->id);
 
-    redirect(new moodle_url('/local/shop/products/category/view.php', array('id' => $theShop->id, 'view' => 'viewAllCategories')));
+    redirect(new moodle_url('/local/shop/products/category/view.php', array('id' => $theshop->id, 'view' => 'viewAllCategories')));
 }
 
 echo $OUTPUT->header();

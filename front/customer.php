@@ -33,24 +33,24 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
-$PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theShop->id);
+$PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || empty($SESSION->shoppingcart->order)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'view' => 'shop')));
+    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theshop->id, 'view' => 'shop')));
 }
 
 $action = optional_param('what', '', PARAM_TEXT);
 
 if ($action) {
     include($CFG->dirroot.'/local/shop/front/customer.controller.php');
-    $controller = new \local_shop\front\customer_controller($theShop, $theCatalog, $theBlock);
+    $controller = new \local_shop\front\customer_controller($theshop, $thecatalog, $theblock);
     $controller->process($action);
 }
 
 echo $out;
 
-echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $renderer->progress('CUSTOMER');
 
@@ -63,13 +63,13 @@ echo '</div>';
 
 echo '<div id="shop-customer-info" class="shop-data">';
 
-$shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theShop->id));
+$shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theshop->id));
 
 if (!isloggedin() || isguestuser()) {
     $loginurl = new moodle_url('/login/index.php');
     echo '<form name="loginform" action="'.$loginurl.'" method="post">';
     echo '<input type="hidden" name="wantsurl" value"'.$shopurl.'">';
-    echo '<input type="hidden" name="id" value="'.$theShop->id.'" />';
+    echo '<input type="hidden" name="id" value="'.$theshop->id.'" />';
     echo '<fieldset>';
     echo '<legend>'.get_string('login', 'local_shop').'</legend>';
     echo '<table width="100%" class="generaltable"><tr valign="top">';

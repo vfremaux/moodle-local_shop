@@ -24,14 +24,14 @@ defined('MOODLE_INTERNAL') || die();
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) {
-    $params = array('shopid' => $theShop->id, 'blockid' => 0 + @$theBlock->id, 'view' => 'shop');
+    $params = array('shopid' => $theshop->id, 'blockid' => 0 + @$theblock->id, 'view' => 'shop');
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/order.controller.php');
-    $controller = new \local_shop\front\order_controller($theShop, $theCatalog, $theBlock);
+    $controller = new \local_shop\front\order_controller($theshop, $thecatalog, $theblock);
     $controller->process($action);
 }
 
@@ -46,7 +46,7 @@ echo $out;
 
 // Start ptinting page.
 
-echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $OUTPUT->box_start('', 'orderpanel');
 

@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * List view of customers.
  *
  * @package     local_shop
  * @categroy    local
@@ -25,12 +23,14 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Customer;
 
 $action = optional_param('action', '', PARAM_TEXT);
+
 if (!empty($action)) {
    include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
    $controller = new customer_controller();
@@ -41,12 +41,13 @@ $order = optional_param('order', 'lastname', PARAM_TEXT);
 $dir = optional_param('dir', 'ASC', PARAM_TEXT);
 $offset = optional_param('offset', 0, PARAM_INT);
 
-$url = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers', 'order' => $order, 'dir' => $dir));
+$params = array('view' => 'viewAllCustomers', 'order' => $order, 'dir' => $dir);
+$url = new moodle_url('/local/shop/customers/view.php', $params);
 
-$customersCount = $DB->count_records_select('local_shop_customer', " UPPER(email) NOT LIKE 'test%' "); // eliminate tests
+$customersCount = $DB->count_records_select('local_shop_customer', " UPPER(email) NOT LIKE 'test%' "); // Eliminate tests.
 $config = get_config('local_shop');
 
-$customers = Customer::get_instances_for_admin($theShop);
+$customers = Customer::get_instances_for_admin($theshop);
 
 echo $out;
 

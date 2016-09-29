@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(defined('MOODLE_INTERNAL')) || die;
-
 /**
- * Form for editing HTML block instances.
+ * Form for rendering Bill management outputs.
  *
  * @package     local_shop
  * @categroy    local
@@ -25,6 +23,7 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
 class shop_bills_renderer {
 
@@ -35,10 +34,10 @@ class shop_bills_renderer {
     /**
      *
      */
-    public function load_context(&$theShop, &$theCatalog, &$theBlock = null) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
+    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
     }
 
     /**
@@ -65,7 +64,8 @@ class shop_bills_renderer {
             $str .= $OUTPUT->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
         }
         $backtoshopstr = get_string('backtoshop', 'local_shop');
-        $str .= '<input type="button" name="cancel_btn" value="'.$backtoshopstr.'" onclick="self.location.href=\''.$CFG->wwwroot.'/local/shop/front/view.php?view=shop&shop='.$this->theshop->id.'\'" />';
+        $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
+        $str .= '<input type="button" name="cancel_btn" value="'.$backtoshopstr.'" onclick="self.location.href=\''.$shopurl.'\'" />';
         $str .= '</td></tr></table>';
         $str .= '</form>';
 
@@ -174,7 +174,8 @@ class shop_bills_renderer {
         $str .= '<td align="center">';
 
         if (!empty($disabled)) {
-            $str .= '<br/><span id="disabled-advice-span" class="error">'.get_string('requiredataadvice', 'local_shop').'</span><br/>';
+            $advice = .get_string('requiredataadvice', 'local_shop');
+            $str .= '<br/><span id="disabled-advice-span" class="error">'.$advice.'</span><br/>';
         }
 
         $str .= '<input type="button" name="go_confirm" value="'.$confirmstr.'" onclick="send_confirm();" '.$disabled.' />';
@@ -186,9 +187,9 @@ class shop_bills_renderer {
     }
 
     /**
-    * prints tabs for js activation of the category panel
-    *
-    */
+     * prints tabs for js activation of the category panel
+     *
+     */
     public function category_tabs($categories) {
 
         $str = '';
@@ -209,7 +210,8 @@ class shop_bills_renderer {
             }
 
             $str .= '<li id="catli'.$cat->id.'" class="'.$catclass.'">';
-            $str .= '<a href="javascript:showcategory('.$cat->id.', \''.$catids.'\');"><span>'.$cat->name.'</span></a>'.$emptyrow.'</li>';
+            $catname = '<span>'.format_string($cat->name).'</span>';
+            $str .= '<a href="javascript:showcategory('.$cat->id.', \''.$catids.'\');">'.$catname.'</a>'.$emptyrow.'</li>';
             $c++;
         }
         $str .= '</ul>';
@@ -237,11 +239,13 @@ class shop_bills_renderer {
             $str .= $this->category_tabs($categories, true);
         }
 
-    // print catalog product line
+        // Print catalog product line.
 
         $c = 0;
         foreach ($categories as $cat) {
-            if (!isset($firstcatid)) $firstcatid = $cat->id;
+            if (!isset($firstcatid)) {
+                $firstcatid = $cat->id;
+            }
 
             if ($this->theshop->printtabbedcategories) {
                 $str .= '<div class="shopcategory" id="category'.$cat->id.'" />';
@@ -311,18 +315,21 @@ class shop_bills_renderer {
             $str .= '<table class="shop-pricelist"><tr>';
              $str .= '<td class="shop-princelabel">'.get_string('puttc', 'local_shop').'</td>';
              foreach ($prices as $range => $price) {
-                 $str .= '<td class="shop-pricerange"> '.$range.' : </td><td class="shop-priceamount">'.$price.' {'.$product->currency.'}</td>';
+                 $str .= '<td class="shop-pricerange"> '.$range.' : </td>';
+                 $str .= '<td class="shop-priceamount">'.$price.' {'.$product->currency.'}</td>';
             }
             $str .= '</tr></table>';
         }
 
         $buystr = get_string('buy', 'local_shop');
-        $disabled = ($product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset) ? 'disabled="disabled"' : '';
+        $ismax = $product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset;
+        $disabled = ($ismax) ? 'disabled="disabled"' : '';
         $blockid = 0 + @$this->theblock->instance->id;
+        $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\', '.$blockid.', \''.$product->shortname.'\')';
         $str .= '<input type="button"
                         name="go_add"
                         value="'.$buystr.'"
-                        onclick="ajax_add_unit(\''.$CFG->wwwroot.'\', '.$blockid.', \''.$product->shortname.'\')" '.$disabled.' />';
+                        onclick="'.$jshandler.'" '.$disabled.' />';
         $str .= '<span id="bag_'.$product->shortname.'">';
         $str .= $this->units($product, true);
         $str .= '</span>';
@@ -356,7 +363,8 @@ class shop_bills_renderer {
             $str .= '<td>';
             $str .= '<img src="'.$element->thumb.'" vspace="10"><br/>';
             if ($element->image != '') {
-                $str .= '<a href="javascript:open_image(\''.$element->image.'\', \''.$CFG->wwwroot.'\')">'.get_string('enlarge', 'local_shop').'</a>';
+                $jshandler = 'javascript:open_image(\''.$element->image.'\', \''.$CFG->wwwroot.'\')';
+                $str .= '<a href="'.$jshandler.'">'.get_string('enlarge', 'local_shop').'</a>';
             }
             $str .= '</td>';
             $str .= '<td>';
@@ -368,10 +376,11 @@ class shop_bills_renderer {
             if ($element->showsdescriptioninset) {
                 $tr .= $element->description;
             }
+            $jshandler = 'addOneUnit(\''.$CFG->wwwroot.'\', \''.$set->salesunit.'\', '.$set->TTCprice.', \''.$set->maxdeliveryquant.'\')';
             $str .= '<input type="button"
                             name="go_add"
                             value="'.get_string('buy', 'local_shop').'"
-                            onclick="addOneUnit(\''.$CFG->wwwroot.'\', \''.$set->salesunit.'\', '.$set->TTCprice.', \''.$set->maxdeliveryquant.'\')">';
+                            onclick="'.$jshandler.'">';
             $str .= '<span id="bag_'.$element->shortname.'"></span>';
             $str .= '</td>';
             $str .= '</tr>';
@@ -410,9 +419,9 @@ class shop_bills_renderer {
         $str .= '<tr>';
         $str .= '<td>';
 
-        $TTCprice = 0;
+        $ttcprice = 0;
         foreach ($bundle->set as $product) {
-            $TTCprice += $product->get_taxed_price(1);
+            $ttcprice += $product->get_taxed_price(1);
             $product->noorder = true; // Bundle can only be purchased as a group.
             $str .= $this->product_block($element);
         }
@@ -421,11 +430,13 @@ class shop_bills_renderer {
         $str .= '<tr>';
         $str .= '<td>';
         $str .= '<strong>'.get_string('ref', 'local_shop').' : '.$bundle->code.' - </strong>';
-        $str .= get_string('puttc', 'local_shop').' = <b>'.$TTCprice.' '. $bundle->currency.' </b><br/>';
+        $str .= get_string('puttc', 'local_shop').' = <b>'.$ttcprice.' '. $bundle->currency.' </b><br/>';
+        $jshandler = 'addOneUnit(\''.$CFG->wwwroot.'\', \''.$bundle->shortname.'\', \''.$bundle->code;
+        $jshandler .= '\', '.$ttcprice.', \''.$bundle->maxdeliveryquant.'\')';
         $str .= '<input type="button"
                         name="go_add"
                         value="'.get_string('buy', 'local_shop').'"
-                        onclick="addOneUnit(\''.$CFG->wwwroot.'\', \''.$bundle->shortname.'\', \''.$bundle->code.'\', '.$TTCprice.', \''.$bundle->maxdeliveryquant.'\')">';
+                        onclick="'.$jshandler.'">';
         $str .= '<span id="bag_'.$bundle->shortname.'"></span>';
         $str .= '</td>';
         $str .= '</tr>';
@@ -441,12 +452,12 @@ class shop_bills_renderer {
 
         $str = '';
 
-        for ($i = 0 ; $i < 0 + @$SESSION->shoppingcart->order[$product->shortname] ; $i++) {
+        for ($i = 0; $i < 0 + @$SESSION->shoppingcart->order[$product->shortname]; $i++) {
             $str .= '&nbsp;<img src="'.$unitimage.'" align="middle" />';
         }
         if ($i > 0) {
-            $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'"
-                            href="Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', \''.$this->theshop->id.'\', \''.$product->shortname.'\')">';
+            $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', \''.$this->theshop->id.'\', \''.$product->shortname.'\')';
+            $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
             $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" />';
             $str .= '</a>';
         }
@@ -457,27 +468,27 @@ class shop_bills_renderer {
     public function order_detail(&$categories) {
         global $SESSION, $CFG;
 
+        $shoppingcart = $SESSION->shoppingcart;
+
         $str = '';
 
         $str .= '<table width="100%" id="orderblock">';
-        foreach ($categories as $aCategory) {
-            foreach ($aCategory->products as $aProduct) {
-                if ($aProduct->isset === 1) {
-                    foreach ($aProduct->set as $portlet) {
+        foreach ($categories as $cat) {
+            foreach ($cat->products as $aproduct) {
+                if ($aproduct->isset === 1) {
+                    foreach ($aproduct->set as $portlet) {
                         $portlet->currency = $this->theshop->get_currency('symbol');
-                        $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ?
-                            $SESSION->shoppingcart->order[$portlet->shortname] : 0 ;
+                        $portlet->preset = !empty($shoppingcart->order[$portlet->shortname]) ? $shoppingcart->order[$portlet->shortname] : 0 ;
                         if ($portlet->preset) {
                             ob_start();
-                            include ($CFG->dirroot.'/local/shop/lib/shopProductTotalLine.portlet.php');
+                            include($CFG->dirroot.'/local/shop/lib/shopProductTotalLine.portlet.php');
                             $str .= ob_get_clean();
                         }
                     }
                 } else {
-                    $portlet = &$aProduct;
-                    $portlet->currency = shop_currency($theBlock, 'symbol');
-                    $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ?
-                        $SESSION->shoppingcart->order[$portlet->shortname] : 0 ;
+                    $portlet = &$aproduct;
+                    $portlet->currency = shop_currency($theblock, 'symbol');
+                    $portlet->preset = !empty($shoppingcart->order[$portlet->shortname]) ? $shoppingcart->order[$portlet->shortname] : 0 ;
                     if ($portlet->preset) {
                            ob_start();
                         include($CFG->dirroot.'/local/shop/lib/shopProductTotalLine.portlet.php');
@@ -494,7 +505,7 @@ class shop_bills_renderer {
         echo $str;
     }
 
-    function billitem_line($portlet) {
+    public function billitem_line($portlet) {
         global $OUTPUT;
 
         $str = '';
@@ -601,12 +612,12 @@ class shop_bills_renderer {
     /**
      * @param object $ci a CatalogItem instance;
      */
-    function item_total_line($ci) {
+    public function item_total_line($ci) {
         global $CFG, $OUTPUT;
 
         $str = '';
-        $TTCprice = $ci->get_taxed_price($ci->preset, $ci->taxcode);
-        $ci->total = $TTCprice * $ci->preset;
+        $ttcprice = $ci->get_taxed_price($ci->preset, $ci->taxcode);
+        $ci->total = $ttcprice * $ci->preset;
 
         $str .= '<tr id="producttotalcaption_'.$ci->shortname.'">';
         $str .= '<td class="shop-ordercaptioncell" colspan="3">';
@@ -616,7 +627,9 @@ class shop_bills_renderer {
         $str .= '<tr id="producttotal_'.$ci->shortname.'">';
         $str .= '<td class="shop-ordercell">';
         $jshandler = 'Javascript:ajax_clear_product(\''.$CFG->wwwroot.'\', \''.$this->theshop->id.'\', \''.$ci->shortname.'\')';
-        $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+        $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
+        $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+        $str .= '</a>';
         $jshandler = 'ajax_update_product(\''.$ci->shortname.'\', this)';
         $str .= '<input type="text"
                         class="order-detail"
@@ -624,7 +637,7 @@ class shop_bills_renderer {
                         name="'.$ci->shortname.'" value="'.$ci->preset.'" size="3" onChange="'.$jshandler.'">';
         $str .= '</td>';
         $str .= '<td class="shop-ordercell">';
-        $str .= '<p>x '.sprintf("%.2f", round($TTCprice, 2)).' '.$ci->currency.' :';
+        $str .= '<p>x '.sprintf("%.2f", round($ttcprice, 2)).' '.$ci->currency.' :';
         $str .= '</td>';
         $str .= '<td class="shop-ordercell">';
         $str .= '<input type="text"
@@ -645,12 +658,14 @@ class shop_bills_renderer {
      *
      *
      */
-    function customer_info_form() {
+    public function customer_info_form() {
         global $USER, $OUTPUT, $DB, $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         $str = '';
 
-        $checked = (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) ? 'checked="checked"' : '';
+        $checked = (!empty($shoppingcart->usedistinctinvoiceinfo)) ? 'checked="checked"' : '';
 
         $heading = get_string('customerinformation', 'local_shop');
         $heading .= ' <input type="checkbox"
@@ -659,38 +674,37 @@ class shop_bills_renderer {
                          onchange="local_toggle_invoiceinfo(this)"
                          '.$checked.' />';
         $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
+
         $str .= $OUTPUT->heading($heading);
+
         if (isloggedin()) {
             $lastname = $USER->lastname;
             $firstname = $USER->firstname;
-            $organisation = (!empty($SESSION->shoppingcart->customerinfo['organisation'])) ?
-                $SESSION->shoppingcart->customerinfo['organisation'] : $USER->institution;
-            $city = (!empty($SESSION->shoppingcart->customerinfo['city'])) ?
-                $SESSION->shoppingcart->customerinfo['city'] : $USER->city;
-            $address = (!empty($SESSION->shoppingcart->customerinfo['address'])) ?
-                $SESSION->shoppingcart->customerinfo['address'] : $USER->address;
-            $zip = (!empty($SESSION->shoppingcart->customerinfo['zip'])) ? $SESSION->shoppingcart->customerinfo['zip'] : '';
-            $country = (!empty($SESSION->shoppingcart->customerinfo['country'])) ?
-                $SESSION->shoppingcart->customerinfo['country'] : strtolower($USER->country);
+            $hasorga = !empty($shoppingcart->customerinfo['organisation']);
+            $organisation = ($hasorga) ? $shoppingcart->customerinfo['organisation'] : $USER->institution;
+            $city = (!empty($shoppingcart->customerinfo['city'])) ? $shoppingcart->customerinfo['city'] : $USER->city;
+            $address = (!empty($shoppingcart->customerinfo['address'])) ? $shoppingcart->customerinfo['address'] : $USER->address;
+            $zip = (!empty($shoppingcart->customerinfo['zip'])) ? $shoppingcart->customerinfo['zip'] : '';
+            $hascountry = !empty($shoppingcart->customerinfo['country']);
+            $country = ($hascountry) ? $shoppingcart->customerinfo['country'] : strtolower($USER->country);
             $email = $USER->email;
-            // get potential ZIP code information from an eventual customer record
+
+            // Get potential ZIP code information from an eventual customer record.
             if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id))) {
-                $zip = (!empty($SESSION->shoppingcart->customerinfo['zip'])) ?
-                    $SESSION->shoppingcart->customerinfo['zip'] : $customer->zip;
-                $organisation = (!empty($SESSION->shoppingcart->customerinfo['organisation'])) ?
-                    $SESSION->shoppingcart->customerinfo['organisation'] : $customer->organisation;
-                $address = (!empty($SESSION->shoppingcart->customerinfo['address'])) ?
-                    $SESSION->shoppingcart->customerinfo['address'] : $customer->address;
+                $zip = (!empty($shoppingcart->customerinfo['zip'])) ? shoppingcart->customerinfo['zip'] : $customer->zip;
+                $organisation = ($hasorga) ? $shoppingcart->customerinfo['organisation'] : $customer->organisation;
+                $hasaddress = !empty($shoppingcart->customerinfo['address']);
+                $address = ($hasaddress) ? $shoppingcart->customerinfo['address'] : $customer->address;
             }
         } else {
-            $lastname = @$SESSION->shoppingcart->customerinfo['lastname'];
-            $firstname = @$SESSION->shoppingcart->customerinfo['firstname'];
-            $organisation = @$SESSION->shoppingcart->customerinfo['organisation'];
-            $country = @$SESSION->shoppingcart->customerinfo['country'];
-            $address = @$SESSION->shoppingcart->customerinfo['address'];
-            $city = @$SESSION->shoppingcart->customerinfo['city'];
-            $zip = @$SESSION->shoppingcart->customerinfo['zip'];
-            $email = @$SESSION->shoppingcart->customerinfo['email'];
+            $lastname = @shoppingcart->customerinfo['lastname'];
+            $firstname = @$shoppingcart->customerinfo['firstname'];
+            $organisation = @$shoppingcart->customerinfo['organisation'];
+            $country = @$shoppingcart->customerinfo['country'];
+            $address = @$shoppingcart->customerinfo['address'];
+            $city = @$shoppingcart->customerinfo['city'];
+            $zip = @$shoppingcart->customerinfo['zip'];
+            $email = @$shoppingcart->customerinfo['email'];
         }
 
         $lastnameclass = '';
@@ -702,8 +716,8 @@ class shop_bills_renderer {
         $zipclass = '';
         $mailclass = '';
 
-        if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
-            foreach (array_keys($SESSION->shoppingcart->errors->customerinfo) as $f) {
+        if (!empty($shoppingcart->errors->customerinfo)) {
+            foreach (array_keys($shoppingcart->errors->customerinfo) as $f) {
                 $f = str_replace('customerinfo::', '', $f);
                 $var = "{$f}class";
                 $$var = 'shop-error';
@@ -717,7 +731,12 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>:';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$lastnameclass.'" name="customerinfo::lastname" size="20" onchange="setupper(this)" value="'. $lastname.'" />';
+        $str .= '<input type="text"
+                        class="'.$lastnameclass.'"
+                        name="customerinfo::lastname"
+                        size="20"
+                        onchange="setupper(this)"
+                        value="'. $lastname.'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -726,7 +745,12 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>:';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$firstnameclass.'" name="customerinfo::firstname" size="20" onchange="capitalizewords(this)" value="'.$firstname.'" />';
+        $str .= '<input type="text"
+                        class="'.$firstnameclass.'"
+                        name="customerinfo::firstname"
+                        size="20"
+                        onchange="capitalizewords(this)"
+                        value="'.$firstname.'" />';
         $str .= '</td>';
         $str .= '</tr>';
         if (!empty($this->theshop->customerorganisationrequired)) {
@@ -735,7 +759,11 @@ class shop_bills_renderer {
             $str .= get_string('organisation', 'local_shop');
             $str .= ':</td>';
             $str .= '<td align="left">';
-            $str .= '<input type="text" name="customerinfo::organisation" size="26" maxlength="64" value="'.$organisation.'" />';
+            $str .= '<input type="text"
+                            name="customerinfo::organisation"
+                            size="26"
+                            maxlength="64"
+                            value="'.$organisation.'" />';
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -745,7 +773,12 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>: ';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text"  class="'.$addressclass.'"name="customerinfo::address" size="26" onchange="setupper(this)" value="'. $address .'" />';
+        $str .= '<input type="text"
+                        class="'.$addressclass.'"
+                        name="customerinfo::address"
+                        size="26"
+                        onchange="setupper(this)"
+                        value="'. $address .'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -754,7 +787,12 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>: ';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text"  class="'.$cityclass.'"name="customerinfo::city" size="26" onchange="setupper(this)" value="'. $city .'" />';
+        $str .= '<input type="text"
+                        class="'.$cityclass.'"
+                        name="customerinfo::city"
+                        size="26"
+                        onchange="setupper(this)"
+                        value="'. $city .'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -763,7 +801,11 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text"  class="'.$zipclass.'" name="customerinfo::zip" size="6" value="'. $zip .'" />';
+        $str .= '<input type="text"
+                        class="'.$zipclass.'"
+                        name="customerinfo::zip"
+                        size="6"
+                        value="'. $zip .'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -784,7 +826,11 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text"  class="'.$mailclass.'" name="customerinfo::email" size="30" onchange="testmail(this)" value="'.$email.'" />';
+        $str .= '<input type="text"
+                        class="'.$mailclass.'"
+                        name="customerinfo::email"
+                        size="30"
+                        onchange="testmail(this)" value="'.$email.'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '</table>';
@@ -800,18 +846,20 @@ class shop_bills_renderer {
     public function invoicing_info_form() {
         global $OUTPUT, $SESSION;
 
+        $shoppingcart = $SESSION->shoppingcart;
+
         $str = '';
 
-        $institution = @$SESSION->shoppingcart->invoiceinfo['organisation'];
-        $department = @$SESSION->shoppingcart->invoiceinfo['department'];
-        $lastname = @$SESSION->shoppingcart->invoiceinfo['lastname'];
-        $firstname = @$SESSION->shoppingcart->invoiceinfo['firstname'];
-        $address = @$SESSION->shoppingcart->invoiceinfo['address'];
-        $zip = @$SESSION->shoppingcart->invoiceinfo['zip'];
-        $city = @$SESSION->shoppingcart->invoiceinfo['city'];
-        $country = @$SESSION->shoppingcart->invoiceinfo['country'];
-        $vatcode = @$SESSION->shoppingcart->invoiceinfo['vatcode'];
-        $plantcode = @$SESSION->shoppingcart->invoiceinfo['plantcode'];
+        $institution = @$shoppingcart->invoiceinfo['organisation'];
+        $department = @$shoppingcart->invoiceinfo['department'];
+        $lastname = @$shoppingcart->invoiceinfo['lastname'];
+        $firstname = @$shoppingcart->invoiceinfo['firstname'];
+        $address = @$shoppingcart->invoiceinfo['address'];
+        $zip = @$shoppingcart->invoiceinfo['zip'];
+        $city = @$shoppingcart->invoiceinfo['city'];
+        $country = @$shoppingcart->invoiceinfo['country'];
+        $vatcode = @$shoppingcart->invoiceinfo['vatcode'];
+        $plantcode = @$shoppingcart->invoiceinfo['plantcode'];
 
         $lastnameclass = '';
         $firstnameclass = '';
@@ -824,8 +872,8 @@ class shop_bills_renderer {
         $vatcodeclass = '';
         $plantcodeclass = '';
 
-        if (!empty($SESSION->shoppingcart->errors->invoiceinfo)) {
-            foreach (array_keys($SESSION->shoppingcart->errors->invoiceinfo) as $f) {
+        if (!empty($shoppingcart->errors->invoiceinfo)) {
+            foreach (array_keys($shoppingcart->errors->invoiceinfo) as $f) {
                 $f = str_replace('invoiceinfo::', '', $f);
                 $var = "{$f}class";
                 $$var = 'shop-error';
@@ -953,7 +1001,11 @@ class shop_bills_renderer {
         $str .= get_string('vatcode','local_shop');
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$vatcodeclass.'" name="invoiceinfo::vatcode" size="15" value="'. $vatcode .'" />';
+        $str .= '<input type="text"
+                        class="'.$vatcodeclass.'"
+                        name="invoiceinfo::vatcode"
+                        size="15"
+                        value="'. $vatcode .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -962,7 +1014,11 @@ class shop_bills_renderer {
         $str .= get_string('plantcode','local_shop');
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$plantcodeclass.'" name="invoiceinfo::plantcode" size="20" value="'. $plantcode .'" />';
+        $str .= '<input type="text"
+                        class="'.$plantcodeclass.'"
+                        name="invoiceinfo::plantcode"
+                        size="20"
+                        value="'. $plantcode .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -972,7 +1028,7 @@ class shop_bills_renderer {
         return $str;
     }
 
-    function participant_row($participant = null) {
+    public function participant_row($participant = null) {
         global $CFG, $OUTPUT;
 
         $str = '';
@@ -1051,7 +1107,7 @@ class shop_bills_renderer {
         return $str;
     }
 
-    function participant_blankrow() {
+    public function participant_blankrow() {
         global $CFG, $OUTPUT;
         static $i = 0;
 
@@ -1091,7 +1147,7 @@ class shop_bills_renderer {
         return $str;
     }
 
-    function new_participant_row() {
+    public function new_participant_row() {
         global $CFG, $SESSION;
 
         $str = '';
@@ -1160,7 +1216,7 @@ class shop_bills_renderer {
         return $str;
     }
 
-    function assignation_row($participant, $role, $shortname) {
+    public function assignation_row($participant, $role, $shortname) {
         global $CFG, $OUTPUT;
 
         $str = '';
@@ -1194,15 +1250,17 @@ class shop_bills_renderer {
             return;
         }
 
-        if (!empty($SESSION->shoppingcart->users[$shortname][$role])) {
-            $rkeys = array_keys($SESSION->shoppingcart->users[$shortname][$role]);
+        $shoppingcart = $SESSION->shoppingcart;
+
+        if (!empty($shoppingcart->users[$shortname][$role])) {
+            $rkeys = array_keys($shoppingcart->users[$shortname][$role]);
         } else {
             $rkeys = array();
         }
 
         $options = array();
-        if (!empty($SESSION->shoppingcart->participants)) {
-            foreach ($SESSION->shoppingcart->participants as $email => $pt) {
+        if (!empty($shoppingcart->participants)) {
+            foreach ($shoppingcart->participants as $email => $pt) {
                 if (!in_array($email, $rkeys)) {
                     $options[$email] = fullname($pt);
                 }
@@ -1263,7 +1321,8 @@ class shop_bills_renderer {
 
     public function cart_summary_line($portlet) {
         $str .= '<tr>';
-        $str .= '<td class="short-order-name"><span title="'.$portlet->name.'" alt="'.$portlet->name.'">'.$portlet->code.'</span></td>';
+        $span = '<span title="'.$portlet->name.'" alt="'.$portlet->name.'">'.$portlet->code.'</span>';
+        $str .= '<td class="short-order-name">'.$span.'</td>';
         $str .= '<td class="short-order-quantity">'.$SESSION->shoppingcart->order[$portlet->code].'</td>';
         $str .= '</tr>';
         $str .= '<tr>';
@@ -1724,7 +1783,7 @@ class shop_bills_renderer {
         $type = strtoupper($pathinfo['extension']);
         $filename = $pathinfo['basename'];
         $fileicon = $OUTPUT->pix_url('/f/$type');
-        if (!file_exists($fileIcon)) {
+        if (!file_exists($fileicon)) {
             $fileicon = $OUTPUT->pix_url('/f/unkonwn');
         }
 
@@ -1763,7 +1822,7 @@ class shop_bills_renderer {
         $str .= '<tr>';
         $str .= '<td align="right">';
 
-        if (empty($aFullBill->idnumber)) {
+        if (empty($bill->idnumber)) {
             $params = array('id' => $this->theshop->id, 'billid' => $bill->id);
             $billitemurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
             $str .= '<a href="'.$billitemurl.'">'.get_string('newbillitem', 'local_shop').'</a> - ';

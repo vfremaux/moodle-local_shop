@@ -565,7 +565,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    public function catlinks($theCatalog) {
+    public function catlinks($thecatalog) {
         global $OUTPUT, $SESSION;
 
         $this->_check_context();
@@ -579,7 +579,7 @@ class shop_products_renderer {
         $str .= '<div class="left-links">';
         $catlinkurl = new moodle_url('/local/shop/products/category/view.php', array('view' => 'viewAllCategories', 'catalogid' => $this->thecatalog->id));
         $str .= '<a href="'.$catlinkurl.'">'.get_string('edit_categories', 'local_shop').'</a> - ';
-        if (Category::count(array('catalogid'=> $theCatalog->id))) {
+        if (Category::count(array('catalogid'=> $thecatalog->id))) {
             $producturl = new moodle_url('/local/shop/products/edit_product.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
             $str .= '<a href="'.$producturl.'">'.get_string('newproduct', 'local_shop').'</a> - ';
             $seturl = new moodle_url('/local/shop/products/edit_set.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
@@ -611,7 +611,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    public function category_chooser($url, $theCatalog) {
+    public function category_chooser($url, $thecatalog) {
         global $OUTPUT, $SESSION;
 
         // In case it was not done before, but it might.

@@ -36,7 +36,7 @@ use local_shop\CatalogShipping;
 use local_shop\CatalogShipZone;
 
 // get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $zoneid = optional_param('zoneid', 0, PARAM_INT);
 
@@ -64,18 +64,18 @@ if (!empty($action)) {
 $url = new moodle_url('/local/shop/shipzones/zoneindex.php');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('shipzones', 'local_shop'), new moodle_url('/local/shop/shipzones/index.php', array('id' => $theShop->id)));
+$PAGE->navbar->add(get_string('shipzones', 'local_shop'), new moodle_url('/local/shop/shipzones/index.php', array('id' => $theshop->id)));
 $PAGE->set_url($url);
 
 $renderer = shop_get_renderer('shipzones');
-$renderer->load_context($theCatalog);
+$renderer->load_context($thecatalog);
 
 echo $OUTPUT->header();
 
 // If slave get entries in master catalog and then overrides whith local descriptions.
-echo $OUTPUT->heading(format_string($theCatalog->name));
+echo $OUTPUT->heading(format_string($thecatalog->name));
 
-echo $renderer->catalog_data($theCatalog);
+echo $renderer->catalog_data($thecatalog);
 
 echo $OUTPUT->heading(get_string('shipzone', 'local_shop'));
 

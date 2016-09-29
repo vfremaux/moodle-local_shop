@@ -31,7 +31,7 @@ use local_shop\Catalog;
 $PAGE->requires->js('/local/shop/js/arrayselector.js', true);
 
 // get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // We edit products within a catalog.
 $view = optional_param('view', '', PARAM_TEXT);
@@ -49,7 +49,7 @@ if (preg_match('/viewAllProducts|search/', $view)) {
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'id' => $theShop->id));
+$url = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'id' => $theshop->id));
 $PAGE->set_url($url);
 
 $PAGE->set_context($context);
@@ -62,7 +62,7 @@ $PAGE->set_pagelayout('admin');
 $out = $OUTPUT->header();
 
 $renderer = shop_get_renderer('products');
-$renderer->load_context($theShop, $theCatalog, $theBlock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Make page content.
 include $CFG->dirroot."/local/shop/products/{$view}.php";

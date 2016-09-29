@@ -34,8 +34,8 @@ class invoice_controller extends front_controller_base {
         if ($cmd == 'navigate') {
 
             if (optional_param('customerservice', '', PARAM_TEXT)) {
-                if (!empty($theShop->defaultcustomersupportcourse) && $SESSION->shoppingcart->customerinfo->hasaccount) {
-                    $targeturl = new \moodle_url('/course/view.php', array('id' => $theShop->defaultcustomersupportcourse));
+                if (!empty($theshop->defaultcustomersupportcourse) && $SESSION->shoppingcart->customerinfo->hasaccount) {
+                    $targeturl = new \moodle_url('/course/view.php', array('id' => $theshop->defaultcustomersupportcourse));
                     if (isloggedin()) {
                         /*
                          * clear all session data and go back to shop front or go to

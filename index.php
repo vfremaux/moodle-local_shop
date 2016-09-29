@@ -33,7 +33,7 @@ use \local_shop\Catalog;
 use \local_shop\catalogs\catalog_controller;
 
 // get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -84,6 +84,6 @@ echo '</div>';
 echo '<br/>';
 echo '<br/>';
 
-echo $shoprenderer->main_menu($theShop);
+echo $shoprenderer->main_menu($theshop);
 
 echo $OUTPUT->footer();

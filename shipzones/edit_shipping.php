@@ -34,7 +34,7 @@ use local_shop\CatalogShipZone;
 use local_shop\CatalogItem;
 
 // get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $action = optional_param('what', '', PARAM_TEXT);
 $zoneid = optional_param('zoneid', 0, PARAM_INT); // Will lock zoneid choice. Needs shippingid.
@@ -58,8 +58,8 @@ $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/lo
 $PAGE->navbar->add(get_string('shippings', 'local_shop'));
 $PAGE->set_pagelayout('admin');
 
-$products = CatalogItem::get_instances_menu(array('catalogid' => $theCatalog->id), 'name');
-$zones = CatalogShipZone::get_instances_menu(array('catalogid' => $theCatalog->id), 'zonecode');
+$products = CatalogItem::get_instances_menu(array('catalogid' => $thecatalog->id), 'name');
+$zones = CatalogShipZone::get_instances_menu(array('catalogid' => $thecatalog->id), 'zonecode');
 
 if ($shippingid) {
     $shipping = new CatalogShipping($shippingid);

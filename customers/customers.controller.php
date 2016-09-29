@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class customers_controller {
 
-    function process($cmd) {
+    public function process($cmd) {
 
         // Delete customers ******************************.
 

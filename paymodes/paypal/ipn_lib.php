@@ -30,7 +30,7 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 *
 */
 
-function paypal_print_test_ipn_link($aFullBillid, $transid, $id) {
+function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
     global $CFG;
 
     $sellerexpectedname = (empty($config->test)) ? $config->paypalsellername : $config->paypalsellertestname ;

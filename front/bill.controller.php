@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class bill_controller extends front_controller {
 
-    function process($cmd) {
+    public function process($cmd) {
+        return;
     }
 }

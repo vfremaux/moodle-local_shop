@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * A product is the concrete realisation of a catalogitem.
  *
  * @package     local_shop
  * @category    local
@@ -48,7 +48,9 @@ class Product extends ShopObject {
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // This builds a lightweight proxy of the Bill, without items.
+            if ($light) {
+                return; // This builds a lightweight proxy of the Bill, without items.
+            }
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -101,7 +103,7 @@ class Product extends ShopObject {
         return $info;
     }
 
-    /*
+    /**
      * Aggregates param arrays into an urlencoded string for storage into DB
      * @param array $data1 a stub of params as an array
      * @param array $data2 a stub of params as an array
@@ -248,11 +250,12 @@ class Product extends ShopObject {
 
         $productinfo = $this->extract_production_data();
 
-        if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php')) {
+        $h = $productinfo->handler;
+        if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
             print_error('errorbadhandler', 'local_shop');
         }
 
-        require_once $CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php';
+        require_once $CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php';
 
         $classname = 'shop_handler_'.$productinfo->handler;
         $handler = new $classname('');

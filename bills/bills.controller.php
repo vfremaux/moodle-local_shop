@@ -34,7 +34,7 @@ use local_shop\Bill;
 
 class bills_controller {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $DB;
 
         $null = null;
@@ -47,12 +47,12 @@ class bills_controller {
                 try {
                     $bill = new Bill($billid);
                     $bill->delete();
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     print_error('objecterror', 'local_shop', $e->message);
                 }
             }
 
-            // todo : delete filearea for the bill.
+            // Todo : delete filearea for the bill.
         }
 
         // Delete a set of billitems inside a bill ******************** **.
@@ -109,17 +109,21 @@ class bills_controller {
             $itemid = required_param('billitemid', PARAM_INT);
             $z = required_param('z', PARAM_INT); // Ordering.
 
-            $billItem = new BillItem($billitemid);
+            $billitem = new BillItem($billitemid);
             $billitem->delete();
 
             $select = " billid = '$billid' GROUP BY billid ";
-            if (!$maxOrder = $DB->get_field_select('local_shop_billitem', 'MAX(ordering)', $select)) {
-                $maxOrder = 1;
+            if (!$maxorder = $DB->get_field_select('local_shop_billitem', 'MAX(ordering)', $select)) {
+                $maxorder = 1;
             }
 
-            // reorder end of list.
+            // Reorder end of list.
             $i = $z;
-            if ($upperrecs = $DB->get_records_select('local_shop_billitem', " id = $billid AND ordering > $z ", 'ordering', 'id, ordering')) {
+            $select = "
+                id = $billid AND
+                ordering > ?
+            ";
+            if ($upperrecs = $DB->get_records_select('local_shop_billitem', $select, array($z), 'ordering', 'id, ordering')) {
                 foreach ($upperrecs as $upperrec) {
                     $DB->update_record('local_shop_billitem', $upperrec);
                 }
@@ -138,27 +142,27 @@ class bills_controller {
                 FROM
                     {local_shop_billitem}
                 WHERE
-                    billid = '$billId' AND
+                    billid = '$billid' AND
                     ordering >= MIN($items) AND
                     ordering NOT IN ($items)
                 ORDER BY
                     ordering ASC
             ";
             if ($moveditems = $DB->get_records_sql($sql)) {
-                $minOrdering = $moveditems[0]->ordering; // Catch the min.
+                $minordering = $moveditems[0]->ordering; // Catch the min.
             }
 
             // Delete other records.
             $DB->delete_records_select('local_shop_billitem', " id IN ($itemlist) ");
 
             // Reorder records.
-            $i = $minOrdering;
+            $i = $minordering;
             foreach ($moveditems as $moveditem) {
                 $moveditem->ordering = $i;
                 $DB->update_record('local_shop_billitem', $moveditem);
                 $i++;
-           }
-           recalculate($bill->id);
+            }
+            recalculate($bill->id);
         }
 
         // Relocates.
@@ -181,7 +185,7 @@ class bills_controller {
             $where = required_param('at', PARAM_INT);
             if ($z > $where) {
                 $gap = $z - $where;
-                for ($i = $z - 1 ; $i >= $where ; $i--) {
+                for ($i = $z - 1; $i >= $where; $i--) {
                     moveRecord(1, $i, $billid);
                 }
                 $query = "
@@ -194,7 +198,7 @@ class bills_controller {
                 ";
                 $DB->execute($sql);
             } else if ($z < $where) {
-                for ($i = $z + 1 ; $i <= $where ; $i++) {
+                for ($i = $z + 1; $i <= $where; $i++) {
                     moveRecord(-1, $i, $billid);
                 }
                 $gap = $where - $z;
@@ -205,8 +209,8 @@ class bills_controller {
                         ordering = ordering + $gap
                     WHERE
                         id = '$relocated'
-                ";
-                $DB->execute($sql);
+               ";
+               $DB->execute($sql);
            }
             /*
              * Locks constraints back
@@ -216,16 +220,17 @@ class bills_controller {
                 ALTER TABLE
                     {local_shop_billitem}
                 ADD INDEX
-                    unique_ordering ( `billid` , `ordering` )
-             ";
-              $DB->execute($sql);
+                    unique_ordering (billid, ordering)
+            ";
+            $DB->execute($sql);
         }
 
         // Unattach attachement.
         if ($cmd == 'unattach') {
-           $bill = $DB->get_record('local_shop_bill', array('id' => $billid), " id, DATE_FORMAT(emissiondate, '%Y%m%d') as date, userid ");
-           $itemDataPath = "/bills/" . md5($bill->userid) . "/B-" . $bill->date . "-" . $billid . "/";
-           fs_deleteFile($itemDataPath . required_param('file', PARAM_TEXT));
+            $fields = " id, DATE_FORMAT(emissiondate, '%Y%m%d') as date, userid ";
+            $bill = $DB->get_record('local_shop_bill', array('id' => $billid), $fields);
+            $itemdatapath = "/bills/" . md5($bill->userid) . "/B-" . $bill->date . "-" . $billid . "/";
+            fs_deleteFile($itemdatapath . required_param('file', PARAM_TEXT));
         }
 
         // Unattach attachement.
@@ -235,7 +240,8 @@ class bills_controller {
                 if ($checkbill->id != $billid) {
                     $params = array('id' => $this->theshop->id, 'view' => 'viewBill', 'billid' => $checkbill->id);
                     $badbillurl = new \moodle_url('/local/shop/bills/view.php', $params);
-                    $letteringfeedback = '<div class="bill_error">'.get_string('uniqueletteringfailure', 'local_shop', $badbillurl).'</div>';
+                    $errorline = get_string('uniqueletteringfailure', 'local_shop', $badbillurl);
+                    $letteringfeedback = '<div class="bill_error">'.$errorline.'</div>';
                 }
             } else {
                 $DB->set_field('local_shop_bill', 'idnumber', $lettering, array('id' => $billid));
@@ -257,7 +263,7 @@ class bills_controller {
             // Call a transition handler.
             $result = 1;
             if (file_exists($CFG->dirroot.'/local/shop/transitions.php')) {
-                include_once $CFG->dirroot.'/local/shop/transitions.php';
+                include_once($CFG->dirroot.'/local/shop/transitions.php');
                 $transitionhandler = "bill_transition_{$priorstatus}_{$status}";
                 if (function_exists($transitionhandler)) {
                     $result = $transitionhandler($billid);

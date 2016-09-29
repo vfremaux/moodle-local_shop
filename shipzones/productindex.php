@@ -44,10 +44,10 @@ require_login();
 require_capability('local/shop:salesadmin', $context);
 
 try {
-    $theCatalog = new Catalog($catalogid);
-    if ($theCatalog->isslave) {
-        $theCatalog = new Catalog($theCatalog->groupid);
-        $catalogid = $theCatalog->groupid;
+    $thecatalog = new Catalog($catalogid);
+    if ($thecatalog->isslave) {
+        $thecatalog = new Catalog($thecatalog->groupid);
+        $catalogid = $thecatalog->groupid;
     }
 } catch(Exception $e) {
     print_error('objecterror', 'local_shop', $e->message);
@@ -60,7 +60,7 @@ try{
 }
 
 $renderer = shop_get_renderer('shipzones');
-$renderer->load_context($theCatalog);
+$renderer->load_context($thecatalog);
 
 if ($allitemswithshipping = CatalogShipping::get_products_with_shipping($catalogid)) {
     foreach ($allitemswithshipping as $ci) {

@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * the common base class for all shop objects.
  *
  * @package     local_shop
  * @category    local
@@ -31,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * A shop object is a generic object that has record in DB
  */
-class ShopObject{
+class ShopObject {
 
     protected static $table;
 
@@ -57,6 +53,7 @@ class ShopObject{
 
     /**
      * magic getter
+     * @param string $field
      */
     public function __get($field) {
 
@@ -101,9 +98,8 @@ class ShopObject{
     }
 
     /**
-    * generic saving
-    *
-    */
+     * generic saving
+     */
     public function save() {
         global $DB;
 
@@ -166,7 +162,9 @@ class ShopObject{
     }
 
     /**
-     *
+     * @param array $filter
+     * @param string $field
+     * @param boolean $choosenone
      */
     public static function get_instances_menu($filter = array(), $field = 'name', $choosenone = false) {
 

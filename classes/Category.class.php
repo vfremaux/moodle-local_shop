@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A category organises catalog items in a catalog.
  *
  * @package     local_shop
  * @category    local
@@ -27,6 +23,10 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
@@ -100,22 +100,24 @@ class Category extends ShopObject {
     }
 
     /**
-     * Geven a set of categories, and a current categoryid,
+     * Given a set of categories, and a current categoryid,
      * filter out all categories that are NOT parentable
+     * @param arrayref $categories
+     * @param int $currentcat
      */
-    public static function filter_parentable(&$categories, $currentcat = 0) {
+    public static function filter_parentable(&$categories, $currentcatid = 0) {
         global $DB;
 
         if (empty($categories)) {
             return;
         }
-        if (!$currentcat) {
+        if (!$currentcatid) {
             return;
         }
 
         foreach ($categories as $c) {
 
-            if ($c->id == $currentcat) {
+            if ($c->id == $currentcatid) {
                 unset($categories[$cid]);
                 continue;
             }
@@ -131,6 +133,5 @@ class Category extends ShopObject {
                 }
             }
         }
-
     }
 }

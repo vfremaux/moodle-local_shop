@@ -36,10 +36,10 @@ class unittests_controller {
 
     protected $theblock;
 
-    public function __construct($theShop, $theCatalog, $theBlock) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
+    public function __construct($theshop, $thecatalog, $theblock) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
     }
 
     public function receive($cmd, $data = array()) {

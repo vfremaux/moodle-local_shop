@@ -29,11 +29,11 @@ defined('MOODLE_INTERNAL') || die;
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
     include($CFG->dirroot.'/local/shop/bills/search.controller.php');
-    $controller = new \local_shop\bills\search_controller($theShop);
+    $controller = new \local_shop\bills\search_controller($theshop);
     $bills = $controller->process($action);
 }
 
-$billCount = $DB->count_records('local_shop_bill');
+$billcount = $DB->count_records('local_shop_bill');
 
 echo $out;
 
@@ -52,17 +52,15 @@ echo $OUTPUT->heading(get_string('billsearch', 'local_shop'), 3);
 if (empty($bills)) {
     print_string('errorsearchbillfailed', 'local_shop');
 } else {
-?>
-    <?php echo $OUTPUT->heading(get_string('results', 'local_shop'), 2) ?>
-    <p><?php print_string('manybillsasresult', 'local_shop') ?>:
-    <table>
-<?php
+    echo $OUTPUT->heading(get_string('results', 'local_shop'), 2);
+    echo '<p>';
+    print_string('manybillsasresult', 'local_shop');
+    echo ':</p>';
+    echo '<table width="100%">';
     foreach ($bills as $portlet) {
-        include ($CFG->dirroot.'/local/shop/lib/shortBillLine.php');
+        include($CFG->dirroot.'/local/shop/lib/shortBillLine.php');
     }
-?>
-    </table>
-<?php
+    echo '</table>';
 }
 ?>
 
@@ -72,7 +70,7 @@ if (empty($bills)) {
 <input type="hidden" name="what" value="search">
 <table>
 <?php
-if ($billCount == 0) {
+if ($billcount == 0) {
 ?>
 <tr>
    <td colspan="4" class="billRow">

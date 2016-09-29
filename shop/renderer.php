@@ -33,7 +33,7 @@ class shop_shop_renderer {
 
     /**
      * prints a full catalog on screen
-     * @param objectref $theBlock the shop block instance
+     * @param objectref $theblock the shop block instance
      * @param array $catgories the full product line extractred from Catalog
      */
     function shops($shops) {

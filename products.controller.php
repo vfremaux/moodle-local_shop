@@ -59,8 +59,8 @@ if ($cmd == 'deletecatalog') {
     $catalogidlist = $catalogid;
     // if master catalog, must delete all slaves
     include "classes/Catalog.class.php";
-    $theCatalog = new Catalog($catalogid);
-    if ($theCatalog->ismaster) {
+    $thecatalog = new Catalog($catalogid);
+    if ($thecatalog->ismaster) {
         $catalogids = $DB->get_records_select_menu('local_shop_catalog', " groupid = '{$catalogid}' AND id != groupid ", '', 'id,id');
         $catalogidlist = implode("','", array_values($catalogids));
     }

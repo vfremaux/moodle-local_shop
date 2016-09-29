@@ -25,7 +25,7 @@ include '../../../config.php';
 include $CFG->dirroot.'/local/shop/locallib.php';
 
 $id = required_param('id', PARAM_INT); // the blockid
-$theBlock = shop_get_block_instance($id);
+$theblock = shop_get_block_instance($id);
 $blockcontext = context_block::instance($id);
 
 // security
@@ -49,8 +49,8 @@ if (file_exists($CFG->dirroot.'/local/shop/export/formats/export_'.$format.'.php
 
 $extractorclass = "shop_export_source_$what";
 $extractor = new $extractorclass();
-$datadesc = $extractor->get_data_description($theBlock);
-$data = $extractor->get_data($theBlock);
+$datadesc = $extractor->get_data_description($theblock);
+$data = $extractor->get_data($theblock);
 
 $rendererclass = "shop_export_$format";
 $renderer = new $rendererclass($data, $datadesc, array('addtimestamp' => 1));

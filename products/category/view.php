@@ -30,7 +30,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 use local_shop\Catalog;
 
 // get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -44,15 +44,15 @@ $view = optional_param('view', 'viewAllCategories', PARAM_TEXT);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/category/view.php', array('shopid' => $theShop->id));
+$url = new moodle_url('/local/shop/products/category/view.php', array('shopid' => $theshop->id));
 $PAGE->set_url($url);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php', array('shopid' => $theShop->id)));
+$PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php', array('shopid' => $theshop->id)));
 $PAGE->navbar->add(get_string('category', 'local_shop'));
 
 $renderer = shop_get_renderer('products');
-$renderer->load_context($theShop, $theCatalog, $theBlock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 echo $OUTPUT->header();
 

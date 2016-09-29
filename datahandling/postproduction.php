@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @package    local_shop
  * @category   local
  * @author     Valery Fremaux <valery@valeisti.fr>
@@ -75,7 +74,8 @@ if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('coursemisconf');
 }
 
-$url = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $id, 'pid' => $productid, 'method' => $method));
+$params = array('id' => $id, 'pid' => $productid, 'method' => $method);
+$url = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
 $PAGE->set_url($url);
 
 // Security.

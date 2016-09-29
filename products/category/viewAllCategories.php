@@ -38,11 +38,11 @@ if ($action != '') {
    $controller->process($action);
 }
 
-$url = new moodle_url('/local/shop/products/category/view.php', array('id' => $theCatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir));
+$url = new moodle_url('/local/shop/products/category/view.php', array('id' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir));
 
-$categoryCount = $DB->count_records_select('local_shop_catalogcategory', " catalogid = ? AND UPPER(name) NOT LIKE 'test%' ", array($theCatalog->id)); // eliminate tests
+$categoryCount = $DB->count_records_select('local_shop_catalogcategory', " catalogid = ? AND UPPER(name) NOT LIKE 'test%' ", array($thecatalog->id)); // eliminate tests
 
-$categories = Category::get_instances(array('catalogid' => $theCatalog->id, 'parentid' => 0), "$order $dir");
+$categories = Category::get_instances(array('catalogid' => $thecatalog->id, 'parentid' => 0), "$order $dir");
 
 echo $OUTPUT->heading(get_string('category', 'local_shop'), 1);
 
@@ -55,6 +55,6 @@ if (empty($categories)) {
     echo $renderer->categories($categories, $order, $dir);
 }
 
-$editurl = new moodle_url('/local/shop/products/category/edit_category.php', array('id' => $theCatalog->id));
-$catalogurl = new moodle_url('/local/shop/products/view.php', array('shopid' => $theShop->id, 'catalogid' => $theCatalog->id, 'view' => 'viewAllProducts'));
+$editurl = new moodle_url('/local/shop/products/category/edit_category.php', array('id' => $thecatalog->id));
+$catalogurl = new moodle_url('/local/shop/products/view.php', array('shopid' => $theshop->id, 'catalogid' => $thecatalog->id, 'view' => 'viewAllProducts'));
 echo '<div class="addlink"><a href="'.$editurl.'">'.$addcategorystr.'</a> - <a href="'.$catalogurl.'">'.$backtocatalogstr.'</a></div>';

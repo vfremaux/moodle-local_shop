@@ -38,8 +38,8 @@ use local_shop\Tax;
 
 // Get the block reference and key context.
 
-// get all the shop session context objects.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -68,12 +68,12 @@ try {
 if ($billitemid) {
     $billitem = new BillItem($billitemid);
     $billitemrec = $billitem->record;
-    $mform = new BillItem_Form('', array('what' => 'edit', 'catalog' => $theCatalog));
+    $mform = new BillItem_Form('', array('what' => 'edit', 'catalog' => $thecatalog));
     $mform->set_data($billitemrec);
 } else {
     $billitem = new BillItem(null);
     $billitemrec = $billitem->record;
-    $mform = new BillItem_Form('', array($cmd => 'add', 'catalog' => $theCatalog));
+    $mform = new BillItem_Form('', array($cmd => 'add', 'catalog' => $thecatalog));
     $billitemrec->billid = $bill->id;
     $mform->set_data($billitemrec);
 }

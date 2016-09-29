@@ -60,11 +60,11 @@ $PAGE->navbar->add(get_string('bills', 'local_shop'), new moodle_url('/local/sho
 $PAGE->set_pagelayout('admin');
 
 if ($view == 'viewBill') {
-    $billIDnumber = $billid;
+    $billidnumber = $billid;
     if ($idnumber = $DB->get_field('local_shop_bill', 'idnumber', array('id' => $billid))) {
-        $billIDnumber .= " {$idnumber}";
+        $billidnumber .= " {$idnumber}";
     }
-    $PAGE->navbar->add(get_string('bill', 'local_shop', $billIDnumber));
+    $PAGE->navbar->add(get_string('bill', 'local_shop', $billidnumber));
 
     $url = new moodle_url('/local/shop/bills/view.php', array('id' => $theshop->id, 'view' => 'viewBill', 'billid' => $billid));
 } else {
@@ -82,6 +82,6 @@ $out = $OUTPUT->header();
 
 // Make page content.
 
-include_once($CFG->dirroot."/local/shop/bills/{$view}.php");
+include($CFG->dirroot."/local/shop/bills/{$view}.php");
 
 echo $OUTPUT->footer();

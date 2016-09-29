@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A tax instance applies for a country.
  *
  * @package     local_shop
  * @category    local
@@ -27,20 +23,25 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
 class Tax extends ShopObject {
 
-    static $table = 'local_shop_tax';
+    protected static $table = 'local_shop_tax';
 
-    function __construct($idorrecord, $light = false) {
+    public function __construct($idorrecord, $light = false) {
         global $DB;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the Bill, without items
+            if ($light) {
+                return; // This builds a lightweight proxy of the Bill, without items.
+            }
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -51,7 +52,7 @@ class Tax extends ShopObject {
         }
     }
 
-    function delete() {
+    public function delete() {
         parent::delete();
     }
 
@@ -62,7 +63,7 @@ class Tax extends ShopObject {
     /**
      * Used by json ajax handler
      */
-    static function get_json_taxset() {
+    public static function get_json_taxset() {
         global $DB;
 
         $taxarr = array();

@@ -41,7 +41,9 @@ class Customer extends ShopObject {
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the customer, without moodle user data
+            if ($light) {
+                return; // This builds a lightweight proxy of the customer, without moodle user data.
+            }
 
             $this->bills = Bill::get_instances(array('customerid' => $this->id), 'status ASC');
         } else {

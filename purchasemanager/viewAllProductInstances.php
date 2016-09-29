@@ -47,7 +47,7 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 
 if ($action != '') {
    include_once($CFG->dirroot.'/local/shop/purchasemanager/productinstances.controller.php');
-   $controller = new productinstances_controller($theCatalogue);
+   $controller = new productinstances_controller($thecatalogue);
    $controller->receive($action);
    $controller->process($action);
 }

@@ -49,15 +49,15 @@ echo $OUTPUT->box_start('', 'shop-invoice');
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
-$aFullBill = Bill::get_by_transaction($transid);
+$afullbill = Bill::get_by_transaction($transid);
 
-if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_COMPLETE) {
+if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_COMPLETE) {
 
     echo '<center>';
     echo $renderer->progress('BILL');
     echo '</center>';
 
-    echo $renderer->invoice_header($aFullBill);
+    echo $renderer->invoice_header($afullbill);
 
     echo '<table cellspacing="5" class="generaltable" width="100%">';
 
@@ -67,7 +67,7 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     echo $renderer->order_line(null);
     $hasrequireddata = array();
 
-    foreach ($aFullBill->items as $biid => $bi) {
+    foreach ($afullbill->items as $biid => $bi) {
         if ($bi->type == 'BILLING') {
             echo $renderer->order_line($bi->catalogitem->shortname, $bi->quantity);
         } else if ($bi->type == 'SHIPPING') {
@@ -76,14 +76,14 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     }
     echo '</table>';
 
-    echo $renderer->full_order_totals($aFullBill);
-    echo $renderer->full_order_taxes($aFullBill);
+    echo $renderer->full_order_totals($afullbill);
+    echo $renderer->full_order_taxes($afullbill);
 
     echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
-    require_once $CFG->dirroot.'/local/shop/paymodes/'.$aFullBill->paymode.'/'.$aFullBill->paymode.'.class.php';
+    require_once $CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php';
 
-    $classname = 'shop_paymode_'.$aFullBill->paymode;
+    $classname = 'shop_paymode_'.$afullbill->paymode;
 
     echo '<div id="shop-order-paymode">';
     $pm = new $classname($theshop);
@@ -91,9 +91,9 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     echo '</div>';
 
     // A specific report.
-    if (!empty($aFullBill->productiondata->public)) {
+    if (!empty($afullbill->productiondata->public)) {
         echo $OUTPUT->box_start();
-        echo $aFullBill->productiondata->public;
+        echo $afullbill->productiondata->public;
         echo $OUTPUT->box_end();
     }
 } else {
@@ -104,16 +104,16 @@ if ($aFullBill->status == SHOP_BILL_SOLDOUT || $aFullBill->status == SHOP_BILL_C
     echo $OUTPUT->box_start();
     echo $config->sellername.' ';
     echo shop_compile_mail_template('post_billing_message', array(), '');
-    echo shop_compile_mail_template('pending_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$aFullBill->paymode);
+    echo shop_compile_mail_template('pending_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$afullbill->paymode);
     echo $OUTPUT->box_end();
 }
 
-echo $renderer->printable_bill_link($aFullBill);
+echo $renderer->printable_bill_link($afullbill);
 
 // If testing the shop, provide a manual link to generate the paypal_ipn call.
-if ($config->test && $aFullBill->paymode == 'paypal') {
+if ($config->test && $afullbill->paymode == 'paypal') {
     require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
-    paypal_print_test_ipn_link($aFullBill->id, $transid, $id, $pinned);
+    paypal_print_test_ipn_link($afullbill->id, $transid, $id, $pinned);
 }
 
 echo $OUTPUT->box_end();
@@ -123,7 +123,7 @@ echo '<form action="/local/shop/front/view.php" method="post" >';
 $options['nextstring'] = 'backtoshop';
 $options['hideback'] = true;
 $options['inform'] = true;
-$options['transid'] = $aFullBill->transactionid;
+$options['transid'] = $afullbill->transactionid;
 echo $renderer->action_form('invoice', $options);
 
 // If we are sure the customer has a customer account.

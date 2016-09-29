@@ -149,15 +149,15 @@ class payment_controller extends front_controller_base {
                  * if it has been possible to continue, trigger the payment module interactive processing function and go ahead
                  */
 
-                $aFullBill = Bill::get_by_transaction($SESSION->shoppingcart->transid);
-                $paymentplugin = \shop_paymode::get_instance($this->theshop, $aFullBill->paymode);
-                if ($interactivepayment = $paymentplugin->process($aFullBill)) {
+                $afullbill = Bill::get_by_transaction($SESSION->shoppingcart->transid);
+                $paymentplugin = \shop_paymode::get_instance($this->theshop, $afullbill->paymode);
+                if ($interactivepayment = $paymentplugin->process($afullbill)) {
                     $next = $this->theshop->get_next_step('payment');
                     $params = array('view' => $next,
                                     'shopid' => $this->theshop->id,
                                     'blockid' => 0 + @$this->theblock->id,
                                     'what' => 'produce',
-                                    'transid' => $aFullBill->transactionid);
+                                    'transid' => $afullbill->transactionid);
                     $url = new \moodle_url('/local/shop/front/view.php', $params);
                     if (empty($SESSION->shoppingcart->debug)) {
                         redirect($url);
@@ -171,7 +171,7 @@ class payment_controller extends front_controller_base {
                                     'shopid' => $this->theshop->id,
                                     'blockid' => 0 + @$this->theblock->id,
                                     'what' => 'confirm',
-                                    'transid' => $aFullBill->transactionid);
+                                    'transid' => $afullbill->transactionid);
                     $url = new \moodle_url('/local/shop/front/view.php', $params);
                     if (empty($SESSION->shoppingcart->debug)) {
                         redirect($url);

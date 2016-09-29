@@ -46,7 +46,8 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
         return false;
     }
 
-    if ($enrols = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+    $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+    if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
         $enrol = reset($enrols);
         $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
     } else {
@@ -92,7 +93,8 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $newuser->timemodified = time();
     $newuser->mnethostid = $CFG->mnet_localhost_id;
 
-    if (!$olduser = $DB->get_record('user', array('firstname' => $newuser->firstname, 'lastname' => $newuser->lastname, 'email' => $newuser->email))) {
+    $params = array('firstname' => $newuser->firstname, 'lastname' => $newuser->lastname, 'email' => $newuser->email);
+    if (!$olduser = $DB->get_record('user', $params)) {
         $newuser->id = $DB->insert_record('user', $newuser);
     } else {
         $newuser->id = $olduser->id;
@@ -142,10 +144,12 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
     $customercontext = context_user::instance($customer->hasaccount);
     $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
-    $participant->username = shop_generate_username($participant); // makes it unique
+    $participant->username = shop_generate_username($participant); // Makes it unique.
 
-    // Let cron generate passwords.
-    // $p->password = hash_internal_user_password(generate_password());
+    /*
+     * Let cron generate passwords.
+     * @see hash_internal_user_password
+     */
 
     $participant->lang = $CFG->lang;
     $participant->deleted = 0;
@@ -159,7 +163,7 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
 
     if ($participant->id = $DB->insert_record('user', $participant)) {
 
-        // passwords will be created and sent out on cron.
+        // Passwords will be created and sent out on cron.
         $pref = new StdClass();
         $pref->userid = $participant->id;
         $pref->name = 'create_password';

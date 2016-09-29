@@ -30,16 +30,21 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 class Shop extends ShopObject {
 
+    /**
+     * An ref to the catalogue
+     */
     public $thecatalogue;
 
-    /*
+    /**
      * An array of navigation paths
      */
     private $navorder;
 
     protected static $table = 'local_shop';
 
-    // build a full shop instance
+    /**
+     * Build a full shop instance.
+     */
     public function __construct($idorrecord, $light = false) {
         global $DB;
 
@@ -51,7 +56,9 @@ class Shop extends ShopObject {
 
         if ($idorrecord) {
 
-            if ($light) return; // This builds a lightweight proxy of the Shop, without catalogue.
+            if ($light) {
+                return; // This builds a lightweight proxy of the Shop, without catalogue.
+            }
 
             if (!empty($this->catalogid)) {
                 $this->thecatalogue = new Catalog($this->catalogid);
@@ -210,7 +217,9 @@ class Shop extends ShopObject {
 
         $discountrate = 0; // No discount as default.
 
-        if ($thresholdcond = $this->record->discountthreshold && $this->record->discountrate && ($amount > $this->record->discountthreshold)) {
+        if ($thresholdcond = $this->record->discountthreshold &&
+                $this->record->discountrate &&
+                        ($amount > $this->record->discountthreshold)) {
             $discountrate = $this->record->discountrate;
             $reason = get_string('ismorethan', 'local_shop');
             $reason .= '<b>'.$this->record->discountthreshold.'&nbsp;</b><b>'.$this->get_currency('symbol').'</b>';

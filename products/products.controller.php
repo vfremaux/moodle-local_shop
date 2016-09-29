@@ -37,8 +37,8 @@ class product_controller {
 
     protected $received = false;
 
-    function __construct($theCatalog) {
-        $this->thecatalog = $theCatalog;
+    function __construct($thecatalog) {
+        $this->thecatalog = $thecatalog;
     }
 
     /**

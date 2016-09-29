@@ -58,8 +58,8 @@ class shop_handler_std_assignroleoncontext extends shop_handler{
         // Get customersupportcourse designated by handler internal params.
 
         if (!isset($data->actionparams['customersupport'])) {
-            $theShop = new Shop($data->shopid);
-            $data->actionparams['customersupport'] = 0 + @$theShop->defaultcustomersupportcourse;
+            $theshop = new Shop($data->shopid);
+            $data->actionparams['customersupport'] = 0 + @$theshop->defaultcustomersupportcourse;
             if ($data->actionparams['customersupport']) {
                 shop_trace("[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Warning : Customer support defaults to block settings.");
             } else {

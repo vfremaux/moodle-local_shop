@@ -35,7 +35,7 @@ $PAGE->requires->js('/local/shop/js/shopadmin.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 
 // get all the shop session context objects.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $itemid = optional_param('itemid', 0, PARAM_INT);
 
@@ -56,13 +56,13 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $mform = new Product_Form('', array('what' => 'edit', 'catalog' => $theCatalog));
+    $mform = new Product_Form('', array('what' => 'edit', 'catalog' => $thecatalog));
     $itemrec = $item->record;
     $itemrec->itemid = $itemid;
     $mform->set_data($itemrec);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Product_Form('', array('what' => 'add', 'catalog' => $theCatalog));
+    $mform = new Product_Form('', array('what' => 'add', 'catalog' => $thecatalog));
     $itemrec = $item->record;
     $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($itemrec);
@@ -77,7 +77,7 @@ if ($data = $mform->get_data()) {
     $data->enablehandler = optional_param('enablehandler', 0, PARAM_TEXT);
 
     $data->id = $data->itemid;
-    $data->catalogid = $theCatalog->id;
+    $data->catalogid = $thecatalog->id;
 
     $data->description = $data->description_editor['text'];
     $data->descriptionformat = $data->description_editor['format'];
@@ -109,8 +109,8 @@ if ($data = $mform->get_data()) {
             }
         }
         // If slave catalogue must insert a master copy
-        if ($theCatalog->isslave) {
-            $data->catalogid = $theCatalog->groupid;
+        if ($thecatalog->isslave) {
+            $data->catalogid = $thecatalog->groupid;
             $DB->insert_record('local_shop_catalogitem', $data);
         }
     } else {

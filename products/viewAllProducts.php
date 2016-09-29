@@ -49,7 +49,7 @@ $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 if ($action != '') {
    include_once($CFG->dirroot.'/local/shop/products/products.controller.php');
-   $controller = new product_controller($theCatalog);
+   $controller = new product_controller($thecatalog);
    $controller->receive($action);
    $controller->process($action);
 }
@@ -58,11 +58,11 @@ $products = array();
 // if slave get entries in master catalog and then overrides whith local descriptions
 /*
 $masterproducts = array();
-if (!$localproducts = $theCatalog->get_products($order, $dir, @$SESSION->shop->categoryid)) {
+if (!$localproducts = $thecatalog->get_products($order, $dir, @$SESSION->shop->categoryid)) {
     $localproducts = array();
 }
-if ($theCatalog->isslave) {
-    $masterCatalog = new Catalog($theCatalog->groupid);
+if ($thecatalog->isslave) {
+    $masterCatalog = new Catalog($thecatalog->groupid);
     if (!$masterproducts = $masterCatalog->get_products($order, $dir)) {
         $masterproducts = array();
     }
@@ -73,9 +73,9 @@ if ($theCatalog->isslave) {
 
 $products = array_merge($masterproducts, $localproducts);
 */
-$theCatalog->get_all_products_for_admin($products);
-if ($theCatalog->isslave) {
-    $masterCatalog = new Catalog($theCatalog->groupid);
+$thecatalog->get_all_products_for_admin($products);
+if ($thecatalog->isslave) {
+    $masterCatalog = new Catalog($thecatalog->groupid);
 }
 
 echo $out;
@@ -84,8 +84,8 @@ echo $OUTPUT->heading(get_string('catalogue', 'local_shop'));
 
 echo $renderer->catalog_header();
 
-$viewurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'id' => $theShop->id, 'catalogid' => $theCatalog->id));
-echo $renderer->category_chooser($viewurl, $theCatalog);
+$viewurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'id' => $theshop->id, 'catalogid' => $thecatalog->id));
+echo $renderer->category_chooser($viewurl, $thecatalog);
 
 echo $OUTPUT->heading(get_string('products', 'local_shop'));
 
@@ -105,7 +105,7 @@ if (count(array_keys($products)) == 0) {
 
     foreach (array_values($products) as $portlet) {
         $portlet->selector = 'productSelector';
-        $portlet->catalog = $theCatalog;
+        $portlet->catalog = $thecatalog;
 
         if (file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$portlet->code.'.class.php')) {
             if ($portlet->enablehandler) {
@@ -123,7 +123,7 @@ if (count(array_keys($products)) == 0) {
             // Product is either a set or a bundle.
 
             /*
-            if ($theCatalog->isslave) {
+            if ($thecatalog->isslave) {
                 // Get the master pieace that has same code and replace master record overriden by local.
                 $masteritem = $masterCatalog->get_product_by_code($portlet->code);
                 $localitem = $portlet;
@@ -172,4 +172,4 @@ if (count(array_keys($products)) == 0) {
 echo '</table>';
 echo '</form>';
 
-echo $renderer->catlinks($theCatalog);
+echo $renderer->catlinks($thecatalog);

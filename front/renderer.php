@@ -399,7 +399,7 @@ class shop_front_renderer {
 
     /**
      * prints a full catalog on screen
-     * @param objectref $theBlock the shop block instance
+     * @param objectref $theblock the shop block instance
      * @param array $catgories the full product line extractred from Catalog
      */
     public function catalog(&$categories) {
@@ -827,8 +827,8 @@ class shop_front_renderer {
 
     /**
      * Prints the customer information form
-     * @param object $theBlock
-     * @param object $theCatalog
+     * @param object $theblock
+     * @param object $thecatalog
      */
     public function customer_info_form() {
         global $USER, $OUTPUT, $DB, $SESSION;
@@ -1014,8 +1014,8 @@ class shop_front_renderer {
 
     /**
      * Prints the form for invoicing customer identity
-     * @param object $theBlock
-     * @param object $theCatalog
+     * @param object $theblock
+     * @param object $thecatalog
      */
     public function invoicing_info_form() {
         global $OUTPUT, $SESSION;
@@ -1566,7 +1566,7 @@ class shop_front_renderer {
 
     /**
      * Prints an order line
-     * @param objectref $theCatalog the whole catalog reference
+     * @param objectref $thecatalog the whole catalog reference
      * @param string $shortname the product short code
      * @param int $q quantity
      * @param array $options
@@ -1632,7 +1632,7 @@ class shop_front_renderer {
 
     /**
      * Prints an order line
-     * @param objectref $theCatalog the whole catalog reference
+     * @param objectref $thecatalog the whole catalog reference
      * @param string $shortname the product short code
      * @param int $q quantity
      * @param array $options
@@ -1914,7 +1914,7 @@ class shop_front_renderer {
             foreach ($paymodes as $var) {
                 $isenabledvar = "enable$var";
 
-                $paymodeplugin = shop_paymode::get_instance($theBlock, $var);
+                $paymodeplugin = shop_paymode::get_instance($theblock, $var);
 
                 // User must be allowed to use non immediate payment methods.
                 if (!$paymodeplugin->is_instant_payment()) {
@@ -2353,18 +2353,18 @@ class shop_front_renderer {
         return '<center><div id="shop-total-link"><a href="'.$totalurl.'#total"><input type="button" value="'.get_string('mytotal', 'local_shop').'" /></a></div><center>';
     }
 
-    public function invoice_header(&$aFullBill) {
+    public function invoice_header(&$afullbill) {
         global $OUTPUT;
 
         $config = get_config('local_shop');
 
         $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL);
 
-        if (!in_array($aFullBill->status, $realized)) {
+        if (!in_array($afullbill->status, $realized)) {
         $headerstring = get_string('ordersheet', 'local_shop');
         print_string('ordertempstatusadvice', 'local_shop');
         } else {
-            if (empty($aFullBill->idnumber)) {
+            if (empty($afullbill->idnumber)) {
                 $headerstring = get_string('proformabill', 'local_shop');
             } else {
                 $headerstring = get_string('bill', 'local_shop');
@@ -2374,7 +2374,7 @@ class shop_front_renderer {
         $str = '';
 
         $str .= '<table>';
-        if (!empty($aFullBill->withlogo)) {
+        if (!empty($afullbill->withlogo)) {
             $str .= '<tr>';
             $str .= '<td><img src="'.$OUTPUT->pix_url('logo', 'theme').'"></td>';
             $str .= '<td align="right"></td>';
@@ -2390,11 +2390,11 @@ class shop_front_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
         $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b><br />';
-        $str .= '<code style="background-color : #E0E0E0">'.$aFullBill->transactionid.'</code><br />';
+        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code><br />';
         $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span>';
         $str .= '</td>';
         $str .= '<td width="40%" align="right" rowspan="5" class="order-preview-seller-address">';
-        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($aFullBill->emissiondate).'<br />';
+        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($afullbill->emissiondate).'<br />';
         $str .= '<br />';
         $str .= '<b>'.$config->sellername.'</b><br />';
         $str .= '<b>'.$config->selleraddress.'</b><br />';
@@ -2405,20 +2405,20 @@ class shop_front_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('customer', 'local_shop').': </b> '.$aFullBill->customer->lastname.' '.$aFullBill->customer->firstname;
+        $str .= '<b>'.get_string('customer', 'local_shop').': </b> '.$afullbill->customer->lastname.' '.$afullbill->customer->firstname;
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr>';
         $str .= '<td width="60%">';
         $str .= '<b>'.get_string('city').': </b>';
-        $str .= $aFullBill->customer->zip.' '.$aFullBill->customer->city;
+        $str .= $afullbill->customer->zip.' '.$afullbill->customer->city;
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('country').': </b> '.strtoupper($aFullBill->customer->country);
+        $str .= '<b>'.get_string('country').': </b> '.strtoupper($afullbill->customer->country);
         $str .= '</td>';
         $str .= '<td>';
         $str .= '&nbsp;';
@@ -2427,7 +2427,7 @@ class shop_front_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('email').': </b>'.$aFullBill->customer->email;
+        $str .= '<b>'.get_string('email').': </b>'.$afullbill->customer->email;
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr>';

@@ -113,16 +113,16 @@ class shop_paymode_test extends shop_paymode{
         shop_trace("[$transid]  Test Processing : paying");
 
         try {
-            $aFullBill = Bill::get_by_transaction($transid);
+            $afullbill = Bill::get_by_transaction($transid);
 
             if ($delayed) {
-                $aFullBill->status = 'PENDING';
-                $aFullBill->save(true);
+                $afullbill->status = 'PENDING';
+                $afullbill->save(true);
                 shop_trace("[$transid]  Test Interactive : Payment Success but waiting IPN for processing");
                 return false; // has not yet payed
             } else {
-                $aFullBill->status = 'SOLDOUT';
-                $aFullBill->save(true);
+                $afullbill->status = 'SOLDOUT';
+                $afullbill->save(true);
                 shop_trace("[$transid]  Test Interactive : Payment Success");
                 return true; // has payed
             }
@@ -149,18 +149,18 @@ class shop_paymode_test extends shop_paymode{
 
         try {
             mtrace("Testing IPN production ");
-            $aFullBill = Bill::get_by_transaction($transid);
+            $afullbill = Bill::get_by_transaction($transid);
 
             $ipncall = true;
             $cmd = 'produce';
             $returnstatus = include($CFG->dirroot.'/local/shop/front/produce.controller.php');
-            $controller = new \local_shop\front\production_controller($aFullBill, true, true);
+            $controller = new \local_shop\front\production_controller($afullbill, true, true);
 
             mtrace("[$transid]  Test IPN : Payment Success, transferring to production controller");
             shop_trace("[$transid]  Test IPN : Payment Success, transferring to production controller");
 
-            $aFullBill->status = 'SOLDOUT';
-            $aFullBill->save(true);
+            $afullbill->status = 'SOLDOUT';
+            $afullbill->save(true);
 
             // Lauch production from a SOLDOUT state
             $controller->process('produce', !$close);

@@ -42,10 +42,10 @@ class shop_purchasemanager_renderer {
 
     protected $theblock;
 
-    function load_context(&$theShop, &$theCatalog, &$theBlock = null) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
+    function load_context(&$theshop, &$thecatalog, &$theblock = null) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
     }
 
     private function _check_context() {
