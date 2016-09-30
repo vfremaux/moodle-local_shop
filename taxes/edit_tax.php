@@ -31,7 +31,6 @@ $taxid = optional_param('taxid', 0, PARAM_INT);
 
 // Security.
 
-
 $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);

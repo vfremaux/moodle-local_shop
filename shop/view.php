@@ -35,6 +35,7 @@ $view = optional_param('view', '', PARAM_TEXT);
 $id = optional_param('shopid', '', PARAM_INT);
 
 // Security.
+
 $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
@@ -61,10 +62,10 @@ $PAGE->set_cacheable(true);
 
 echo $OUTPUT->header();
 
-// make page content
+// Make page content.
 
 include_once($CFG->dirroot."/local/shop/shop/{$view}.php");
 
-// make footer
+// Make footer.
 
 echo $OUTPUT->footer();

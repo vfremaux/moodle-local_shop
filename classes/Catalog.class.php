@@ -647,7 +647,7 @@ class Catalog extends ShopObject {
     public function get_products_by_code($order = 'code', $dir = 'ASC', $masterrecords = 0, $nosets = false, $userid = null) {
         global $DB;
 
-        $nosetsql = ($nosets) ? " NOT (setid != 0 AND isset = 0) AND " : '' ;
+        $nosetsql = ($nosets) ? " NOT (setid != 0 AND isset = 0) AND " : '';
         $useridsql = (is_null($userid)) ? '' : ' AND ci.userid = ? ';
 
         $sql = "

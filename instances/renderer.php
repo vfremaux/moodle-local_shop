@@ -71,7 +71,7 @@ class shop_instances_renderer {
 
             $statusclass = strtolower($product->status);
             $str .= '<tr class="shop-'.$statusclass.'line shop-product-row" valign="top">';
-            $slaveclass  = (@$portlet->masterrecord == 0) ? '' : 'engraved slaved' ;
+            $slaveclass  = (@$portlet->masterrecord == 0) ? '' : 'engraved slaved';
             $str.= '<td class="cell '.$slaveclass.'"align="center">';
             $str .= '<img src="'.$product->thumb.'" vspace="10" border="0" height="50">';
             $str .= '</td>';

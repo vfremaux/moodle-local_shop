@@ -20,7 +20,6 @@
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
@@ -28,7 +27,7 @@ require_once($CFG->dirroot.'/local/shop/unittests/index.controller.php');
 
 use local_shop\Shop;
 
-// get all the shop session context objects
+// Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Get block information.
@@ -84,14 +83,24 @@ if ($productline = $thecatalog->get_products()) {
 
     $testtable->width = "100%";
     $testtable->size = array('5%', '10%', '20%', '25%', '20%', '20%');
-    $testtable->head = array("", "<b>$productcodestr</b>", "<b>$productnamestr</b>", "<b>$productdescstr</b>", "<b>$productparamsstr</b>", "<b>$productrequirementsstr</b>");
+    $testtable->head = array('',
+                             "<b>$productcodestr</b>",
+                             "<b>$productnamestr</b>",
+                             "<b>$productdescstr</b>",
+                             "<b>$productparamsstr</b>",
+                             "<b>$productrequirementsstr</b>");
 
     foreach ($productline as $productcode => $catalogitem) {
-        $presel = (in_array($productcode, $selected)) ? ' checked="checked" ' : '' ;
+        $presel = (in_array($productcode, $selected)) ? ' checked="checked" ' : '';
         $selbox = '<input type="checkbox" name="sel[]" value="'.$productcode.'" '.$presel.' >';
         $producturl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $catalogitem->id));
         $productlink = '<a href="'.$producturl.'">'.format_string($catalogitem->name).'</a>';
-        $testtable->data[] = array($selbox, $productcode, $productlink, $catalogitem->description, '<b>'.$catalogitem->enablehandler.'</b><br/>'.$catalogitem->get_serialized_handlerparams(), $catalogitem->requireddata);
+        $testtable->data[] = array($selbox,
+                                   $productcode,
+                                   $productlink,
+                                   $catalogitem->description,
+                                   '<b>'.$catalogitem->enablehandler.'</b><br/>'.$catalogitem->get_serialized_handlerparams(),
+                                   $catalogitem->requireddata);
     }
 
     echo $OUTPUT->box_start('generalbox');

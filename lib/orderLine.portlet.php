@@ -28,7 +28,7 @@ if ($portlet->type == 'DISCOUNT') {
 
 if ($portlet->type == 'BILLING') {
     $rowcount = (0 + @$rowcount + 1) % 2;
-    $rowclass = ($rowcount) ? 'odd' : 'even' ;
+    $rowclass = ($rowcount) ? 'odd' : 'even';
 ?>
 <tr valign="top" class="<?php echo $rowclass ?>">
   <td align="left" class="cell c0">

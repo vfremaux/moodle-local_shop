@@ -678,7 +678,7 @@ class shop_front_renderer {
 
         $str .= '<div class="shop-front-order">';
         $buystr = get_string('buy', 'local_shop');
-        $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '' ;
+        $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '';
         if ($bundle->password) {
            $str .= '<input type="text"
                            id="ci-pass-'.$bundle->shortname.'"

@@ -33,7 +33,7 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
     global $CFG;
 
-    $sellerexpectedname = (empty($config->test)) ? $config->paypalsellername : $config->paypalsellertestname ;
+    $sellerexpectedname = (empty($config->test)) ? $config->paypalsellername : $config->paypalsellertestname;
 
     $txnid = substr($transid, 0,10);
     $url = $CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php';

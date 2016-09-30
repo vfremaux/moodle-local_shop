@@ -86,15 +86,17 @@ if ($shoprec = $mform->get_data()) {
 
     // Process text fields from editors.
     $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-    $shoprec->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'description', $shoprec->id, array('subdirs' => true), $shoprec->description);
-    $shoprec = file_postupdate_standard_editor($shoprec, 'description', $mform->editoroptions, $context, 'local_shop', 'description', $shoprec->id);
+    $shoprec->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'description',
+                                                       $shoprec->id, array('subdirs' => true), $shoprec->description);
+    $shoprec = file_postupdate_standard_editor($shoprec, 'description', $mform->editoroptions, $context, 'local_shop',
+                                               'description', $shoprec->id);
 
     $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
-    $shoprec->eula = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'eula', $shoprec->id, array('subdirs' => true), $shoprec->eula);
-    $shoprec = file_postupdate_standard_editor($shoprec, 'eula', $mform->editoroptions, $context, 'local_shop', 'eula', $shoprec->id);
+    $shoprec->eula = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'eula',
+                                                $shoprec->id, array('subdirs' => true), $shoprec->eula);
+    $shoprec = file_postupdate_standard_editor($shoprec, 'eula', $mform->editoroptions, $context,
+                                               'local_shop', 'eula', $shoprec->id);
 
-    // When we need to hace a complete developped view of shops in the future
-    // redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewShop', 'shopid' => $shopid)));
     redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
 }
 

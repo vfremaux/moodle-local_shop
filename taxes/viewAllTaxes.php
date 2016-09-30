@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
@@ -58,7 +57,12 @@ if (empty($taxes)) {
     $countproductsstr = get_string('countproducts', 'local_shop');
 
     $table = new html_table();
-    $table->head = array("<b>$namestr</b>", "<b>$countrystr</b>", "<b>$ratiostr</b>", "<b>$formulastr</b>", "<b>$countproductsstr</b>", '');
+    $table->head = array("<b>$namestr</b>",
+                         "<b>$countrystr</b>",
+                         "<b>$ratiostr</b>",
+                         "<b>$formulastr</b>",
+                         "<b>$countproductsstr</b>",
+                         '');
     $table->width = '100%';
     $table->align = array('left', 'left', 'center', 'left', 'center', 'right');
     foreach ($taxes as $t) {

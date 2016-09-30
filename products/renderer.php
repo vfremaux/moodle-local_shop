@@ -156,7 +156,7 @@ class shop_products_renderer {
 
             $statusclass = strtolower($product->status);
             $str .= '<tr class="shop-'.$statusclass.'line shop-product-row" valign="top">';
-            $slaveclass  = (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) ? '' : 'engraved slaved' ;
+            $slaveclass  = (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) ? '' : 'engraved slaved';
             $str .= '<td class="cell '.$slaveclass.'"align="center" rowspan="2">';
             $str .= '<img src="'.$product->thumb.'" vspace="10" height="50">';
             $str .= '</td>';
@@ -194,7 +194,7 @@ class shop_products_renderer {
             $str .= $product->stock;
             $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
-            $str .= ($product->renewable) ? get_string('yes') : '' ;
+            $str .= ($product->renewable) ? get_string('yes') : '';
             $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             switch ($product->quantaddressesusers) {

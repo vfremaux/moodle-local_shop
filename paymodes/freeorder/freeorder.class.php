@@ -46,7 +46,7 @@ class shop_paymode_freeorder extends shop_paymode {
     }
 
     function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop') ;
+        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
     // processes a payment return

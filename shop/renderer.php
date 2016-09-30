@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(defined('MOODLE_INTERNAL')) || die;
-
 /**
- * Form for editing HTML block instances.
+ * Renderer for shop management.
  *
  * @package     local_shop
  * @categroy    local
@@ -25,6 +23,7 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 use local_shop\Catalog;
@@ -36,7 +35,7 @@ class shop_shop_renderer {
      * @param objectref $theblock the shop block instance
      * @param array $catgories the full product line extractred from Catalog
      */
-    function shops($shops) {
+    public function shops($shops) {
         global $OUTPUT;
 
         $namestr = get_string('name');
@@ -61,12 +60,18 @@ class shop_shop_renderer {
 
             $editurl = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $sh->id, 'sesskey' => sesskey()));
             $commands = '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"></a>';
+
             if ($blockcount == 0) {
-                $deleteurl = new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops', 'what' => 'delete', 'id' => $sh->id, 'sesskey' => sesskey()));
+                $params = array('view' => 'viewAllShops', 'what' => 'delete', 'id' => $sh->id, 'sesskey' => sesskey());
+                $deleteurl = new moodle_url('/local/shop/shop/view.php', $params);
                 $commands .= ' <a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'"></a>';
             }
 
-            $table->data[] = array(format_string($sh->name), format_text($sh->description, $sh->descriptionformat), $sh->get_currency('symbol'), $catname, $blockcount, $commands);
+            $table->data[] = array(format_string($sh->name),
+                                   format_text($sh->description, $sh->descriptionformat),
+                                   $sh->get_currency('symbol'), $catname,
+                                   $blockcount,
+                                   $commands);
         }
 
         return html_writer::table($table);

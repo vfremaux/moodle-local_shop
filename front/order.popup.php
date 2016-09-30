@@ -72,7 +72,7 @@ echo '<div style="max-width:780px">';
     <tr>
         <td colspan="2" align="center">
         <?php
-        $headerstring = ($afullbill->idnumber) ? get_string('bill', 'local_shop') : get_string('ordersheet', 'local_shop') ;
+        $headerstring = ($afullbill->idnumber) ? get_string('bill', 'local_shop') : get_string('ordersheet', 'local_shop');
         echo $OUTPUT->heading($headerstring, 1);
         ?>
         </td>

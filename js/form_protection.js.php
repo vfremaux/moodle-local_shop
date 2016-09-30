@@ -247,34 +247,34 @@ function setupper(textfield) {
         switch (textfield.value.charAt(i)) {
             case 'é' :
                 fieldvalue += "e";
-                break ;
+                break;
             case 'è' :
                 fieldvalue += "e";
-                break ;
+                break;
             case 'ê' :
                 fieldvalue += "e";
-                break ;
+                break;
             case 'à' :
                 fieldvalue += "a";
-                break ;
+                break;
             case 'ü' :
                 fieldvalue += "u";
-                break ;
+                break;
             case 'ù' :
                 fieldvalue += "u";
-                break ;
+                break;
             case 'î' :
                 fieldvalue += "i";
-                break ;
+                break;
             case 'ï' :
                 fieldvalue += "i";
-                break ;
+                break;
             case 'û' :
                 fieldvalue += "u";
-                break ;
+                break;
             case 'ô' :
                 fieldvalue += "o";
-                break ;
+                break;
             default:
                 fieldvalue += textfield.value.charAt(i);
         }

@@ -73,7 +73,7 @@ class BillItem_Form extends moodleform {
             </script>
         ";
 
-        $ordering = ($this->mode == 'add') ? $this->bill->maxordering + 1 : 0 ;
+        $ordering = ($this->mode == 'add') ? $this->bill->maxordering + 1 : 0;
         $mform->addElement('html', $js);
 
         // Adding fieldset.

@@ -478,7 +478,8 @@ class shop_bills_renderer {
                 if ($aproduct->isset === 1) {
                     foreach ($aproduct->set as $portlet) {
                         $portlet->currency = $this->theshop->get_currency('symbol');
-                        $portlet->preset = !empty($shoppingcart->order[$portlet->shortname]) ? $shoppingcart->order[$portlet->shortname] : 0 ;
+                        $shortname = @$shoppingcart->order[$portlet->shortname];
+                        $portlet->preset = !empty($shortname) ? $shortname : 0;
                         if ($portlet->preset) {
                             ob_start();
                             include($CFG->dirroot.'/local/shop/lib/shopProductTotalLine.portlet.php');
@@ -488,7 +489,8 @@ class shop_bills_renderer {
                 } else {
                     $portlet = &$aproduct;
                     $portlet->currency = shop_currency($theblock, 'symbol');
-                    $portlet->preset = !empty($shoppingcart->order[$portlet->shortname]) ? $shoppingcart->order[$portlet->shortname] : 0 ;
+                    $shortname = $shoppingcart->order[$portlet->shortname];
+                    $portlet->preset = !empty($shortname) ? $shortname : 0;
                     if ($portlet->preset) {
                            ob_start();
                         include($CFG->dirroot.'/local/shop/lib/shopProductTotalLine.portlet.php');
@@ -583,10 +585,12 @@ class shop_bills_renderer {
                             'relocated' => $portlet->id,
                             'z' => $portlet->ordering);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-            $str .= '<a href="'.$linkurl.'"><img src="'.$OUTPUT->pix_url('t/move').'" border="0" alt="'.get_string('move').'"></a>';
+            $pixurl = $OUTPUT->pix_url('t/move');
+            $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('move').'"></a>';
             $params = array('id' => $this->theshop->id, 'billid' => $portlet->id, 'billitemid' => $portlet->id);
             $linkurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
-            $str .= '<a href="'.$linkurl.'"><img src="'.$OUTPUT->pix_url('i/edit').'" border="0" alt="'.get_string('edit').'"></a>';
+            $pixurl = $OUTPUT->pix_url('i/edit');
+            $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'"></a>';
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
                             'what' => 'deleteItem',
@@ -594,7 +598,8 @@ class shop_bills_renderer {
                             'z' => $portlet->ordering,
                             'billid' => $portlet->id);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-            $str .= '<a href="'.$linkurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" alt="'.get_string('delete').'"></a>';
+            $pixurl = $OUTPUT->pix_url('t/delete');
+            $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" alt="'.get_string('delete').'"></a>';
         }
         $str .= '</td>';
         $str .= '</tr>';

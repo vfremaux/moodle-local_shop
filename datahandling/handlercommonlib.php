@@ -81,8 +81,8 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $newuser->username = shop_generate_username($data->customer);
     $customer->password = generate_password(8);
     $newuser->city = $data->customer->city;
-    $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country ;
-    $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang ;
+    $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country;
+    $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang;
     $newuser->firstname = $data->customer->firstname;
     $newuser->lastname = $data->customer->lastname;
     $newuser->email = $data->customer->email;

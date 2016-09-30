@@ -163,7 +163,7 @@ class CatalogItem extends ShopObject {
         $str = '';
 
         $prices = array();
-        $key = (!@$this->record->range1) ? '0-' : "0-{$this->record->range1}" ;
+        $key = (!@$this->record->range1) ? '0-' : "0-{$this->record->range1}";
         if ($taxed) {
             $prices[$key] = sprintf('%.2f', $this->get_taxed_price(0, $this->record->taxcode));
         } else {
