@@ -65,7 +65,10 @@ class shop_bills_renderer {
         }
         $backtoshopstr = get_string('backtoshop', 'local_shop');
         $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
-        $str .= '<input type="button" name="cancel_btn" value="'.$backtoshopstr.'" onclick="self.location.href=\''.$shopurl.'\'" />';
+        $str .= '<input type="button"
+                        name="cancel_btn"
+                        value="'.$backtoshopstr.'"
+                        onclick="self.location.href=\''.$shopurl.'\'" />';
         $str .= '</td></tr></table>';
         $str .= '</form>';
 
@@ -994,7 +997,7 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>: <br>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        // $country = 'FR';
+
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
         $params = array('' => 'choosedots');

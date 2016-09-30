@@ -211,7 +211,7 @@ class bills_controller {
                         id = '$relocated'
                 ";
                 $DB->execute($sql);
-           }
+            }
             /*
              * Locks constraints back
              * remove this : cannot support concurrent operations
