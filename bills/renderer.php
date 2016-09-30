@@ -696,13 +696,13 @@ class shop_bills_renderer {
 
             // Get potential ZIP code information from an eventual customer record.
             if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id))) {
-                $zip = (!empty($shoppingcart->customerinfo['zip'])) ? shoppingcart->customerinfo['zip'] : $customer->zip;
+                $zip = (!empty($shoppingcart->customerinfo['zip'])) ? $shoppingcart->customerinfo['zip'] : $customer->zip;
                 $organisation = ($hasorga) ? $shoppingcart->customerinfo['organisation'] : $customer->organisation;
                 $hasaddress = !empty($shoppingcart->customerinfo['address']);
                 $address = ($hasaddress) ? $shoppingcart->customerinfo['address'] : $customer->address;
             }
         } else {
-            $lastname = @shoppingcart->customerinfo['lastname'];
+            $lastname = @$shoppingcart->customerinfo['lastname'];
             $firstname = @$shoppingcart->customerinfo['firstname'];
             $organisation = @$shoppingcart->customerinfo['organisation'];
             $country = @$shoppingcart->customerinfo['country'];
