@@ -997,8 +997,9 @@ class shop_bills_renderer {
         // $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        $params = array('' => 'choosedots'), array('class' => $countryclass);
-        $str .= html_writer::select($choices, 'invoiceinfo::country', $country, $params);
+        $params = array('' => 'choosedots');
+        $attrs = array('class' => $countryclass);
+        $str .= html_writer::select($choices, 'invoiceinfo::country', $country, $params, $attrs);
         $str .= '</td>';
         $str .= '</tr>';
 

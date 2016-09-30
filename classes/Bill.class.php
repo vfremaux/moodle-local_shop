@@ -237,10 +237,12 @@ class Bill extends ShopObject {
             $transid = strtoupper(substr(mysqli_real_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 32));
             while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
                 $transid = strtoupper(substr(mysqli_real_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 40));
+            }
         } else if ($CFG->dbtype == 'postgresql') {
             $transid = strtoupper(substr(pg_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 32));
             while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
                 $transid = strtoupper(substr(pg_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 40));
+            }
         }
         $this->transactionid = $transid;
     }

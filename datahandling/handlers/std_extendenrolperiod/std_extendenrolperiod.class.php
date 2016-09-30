@@ -85,7 +85,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
         $enrol = $DB->get_record('enrol', array('courseid' => $courseid, 'enrol' => $data->actionparams['enroltype']));
 
         $context = context_course::instance($course->id);
-        $userid = (empty($data->foruser)) ? $USER->id : $data->foruser ;
+        $userid = (empty($data->foruser)) ? $USER->id : $data->foruser;
         $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
         if (!$enroldata = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $userid))) {
