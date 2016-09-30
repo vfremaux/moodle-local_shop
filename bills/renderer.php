@@ -319,8 +319,8 @@ class shop_bills_renderer {
              $str .= '</b><br />';
         } else {
             $str .= '<table class="shop-pricelist"><tr>';
-             $str .= '<td class="shop-princelabel">'.get_string('puttc', 'local_shop').'</td>';
-             foreach ($prices as $range => $price) {
+            $str .= '<td class="shop-princelabel">'.get_string('puttc', 'local_shop').'</td>';
+            foreach ($prices as $range => $price) {
                  $str .= '<td class="shop-pricerange"> '.$range.' : </td>';
                  $str .= '<td class="shop-priceamount">'.$price.' {'.$product->currency.'}</td>';
             }
@@ -382,7 +382,8 @@ class shop_bills_renderer {
             if ($element->showsdescriptioninset) {
                 $tr .= $element->description;
             }
-            $jshandler = 'addOneUnit(\''.$CFG->wwwroot.'\', \''.$set->salesunit.'\', '.$set->TTCprice.', \''.$set->maxdeliveryquant.'\')';
+            $jshandler = 'addOneUnit(\''.$CFG->wwwroot;
+            $jshandler .= '\', \''.$set->salesunit.'\', '.$set->TTCprice.', \''.$set->maxdeliveryquant.'\')';
             $str .= '<input type="button"
                             name="go_add"
                             value="'.get_string('buy', 'local_shop').'"
@@ -462,7 +463,8 @@ class shop_bills_renderer {
             $str .= '&nbsp;<img src="'.$unitimage.'" align="middle" />';
         }
         if ($i > 0) {
-            $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', \''.$this->theshop->id.'\', \''.$product->shortname.'\')';
+            $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot;
+            $jshandler .= '\', \''.$this->theshop->id.'\', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
             $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" />';
             $str .= '</a>';
@@ -808,7 +810,7 @@ class shop_bills_renderer {
         $str .= '</tr>';
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('zip','local_shop');
+        $str .= get_string('zip', 'local_shop');
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
@@ -825,7 +827,6 @@ class shop_bills_renderer {
         $str .= '<sup style="color : red">*</sup>: <br>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        // $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $this->theshop->process_country_restrictions($choices);
         $str .= html_writer::select($choices, 'customerinfo::country', $country, array('' => 'choosedots'));
@@ -982,7 +983,7 @@ class shop_bills_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('zip','local_shop');
+        $str .= get_string('zip', 'local_shop');
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
@@ -1024,7 +1025,7 @@ class shop_bills_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('plantcode','local_shop');
+        $str .= get_string('plantcode', 'local_shop');
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
