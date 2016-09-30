@@ -209,8 +209,8 @@ class bills_controller {
                         ordering = ordering + $gap
                     WHERE
                         id = '$relocated'
-               ";
-               $DB->execute($sql);
+                ";
+                $DB->execute($sql);
            }
             /*
              * Locks constraints back

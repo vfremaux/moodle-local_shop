@@ -90,7 +90,7 @@ class shop_catalogs_renderer {
      * Prints an admin list of catalogs
      * @param array $catalogs
      */
-    function catalogs($catalogs) {
+    public function catalogs($catalogs) {
 
         $str = '';
         $str .= '<table width="100%" cellspacing="10">';

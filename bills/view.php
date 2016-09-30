@@ -56,7 +56,8 @@ $url = new moodle_url('/local/shop/bills/view.php', array('view' => $view));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
-$PAGE->navbar->add(get_string('bills', 'local_shop'), new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills')));
+$viewurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
+$PAGE->navbar->add(get_string('bills', 'local_shop'), $viewurl);
 $PAGE->set_pagelayout('admin');
 
 if ($view == 'viewBill') {
@@ -82,6 +83,6 @@ $out = $OUTPUT->header();
 
 // Make page content.
 
-include($CFG->dirroot."/local/shop/bills/{$view}.php");
+require($CFG->dirroot."/local/shop/bills/{$view}.php");
 
 echo $OUTPUT->footer();

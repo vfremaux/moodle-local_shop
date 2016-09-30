@@ -893,16 +893,16 @@ class shop_bills_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
         $str .= get_string('organisation', 'local_shop');
-        $str .=  ':</td>';
-        $str .=  '<td align="left">';
-        $str .=  '<input type="text"
+        $str .= ':</td>';
+        $str .= '<td align="left">';
+        $str .= '<input type="text"
                          class="'.$organisationclass.'"
                          name="invoiceinfo::organisation"
                          size="26"
                          maxlength="64"
                          value="'.$institution.'" />';
-        $str .=  '</td>';
-        $str .=  '</tr>';
+        $str .= '</td>';
+        $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
@@ -997,7 +997,8 @@ class shop_bills_renderer {
         // $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        $str .= html_writer::select($choices, 'invoiceinfo::country', $country, array('' => 'choosedots'), array('class' => $countryclass));
+        $params = array('' => 'choosedots'), array('class' => $countryclass);
+        $str .= html_writer::select($choices, 'invoiceinfo::country', $country, $params);
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1065,9 +1066,11 @@ class shop_bills_renderer {
             }
             $str .= '<td align="left">';
             if (@$participant->moodleid) {
-                $str .= '<img src="'.$OUTPUT->pix_url('i/moodle_host').'" title="'.get_string('isuser', 'local_shop').'" />';
+                $pixurl = $OUTPUT->pix_url('i/moodle_host');
+                $str .= '<img src="'.$pixurl.'" title="'.get_string('isuser', 'local_shop').'" />';
             } else {
-                $str .= '<img src="'.$OUTPUT->pix_url('new', 'local_shop').'" title="'.get_string('isnotuser', 'local_shop').'" />';
+                $pixurl = $OUTPUT->pix_url('new', 'local_shop');
+                $str .= '<img src="'.$pixurl.'" title="'.get_string('isnotuser', 'local_shop').'" />';
             }
             $str .= '</td>';
             $str .= '<td align="right">';
@@ -1234,7 +1237,8 @@ class shop_bills_renderer {
         $str .= @$participant->firstname;
         $str .= '</td>';
         $str .= '<td align="right">';
-        $jshandler = 'Javascript:ajax_delete_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname.'\', \''.$participant->email.'\')';
+        $jshandler = 'Javascript:ajax_delete_assign(\''.$CFG->wwwroot;
+        $jshandler .= '\', \''.$role.'\', \''.$shortname.'\', \''.$participant->email.'\')';
         $str .= '<a href="'.$jshandler.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
         $str .= '</td>';
         $str .= '</tr>';
@@ -1289,9 +1293,9 @@ class shop_bills_renderer {
         $str .= $OUTPUT->heading(get_string(str_replace('_', '', $role), 'local_shop'));  // Remove pseudo roles markers.
         if (!empty($roleassigns[$shortname][$role])) {
             $str .= '<table width="100%" class="shop-role-list">';
-                foreach ($roleassigns[$shortname][$role] as $participant) {
-                    $str .= $this->assignation_row($participant, $role, $shortname, true);
-                }
+            foreach ($roleassigns[$shortname][$role] as $participant) {
+                $str .= $this->assignation_row($participant, $role, $shortname, true);
+            }
             $str .= '</table>';
         } else {
             $str .= '<div class="shop-role-list">';
@@ -1599,7 +1603,8 @@ class shop_bills_renderer {
         $str .= '<td width="120" class="cell c3">';
         $params = array('transid' => $portlet->transactionid, 'id' => $this->theshop->id);
         $scanurl = new moodle_url('/local/shop/front/scantrace.php', $params);
-        $str .= '<code><a href="'.$scanurl.'" title="'.get_string('scantrace', 'local_shop').'">'.$portlet->transactionid.'</a></code>';
+        $title = get_string('scantrace', 'local_shop');
+        $str .= '<code><a href="'.$scanurl.'" title="'.$title.'">'.$portlet->transactionid.'</a></code>';
         $str .= '</td>';
         $str .= '<td width="100" align="right" class="cell lastcol">';
         $str .= sprintf("%.2f", round($portlet->amount, 2)).' '.get_string($portlet->currency.'symb', 'local_shop');
@@ -1731,7 +1736,8 @@ class shop_bills_renderer {
 
         $str .= '<tr class="billRow">';
         $str .= '<td>';
-        $str .= '<a href="'.$relocateurl.'"><img src="'.$OUTPUT->pix_url('relocatebox', 'local_shop').'" class="shop-relocate-box" ></a>';
+        $pixurl = $OUTPUT->pix_url('relocatebox', 'local_shop');
+        $str .= '<a href="'.$relocateurl.'"><img src="'.$pixurl.'" class="shop-relocate-box" ></a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1747,7 +1753,8 @@ class shop_bills_renderer {
 
         $fs = get_file_storage();
 
-        $attachments = $fs->get_area_files(context_system::instance()->id, 'local_shop', 'billattachments', $bill->id, true);
+        $contextid = context_system::instance()->id;
+        $attachments = $fs->get_area_files($contextid, 'local_shop', 'billattachments', $bill->id, true);
         if (empty($attachments)) {
             $str .= $OUTPUT->notification(get_string('nobillattachements', 'local_shop'));
         } else {
@@ -1801,7 +1808,8 @@ class shop_bills_renderer {
         $str .= '</td>';
 
         $str .= '<td width="60%">';
-        $fileurl = moodle_url::make_pluginfile_url($context->id, 'local_shop', 'billattachments', $file->get_itemid(), '/', $filename);
+        $fileurl = moodle_url::make_pluginfile_url($context->id, 'local_shop', 'billattachments',
+                                                   $file->get_itemid(), '/', $filename);
         $str .= '<a href="'.$fileurl.'">'.$filename.'</a>';
         $str .= '</td>';
 
@@ -1810,9 +1818,11 @@ class shop_bills_renderer {
         $str .= '</td>';
 
         $str .= '<td width="10%">';
-        $params = array('id' => $id, 'what' => 'unattach', 'type' => $portlet->attachementtype, 'file' => $filename);
+        $params = array('id' => $id, 'what' => 'unattach', 'type' => $portlet->attachementtype,
+                        'file' => $filename);
         $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-        $str .= '<a href="'.$linkurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" border="0" alt="'.get_string('delete') .'"></a>';
+        $pixurl = $OUTPUT->pix_url('t/delete');
+        $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('delete') .'"></a>';
         $str .= '</td>';
 
         $str .= '</tr>';
@@ -1839,6 +1849,21 @@ class shop_bills_renderer {
         $str .= '</tr>';
         $str .= '</table>';
         $str .= '<br />';
+
+        return $str;
+    }
+
+    public function lettering_form($shopid, $afullbillid) {
+        $str = '';
+
+        $str .= '<form name="billletteringform" action="" method="post" >';
+        $str .= '<input type="hidden" name="view" value="viewBill" />';
+        $str .= '<input type="hidden" name="shopid" value="'.$shopid.'" />';
+        $str .= '<input type="hidden" name="billid" value="'.$afullbillid.'" />';
+        $str .= '<input type="hidden" name="what" value="reclettering" />';
+        $str .= '<input type="text" name="idnumber" value="<?php echo $afullbill->idnumber ?>" />';
+        $str .= '<input type="submit" name="go_lettering" value="'.get_string('updatelettering', 'local_shop')." />';
+        $str .= '</form>';
 
         return $str;
     }

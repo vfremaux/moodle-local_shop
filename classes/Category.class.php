@@ -117,12 +117,13 @@ class Category extends ShopObject {
 
         foreach ($categories as $c) {
 
+            $cid = $c->id;
+
             if ($c->id == $currentcatid) {
                 unset($categories[$cid]);
                 continue;
             }
 
-            $cid = $c->id;
             if ($c->parentid) {
                 while ($c->parentid) {
                     $c = $DB->get_record('local_shop_catalogcategory', array('id' => $c->parentid), 'id,parentid');

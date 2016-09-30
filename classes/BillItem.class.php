@@ -49,7 +49,7 @@ class BillItem extends ShopObject {
 
     protected $customerdata;
 
-    protected $actionparams; // parameters decoded from handler params
+    protected $actionparams; // Parameters decoded from handler params.
 
     public function __construct($idorrec, &$bill = null, $ordering = -1) {
         global $DB;
@@ -64,7 +64,8 @@ class BillItem extends ShopObject {
                 $bill = new Bill($this->record->billid);
             }
 
-            if (!assert(($this->record->unitcost * $this->record->quantity) == $this->record->totalprice, " ({$this->record->unitcost} * {$this->record->quantity}) == {$this->record->totalprice} ")) {
+            $message = " ({$this->record->unitcost} * {$this->record->quantity}) == {$this->record->totalprice} ";
+            if (!assert(($this->record->unitcost * $this->record->quantity) == $this->record->totalprice, $message)) {
                 debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             }
 
@@ -83,7 +84,7 @@ class BillItem extends ShopObject {
                     $pairs = explode('&', $this->productiondata->handlerparams);
                     if (!empty($pairs)) {
                         foreach ($pairs as $p) {
-                            list($param,$value) = explode('=', $p);
+                            list($param, $value) = explode('=', $p);
                             $this->actionparams[$param] = $value;
                         }
                     }
@@ -136,8 +137,10 @@ class BillItem extends ShopObject {
                 $this->record->quantity = $idorrec->quantity;
                 $this->record->abstract = $this->catalogitem->name;
                 $this->record->description = $this->catalogitem->description;
-                $this->productiondata = $idorrec->productiondata; // This gets production data from shop front end. Essentially user definitions.
-                $this->productiondata->handlerparams = $this->catalogitem->handlerparams; // This adds a freezed copy of original handler params.
+                // This gets production data from shop front end. Essentially user definitions.
+                $this->productiondata = $idorrec->productiondata;
+                // This adds a freezed copy of original handler params.
+                $this->productiondata->handlerparams = $this->catalogitem->handlerparams;
                 if (!empty($this->productiondata->handlerparams)) {
                     if (is_array($this->productiondata->handlerparams)) {
                         $this->actionparams = $this->productiondata->handlerparams;
@@ -152,30 +155,33 @@ class BillItem extends ShopObject {
                     }
                 }
 
-                $this->productiondata->catalogitemdata = $this->catalogitem->productiondata; // This passes some production params from catalog.
+                // This passes some production params from catalog.
+                $this->productiondata->catalogitemdata = $this->catalogitem->productiondata;
                 $this->customerdata = $idorrec->customerdata;
 
                 // Deshydrates sub structures in record for storage.
                 $this->record->catalogitem = base64_encode(serialize($this->catalogitem));
                 $this->record->productiondata = base64_encode(serialize($this->productiondata));
-                $this->record->customerdata = base64_encode(serialize($this->customerdata)); // Customer data comes from product requirements.
+
+                // Customer data comes from product requirements.
+                $this->record->customerdata = base64_encode(serialize($this->customerdata));
             }
         }
     }
 
     public function move($dir, $z) {
-       global $DB;
+        global $DB;
 
-       $sql = "
-          UPDATE
-             {local_shop_billitem}
-          SET
-             ordering = ordering + $dir
-          WHERE
-             ordering = ? AND
-             billid = ?
-       ";
-       $DB->execute($sql, array($z, $this->id));
+        $sql = "
+            UPDATE
+                {local_shop_billitem}
+            SET
+                ordering = ordering + $dir
+            WHERE
+                ordering = ? AND
+                billid = ?
+        ";
+        $DB->execute($sql, array($z, $this->id));
     }
 
     public function get_price() {
@@ -187,7 +193,8 @@ class BillItem extends ShopObject {
     }
 
     public function get_tax_amount() {
-        return $this->catalogitem->get_taxed_price($this->record->quantity) - $this->catalogitem->get_price($this->record->quantity);
+        return $this->catalogitem->get_taxed_price($this->record->quantity) -
+                $this->catalogitem->get_price($this->record->quantity);
     }
 
     public function get_totaltax() {
@@ -200,14 +207,10 @@ class BillItem extends ShopObject {
 
     public function get_customerid() {
         if (empty($this->bill)) {
-            // rehydrates if necessary.
+            // Rehydrates if necessary.
             $this->bill = new Bill($this->billid);
         }
         return $this->bill->customerid;
-    }
-
-    public function save() {
-        parent::save();
     }
 
     public function delete() {

@@ -55,6 +55,7 @@ class CatalogItem extends ShopObject {
     public $masterrecord = 1;
 
     public function __construct($idorrecord, $light = false) {
+
         $this->elements = array();
         parent::__construct($idorrecord, self::$table);
 
@@ -63,7 +64,8 @@ class CatalogItem extends ShopObject {
         if ($idorrecord) {
 
             if ($light) {
-                 return; // This builds a lightweight proxy of the Shop, without catalogue.
+                // This builds a lightweight proxy of the Shop, without catalogue.
+                return;
             }
 
             if ($this->isset) {
@@ -83,7 +85,7 @@ class CatalogItem extends ShopObject {
                 if (!empty($pairs)) {
                     foreach ($pairs as $p) {
                         if (strpos($p, '=') !== false) {
-                            list($param,$value) = explode('=', $p);
+                            list($param, $value) = explode('=', $p);
                             $this->handlerparams[$param] = $value;
                         }
                     }
@@ -171,7 +173,7 @@ class CatalogItem extends ShopObject {
         }
 
         for ($i = 1; $i < 5; $i++) {
-            $j= $i+1;
+            $j = $i + 1;
             $r1 = "range$i";
             $r2 = "range$j";
             $p = "price$j";
@@ -223,12 +225,12 @@ class CatalogItem extends ShopObject {
     }
 
     // This will override existing elements.
-    public function setElement($elm) {
+    public function set_element($elm) {
         $this->elements[$elm->id] = $elm;
     }
 
     // This will fetch an element by code.
-    public function getElement($code) {
+    public function get_element($code) {
         if (array_key_exists($code, $this->elements)) {
             return $this->elements[$elm->code];
         } else {
@@ -239,7 +241,7 @@ class CatalogItem extends ShopObject {
     /**
      * This will override existing elements
      */
-    public function deleteElement($elmid) {
+    public function delete_element($elmid) {
         unset($this->elements[$elmid]);
     }
 
@@ -468,7 +470,7 @@ class CatalogItem extends ShopObject {
 
         // Suboverride elements if any.
         if ($this->elements) {
-            foreach($override->elements as $ovelm) {
+            foreach ($override->elements as $ovelm) {
                 if (array_key_exists($ovelm->code, $this->elementsbycode)) {
                     $this->elements[$this->elementsbycode[$ovelm->code]->id]->apply($ovelm);
                 } else {

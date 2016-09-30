@@ -131,7 +131,10 @@ class Bill extends ShopObject {
 
         if ($idorrecord) {
 
-            if ($light) return; // This builds a lightweight proxy of the Bill, without items.
+            if ($light) {
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
+            }
 
             if (is_object($idorrecord)) {
                 $id = $idorrecord->id;
@@ -227,12 +230,17 @@ class Bill extends ShopObject {
     }
 
     public function generate_unique_transaction() {
-        global $DB;
+        global $DB, $CFG;
 
         // Seek for a unique transaction ID.
-        $transid = strtoupper(substr(mysql_escape_string(base64_encode(crypt(microtime() + rand(0,32)))), 0, 32));
-        while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
-            $transid = strtoupper(substr(mysql_escape_string(base64_encode(crypt(microtime() + rand(0,32)))), 0, 40));
+        if ($CFG->dbtype == 'mysqli') {
+            $transid = strtoupper(substr(mysqli_real_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 32));
+            while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
+                $transid = strtoupper(substr(mysqli_real_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 40));
+        } else if ($CFG->dbtype == 'postgresql') {
+            $transid = strtoupper(substr(pg_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 32));
+            while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
+                $transid = strtoupper(substr(pg_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 40));
         }
         $this->transactionid = $transid;
     }
@@ -394,7 +402,7 @@ class Bill extends ShopObject {
 
             // Deroute some special types.
             if ($billitem->type == 'SHIPPING') {
-                $this->shipping = $itemrec->totalprice; // taxed
+                $this->shipping = $itemrec->totalprice; // Taxed.
                 continue;
             }
             if ($billitem->type == 'DISCOUNT') {
@@ -434,11 +442,11 @@ class Bill extends ShopObject {
          * echo 'OU '.$this->orderuntaxed.'<br/>';
          * echo 'Ot '.$this->ordertaxes.'<br/>';
          * echo 'OT '.$this->ordertaxed.'<br/><br/>';
-         * 
+         *
          * echo 'DU '.$this->untaxeddiscount.'<br/>';
          * echo 'Dt '.$this->discounttaxes.'<br/>';
          * echo 'DT '.$this->discount.'<br/><br/>';
-         * 
+         *
          * echo 'FU '.$this->finaluntaxedtotal.'<br/>';
          * echo 'Ft '.$this->finaltaxestotal.'<br/>';
          * echo 'FT '.$this->finaltaxedtotal.'<br/>';

@@ -130,9 +130,10 @@ class product_controller {
             // Get source item in master catalog.
             $masterCatalog = new Catalog($this->thecatalog->groupid);
             $item = new CatalogItem($this->data->masteritemid);
-            if (empty(CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id)))) {
+            $result = CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id));
+            if (empty($result)) {
                 $item->catalogid = $this->thecatalog->id; // Binding to local catalog
-                $item->id = 0; // Ensure new record
+                $item->id = 0; // Ensure new record.
                 $item->save();
             }
             /*

@@ -73,13 +73,12 @@ if (empty($bills)) {
 if ($billcount == 0) {
 ?>
 <tr>
-   <td colspan="4" class="billRow">
-   <?php print_string('nobills', 'local_shop') ?>
-   </td>
+    <td colspan="4" class="billRow">
+    <?php print_string('nobills', 'local_shop') ?>
+    </td>
 </tr>
 <?php
-}
-else {
+} else {
 ?>
     <tr>
         <td valign="top">
@@ -93,11 +92,11 @@ else {
             <p class="smalltext"><?php print_string('searchforakeyinstructions', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('key');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+         <td align="right">
+             <a href="Javascript:searchBy('key');"><?php print_string('search') ?></a>
+         </td>
+    </tr>
     <tr>
         <td align="center">
             <?php echo $OUTPUT->heading(get_string('orclientname', 'local_shop'), 3) ?>
@@ -105,11 +104,11 @@ else {
             <p class="smalltext"><?php print_string('customersnameonbill', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('name');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('name');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
     <tr>
         <td align="center">
             <?php echo $OUTPUT->heading(get_string('orbillid', 'local_shop'), 3) ?>
@@ -117,11 +116,11 @@ else {
             <p class="smalltext"><?php print_string('billorderingnumber', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('id');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('id');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
     <tr>
         <td align="center">
             <?php echo $OUTPUT->heading(get_string('oremissiondate', 'local_shop'), 3) ?>
@@ -140,11 +139,11 @@ else {
             <p class="smalltext"><?php print_string('searchtimerange', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('date');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('date');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
 <?php
 }
 ?>
