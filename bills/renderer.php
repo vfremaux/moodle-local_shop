@@ -25,6 +25,9 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ *
+ */
 class shop_bills_renderer {
 
     protected $theshop;
@@ -1866,7 +1869,7 @@ class shop_bills_renderer {
         $str .= '<input type="hidden" name="billid" value="'.$afullbillid.'" />';
         $str .= '<input type="hidden" name="what" value="reclettering" />';
         $str .= '<input type="text" name="idnumber" value="<?php echo $afullbill->idnumber ?>" />';
-        $str .= '<input type="submit" name="go_lettering" value="'.get_string('updatelettering', 'local_shop')." />';
+        $str .= '<input type="submit" name="go_lettering" value="'.get_string('updatelettering', 'local_shop').'" />';
         $str .= '</form>';
 
         return $str;
