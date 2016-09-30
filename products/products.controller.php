@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
@@ -37,7 +37,7 @@ class product_controller {
 
     protected $received = false;
 
-    function __construct($thecatalog) {
+    public function __construct($thecatalog) {
         $this->thecatalog = $thecatalog;
     }
 
@@ -49,7 +49,7 @@ class product_controller {
     public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
-            // data is fed from outside.
+            // Data is fed from outside.
             $this->data = (object)$data;
             return;
         } else {
@@ -127,7 +127,7 @@ class product_controller {
 
         /** ***** make a local physical clone of the master product in this slave catalog ***** **/
         if ($cmd == 'makecopy') {
-            // get source item in master catalog
+            // Get source item in master catalog.
             $masterCatalog = new Catalog($this->thecatalog->groupid);
             $item = new CatalogItem($this->data->masteritemid);
             if (empty(CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id)))) {
@@ -135,8 +135,10 @@ class product_controller {
                 $item->id = 0; // Ensure new record
                 $item->save();
             }
-            // Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
-            // reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
+            /*
+             * Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
+             * reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
+             */
         }
 
         /** **** Delete the local copy **** **/

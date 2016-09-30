@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(defined('MOODLE_INTERNAL')) || die;
-
 /**
  * Form for editing HTML block instances.
  *
@@ -25,6 +23,7 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * useful templating functions from an older project of mine, hacked for Moodle
@@ -46,7 +45,7 @@ function shop_compile_mail_template($template, $infomap, $subplugin, $lang = '',
     return $notification;
 }
 
-/*
+/**
  * resolves and get the content of a Mail template, acoording to the user's current language.
  * @param virtual the virtual mail template name
  * @param module the current module

@@ -37,7 +37,7 @@ use local_shop\CatalogShipping;
 $catalogid = required_param('id', PARAM_INT);
 $catalogitemid = required_param('catalogitemid', PARAM_INT);
 
-// Security
+// Security.
 
 $context = context_system::instance();
 require_login();
@@ -49,13 +49,13 @@ try {
         $thecatalog = new Catalog($thecatalog->groupid);
         $catalogid = $thecatalog->groupid;
     }
-} catch(Exception $e) {
+} catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->message);
 }
 
 try{
     $catalogitem = new CatalogItem($catalogitemid);
-} catch(Exception $e) {
+} catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->message);
 }
 

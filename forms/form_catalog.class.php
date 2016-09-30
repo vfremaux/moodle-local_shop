@@ -39,8 +39,8 @@ class Catalog_Form extends moodleform {
 
         $context = context_system::instance();
 
-        $maxfiles = 99;                // TODO: add some setting
-        $maxbytes = $COURSE->maxbytes; // TODO: add some setting
+        $maxfiles = 99;                // TODO: add some setting.
+        $maxbytes = $COURSE->maxbytes; // TODO: add some setting.
         $this->editoroptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes, 'context' => $context);
 
         $mform =& $this->_form;

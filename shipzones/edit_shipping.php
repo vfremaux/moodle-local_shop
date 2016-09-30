@@ -15,16 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_shop
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package         local_shop
+ * @category        local
+ * @author          Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright       Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
-require_once($CFG->dirroot.'/local/shop/forms/form_shipping.class.php'); // imports of Form shipping
+require_once($CFG->dirroot.'/local/shop/forms/form_shipping.class.php'); // Imports of Form shipping.
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogShipZone.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogShipping.class.php');
@@ -33,7 +32,7 @@ use local_shop\CatalogShipping;
 use local_shop\CatalogShipZone;
 use local_shop\CatalogItem;
 
-// get the block reference and key context.
+// Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $action = optional_param('what', '', PARAM_TEXT);
@@ -47,7 +46,7 @@ $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-// make page header and navigation
+// Make page header and navigation.
 
 $url = new moodle_url('/local/shop/shipzones/edit_shipping.php', array('shippingid' => $shippingid));
 $PAGE->set_url($url);

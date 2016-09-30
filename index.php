@@ -32,7 +32,7 @@ use \local_shop\Shop;
 use \local_shop\Catalog;
 use \local_shop\catalogs\catalog_controller;
 
-// get all the shop session context objects
+// Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.

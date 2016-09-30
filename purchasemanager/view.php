@@ -30,7 +30,7 @@ use local_shop\Catalog;
 
 $PAGE->requires->js('/local/shop/js/arrayselector.js', true);
 
-// get the block reference and key context.
+// Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // We edit products within a catalog.
@@ -71,7 +71,7 @@ $renderer = shop_get_renderer('purchasemanager');
 $renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Make page content.
-include $CFG->dirroot."/local/shop/purchasemanager/{$view}.php";
+include($CFG->dirroot."/local/shop/purchasemanager/{$view}.php");
 
 // Make footer.
 echo $OUTPUT->footer();

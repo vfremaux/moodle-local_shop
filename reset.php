@@ -26,7 +26,7 @@ require('../../config.php');
 require_once($CFG->dirroot.'/local/shop/forms/form_reset.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
-// get all the shop session context objects
+// Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.

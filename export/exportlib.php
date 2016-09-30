@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 abstract class shop_export {
 
@@ -32,9 +31,9 @@ abstract class shop_export {
     protected $datadesc;
 
     /**
-    * array of export options
-    * 'addtimestamp' => 0/1
-    */
+     * array of export options
+     * 'addtimestamp' => 0/1
+     */
     protected $options;
 
     public function __construct($data, $datadesc, $options) {

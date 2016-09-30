@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    blocks
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/local/shop/classes/Shop.class.php';
 require_once $CFG->dirroot.'/local/shop/classes/CatalogItem.class.php';
@@ -42,36 +41,34 @@ define('PROVIDING_LOGGEDIN_ONLY', 1);
 define('PROVIDING_BOTH', 0);
 define('PROVIDING_LOGGEDOUT_ONLY', -1);
 
-/**
-* what means the quantity ordered
-* SHOP_QUANT_NO_SEATS : will not ask for required seats to assign. Such product as physical goods f.e., or unassigned seat packs
-* SHOP_QUANT_ONE_SEAT : products gives one seat only whatever the quantity ordered. Usually quantity addresses another parameter such as course duration
-* SHOP_QUANT_AS_SEATS : products as many required seats as quantity requires. This is for assignable seats.
-*/
+/*
+ * what means the quantity ordered
+ * SHOP_QUANT_NO_SEATS : will not ask for required seats to assign. Such product as physical goods f.e., or unassigned seat packs
+ * SHOP_QUANT_ONE_SEAT : products gives one seat only whatever the quantity ordered. Usually quantity addresses another parameter such as course duration
+ * SHOP_QUANT_AS_SEATS : products as many required seats as quantity requires. This is for assignable seats.
+ */
 define('SHOP_QUANT_AS_SEATS', 2);
 define('SHOP_QUANT_ONE_SEAT', 1);
 define('SHOP_QUANT_NO_SEATS', 0);
 
-/**
-* known bill states
-*
-*
-*/
-define('SHOP_BILL_WORKING', 'WORKING'); // an order is being prepared in the backoffice
-define('SHOP_BILL_PLACED', 'PLACED'); // an order has been placed online
-define('SHOP_BILL_PENDING', 'PENDING'); // an order is confirmed, waiting for paiment confirmation
-define('SHOP_BILL_PREPROD', 'PREPROD'); // an order has bypassed paiment check and is produced but not yet paied
-define('SHOP_BILL_SOLDOUT', 'SOLDOUT'); // an order has been paied
-define('SHOP_BILL_PARTIAL', 'PARTIAL'); // an order has beed partialy paied
-define('SHOP_BILL_COMPLETE', 'COMPLETE'); // an order is paied AND produced (final state)
-define('SHOP_BILL_PAYBACK', 'PAYBACK'); // an order needs payback to customer
-define('SHOP_BILL_FAILED', 'FAILED'); // an order production has failed
-define('SHOP_BILL_REFUSED', 'REFUSED'); // an order could not conclude because payment failed or was rejected
-define('SHOP_BILL_CANCELLED', 'CANCELLED'); // an order has been cancelled after placement (or pending with no final resolution)
+/*
+ * known bill states
+ */
+define('SHOP_BILL_WORKING', 'WORKING'); // An order is being prepared in the backoffice.
+define('SHOP_BILL_PLACED', 'PLACED'); // An order has been placed online.
+define('SHOP_BILL_PENDING', 'PENDING'); // An order is confirmed, waiting for paiment confirmation.
+define('SHOP_BILL_PREPROD', 'PREPROD'); // An order has bypassed paiment check and is produced but not yet paied.
+define('SHOP_BILL_SOLDOUT', 'SOLDOUT'); // An order has been paied.
+define('SHOP_BILL_PARTIAL', 'PARTIAL'); // An order has beed partialy paied.
+define('SHOP_BILL_COMPLETE', 'COMPLETE'); // An order is paied AND produced (final state).
+define('SHOP_BILL_PAYBACK', 'PAYBACK'); // An order needs payback to customer.
+define('SHOP_BILL_FAILED', 'FAILED'); // An order production has failed.
+define('SHOP_BILL_REFUSED', 'REFUSED'); // An order could not conclude because payment failed or was rejected.
+define('SHOP_BILL_CANCELLED', 'CANCELLED'); // An order has been cancelled after placement (or pending with no final resolution).
 
 /**
-* gives all product status
-*/
+ * gives all product status
+ */
 function shop_get_status() {
     $status = array(
                 'PREVIEW' => get_string('PREVIEW', 'local_shop'),
@@ -92,7 +89,6 @@ function print_order_call($fielname, $context = '') {
 
 /**
  * get a block instance for the shop
- *
  */
 function shop_get_block_instance($instanceid) {
     global $DB;
@@ -142,7 +138,10 @@ function shop_decode_params($catalogitemcode) {
     $paramelements = explode('&', $paramstring);
     foreach ($paramelements as $elm) {
         list($key, $value) = explode('=', $elm);
-        if (empty($key)) continue; // ignore bad formed
+        if (empty($key)) {
+            // Ignore bad formed
+            continue;
+        }
         $params[$key] = $value;
     }
     return $params;
@@ -158,33 +157,37 @@ function shop_delivery_check_available_backup($courseid) {
     global $CFG, $DB;
 
     $realpath = false;
-    // calculate the archive pattern
+    // Calculate the archive pattern.
     $course = $DB->get_record('course', array('id' => $courseid));
-    //Calculate the backup word
+    // Calculate the backup word.
     $backup_word = backup_get_backup_string($course);
-    //Calculate the date recognition/capture patterns
+    // Calculate the date recognition/capture patterns.
     $backup_date_pattern = '([0-9]{8}-[0-9]{4})';
-    //Calculate the shortname
+    // Calculate the shortname.
     $backup_shortname = clean_filename($course->shortname);
     if (empty($backup_shortname) or $backup_shortname == '_' ) {
         $backup_shortname = $course->id;
     } else {
-        // get rid of all version information for searching archive
+        // Get rid of all version information for searching archive.
         $backup_shortname = preg_replace('/(_(\d+))+$/' , '', $backup_shortname);
     }
-    //Calculate the final backup filename
-    //The backup word
+    // Calculate the final backup filename.
+    // The backup word.
     $backup_pattern = $backup_word."-";
-    //The shortname
+    // The shortname.
     $backup_pattern .= preg_quote(moodle_strtolower($backup_shortname)).".*-";
-    //The date format
+    // The date format.
     $backup_pattern .= $backup_date_pattern;
-    //The extension
+    // The extension.
     $backup_pattern .= "\\.zip";
-    // Get the last backup in the proper location
-    // backup must have moodle backup filename format
+    /*
+     * Get the last backup in the proper location
+     * backup must have moodle backup filename format
+     */
     $realdir = $CFG->dataroot.'/'.$courseid.'/backupdata';
-    if (!file_exists($realdir)) return false;
+    if (!file_exists($realdir)) {
+        return false;
+    }
     if ($DIR = opendir($realdir)) {
         $archives = array();
         while ($entry = readdir($DIR)) {
@@ -193,7 +196,7 @@ function shop_delivery_check_available_backup($courseid) {
             }
         }
         if (!empty($archives)) {
-            // sorts reverse the archives so we can get the latest.
+            // Sorts reverse the archives so we can get the latest.
             krsort($archives);
             $archnames = array_values($archives);
             $realpath->path = $archnames[0];
@@ -274,26 +277,28 @@ function shop_generate_shortname($user) {
 function shop_create_course_from_template($templatepath, $courserec) {
     if (empty($courserec->password)) $courserec->password = '';
     if (empty($courserec->fullname)) $courserec->fullname = '';
-    if (empty($courserec->shortname)) print_error('errorprograming'); // should NEVER happen... shortname needs to be resolved before creating
+    if (empty($courserec->shortname)) print_error('errorprograming'); // Should NEVER happen... shortname needs to be resolved before creating.
     if (empty($courserec->idnumber)) $courserec->idnumber = '';
     if (empty($courserec->lang)) $courserec->lang = '';
     if (empty($courserec->lang)) $courserec->lang = '';
     if (empty($courserec->theme)) $courserec->theme = '';
     if (empty($courserec->cost)) $courserec->cost = '';
 
-    // first creation of record before restoring.
+    // First creation of record before restoring.
     if (!$courserec->id = $DB->insert_record('course', addslashes_object($courserec))) {
         return;
     }
     create_context(CONTEXT_COURSE, $courserec->id);
     import_backup_file_silently($templatepath, $courserec->id, true, false, array('restore_course_files' => 1));
-    // this part forces some course attributes to override the given attributes in template
-    // temptate attributes might come from the backup instant and are not any more consistant.
-    // As importing a course needs a real course to exist before importing, it is not possible
-    // to preset those attributes and expect backup will not overwrite them.
-    // conversely, precreating the coure with some attributes setup might give useful default valies that
-    // are not present in the backup.
-    // override necessary attributes from original courserec.
+    /*
+     * this part forces some course attributes to override the given attributes in template
+     * temptate attributes might come from the backup instant and are not any more consistant.
+     * As importing a course needs a real course to exist before importing, it is not possible
+     * to preset those attributes and expect backup will not overwrite them.
+     * conversely, precreating the coure with some attributes setup might give useful default valies that
+     * are not present in the backup.
+     * override necessary attributes from original courserec.
+     */
     $DB->update_record('course', $courserec);
     return $courserec->id;
 }
@@ -305,7 +310,7 @@ function shop_fast_make_category($catname, $description = '', $catparent = 0) {
     global $CFG, $USER, $DB;
 
     $cname = mysql_real_escape_string($catname);
-    // Check if a category with the same name and parent ID already exists
+    // Check if a category with the same name and parent ID already exists.
     if ($cat = $DB->get_field_select('course_categories', 'id', " name = '$cname' AND parent = $catparent ")) {
         return false;
     } else {
@@ -337,8 +342,8 @@ function shop_fast_make_category($catname, $description = '', $catparent = 0) {
 }
 
 /**
-* background style switch
-*/
+ * background style switch
+ */
 function shop_switch_style($reset = 0) {
     static $style;
     if ($reset) $style = 'odd';
@@ -351,10 +356,10 @@ function shop_switch_style($reset = 0) {
 }
 
 /**
-* opens a trace file
-* IMPORTANT : check very carefully the path and name of the file or it might destroy
-* some piece of code. Do NEVER use in production systems unless hot case urgent tracking
-*/
+ * opens a trace file
+ * IMPORTANT : check very carefully the path and name of the file or it might destroy
+ * some piece of code. Do NEVER use in production systems unless hot case urgent tracking
+ */
 function shop_open_trace() {
     global $CFG, $MERCHANT_TRACE;
 
@@ -365,8 +370,8 @@ function shop_open_trace() {
 }
 
 /**
-* closes an open trace
-*/
+ * closes an open trace
+ */
 function shop_close_trace() {
     global $MERCHANT_TRACE;
 
@@ -377,24 +382,26 @@ function shop_close_trace() {
 }
 
 /**
-* outputs into an open trace (ligther than debug_trace)
-*/
+ * outputs into an open trace (ligther than debug_trace)
+ * @param string $str
+ */
 function shop_trace_open($str) {
     global $MERCHANT_TRACE;
 
     if (!is_null($MERCHANT_TRACE)) {
         $date = new DateTime();
         $u = microtime(true);
-        $u = sprintf('%03d', floor(($u - floor($u)) * 1000)); // millisecond
+        $u = sprintf('%03d', floor(($u - floor($u)) * 1000)); // Millisecond.
         fputs($MERCHANT_TRACE, "-- ".$date->format('Y-n-d h:i:s').' '.$u." --  ".$str."\n");
     }
 }
 
 /**
-* write to the trace
-*/
+ * write to the trace
+ */
 function shop_trace($str) {
     global $MERCHANT_TRACE;
+
     if (!is_null($MERCHANT_TRACE)) {
         shop_trace_open($str);
     } else {
@@ -405,47 +412,51 @@ function shop_trace($str) {
     }
 }
 
+/**
+ * Deprectated : use class method instead
+ */
 function shop_calculate_taxed($htprice, $taxid) {
-    static $TAXCACHE;
+    static $taxcache;
     global $DB;
 
-    if (!isset($TAXCACHE)) {
-        $TAXCACHE = array();
+    if (!isset($taxcache)) {
+        $taxcache = array();
     }
-    if (!array_key_exists($taxid, $TAXCACHE)) {
-        if ($TAXCACHE[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
-            if (empty($TAXCACHE[$taxid]->formula)) $TAXCACHE[$taxid]->formula = '$TTC = $HT';
+    if (!array_key_exists($taxid, $taxcache)) {
+        if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+            if (empty($taxcache[$taxid]->formula)) $taxcache[$taxid]->formula = '$ttc = $ht';
         } else {
             return $htprice;
         }
     }
-    $HT = $htprice;
-    $TR = $TAXCACHE[$taxid]->ratio;
-    eval($TAXCACHE[$taxid]->formula.';');
-    return $TTC;
+    $ht = $htprice;
+    $tr = $taxcache[$taxid]->ratio;
+    eval($taxcache[$taxid]->formula.';');
+    return $ttc;
 }
 
 /**
-* International currencies
-* from http://fr.wikipedia.org/wiki/ISO_4217
-*/
+ * International currencies
+ * from http://fr.wikipedia.org/wiki/ISO_4217
+ */
 function shop_get_supported_currencies() {
     static $CURRENCIES;
+
     if (!isset($CURRENCIES)) {
-        $CURRENCIES = array('EUR' => get_string('EUR', 'local_shop'), // Euro
-                            'CHF' => get_string('CHF', 'local_shop'), // Swiss franc
-                            'USD' => get_string('USD', 'local_shop'), // US dollar
-                            'CAD' => get_string('CAD', 'local_shop'), // Canadian dollar
-                            'AUD' => get_string('AUD', 'local_shop'), // Australian dollar
-                            'GPB' => get_string('GPB', 'local_shop'), // English pound
-                            'TRY' => get_string('TRY', 'local_shop'), // Turkish pound
-                            'PLN' => get_string('PLN', 'local_shop'), // Zloty (Poland)
-                            'RON' => get_string('RON', 'local_shop'), // Roman leu
-                            'ILS' => get_string('ILS', 'local_shop'), // Shekel
-                            'KRW' => get_string('KRW', 'local_shop'), // Won (corea)
-                            'JPY' => get_string('JPY', 'local_shop'), // Yen (japan)
-                            'TND' => get_string('TND', 'local_shop'), // Dinar (Tunisian, internal market)
-                            'MAD' => get_string('MAD', 'local_shop'), // Dinar (Marocco, internal market)
+        $CURRENCIES = array('EUR' => get_string('EUR', 'local_shop'), // Euro.
+                            'CHF' => get_string('CHF', 'local_shop'), // Swiss franc.
+                            'USD' => get_string('USD', 'local_shop'), // US dollar.
+                            'CAD' => get_string('CAD', 'local_shop'), // Canadian dollar.
+                            'AUD' => get_string('AUD', 'local_shop'), // Australian dollar.
+                            'GPB' => get_string('GPB', 'local_shop'), // English pound.
+                            'TRY' => get_string('TRY', 'local_shop'), // Turkish pound.
+                            'PLN' => get_string('PLN', 'local_shop'), // Zloty (Poland).
+                            'RON' => get_string('RON', 'local_shop'), // Roman leu.
+                            'ILS' => get_string('ILS', 'local_shop'), // Shekel.
+                            'KRW' => get_string('KRW', 'local_shop'), // Won (corea).
+                            'JPY' => get_string('JPY', 'local_shop'), // Yen (japan).
+                            'TND' => get_string('TND', 'local_shop'), // Dinar (Tunisian, internal market).
+                            'MAD' => get_string('MAD', 'local_shop'), // Dinar (Marocco, internal market).
                       );
     }
     return $CURRENCIES;
@@ -530,102 +541,6 @@ function shop_get_sales_managers($blockid) {
             contextid = $blockcontext->id
     ";
     return $DB->get_records_sql($sql);
-}
-
-/**
- * fixes the disparition of custom location for strings, and impossibility to use
- * get_string on a subplugin schema for blocks.
- * OBSOLETE
- */
- /*
-function shop_get_string($identifier, $subplugin, $a = '', $lang = '') {
-    global $CFG;
-
-    static $string = array();
-
-    if (empty($lang)) $lang = current_language();
-
-    $parts = explode('_', $subplugin);
-    $type = array_shift($parts);
-    $plug = implode('_', $parts);
-
-    include $CFG->dirroot.'/local/shop/db/subplugins.php';
-
-    if (!array_key_exists($type, $subplugins)) {
-        debugging("Unmatched key, bad string call : $type in $subplugin for $identifier");
-        die;
-    }
-
-    if (!isset($plugstring[$plug])) {
-        if (file_exists($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/en/'.$subplugin.'.php')) {
-            include $CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/en/'.$subplugin.'.php';
-        } else {
-            debugging("English lang file must exist for $subplugin ", DEBUG_DEVELOPER);
-        }
-
-        // override with lang file if exists
-        if (file_exists($CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php')) {
-            include $CFG->dirroot.'/'.$subplugins[$type].'/'.$plug.'/lang/'.$lang.'/'.$subplugin.'.php';
-        } else {
-            $string = array();
-        }
-        $plugstring[$plug] = $string;
-    }
-
-    if (array_key_exists($identifier, $plugstring[$plug])) {
-        $result = $plugstring[$plug][$identifier];
-        if ($a !== NULL) {
-            if (is_object($a) or is_array($a)) {
-                $a = (array)$a;
-                $search = array();
-                $replace = array();
-                foreach ($a as $key => $value) {
-                    if (is_int($key)) {
-                        // we do not support numeric keys - sorry!
-                        continue;
-                    }
-                    $search[]  = '{$a->'.$key.'}';
-                    $replace[] = (string)$value;
-                }
-                if ($search) {
-                    $result = str_replace($search, $replace, $result);
-                }
-            } else {
-                $result = str_replace('{$a}', (string)$a, $result);
-            }
-        }
-        // Debugging feature lets you display string identifier and component
-        if (!empty($CFG->debugstringids) && optional_param('strings', 0, PARAM_INT)) {
-            $result .= ' {' . $identifier . '/' . $subplugin . '}';
-        }
-        return $result;
-    }
-
-    if (!empty($CFG->debugstringids) && optional_param('strings', 0, PARAM_INT)) {
-        return "[[$identifier/$subplugin]]";
-    } else {
-        return "[[$identifier]]";
-    }
-}
-*/
-
-/**
- *
- *
- */
-function shop_get_full_bill($transid, &$theshop, &$theblock) {
-    global $CFG, $DB;
-
-    include_once $CFG->dirroot.'/local/shop/classes/Bill.class.php';
-
-    if (!$transid) return false;
-
-    $billrec = $DB->get_record('local_shop_bill', array('transactionid' => $transid));
-    $thecatalog = new Catalog($theshop->catalogid);
-
-    $bill = new Bill($billrec, $theshop, $thecatalog, $theblock);
-
-    return $bill;
 }
 
 /**

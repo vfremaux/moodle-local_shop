@@ -128,7 +128,7 @@ if (empty($billsbystate)) {
     $i = 0;
     foreach (array_keys($billsbystate) as $status) {
         echo '<tr>';
-        echo '<td colspan="5" class="grouphead">',
+        echo '<td colspan="5" class="grouphead">';
         echo '<b>'.get_string('bill_' . $status . 's', 'local_shop').'</b>';
         echo '</td>';
         echo '</tr>';

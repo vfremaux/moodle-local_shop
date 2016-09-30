@@ -174,7 +174,7 @@ class shop_bills_renderer {
         $str .= '<td align="center">';
 
         if (!empty($disabled)) {
-            $advice = .get_string('requiredataadvice', 'local_shop');
+            $advice = get_string('requiredataadvice', 'local_shop');
             $str .= '<br/><span id="disabled-advice-span" class="error">'.$advice.'</span><br/>';
         }
 

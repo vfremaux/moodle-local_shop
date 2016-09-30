@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>js/fancybox</location>
+    <name>Fancy Box</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+</libraries>

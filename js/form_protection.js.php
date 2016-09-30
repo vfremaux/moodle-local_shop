@@ -27,55 +27,53 @@ require('../../../config.php');
 header("Content-type: text/javascript");
 
 ?>
-/* AUTEUR: VF */
-/* DATE DE CREATION: 29/10/00 */
-
 /* API Variables */
 
-// testnumeric(textfield)
-// tests a numeric whithout size constraint
-// textfield : the textfield that contains the numeric as a value
-// // testunsigned(textfield)
-// tests an unsigned numeric value whithout size constraint
-// textfield : the textfield that contains the numeric as a value
-
-// testcp(textfield)
-// tests a zip code over 5 digits
-// textfield : the textfield that contains the zipcode as a value
-
-// testdate(textfield,format)
-// tests a date expressed with the given format
-// textfield : the textfield that contains the date as a text value
-
-// testidentifier(textfield, minchars)
-// tests identifier of minchar characters at least. Identifier MUST NOT have non alphanumeric chars
-// (excepting underscore)
-// textfield : the textfield that contains the identifier as a text value
-
-// testmail(textfield)
-// tests an email format as box@domain.
-// textfield : the textfield that contains the mail address as a text value
-
-// testpassword(textfield, minchars)
-// tests a password token
-// textfield : the textfield that contains the password as a text value
-
-// setupper(textfield)
-// force uppercase
-// textfield : the textfield that contains the password as a text value
-
-// capitalizefirst(textfield)
-// force uppercase for first letter
-// textfield : the textfield that contains the password as a text value
-
-// capitalizewords(textfield)
-// force uppercase for first letter of each word
-// textfield : the textfield that contains the password as a text value
-
-// checkedformlaunch(form)
-// vérifie le formulaire et le lance si pas d'erreur
-// form : nom du formulaire
-
+/* testnumeric(textfield)
+ * tests a numeric whithout size constraint
+ * textfield : the textfield that contains the numeric as a value
+ *
+ * testunsigned(textfield)
+ * tests an unsigned numeric value whithout size constraint
+ * textfield : the textfield that contains the numeric as a value
+ *
+ * testcp(textfield)
+ * tests a zip code over 5 digits
+ * textfield : the textfield that contains the zipcode as a value
+ *
+ * testdate(textfield,format)
+ * tests a date expressed with the given format
+ * textfield : the textfield that contains the date as a text value
+ *
+ * testidentifier(textfield, minchars)
+ * tests identifier of minchar characters at least. Identifier MUST NOT have non alphanumeric chars
+ * (excepting underscore)
+ * textfield : the textfield that contains the identifier as a text value
+ *
+ * testmail(textfield)
+ * tests an email format as box@domain.
+ * textfield : the textfield that contains the mail address as a text value
+ *
+ * testpassword(textfield, minchars)
+ * tests a password token
+ * textfield : the textfield that contains the password as a text value
+ *
+ * setupper(textfield)
+ * force uppercase
+ * textfield : the textfield that contains the password as a text value
+ *
+ * capitalizefirst(textfield)
+ * force uppercase for first letter
+ * textfield : the textfield that contains the password as a text value
+ *
+ * capitalizewords(textfield)
+ * force uppercase for first letter of each word
+ * textfield : the textfield that contains the password as a text value
+ *
+ * checkedformlaunch(form)
+ * vérifie le formulaire et le lance si pas d'erreur
+ * form : nom du formulaire
+ */
 
 /* globals */
 

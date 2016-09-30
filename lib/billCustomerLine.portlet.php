@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-// hide discount individual lines
+
+// Hide discount individual lines.
 if ($portlet->type == 'DISCOUNT') return;
 
 if ($portlet->type == 'BILLING') {
@@ -52,8 +52,7 @@ if ($portlet->type == 'BILLING') {
    </td>
 </tr>
 <?php
-}
-else{
+} else {
 ?>
 <tr class="<?php echo  switchStyle('odd','even'); ?>">
     <td colspan="7" class="billlineabstract">

@@ -48,7 +48,11 @@ abstract class catalogitemform extends moodleform {
         $maxfiles = 99;                // TODO: add some settings.
         $maxbytes = $COURSE->maxbytes; // TODO: add some settings.
         $context = context_system::instance();
-        $this->editoroptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes, 'context' => $context);
+        $this->editoroptions = array('trusttext' => true,
+                                     'subdirs' => false,
+                                     'maxfiles' => $maxfiles,
+                                     'maxbytes' => $maxbytes,
+                                     'context' => $context);
 
         $this->defaultattributes = 'size="50" maxlength="200"';
         $this->attributesshort = 'size="24" maxlength="24"';
@@ -74,11 +78,12 @@ abstract class catalogitemform extends moodleform {
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
 
         if (!empty($config->multipleowners)) {
-            $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), 'hasaccount,firstname,lastname');
+            $fields = 'hasaccount,firstname,lastname';
+            $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), $fields);
 
             $ownersmenu = array('' => get_string('sitelevel', 'local_shop'));
             if ($potentialowners) {
-                foreach($potentialowners as $accountid => $owner) {
+                foreach ($potentialowners as $accountid => $owner) {
                     $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
                 }
             }
@@ -117,7 +122,6 @@ abstract class catalogitemform extends moodleform {
         $ttc1 = &$mform->createElement('static', 'ti1', '', '<span id="id_price1ti">TTC : </span>');
         $pricegroup[] = $ttc1;
         $mform->addGroup($pricegroup, 'priceset1', get_string('unitprice1', 'local_shop'), ' ', false);
-        // $mform->addRule('price1', '', 'required');
 
         $pricegroup = array();
         $price2 = &$mform->createElement('text', 'price2', '', $attributesprice1);
@@ -186,7 +190,6 @@ abstract class catalogitemform extends moodleform {
         $ttc5 = &$mform->createElement('static', 'ti5', '', '<span id="id_price5ti">TTC : </span>');
         $pricegroup[] = $ttc5;
         $mform->addGroup($pricegroup, 'priceset5', get_string('unitprice5', 'local_shop'), ' ', false);
-
     }
 
     protected function add_tax_select() {

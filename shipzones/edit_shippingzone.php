@@ -32,8 +32,6 @@ use local_shop\Catalog;
 use local_shop\CatalogShipZone;
 
 // Get the block reference and key context.
-
-// get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $action = optional_param('what', '', PARAM_TEXT);

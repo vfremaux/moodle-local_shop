@@ -35,7 +35,7 @@ use local_shop\Catalog;
 use local_shop\CatalogShipping;
 use local_shop\CatalogShipZone;
 
-// get the block reference and key context.
+// Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $zoneid = optional_param('zoneid', 0, PARAM_INT);
@@ -64,7 +64,8 @@ if (!empty($action)) {
 $url = new moodle_url('/local/shop/shipzones/zoneindex.php');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('shipzones', 'local_shop'), new moodle_url('/local/shop/shipzones/index.php', array('id' => $theshop->id)));
+$zonesurl = new moodle_url('/local/shop/shipzones/index.php', array('id' => $theshop->id));
+$PAGE->navbar->add(get_string('shipzones', 'local_shop'), $zonesurl);
 $PAGE->set_url($url);
 
 $renderer = shop_get_renderer('shipzones');

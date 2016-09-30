@@ -188,7 +188,7 @@ abstract class shop_paymode {
 
     /**
      * get one plugin instance by name (Factory)
-     * @param objectref $theBlock the shop instance we are working on
+     * @param objectref $theblock the shop instance we are working on
      * @param string $paymentpluginname instance builder from name
      */
     public static function get_instance(&$shop, $paymentpluginname) {

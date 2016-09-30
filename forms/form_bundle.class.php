@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
@@ -35,8 +34,8 @@ use local_shop\Tax;
 
 class Bundle_Form extends catalogitemform {
 
-    function definition() {
-        global $CFG, $OUTPUT, $COURSE, $DB;
+    public function definition() {
+        global $OUTPUT, $COURSE, $DB;
 
         // Setting variables.
 
@@ -47,7 +46,7 @@ class Bundle_Form extends catalogitemform {
 
         $context = context_system::instance();
 
-        // Adding title and description
+        // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'bundle', 'local_shop')));
 
         $mform->addElement('header', 'h0', get_string('general'));
@@ -79,7 +78,8 @@ class Bundle_Form extends catalogitemform {
 
         $group = array();
         $group[] = &$mform->createElement('checkbox', 'shownameinset', '', get_string('shownameinset', 'local_shop'), 1);
-        $group[] = &$mform->createElement('checkbox', 'showdescriptioninset', '', get_string('showdescriptioninset', 'local_shop'), 1);
+        $label = get_string('showdescriptioninset', 'local_shop');
+        $group[] = &$mform->createElement('checkbox', 'showdescriptioninset', '', $label, 1);
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
 
         $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));
@@ -90,7 +90,7 @@ class Bundle_Form extends catalogitemform {
         $this->add_action_buttons();
     }
 
-    function set_data($defaults) {
+    public function set_data($defaults) {
         $context = context_system::instance();
         $this->set_name_data($defaults, $context);
         $this->set_document_asset_data($defaults, $context);

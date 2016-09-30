@@ -1,3 +1,5 @@
+// jshint undef:false, unused:false
+
 var taxeratios;
 
 $(function(){
@@ -8,8 +10,8 @@ $(function(){
 });
 
 /**
-*
-*/
+ *
+ */
 function updatetiprice(item){
     taxsel = document.getElementById('id_taxcode');
     taxid = taxsel.options[taxsel.selectedIndex].value;

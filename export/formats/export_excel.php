@@ -14,16 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/local/shop/export/exportlib.php';
+require_once($CFG->dirroot.'/local/shop/export/exportlib.php');
 
 class shop_export_excel extends shop_export {
 
@@ -93,14 +92,17 @@ class shop_export_excel extends shop_export {
         }
 
         foreach ($this->datadesc[0]['columns'] as $col) {
-            if ($col['width'] == 0) continue;
+            if ($col['width'] == 0) {
+                continue;
+            }
             if (@$CFG->latinexcelexport) {
                 $coltitle = mb_convert_encoding(get_string('export'.$col['name'], 'local_shop'), 'ISO-8859-1', 'UTF-8');
             } else {
                 $coltitle = get_string('export'.$col['name'], 'local_shop');
             }
 
-            $this->worksheets[0]->write_string(0, $i, get_string('export'.$col['name'], 'local_shop'), $this->xls_formats[$this->datadesc[0]['colheadingformat']]);
+            $text = get_string('export'.$col['name'], 'local_shop');
+            $this->worksheets[0]->write_string(0, $i, $text, $this->xls_formats[$this->datadesc[0]['colheadingformat']]);
             $i++;
         }
     }
@@ -111,7 +113,6 @@ class shop_export_excel extends shop_export {
      *
      */
     protected function __print_data() {
-        global $CFG;
 
         $row = 1;
 
@@ -163,7 +164,7 @@ class shop_export_excel extends shop_export {
      *
      *
      */
-    function render() {
+    public function render() {
         $this->__print_header();
         $this->__print_data();
     }
@@ -172,7 +173,7 @@ class shop_export_excel extends shop_export {
      * Terminates all operations
      *
      */
-    function close_export() {
+    public function close_export() {
         $this->workbook->close();
     }
 
@@ -182,7 +183,7 @@ class shop_export_excel extends shop_export {
      * @return array of usable formats keyed by a label
      *
      */
-    function setup_xls_formats() {
+    public function setup_xls_formats() {
 
         if (!$this->workbook) {
             print_error('errorexcelcreation', 'local_shop');

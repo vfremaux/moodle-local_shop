@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 class shop_instances_renderer {
 
     public function instance_admin_line($instance) {
-        global $OUTPUT, $CFG;
+        global $OUTPUT;
 
         $str = '';
 
@@ -110,7 +110,8 @@ class shop_instances_renderer {
             }
 
             $deletestr = get_string('deleteproduct', 'local_shop');
-            $deleteurl = new moodle_url('/local/shop/instances/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id));
+            $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id);
+            $deleteurl = new moodle_url('/local/shop/instances/view.php', $params);
             $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$deletestr.'"></a>';
 
             $str .= '</td>';

@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * Defines form to add a new billitem
  *
  * @package    local_shop
@@ -93,9 +92,11 @@ class Bill_Form extends moodleform {
 
         // Set default for user select.
         $userarray = array();
-        $userarray[] = &$mform->createElement('select', 'userid', get_string('customers', 'local_shop'), $fullname_custo_select, $attributesjscustomer);
+        $label = get_string('customers', 'local_shop');
+        $userarray = &$mform->createElement('select', 'userid', $label, $fullname_custo_select, $attributesjscustomer);
         $userarray[] = &$mform->createElement('select', 'useraccountid', get_string('users'), $fullname_user_select, $attributesjsuser);
-        $mform->addGroup($userarray, 'selectar', get_string('pickuser', 'local_shop'), '&nbsp;'. get_string('or', 'local_shop').'&nbsp;', false);
+        $orstr = get_string('or', 'local_shop');
+        $mform->addGroup($userarray, 'selectar', get_string('pickuser', 'local_shop'), '&nbsp;'. $orstr.'&nbsp;', false);
         $mform->addHelpButton('selectar', 'customer_account', 'local_shop');
 
         $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop').':');
@@ -108,7 +109,7 @@ class Bill_Form extends moodleform {
         $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
         $context = context_system::instance();
-        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', 'u.id, firstname, lastname');
+        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', 'u.id,'.get_all_name_fields(true, 'u'));
         $editoropt = array();
         if ($billeditors) {
             foreach ($billeditors as $billeditor) {

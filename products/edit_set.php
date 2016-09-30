@@ -35,17 +35,17 @@ $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/shopadmin.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 
-// get all the shop session context objects
+// Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $setid = optional_param('setid', '', PARAM_INT);
 
-// Security
+// Security.
 $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-// make page header and navigation
+// Make page header and navigation.
 
 $url = new moodle_url('/local/shop/products/edit_set.php', array('setid' => $setid));
 $PAGE->set_url($url);
@@ -87,7 +87,8 @@ if ($data = $mform->get_data()) {
     if (empty($data->setid)) {
         $data->shortname = CatalogItem::compute_item_shortname($data);
 
-        $data->setid = 0; // We must care that setid deisgnates both local form Setid and Catalogitem setid field.
+        // We must care that setid deisgnates both local form Setid and Catalogitem setid field.
+        $data->setid = 0;
         $data->id = $DB->insert_record('local_shop_catalogitem', $data);
 
         // We have items in the set. update relevant products.
@@ -104,17 +105,19 @@ if ($data = $mform->get_data()) {
             }
         }
 
-        // if slave catalogue must insert a master copy
+        // If slave catalogue must insert a master copy.
         if ($thecatalog->isslave) {
             $data->catalogid = $thecatalog->groupid;
             $DB->insert_record('local_shop_catalogitem', $data);
         }
     } else {
         $data->id = $data->setid;
-        $data->setid = 0; // We must care that setid deisgnates both local form Setid and Catalogitem setid field.
+        // We must care that setid designates both local form Setid and Catalogitem setid field.
+        $data->setid = 0;
 
         // If set code as changed, we'd better recompute a new shortname.
-        if (empty($data->shortname) || ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
+        if (empty($data->shortname) ||
+                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
 
@@ -125,8 +128,10 @@ if ($data = $mform->get_data()) {
 
     // process text fields from editors
     $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-    $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogitemdescription', $data->id, array('subdirs' => true), $data->description);
-    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop', 'catalogitemdescription', $data->id);
+    $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogitemdescription',
+                                                    $data->id, array('subdirs' => true), $data->description);
+    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
+                                            'catalogitemdescription', $data->id);
 
     $fs = get_file_storage();
 

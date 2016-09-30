@@ -1,29 +1,29 @@
 body{
-	font-family:Garamond,serif;
+    font-family:Garamond,serif;
 }
 
 img{
-	filter: none;
+    filter: none;
 }
 
 /* order preview */
 .order-preview-seller-address{
-	border:1px solid #606060;
+    border:1px solid #606060;
 }
 
 .order-preview-order-list > tbody > tr.odd > td{
-	background-color:#F0F0F0;
+    background-color:#F0F0F0;
 }
 
 .order-preview-order-list > tbody > tr.even > td{
-	background-color:#F8F8F8;
+    background-color:#F8F8F8;
 }
 
 .order-preview-order-totals{
-	border:3px solid #606060;
+    border:3px solid #606060;
 }
 
 .topay{
-	font-weight:bolder;
-	background-color:#F0F0F0;
+    font-weight:bolder;
+    background-color:#F0F0F0;
 }

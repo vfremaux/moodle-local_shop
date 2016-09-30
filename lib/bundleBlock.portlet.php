@@ -52,7 +52,7 @@ if ($portlet->image != '') {
             function bundle_subportlet($portlet) {
                 global $CFG, $OUTPUT;
 
-                include $CFG->dirroot.'/local/shop/lib/productBlock.portlet.php';
+                include($CFG->dirroot.'/local/shop/lib/productBlock.portlet.php');
             }
 
             $TTCprice = 0;

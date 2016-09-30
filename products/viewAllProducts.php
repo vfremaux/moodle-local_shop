@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
@@ -43,8 +42,7 @@ if (!has_capability('local/shop:accessallowners', $context)) {
     $shoprenderer->print_owner_menu($url);
 }
 
-// execute controller
-//echo "[$view:$cmd]";
+// Execute controller.
 $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 if ($action != '') {
@@ -55,24 +53,6 @@ if ($action != '') {
 }
 $products = array();
 
-// if slave get entries in master catalog and then overrides whith local descriptions
-/*
-$masterproducts = array();
-if (!$localproducts = $thecatalog->get_products($order, $dir, @$SESSION->shop->categoryid)) {
-    $localproducts = array();
-}
-if ($thecatalog->isslave) {
-    $masterCatalog = new Catalog($thecatalog->groupid);
-    if (!$masterproducts = $masterCatalog->get_products($order, $dir)) {
-        $masterproducts = array();
-    }
-    foreach ($localproducts as $code => $product) {
-        $localproducts[$code]->masterid = $masterproducts[$product->code]->id;
-    }
-}
-
-$products = array_merge($masterproducts, $localproducts);
-*/
 $thecatalog->get_all_products_for_admin($products);
 if ($thecatalog->isslave) {
     $masterCatalog = new Catalog($thecatalog->groupid);
@@ -122,29 +102,20 @@ if (count(array_keys($products)) == 0) {
         } else {
             // Product is either a set or a bundle.
 
-            /*
-            if ($thecatalog->isslave) {
-                // Get the master pieace that has same code and replace master record overriden by local.
-                $masteritem = $masterCatalog->get_product_by_code($portlet->code);
-                $localitem = $portlet;
-                $portlet = $masteritem->apply($localitem);
-            }
-            */
-
             if ($portlet->isset == PRODUCT_SET) {
-                // is a product set
+                // Is a product set.
                 $portlet->thumb = $OUTPUT->pix_url('productset', 'local_shop');
                 echo $renderer->set_admin_line($portlet, true);
             } else {
-                // is a product bundle
-                // update bundle price info
+                // Is a product bundle.
+                // Update bundle price info.
                 $bundlePrice = 0;
                 $bundleTTCPrice = 0;
                 if ($portlet->elements) {
                     foreach (array_values($portlet->elements) as $aBundleElement) {
-                        // accumulate untaxed
+                        // Accumulate untaxed.
                         $bundlePrice += $aBundleElement->price1;
-                        // accumulate taxed after tax transform
+                        // Accumulate taxed after tax transform.
                         $price = $aBundleElement->price1;
                         $aBundleElement->TTCprice = shop_calculate_taxed($aBundleElement->price1, $aBundleElement->taxcode);
                         $bundleTTCPrice += $aBundleElement->TTCprice;

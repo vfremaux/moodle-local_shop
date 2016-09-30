@@ -164,12 +164,10 @@ class Catalog extends ShopObject {
 
     /**
      * get the full productline from categories
-     *
+     * @param arrayref &$shopproducts an array to be filled
      */
     public function get_all_products(&$shopproducts) {
-        global $CFG, $SESSION, $DB, $OUTPUT;
-
-        $context = \context_system::instance();
+        global $SESSION, $DB;
 
         $categories = $this->get_categories();
 
@@ -325,9 +323,7 @@ class Catalog extends ShopObject {
      * get the full productline from categories
      */
     public function get_all_products_for_admin(&$shopproducts) {
-        global $CFG, $SESSION, $DB, $OUTPUT;
-
-        $context = \context_system::instance();
+        global $SESSION, $DB;
 
         $categories = $this->get_categories();
 
@@ -607,12 +603,12 @@ class Catalog extends ShopObject {
                         $return->value += $sh->value;
                     } else {
                         if (!empty($sh->formula)) {
-                            $A = $sh->a;
-                            $B = $sh->b;
-                            $C = $sh->c;
-                            $HT = $shippedproduct->price1;
-                            $TTC = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
-                            $Q = $order[$shippedproduct->shortname];
+                            $a = $sh->a;
+                            $b = $sh->b;
+                            $c = $sh->c;
+                            $ht = $shippedproduct->price1;
+                            $ttc = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
+                            $q = $order[$shippedproduct->shortname];
                             eval($sh->formula.';');
                             $return->value += 0 + @$SHP;
                         } else {

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -25,9 +23,12 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+ 
+ // TODO : check if still useful.
+ 
+defined('MOODLE_INTERNAL') || die();
 
-if ($cmd == 'addcatalog') {
-} else if ($cmd == 'updatecatalog') {
+if ($cmd == 'updatecatalog') {
     $catalog->id = required_param('item', PARAM_INT);
     $catalog->name = required_param('name', PARAM_TEXT);
     $catalog->description = optional_param('description', '', PARAM_CLEANHTML);
@@ -57,14 +58,15 @@ if ($cmd == 'addcatalog') {
 if ($cmd == 'deletecatalog') {
     $catalogid = required_param('catalogid', PARAM_INT);
     $catalogidlist = $catalogid;
-    // if master catalog, must delete all slaves
-    include "classes/Catalog.class.php";
+
+    // If master catalog, must delete all slaves.
+    include($CFG->dirroot.'/classes/Catalog.class.php');
     $thecatalog = new Catalog($catalogid);
     if ($thecatalog->ismaster) {
-        $catalogids = $DB->get_records_select_menu('local_shop_catalog', " groupid = '{$catalogid}' AND id != groupid ", '', 'id,id');
+        $catalogids = $DB->get_records_select_menu('local_shop_catalog', " groupid = ? AND id != groupid ", array($catalogid), '', 'id,id');
         $catalogidlist = implode("','", array_values($catalogids));
     }
-    // deletes products entries in candidate catalogs
+    // Deletes products entries in candidate catalogs.
     $DB->delete_records_select('local_shop_catalogitem', " id IN ('$catalogidlist') ");
     $DB->delete_records_select('local_shop_catalogcategory', " id IN ('$catalogidlist') ");
     $DB->delete_records_select('local_shop_catalog', " id IN ('$catalogidlist') ");

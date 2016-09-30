@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -33,19 +32,21 @@ use local_shop\Shop;
 /**
  * A general renderer for global parts of the moodle shop
  * It will provide generic functions that may be used in several services inside
- the shop front and backoffice implementation.
+ * the shop front and backoffice implementation.
  */
 class local_shop_renderer extends plugin_renderer_base {
 
     /**
      * prints an owner menu and changes currently viewed owner if required
      */
-    function print_owner_menu($urlroot) {
+    public function print_owner_menu($urlroot) {
         global $OUTPUT, $DB;
 
         $config = get_config('local_shop');
 
-        if (empty($config->usedelegation)) return;
+        if (empty($config->usedelegation)) {
+            return;
+        }
 
         $activeowner = optional_param('shopowner', null, PARAM_INT);
 
@@ -77,7 +78,7 @@ class local_shop_renderer extends plugin_renderer_base {
     /**
      * prints a customer menu and changes currently viewed owner if required
      */
-    function print_customer_menu($urlroot, $shopownerid = 0) {
+    public function print_customer_menu($urlroot, $shopownerid = 0) {
         global $OUTPUT, $DB;
 
         $activecustomer = optional_param('customer', null, PARAM_INT);
@@ -127,7 +128,8 @@ class local_shop_renderer extends plugin_renderer_base {
 
         if (count($customers) == 1) {
             $customername = reset($customers);
-            $output = $customerlabel.': '.$customername->lastname.' '.$customername->firstname. ' ('.$customername->city.') ['.$customername->country.']';
+            $output = $customerlabel.': '.$customername->lastname.' '.$customername->firstname;
+            $output .= ' ('.$customername->city.') ['.$customername->country.']';
         } else {
             $select = new single_select(new moodle_url($urlroot), 'customer', $customersmenu, $activecustomer, null, 'selectcustomer');
             $select->label = $customerlabel;
@@ -139,7 +141,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    function paging_results($portlet) {
+    public function paging_results($portlet) {
         if (empty($portlet->pagesize)) {
             $portlet->pagesize = 20;
         }
@@ -167,7 +169,7 @@ class local_shop_renderer extends plugin_renderer_base {
         }
     }
 
-    function catalog_choice($url) {
+    public function catalog_choice($url) {
         global $SESSION, $OUTPUT;
 
         $str = '';
@@ -181,7 +183,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function shop_choice($url, $chooseall = false) {
+    public function shop_choice($url, $chooseall = false) {
         global $SESSION, $OUTPUT;
 
         $str = '';
@@ -200,7 +202,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function currency_choice($current, $url) {
+    public function currency_choice($current, $url) {
         global $OUTPUT;
 
         $currencies = shop_get_supported_currencies();
@@ -212,7 +214,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function customer_choice($current, $url) {
+    public function customer_choice($current, $url) {
         global $OUTPUT;
 
         $customers = Customer::get_instances_menu(array(), 'CONCAT(lastname, \' \', firstname)', 'lastname, firstname');
@@ -224,7 +226,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function main_menu($theshop) {
+    public function main_menu($theshop) {
         $str = '<table class="shop-main-menu">';
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
