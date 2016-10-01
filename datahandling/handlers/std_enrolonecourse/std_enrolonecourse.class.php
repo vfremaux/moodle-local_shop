@@ -123,7 +123,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
              */
             if (!shop_create_customer_user($data, $customer, $newuser)) {
                 $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay Error :";
-                $message .= " User could not be created {$newuser->username}."
+                $message .= " User could not be created {$newuser->username}.";
                 shop_trace($message);
                 $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
                 $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
@@ -191,8 +191,8 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $role = $DB->get_record('role', array('shortname' => $rolename));
         $now = time();
 
-        $params = array('enrol' => $enrolname, 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC');
-        if ($enrols = $DB->get_records('enrol', $params) {
+        $params = array('enrol' => $enrolname, 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+        if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
             $enrolplugin = enrol_get_plugin($enrolname); // The enrol object instance.
         }

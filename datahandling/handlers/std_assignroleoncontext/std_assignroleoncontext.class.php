@@ -64,8 +64,8 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
                 shop_trace($message);
             } else {
                 $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Warning :";
-                $message = " No customer support aea defined.")
-                shop_trace($message;
+                $message = " No customer support aea defined.";
+                shop_trace($message);
             }
         }
 
