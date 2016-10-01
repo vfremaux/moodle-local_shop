@@ -106,7 +106,7 @@ class bills_controller {
 
         // Delete Single ************************* **.
         if ($cmd == 'deleteItem') {
-            $itemid = required_param('billitemid', PARAM_INT);
+            $billitemid = required_param('billitemid', PARAM_INT);
             $z = required_param('z', PARAM_INT); // Ordering.
 
             $billitem = new BillItem($billitemid);
@@ -188,7 +188,7 @@ class bills_controller {
                 for ($i = $z - 1; $i >= $where; $i--) {
                     moveRecord(1, $i, $billid);
                 }
-                $query = "
+                $sql = "
                     UPDATE
                         {shop_}billitem}
                     SET

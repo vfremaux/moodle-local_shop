@@ -83,7 +83,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
                 $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);
                 $productionfeedback->salesadmin = get_string('knownaccount', 'local_shop', $USER->username);
                 $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay :";
-                $message .= " Known account {$USER->username} at process entry."
+                $message .= " Known account {$USER->username} at process entry.";
                 shop_trace($message);
                 return $productionfeedback;
             }

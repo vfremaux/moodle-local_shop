@@ -128,7 +128,7 @@ class shop_front_renderer {
      * Prints a summary form for the purchase
      */
     public function order_totals() {
-        global $CFG, $SESSION;
+        global $SESSION;
 
         $this->check_context();
 
@@ -172,7 +172,6 @@ class shop_front_renderer {
             $str .= '<tr>';
             $str .= '<td colspan="2">';
             $str .= $reason;
-            // $str .= get_string('yougetdiscountof', 'local_shop');
             $str .= ' : <b>'.$discountrate.' %</b>.<br/>';
             $str .= '</td>';
             $str .= '</tr>';
@@ -194,7 +193,10 @@ class shop_front_renderer {
             $str .= '<tr>';
             $str .= '<td align="left" colspan="2">';
             $str .= '<span class="smalltext">(*)'. get_string('shippingadded', 'local_shop') .'<br/></span>';
-            $str .= '<input type="checkbox" name="shipping" value="1" '.sprintf('%.2f', $shipchecked).' /> '.get_string('askforshipping', 'local_shop');
+            $str .= '<input type="checkbox"
+                            name="shipping"
+                            value="1"
+                            '.sprintf('%.2f', $shipchecked).' /> '.get_string('askforshipping', 'local_shop');
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -208,7 +210,7 @@ class shop_front_renderer {
      *
      */
     public function printable_bill_link(&$bill) {
-        global $CFG, $DB, $OUTPUT;
+        global $DB, $OUTPUT;
 
         $str = '';
 
@@ -403,7 +405,7 @@ class shop_front_renderer {
      * @param array $catgories the full product line extractred from Catalog
      */
     public function catalog(&$categories) {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
 
         $config = get_config('local_shop');
         $this->check_context();
@@ -436,7 +438,8 @@ class shop_front_renderer {
             // Render all upper branch choices, with presected items in the active branch.
             while ($catid = array_shift($branch)) {
                 $cat = new Category($catid);
-                $levelcategories = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid), 'sortorder');
+                $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid);
+                $levelcategories = Category::get_instances($params, 'sortorder');
                 $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $cat->id == $categoryid, true);
 
                 // Print childs.
@@ -446,7 +449,7 @@ class shop_front_renderer {
             }
         }
 
-        // print catalog product line on the active category if tabbed.
+        // Print catalog product line on the active category if tabbed.
         $catids = array_keys($categories);
         $category = optional_param('category', $catids[0], PARAM_INT);
 
@@ -456,7 +459,9 @@ class shop_front_renderer {
             if ($withtabs && ($category != $cat->id)) {
                 continue;
             }
-            if (!isset($firstcatid)) $firstcatid = $cat->id;
+            if (!isset($firstcatid)) {
+                $firstcatid = $cat->id;
+            }
 
             if ($withtabs) {
                 $str .= '<div class="shopcategory" id="category'.$cat->id.'" />';
@@ -597,7 +602,6 @@ class shop_front_renderer {
     }
 
     public function product_set(&$set) {
-        global $CFG;
 
         $str = '';
 
@@ -730,7 +734,7 @@ class shop_front_renderer {
     }
 
     public function order_detail(&$categories) {
-        global $SESSION, $CFG, $OUTPUT;
+        global $SESSION, $OUTPUT;
 
         if (empty($categories)) {
             return;
@@ -740,13 +744,13 @@ class shop_front_renderer {
 
         $str .= '<table width="100%" id="orderblock">';
 
-        foreach ($categories as $aCategory) {
-            if (empty($aCategory->products)) {
+        foreach ($categories as $acategory) {
+            if (empty($acategory->products)) {
                 continue;
             }
-            foreach ($aCategory->products as $aProduct) {
-                if ($aProduct->isset == PRODUCT_SET) {
-                    foreach ($aProduct->elements as $portlet) {
+            foreach ($acategory->products as $aproduct) {
+                if ($aproduct->isset == PRODUCT_SET) {
+                    foreach ($aproduct->elements as $portlet) {
                         $portlet->currency = $this->theshop->get_currency('symbol');
                         $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ?
                             $SESSION->shoppingcart->order[$portlet->shortname] :
@@ -756,7 +760,7 @@ class shop_front_renderer {
                         }
                     }
                 } else {
-                    $portlet = &$aProduct;
+                    $portlet = &$aproduct;
                     $portlet->currency = $this->theshop->get_currency('symbol');
                     $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ?
                         $SESSION->shoppingcart->order[$portlet->shortname] :
@@ -869,7 +873,7 @@ class shop_front_renderer {
                 $shoppingcart->customerinfo['country'] :
                 $USER->country;
             $email = $USER->email;
-            // get potential ZIP code information from an eventual customer record
+            // Get potential ZIP code information from an eventual customer record.
             if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id))) {
                 $zip = (!empty($shoppingcart->customerinfo['zip'])) ?
                     $shoppingcart->customerinfo['zip'] :
@@ -1024,17 +1028,18 @@ class shop_front_renderer {
 
         $str = '';
 
-        $institution = @$SESSION->shoppingcart->invoiceinfo['organisation'];
-        $department = @$SESSION->shoppingcart->invoiceinfo['department'];
-        $lastname = @$SESSION->shoppingcart->invoiceinfo['lastname'];
-        $firstname = @$SESSION->shoppingcart->invoiceinfo['firstname'];
-        $email = @$SESSION->shoppingcart->invoiceinfo['email'];
-        $address = @$SESSION->shoppingcart->invoiceinfo['address'];
-        $zip = @$SESSION->shoppingcart->invoiceinfo['zip'];
-        $city = @$SESSION->shoppingcart->invoiceinfo['city'];
-        $country = @$SESSION->shoppingcart->invoiceinfo['country'];
-        $vatcode = @$SESSION->shoppingcart->invoiceinfo['vatcode'];
-        // $plantcode = @$SESSION->shoppingcart->invoiceinfo['plantcode'];
+        $shoppingcart = $SESSION->shoppingcart;
+
+        $institution = @$shoppingcart->invoiceinfo['organisation'];
+        $department = @$shoppingcart->invoiceinfo['department'];
+        $lastname = @$shoppingcart->invoiceinfo['lastname'];
+        $firstname = @$shoppingcart->invoiceinfo['firstname'];
+        $email = @$shoppingcart->invoiceinfo['email'];
+        $address = @$shoppingcart->invoiceinfo['address'];
+        $zip = @$shoppingcart->invoiceinfo['zip'];
+        $city = @$shoppingcart->invoiceinfo['city'];
+        $country = @$shoppingcart->invoiceinfo['country'];
+        $vatcode = @$shoppingcart->invoiceinfo['vatcode'];
 
         $lastnameclass = '';
         $firstnameclass = '';
@@ -1048,8 +1053,8 @@ class shop_front_renderer {
         $vatcodeclass = '';
         $plantcodeclass = '';
 
-        if (!empty($SESSION->shoppingcart->errors->invoiceinfo)) {
-            foreach (array_keys($SESSION->shoppingcart->errors->invoiceinfo) as $f) {
+        if (!empty($shoppingcart->errors->invoiceinfo)) {
+            foreach (array_keys($shoppingcart->errors->invoiceinfo) as $f) {
                 $f = str_replace('invoiceinfo::', '', $f);
                 $var = "{$f}class";
                 $$var = 'shop-error';
@@ -1306,7 +1311,6 @@ class shop_front_renderer {
     }
 
     public function participant_blankrow() {
-        global $CFG, $OUTPUT;
 
         $this->check_context();
 
@@ -1349,7 +1353,7 @@ class shop_front_renderer {
     }
 
     public function new_participant_row() {
-        global $CFG, $SESSION;
+        global $CFG;
 
         $this->check_context();
 
@@ -1448,7 +1452,9 @@ class shop_front_renderer {
 
         $str = '';
 
-        if (empty($SESSION->shoppingcart)) return;
+        if (empty($SESSION->shoppingcart)) {
+            return;
+        }
 
         if (!empty($SESSION->shoppingcart->users[$shortname][$role])) {
             $rkeys = array_keys($SESSION->shoppingcart->users[$shortname][$role]);
@@ -1506,7 +1512,7 @@ class shop_front_renderer {
     }
 
     public function cart_summary() {
-        global $SESSION, $CFG;
+        global $SESSION;
 
         $str = '';
 
@@ -1531,7 +1537,7 @@ class shop_front_renderer {
     }
 
     public function admin_options() {
-        global $OUTPUT, $SESSION, $DB;
+        global $OUTPUT, $SESSION;
 
         $this->check_context();
 
@@ -1570,7 +1576,6 @@ class shop_front_renderer {
      * @param string $shortname the product short code
      * @param int $q quantity
      * @param array $options
-     * @param boolean $return if true returns a string
      */
     public function order_line($shortname = null, $q = null, $options = null) {
         global $SESSION;
@@ -1632,14 +1637,9 @@ class shop_front_renderer {
 
     /**
      * Prints an order line
-     * @param objectref $thecatalog the whole catalog reference
-     * @param string $shortname the product short code
-     * @param int $q quantity
-     * @param array $options
-     * @param boolean $return if true returns a string
+     * @param objectref $billitem the billitem
      */
     public function bill_line($billitem) {
-        global $SESSION;
 
         $str = '';
 
@@ -1670,12 +1670,17 @@ class shop_front_renderer {
         return $str;
     }
 
+    /**
+     * @param object $bill
+     */
     public function full_order_totals($bill = null) {
-        global $SESSION, $CFG;
+        global $SESSION;
 
         $this->check_context();
 
         $config = get_config('local_shop');
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         if (!is_null($bill)) {
             $taxedtotal = $bill->ordertaxed;
@@ -1686,24 +1691,24 @@ class shop_front_renderer {
             $shippingtaxedvalue = 0;
             $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
         } else {
-            $taxedtotal = $SESSION->shoppingcart->taxedtotal;
+            $taxedtotal = $shoppingcart->taxedtotal;
             $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-            $discount = $SESSION->shoppingcart->discount;
+            $discount = $shoppingcart->discount;
 
-            $sessionfinaltaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
-            $sessionfinaluntaxedtotal = $SESSION->shoppingcart->finaluntaxedtotal;
+            $sessionfinaltaxedtotal = $shoppingcart->finaltaxedtotal;
+            $sessionfinaluntaxedtotal = $shoppingcart->finaluntaxedtotal;
 
             if ($discountrate) {
                 $finaltaxedtotal = $taxedtotal * (1 - ($discountrate / 100));
-                $finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
+                $finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
             } else {
-                $finaltaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
-                $finaluntaxedtotal = $SESSION->shoppingcart->finaluntaxedtotal;
+                $finaltaxedtotal = $shoppingcart->finaltaxedtotal;
+                $finaluntaxedtotal = $shoppingcart->finaluntaxedtotal;
             }
 
-            $finaltaxestotal = @$SESSION->shoppingcart->finaltaxestotal;
-            $shippingtaxedvalue = 0 + @$SESSION->shoppingcart->shipping->taxedvalue;
-            $finalshippedtaxedtotal = $SESSION->shoppingcart->finalshippedtaxedtotal;
+            $finaltaxestotal = @$shoppingcart->finaltaxestotal;
+            $shippingtaxedvalue = 0 + @$shoppingcart->shipping->taxedvalue;
+            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal;
         }
 
         $str = '';
@@ -1813,8 +1818,11 @@ class shop_front_renderer {
         return $str;
     }
 
+    /**
+     * @param object $bill
+     */
     public function full_order_taxes(&$bill = null) {
-        global $SESSION, $CFG, $DB, $OUTPUT;
+        global $SESSION, $OUTPUT;
 
         $this->check_context();
 
@@ -1884,7 +1892,7 @@ class shop_front_renderer {
      *
      */
     public function payment_block() {
-        global $SESSION, $OUTPUT, $USER, $CFG;
+        global $SESSION, $OUTPUT, $CFG;
 
         $config = get_config('local_shop');
         $this->check_context();
@@ -1927,14 +1935,18 @@ class shop_front_renderer {
                 // If test payment, check if we are logged in and admin, or logged in from an admin behalf.
 
                 if (($var == 'test') && (!$config->test)) {
-                    if (!isloggedin()) continue;
+                    if (!isloggedin()) {
+                        continue;
+                    }
 
                     if (!empty($USER->realuser)) {
                         $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->realuser);
                     } else {
                         $isrealadmin = false;
                     }
-                    if (!is_siteadmin() && !$isrealadmin) continue;
+                    if (!is_siteadmin() && !$isrealadmin) {
+                        continue;
+                    }
                 }
 
                 $check = $this->theshop->{$isenabledvar};
@@ -1964,7 +1976,7 @@ class shop_front_renderer {
      *
      */
     public function order_short() {
-        global $CFG, $SESSION, $DB;
+        global $SESSION, $DB;
 
         $shoppingcart = $SESSION->shoppingcart;
 
@@ -2134,7 +2146,7 @@ class shop_front_renderer {
      * @return an HTML string with the form
      */
     public function customer_requirements(&$errors) {
-        global $SESSION, $CFG;
+        global $SESSION;
 
         $this->check_context();
 
@@ -2161,7 +2173,9 @@ class shop_front_renderer {
             echo json_encode($test);
         */
 
-        if (!empty($SESSION->shoppingcart->order)) {
+        $shoppingcart = $SESSION->shoppingcart;
+
+        if (!empty($shoppingcart->order)) {
             $str .= '<form name="shop-requirements">';
             $str .= '<input type="hidden" name="view" value="purchaserequ">';
             $str .= '<input type="hidden" name="id" value="'.$this->theshop->id.'">';
@@ -2171,7 +2185,7 @@ class shop_front_renderer {
             $str .= '<div id="shop-requirement-caption">';
             $str .= get_string('requireddatacaption', 'local_shop');
             $str .= '</div>';
-            foreach ($SESSION->shoppingcart->order as $itemname => $itemcount) {
+            foreach ($shoppingcart->order as $itemname => $itemcount) {
                 $product = $this->thecatalog->get_product_by_shortname($itemname);
                 $requireddata = $product->requireddata;
                 // Take care, result of magic _get() is not directly testable.
@@ -2210,7 +2224,7 @@ class shop_front_renderer {
                                     $str .= '<input type"text"
                                                     name="'.$itemname.'/'.$reqobj->field.$i.'"
                                                     id="id-'.$reqobj->field.$i.'"
-                                                    value="'.@$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i].'"
+                                                    value="'.@$shoppingcart->customerdata[$itemname][$reqobj->field][$i].'"
                                                     '.$attributes.'
                                                     '.$inputclass.'/>';
                                     $str .= '<div class="requ-desc">';
@@ -2225,7 +2239,7 @@ class shop_front_renderer {
                                                        id="id-'.$reqobj->field.$i.'"
                                                        '.$attributes.'
                                                        '.$inputclass.'>';
-                                    $str .= @$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i];
+                                    $str .= @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
                                     $str .= '</textarea>';
                                     $str .= '<div class="requ-desc">';
                                     $str .= $reqobj->desc;
@@ -2234,7 +2248,7 @@ class shop_front_renderer {
                                     break;
 
                                 case 'checkbox':
-                                    $checked = (@$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i]) ? 'checked="checked"' : '';
+                                    $checked = (@$shoppingcart->customerdata[$itemname][$reqobj->field][$i]) ? 'checked="checked"' : '';
                                     $str .= '<div class="requ-param">';
                                     $str .= '<input type="checkbox"
                                                     name="'.$itemname.'/'.$reqobj->field.$i.'"
@@ -2257,7 +2271,7 @@ class shop_front_renderer {
                                     $options = $reqobj->options;
                                     if ($options) {
                                         foreach ($options as $optkey => $optvalue) {
-                                        $selected = ($optkey == @$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i]) ? 'selected' : '';
+                                        $selected = ($optkey == @$shoppingcart->customerdata[$itemname][$reqobj->field][$i]) ? 'selected' : '';
                                             $str.= '<option name="'.$optkey.'">'.$optvalue.'</option>';
                                         }
                                     }
@@ -2279,7 +2293,7 @@ class shop_front_renderer {
                     }
                 }
             }
-            $extraclass = (empty($SESSION->shoppingcart->customerdata)) ? 'unsaved' : '';
+            $extraclass = (empty($shoppingcart->customerdata)) ? 'unsaved' : '';
             $str .= '<div id="requ-submit" class="'.$extraclass.'">';
             $str .= '<input type="submit" name="go_btn" value="'.get_string('saverequs', 'local_shop').'" style="width:200px" />';
             $str .= '</div>'; // Closes requ-submit.
@@ -2299,7 +2313,7 @@ class shop_front_renderer {
      * @param array $bill
      */
     public function check_and_print_eula_conditions() {
-        global $CFG, $SESSION, $SITE;
+        global $SESSION, $SITE;
 
         $eulastr = '';
 
@@ -2350,7 +2364,8 @@ class shop_front_renderer {
 
     public function my_total_link() {
         $totalurl = new moodle_url('/local/shop/front/view.php', array('shopid' => $this->theshop->id));
-        return '<center><div id="shop-total-link"><a href="'.$totalurl.'#total"><input type="button" value="'.get_string('mytotal', 'local_shop').'" /></a></div><center>';
+        $button = '<input type="button" value="'.get_string('mytotal', 'local_shop').'" />';
+        return '<center><div id="shop-total-link"><a href="'.$totalurl.'#total">'.$button.'</a></div><center>';
     }
 
     public function invoice_header(&$afullbill) {

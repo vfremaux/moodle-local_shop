@@ -26,7 +26,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
 Use \local_shop\Bill;
 
-$transid = optional_param('transid', null, PARAM_TEXT); // Protects agains SQL injection.
+$transid = optional_param('transid', null, PARAM_TEXT);
 $billid = optional_param('billid', null, PARAM_INT);
 
 if ($transid) {

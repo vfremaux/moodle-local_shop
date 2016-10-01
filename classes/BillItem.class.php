@@ -41,7 +41,7 @@ class BillItem extends ShopObject {
 
     protected static $table = 'local_shop_billitem';
 
-    protected $bill;
+    public $bill;
 
     public $catalogitem;
 

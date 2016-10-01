@@ -48,7 +48,7 @@ class shop_bills_renderer {
      *
      */
     public function printable_bill_link($billid, $transid) {
-        global $CFG, $DB, $OUTPUT;
+        global $DB, $OUTPUT;
 
         $str = '';
 
@@ -380,7 +380,7 @@ class shop_bills_renderer {
             $str .= '<p><strong>'.get_string('ref', 'local_shop').' : '.$element->code.' - </strong>';
             $str .= get_string('puttc', 'local_shop').' = <b>'.$element->TTCprice.' '. $set->currency.' </b><br/>';
             if ($element->showsdescriptioninset) {
-                $tr .= $element->description;
+                $str .= $element->description;
             }
             $jshandler = 'addOneUnit(\''.$CFG->wwwroot;
             $jshandler .= '\', \''.$set->salesunit.'\', '.$set->TTCprice.', \''.$set->maxdeliveryquant.'\')';
@@ -430,7 +430,7 @@ class shop_bills_renderer {
         foreach ($bundle->set as $product) {
             $ttcprice += $product->get_taxed_price(1);
             $product->noorder = true; // Bundle can only be purchased as a group.
-            $str .= $this->product_block($element);
+            $str .= $this->product_block($product);
         }
         $str .= '</td>';
         $str .= '</tr>';
@@ -496,7 +496,7 @@ class shop_bills_renderer {
                     }
                 } else {
                     $portlet = &$aproduct;
-                    $portlet->currency = shop_currency($theblock, 'symbol');
+                    $portlet->currency = shop_currency($this->theblock, 'symbol');
                     $shortname = $shoppingcart->order[$portlet->shortname];
                     $portlet->preset = !empty($shortname) ? $shortname : 0;
                     if ($portlet->preset) {
@@ -509,18 +509,15 @@ class shop_bills_renderer {
         }
         $str .= "</table>";
 
-        if ($return) {
-            return $str;
-        }
-        echo $str;
+        return $str;
     }
 
-    public function billitem_line($portlet) {
+    public function billitem_line($billitem) {
         global $OUTPUT;
 
         $str = '';
 
-        if (empty($portlet)) {
+        if (empty($billitem)) {
             $str .= '<tr valign="top">';
             $str .= '<!--<th class="header c0">';
             $str .= '&nbsp;';
@@ -559,52 +556,56 @@ class shop_bills_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td width="30" class="cell c0">';
-        $params = array('id' => $this->theshop->id, 'view' => 'editBillItem', 'item' => $portlet->id);
+        $params = array('shopid' => $this->theshop->id, 'view' => 'editBillItem', 'item' => $billitem->id);
         $billurl = new moodle_url('/local/coursehop/bills/view.php', $params);
-        $str .= '<a class="activeLink" href="'.$billurl.'">'.$portlet->ordering.'. </a>';
+        $str .= '<a class="activeLink" href="'.$billurl.'">'.$billitem->ordering.'. </a>';
         $str .= '</td>';
         $str .= '<td width="60" class="cell c1">';
-        $str .= $portlet->itemcode;
+        $str .= $billitem->itemcode;
         $str .= '</td>';
         $str .= '<td width="*" class="cell c2">';
-        $str .= $portlet->description;
+        $str .= $billitem->description;
         $str .= '</td>';
         $str .= '<td width="40" class="cell c3">';
-        $str .= $portlet->delay;
+        $str .= $billitem->delay;
         $str .= '</td>';
         $str .= '<td width="80" class="cell c4">';
-        $str .= sprintf("%.2f", round($portlet->unitcost, 2));
+        $str .= sprintf("%.2f", round($billitem->unitcost, 2));
         $str .= '</td>';
         $str .= '<td width="30" class="cell c5">';
-        $str .= $portlet->quantity;
+        $str .= $billitem->quantity;
         $str .= '</td>';
         $str .= '<td width="80" class="cell c6">';
-        $str .= '<span id="price_'.$portlet->ordering.'">'.sprintf("%.2f", round($portlet->totalprice, 2)).'</span>';
+        $str .= '<span id="price_'.$billitem->ordering.'">'.sprintf("%.2f", round($billitem->totalprice, 2)).'</span>';
         $str .= '</td>';
         $str .= '<td width="30" class="cell c7">';
-        $str .= $portlet->taxcode;
+        $str .= $billitem->taxcode;
         $str .= '</td>';
         $str .= '<td width="60" class="cell lastcol">';
 
-        if (empty($bill->idnumber)) {
+        if (empty($billitem->bill->idnumber)) {
+            /*
+             * We can change sometihng in billitems if the bill has not been freezed with an idnumber.
+             * that denotes it has been transfered to offical accountance.
+             */
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
                             'what' => 'relocating',
-                            'relocated' => $portlet->id,
-                            'z' => $portlet->ordering);
+                            'relocated' => $billitem->id,
+                            'z' => $billitem->ordering);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
             $pixurl = $OUTPUT->pix_url('t/move');
             $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('move').'"></a>';
-            $params = array('id' => $this->theshop->id, 'billid' => $portlet->id, 'billitemid' => $portlet->id);
+            $params = array('id' => $this->theshop->id, 'billid' => $billitem->bill->id, 'billitemid' => $billitem->id);
             $linkurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
             $pixurl = $OUTPUT->pix_url('i/edit');
             $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'"></a>';
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
                             'what' => 'deleteItem',
-                            'billitemid' => $portlet->id,
-                            'z' => $portlet->ordering,
-                            'billid' => $portlet->id);
+                            'billitemid' => $billitem->id,
+                            'z' => $billitem->ordering,
+                            'billid' => $billitem->bill->id);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
             $pixurl = $OUTPUT->pix_url('t/delete');
             $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" alt="'.get_string('delete').'"></a>';
@@ -615,7 +616,7 @@ class shop_bills_renderer {
         $str .= '<td>&nbsp;';
         $str .= '</td>';
         $str .= '<td valign="top" class="itemDescription" colspan="9">';
-        $str .= format_text($portlet->description);
+        $str .= format_text($billitem->description);
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -723,7 +724,6 @@ class shop_bills_renderer {
         $lastnameclass = '';
         $firstnameclass = '';
         $organisationclass = '';
-        $countryclass = '';
         $addressclass = '';
         $cityclass = '';
         $zipclass = '';
@@ -773,6 +773,7 @@ class shop_bills_renderer {
             $str .= ':</td>';
             $str .= '<td align="left">';
             $str .= '<input type="text"
+                            class="'.$organisationclass.'"
                             name="customerinfo::organisation"
                             size="26"
                             maxlength="64"
@@ -1124,7 +1125,6 @@ class shop_bills_renderer {
     }
 
     public function participant_blankrow() {
-        global $CFG, $OUTPUT;
         static $i = 0;
 
         $str = '';
@@ -1164,7 +1164,7 @@ class shop_bills_renderer {
     }
 
     public function new_participant_row() {
-        global $CFG, $SESSION;
+        global $CFG;
 
         $str = '';
 
@@ -1320,13 +1320,13 @@ class shop_bills_renderer {
     }
 
     public function cart_summary() {
-        global $SESSION, $CFG;
+        global $SESSION;
 
         $str = '';
 
         if (!empty($SESSION->shoppingcart->order)) {
             $str .= '<table width="100%">';
-            foreach ($SESSION->shoppingcart->order as $itemname => $itemcount) {
+            foreach (array_keys($SESSION->shoppingcart->order) as $itemname) {
                 $portlet = $this->thecatalog->get_product_by_shortname($itemname);
                 $str .= $this->cart_summary_line($portlet);
             }
@@ -1337,6 +1337,8 @@ class shop_bills_renderer {
     }
 
     public function cart_summary_line($portlet) {
+        global $SESSION;
+
         $str .= '<tr>';
         $span = '<span title="'.$portlet->name.'" alt="'.$portlet->name.'">'.$portlet->code.'</span>';
         $str .= '<td class="short-order-name">'.$span.'</td>';
@@ -1345,34 +1347,6 @@ class shop_bills_renderer {
         $str .= '<tr>';
         $str .= '<td colspan="2"  class="short-order-summary">'.shorten_text(strip_tags($portlet->description), 120).'</td>';
         $str .= '</tr>';
-
-        return $str;
-    }
-
-    public function admin_options($shopid) {
-        global $OUTPUT, $SESSION;
-
-        $str = '';
-
-        if (isloggedin() && has_capability('moodle/site:config', context_system::instance())) {
-            $str .= $OUTPUT->box_start('', 'shop-adminlinks');
-            print_string('adminoptions', 'local_shop');
-            $disableall = get_string('disableallmode', 'local_shop');
-            $enableall = get_string('enableallmode', 'local_shop');
-            $toproductbackofficestr = get_string('gotobackoffice', 'local_shop');
-            $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->theshop->id));
-            if (!empty($SESSION->shopseeall)) {
-                $shopurl->params(array('seeall' => 0));
-                $str .= '<a href="'.$shopurl.'">'.$disableall.'</a>';
-            } else {
-                $shopurl->params(array('seeall' => 1));
-                $str .= '<a href="'.$shopurl.'">'.$enableall.'</a>';
-            }
-            $params = array('view' => 'viewAllProducts', 'id' => $this->thecatalog->id);
-            $producturl = new moodle_url('/local/shop/products/view.php', $params);
-            $str .= '&nbsp;<a href="'.$producturl.'">'.$toproductbackofficestr.'</a>';
-            $str .= $OUTPUT->box_end();
-        }
 
         return $str;
     }
@@ -1552,23 +1526,17 @@ class shop_bills_renderer {
         return $str;
     }
 
-    public function field_start($legend, $class, $return = false) {
+    public function field_start($legend, $class) {
 
         $str = '';
         $str .= '<fieldset class="'.$class."\">\n";
         $str .= '<legend>'.$legend."</legend>\n";
 
-        if ($return) {
-            return $str;
-        }
-        echo $str;
+        return $str;
     }
 
-    public function field_end($return = false) {
-        if ($return) {
-            return '</field>';
-        }
-        echo "</fieldset>\n";
+    public function field_end() {
+        return '</fieldset>';
     }
 
     public function bill_merchant_line($portlet) {
@@ -1637,7 +1605,7 @@ class shop_bills_renderer {
     }
 
     public function flow_controller($status, $url) {
-        global $DB, $CFG, $OUTPUT;
+        global $DB, $OUTPUT;
 
         $str = '';
 
@@ -1725,8 +1693,7 @@ class shop_bills_renderer {
             $str .= html_writer::select($curmenu, 'cur', $cur, array('' => 'CHOOSEDOTS'), $attrs);
             $str .= '</form>';
         }
-        if ($return) return $str;
-        echo $str;
+        return $str;
     }
 
     public function relocate_box($billid, $ordering, $z, $relocated) {
