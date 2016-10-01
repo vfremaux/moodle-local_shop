@@ -532,8 +532,8 @@ class CatalogItem extends ShopObject {
             $this->record->setid = $inset; // Should give the new set.
         }
 
-        $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code));
-        while ($DB->record_exists('local_shop_catalogitem', $params) {
+        $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
+        while ($DB->record_exists('local_shop_catalogitem', $params)) {
             $this->record->code .= '1';
         }
 
