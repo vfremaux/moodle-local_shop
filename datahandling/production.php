@@ -39,38 +39,38 @@ function produce_prepay(&$afullbill) {
     $response->salesadmin = '';
 
     if (!empty($afullbill->items)) {
-        foreach ($afullbill->items as $anItem) {
+        foreach ($afullbill->items as $anitem) {
             // This refreshes some catalogitem information at production time.
-            if ($anItem->type != 'BILLING') {
+            if ($anitem->type != 'BILLING') {
                 // Pseudo items like discount or shipping. Do not try to produce them.
                 continue;
             }
-            $catalogitem = $afullbill->thecatalogue->get_product_by_code($anItem->catalogitem->code);
-            $anItem->transactionid = $afullbill->transactionid;
-            $anItem->customer = $afullbill->customer;
-            $anItem->shopid = $afullbill->theshop->id;
+            $catalogitem = $afullbill->thecatalogue->get_product_by_code($anitem->catalogitem->code);
+            $anitem->transactionid = $afullbill->transactionid;
+            $anitem->customer = $afullbill->customer;
+            $anitem->shopid = $afullbill->theshop->id;
 
             $handler = $catalogitem->get_handler();
 
             if ($handler === false) {
                 // The handler exists but is disabled.
-                shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anItem->itemcode}");
+                shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
                 continue;
             }
 
             if (!is_null($handler)) {
                 if (method_exists($handler, 'produce_prepay')) {
-                    shop_trace("[{$afullbill->transactionid}] Prepay Production : preproducing for $anItem->itemcode");
-                    if ($itemresponse = $handler->produce_prepay($anItem, $afullbill->transactionid)) {
+                    shop_trace("[{$afullbill->transactionid}] Prepay Production : preproducing for $anitem->itemcode");
+                    if ($itemresponse = $handler->produce_prepay($anitem, $afullbill->transactionid)) {
                         $response->public .= "<br/>\n".$itemresponse->public;
                         $response->private .= "<br/>\n".$itemresponse->private;
                         $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;
                     } else {
-                        shop_trace("[{$afullbill->transactionid}] Prepay Production Warning : Empty response $anItem->itemcode");
+                        shop_trace("[{$afullbill->transactionid}] Prepay Production Warning : Empty response $anitem->itemcode");
                     }
                 }
             } else {
-                shop_trace("[{$afullbill->transactionid}] Prepay Production Error : No handler for $anItem->itemcode");
+                shop_trace("[{$afullbill->transactionid}] Prepay Production Error : No handler for $anitem->itemcode");
             }
         }
     }
@@ -91,41 +91,41 @@ function produce_postpay(&$afullbill) {
     $response->private = '';
     $response->salesadmin = '';
 
-    foreach ($afullbill->items as $anItem) {
+    foreach ($afullbill->items as $anitem) {
 
-        if ($anItem->type != 'BILLING') {
+        if ($anitem->type != 'BILLING') {
             // Pseudo items like discount or shipping. Do not try to produce them.
             continue;
         }
-        $catalogitem = $afullbill->thecatalogue->get_product_by_code($anItem->catalogitem->code);
-        $anItem->transactionid = $afullbill->transactionid;
-        $anItem->customer = $afullbill->customer;
+        $catalogitem = $afullbill->thecatalogue->get_product_by_code($anitem->catalogitem->code);
+        $anitem->transactionid = $afullbill->transactionid;
+        $anitem->customer = $afullbill->customer;
 
         $handler = $catalogitem->get_handler();
 
         if ($handler === false) {
             // The handler exists but is disabled.
-            shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anItem->itemcode}");
+            shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
             continue;
         }
 
         if (!is_null($handler)) {
             if (method_exists($handler, 'produce_postpay')) {
-                if ($itemresponse = $handler->produce_postpay($anItem)) {
+                if ($itemresponse = $handler->produce_postpay($anitem)) {
                     $hasworked = true;
                     $response->public .= "<br/>\n".$itemresponse->public;
                     $response->private .= "<br/>\n".$itemresponse->private;
                     $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;
                 } else {
-                    shop_trace("[{$afullbill->transactionid}] Postpay Production Error : empty response fpr {$anItem->itemcode}");
+                    shop_trace("[{$afullbill->transactionid}] Postpay Production Error : empty response fpr {$anitem->itemcode}");
                 }
             } else {
-                shop_trace("[{$afullbill->transactionid}] Postpay Production Warning : No handler for $anItem->itemcode");
+                shop_trace("[{$afullbill->transactionid}] Postpay Production Warning : No handler for $anitem->itemcode");
             }
         } else {
             $e = new Stdclass;
-            $e->abstract = $anItem->abstract;
-            $e->quantity = $anItem->quantity;
+            $e->abstract = $anitem->abstract;
+            $e->quantity = $anitem->quantity;
             $response->public .= get_string('defaultpublicmessagepostpay', 'local_shop', $e);
             $response->private .= get_string('defaultprivatemessagepostpay', 'local_shop', $e);
             $response->salesadmin .= get_string('defaultsalesadminmessagepostpay', 'local_shop', $e);
@@ -134,7 +134,8 @@ function produce_postpay(&$afullbill) {
 
     // Set the final COMPLETE status if has worked.
     if ($hasworked) {
-        // $DB->set_field('local_shop_bill', 'status', 'COMPLETE', array('id' => $afullbill->id));
+        assert(true);
+        // Set bill status to COMPLETE ? 
     }
     return $response;
 }
@@ -160,7 +161,9 @@ function shop_aggregate_production(&$abill, $productiondata, $interactive = fals
      * If interactive, we need all productionfeedback accumulated to sync the recorded information so we can print it out to
      * actual user on transaction feedback.
      */
-    if ($interactive) @$abill->onlinefeedback = $previousdata;
+    if ($interactive) {
+        @$abill->onlinefeedback = $previousdata;
+    }
 }
 
 /**
@@ -211,10 +214,10 @@ function produce_generate_secret($length, $charset = '1234567890abcdefghijklmnop
 
     $buf = '';
 
-    for ($i = 0 ; $i < $length ; $i++) {
+    for ($i = 0; $i < $length; $i++) {
         $ix = rand(0, strlen($charset) - 1);
         $buf .= $charset[$ix];
-        if (($i +1) % 4 == 0) {
+        if (($i + 1) % 4 == 0) {
             $buf .= '-';
         }
     }

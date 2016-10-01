@@ -41,7 +41,7 @@ class ShopObject {
         if (empty($recordorid)) {
             $this->record = new \StdClass;
             $this->record->id = 0;
-        } else if (is_numeric($recordorid))  {
+        } else if (is_numeric($recordorid)) {
             $this->record = $DB->get_record(self::$table, array('id' => $recordorid));
             if (!$this->record) {
                 throw new \Exception('Missing record exception in table '.self::$table.' for ID $recordorid ');
@@ -132,7 +132,8 @@ class ShopObject {
      * @param array $filter an array of specialized field filters
      * @return array of object instances keyed by primary id.
      */
-    static protected function _get_instances($table, $filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    static protected function _get_instances($table, $filter = array(), $order = '',
+                                             $fields = '*', $limitfrom = 0, $limitnum = '') {
         global $DB;
 
         $records = $DB->get_records($table, $filter, $order, $fields, $limitfrom, $limitnum);

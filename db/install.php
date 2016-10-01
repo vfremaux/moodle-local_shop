@@ -133,7 +133,9 @@ function xmldb_local_shop_install() {
 
     // Create the teacherowner role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'courseowner'))) {
-        $courseownerid = create_role(get_string('courseowner', 'local_shop'), 'courseowner', str_replace("'", "\\'", get_string('courseownerdesc', 'local_shop')), 'editingteacher');
+        $rolestr = get_string('courseowner', 'local_shop');
+        $roledesc = get_string('courseownerdesc', 'local_shop');
+        $courseownerid = create_role($rolestr, 'courseowner', str_replace("'", "\\'", $roledesc), 'editingteacher');
         set_role_contextlevels($courseownerid, array(CONTEXT_COURSECAT, CONTEXT_COURSE));
         $editingteacher   = $DB->get_record('role', array('shortname' => 'editingteacher'));
         role_cap_duplicate($editingteacher, $courseownerid);
@@ -141,7 +143,9 @@ function xmldb_local_shop_install() {
 
     // Create the categoryowner role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'categoryowner'))) {
-        $categoryownerid = create_role(get_string('categoryowner', 'local_shop'), 'categoryowner', str_replace("'", "\\'", get_string('categoryownerdesc', 'local_shop')), 'coursecreator');
+        $rolestr = get_string('categoryowner', 'local_shop');
+        $roledesc = get_string('categoryownerdesc', 'local_shop');
+        $categoryownerid = create_role($rolestr, 'categoryowner', str_replace("'", "\\'", $roledesc), 'coursecreator');
         set_role_contextlevels($categoryownerid, array(CONTEXT_COURSECAT));
         $coursecreator   = $DB->get_record('role', array('shortname' => 'coursecreator'));
         role_cap_duplicate($coursecreator, $categoryownerid);
@@ -149,8 +153,10 @@ function xmldb_local_shop_install() {
 
     // Create the sales manager role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'sales'))) {
-        $salesroleid = create_role(get_string('salesrolename', 'local_shop'), 'sales', str_replace("'", "\\'", get_string('salesroledesc', 'local_shop')), '');
-        set_role_contextlevels($salesroleid, array(CONTEXT_BLOCK,CONTEXT_SYSTEM));
+        $rolestr = get_string('salesrolename', 'local_shop');
+        $roledesc = get_string('salesroledesc', 'local_shop');
+        $salesroleid = create_role($rolestr, 'sales', str_replace("'", "\\'", $roledesc), '');
+        set_role_contextlevels($salesroleid, array(CONTEXT_BLOCK, CONTEXT_SYSTEM));
     }
 
     // Create first catalog for default shop.
@@ -292,7 +298,8 @@ function xmldb_local_shop_install() {
         $table = new xmldb_table('flowcontrol');
         if ($fcs = $DB->get_records('flowcontrol')) {
             foreach ($fcs as $fc) {
-                if (!$DB->record_exists('local_flowcontrol', array('element' => $fc->element, 'fromstate' => $fc->fromstate, 'tostate' => $fc->tostate))) {
+                $params = array('element' => $fc->element, 'fromstate' => $fc->fromstate, 'tostate' => $fc->tostate);
+                if (!$DB->record_exists('local_flowcontrol', $params)) {
                     $DB->insert_record('local_flowcontrol', $fc);
                 }
             }

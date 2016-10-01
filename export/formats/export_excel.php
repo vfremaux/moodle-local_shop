@@ -30,14 +30,9 @@ class shop_export_excel extends shop_export {
 
     protected $worksheets = array();
 
-    protected $xls_formats = array();
-
-    public function __construct($data, $datadesc, $options) {
-        parent::__construct($data, $datadesc, $options);
-    }
+    protected $xlsformats = array();
 
     /**
-     *
      *
      */
     public function open_export() {
@@ -68,7 +63,9 @@ class shop_export_excel extends shop_export {
 
             $i = 0;
             foreach ($this->datadesc[0]['columns'] as $col) {
-                if ($col['width'] == 0) continue;
+                if ($col['width'] == 0)  {
+                    continue;
+                }
                 $this->worksheets[0]->set_column($i, $i, $col['width']);
                 $i++;
             }
@@ -82,13 +79,13 @@ class shop_export_excel extends shop_export {
      * with all the relevant data about a user.
      *
      */
-    protected function __print_header() {
-        global $CFG;
+    protected function print_header() {
+        global $OUTPUT;
 
         $i = 0;
 
         if (empty($this->datadesc[0]['columns'])) {
-            echo $OUPUT->notification(get_string('nocolumns', 'local_shop'));
+            echo $OUTPUT->notification(get_string('nocolumns', 'local_shop'));
         }
 
         foreach ($this->datadesc[0]['columns'] as $col) {
@@ -112,7 +109,7 @@ class shop_export_excel extends shop_export {
      * with all the relevant data about a user.
      *
      */
-    protected function __print_data() {
+    protected function print_data() {
 
         $row = 1;
 
@@ -165,8 +162,8 @@ class shop_export_excel extends shop_export {
      *
      */
     public function render() {
-        $this->__print_header();
-        $this->__print_data();
+        $this->print_header();
+        $this->print_data();
     }
 
     /**
@@ -221,6 +218,6 @@ class shop_export_excel extends shop_export {
         $formats['date']->set_size(9);
         $formats['date']->set_num_format('aaaa/mm/dd hh:mm');
 
-        $this->xls_formats = $formats;
+        $this->xlsformats = $formats;
     }
 }

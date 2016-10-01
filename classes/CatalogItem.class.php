@@ -69,7 +69,7 @@ class CatalogItem extends ShopObject {
             }
 
             if ($this->isset) {
-                $this->elements = CatalogItem::get_instances(array('catalogid' => $this->catalogid, 'setid' => $this->id), 'code');
+                $this->elements = self::get_instances(array('catalogid' => $this->catalogid, 'setid' => $this->id), 'code');
                 $catalog = new Catalog($this->catalogid, true);
                 if (!empty($this->elements)) {
                     foreach ($this->elements as $elmid => $elm) {
@@ -286,9 +286,8 @@ class CatalogItem extends ShopObject {
     }
 
     /**
-    *
-    *
-    */
+     *
+     */
     public function get_thumb_url() {
         global $OUTPUT;
 
@@ -320,7 +319,7 @@ class CatalogItem extends ShopObject {
         if (empty($enablehandler)) {
             return false;
         } else if ($enablehandler == SPECIFIC_HANDLER) {
-            $thehandler = $anItem->itemcode;
+            $thehandler = $this->itemcode;
         } else {
             $thehandler = $enablehandler;
         }
@@ -488,7 +487,7 @@ class CatalogItem extends ShopObject {
 
     public function remove_content() {
         if (!$this->elements) {
-            $this->elements = CatalogItem::get_instances(array('setid' => $this->id));
+            $this->elements = self::get_instances(array('setid' => $this->id));
         }
 
         foreach ($this->elements as $elm) {
@@ -510,7 +509,7 @@ class CatalogItem extends ShopObject {
      */
     public function fulldelete() {
         if ($this->id && !$this->elements) {
-            $this->elements = CatalogItem::get_instances(array('setid' => $this->id));
+            $this->elements = self::get_instances(array('setid' => $this->id));
         }
 
         foreach ($this->elements as $elm) {
@@ -533,7 +532,8 @@ class CatalogItem extends ShopObject {
             $this->record->setid = $inset; // Should give the new set.
         }
 
-        while ($DB->record_exists('local_shop_catalogitem', array('catalogid' => $this->catalogid, 'code' => $this->record->code))) {
+        $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code));
+        while ($DB->record_exists('local_shop_catalogitem', $params) {
             $this->record->code .= '1';
         }
 
@@ -573,19 +573,19 @@ class CatalogItem extends ShopObject {
         $whereclause = '';
         switch ($by) {
             case "code":
-               $whereclause = "   code = ? ";
-               $params[] = $arg;
-               break;
+                $whereclause = "   code = ? ";
+                $params[] = $arg;
+                break;
             case "shortname":
-               $whereclause = "   shortname LIKE ? ";
-               $params[] = $arg.'%';
-               break;
+                $whereclause = "   shortname LIKE ? ";
+                $params[] = $arg.'%';
+                break;
             case "name":
-               $whereclause = "   UPPER(name) LIKE UPPER(?) ";
-               $params[] = $arg;
-               break;
+                $whereclause = "   UPPER(name) LIKE UPPER(?) ";
+                $params[] = $arg;
+                break;
             default:
-               $error = true;
+                $error = true;
         }
 
         $scopeclause = '';

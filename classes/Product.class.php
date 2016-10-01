@@ -49,7 +49,8 @@ class Product extends ShopObject {
 
         if ($idorrecord) {
             if ($light) {
-                return; // This builds a lightweight proxy of the Bill, without items.
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
             }
         } else {
             // Initiate empty fields.
@@ -255,7 +256,7 @@ class Product extends ShopObject {
             print_error('errorbadhandler', 'local_shop');
         }
 
-        require_once $CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php';
+        require_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
 
         $classname = 'shop_handler_'.$productinfo->handler;
         $handler = new $classname('');

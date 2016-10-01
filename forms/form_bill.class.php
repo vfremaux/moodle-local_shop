@@ -64,11 +64,11 @@ class Bill_Form extends moodleform {
         $customers = Customer::get_instances();
 
         // Getting the full name of customers.
-        $fullname_custo_select = array();
-        $fullname_custo_select['0'] = get_string('choosecustomer', 'local_shop');
+        $fullnamecustoselect = array();
+        $fullnamecustoselect['0'] = get_string('choosecustomer', 'local_shop');
 
         foreach ($customers as $customer) {
-            $fullname_custo_select[$customer->id] = $customer->lastname.' '.$customer->firstname;
+            $fullnamecustoselect[$customer->id] = $customer->lastname.' '.$customer->firstname;
         }
 
         // Select user whithout customer account.
@@ -84,17 +84,18 @@ class Bill_Form extends moodleform {
         $users = $DB->get_records_sql($sqluser);
 
         // Getting the full names.
-        $fullname_user_select = array();
-        $fullname_user_select['0'] = get_string('chooseuser', 'local_shop');
+        $fullnameuserselect = array();
+        $fullnameuserselect['0'] = get_string('chooseuser', 'local_shop');
         foreach ($users as $user) {
-            $fullname_user_select[$user->id] = fullname($user);
+            $fullnameuserselect[$user->id] = fullname($user);
         }
 
         // Set default for user select.
         $userarray = array();
         $label = get_string('customers', 'local_shop');
-        $userarray = &$mform->createElement('select', 'userid', $label, $fullname_custo_select, $attributesjscustomer);
-        $userarray[] = &$mform->createElement('select', 'useraccountid', get_string('users'), $fullname_user_select, $attributesjsuser);
+        $userarray = &$mform->createElement('select', 'userid', $label, $fullnamecustoselect, $attributesjscustomer);
+        $label = get_string('users');
+        $userarray[] = &$mform->createElement('select', 'useraccountid', $label, $fullnameuserselect, $attributesjsuser);
         $orstr = get_string('or', 'local_shop');
         $mform->addGroup($userarray, 'selectar', get_string('pickuser', 'local_shop'), '&nbsp;'. $orstr.'&nbsp;', false);
         $mform->addHelpButton('selectar', 'customer_account', 'local_shop');

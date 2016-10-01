@@ -55,10 +55,10 @@ class shop_customers_renderer {
                              '');
         $table->align = array('center', 'left', 'left', 'left', 'center', 'center', 'right');
 
-        $emptyAccounts = 0;
+        $emptyaccounts = 0;
         foreach ($customers as $c) {
             if ($c->billcount == 0) {
-                $emptyAccounts++;
+                $emptyaccounts++;
             }
             $row = array();
             $params = array('view' => 'viewCustomer', 'customer' => $c->id);
@@ -133,7 +133,7 @@ class shop_customers_renderer {
      * @param array $billset
      * @param string $status filtering on bill state
      */
-    function customer_bills($billset, $status) {
+    public function customer_bills($billset, $status) {
         global $OUTPUT;
 
         $config = get_config('local_shop');
@@ -169,11 +169,17 @@ class shop_customers_renderer {
             $row[] = sprintf("%.2f", round($portlet->amount, 2)).' '.$config->defaultcurrency;
             if ($portlet->status == 'PENDING') {
                 $markstr = get_string('mark', 'local_shop');
-                $params = array('view' => 'viewCustomer', 'what' => 'sellout', 'billid' => $portlet->id, 'customer' => $portlet->userid);
+                $params = array('view' => 'viewCustomer',
+                                'what' => 'sellout',
+                                'billid' => $portlet->id,
+                                'customer' => $portlet->userid);
                 $url = new moodle_url('/local/shop/view.php', $params);
                 $row[] = '<a href="'.$url.'" alt="'.$markstr.'"><img src="'.$OUTPUT->pix_url('mark', 'local_shop').'"/></a>';
             } else if ($portlet->status == 'SOLDOUT') {
-                $params = array('view' => 'viewCustomer', 'what' => 'unmark', 'billid' => $portlet->id, 'customer' => $portlet->userid);
+                $params = array('view' => 'viewCustomer',
+                                'what' => 'unmark',
+                                'billid' => $portlet->id,
+                                'customer' => $portlet->userid);
                 $url = new moodle_url('/local/shop/view.php', $params);
                 $row[] = '<a href="'.$url.'" alt="'.$unmarkstr.'"><img src="'.$OUTPUT->pix_url('unmark', 'local_shop').'" ></a>';
             }

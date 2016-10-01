@@ -101,7 +101,9 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
         $DB->update_record('user', $newuser);
     }
 
-    if (!$newuser->id) return false;
+    if (!$newuser->id) {
+        return false;
+    }
 
     $data->user = get_complete_user_data('username', $newuser->username);
 

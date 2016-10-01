@@ -34,9 +34,21 @@ class BillItem_Form extends moodleform {
 
     private $bill;
 
+    protected $editoroptions;
+
     public function __construct($mode, $bill, $action) {
         $this->mode = $mode;
         $this->bill = $bill;
+
+        $context = context_system::instance();
+
+        $maxfiles = 99;                // TODO: add some setting.
+        $maxbytes = $COURSE->maxbytes; // TODO: add some setting.
+        $this->editoroptions = array('trusttext' => true,
+                                     'subdirs' => false,
+                                     'maxfiles' => $maxfiles,
+                                     'maxbytes' => $maxbytes,
+                                     'context' => $context);
         parent::__construct($action);
     }
 
@@ -79,7 +91,7 @@ class BillItem_Form extends moodleform {
         // Adding fieldset.
         $attributes = 'size="50" maxlength="200"';
         $attributesshort = 'size="24" maxlength="24"';
-        $attributes_description = 'cols="50" rows="8"';
+        $attributesdescription = 'cols="50" rows="8"';
         $label = get_string('order', 'local_shop');
         $billcode = 'ORD-'.date('Ymd', $this->bill->emissiondate).'-'.$this->bill->id;
         $mform->addElement('static', 'billtitle', $label, $billcode);
@@ -92,10 +104,10 @@ class BillItem_Form extends moodleform {
         $mform->addElement('text', 'itemcode', get_string('code', 'local_shop'), $attributesshort);
         $mform->setType('itemcode', PARAM_INT);
 
-        $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop'), $attributesshort);
+        $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop'), $this->editoroptions);
         $mform->setType('abstract', PARAM_CLEANHTML);
 
-        $mform->addElement('editor', 'description', get_string('description'));
+        $mform->addElement('editor', 'description', get_string('description'), $this->editoroptions);
         $mform->setType('description', PARAM_CLEANHTML);
 
         $mform->addElement('date_selector', 'delay', get_string('timetodo', 'local_shop'));
@@ -105,8 +117,8 @@ class BillItem_Form extends moodleform {
 
         $mform->addElement('text', 'quantity', get_string('quantity', 'local_shop').':', $attributesshort);
         $mform->setType('quantity', PARAM_NUMBER);
-
-        $content = "<span id=\"totalPrice\">0.00</span> ". $config->defaultcurrency;
++
+        $content = '<span id="totalPrice">0.00</span> '. $config->defaultcurrency;
         $mform->addElement('static', 'totalprice', get_string('total'), $content);
         $bill = $DB->get_record('local_shop_bill', array('id' => $this->bill->id));
 

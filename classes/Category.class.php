@@ -77,7 +77,8 @@ class Category extends ShopObject {
         global $DB;
 
         $branch = array();
-        $recs = $DB->get_records('local_shop_catalogcategory', array('parentid' => $categoryid, 'catalogid' => $catalogid), 'sortorder', 'id,parentid', 0, 1);
+        $params = array('parentid' => $categoryid, 'catalogid' => $catalogid);
+        $recs = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', 'id,parentid', 0, 1);
         if ($recs) {
             $reckeys = array_keys($recs);
             $catid = array_shift($reckeys);
@@ -85,10 +86,6 @@ class Category extends ShopObject {
             $branch += self::get_first_branch($catalogid, $catid);
         }
         return $branch;
-    }
-
-    public function delete() {
-        parent::delete();
     }
 
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

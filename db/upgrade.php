@@ -34,7 +34,6 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
     $dbman = $DB->get_manager();
 
     if ($result && $oldversion < 2016022900) {
-        // New version in version.php.
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop');
@@ -69,7 +68,6 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
     }
 
     if ($result && $oldversion < 2016083100) {
-        // New version in version.php
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop_catalogitem');
@@ -84,7 +82,6 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
     }
 
     if ($result && $oldversion < 2016090800) {
-        //New version in version.php.
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop');

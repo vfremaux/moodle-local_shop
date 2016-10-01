@@ -29,7 +29,7 @@ namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
 
-include_once $CFG->dirroot.'/local/shop/classes/ShopObject.php';
+require_once($CFG->dirroot.'/local/shop/classes/ShopObject.php');
 
 class Organisation extends ShopObject {
 }

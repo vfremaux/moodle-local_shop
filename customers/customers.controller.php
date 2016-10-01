@@ -37,7 +37,7 @@ class customers_controller {
         if ($cmd == 'deletecustomer') {
             $customerids = required_param_array('customerid', PARAM_INT);
             if ($customerids) {
-                foreach($customerids as $id) {
+                foreach ($customerids as $id) {
                     $customer = new Customer();
                     $customer->delete();
                 }

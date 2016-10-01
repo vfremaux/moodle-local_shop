@@ -21,8 +21,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-include('../../../config.php');
-include_once($CFG->dirroot.'/local/shop/locallib.php');
+require('../../../config.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 $id = required_param('id', PARAM_INT); // The blockid.
 $theblock = shop_get_block_instance($id);

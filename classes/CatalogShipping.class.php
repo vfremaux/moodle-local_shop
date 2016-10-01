@@ -44,7 +44,10 @@ class CatalogShipping extends ShopObject {
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // This builds a lightweight proxy of the Bill, without items.
+            if ($light) {
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
+            }
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -56,10 +59,6 @@ class CatalogShipping extends ShopObject {
             $this->record->b = 0;
             $this->record->c = 0;
         }
-    }
-
-    public function delete() {
-        parent::delete();
     }
 
     public static function get_products_with_shipping($catalogid) {

@@ -40,7 +40,8 @@ class Tax extends ShopObject {
 
         if ($idorrecord) {
             if ($light) {
-                return; // This builds a lightweight proxy of the Bill, without items.
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
             }
         } else {
             // Initiate empty fields.
@@ -52,11 +53,7 @@ class Tax extends ShopObject {
         }
     }
 
-    public function delete() {
-        parent::delete();
-    }
-
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 

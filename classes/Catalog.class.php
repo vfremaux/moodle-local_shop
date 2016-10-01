@@ -219,7 +219,7 @@ class Catalog extends ShopObject {
                 }
                 $categoryclause = '';
             } else {
-                $categoryclause =  " ci.categoryid = ? AND ";
+                $categoryclause = " ci.categoryid = ? AND ";
 
             }
 
@@ -342,8 +342,8 @@ class Catalog extends ShopObject {
 
         $shopproducts = array();
         foreach ($categories as $key => $cat) {
-            // get master catalog items
-            /**
+            // Get master catalog items.
+            /*
              * product might be standalone product or set or bundle
              */
             if ($this->isslave) {
@@ -525,7 +525,7 @@ class Catalog extends ShopObject {
      * @return an object providing entries for a billitem setup as shipping additional
      * pseudo product
      */
-    function calculate_shipping($shoppingcart = null) {
+    public function calculate_shipping($shoppingcart = null) {
         global $DB, $SESSION;
 
         if (!$shoppingcart) {
@@ -624,11 +624,11 @@ class Catalog extends ShopObject {
                 }
             }
             if ($return->value > 0) {
-                   $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
-               } else {
-                   $return->taxedvalue = 0;
-               }
-               return $return;
+                $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
+            } else {
+                $return->taxedvalue = 0;
+            }
+            return $return;
         }
         // Void return if no shipping solution.
         shop_trace("[{$transactionid}] shop Shipping : No shipping solution");
@@ -678,9 +678,10 @@ class Catalog extends ShopObject {
         ";
 
         $params = array($this->id);
-        if (!empty($userid)) $params[] = $userid;
+        if (!empty($userid)) {
+            $params[] = $userid;
+        }
 
-        // echo $sql;
         $allproducts = array();
         if ($catalogitems = $DB->get_records_sql($sql, $params)) {
             foreach ($catalogitems as $cirec) {
@@ -776,7 +777,7 @@ class Catalog extends ShopObject {
         }
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', 
+    public static function get_instances($filter = array(), $order = '', $fields = '*',
                                          $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }

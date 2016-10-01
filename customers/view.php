@@ -70,6 +70,6 @@ $renderer->load_context($theshop);
 
 $out = $OUTPUT->header();
 
-include($CFG->dirroot.'/local/shop/customers/'.$view.'.php');
+require($CFG->dirroot.'/local/shop/customers/'.$view.'.php');
 
 echo $OUTPUT->footer();

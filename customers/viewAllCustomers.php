@@ -32,9 +32,9 @@ use local_shop\Customer;
 $action = optional_param('action', '', PARAM_TEXT);
 
 if (!empty($action)) {
-   include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
-   $controller = new customer_controller();
-   $controller->process($action);
+    include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
+    $controller = new customer_controller();
+    $controller->process($action);
 }
 
 $order = optional_param('order', 'lastname', PARAM_TEXT);
@@ -44,7 +44,7 @@ $offset = optional_param('offset', 0, PARAM_INT);
 $params = array('view' => 'viewAllCustomers', 'order' => $order, 'dir' => $dir);
 $url = new moodle_url('/local/shop/customers/view.php', $params);
 
-$customersCount = $DB->count_records_select('local_shop_customer', " UPPER(email) NOT LIKE 'test%' "); // Eliminate tests.
+$customerscount = $DB->count_records_select('local_shop_customer', " UPPER(email) NOT LIKE 'test%' "); // Eliminate tests.
 $config = get_config('local_shop');
 
 $customers = Customer::get_instances_for_admin($theshop);
@@ -63,7 +63,7 @@ if (empty($customers)) {
 
 $portlet = new StdClass();
 $portlet->url = $url;
-$portlet->total = $customersCount;
+$portlet->total = $customerscount;
 $portlet->pagesize = $config->maxitemsperpage;
 echo $mainrenderer->paging_results($portlet);
 

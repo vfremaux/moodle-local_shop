@@ -91,7 +91,9 @@ class Set extends ShopObject {
         }
         if (!array_key_exists($taxid, $taxcache)) {
             if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
-                if (empty($taxcache[$taxid]->formula)) $taxcache[$taxid]->formula = '$ttc = $ht';
+                if (empty($taxcache[$taxid]->formula)) {
+                    $taxcache[$taxid]->formula = '$ttc = $ht';
+                }
             } else {
                 return $htprice;
             }

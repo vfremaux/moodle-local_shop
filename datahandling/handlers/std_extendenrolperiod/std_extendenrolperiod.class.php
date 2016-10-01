@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,13 +21,14 @@ defined('MOODLE_INTERNAL') || die();
  * @author      Valery Fremaux (valery.fremaux@gmail.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-include_once($CFG->dirroot.'/lib/enrollib.php');
+require_once($CFG->dirroot.'/lib/enrollib.php');
 
-class shop_handler_std_extendenrolperiod extends shop_handler{
+class shop_handler_std_extendenrolperiod extends shop_handler {
 
     public function __construct($label) {
-        $this->name = 'std_extendenrolperiod'; // for unit test reporting
+        $this->name = 'std_extendenrolperiod'; // for unit test reporting.
         parent::__construct($label);
     }
 
@@ -58,7 +57,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
 
-        // Assign Student role in course for the period
+        // Assign Student role in course for the period.
         if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
             print_error('erroractiondatavalue', 'local_shop', $this->get_name());
         }
@@ -97,11 +96,11 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
         }
 
         /*
-         * If we have time left in course, extend the period over that time. If we are already out of time, just open
-         * a new rangextension period from now.
+         * If we have time left in course, extend the period over that time.
+         * If we are already out of time, just open a new rangextension period from now.
          */
         $now = time();
-        $enroldata->timeend = ($now > $enroldata->timeend) ? $now +  $rangeextension : $enroldata->timeend + $rangeextension;
+        $enroldata->timeend = ($now > $enroldata->timeend) ? $now + $rangeextension : $enroldata->timeend + $rangeextension;
 
         if (!$DB->update_record('user_enrolments', $enroldata)) {
             $productionfeedback->public = get_string('processerror', 'local_shop');
@@ -147,7 +146,8 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             $errors[$data->code][] = get_string('errornocourse', 'shophandlers_std_extendenrolperiod');
         } else {
             if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-                $errors[$data->code][] = get_string('errorextcoursenotexists', 'shophandlers_std_extendenrolperiod', $data->actionparams['coursename']);
+                $err = get_string('errorextcoursenotexists', 'shophandlers_std_extendenrolperiod', $data->actionparams['coursename']);
+                $errors[$data->code][] = $err;
             }
         }
 
@@ -156,12 +156,15 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             $data->actionparams['enroltype'] = 'manual';
         }
 
-        if (!$enrolplugin = enrol_get_plugin($data->actionparams['enroltype'])) {
-            $errors[$data->code][] = get_string('errorenrolpluginnotavailable', 'shophandlers_std_extendenrolperiod', $data->actionparams['enroltype']);
+        $enroltype = $data->actionparams['enroltype'];
+        if (!$enrolplugin = enrol_get_plugin($enroltype)) {
+            $err = get_string('errorenrolpluginnotavailable', 'shophandlers_std_extendenrolperiod', $enroltype);
+            $errors[$data->code][] = $err;
         }
 
         if (!enrol_is_enabled($data->actionparams['enroltype'])) {
-            $errors[$data->code][] = get_string('errorenroldisabled', 'shophandlers_std_extendenrolperiod', $data->actionparams['enroltype']);
+            $err = get_string('errorenroldisabled', 'shophandlers_std_extendenrolperiod', $data->actionparams['enroltype']);
+            $errors[$data->code][] = $err;
         }
 
         if (!isset($data->actionparams['extension'])) {

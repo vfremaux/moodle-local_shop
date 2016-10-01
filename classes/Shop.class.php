@@ -166,7 +166,7 @@ class Shop extends ShopObject {
             $defaultpaymode = '';
         }
 
-        foreach($paymodeenable as $k => $v) {
+        foreach ($paymodeenable as $k => $v) {
             $key = 'enable'.$k;
             $shoprec->$key = $v;
         }
@@ -213,7 +213,9 @@ class Shop extends ShopObject {
     public function calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
         global $CFG, $USER;
 
-        if (is_null($user)) $user = $USER;
+        if (is_null($user)) {
+            $user = $USER;
+        }
 
         $discountrate = 0; // No discount as default.
 

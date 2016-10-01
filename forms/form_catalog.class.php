@@ -50,7 +50,6 @@ class Catalog_Form extends moodleform {
 
         // Adding fieldset.
         $attributes = 'size="50" maxlength="255"';
-        $attributes_description = 'cols="50" rows="8"';
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -66,12 +65,12 @@ class Catalog_Form extends moodleform {
         $mform->setType('name', PARAM_TEXT);
 
         $label = get_string('description', 'local_shop');
-        $mform->addElement('editor', 'description_editor', $label, null, $this->editoroptions);
+        $mform->addElement('editor', 'description_editor', $label, $this->editoroptions);
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
         $mform->addRule('description_editor', null, 'required');
 
         $label = get_string('salesconditions', 'local_shop');
-        $mform->addElement('editor', 'salesconditions_editor', $label, null, $this->editoroptions);
+        $mform->addElement('editor', 'salesconditions_editor', $label, $this->editoroptions);
 
         $label = get_string('countrycodelist', 'local_shop');
         $mform->addElement('text', 'countryrestrictions', $label, $attributes);

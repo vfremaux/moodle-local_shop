@@ -80,7 +80,8 @@ abstract class shop_handler{
      * @param string $field the fieldname to validate for
      * @param int $instance the instance to validate for. Needed to key the error output.
      * @param string $value the value to validate
-     * @param arrayref $errors, an error array to be field with all encountered errors. Keys of the array are [catalogitem][fieldname][instanceix].
+     * @param arrayref $errors, an error array to be field with all encountered errors. Keys of the
+     * array are [catalogitem][fieldname][instanceix].
      * @return false if not validated
      */
     public function validate_required_data($itemname, $field, $instance, $value, &$errors) {
@@ -92,11 +93,13 @@ abstract class shop_handler{
      * @param array $params production related info stored at purchase time
      */
     public function display_product_infos($pid, $pinfo) {
-        // do nothing.
+        // Do nothing.
+        return;
     }
 
     public function display_product_acions() {
         // Do nothing.
+        return;
     }
 
     protected function unit_test($data, &$errors, &$warnings, &$messages) {

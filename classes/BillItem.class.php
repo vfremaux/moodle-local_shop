@@ -148,7 +148,7 @@ class BillItem extends ShopObject {
                         $pairs = explode('&', $this->productiondata->handlerparams);
                         if (!empty($pairs)) {
                             foreach ($pairs as $p) {
-                                list($param,$value) = explode('=', $p);
+                                list($param, $value) = explode('=', $p);
                                 $this->actionparams[$param] = $value;
                             }
                         }
@@ -193,8 +193,9 @@ class BillItem extends ShopObject {
     }
 
     public function get_tax_amount() {
-        return $this->catalogitem->get_taxed_price($this->record->quantity) -
-                $this->catalogitem->get_price($this->record->quantity);
+        $taxed = $this->catalogitem->get_taxed_price($this->record->quantity);
+        $untaxed = $this->catalogitem->get_price($this->record->quantity);
+        return $taxed - $untaxed;
     }
 
     public function get_totaltax() {
