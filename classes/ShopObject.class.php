@@ -23,6 +23,9 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * A shop object is a generic object that has record in DB
