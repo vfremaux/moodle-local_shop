@@ -31,7 +31,7 @@ class taxes_controller {
     public function process($cmd) {
         global $DB;
 
-        // Delete a tax
+        // Delete a tax.
         if ($cmd == 'delete') {
             $taxid = required_param('taxid', PARAM_INT);
             $tax = new Tax($taxid);

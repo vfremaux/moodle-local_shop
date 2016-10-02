@@ -50,7 +50,7 @@ $PAGE->navbar->add(get_string('shops', 'local_shop'), new moodle_url('/local/sho
 $PAGE->set_pagelayout('admin');
 
 if ($view == 'viewShop') {
-    $id = required_param('shopid', PARAM_INT); // just for bocking
+    $id = required_param('shopid', PARAM_INT); // Just for backing.
     $shop = new Shop($id);
     $PAGE->navbar->add(get_string('shop', 'local_shop'), $shop->name);
 }
@@ -64,7 +64,7 @@ echo $OUTPUT->header();
 
 // Make page content.
 
-include_once($CFG->dirroot."/local/shop/shop/{$view}.php");
+require_once($CFG->dirroot."/local/shop/shop/{$view}.php");
 
 // Make footer.
 

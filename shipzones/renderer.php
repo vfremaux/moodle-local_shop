@@ -110,7 +110,14 @@ class shop_shipzones_renderer {
         $cstr = get_string('c', 'local_shop');
 
         $table = new html_table();
-        $table->header = array('', "<b>$codestr</b>", "<b>$valuestr</b>", "<b>$formulastr</b>", "<b>$astr</b>", "<b>$bstr</b>", "<b>$cstr</b>", '');
+        $table->header = array('',
+                               "<b>$codestr</b>",
+                               "<b>$valuestr</b>",
+                               "<b>$formulastr</b>",
+                               "<b>$astr</b>",
+                               "<b>$bstr</b>",
+                               "<b>$cstr</b>",
+                               '');
         $table->width = '100%';
         $table->align = array('center', 'left', 'left', 'left', 'left', 'left', 'right');
 
@@ -160,7 +167,7 @@ class shop_shipzones_renderer {
 
         foreach ($zones as $z) {
             $row = array();
-            $row[] = '<!-- input type="checkbox" name="zoneids[]" value="'.$z->id.'" / -->'; // Not yet
+            $row[] = '<!-- input type="checkbox" name="zoneids[]" value="'.$z->id.'" / -->'; // Not yet!
             $row[] = $z->zonecode;
             $row[] = $z->description;
             $row[] = $z->billscopeamount;

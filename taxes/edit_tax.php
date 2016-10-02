@@ -23,7 +23,7 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
-require_once($CFG->dirroot.'/local/shop/forms/form_tax.class.php'); //imports of Form tax
+require_once($CFG->dirroot.'/local/shop/forms/form_tax.class.php'); // Imports of Form tax.
 
 // Get the block reference and key context.
 

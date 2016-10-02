@@ -52,7 +52,7 @@ $PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
 
 // Make page content.
-include($CFG->dirroot."/local/shop/taxes/{$view}.php");
+require($CFG->dirroot."/local/shop/taxes/{$view}.php");
 
 // Make footer.
 echo $OUTPUT->footer();

@@ -30,9 +30,9 @@ use local_shop\CatalogItem;
 
 $action = optional_param('what', '', PARAM_TEXT);
 if (!empty($action)) {
-   include($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
-   $controller = new taxes_controller();
-   $controller->process($action);
+    include($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
+    $controller = new taxes_controller();
+    $controller->process($action);
 }
 
 $order = optional_param('order', 'country', PARAM_TEXT);
@@ -41,7 +41,7 @@ $offset = optional_param('offset', 0, PARAM_INT);
 
 $url = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes', 'order' => $order, 'dir' => $dir));
 
-$taxesCount = $DB->count_records_select('local_shop_tax', " UPPER(title) NOT LIKE 'test%' "); // eliminate tests
+$taxesCount = $DB->count_records_select('local_shop_tax', " UPPER(title) NOT LIKE 'test%' "); // Eliminate tests.
 
 $taxes = Tax::get_instances();
 
@@ -75,11 +75,16 @@ if (empty($taxes)) {
         $pcount = 0 + CatalogItem::count(array('taxcode' => $t->id));
         $row[] = $pcount;
 
-        $editurl = new moodle_url('/local/shop/taxes/edit_tax.php', array('taxid' => $t->id, 'what' => 'updatetax'));
+        $params = array('taxid' => $t->id, 'what' => 'updatetax');
+        $editurl = new moodle_url('/local/shop/taxes/edit_tax.php', $params);
         $commands = '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
 
         if ($pcount == 0) {
-            $params = array('view' => 'viewAllTaxes', 'order' => $order, 'dir' => $dir, 'taxid' => $t->id, 'what' => 'delete');
+            $params = array('view' => 'viewAllTaxes',
+                            'order' => $order,
+                            'dir' => $dir,
+                            'taxid' => $t->id,
+                            'what' => 'delete');
             $deleteurl = new moodle_url('/local/shop/taxes/view.php', $params);
             $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
         }

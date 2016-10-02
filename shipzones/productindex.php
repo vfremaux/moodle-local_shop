@@ -53,7 +53,7 @@ try {
     print_error('objecterror', 'local_shop', $e->message);
 }
 
-try{
+try {
     $catalogitem = new CatalogItem($catalogitemid);
 } catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->message);
