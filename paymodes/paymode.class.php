@@ -137,7 +137,7 @@ abstract class shop_paymode {
      */
     public static function resolve_transaction_identification(&$transid, &$cmd, &$paymode) {
 
-        $plugins = shop_paymode::shop_get_plugins(null);
+        $plugins = self::shop_get_plugins(null);
         $transid = '';
         $cmd = '';
 

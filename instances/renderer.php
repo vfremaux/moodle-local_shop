@@ -69,7 +69,7 @@ class shop_instances_renderer {
             $prices = $product->get_printable_prices(true);
             foreach ($prices as $key => $price) {
                 $pl = '<span class="shop-admin-pricerange">'.$key.' : </span>';
-                $pl .= '<span class="shop-admin-amount">'.$price.'</span>'
+                $pl .= '<span class="shop-admin-amount">'.$price.'</span>';
                 $taxedpricelines[] = $pl;
             }
 

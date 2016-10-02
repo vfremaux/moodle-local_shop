@@ -67,7 +67,7 @@ if ($hassiteconfig) {
     $key = 'local_shop/testoverride';
     $label = get_string('testoverride', 'local_shop');
     $desc = get_string('configtestoverride', 'local_shop');
-    $settings->add(new admin_setting_configcheckbox(, $label, $desc, ''));
+    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
     $key = 'local_shop/useshipping';
     $label = get_string('useshipping', 'local_shop');

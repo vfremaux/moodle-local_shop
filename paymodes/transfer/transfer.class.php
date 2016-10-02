@@ -48,10 +48,10 @@ class shop_paymode_transfer extends shop_paymode {
                       'BANK_CODE' => $config->bankcode,
                       'BANK_OFFICE' => $config->bankoffice,
                       'BANK_ACCOUNT' => $config->bankaccount,
-                      'ACCOUNT_KEY' =>  $config->bankaccountkey,
-                      'IBAN' =>  $config->iban,
-                      'BIC' =>  $config->bic,
-                      'TVA_EUROPE' =>  $config->tvaeurope,
+                      'ACCOUNT_KEY' => $config->bankaccountkey,
+                      'IBAN' => $config->iban,
+                      'BIC' => $config->bic,
+                      'TVA_EUROPE' => $config->tvaeurope,
                       'PROC_ORDER' => $proc++);
         echo shop_compile_mail_template('print_procedure_text', $vars, 'shoppaymodes_transfer');
     }
@@ -74,10 +74,10 @@ class shop_paymode_transfer extends shop_paymode {
                       'BANK_CODE' => $config->bankcode,
                       'BANK_OFFICE' => $config->bankoffice,
                       'BANK_ACCOUNT' => $config->bankaccount,
-                      'ACCOUNT_KEY' =>  $config->bankaccountkey,
-                      'IBAN' =>  $config->iban,
-                      'BIC' =>  $config->bic,
-                      'TVA_EUROPE' =>  $config->tvaeurope,
+                      'ACCOUNT_KEY' => $config->bankaccountkey,
+                      'IBAN' => $config->iban,
+                      'BIC' => $config->bic,
+                      'TVA_EUROPE' => $config->tvaeurope,
                       'PROC_ORDER' => $proc++);
         echo shop_compile_mail_template('print_procedure_text_invoice', $vars, 'shoppaymodes_transfer');
     }

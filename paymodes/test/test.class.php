@@ -166,7 +166,7 @@ class shop_paymode_test extends shop_paymode {
             $controller->process('produce', !$close);
 
             die;
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             shop_trace("[$transid]  Test IPN : Transaction ID Error");
             mtrace($OUTPUT->notification(get_string('ipnerror', 'shoppaymodes_test'), 'error'));
         }

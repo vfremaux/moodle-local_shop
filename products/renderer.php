@@ -21,7 +21,6 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -48,7 +47,7 @@ class shop_products_renderer {
 
     private function _check_context() {
         if (empty($this->thecatalog)) {
-            throw new coding_exception('context not ready in products_renderer. Missing Catlaog instance');
+            throw new coding_exception('context not ready in products_renderer. Missing Catalog instance');
         }
     }
 
@@ -145,13 +144,15 @@ class shop_products_renderer {
             $pricelines = array();
             $prices = $product->get_printable_prices();
             foreach ($prices as $key => $price) {
-                $pricelines[] = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $pl = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $pricelines[] = $pl;
             }
 
             $taxedpricelines = array();
             $prices = $product->get_printable_prices(true);
             foreach ($prices as $key => $price) {
-                $taxedpricelines[] = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $pl = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $taxedpricelines[] = $pl;
             }
 
             $statusclass = strtolower($product->status);
@@ -190,7 +191,7 @@ class shop_products_renderer {
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             $str .= $product->sold;
             $str .= '</td>';
-            $str.= '<td class="amount cell '.$slaveclass.'" align="center">';
+            $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             $str .= $product->stock;
             $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
@@ -208,8 +209,8 @@ class shop_products_renderer {
                     break;
 
                   case SHOP_QUANT_AS_SEATS:
-                    $str .= get_string('yes');
-                    break;
+                     $str .= get_string('yes');
+                     break;
             }
 
             $str .= '</td>';
@@ -219,11 +220,13 @@ class shop_products_renderer {
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $product->id));
                 $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a> ';
 
-                $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $product->id));
+                $params = array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $product->id);
+                $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $str .= '<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('t/copy').'" title="'.get_string('copy').'"/></a> ';
 
                 $deletestr = get_string('deleteproduct', 'local_shop');
-                $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $product->id));
+                $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $product->id);
+                $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
                 $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$deletestr.'"></a>';
             }
 
@@ -232,18 +235,24 @@ class shop_products_renderer {
 
             if ($this->thecatalog->isslave) {
                 if ($product->masterrecord == 1) {
-                    $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $product->id));
-                    $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('copy', 'local_shop').'" title="'.$createlocalstr.'"></a>';
+                    $params = array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $product->id);
+                    $copyurl = new moodle_url('/local/shop/products/view.php', $params);
+                    $pixurl = $OUTPUT->pix_url('copy', 'local_shop');
+                    $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$createlocalstr.'"></a>';
                 } else {
-                    $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $product->id));
-                    $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('uncopy', 'local_shop').'" title="'.$deletelocalversionstr.'"></a>';
+                    $params = array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $product->id);
+                    $copyurl = new moodle_url('/local/shop/products/view.php', $params);
+                    $pixurl = $OUTPUT->pix_url('uncopy', 'local_shop');
+                    $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$deletelocalversionstr.'"></a>';
                 }
             }
             $str .= '</td>';
             $str .= '</tr>';
         }
 
-        if ($return) return $str;
+        if ($return) {
+            return $str;
+        }
         echo $str;
     }
 
@@ -278,26 +287,35 @@ class shop_products_renderer {
         if (!$this->thecatalog->isslave || (@$set->masterrecord == 0)) {
             // We cannot edit master records ghosts from the slave catalog.
             $editseturl = new moodle_url('/local/shop/products/edit_set.php', array('setid' => $set->id));
-            $str .= '<a href="'.$editseturl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.get_string('editset', 'local_shop').'"></a>';
+            $pixurl = $OUTPUT->pix_url('t/edit');
+            $str .= '<a href="'.$editseturl.'"><img src="'.$pixurl.'" title="'.get_string('editset', 'local_shop').'"></a>';
 
-            $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $set->id));
+            $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $set->id);
+            $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
             $linklbl = get_string('removeset', 'local_shop');
-            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'"></a>';
+            $pixurl = $OUTPUT->pix_url('t/delete');
+            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'"></a>';
 
-            $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlink', 'itemid' => $set->id));
+            $params = array('view' => 'viewAllProducts', 'what' => 'unlink', 'itemid' => $set->id);
+            $unlinkurl = new moodle_url('/local/shop/products/view.php', $params);
             $linklbl = get_string('removealllinkedproducts', 'local_shop');
-            $str .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'"></a>';
+            $pixurl = $OUTPUT->pix_url('unlink', 'local_shop');
+            $str .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'"></a>';
         }
 
         if ($this->thecatalog->isslave) {
             if ($set->masterrecord == 1) {
-                $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $set->id));
+                $params = array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $set->id);
+                $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('addoverride', 'local_shop');
-                $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('copy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                $pixurl = $OUTPUT->pix_url('copy', 'local_shop');
+                $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
             } else {
-                $uncopyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $set->id));
+                $params = array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $set->id);
+                $uncopyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('deleteoverride', 'local_shop');
-                $str .= '&nbsp;<a href="'.$uncopyurl.'"><img src="'.$OUTPUT->pix_url('uncopy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                $pixurl = $OUTPUT->pix_url('uncopy', 'local_shop');
+                $str .= '&nbsp;<a href="'.$uncopyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
             }
         }
         $str .= '</td>';
@@ -368,26 +386,35 @@ class shop_products_renderer {
             // We cannot edit master records ghosts from the slave catalog.
             $editurl = new moodle_url('/local/shop/products/edit_bundle.php', array('itemid' => $bundle->id));
             $linklbl = get_string('editbundle', 'local_shop');
-            $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'" /></a>';
+            $pixurl = $OUTPUT->pix_url('t/edit');
+            $str .= '<a href="'.$editurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
 
-            $viewurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlinkset', 'itemid' => $bundle->id));
+            $params = array('view' => 'viewAllProducts', 'what' => 'unlinkset', 'itemid' => $bundle->id);
+            $viewurl = new moodle_url('/local/shop/products/view.php', $params);
             $linklbl = get_string('deletebundle', 'local_shop');
-            $str .= '&nbsp;<a href="'.$viewurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'" /></a>';
+            $pixurl = $OUTPUT->pix_url('t/delete');
+            $str .= '&nbsp;<a href="'.$viewurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
 
-            $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $bundle->id));
+            $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $bundle->id);
+            $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
             $linklbl = get_string('deletealllinkedproducts', 'local_shop');
-            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'" /></a>';
+            $pixurl = $OUTPUT->pix_url('unlink', 'local_shop');
+            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
         }
 
         if ($this->thecatalog->isslave) {
             if ($bundle->masterrecord == 1) {
-                $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'makecopy', 'productid' => $bundle->id));
+                $params = array('view' => 'viewAllProducts', 'what' => 'makecopy', 'productid' => $bundle->id);
+                $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('addoverride', 'local_shop');
-                $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('copy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                $pixurl = $OUTPUT->pix_url('copy', 'local_shop');
+                $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
             } else {
-                $deletecopyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'freecopy', 'productid' => $bundle->id));
+                $params = array('view' => 'viewAllProducts', 'what' => 'freecopy', 'productid' => $bundle->id);
+                $deletecopyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('deleteoverride', 'local_shop');
-                $str .= '&nbsp;<a href="'.$deletecopyurl.'"><img src="'.$OUTPUT->pix_url('uncopy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                $pixurl = $OUTPUT->pix_url('uncopy', 'local_shop');
+                $str .= '&nbsp;<a href="'.$deletecopyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
             }
         }
         $str .= '</td>';
@@ -427,7 +454,13 @@ class shop_products_renderer {
         $availabilitystr = get_string('availability', 'local_shop');
 
         $table = new html_table();
-        $table->head = array('', "<b>$codestr</b>", "<b>$namestr</b>", "<b>$pricestr</b>", "<b>$ttcstr</b>", "<b>$availabilitystr</b>", '');
+        $table->head = array('',
+                             "<b>$codestr</b>",
+                             "<b>$namestr</b>",
+                             "<b>$pricestr</b>",
+                             "<b>$ttcstr</b>",
+                             "<b>$availabilitystr</b>",
+                             '');
         $table->width = '100%';
         $table->size = array('10%', '10%', '45%', '10%', '10%', '10%', '5%');
         $table->align = array('left', 'left', 'left', 'right', 'right', 'center', 'right');
@@ -451,35 +484,46 @@ class shop_products_renderer {
                 // We cannot edit master records ghosts from the slave catalog.
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $elm->id));
                 $linklbl = get_string('editproduct', 'local_shop');
-                $commands .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'"></a>';
+                $pixurl = $OUTPUT->pix_url('t/edit');
+                $commands .= '<a href="'.$editurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'"></a>';
 
                 if (!$this->thecatalog->isslave) {
 
-                    $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $elm->id));
-                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('t/copy').'" title="'.get_string('copy').'"/></a> ';
+                    $params = array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $elm->id);
+                    $copyurl = new moodle_url('/local/shop/products/view.php', $params);
+                    $pixurl = $OUTPUT->pix_url('t/copy');
+                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.get_string('copy').'"/></a> ';
 
                     // Only real products can be unlinked or deleted or copied.
-                    $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteproduct', 'itemid' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'deleteproduct', 'itemid' => $elm->id);
+                    $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('removeset', 'local_shop');
-                    $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'"></a>';
+                    $pixurl = $OUTPUT->pix_url('t/delete');
+                    $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'"></a>';
 
-                    $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlink', 'itemid' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'unlink', 'itemid' => $elm->id);
+                    $unlinkurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('unlinkproduct', 'local_shop');
-                    $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'"></a>';
+                    $pixurl = $OUTPUT->pix_url('unlink', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'"></a>';
                 }
             }
 
             if ($this->thecatalog->isslave) {
                 if ($elm->masterrecord == 1) {
                     // If we do not have a local override, allow creating one.
-                    $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $elm->id);
+                    $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('addoverride', 'local_shop');
-                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('copy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                    $pixurl = $OUTPUT->pix_url('copy', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
                 } else {
                     // If we do have an override, allow discarding it.
-                    $uncopyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $elm->id);
+                    $uncopyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('deleteoverride', 'local_shop');
-                    $commands .= '&nbsp;<a href="'.$uncopyurl.'"><img src="'.$OUTPUT->pix_url('uncopy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                    $pixurl = $OUTPUT->pix_url('uncopy', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$uncopyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
                 }
             }
             $row[] = $commands;
@@ -503,7 +547,13 @@ class shop_products_renderer {
         $availabilitystr = get_string('availability', 'local_shop');
 
         $table = new html_table();
-        $table->head = array('', "<b>$codestr</b>", "<b>$namestr</b>", "<b>$pricestr</b>", "<b>$ttcstr</b>", "<b>$availabilitystr</b>", '');
+        $table->head = array('',
+                             "<b>$codestr</b>",
+                             "<b>$namestr</b>",
+                             "<b>$pricestr</b>",
+                             "<b>$ttcstr</b>",
+                             "<b>$availabilitystr</b>",
+                             '');
         $table->width = '100%';
         $table->size = array('10%', '10%', '45%', '10%', '10%', '10%', '5%');
         $table->align = array('left', 'left', 'left', 'right', 'right', 'center', 'right');
@@ -526,33 +576,44 @@ class shop_products_renderer {
             if (!$this->thecatalog->isslave || ($elm->masterrecord == 0)) {
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $elm->id));
                 $linklbl = get_string('editproduct', 'local_shop');
-                $commands .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" title="'.$linklbl.'"></a>';
+                $pixurl = $OUTPUT->pix_url('t/edit');
+                $commands .= '<a href="'.$editurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'"></a>';
 
                 if (!$this->thecatalog->isslave) {
 
-                    $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $elm->id));
-                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('t/copy').'" title="'.get_string('copy').'"/></a> ';
+                    $params = array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $elm->id);
+                    $copyurl = new moodle_url('/local/shop/products/view.php', $params);
+                    $pixurl = $OUTPUT->pix_url('t/copy');
+                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.get_string('copy').'"/></a> ';
 
                     // Only real products can be unlinked or deleted.
-                    $unlinkurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'unlinkproduct', 'productid' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'unlinkproduct', 'productid' => $elm->id);
+                    $unlinkurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('removeproductfrombundle', 'local_shop');
-                    $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$OUTPUT->pix_url('unlink', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                    $pixurl = $OUTPUT->pix_url('unlink', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$unlinkurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
 
-                    $deleteurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'deleteitems', 'itemid[]' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'deleteitems', 'itemid[]' => $elm->id);
+                    $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('delete');
-                    $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$linklbl.'" /></a>';
+                    $pixurl = $OUTPUT->pix_url('t/delete');
+                    $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
                 }
             }
 
             if ($this->thecatalog->isslave) {
                 if ($elm->masterrecord == 1) {
-                    $copyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $elm->id);
+                    $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('addoverride', 'local_shop');
-                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$OUTPUT->pix_url('copy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                    $pixurl = $OUTPUT->pix_url('copy', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
                 } else {
-                    $deletecopyurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $elm->id));
+                    $params = array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $elm->id);
+                    $deletecopyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('deleteoverride', 'local_shop');
-                    $commands .= '&nbsp;<a href="'.$deletecopyurl.'"><img src="'.$OUTPUT->pix_url('uncopy', 'local_shop').'" title="'.$linklbl.'" /></a>';
+                    $pixurl = $OUTPUT->pix_url('uncopy', 'local_shop');
+                    $commands .= '&nbsp;<a href="'.$deletecopyurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
                 }
             }
             $row[] = $commands;
@@ -577,14 +638,16 @@ class shop_products_renderer {
         $str .= '<div id="local-shop-catlinks">';
 
         $str .= '<div class="left-links">';
-        $catlinkurl = new moodle_url('/local/shop/products/category/view.php', array('view' => 'viewAllCategories', 'catalogid' => $this->thecatalog->id));
+        $params = array('view' => 'viewAllCategories', 'catalogid' => $this->thecatalog->id);
+        $catlinkurl = new moodle_url('/local/shop/products/category/view.php', $params);
         $str .= '<a href="'.$catlinkurl.'">'.get_string('edit_categories', 'local_shop').'</a> - ';
         if (Category::count(array('catalogid'=> $thecatalog->id))) {
-            $producturl = new moodle_url('/local/shop/products/edit_product.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
+            $params = array('id' => $this->theshop->id, 'categoryid' => $categoryid);
+            $producturl = new moodle_url('/local/shop/products/edit_product.php', $params);
             $str .= '<a href="'.$producturl.'">'.get_string('newproduct', 'local_shop').'</a> - ';
-            $seturl = new moodle_url('/local/shop/products/edit_set.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
+            $seturl = new moodle_url('/local/shop/products/edit_set.php', $params);
             $str .= '&nbsp;<a href="'.$seturl.'">'.get_string('newset', 'local_shop').'</a> - ';
-            $bundleurl = new moodle_url('/local/shop/products/edit_bundle.php', array('id' => $this->theshop->id, 'categoryid' => $categoryid));
+            $bundleurl = new moodle_url('/local/shop/products/edit_bundle.php', $params);
             $str .= '<a href="'.$bundleurl.'">'.get_string('newbundle', 'local_shop').'</a> - ';
             $testurl = new moodle_url('/local/shop/unittests/index.php', array('id' => $this->theshop->id));
             $str .= '&nbsp;<a href="'.$testurl.'">'.get_string('unittests', 'local_shop').'</a>';
@@ -602,7 +665,8 @@ class shop_products_renderer {
             foreach ($linkedshops as $sh) {
                 $shopopts[$sh->id] = format_string($sh->name);
             }
-            $str .= get_string('gotofrontoffice', 'local_shop').': '.$OUTPUT->single_select(new moodle_url('/local/shop/front/view.php', array('view' => 'shop')), 'id', $shopopts);
+            $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop'));
+            $str .= get_string('gotofrontoffice', 'local_shop').': '.$OUTPUT->single_select($shopurl, 'id', $shopopts);
         }
         $str .= '</div>';
 
@@ -628,7 +692,8 @@ class shop_products_renderer {
 
             $name = 'categoryid';
             $str .= '<div class="shop-category-chooser">';
-            $str .= get_string('category', 'local_shop').' : '.$OUTPUT->single_select($url, $name, $catoptions, $current, array(0 => get_string('allcategories', 'local_shop')));
+            $params = array(0 => get_string('allcategories', 'local_shop'));
+            $str .= get_string('category', 'local_shop').' : '.$OUTPUT->single_select($url, $name, $catoptions, $current, $params);
             $str .= '</div>';
         }
 
@@ -675,11 +740,13 @@ class shop_products_renderer {
         global $OUTPUT, $DB;
         static $indentarr = array();
 
-        $subs = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $category->id), "$order $dir");
+        $subs = Category::get_instances(array('catalogid' => $this->thecatalog->id,
+                                              'parentid' => $category->id), "$order $dir");
 
         $params = array('id' => $this->theshop->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
         $url = new moodle_url('/local/shop/products/category/view.php', $params);
-        $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', array('catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid));
+        $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid);
+        $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
 
         $indent = implode('', $indentarr);
 
@@ -688,7 +755,9 @@ class shop_products_renderer {
         $class = ($category->visible) ? 'shop-shadow'  : '';
         $row[] = $indent.'<span class="'.$class.'">'.$category->name.'</span>';
 
-        $category->description = file_rewrite_pluginfile_urls($category->description, 'pluginfile.php',context_system::instance()->id, 'local_shop', 'categorydescription', $category->id);
+        $contextid = context_system::instance()->id;
+        $category->description = file_rewrite_pluginfile_urls($category->description, 'pluginfile.php',
+                                                              $contextid, 'local_shop', 'categorydescription', $category->id);
         $row[] = format_text($category->description);
         $row[] = $DB->count_records('local_shop_catalogitem', array('categoryid' => $category->id));
 
@@ -705,16 +774,23 @@ class shop_products_renderer {
         $commands .= '&nbsp;<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"/></a>';
 
         if (empty($subs)) {
-            $params = array('id' => $this->theshop->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir, 'what' => 'delete', 'categoryids[]' => $category->id);
+            $params = array('shopid' => $this->theshop->id,
+                            'view' => 'viewAllCategories',
+                            'order' => $order,
+                            'dir' => $dir,
+                            'what' => 'delete',
+                            'categoryids[]' => $category->id);
             $deleteurl = new moodle_url('/local/shop/products/category/view.php', $params);
             $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
         }
 
         if ($category->sortorder > 1) {
-              $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=up\"><img src=\"".$OUTPUT->pix_url('/t/down').'" /></a>';
-          }
+            $icon = '<img src="'.$OUTPUT->pix_url('/t/down').'" />'
+            $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=up\">".$icon.'</a>';
+        }
         if ($category->sortorder < $maxorder) {
-              $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=down\"><img src=\"".$OUTPUT->pix_url('t/up').'" /></a>';
+            $icon = '<img src="'.$OUTPUT->pix_url('t/up').'" />'
+            $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=down\">".$icon.'</a>';
         }
         $row[] = $commands;
 

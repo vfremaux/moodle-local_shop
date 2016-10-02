@@ -29,13 +29,13 @@ require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 use local_shop\products\category_controller;
 use local_shop\Category;
 
-$action = optional_param('what','',PARAM_TEXT);
+$action = optional_param('what', '', PARAM_TEXT);
 $order = optional_param('order', 'sortorder', PARAM_TEXT);
 $dir = optional_param('dir', 'ASC', PARAM_TEXT);
 
 if ($action != '') {
-   $controller = new \local_shop\products\category_controller();
-   $controller->process($action);
+    $controller = new \local_shop\products\category_controller();
+    $controller->process($action);
 }
 
 $params = array('id' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
@@ -46,8 +46,7 @@ $select = "
     catalogid = ? AND
     UPPER(name) NOT LIKE 'test%'
 ";
-$categoryCount = $DB->count_records_select('local_shop_catalogcategory', $select, array($thecatalog->id));
-
+$categorycount = $DB->count_records_select('local_shop_catalogcategory', $select, array($thecatalog->id));
 
 $categories = Category::get_instances(array('catalogid' => $thecatalog->id, 'parentid' => 0), "$order $dir");
 

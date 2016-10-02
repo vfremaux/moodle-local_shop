@@ -36,26 +36,25 @@ class category_controller {
             $categoryidlist = implode("','", $categoryids);
             $DB->delete_records_select('local_shop_catalogcategory', " id IN ('$categoryidlist') ");
 
-        // Raises a question in the list ****************.
         } else if ($cmd == 'up') {
+            // Raises a question in the list ****************.
             $cid = required_param('categoryid', PARAM_INT);
 
             shop_list_up($shop, $cid, 'local_shop_catalogcategory');
 
-
-        // Lowers a question in the list ****************.
         } else if ($cmd == 'down') {
+            // Lowers a question in the list ****************.
             $cid = required_param('categoryid', PARAM_INT);
 
             shop_list_down($shop, $cid, 'local_shop_catalogcategory');
 
-        // Show a category ****************.
         } else if ($cmd == 'show') {
+            // Show a category ****************.
             $cid = required_param('categoryid', PARAM_INT);
             $DB->set_field('local_shop_catalogcategory', 'visible', 1, array('id' => $cid));
 
-        // Hide a category ****************.
         } else if ($cmd == 'hide') {
+            // Hide a category ****************.
             $cid = required_param('categoryid', PARAM_INT);
             $DB->set_field('local_shop_catalogcategory', 'visible', 0, array('id' => $cid));
         }

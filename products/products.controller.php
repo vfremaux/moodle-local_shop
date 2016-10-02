@@ -44,7 +44,8 @@ class product_controller {
     /**
      * Receives all needed parameters from outside for each action case.
      * @param string $cmd the action keyword
-     * @param array $data incoming parameters from form when directly available, otherwise the function shoudl get them from request
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function shoudl get them from request
      */
     public function receive($cmd, $data = array()) {
 
@@ -67,10 +68,12 @@ class product_controller {
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
             case 'clone':
-                $this->data->itemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
+                // Item id will be given as the remote master id (no local override).
+                $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
             case 'makecopy':
-                $this->data->masteritemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
+                // Item id will be given as the remote master id (no local override).
+                $this->data->masteritemid = required_param('itemid', PARAM_INT);
                 break;
             case 'freecopy' :
                 $this->data->localitemid = required_param('itemid', PARAM_INT);
@@ -112,20 +115,20 @@ class product_controller {
             }
         }
 
-        /** ***** We unlink a linked product ***** **/
+        /* ***** We unlink a linked product ***** */
         if ($cmd == 'unlink') {
             $item = new CatalogItem($this->data->itemid);
             $item->unlink();
         }
 
-        /** ****** Clone a product or a set/bundle element as a product ***** **/
+        /* ****** Clone a product or a set/bundle element as a product ***** */
         if ($cmd == 'clone') {
             $original = new CatalogItem($this->data->itemid);
             $original->clone_instance();
             redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
         }
 
-        /** ***** make a local physical clone of the master product in this slave catalog ***** **/
+        /* ***** make a local physical clone of the master product in this slave catalog ***** */
         if ($cmd == 'makecopy') {
             // Get source item in master catalog.
             $masterCatalog = new Catalog($this->thecatalog->groupid);
@@ -142,13 +145,13 @@ class product_controller {
              */
         }
 
-        /** **** Delete the local copy **** **/
+        /* **** Delete the local copy **** */
         if ($cmd == 'freecopy') {
             $localitem = new CatalogItem($this->data->localitemid);
             $localitem->delete();
         }
 
-        /** ***** searches and filters the product list ***** **/
+        /* ***** searches and filters the product list ***** */
         if ($cmd == 'search') {
             $error = false;
 
