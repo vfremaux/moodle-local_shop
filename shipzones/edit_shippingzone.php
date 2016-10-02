@@ -24,7 +24,7 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
-require_once($CFG->dirroot.'/local/shop/forms/form_shippingzone.class.php'); // imports of Form shipping
+require_once($CFG->dirroot.'/local/shop/forms/form_shippingzone.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogShipZone.class.php');
 

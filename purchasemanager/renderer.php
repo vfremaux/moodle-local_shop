@@ -122,12 +122,12 @@ class shop_purchasemanager_renderer {
             }
 
             $str .= '<tr class="shop-productinstance-row '.$statusclass.'" valign="top">';
-            $str.= '<td class="cell" align="center">';
+            $str .= '<td class="cell" align="center">';
             $str .= '<img src="'.$product->get_thumb_url().'" vspace="10" border="0" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell" align="left">';
             $str .= $product->code;
-            $str . '</td>';
+            $str .= '</td>';
             $str .= '<td class="name cell" align="left">';
             $str .= $product->name;
             $str .= '</td>';

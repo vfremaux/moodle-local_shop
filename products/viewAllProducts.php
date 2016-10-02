@@ -46,10 +46,10 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 if ($action != '') {
-   include_once($CFG->dirroot.'/local/shop/products/products.controller.php');
-   $controller = new product_controller($thecatalog);
-   $controller->receive($action);
-   $controller->process($action);
+    include_once($CFG->dirroot.'/local/shop/products/products.controller.php');
+    $controller = new product_controller($thecatalog);
+    $controller->receive($action);
+    $controller->process($action);
 }
 $products = array();
 
@@ -64,7 +64,8 @@ echo $OUTPUT->heading(get_string('catalogue', 'local_shop'));
 
 echo $renderer->catalog_header();
 
-$viewurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'id' => $theshop->id, 'catalogid' => $thecatalog->id));
+$params = array('view' => 'viewAllProducts', 'id' => $theshop->id, 'catalogid' => $thecatalog->id);
+$viewurl = new moodle_url('/local/shop/products/view.php', $params);
 echo $renderer->category_chooser($viewurl, $thecatalog);
 
 echo $OUTPUT->heading(get_string('products', 'local_shop'));
@@ -89,9 +90,11 @@ if (count(array_keys($products)) == 0) {
 
         if (file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$portlet->code.'.class.php')) {
             if ($portlet->enablehandler) {
-                $portlet->code .= ' <img title="'.$hashandlersstr.'" src="'.$OUTPUT->pix_url('hashandler', 'local_shop').'" />';
+                $pixurl = $OUTPUT->pix_url('hashandler', 'local_shop');
+                $portlet->code .= ' <img title="'.$hashandlersstr.'" src="'.$pixurl.'" />';
             } else {
-                $portlet->code .= ' <img title="'.$hashandlersstr.'" src="'.$OUTPUT->pix_url('hashandlerdisabled', 'local_shop').'" />';
+                $pixurl = $OUTPUT->pix_url('hashandlerdisabled', 'local_shop');
+                $portlet->code .= ' <img title="'.$hashandlersstr.'" src="'.$pixurl.'" />';
             }
         }
 
@@ -109,36 +112,37 @@ if (count(array_keys($products)) == 0) {
             } else {
                 // Is a product bundle.
                 // Update bundle price info.
-                $bundlePrice = 0;
-                $bundleTTCPrice = 0;
+                $bundleprice = 0;
+                $bundlettcprice = 0;
                 if ($portlet->elements) {
-                    foreach (array_values($portlet->elements) as $aBundleElement) {
+                    foreach (array_values($portlet->elements) as $element) {
                         // Accumulate untaxed.
-                        $bundlePrice += $aBundleElement->price1;
+                        $bundleprice += $element->price1;
                         // Accumulate taxed after tax transform.
-                        $price = $aBundleElement->price1;
-                        $aBundleElement->TTCprice = shop_calculate_taxed($aBundleElement->price1, $aBundleElement->taxcode);
-                        $bundleTTCPrice += $aBundleElement->TTCprice;
+                        $price = $element->price1;
+                        $element->TTCprice = shop_calculate_taxed($element->price1, $element->taxcode);
+                        $bundlettcprice += $element->TTCprice;
                     }
                 } else {
-                    $bundlePrice = 0;
-                    $bundleTTCPrice = 0;
+                    $bundleprice = 0;
+                    $bundlettcprice = 0;
                 }
+
                 /*
                  * update bundle price in database for other applications. Note that only visible product entry
                  * is updated.
                  */
                 $record = new StdClass;
                 $record->id = $portlet->id;
-                $record->price1 = $bundlePrice;
+                $record->price1 = $bundleprice;
                 $DB->update_record('local_shop_catalogitem', $record);
-                $portlet->price1 = $bundlePrice;
-                $portlet->bundleTTCPrice = $bundleTTCPrice;
+                $portlet->price1 = $bundleprice;
+                $portlet->bundleTTCPrice = $bundlettcprice;
                 $portlet->thumb = $portlet->get_thumb_url();
                 echo $renderer->bundle_admin_line($portlet);
-          }
-       }
-   }
+            }
+        }
+    }
 }
 echo '</table>';
 echo '</form>';

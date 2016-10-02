@@ -41,7 +41,7 @@ $offset = optional_param('offset', 0, PARAM_INT);
 
 $url = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes', 'order' => $order, 'dir' => $dir));
 
-$taxesCount = $DB->count_records_select('local_shop_tax', " UPPER(title) NOT LIKE 'test%' "); // Eliminate tests.
+$taxescount = $DB->count_records_select('local_shop_tax', " UPPER(title) NOT LIKE 'test%' "); // Eliminate tests.
 
 $taxes = Tax::get_instances();
 

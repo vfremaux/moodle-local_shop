@@ -54,7 +54,7 @@ class local_shop_renderer extends plugin_renderer_base {
 
         $ownersmenu = array();
         if ($owners) {
-            foreach($owners as $accountid => $owner) {
+            foreach ($owners as $accountid => $owner) {
                 $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
             }
         }
@@ -119,7 +119,7 @@ class local_shop_renderer extends plugin_renderer_base {
 
         $customersmenu = array();
         if ($customers) {
-            foreach($customers as $cid => $cu) {
+            foreach ($customers as $cid => $cu) {
                 $customersmenu[$cid] = $cu->lastname.' '.$cu->firstname.' ('.$cu->city.') ['.$cu->country.']';
             }
         }
@@ -131,7 +131,8 @@ class local_shop_renderer extends plugin_renderer_base {
             $output = $customerlabel.': '.$customername->lastname.' '.$customername->firstname;
             $output .= ' ('.$customername->city.') ['.$customername->country.']';
         } else {
-            $select = new single_select(new moodle_url($urlroot), 'customer', $customersmenu, $activecustomer, null, 'selectcustomer');
+            $u = (new moodle_url($urlroot);
+            $select = new single_select($u, 'customer', $customersmenu, $activecustomer, null, 'selectcustomer');
             $select->label = $customerlabel;
             $output = $OUTPUT->render($select);
         }
@@ -152,7 +153,7 @@ class local_shop_renderer extends plugin_renderer_base {
                 $str .= '<a href="'.$portlet->url.'&offset='.$pageoffset.'">&lt;</a> - ';
             }
             $str .= '<span class="paging">';
-            for ($i = 1 ; $i <= $pages ; $i++) {
+            for ($i = 1; $i <= $pages; $i++) {
                 if ($i == ($offset / $portlet->pagesize) + 1) {
                     echo " $i - ";
                 } else {
@@ -175,7 +176,7 @@ class local_shop_renderer extends plugin_renderer_base {
         $str = '';
         $catalogs = Catalog::get_instances();
         $catalogmenu = array();
-        foreach($catalogs as $c) {
+        foreach ($catalogs as $c) {
             $catalogmenu[$c->id] = format_string($c->name);
         }
         $str .= $OUTPUT->single_select($url, 'catalogid', $catalogmenu, $SESSION->shop->catalogid);
@@ -194,7 +195,7 @@ class local_shop_renderer extends plugin_renderer_base {
             $shopmenu[0] = get_string('chooseall', 'local_shop');
         }
 
-        foreach($shops as $s) {
+        foreach ($shops as $s) {
             $shopmenu[$s->id] = format_string($s->name);
         }
         $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid);

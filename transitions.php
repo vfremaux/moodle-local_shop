@@ -32,7 +32,7 @@ use local_shop\Bill;
 /*
  * perform a transition from state to state for a workflowed object
  */
-function bill_transition_PENDING_SOLDOUT($billid) {
+function bill_transition_pending_soldout($billid) {
     global $CFG, $SITE, $USER, $DB, $OUTPUT;
 
     $config = get_config('local_shop');
@@ -103,8 +103,8 @@ function bill_transition_PENDING_SOLDOUT($billid) {
     }
 }
 
-function bill_transition_FAILURE_SOLDOUT($billid) {
-    bill_transition_PENDING_SOLDOUT($billid);
+function bill_transition_failure_soldout($billid) {
+    bill_transition_pending_soldout($billid);
 }
 
 /*
@@ -113,7 +113,7 @@ function bill_transition_FAILURE_SOLDOUT($billid) {
  * a PLACED to PENDING should try to recover pre_payment production if performed
  * manually
  */
-function bill_transition_PLACED_PENDING($billid) {
+function bill_transition_placed_pending($billid) {
     global $CFG, $SITE, $USER, $DB, $OUTPUT;
 
     $config = get_config('local_shop');
@@ -173,7 +173,7 @@ function bill_transition_PLACED_PENDING($billid) {
     }
 }
 
-function bill_transition_SOLDOUT_COMPLETE($billid) {
+function bill_transition_soldout_complete($billid) {
     global $CFG, $SITE, $USER, $DB;
 
     /*

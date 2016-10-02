@@ -65,7 +65,7 @@ $renderer = shop_get_renderer('products');
 $renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Make page content.
-include $CFG->dirroot."/local/shop/products/{$view}.php";
+require($CFG->dirroot."/local/shop/products/{$view}.php");
 
 // Make footer.
 echo $OUTPUT->footer();

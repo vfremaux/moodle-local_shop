@@ -71,7 +71,7 @@ $renderer = shop_get_renderer('purchasemanager');
 $renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Make page content.
-include($CFG->dirroot."/local/shop/purchasemanager/{$view}.php");
+require($CFG->dirroot."/local/shop/purchasemanager/{$view}.php");
 
 // Make footer.
 echo $OUTPUT->footer();

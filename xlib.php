@@ -37,7 +37,7 @@ function local_shop_has_shops() {
     try {
         $shops = $DB->count_records('local_shop');
     } catch (Exception $e) {
-        // Just ignore errors
+        // Just ignore errors.
         return false;
     }
 

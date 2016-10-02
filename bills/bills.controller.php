@@ -264,7 +264,8 @@ class bills_controller {
             $result = 1;
             if (file_exists($CFG->dirroot.'/local/shop/transitions.php')) {
                 include_once($CFG->dirroot.'/local/shop/transitions.php');
-                $transitionhandler = "bill_transition_{$priorstatus}_{$status}";
+                // Lower case because Moodle validation forces all functions to be lowercase.
+                $transitionhandler = core_text::strtolower("bill_transition_{$priorstatus}_{$status}");
                 if (function_exists($transitionhandler)) {
                     $result = $transitionhandler($billid);
                 }

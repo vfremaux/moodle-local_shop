@@ -45,10 +45,10 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 // Execute controller.
 
 if ($action != '') {
-   include_once($CFG->dirroot.'/local/shop/purchasemanager/productinstances.controller.php');
-   $controller = new productinstances_controller($thecatalogue);
-   $controller->receive($action);
-   $controller->process($action);
+    include_once($CFG->dirroot.'/local/shop/purchasemanager/productinstances.controller.php');
+    $controller = new productinstances_controller($thecatalogue);
+    $controller->receive($action);
+    $controller->process($action);
 }
 
 $customermenu = $shoprenderer->print_customer_menu($url);
@@ -72,7 +72,7 @@ echo '</div>';
 echo '</div>';
 
 if (count(array_keys($productinstances)) == 0) {
-   echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
+    echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
 } else {
     $formurl = new moodle_url('/local/shop/purchasemanager/view.php');
     echo '<form name="selection" action="'.$formurl.'" method="get">';
