@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
-class shop_paymode_transfer extends shop_paymode{
+class shop_paymode_transfer extends shop_paymode {
 
     public function __construct(&$shopblockinstance) {
         parent::__construct('transfer', $shopblockinstance);
@@ -59,6 +59,7 @@ class shop_paymode_transfer extends shop_paymode{
     // Prints a payment porlet in an order form.
     public function print_invoice_info(&$billdata = null) {
         global $CFG;
+
         $proc = 1;
 
         $config = get_config('local_shop');
@@ -78,7 +79,7 @@ class shop_paymode_transfer extends shop_paymode{
             'IBAN' =>  $config->iban,
             'BIC' =>  $config->bic,
             'TVA_EUROPE' =>  $config->tvaeurope,
-            'PROC_ORDER' => $proc++  ), 'shoppaymodes_transfer');
+            'PROC_ORDER' => $proc++), 'shoppaymodes_transfer');
     }
 
     public function print_complete() {

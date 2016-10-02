@@ -14,32 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_test
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
-Use \local_shop\Bill;
+
+use \local_shop\Bill;
 
 /**
 * A generic class for making payment tests
 * not enabled in production.
 */
-class shop_paymode_test extends shop_paymode{
+class shop_paymode_test extends shop_paymode {
 
-    function __construct(&$shopblockinstance) {
+    public function __construct(&$shopblockinstance) {
         parent::__construct('test', $shopblockinstance, true, true);
     }
 
     // prints a payment porlet in an order form
-    function print_payment_portlet(&$shoppingcart) {
-        global $CFG;
+    public function print_payment_portlet(&$shoppingcart) {
 
         $shopurl = new moodle_url('/local/shop/front/view.php');
         $ipnurl = new moodle_url('/local/shop/paymodes/test/test_ipn.php');
@@ -62,8 +61,10 @@ class shop_paymode_test extends shop_paymode{
         echo '</form>';
         echo '</td>';
 
-        // this stands for delayed payment, as check or bank wired transfer, needing backoffice
-        // post check to activate production.
+        /*
+         * this stands for delayed payment, as check or bank wired transfer, needing backoffice
+         * post check to activate production.
+         */
         echo '<td>';
         echo '<form name="paymentform" action="'.$shopurl.'" target="_blank">';
         echo '<input type="hidden" name="shopid" value="'.$this->theshop->id.'">';
@@ -76,7 +77,7 @@ class shop_paymode_test extends shop_paymode{
         echo '</form>';
         echo '</td>';
 
-        // In IPN Payemnt (delayed return from payment peer) we may have no track of shopid
+        // In IPN Payemnt (delayed return from payment peer) we may have no track of shopid.
         echo '<td>';
         echo '<form name="paymentform" action="'.$ipnurl.'" target="_blank" >';
         echo '<input type="hidden" name="transid" value="'.$shoppingcart->transid.'" />';
@@ -96,16 +97,16 @@ class shop_paymode_test extends shop_paymode{
         echo '</table>';
     }
 
-    // prints a payment porlet in an order form
-    function print_invoice_info(&$billdata = null) {
+    // Prints a payment porlet in an order form.
+    public function print_invoice_info(&$billdata = null) {
     }
 
-    function print_complete() {
+    public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
-    // processes a payment return
-    function process() {
+    // Processes a payment return.
+    public function process() {
         global $OUTPUT;
 
         $delayed = optional_param('delayed', 0, PARAM_BOOL);
@@ -119,12 +120,12 @@ class shop_paymode_test extends shop_paymode{
                 $afullbill->status = 'PENDING';
                 $afullbill->save(true);
                 shop_trace("[$transid]  Test Interactive : Payment Success but waiting IPN for processing");
-                return false; // has not yet payed
+                return false; // Has not yet payed.
             } else {
                 $afullbill->status = 'SOLDOUT';
                 $afullbill->save(true);
                 shop_trace("[$transid]  Test Interactive : Payment Success");
-                return true; // has payed
+                return true; // Has payed.
             }
         }
         catch (Exception $e) {
@@ -133,12 +134,12 @@ class shop_paymode_test extends shop_paymode{
         }
     }
 
-    function is_instant_payment() {
+    public function is_instant_payment() {
         return true;
     }
 
-    // processes a payment asynchronous confirmation
-    function process_ipn() {
+    // Processes a payment asynchronous confirmation.
+    public function process_ipn() {
         global $CFG, $OUTPUT;
 
         $transid = required_param('transid', PARAM_TEXT);
@@ -162,7 +163,7 @@ class shop_paymode_test extends shop_paymode{
             $afullbill->status = 'SOLDOUT';
             $afullbill->save(true);
 
-            // Lauch production from a SOLDOUT state
+            // Lauch production from a SOLDOUT state.
             $controller->process('produce', !$close);
 
             die;
@@ -173,7 +174,7 @@ class shop_paymode_test extends shop_paymode{
         }
     }
 
-    // provides global settings to add to shop settings when installed
-    function settings(&$settings) {
+    // Provides global settings to add to shop settings when installed.
+    public function settings(&$settings) {
     }
 }

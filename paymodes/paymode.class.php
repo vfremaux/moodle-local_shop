@@ -79,7 +79,7 @@ abstract class shop_paymode {
     // Provides global settings to add to shop settings when installed.
     abstract function settings(&$settings);
 
-    // provides global settings to add to shop settings when installed
+    // Provides global settings to add to shop settings when installed.
     public function add_instance_config($mform) {
         global $CFG;
 
@@ -88,7 +88,8 @@ abstract class shop_paymode {
 
         $group[] = &$mform->createElement('checkbox', $isenabledvar);
         $group[] = &$mform->createElement('radio', 'defaultpaymode', '', '', $this->get_name());
-        $mform->addGroup($group, 'paymode'.$this->get_name(), get_string('enable'.$this->get_name(), 'shoppaymodes_'.$this->get_name()), ' '.get_string('isdefault', 'local_shop').' ', false);
+        $label = get_string('enable'.$this->get_name(), 'shoppaymodes_'.$this->get_name());
+        $mform->addGroup($group, 'paymode'.$this->get_name(), $label, ' '.get_string('isdefault', 'local_shop').' ', false);
     }
 
     /**
@@ -135,9 +136,11 @@ abstract class shop_paymode {
      * @return the paymode plugin instance that fits the transaction
      */
     public static function resolve_transaction_identification(&$transid, &$cmd, &$paymode) {
+
         $plugins = shop_paymode::shop_get_plugins(null);
         $transid = '';
         $cmd = '';
+
         foreach ($plugins as $plugin) {
             $plugin->identify_transaction($transid, $cmd);
             if (!empty($transid)) {
@@ -175,8 +178,6 @@ abstract class shop_paymode {
      * @return an array for select
      */
     public static function get_list() {
-        global $CFG;
-
         $paylist = array();
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
         foreach ($plugins as $p) {
@@ -194,7 +195,7 @@ abstract class shop_paymode {
         global $CFG;
 
         include_once($CFG->dirroot.'/local/shop/paymodes/'.$paymentpluginname.'/'.$paymentpluginname.'.class.php');
-        $classname = "shop_paymode_".$paymentpluginname;
+        $classname = 'shop_paymode_'.$paymentpluginname;
         $payment = new $classname($shop);
         return $payment;
     }
@@ -208,7 +209,7 @@ abstract class shop_paymode {
 
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
         foreach ($plugins as $p) {
-            include_once $CFG->dirroot.'/local/shop/paymodes/'.$p.'/'.$p.'.class.php';
+            include_once($CFG->dirroot.'/local/shop/paymodes/'.$p.'/'.$p.'.class.php');
             $classname = "shop_paymode_$p";
             $shop = null;
             $pm = new $classname($shop);
