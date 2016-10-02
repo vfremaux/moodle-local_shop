@@ -616,7 +616,7 @@ class Catalog extends ShopObject {
                             $in['ht'] = $shippedproduct->price1;
                             $in['ttc'] = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
                             $in['q'] = $order[$shippedproduct->shortname];
-                            $result ) evaluate($sh->formula.';', $in, 'shp');
+                            $result = evaluate($sh->formula.';', $in, 'shp');
                             $return->value += 0 + @$result['shp'];
                         } else {
                             $return->value += 0;

@@ -28,7 +28,7 @@ require_once($CFG->dirroot.'/lib/enrollib.php');
 class shop_handler_std_extendenrolperiod extends shop_handler {
 
     public function __construct($label) {
-        $this->name = 'std_extendenrolperiod'; // for unit test reporting.
+        $this->name = 'std_extendenrolperiod'; // For unit test reporting.
         parent::__construct($label);
     }
 
@@ -124,7 +124,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
 
         $maildata->courseid = $course->id;
-        $maildata->extension = $rangeextension / DAYSECS; // given in days
+        $maildata->extension = $rangeextension / DAYSECS; // Given in days.
         $maildata->username = fullname($data->bill->user);
 
         $productionfeedback->public = get_string('productiondata_public', 'shophandlers_STD_EXTEND_ENROL_PRERIOD', $maildata);
@@ -146,7 +146,8 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
             $errors[$data->code][] = get_string('errornocourse', 'shophandlers_std_extendenrolperiod');
         } else {
             if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-                $err = get_string('errorextcoursenotexists', 'shophandlers_std_extendenrolperiod', $data->actionparams['coursename']);
+                $cn = $data->actionparams['coursename'];
+                $err = get_string('errorextcoursenotexists', 'shophandlers_std_extendenrolperiod', $cn);
                 $errors[$data->code][] = $err;
             }
         }

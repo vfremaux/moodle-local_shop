@@ -444,8 +444,8 @@ class shop_front_renderer {
                 $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true);
 
                 // Print childs.
-                $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id), 'sortorder');
-                if ($subs = Category::get_instances($attrs) {
+                $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
+                if ($subs = Category::get_instances($attrs, 'sortorder')) {
                     $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid);
                 }
             }

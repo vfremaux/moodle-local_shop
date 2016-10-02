@@ -29,7 +29,7 @@ function xmldb_local_shop_uninstall() {
     $courseownerid   = $DB->get_field('role', 'id', array('shortname' => 'courseowner'));
     $coursecreatorid   = $DB->get_field('role', 'id', array('shortname' => 'coursecreator'));
     $categoryownerid   = $DB->get_field('role', 'id', array('shortname' => 'categoryowner'));
-    // remap all teacherowner assignments to editingteacher
+    // Remap all teacherowner assignments to editingteacher.
     $sql = "
         UPDATE
             {role_assignment}

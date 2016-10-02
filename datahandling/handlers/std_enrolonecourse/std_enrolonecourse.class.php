@@ -52,11 +52,11 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         global $USER, $DB;
 
         if (!empty($catalogitem->handlerparams['coursename'])) {
-            $params =  array('shortname' => $catalogitem->handlerparams['coursename']);
-            $course = $DB->get_record('course',$params);
+            $params = array('shortname' => $catalogitem->handlerparams['coursename']);
+            $course = $DB->get_record('course', $params);
         } else if (!empty($catalogitem->handlerparams['courseid'])) {
-            $params =  array('shortname' => $catalogitem->handlerparams['courseid']);
-            $course = $DB->get_record('course',$params);
+            $params = array('shortname' => $catalogitem->handlerparams['courseid']);
+            $course = $DB->get_record('course', $params);
         }
 
         if (!$course || !$course->visible) {
@@ -74,7 +74,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         return !is_enrolled($context, $USER);
     }
 
-    // Pre pay information always comme from shopping session.
+    /**
+     * Pre pay information always comme from shopping session.
+     */
     public function produce_prepay(&$data) {
         global $CFG, $DB, $USER;
 
@@ -146,7 +148,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * Post pay information can come from session or from production data stored in delayed bills.
      */
     public function produce_postpay(&$data) {
-        global $CFG, $DB, $USER;
+        global $DB, $USER;
 
         $config = get_config('local_shop');
 
@@ -165,7 +167,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
 
         $startdate = @$data->actionparams['startdate'];
-        if (empty($startdate)) $startdate = time();
+        if (empty($startdate)) {
+            $startdate = time();
+        }
 
         // Computes infinite, relative of fixed enddate.
         $enddate = @$data->actionparams['enddate'];

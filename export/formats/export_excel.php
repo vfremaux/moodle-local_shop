@@ -63,7 +63,7 @@ class shop_export_excel extends shop_export {
 
             $i = 0;
             foreach ($this->datadesc[0]['columns'] as $col) {
-                if ($col['width'] == 0)  {
+                if ($col['width'] == 0) {
                     continue;
                 }
                 $this->worksheets[0]->set_column($i, $i, $col['width']);

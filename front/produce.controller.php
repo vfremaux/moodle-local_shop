@@ -121,7 +121,7 @@ class production_controller extends front_controller_base {
         if ($cmd == 'produce') {
 
             // Start production.
-            $message = "[{$afullbill->transactionid}] Production Controller :"
+            $message = "[{$afullbill->transactionid}] Production Controller :";
             $message .= " Full production starting from {$afullbill->status} ...";
             shop_trace($message);
             if ($this->interactive && $this->ipncall) {
