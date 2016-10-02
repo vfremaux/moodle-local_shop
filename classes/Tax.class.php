@@ -34,7 +34,6 @@ class Tax extends ShopObject {
     protected static $table = 'local_shop_tax';
 
     public function __construct($idorrecord, $light = false) {
-        global $DB;
 
         parent::__construct($idorrecord, self::$table);
 

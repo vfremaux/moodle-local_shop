@@ -23,7 +23,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 function xmldb_local_shop_uninstall() {
-    global $CFG, $DB;
+    global $DB;
 
     $editingteacherid   = $DB->get_field('role', 'id', array('shortname' => 'editingteacher'));
     $courseownerid   = $DB->get_field('role', 'id', array('shortname' => 'courseowner'));

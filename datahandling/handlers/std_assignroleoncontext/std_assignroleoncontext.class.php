@@ -117,7 +117,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
     // Post pay information can come from session or from production data stored in delayed bills.
     public function produce_postpay(&$data) {
-        global $CFG, $DB, $USER;
+        global $DB, $USER, $SITE;
 
         $productionfeedback = new StdClass();
 
@@ -139,9 +139,23 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
         if (!$context()) {
             $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay :";
-            $meesage .= " failed item {$data->id} no valid context ($contextlevel, $instance)";
+            $message .= " failed item {$data->id} no valid context ($contextlevel, $instance)";
             shop_trace($message);
             return;
+        }
+
+        if ($contextlevel == CONTEXT_BLOCK) {
+            $instancename = 'Course Module '.$context->instanceid; // TODO : Clarify in future.
+        } else if ($contextlevel == CONTEXT_COURSE) {
+            $instancename = 'Block Instance '.$context->instanceid; // TODO : Clarify in future.
+        } else if ($contextlevel == CONTEXT_COURSE) {
+            $instancename = $DB->get_field('course', 'shortname', array('id' => $context->instanceid));
+        } else if ($contextlevel == CONTEXT_COURSECAT) {
+            $instancename = $DB->get_field('course_categories', 'name', array('id' => $context->instanceid));
+        } else if ($contextlevel == CONTEXT_USER) {
+            $instancename = $DB->get_field('user', 'username', array('id' => $context->instanceid));
+        } else if ($contextlevel == CONTEXT_SYSTEM) {
+            $instancename = $SITE->shortname;
         }
 
         $rolename = @$data->actionparams['role'];
@@ -178,7 +192,6 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $customeruser = $DB->get_record('user', array('id', $customer->hasaccount));
         } else {
             if ($USER->id) {
-                $userid = $USER->id;
                 $customeruser = $USER;
             } else {
                 $fb = get_string('productiondata_failure_public', 'shophandlers_std_assignroleoncontext', 'Code : NO_USER');
@@ -209,14 +222,14 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $now = time();
 
         try {
-            role_assign($role->id, $user->id, $context->id);
+            $raid = role_assign($role->id, $user->id, $context->id);
         } catch (Exception $exc) {
             shop_trace("[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay : Failed...");
             $fb = get_string('productiondata_failure_public', 'shophandlers_std_assignroleoncontext', 'Code : ROLE ASSIGN');
             $productionfeedback->public = $fb;
-            $fb = get_string('productiondata_failure_private', 'shophandlers_std_assignroleoncontext', $course->id);
+            $fb = get_string('productiondata_failure_private', 'shophandlers_std_assignroleoncontext', $instancename);
             $productionfeedback->private = $fb;
-            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_assignroleoncontext', $course->id);
+            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_assignroleoncontext', $instancename);
             $productionfeedback->salesadmin = $fb;
             return $productionfeedback;
         }
@@ -228,10 +241,10 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $product->initialbillitemid = $data->id; // Data is a billitem.
         $product->currentbillitemid = $data->id; // Data is a billitem.
         $product->customerid = $data->bill->customerid;
-        $product->contexttype = 'enrol';
-        $product->instanceid = $enrol->id;
-        $product->startdate = $starttime;
-        $product->enddate = $endtime;
+        $product->contexttype = 'roleassign';
+        $product->instanceid = $raid; // Register role assign instance.
+        $product->startdate = $startdate;
+        $product->enddate = $enddate;
         $product->reference = shop_generate_product_ref($data);
         $product->productiondata = Product::compile_production_data($data->actionparams);
         $product->id = $DB->insert_record('local_shop_product', $product);
@@ -251,12 +264,12 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
         $fb = get_string('productiondata_assign_public', 'shophandlers_std_assignroleoncontext');
         $productionfeedback->public = $fb;
-        $fb = get_string('productiondata_assign_private', 'shophandlers_std_assignroleoncontext', $course->id);
+        $fb = get_string('productiondata_assign_private', 'shophandlers_std_assignroleoncontext', $instancename);
         $productionfeedback->private = $fb;
-        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_assignroleoncontext', $course->id);
+        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_assignroleoncontext', $instancename);
         $productionfeedback->salesadmin = $fb;
 
-        shop_trace("[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay : Completed in $coursename...");
+        shop_trace("[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay : Completed in $instancename...");
         return $productionfeedback;
     }
 
@@ -299,7 +312,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $errors[$data->code][] = get_string('errormissingrole', 'shophandlers_std_assignroleoncontext');
         }
 
-        if (!$role = $DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
+        if (!$DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
             $errors[$data->code][] = get_string('errorrole', 'shophandlers_std_assignroleoncontext', $data->actionparams['role']);
         }
     }

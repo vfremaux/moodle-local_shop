@@ -29,7 +29,7 @@ require_once($CFG->dirroot.'/local/shop/country.php');
 class Tax_Form extends moodleform {
 
     public function definition() {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
 
         $attributes = 'size="47" maxlength="200"';
 
@@ -49,7 +49,6 @@ class Tax_Form extends moodleform {
         $mform->addRule('ratio', null, 'required');
         $mform->setType('ratio', PARAM_TEXT);
 
-        $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $choices = array('' => get_string('selectacountry').'...') + $choices;
         $mform->addElement('select', 'country', get_string('taxcountry', 'local_shop'), $choices);
@@ -65,7 +64,7 @@ class Tax_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    public function validation($data, $files = array()) {
+    public function validation($data) {
 
         $errors = array();
         if (empty($data['title'])) {

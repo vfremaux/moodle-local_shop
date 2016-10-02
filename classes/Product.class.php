@@ -41,7 +41,6 @@ class Product extends ShopObject {
      * @param bool $light future use. Switch to light proxy object initialisation.
      */
     public function __construct($idorrecord, $light = false) {
-        global $DB;
 
         $config = get_config('local_shop');
 
@@ -156,6 +155,11 @@ class Product extends ShopObject {
             $filterclause = ' AND '.implode(' AND ', $filterstrs);
         }
 
+        $orderclause = '';
+        if (!empty($order)) {
+            $orderclause = " ORDER BY $order ";
+        }
+
         $sql = '
             SELECT
                 p.*
@@ -171,6 +175,7 @@ class Product extends ShopObject {
                 p.catalogitemid = ci.id AND
                 p.initialbillitemid = ibi.id
                 '.$filterclause.'
+            $orderclause
         ';
 
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
@@ -227,7 +232,7 @@ class Product extends ShopObject {
             case 'coursecat':
                 $coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid));
                 $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
-                $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $courseurl));
+                $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
                 break;
 
             case 'attempt':

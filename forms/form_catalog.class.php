@@ -35,7 +35,7 @@ class Catalog_Form extends moodleform {
     protected $editoroptions;
 
     public function definition() {
-        global $CFG, $OUTPUT, $DB, $COURSE;
+        global $OUTPUT, $DB, $COURSE;
 
         $context = context_system::instance();
 
@@ -101,7 +101,7 @@ class Catalog_Form extends moodleform {
         $linkedarray = array();
         $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('standalone', 'local_shop'), 'free');
         $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('master', 'local_shop'), 'master');
-        if (!empty($masterCatalogOptions)) {
+        if (!empty($mastercatalogoptions)) {
             $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('slaveto', 'local_shop'), 'slave');
             $linkedarray[] = &$mform->createElement('select', 'groupid', '', $mastercatalogoptions);
         }

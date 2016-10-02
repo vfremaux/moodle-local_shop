@@ -36,7 +36,7 @@ class Shop_Form extends moodleform {
     protected $editoroptions;
 
     public function definition() {
-        global $CFG, $OUTPUT, $DB;
+        global $DB;
 
         // Setting variables.
         $mform =& $this->_form;
@@ -51,7 +51,6 @@ class Shop_Form extends moodleform {
         $attributes = 'size="47" maxlength="200"';
         $attributesshort = 'size="30" maxlength="200"';
         $attributeslong = 'size="80" maxlength="255"';
-        $attributesint = 'size="5" maxlength="200"';
 
         // Adding fieldset.
         $mform->addElement('hidden', 'what', $this->_customdata['what']);

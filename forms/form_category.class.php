@@ -30,7 +30,7 @@ class Category_Form extends moodleform {
     public $editoroptions;
 
     public function definition() {
-        global $CFG, $COURSE, $OUTPUT;
+        global $COURSE, $OUTPUT;
 
         $attributes = array('size' => 47,  'maxlength' => 200);
 

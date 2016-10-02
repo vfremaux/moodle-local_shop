@@ -38,13 +38,13 @@ class CatalogShipZone extends ShopObject {
     protected static $table = 'local_shop_catalogshipzone';
 
     public function __construct($idorrecord = '', $light = false) {
-        global $DB;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
             if ($light) {
-                return; // This builds a lightweight proxy of the Bill, without items.
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
             }
         } else {
             $this->record->catalogid = 0;
@@ -68,11 +68,14 @@ class CatalogShipZone extends ShopObject {
             $zonerecs = $DB->get_records(self::$table, array());
         }
 
+        $zones = array();
         if (!empty($zonerecs)) {
             foreach ($zonerecs as $zone) {
                 $zones[$zone->id] = new CatalogShipZone($zone);
             }
         }
+
+        return $zones;
     }
 
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

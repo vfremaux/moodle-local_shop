@@ -160,9 +160,6 @@ class CatalogItem extends ShopObject {
     }
 
     public function get_printable_prices($taxed = false) {
-        global $DB;
-
-        $str = '';
 
         $prices = array();
         $key = (!@$this->record->range1) ? '0-' : "0-{$this->record->range1}";
@@ -196,7 +193,7 @@ class CatalogItem extends ShopObject {
     }
 
     public function get_taxed_price($q, $taxid = 0) {
-        global $DB, $CFG;
+        global $DB;
         static $taxcache;
 
         if (empty($taxid)) {
@@ -232,7 +229,7 @@ class CatalogItem extends ShopObject {
     // This will fetch an element by code.
     public function get_element($code) {
         if (array_key_exists($code, $this->elements)) {
-            return $this->elements[$elm->code];
+            return $this->elements[$code];
         } else {
             throw Exception('nosuchelement');
         }
@@ -275,7 +272,7 @@ class CatalogItem extends ShopObject {
         $context = \context_system::instance();
 
         $fs = get_file_storage();
-        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemimage', $this->id, $ignoredirs = true)) {
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemimage', $this->id, /* ignoredirs */ true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemimage', $this->id);
             $unitpix = array_pop($files);
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
@@ -294,7 +291,7 @@ class CatalogItem extends ShopObject {
         $context = \context_system::instance();
 
         $fs = get_file_storage();
-        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemthumb', $this->id, $ignoredirs = true)) {
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemthumb', $this->id, /* ignoredirs */ true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemthumb', $this->id);
             $unitpix = array_pop($files);
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
@@ -588,6 +585,7 @@ class CatalogItem extends ShopObject {
                 $error = true;
         }
 
+        $params = array();
         $scopeclause = '';
         if (!empty($searchscope)) {
             if (is_array()) {
@@ -616,7 +614,7 @@ class CatalogItem extends ShopObject {
                   $whereclause
             ";
 
-            $results = $DB->get_records_sql($sql, array($catalogid));
+            $results = $DB->get_records_sql($sql, $params);
         }
 
         return $results;

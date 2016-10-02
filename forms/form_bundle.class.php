@@ -35,7 +35,7 @@ use local_shop\Tax;
 class Bundle_Form extends catalogitemform {
 
     public function definition() {
-        global $OUTPUT, $COURSE, $DB;
+        global $OUTPUT;
 
         // Setting variables.
 
@@ -43,8 +43,6 @@ class Bundle_Form extends catalogitemform {
 
         $mform->addElement('hidden', 'bundleid');
         $mform->setType('bundleid', PARAM_INT);
-
-        $context = context_system::instance();
 
         // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'bundle', 'local_shop')));

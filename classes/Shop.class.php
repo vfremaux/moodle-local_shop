@@ -156,6 +156,8 @@ class Shop extends ShopObject {
 
     /**
      * Expands back compacted params for paymodes into separate fields
+     * @param objectref &$shoprec expansion is performed directly in input object.
+     * @return void
      */
     public static function expand_paymodes(&$shoprec) {
 
@@ -164,7 +166,6 @@ class Shop extends ShopObject {
             $paymodeenable = array_shift($expanded);
         } else {
             $paymodeenable = array();
-            $defaultpaymode = '';
         }
 
         foreach ($paymodeenable as $k => $v) {
@@ -220,7 +221,7 @@ class Shop extends ShopObject {
 
         $discountrate = 0; // No discount as default.
 
-        if ($thresholdcond = $this->record->discountthreshold &&
+        if ($this->record->discountthreshold &&
                 $this->record->discountrate &&
                         ($amount > $this->record->discountthreshold)) {
             $discountrate = $this->record->discountrate;
@@ -229,15 +230,15 @@ class Shop extends ShopObject {
         }
 
         if (isloggedin()) {
-            if ($usercond1 = has_capability('local/shop:discountagreed', $context, $USER->id)) {
+            if (has_capability('local/shop:discountagreed', $context, $USER->id)) {
                 $discountrate = $this->record->discountrate;
                 $reason = get_string('userdiscountagreed', 'local_shop');
             }
-            if ($usercond2 = has_capability('local/shop:seconddiscountagreed', $context, $USER->id)) {
+            if (has_capability('local/shop:seconddiscountagreed', $context, $USER->id)) {
                 $discountrate = $this->record->discountrate2;
                 $reason = get_string('userdiscountagreed2', 'local_shop');
             }
-            if ($usercond3 = has_capability('local/shop:thirddiscountagreed', $context, $USER->id)) {
+            if (has_capability('local/shop:thirddiscountagreed', $context, $USER->id)) {
                 $discountrate = $this->record->discountrate3;
                 $reason = get_string('userdiscountagreed3', 'local_shop');
             }

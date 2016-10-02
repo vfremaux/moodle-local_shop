@@ -82,7 +82,7 @@ class Set extends ShopObject {
         }
     }
 
-    public function get_taxed_price($q, $tax) {
+    public function get_taxed_price($q, $taxid) {
         global $DB, $CFG;
         static $taxcache;
 
@@ -95,7 +95,7 @@ class Set extends ShopObject {
                     $taxcache[$taxid]->formula = '$ttc = $ht';
                 }
             } else {
-                return $htprice;
+                return $this->get_price($q);
             }
         }
         $in['ht'] = $this->get_price($q);

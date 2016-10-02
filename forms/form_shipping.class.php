@@ -28,7 +28,7 @@ require_once($CFG->libdir.'/formslib.php');
 class ProductShipping_Form extends moodleform {
 
     public function definition() {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
 
         $codeattributes = 'size="10" maxlength="10"';
 
@@ -53,15 +53,15 @@ class ProductShipping_Form extends moodleform {
         $mform->setType('formula', PARAM_TEXT);
         $mform->addHelpButton('formula', 'formula', 'local_shop');
 
-        $mform->addElement('text', 'a', get_string('param_a', 'local_shop'));
+        $mform->addElement('text', 'a', get_string('param_a', 'local_shop'), $codeattributes);
         $mform->setAdvanced('a');
         $mform->setType('a', PARAM_NUMBER);
 
-        $mform->addElement('text', 'b', get_string('param_b', 'local_shop'));
+        $mform->addElement('text', 'b', get_string('param_b', 'local_shop'), $codeattributes);
         $mform->setAdvanced('b');
         $mform->setType('b', PARAM_NUMBER);
 
-        $mform->addElement('text', 'c', get_string('param_c', 'local_shop'));
+        $mform->addElement('text', 'c', get_string('param_c', 'local_shop'), $codeattributes);
         $mform->setAdvanced('c');
         $mform->setType('c', PARAM_NUMBER);
 

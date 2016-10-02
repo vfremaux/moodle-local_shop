@@ -253,8 +253,6 @@ class Bill extends ShopObject {
      * have accurate amount of the original order
      */
     public function add_item(BillItem $bi) {
-        global $USER;
-
         $this->items[] = $bi;
         $this->orderuntaxedamount += $bi->totalprice;
         $this->ordertaxes += $bi->get_totaltax();
@@ -305,9 +303,9 @@ class Bill extends ShopObject {
     }
 
     public function check_discount() {
-        global $CFG, $USER, $SESSION, $DB;
+        global $DB;
 
-        $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, $reason);
+        $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, '');
 
         // Trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches.
         if ($discountrate) {

@@ -57,7 +57,8 @@ class catalog_controller {
             // If master catalog, must delete all slaves.
             $thecatalog = new Catalog($this->data->catalogid);
             if ($thecatalog->ismaster) {
-                $catalogids = $DB->get_records_select_menu('local_shop_catalog', " groupid = '{$this->data->catalogid}' ", 'id', 'id,name');
+                $select = " groupid = '{$this->data->catalogid}' ";
+                $catalogids = $DB->get_records_select_menu('local_shop_catalog', $select, 'id', 'id,name');
                 $catalogidlist = implode("','", array_keys($catalogids));
             }
             // Deletes products entries in candidate catalogs.

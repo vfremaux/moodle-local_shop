@@ -37,7 +37,7 @@ class ShopObject {
     protected $record;
 
     public function __construct($recordorid, $recordtable) {
-        global $CFG, $DB;
+        global $DB;
 
         self::$table = $recordtable;
 

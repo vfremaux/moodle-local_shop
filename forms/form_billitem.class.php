@@ -35,8 +35,12 @@ class BillItem_Form extends moodleform {
     private $bill;
 
     protected $editoroptions;
+    protected $attributesshort;
+    protected $attributesdescription;
 
     public function __construct($mode, $bill, $action) {
+        global $COURSE;
+
         $this->mode = $mode;
         $this->bill = $bill;
 
@@ -49,6 +53,10 @@ class BillItem_Form extends moodleform {
                                      'maxfiles' => $maxfiles,
                                      'maxbytes' => $maxbytes,
                                      'context' => $context);
+
+        $this->attributesshort = 'size="24" maxlength="24"';
+        $this->attributesdescription = 'cols="50" rows="8"';
+
         parent::__construct($action);
     }
 
@@ -85,13 +93,9 @@ class BillItem_Form extends moodleform {
             </script>
         ";
 
-        $ordering = ($this->mode == 'add') ? $this->bill->maxordering + 1 : 0;
         $mform->addElement('html', $js);
 
         // Adding fieldset.
-        $attributes = 'size="50" maxlength="200"';
-        $attributesshort = 'size="24" maxlength="24"';
-        $attributesdescription = 'cols="50" rows="8"';
         $label = get_string('order', 'local_shop');
         $billcode = 'ORD-'.date('Ymd', $this->bill->emissiondate).'-'.$this->bill->id;
         $mform->addElement('static', 'billtitle', $label, $billcode);
@@ -101,7 +105,7 @@ class BillItem_Form extends moodleform {
         $mform->addElement('hidden', 'ordering', $lastordering);
         $mform->setType('ordering', PARAM_INT);
 
-        $mform->addElement('text', 'itemcode', get_string('code', 'local_shop'), $attributesshort);
+        $mform->addElement('text', 'itemcode', get_string('code', 'local_shop'), $this->attributesshort);
         $mform->setType('itemcode', PARAM_INT);
 
         $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop'), $this->editoroptions);
@@ -112,10 +116,10 @@ class BillItem_Form extends moodleform {
 
         $mform->addElement('date_selector', 'delay', get_string('timetodo', 'local_shop'));
 
-        $mform->addElement('text', 'unitcost', get_string('unittex', 'local_shop'), $attributesshort);
+        $mform->addElement('text', 'unitcost', get_string('unittex', 'local_shop'), $this->attributesshort);
         $mform->setType('unitcost', PARAM_NUMBER);
 
-        $mform->addElement('text', 'quantity', get_string('quantity', 'local_shop').':', $attributesshort);
+        $mform->addElement('text', 'quantity', get_string('quantity', 'local_shop').':', $this->attributesshort);
         $mform->setType('quantity', PARAM_NUMBER);
 
         $content = '<span id="totalPrice">0.00</span> '. $config->defaultcurrency;

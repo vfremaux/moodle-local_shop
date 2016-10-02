@@ -31,7 +31,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
 function produce_prepay(&$afullbill) {
-    global $CFG, $DB;
 
     $response = new StdClass;
     $response->public = '';
@@ -82,7 +81,6 @@ function produce_prepay(&$afullbill) {
  * @param \local_shop\Bill $afullbill
  */
 function produce_postpay(&$afullbill) {
-    global $CFG, $DB;
 
     $hasworked = false;
 
@@ -148,7 +146,6 @@ function produce_postpay(&$afullbill) {
  * code can print the full updated production track.
  */
 function shop_aggregate_production(&$abill, $productiondata, $interactive = false) {
-    global $DB;
 
     $previousdata = (empty($abill->productionfeedback)) ? new StdClass : json_decode(base64_decode($abill->productionfeedback));
     @$previousdata->public .= $productiondata->public;
@@ -171,7 +168,6 @@ function shop_aggregate_production(&$abill, $productiondata, $interactive = fals
  * @param object &$theshop
  */
 function produce_unittests(&$theshop, &$products, $selected, &$errors, &$warnings, &$messages) {
-    global $CFG, $DB;
 
     foreach ($products as $ci) {
         if (!in_array($ci->code, $selected)) {

@@ -121,7 +121,7 @@ class shop_export_excel extends shop_export {
             return;
         }
 
-        foreach ($this->data[0] as $rowid => $datarow) {
+        foreach (array_values($this->data[0]) as $datarow) {
             $i = 0;
             $dataarr = (array)$datarow;
             foreach ($this->datadesc[0]['columns'] as $col) {

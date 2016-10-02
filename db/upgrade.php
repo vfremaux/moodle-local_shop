@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param int $oldversion
  */
 function xmldb_local_shop_upgrade($oldversion = 0) {
-    global $CFG, $THEME, $DB;
+    global $DB;
 
     $result = true;
 

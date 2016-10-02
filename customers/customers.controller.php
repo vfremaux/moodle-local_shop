@@ -38,7 +38,7 @@ class customers_controller {
             $customerids = required_param_array('customerid', PARAM_INT);
             if ($customerids) {
                 foreach ($customerids as $id) {
-                    $customer = new Customer();
+                    $customer = new Customer($id);
                     $customer->delete();
                 }
             }
@@ -55,7 +55,7 @@ class customers_controller {
             $customer->zip = required_param('zip', PARAM_TEXT);
             $customer->city = required_param('city', PARAM_TEXT);
             $customer->country = optional_param('country', 'FR', PARAM_ALPHA);
-            $newid = $DB->insert_record('local_shop_customer', $customer);
+            $DB->insert_record('local_shop_customer', $customer);
         }
 
         if ($cmd == "sellout") {

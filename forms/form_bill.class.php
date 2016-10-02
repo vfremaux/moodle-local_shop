@@ -36,7 +36,7 @@ use local_shop\Customer;
 class Bill_Form extends moodleform {
 
     public function definition() {
-        global $CFG, $OUTPUT, $DB;
+        global $OUTPUT, $DB;
 
         $strrequired = get_string('required', 'local_shop');
 
@@ -50,7 +50,6 @@ class Bill_Form extends moodleform {
 
         $attributes = 'size="47" maxlength="200"';
         $attributesshort = 'size="30" maxlength="200"';
-        $attributesint = 'size="5" maxlength="200"';
         $attributesjscustomer = 'onchange = listClear(document.getElementById(\'id_useraccountid\'))';
         $attributesjsuser = 'onchange = listClear(document.getElementById(\'id_userid\'))';
 

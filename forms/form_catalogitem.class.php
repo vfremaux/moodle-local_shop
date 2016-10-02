@@ -62,6 +62,9 @@ abstract class catalogitemform extends moodleform {
     }
 
     protected function add_standard_name_elements() {
+        global $DB;
+
+        $config = get_config('local_shop');
 
         $mform = $this->_form;
 
@@ -257,13 +260,13 @@ abstract class catalogitemform extends moodleform {
         global $COURSE;
 
         $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
-        $leafletfpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.pdf'));
+        $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.pdf'));
 
         $mform = $this->_form;
 
         $group = array();
         $label = get_string('leaflet', 'local_shop');
-        $group[0] = & $mform->createElement('filepicker', 'leaflet', $label, $leafletfpickerattributes);
+        $group[0] = & $mform->createElement('filepicker', 'leaflet', $label, $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearleaflet', get_string('clear', 'local_shop'));
 
         $label = get_string('leaflet', 'local_shop');

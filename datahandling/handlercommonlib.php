@@ -139,7 +139,7 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
     if (!$customer = $DB->get_record('local_shop_customer', array('id' => $billitem->get_customerid()))) {
         return false;
     }
-    if (!$customeruser = $DB->get_record('user', array('id' => $customer->hasaccount))) {
+    if (!$DB->get_record('user', array('id' => $customer->hasaccount))) {
         return false;
     }
 

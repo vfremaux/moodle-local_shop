@@ -66,7 +66,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
 
-        if (!$enrolplugin = enrol_get_plugin($data->actionparams['enroltype'])) {
+        if (!enrol_get_plugin($data->actionparams['enroltype'])) {
             print_error('genericerror', 'local_shop', get_string('errorenrolnotinstalled', 'shophandlers_std_extendenrolperiod'));
         }
 
@@ -81,11 +81,10 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         // Quantity addresses number of elementary extension period.
         $rangeextension = $data->actionparams['extension'] * DAYSECS * $data->quantity;
 
-        $enrol = $DB->get_record('enrol', array('courseid' => $courseid, 'enrol' => $data->actionparams['enroltype']));
+        $enrol = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol' => $data->actionparams['enroltype']));
 
         $context = context_course::instance($course->id);
         $userid = (empty($data->foruser)) ? $USER->id : $data->foruser;
-        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
         if (!$enroldata = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $userid))) {
             $productiondata->public = get_string('processerror', 'local_shop');
@@ -113,7 +112,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         // Find existing product and add an event.
         // Register product.
         $product = $DB->get_record('local_shop_product', array('reference' => $data->required['productcode']));
-        $product->enddate = $endtime;
+        $product->enddate = $enroldata->timeend;
         $DB->update_record('local_shop_product', $product);
 
         // Record an event.
@@ -158,7 +157,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         }
 
         $enroltype = $data->actionparams['enroltype'];
-        if (!$enrolplugin = enrol_get_plugin($enroltype)) {
+        if (!enrol_get_plugin($enroltype)) {
             $err = get_string('errorenrolpluginnotavailable', 'shophandlers_std_extendenrolperiod', $enroltype);
             $errors[$data->code][] = $err;
         }

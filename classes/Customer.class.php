@@ -36,13 +36,14 @@ class Customer extends ShopObject {
     public static $table = 'local_shop_customer';
 
     public function __construct($idorrecord, $light = false) {
-        global $DB, $CFG;
+        global $CFG;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
             if ($light) {
-                return; // This builds a lightweight proxy of the customer, without moodle user data.
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
             }
 
             $this->bills = Bill::get_instances(array('customerid' => $this->id), 'status ASC');
@@ -101,6 +102,9 @@ class Customer extends ShopObject {
             }
         }
 
+        $order = optional_param('order', 'c.id', PARAM_ALPHA);
+        $dir = optional_param('dir', '', PARAM_ALPHA);
+
         $sql = "
             SELECT
                c.*,
@@ -122,10 +126,10 @@ class Customer extends ShopObject {
                $catalogclause
             GROUP BY
                c.id
+            ORDER BY
+               $order $dir
         ";
 
-        $order = optional_param('order', '', PARAM_ALPHA);
-        $dir = optional_param('dir', '', PARAM_ALPHA);
         $offset = optional_param('offest', '', PARAM_ALPHA);
         $customers = $DB->get_records_sql($sql, $params, $offset, $config->maxitemsperpage);
         $customersarr = array();

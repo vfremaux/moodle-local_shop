@@ -158,6 +158,9 @@ class shop_customers_renderer {
         $table->width = '100%';
         $table->data = array();
 
+        $markstr = get_string('mark', 'local_shop');
+        $unmarkstr = get_string('unmark', 'local_shop');
+
         foreach ($billset as $portlet) {
             $row = array();
             $url = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $portlet->id));
@@ -168,7 +171,6 @@ class shop_customers_renderer {
             $row[] = $portlet->title;
             $row[] = sprintf("%.2f", round($portlet->amount, 2)).' '.$config->defaultcurrency;
             if ($portlet->status == 'PENDING') {
-                $markstr = get_string('mark', 'local_shop');
                 $params = array('view' => 'viewCustomer',
                                 'what' => 'sellout',
                                 'billid' => $portlet->id,

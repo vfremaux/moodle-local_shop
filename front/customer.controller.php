@@ -31,6 +31,8 @@ class customer_controller extends front_controller_base {
     public function process($cmd) {
         global $SESSION, $USER, $DB;
 
+        $config = get_config('local_shop');
+
         if ($cmd == 'revalidate') {
 
             // This comes after a customer login with a owned moodle account.
@@ -57,14 +59,14 @@ class customer_controller extends front_controller_base {
             }
 
             if (!empty($config->hasshipping)) {
-                $shoppingcart->shipping = $thecatalog->calculate_shipping();
+                $shoppingcart->shipping = $this->thecatalog->calculate_shipping();
                 $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal + $shoppingcart->shipping->value;
             } else {
                 // This is the last final payable amount.
                 $SESSION->shoppingcart->finalshippedtaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
             }
 
-            if ($back = optional_param('back', '', PARAM_TEXT)) {
+            if (optional_param('back', '', PARAM_TEXT)) {
                 $params = array('view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1);
                 redirect(new \moodle_url('/local/shop/front/view.php', $params));
             } else {

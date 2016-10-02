@@ -37,13 +37,13 @@ class Category extends ShopObject {
     protected $thecatalog;
 
     public function __construct($idorrecord, $light = false) {
-        global $DB;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
             if ($light) {
-                return; // This builds a lightweight proxy of the Bill, without items.
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
             }
         } else {
             // Initiate empty fields.
@@ -100,7 +100,7 @@ class Category extends ShopObject {
      * Given a set of categories, and a current categoryid,
      * filter out all categories that are NOT parentable
      * @param arrayref $categories
-     * @param int $currentcat
+     * @param int $currentcatid
      */
     public static function filter_parentable(&$categories, $currentcatid = 0) {
         global $DB;
@@ -124,7 +124,7 @@ class Category extends ShopObject {
             if ($c->parentid) {
                 while ($c->parentid) {
                     $c = $DB->get_record('local_shop_catalogcategory', array('id' => $c->parentid), 'id,parentid');
-                    if ($c->id == $currentcat) {
+                    if ($c->id == $currentcatid) {
                         unset($categories[$cid]);
                         break;
                     }
