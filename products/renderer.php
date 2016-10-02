@@ -785,11 +785,11 @@ class shop_products_renderer {
         }
 
         if ($category->sortorder > 1) {
-            $icon = '<img src="'.$OUTPUT->pix_url('/t/down').'" />'
+            $icon = '<img src="'.$OUTPUT->pix_url('/t/down').'" />';
             $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=up\">".$icon.'</a>';
         }
         if ($category->sortorder < $maxorder) {
-            $icon = '<img src="'.$OUTPUT->pix_url('t/up').'" />'
+            $icon = '<img src="'.$OUTPUT->pix_url('t/up').'" />';
             $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=down\">".$icon.'</a>';
         }
         $row[] = $commands;

@@ -131,7 +131,7 @@ class local_shop_renderer extends plugin_renderer_base {
             $output = $customerlabel.': '.$customername->lastname.' '.$customername->firstname;
             $output .= ' ('.$customername->city.') ['.$customername->country.']';
         } else {
-            $u = (new moodle_url($urlroot);
+            $u = new moodle_url($urlroot);
             $select = new single_select($u, 'customer', $customersmenu, $activecustomer, null, 'selectcustomer');
             $select->label = $customerlabel;
             $output = $OUTPUT->render($select);
