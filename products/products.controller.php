@@ -131,11 +131,10 @@ class product_controller {
         /* ***** make a local physical clone of the master product in this slave catalog ***** */
         if ($cmd == 'makecopy') {
             // Get source item in master catalog.
-            $masterCatalog = new Catalog($this->thecatalog->groupid);
             $item = new CatalogItem($this->data->masteritemid);
             $result = CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id));
             if (empty($result)) {
-                $item->catalogid = $this->thecatalog->id; // Binding to local catalog
+                $item->catalogid = $this->thecatalog->id; // Binding to local catalog.
                 $item->id = 0; // Ensure new record.
                 $item->save();
             }

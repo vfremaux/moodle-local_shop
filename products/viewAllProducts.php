@@ -54,9 +54,6 @@ if ($action != '') {
 $products = array();
 
 $thecatalog->get_all_products_for_admin($products);
-if ($thecatalog->isslave) {
-    $masterCatalog = new Catalog($thecatalog->groupid);
-}
 
 echo $out;
 
@@ -72,9 +69,9 @@ echo $OUTPUT->heading(get_string('products', 'local_shop'));
 
 if (count(array_keys($products)) == 0) {
     if (@$SESSION->shop->categoryid) {
-       echo $OUTPUT->notification(get_string('noproducts', 'local_shop'));
+        echo $OUTPUT->notification(get_string('noproducts', 'local_shop'));
     } else {
-       echo $OUTPUT->notification(get_string('noproductincategory', 'local_shop'));
+        echo $OUTPUT->notification(get_string('noproductincategory', 'local_shop'));
     }
 } else {
     $formurl = new moodle_url('/local/shop/products/view.php');
