@@ -1,5 +1,6 @@
-// jshint undef:false, unused:false
-// Javascript functions for shop/order.
+/*
+ * jshint undef:false, unused:false
+ */
 
 function send_confirm(){
     document.forms['bill'].cmd.value = 'confirm';

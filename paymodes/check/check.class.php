@@ -22,16 +22,16 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/local/shop/paymodes/paymode.class.php';
+require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
 class shop_paymode_check extends shop_paymode {
 
-    function __construct(&$shop) {
+    public function __construct(&$shop) {
         parent::__construct('check', $shop);
     }
 
     // Prints a payment porlet in an order form.
-    function print_payment_portlet(&$billdata) {
+    public function print_payment_portlet(&$billdata) {
 
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_check');
@@ -47,7 +47,7 @@ class shop_paymode_check extends shop_paymode {
         echo '</blockquote>';
     }
 
-    function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info(&$billdata = null) {
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_check');
         echo '<blockquote>';
@@ -62,21 +62,21 @@ class shop_paymode_check extends shop_paymode {
         echo '</blockquote>';
     }
 
-    function print_complete() {
+    public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
     // Processes a payment return.
-    function process() {
+    public function process() {
     }
 
     // Processes a payment asynchronoous confirmation.
-    function process_ipn() {
+    public function process_ipn() {
         // No IPN for offline payment.
     }
 
     // Provides global settings to add to shop settings when installed.
-    function settings(&$settings) {
+    public function settings(&$settings) {
     }
 
 }

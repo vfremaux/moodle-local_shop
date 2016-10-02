@@ -241,7 +241,7 @@ class production_controller extends front_controller_base {
             mtrace("[{$afullbill->transactionid}] ".'Production Controller : Transaction notified to customer');
         }
 
-        /* notify sales forces and administrator */
+        // Notify sales forces and administrator.
         // Send final notification by mail if something has been done the sales administrators users should know.
         $vars = array('TRANSACTION' => $afullbill->transactionid,
                       'SERVER' => $SITE->fullname,

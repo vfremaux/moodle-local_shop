@@ -1520,9 +1520,9 @@ class shop_front_renderer {
         if (!empty($roleassigns[$shortname][$role])) {
             $str .= '<div class="shop-role-list-container">';
             $str .= '<table width="100%" class="shop-role-list">';
-                foreach ($roleassigns[$shortname][$role] as $participant) {
-                    $str .= $this->assignation_row($participant, $role, $shortname, true);
-                }
+            foreach ($roleassigns[$shortname][$role] as $participant) {
+                $str .= $this->assignation_row($participant, $role, $shortname, true);
+            }
             $str .= '</table>';
             $str .= '</div>';
         } else {
@@ -1530,7 +1530,7 @@ class shop_front_renderer {
             $str .= '<div class="shop-role-list">';
             $str .= get_string('noassignation', 'local_shop');
             $str .= '</div>';
-            $str.= '</div>';
+            $str .= '</div>';
         }
         if (@$SESSION->shoppingcart->assigns[$shortname] < $SESSION->shoppingcart->order[$shortname]) {
             $str .= $this->assignation_select($role, $shortname, true);
@@ -1666,7 +1666,7 @@ class shop_front_renderer {
             $str .= $q;
             $str .= '</td>';
             $str .= '<td width="8%" align="right" style="text-align:right" class="lastcol">';
-            $str .= sprintf('%.2f', $catalogitem->get_taxed_price($q) *  $q);
+            $str .= sprintf('%.2f', $catalogitem->get_taxed_price($q) * $q);
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -1998,7 +1998,7 @@ class shop_front_renderer {
                     // Set default paymode as first available.
                     if (empty($SESSION->shoppingcart->paymode)) {
                         $default = (empty($this->theshop->defaultpaymode)) ? $var : $this->theshop->defaultpaymode;
-                        $SESSION->shoppingcart->paymode = $default ;
+                        $SESSION->shoppingcart->paymode = $default;
                         $paymode = $default;
                     } else {
                         $paymode = $SESSION->shoppingcart->paymode;
@@ -2143,7 +2143,7 @@ class shop_front_renderer {
      * @param string $view the current view
      * @param array $options additional information as an array
      */
-    function action_form($view, $options) {
+    public function action_form($view, $options) {
 
         $this->check_context();
 
@@ -2241,7 +2241,7 @@ class shop_front_renderer {
                 if (!empty($requirements)) {
                     $str .= '<div class="shop-product-requ">';
                     $str .= '<div class="shop-product-name">'.$product->name.'</div>';
-                    for ($i = 0; $i < $itemcount ; $i++) {
+                    for ($i = 0; $i < $itemcount; $i++) {
                         $str .= '<div class="shop-product-requirements">';
                         $label = get_string('instance', 'local_shop', $i + 1);
                         $str .= '<div class="shop-product-requirement">'.$label.'</div>';
@@ -2324,7 +2324,7 @@ class shop_front_renderer {
                                         foreach ($options as $optkey => $optvalue) {
                                             $isselected = $optkey == @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
                                             $selected = ($isselected) ? 'selected' : '';
-                                            $str.= '<option name="'.$optkey.'">'.$optvalue.'</option>';
+                                            $str .= '<option name="'.$optkey.'">'.$optvalue.'</option>';
                                         }
                                     }
                                     $str .= '</select>';

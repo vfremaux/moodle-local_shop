@@ -55,7 +55,7 @@ define('SHOP_QUANT_ONE_SEAT', 1);
 define('SHOP_QUANT_NO_SEATS', 0);
 
 /*
- * known bill states
+ * Known bill states.
  */
 define('SHOP_BILL_WORKING', 'WORKING'); // An order is being prepared in the backoffice.
 define('SHOP_BILL_PLACED', 'PLACED'); // An order has been placed online.
@@ -331,7 +331,7 @@ function shop_create_course_from_template($templatepath, $courserec) {
 function shop_fast_make_category($catname, $description = '', $catparent = 0) {
     global $DB;
 
-    $cname = mysql_real_escape_string($catname);
+    $cname = mysqli_real_escape_string($catname);
     // Check if a category with the same name and parent ID already exists.
     if ($cat = $DB->get_field_select('course_categories', 'id', " name = '$cname' AND parent = $catparent ")) {
         return false;
@@ -449,7 +449,9 @@ function shop_calculate_taxed($htprice, $taxid) {
     }
     if (!array_key_exists($taxid, $taxcache)) {
         if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
-            if (empty($taxcache[$taxid]->formula)) $taxcache[$taxid]->formula = '$ttc = $ht';
+            if (empty($taxcache[$taxid]->formula)) {
+                $taxcache[$taxid]->formula = '$ttc = $ht';
+            }
         } else {
             return $htprice;
         }
@@ -572,7 +574,8 @@ function shop_get_sales_managers($blockid) {
 /**
  * gives status list for bills :
  * PLACED : This is the first state;
- * PENDING : Payment has been initiated, but we do not have yet any evidence of it. This can be online payment startup or offline method.
+ * PENDING : Payment has been initiated, but we do not have yet any evidence of it. This can be online
+ * payment startup or offline method.
  * PAYBACK : The bill needs to be payback to the customer.
  * PARTIAL : The bill has received partial (not complete) payment.
  * SOLDOUT : The bill has received complete payment. It can be processed for production
