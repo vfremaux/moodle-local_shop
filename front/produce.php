@@ -26,7 +26,7 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-Use \local_shop\Bill;
+use \local_shop\Bill;
 
 // Resolving invoice identity and command.
 
@@ -34,13 +34,16 @@ $action = optional_param('what', '', PARAM_TEXT);
 $transid = optional_param('transid', @$SESSION->shoppingcart->transid, PARAM_TEXT);
 try {
     $afullbill = Bill::get_by_transaction($transid);
-} catch(Exception $e) {
-    die("Transaction exception ");
+} catch (Exception $e) {
+    die("Transaction exception \n");
 }
 
 // In case session is lost, go to the public entrance of the shop.
-if ((!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) && $action != 'navigate' && !empty($transid)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theshop->id, 'blockid' => @$theblock->instance->id, 'view' => 'shop')));
+if ((!isset($SESSION->shoppingcart) ||
+        !isset($SESSION->shoppingcart->customerinfo)) &&
+                $action != 'navigate' && !empty($transid)) {
+    $params = array('id' => $theshop->id, 'blockid' => @$theblock->instance->id, 'view' => 'shop');
+    redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
 /*
@@ -59,8 +62,12 @@ if ($action != '') {
 }
 
 $supports = array();
-if ($config->sellermailsupport) $supports[] = get_string('byemailat', 'local_shop').' '. $config->sellermailsupport;
-if ($config->sellerphonesupport) $supports[] = get_string('byphoneat', 'local_shop').' '. $config->sellerphonesupport;
+if ($config->sellermailsupport) {
+    $supports[] = get_string('byemailat', 'local_shop').' '. $config->sellermailsupport;
+}
+if ($config->sellerphonesupport) {
+    $supports[] = get_string('byphoneat', 'local_shop').' '. $config->sellerphonesupport;
+}
 $supportstr = implode(' '.get_string('or', 'local_shop').' ', $supports);
 $supportstr = (empty($supportstr)) ? '(No support info)' : $supportstr;
 

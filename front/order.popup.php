@@ -40,14 +40,14 @@ $renderer->load_context($theshop, $theblock);
 
 // Security.
 
-// invoke controller.
+// Invoke controller.
 
 $action = optional_param('what', '', PARAM_TEXT);
 $transid = required_param('transid', PARAM_TEXT);
 
 try {
     $afullbill = Bill::get_by_transaction($transid);
-} catch(Exception $e) {
+} catch (Exception $e) {
     $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id));
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
     print_error('invalidbillid', 'local_shop', $viewurl);
@@ -63,11 +63,12 @@ echo $OUTPUT->header();
 
 echo '<div style="max-width:780px">';
 
+$printorderlinkstr = get_string('printorderlink', 'local_shop');
 ?>
 <table>
     <tr>
         <td><img src="<?php echo $OUTPUT->pix_url('logo', 'theme') ?>"></td>
-        <td align="right"><a href="#" onclick="window.print();return false;"><?php echo get_string('printorderlink', 'local_shop') ?></a></td>
+        <td align="right"><a href="#" onclick="window.print();return false;"><?php echo $pintorderlinkstr ?></a></td>
     </tr>
     <tr>
         <td colspan="2" align="center">
@@ -88,7 +89,7 @@ echo '<div style="max-width:780px">';
          <br />
          <b><?php echo $config->sellername ?></b><br />
          <b><?php echo $config->selleraddress ?></b><br />
-         <b><?php echo $config->sellerzip ?> <?php echo  $config->sellercity ?></b><br />
+         <b><?php echo $config->sellerzip ?> <?php echo $config->sellercity ?></b><br />
          <?php echo $config->sellercountry ?>
       </td>
    </tr>
@@ -142,7 +143,7 @@ echo $renderer->full_order_taxes();
 
 echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
-require_once $CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php';
+require_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
 
 $classname = 'shop_paymode_'.$afullbill->paymode;
 
@@ -152,7 +153,8 @@ $pm->print_name();
 echo '</div>';
 
 echo '<div id="order-mailto">';
-echo '<p>'.get_string('forquestionssendmailto', 'local_shop').' : <a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';
+$hlpstr = get_string('forquestionssendmailto', 'local_shop');
+echo '<p>'.$hlpstr.' : <a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';
 echo '</div>';
 echo '</div>';
 echo $OUTPUT->footer();

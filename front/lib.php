@@ -27,8 +27,12 @@ require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
-if (!defined('PHP_ROUND_HALF_EVEN')) define('PHP_ROUND_HALF_EVEN', 3);
-if (!defined('PHP_ROUND_HALF_ODD')) define('PHP_ROUND_HALF_ODD', 3);
+if (!defined('PHP_ROUND_HALF_EVEN')) {
+    define('PHP_ROUND_HALF_EVEN', 3);
+}
+if (!defined('PHP_ROUND_HALF_ODD')) {
+    define('PHP_ROUND_HALF_ODD', 3);
+}
 
 /*
  * this function calculates an overall shipping additional line to be added to bill
@@ -113,7 +117,8 @@ function shop_validate_customer($theshop) {
     }
 
     if (!isloggedin() && shop_has_potential_account($shoppingcart->customerinfo['email'])) {
-        $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theshop->id, 'what' => 'revalidate'));
+        $params = array('view' => 'customer', 'id' => $theshop->id, 'what' => 'revalidate');
+        $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', $params);
         $a = new StdClass();
         $a->wwwroot = $CFG->wwwroot;
         $shoppingcart->errors->customerinfo['customerinfo::mail'] = get_string('existingmailpleaselogin', 'local_shop', $a);
@@ -249,9 +254,9 @@ function shop_check_assigned_seats($requiredroles) {
 function shop_get_transid() {
     global $DB;
 
-    $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0,16), 'MOODLE_SHOP')), 0, 16));
+    $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 16), 'MOODLE_SHOP')), 0, 16));
     while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
-        $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0,16))), 0, 16));
+        $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 16))), 0, 16));
     }
     return $transid;
 }
@@ -304,12 +309,12 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
                 return $endtime;
             }
 
-            if (preg_match('/\+(\d+))D/',$handlerdata->actionparams['endtime'], $matches)) {
+            if (preg_match('/\+(\d+))D/', $handlerdata->actionparams['endtime'], $matches)) {
                 $days = $matches[1] * DAYSECS;
                 $endtime = $starttime + $days;
             }
 
-            if (preg_match('/\+(\d+))H/',$handlerdata->actionparams['endtime'], $matches)) {
+            if (preg_match('/\+(\d+))H/', $handlerdata->actionparams['endtime'], $matches)) {
                 $days = $matches[1] * HOURSECS;
                 $endtime = $starttime + $days;
             }
@@ -322,11 +327,11 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
  * builds a product ref from transation ID and catalogitem code.
  * @param object &$anitem a catalog item instance
  */
-function shop_generate_product_ref(&$anItem) {
+function shop_generate_product_ref(&$anitem) {
     global $DB;
 
-    $transactionid = $anItem->transactionid;
-    $itemcode = $anItem->catalogitem->itemcode;
+    $transactionid = $anitem->transactionid;
+    $itemcode = $anitem->catalogitem->itemcode;
 
     $crypto = md5($transactionid.$itemcode);
     $productref = substr(base64_encode($crypto), 0, 8);

@@ -417,7 +417,7 @@ function shop_trace($str) {
  */
 function shop_calculate_taxed($htprice, $taxid) {
     static $taxcache;
-    global $DB;
+    global $DB, $CFG;
 
     if (!isset($taxcache)) {
         $taxcache = array();
@@ -429,10 +429,11 @@ function shop_calculate_taxed($htprice, $taxid) {
             return $htprice;
         }
     }
-    $ht = $htprice;
-    $tr = $taxcache[$taxid]->ratio;
-    eval($taxcache[$taxid]->formula.';');
-    return $ttc;
+    $in['ht'] = $htprice;
+    $in['tr'] = $taxcache[$taxid]->ratio;
+    require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
+    $result = evaluate($taxcache[$taxid]->formula.';', $in, 'ttc');
+    return $result['ttc'];
 }
 
 /**

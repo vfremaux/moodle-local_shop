@@ -28,7 +28,7 @@ require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class invoice_controller extends front_controller_base {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $SESSION;
 
         if ($cmd == 'navigate') {

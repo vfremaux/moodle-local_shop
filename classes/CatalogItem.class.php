@@ -196,7 +196,7 @@ class CatalogItem extends ShopObject {
     }
 
     public function get_taxed_price($q, $taxid = 0) {
-        global $DB;
+        global $DB, $CFG;
         static $taxcache;
 
         if (empty($taxid)) {
@@ -217,11 +217,11 @@ class CatalogItem extends ShopObject {
             }
         }
 
-        $ht = $this->get_price($q);
-        $tr = $taxcache[$taxid]->ratio;
-        eval($taxcache[$taxid]->formula.';');
-        $this->tax = $ttc - $ht;
-        return $ttc;
+        $in['ht'] = $this->get_price($q);
+        $in['tr'] = $taxcache[$taxid]->ratio;
+        $result = evaluate($taxcache[$taxid]->formula.';', $in, 'ttc');
+        $this->tax = $result['ttc'] - $in['ht'];
+        return $result['ttc'];
     }
 
     // This will override existing elements.

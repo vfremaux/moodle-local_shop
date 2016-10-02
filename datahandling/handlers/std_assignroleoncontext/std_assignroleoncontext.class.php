@@ -95,7 +95,9 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
              */
             // Create Moodle User but no assignation (this will register in customer support if exists).
             if (!shop_create_customer_user($data, $customer, $newuser)) {
-                shop_trace("[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Error : User could not be created {$newuser->username}.");
+                $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Error :";
+                $message .= " User could not be created {$newuser->username}.";
+                shop_trace($message);
                 $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
                 $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
                 $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
@@ -106,7 +108,8 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $a->username = $newuser->username;
             $a->password = $customer->password;
             $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $a);
-            $productionfeedback->salesadmin = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
+            $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
+            $productionfeedback->salesadmin = $fb;
         }
 
         return $productionfeedback;
@@ -152,7 +155,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $role = $DB->get_record('role', array('shortname' => $rolename));
         if (!$role) {
             $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay :";
-            $message .= " failed item {$data->id} no valid role ($rolename)"
+            $message .= " failed item {$data->id} no valid role ($rolename)";
             shop_trace($message);
             return;
         }
@@ -189,7 +192,9 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         }
 
         $startdate = @$data->actionparams['startdate'];
-        if (empty($startdate)) $startdate = time();
+        if (empty($startdate)) {
+            $startdate = time();
+        }
 
         // Computes infinite, relative of fixed enddate.
         $enddate = @$data->actionparams['enddate'];

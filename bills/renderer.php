@@ -1013,7 +1013,7 @@ class shop_bills_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('vatcode','local_shop');
+        $str .= get_string('vatcode', 'local_shop');
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
@@ -1089,7 +1089,7 @@ class shop_bills_renderer {
             $str .= '</td>';
             $str .= '</tr>';
         } else {
-            // print a caption row
+            // Print a caption row.
             $str .= '<tr>';
             $str .= '<th align="left">';
             $str .= get_string('lastname');
@@ -1605,7 +1605,7 @@ class shop_bills_renderer {
     }
 
     public function flow_controller($status, $url) {
-        global $DB, $OUTPUT;
+        global $DB, $OUTPUT, $CFG;
 
         $str = '';
 
@@ -1734,8 +1734,8 @@ class shop_bills_renderer {
             $str .= $OUTPUT->notification(get_string('nobillattachements', 'local_shop'));
         } else {
             $str .= '<table class="globaltable">';
-            foreach ($attachements as $afile) {
-                $str .= $this->attachement($afile, 'bill');
+            foreach ($attachments as $afile) {
+                $str .= $this->attachement($afile, $bill);
             }
             $str .= '</table>';
         }
@@ -1761,7 +1761,7 @@ class shop_bills_renderer {
         return $str;
     }
 
-    public function attachment($file) {
+    public function attachment($file, $bill) {
         global $OUTPUT;
 
         $context = context_system::instance();
@@ -1769,7 +1769,7 @@ class shop_bills_renderer {
         $pathinfo = pathinfo($file->get_filename());
         $type = strtoupper($pathinfo['extension']);
         $filename = $pathinfo['basename'];
-        $fileicon = $OUTPUT->pix_url('/f/$type');
+        $fileicon = $OUTPUT->pix_url("/f/$type");
         if (!file_exists($fileicon)) {
             $fileicon = $OUTPUT->pix_url('/f/unkonwn');
         }
@@ -1793,7 +1793,7 @@ class shop_bills_renderer {
         $str .= '</td>';
 
         $str .= '<td width="10%">';
-        $params = array('id' => $id, 'what' => 'unattach', 'type' => $portlet->attachementtype,
+        $params = array('id' => $bill->id, 'what' => 'unattach', 'type' => $portlet->attachementtype,
                         'file' => $filename);
         $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
         $pixurl = $OUTPUT->pix_url('t/delete');

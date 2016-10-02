@@ -24,7 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
-include_once($CFG->dirroot.'/local/shop/country.php');
+require_once($CFG->dirroot.'/local/shop/country.php');
 
 class Tax_Form extends moodleform {
 
@@ -50,7 +50,7 @@ class Tax_Form extends moodleform {
         $mform->setType('ratio', PARAM_TEXT);
 
         $country = 'FR';
-        $choices =  get_string_manager()->get_list_of_countries();
+        $choices = get_string_manager()->get_list_of_countries();
         $choices = array('' => get_string('selectacountry').'...') + $choices;
         $mform->addElement('select', 'country', get_string('taxcountry', 'local_shop'), $choices);
         $mform->setType('country', PARAM_TEXT);

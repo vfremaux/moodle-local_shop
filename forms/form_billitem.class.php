@@ -53,7 +53,7 @@ class BillItem_Form extends moodleform {
     }
 
     public function definition() {
-        global $CFG, $OUTPUT, $DB;
+        global $OUTPUT, $DB;
 
         $config = get_config('local_shop');
 
@@ -117,7 +117,7 @@ class BillItem_Form extends moodleform {
 
         $mform->addElement('text', 'quantity', get_string('quantity', 'local_shop').':', $attributesshort);
         $mform->setType('quantity', PARAM_NUMBER);
-+
+
         $content = '<span id="totalPrice">0.00</span> '. $config->defaultcurrency;
         $mform->addElement('static', 'totalprice', get_string('total'), $content);
         $bill = $DB->get_record('local_shop_bill', array('id' => $this->bill->id));

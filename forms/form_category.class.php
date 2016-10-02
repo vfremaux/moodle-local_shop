@@ -82,14 +82,14 @@ class Category_Form extends moodleform {
 
         $context = context_system::instance();
 
-        $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor',
+        $draftideditor = file_get_submitted_draft_itemid('description_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor',
                                                @$defaults->id, array('subdirs' => true), $defaults->description);
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
                                                  'categorydescription', @$defaults->id);
         $defaults->description = array('text' => $currenttext,
                                        'format' => $defaults->descriptionformat,
-                                       'itemid' => $draftid_editor);
+                                       'itemid' => $draftideditor);
 
         parent::set_data($defaults);
     }

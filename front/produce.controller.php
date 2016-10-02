@@ -72,7 +72,7 @@ class production_controller extends front_controller_base {
             return;
         }
 
-        /**
+        /*
          * Payment is overriden if :
          * - this is a free order (paymode has been detected as freeorder)
          * - the user is logged in and has special payment override capability
@@ -84,7 +84,7 @@ class production_controller extends front_controller_base {
         if ($cmd == 'confirm') {
 
             if ($paycheckoverride) {
-                // bump to next case
+                // Bump to next case.
                 $cmd = 'produce';
                 $overriding = true;
             } else {
@@ -114,16 +114,20 @@ class production_controller extends front_controller_base {
                  * data to display to user.
                  */
                 shop_aggregate_production($afullbill, $productionfeedback, $this->interactive);
-                // all has been finished.
+                // All has been finished.
                 unset($SESSION->shoppingcart);
             }
         }
         if ($cmd == 'produce') {
 
             // Start production.
-            shop_trace("[{$afullbill->transactionid}] ".'Production Controller : Full production starting from '.$afullbill->status.' ...');
+            $message = "[{$afullbill->transactionid}] Production Controller :"
+            $message .= " Full production starting from {$afullbill->status} ...";
+            shop_trace($message);
             if ($this->interactive && $this->ipncall) {
-                mtrace("[{$afullbill->transactionid}] ".'Production Controller : Full production starting from '.$afullbill->status.' ...');
+                $message = "[{$afullbill->transactionid}] Production Controller :";
+                $message .= " Full production starting from {$afullbill->status} ...";
+                mtrace($message);
             }
 
             if ($afullbill->status == SHOP_BILL_PENDING || $afullbill->status == SHOP_BILL_SOLDOUT || $overriding) {
@@ -184,24 +188,24 @@ class production_controller extends front_controller_base {
         $customer = $DB->get_record('local_shop_customer', array('id' => $afullbill->customerid));
 
         $paymodename = get_string($afullbill->paymode, 'shoppaymodes_'.$afullbill->paymode);
-        $notification  = shop_compile_mail_template('sales_feedback', array('SERVER' => $SITE->shortname,
-                                                                   'SERVER_URL' => $CFG->wwwroot,
-                                                                   'SELLER' => $config->sellername,
-                                                                   'FIRSTNAME' => $customer->firstname,
-                                                                   'LASTNAME' =>  $customer->lastname,
-                                                                   'MAIL' => $customer->email,
-                                                                   'CITY' => $customer->city,
-                                                                   'COUNTRY' => $customer->country,
-                                                                   'ITEMS' => $afullbill->itemcount,
-                                                                   'PAYMODE' => $paymodename,
-                                                                   'AMOUNT' => sprintf("%.2f", round($afullbill->amount, 2))),
-                                                 '');
+        $vars = array('SERVER' => $SITE->shortname,
+                      'SERVER_URL' => $CFG->wwwroot,
+                      'SELLER' => $config->sellername,
+                      'FIRSTNAME' => $customer->firstname,
+                      'LASTNAME' =>  $customer->lastname,
+                      'MAIL' => $customer->email,
+                      'CITY' => $customer->city,
+                      'COUNTRY' => $customer->country,
+                      'ITEMS' => $afullbill->itemcount,
+                      'PAYMODE' => $paymodename,
+                      'AMOUNT' => sprintf("%.2f", round($afullbill->amount, 2)));
+        $notification = shop_compile_mail_template('sales_feedback', $vars, '');
         $params = array('id' => $afullbill->shopid,
                         'blockid' => $afullbill->blockid,
                         'view' => 'bill',
                         'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
-        $customerBillViewUrl = new moodle_url('/local/shop/front/view.php', $params);
+        $customerbillviewurl = new moodle_url('/local/shop/front/view.php', $params);
 
         $seller = new \StdClass;
         $seller->id = $DB->get_field('user', 'id', array('username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id));
@@ -230,7 +234,7 @@ class production_controller extends front_controller_base {
         }
 
         if ($afullbill->customeruser) {
-            ticket_notify($afullbill->customeruser, $seller, $title, $sentnotification, $sentnotification, $customerBillViewUrl);
+            ticket_notify($afullbill->customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
         }
 
         if ($this->interactive && $this->ipncall) {
@@ -239,26 +243,26 @@ class production_controller extends front_controller_base {
 
         /* notify sales forces and administrator */
         // Send final notification by mail if something has been done the sales administrators users should know.
-        $salesnotification = shop_compile_mail_template('transaction_confirm', array('TRANSACTION' => $afullbill->transactionid,
-                                                                   'SERVER' => $SITE->fullname,
-                                                                   'SERVER_URL' => $CFG->wwwroot,
-                                                                   'SELLER' => $config->sellername,
-                                                                   'FIRSTNAME' => $customer->firstname,
-                                                                   'LASTNAME' => $customer->lastname,
-                                                                   'MAIL' => $customer->email,
-                                                                   'CITY' => $customer->city,
-                                                                   'COUNTRY' => $customer->country,
-                                                                   'PAYMODE' => $afullbill->paymode,
-                                                                   'ITEMS' => $afullbill->itemcount,
-                                                                   'AMOUNT' => sprintf("%.2f", round($afullbill->untaxedamount, 2)),
-                                                                   'TAXES' => sprintf("%.2f", round($afullbill->taxes, 2)),
-                                                                   'TTC' => sprintf("%.2f", round($afullbill->amount, 2))
-                                                                    ), '');
+        $vars = array('TRANSACTION' => $afullbill->transactionid,
+                      'SERVER' => $SITE->fullname,
+                      'SERVER_URL' => $CFG->wwwroot,
+                      'SELLER' => $config->sellername,
+                      'FIRSTNAME' => $customer->firstname,
+                      'LASTNAME' => $customer->lastname,
+                      'MAIL' => $customer->email,
+                      'CITY' => $customer->city,
+                      'COUNTRY' => $customer->country,
+                      'PAYMODE' => $afullbill->paymode,
+                      'ITEMS' => $afullbill->itemcount,
+                      'AMOUNT' => sprintf("%.2f", round($afullbill->untaxedamount, 2)),
+                      'TAXES' => sprintf("%.2f", round($afullbill->taxes, 2)),
+                      'TTC' => sprintf("%.2f", round($afullbill->amount, 2)));
+        $salesnotification = shop_compile_mail_template('transaction_confirm', $vars, '');
         $params = array('id' => $afullbill->shopid,
                         'view' => 'viewBill',
                         'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
-        $administratorViewUrl = new moodle_url('/local/shop/bills/view.php', $params);;
+        $administratorviewurl = new moodle_url('/local/shop/bills/view.php', $params);;
         if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
             $title = $SITE->shortname.' : '.get_string('orderconfirm', 'local_shop');
             if (!empty($productiondata->private)) {
@@ -266,11 +270,15 @@ class production_controller extends front_controller_base {
             } else {
                 $sn = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);
             }
-            $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $sn, $sn, $administratorViewUrl);
+            $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $sn, $sn, $administratorviewurl);
             if ($sent) {
-                shop_trace("[{$afullbill->transactionid}] Production Controller : shop Transaction Confirm Notification to sales");
+                $message = "[{$afullbill->transactionid}] Production Controller :";
+                $message .= " shop Transaction Confirm Notification to sales";
+                shop_trace($message);
             } else {
-                shop_trace("[{$afullbill->transactionid}] Production Controller Warning : Seems no sales manager are assigned");
+                $message = "[{$afullbill->transactionid}] Production Controller Warning :";
+                $message .= " Seems no sales manager are assigned";
+                shop_trace($message);
             }
         } else {
             shop_trace("[{$afullbill->transactionid}] ".'Production Controller : No sales role defined');

@@ -27,8 +27,8 @@ require_once($CFG->libdir.'/formslib.php');
 
 class ResetForm extends moodleform {
 
-    // Define the form
-    function definition () {
+    // Define the form.
+    public function definition () {
         global $DB;
 
         $mform =& $this->_form;

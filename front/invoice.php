@@ -36,8 +36,12 @@ if ($action) {
 }
 
 $supports = array();
-if ($config->sellermailsupport) $supports[] = get_string('byemailat', 'local_shop'). ' '. $config->sellermailsupport;
-if ($config->sellerphonesupport) $supports[] = get_string('byphoneat', 'local_shop'). ' '. $config->sellerphonesupport;
+if ($config->sellermailsupport) {
+    $supports[] = get_string('byemailat', 'local_shop'). ' '. $config->sellermailsupport;
+}
+if ($config->sellerphonesupport) {
+    $supports[] = get_string('byphoneat', 'local_shop'). ' '. $config->sellerphonesupport;
+}
 $supportstr = implode(' '.get_string('or', 'local_shop').' ', $supports);
 $supportstr = (empty($supportstr)) ? '(No support info)' : '';
 
@@ -81,7 +85,7 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
 
     echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
-    require_once $CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php';
+    require_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
 
     $classname = 'shop_paymode_'.$afullbill->paymode;
 

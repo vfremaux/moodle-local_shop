@@ -82,7 +82,8 @@ class customer_controller extends front_controller_base {
                      * process. We will always update data for the same email.
                      * this is not considered as reliable data, user accounts are...
                      */
-                    if (!$customer = $DB->get_record('local_shop_customer', array('email' => $shoppingcart->customerinfo['email']))) {
+                    $params = array('email' => $shoppingcart->customerinfo['email']);
+                    if (!$customer = $DB->get_record('local_shop_customer', $params)) {
                         $customer = (object) $shoppingcart->customerinfo;
                         $customer->timecreated = time();
 

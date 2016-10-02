@@ -69,7 +69,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($usercontext);
 $PAGE->set_pagelayout('popup');
 
-// get active catalog from block.
+// Get active catalog from block.
 
 $renderer = shop_get_renderer();
 $renderer->load_context($theshop, $theblock);
@@ -113,7 +113,7 @@ echo $renderer->full_order_taxes($afullbill);
 
 echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
-require_once $CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php';
+require_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
 
 $classname = 'shop_paymode_'.$afullbill->paymode;
 

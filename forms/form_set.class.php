@@ -33,10 +33,14 @@ use local_shop\Tax;
 
 class Set_Form extends catalogitemform {
 
-    function definition() {
-        global $CFG, $OUTPUT, $COURSE;
+    protected $attributesshort;
 
-        // Setting variables
+    public function definition() {
+        global $OUTPUT;
+
+        $this->attributesshort = 'size="30" maxlength="200"';
+
+        // Setting variables.
         $mform =& $this->_form;
 
         $mform->addElement('hidden', 'setid');
@@ -92,14 +96,14 @@ class Set_Form extends catalogitemform {
 
         $this->add_document_assets();
 
-        $mform->addElement('text', 'requireddata', get_string('requireddata', 'local_shop'), $this->defaultattributes);
+        $mform->addElement('text', 'requireddata', get_string('requireddata', 'local_shop'), $this->attributesshort);
         $mform->setType('requireddata', PARAM_TEXT);
 
         // Adding submit and reset button.
         $this->add_action_buttons();
     }
 
-    function set_data($defaults) {
+    public function set_data($defaults) {
         $context = context_system::instance();
         $this->set_name_data($defaults, $context);
         $this->set_document_asset_data($defaults, $context);

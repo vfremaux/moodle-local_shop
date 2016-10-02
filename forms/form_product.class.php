@@ -33,9 +33,7 @@ use local_shop\Tax;
 class Product_Form extends catalogitemform {
 
     public function definition() {
-        global $CFG, $OUTPUT, $COURSE, $DB;
-
-        $config = get_config('local_shop');
+        global $OUTPUT, $DB;
 
         if (!$this->_customdata['catalog']->isslave) {
 
@@ -43,7 +41,8 @@ class Product_Form extends catalogitemform {
                 catalogid = ? AND
                 (isset = 1 OR isset = 2)
             ";
-            $sets = $DB->get_records_select('local_shop_catalogitem', $select, array($this->_customdata['catalog']->id), 'id, name');
+            $params = array($this->_customdata['catalog']->id);
+            $sets = $DB->get_records_select('local_shop_catalogitem', $select, $params, 'id, name');
         }
 
         // Setting variables.
@@ -53,10 +52,10 @@ class Product_Form extends catalogitemform {
         $mform->addElement('hidden', 'itemid');
         $mform->setType('itemid', PARAM_INT);
 
-        $attributes_specificdata = 'rows="4" style="width:80%" ';
-        $attributes_handlerparams = 'cols="50" rows="8" style="width:80%" ';
+        $attributesspecificdata = 'rows="4" style="width:80%" ';
+        $attributeshandlerparams = 'cols="50" rows="8" style="width:80%" ';
 
-        // Adding title and description
+        // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'product', 'local_shop')));
 
         $mform->addElement('header', 'h0', get_string('general'));
@@ -109,7 +108,7 @@ class Product_Form extends catalogitemform {
         $mform->addElement('header', 'h4', get_string('automation', 'local_shop'));
 
         // This may need to be translated for localised catalogs.
-        $mform->addElement('textarea', 'requireddata', get_string('requireddata', 'local_shop'), $attributes_specificdata);
+        $mform->addElement('textarea', 'requireddata', get_string('requireddata', 'local_shop'), $attributesspecificdata);
         $mform->setType('requireddata', PARAM_TEXT);
         $mform->addHelpButton('requireddata', 'requireddata', 'local_shop');
 
@@ -121,7 +120,7 @@ class Product_Form extends catalogitemform {
             $mform->addElement('select', 'enablehandler', get_string('enablehandler', 'local_shop'), $handleropts);
             $mform->setType('enablehandler', PARAM_TEXT);
 
-            $mform->addElement('textarea', 'handlerparams', get_string('handlerparams', 'local_shop'), $attributes_handlerparams);
+            $mform->addElement('textarea', 'handlerparams', get_string('handlerparams', 'local_shop'), $attributeshandlerparams);
             $mform->setType('handlerparams', PARAM_TEXT);
             $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
 

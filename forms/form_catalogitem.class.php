@@ -183,7 +183,6 @@ abstract class catalogitemform extends moodleform {
         $from5->updateAttributes(array('disabled' => 'disabled', 'size' => 7));
         $mform->setType('from5', PARAM_INT);
         $pricegroup[] = $from5;
-        // $to5 = &$mform->createElement('text', 'range5', '', $attributesprice1);
         $to5 = &$mform->createElement('static', 'range5', '', '');
         $pricegroup[] = $to5;
         $mform->setType('range5', PARAM_INT);
@@ -275,7 +274,7 @@ abstract class catalogitemform extends moodleform {
         $group[1] = & $mform->createElement('checkbox', 'clearimage', get_string('clear', 'local_shop'));
 
         $label = get_string('image', 'local_shop');
-        $mform->addGroup($group, 'grimage', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ',false);
+        $mform->addGroup($group, 'grimage', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
         $label = get_string('thumbnail', 'local_shop');
@@ -303,12 +302,14 @@ abstract class catalogitemform extends moodleform {
     }
 
     protected function set_name_data(&$defaults, $context) {
-        $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', @$defaults->id,
+        $draftideditor = file_get_submitted_draft_itemid('description_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor', @$defaults->id,
                                                 array('subdirs' => true), $defaults->description);
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
                                                  'catalogdescription', @$defaults->id);
-        $defaults->description_editor = array('text' => $currenttext, 'format' => $defaults->descriptionformat, 'itemid' => $draftid_editor);
+        $defaults->description_editor = array('text' => $currenttext,
+                                              'format' => $defaults->descriptionformat,
+                                              'itemid' => $draftideditor);
     }
 
     protected function set_document_asset_data(&$defaults, $context) {
@@ -334,18 +335,18 @@ abstract class catalogitemform extends moodleform {
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grunit = array('unit' => $draftitemid);
 
-        $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'eula_editor', @$defaults->id,
+        $draftideditor = file_get_submitted_draft_itemid('eula_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'eula_editor', @$defaults->id,
                                                array('subdirs' => true), $defaults->eula);
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
                                                  'catalogitemeula', @$defaults->id);
-        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftid_editor);
+        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftideditor);
 
-        $draftid_editor = file_get_submitted_draft_itemid('notes_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'notes_editor', @$defaults->id,
+        $draftideditor = file_get_submitted_draft_itemid('notes_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'notes_editor', @$defaults->id,
                                                array('subdirs' => true), $defaults->notes);
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
                                                  'catalogitemnotes', @$defaults->id);
-        $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftid_editor);
+        $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftideditor);
     }
 }

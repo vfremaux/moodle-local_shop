@@ -49,7 +49,7 @@ class purchasereq_controller extends front_controller_base {
                 $requirements = json_decode($requireddata);
                 if (!empty($requirements)) {
                     foreach ($requirements as $reqobj) {
-                        for ($i = 0 ; $i < $itemcount ; $i++) {
+                        for ($i = 0; $i < $itemcount; $i++) {
                             $param = required_param($itemname.'/'.$reqobj->field.$i, PARAM_TEXT);
                             if (!is_null($handler) && !($handler === false)) {
                                 if (!$handler->validate_required_data($itemname, $reqobj->field, $i, $param, $errors)) {
@@ -66,12 +66,17 @@ class purchasereq_controller extends front_controller_base {
             // Comming from further form.
             if ($back = optional_param('back', false, PARAM_BOOL)) {
                 $prev = $this->theshop->get_prev_step('purchaserequ');
-                $params = array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
+                $params = array('view' => $prev,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id,
+                                'back' => 1);
                 redirect(new \moodle_url('/local/shop/front/view.php', $params));
             } else {
                 // Going further silently.
                 $next = $this->theshop->get_next_step('purchaserequ');
-                $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+                $params = array('view' => $next,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id);
                 redirect(new \moodle_url('/local/shop/front/view.php', $params));
             }
         }

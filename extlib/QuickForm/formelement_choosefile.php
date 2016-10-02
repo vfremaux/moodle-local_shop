@@ -25,8 +25,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/form/group.php');
 
-// register this new element in QuickForm.
-$quickformregister = array($CFG->dirroot.'/local/shop/forms/formelement_choosefile.php','HTML_QuickForm_group');
+// Register this new element in QuickForm.
+$quickformregister = array($CFG->dirroot.'/local/shop/forms/formelement_choosefile.php', 'HTML_QuickForm_group');
 $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['choosefile'] = $quickformregister;
 
 /**
@@ -37,16 +37,17 @@ $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['choosefile'] = $quickformregister;
  * @access public
  */
 class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
+
     /**
-    * Options for element :
-    *
-    * $url must be relative to home page  eg /mod/survey/stuff.php
-    * courseid => int course id if null then uses $COURSE global
-    * width => int Height to assign to popup window
-    * title => string Text to be displayed as popup page title
-    * options => string List of additional options for popup window
-    */
-    var $_options = array('blockid' => null,
+     * Options for element :
+     *
+     * $url must be relative to home page  eg /mod/survey/stuff.php
+     * courseid => int course id if null then uses $COURSE global
+     * width => int Height to assign to popup window
+     * title => string Text to be displayed as popup page title
+     * options => string List of additional options for popup window
+     */
+    public $_options = array('blockid' => null,
                           'height' => 500,
                           'width' => 750,
                           'options' => 'none');
@@ -71,7 +72,7 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
         $this->HTML_QuickForm_element($elementName, $elementLabel, $attributes);
         $this->_appendName = true;
         $this->_type = 'choosefile';
-        // set the options, do not bother setting bogus ones
+        // Set the options, do not bother setting bogus ones.
         if (is_array($options)) {
             foreach ($options as $name => $value) {
                 if (isset($this->_options[$name])) {
@@ -84,9 +85,6 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
             }
         }
     }
-
-    // }}}
-    // {{{ _createElements()
 
     function _createElements() {
         global $COURSE;
@@ -107,7 +105,7 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
             error("The course file chooser needs a blockid to be given in options");
         }
 
-        // first find out the text field id - this is a bit hacky, is there a better way?
+        // First find out the text field id - this is a bit hacky, is there a better way?
         $choose = 'id_'.str_replace(array('[', ']'), array('_', ''), $this->getElementName(0));
         $url="/block/shop/file.php?id={$blockid}&choose=".$choose;
 

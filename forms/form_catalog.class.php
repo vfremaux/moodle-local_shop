@@ -41,7 +41,11 @@ class Catalog_Form extends moodleform {
 
         $maxfiles = 99;                // TODO: add some setting.
         $maxbytes = $COURSE->maxbytes; // TODO: add some setting.
-        $this->editoroptions = array('trusttext' => true, 'subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes, 'context' => $context);
+        $this->editoroptions = array('trusttext' => true,
+                                     'subdirs' => false,
+                                     'maxfiles' => $maxfiles,
+                                     'maxbytes' => $maxbytes,
+                                     'context' => $context);
 
         $mform =& $this->_form;
 
@@ -87,10 +91,10 @@ class Catalog_Form extends moodleform {
            WHERE
              ci.id = ci.groupid
         ";
-        $masterCatalogOptions = array();
-        if ($masterCatalogs = $DB->get_records_sql($sql)) {
-            foreach ($masterCatalogs as $acat) {
-                $masterCatalogOptions[$acat->id] = $acat->name;
+        $mastercatalogoptions = array();
+        if ($mastercatalogs = $DB->get_records_sql($sql)) {
+            foreach ($mastercatalogs as $acat) {
+                $mastercatalogoptions[$acat->id] = $acat->name;
             }
         }
 
@@ -99,7 +103,7 @@ class Catalog_Form extends moodleform {
         $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('master', 'local_shop'), 'master');
         if (!empty($masterCatalogOptions)) {
             $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('slaveto', 'local_shop'), 'slave');
-            $linkedarray[] = &$mform->createElement('select', 'groupid', '', $masterCatalogOptions);
+            $linkedarray[] = &$mform->createElement('select', 'groupid', '', $mastercatalogoptions);
         }
         $mform->addGroup($linkedarray, 'linkedarray', '', array(' '), false);
         $mform->setDefault('linked', 'free');
@@ -112,21 +116,23 @@ class Catalog_Form extends moodleform {
 
         $context = context_system::instance();
 
-        $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor', $defaults->id,
+        $draftideditor = file_get_submitted_draft_itemid('description_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor', $defaults->id,
                                                array('subdirs' => true), $defaults->description);
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
                                                  'catalogdescription', $defaults->id);
-        $defaults->description_editor = array('text' => $currenttext, 'format' => $defaults->descriptionformat, 'itemid' => $draftid_editor);
+        $defaults->description_editor = array('text' => $currenttext,
+                                              'format' => $defaults->descriptionformat,
+                                              'itemid' => $draftideditor);
 
-        $draftid_editor = file_get_submitted_draft_itemid('salesconditions_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'salesconditions_editor', $defaults->id,
+        $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'salesconditions_editor', $defaults->id,
                                                array('subdirs' => true), $defaults->salesconditions);
         $defaults = file_prepare_standard_editor($defaults, 'salesconditions', $this->editoroptions, $context, 'local_shop',
                                                  'catalogsalesconditions', $defaults->id);
         $defaults->salesconditions_editor = array('text' => $currenttext,
                                                   'format' => $defaults->salesconditionsformat,
-                                                  'itemid' => $draftid_editor);
+                                                  'itemid' => $draftideditor);
 
         parent::set_data($defaults);
     }

@@ -526,7 +526,7 @@ class Catalog extends ShopObject {
      * pseudo product
      */
     public function calculate_shipping($shoppingcart = null) {
-        global $DB, $SESSION;
+        global $DB, $SESSION, $CFG;
 
         if (!$shoppingcart) {
             $shoppingcart = $SESSION->shoppingcart;
@@ -601,6 +601,7 @@ class Catalog extends ShopObject {
             $return->code = 'SHIP_';
             $return->taxcode = $applicable->taxid;
             $return->value = 0;
+            require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
             foreach ($shippings as $sh) {
                 $shippedproduct = $DB->get_record('local_shop_catalogitem', array('code' => $sh->productcode));
                 // Must be a valid product in order AND have some items required.
@@ -609,14 +610,14 @@ class Catalog extends ShopObject {
                         $return->value += $sh->value;
                     } else {
                         if (!empty($sh->formula)) {
-                            $a = $sh->a;
-                            $b = $sh->b;
-                            $c = $sh->c;
-                            $ht = $shippedproduct->price1;
-                            $ttc = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
-                            $q = $order[$shippedproduct->shortname];
-                            eval($sh->formula.';');
-                            $return->value += 0 + @$shp;
+                            $in['a'] = $sh->a;
+                            $in['b'] = $sh->b;
+                            $in['c'] = $sh->c;
+                            $in['ht'] = $shippedproduct->price1;
+                            $in['ttc'] = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
+                            $in['q'] = $order[$shippedproduct->shortname];
+                            $result ) evaluate($sh->formula.';', $in, 'shp');
+                            $return->value += 0 + @$result['shp'];
                         } else {
                             $return->value += 0;
                         }

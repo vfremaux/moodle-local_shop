@@ -35,8 +35,7 @@ class ProductEvent extends ShopObject {
     protected static $table = 'local_shop_productevent';
 
     // Build a full bill plus billitems.
-    public function __construct($idorrecord) {
-        global $DB;
+    public function __construct($idorrecord, $light = false) {
 
         parent::__construct($idorrecord, self::$table);
 

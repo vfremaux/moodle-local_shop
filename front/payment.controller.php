@@ -125,7 +125,10 @@ class payment_controller extends front_controller_base {
                 $totalitems += $quant;
             }
 
-            // This is the first generation of the DB bill. All further step should rely on this information and not shoppingcart anymore.
+            /*
+             * This is the first generation of the DB bill. All further step should rely on this
+             * information and not shoppingcart anymore.
+             */
             $billid = $bill->save();
 
             shop_trace("[{$bill->transactionid}] ".'Order placed : '.$bill->amount.' for '.$totalitems.' objects');
@@ -135,7 +138,10 @@ class payment_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($back = optional_param('back', false, PARAM_BOOL)) {
                 $prev = $this->theshop->get_prev_step('payment');
-                $params = array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
+                $params = array('view' => $prev,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id,
+                                'back' => 1);
                 $url = new \moodle_url('/local/shop/front/view.php', $params);
                 if (empty($SESSION->shoppingcart->debug)) {
                     redirect($url);
@@ -146,7 +152,8 @@ class payment_controller extends front_controller_base {
                 confirm_sesskey();
                 /*
                  * security. No one should be able to trigger this case from outside
-                 * if it has been possible to continue, trigger the payment module interactive processing function and go ahead
+                 * if it has been possible to continue, trigger the payment module interactive
+                 * processing function and go ahead
                  */
 
                 $afullbill = Bill::get_by_transaction($SESSION->shoppingcart->transid);

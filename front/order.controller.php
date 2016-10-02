@@ -39,7 +39,10 @@ class order_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($back = optional_param('back', false, PARAM_BOOL)) {
                 $prev = $this->theshop->get_prev_step('order');
-                $params = array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
+                $params = array('view' => $prev,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id,
+                                'back' => 1);
                 redirect(new \moodle_url('/local/shop/front/view.php', $params));
             } else {
 
@@ -51,21 +54,21 @@ class order_controller extends front_controller_base {
                     $items += $quant;
                 }
 
-                $salesnotification = shop_compile_mail_template('transaction_input', array('TRANSACTION' => $shoppingcart->transid,
-                                                                           'SERVER' => $SITE->fullname,
-                                                                           'SERVER_URL' => $CFG->wwwroot,
-                                                                           'SELLER' => $config->sellername,
-                                                                           'FIRSTNAME' => $shoppingcart->customerinfo['firstname'],
-                                                                           'LASTNAME' => $shoppingcart->customerinfo['lastname'],
-                                                                           'MAIL' => $shoppingcart->customerinfo['email'],
-                                                                           'CITY' => $shoppingcart->customerinfo['city'],
-                                                                           'COUNTRY' => $shoppingcart->customerinfo['country'],
-                                                                           'PAYMODE' => $shoppingcart->paymode,
-                                                                           'ITEMS' => $items,
-                                                                           'AMOUNT' => sprintf("%.2f", round($shoppingcart->untaxedtotal, 2)),
-                                                                           'TAXES' => sprintf("%.2f", round($shoppingcart->taxestotal, 2)),
-                                                                           'TTC' => sprintf("%.2f", round($shoppingcart->taxedtotal, 2))
-                                                                            ), '');
+                $vatrs= array('TRANSACTION' => $shoppingcart->transid,
+                              'SERVER' => $SITE->fullname,
+                              'SERVER_URL' => $CFG->wwwroot,
+                              'SELLER' => $config->sellername,
+                              'FIRSTNAME' => $shoppingcart->customerinfo['firstname'],
+                              'LASTNAME' => $shoppingcart->customerinfo['lastname'],
+                              'MAIL' => $shoppingcart->customerinfo['email'],
+                              'CITY' => $shoppingcart->customerinfo['city'],
+                              'COUNTRY' => $shoppingcart->customerinfo['country'],
+                              'PAYMODE' => $shoppingcart->paymode,
+                              'ITEMS' => $items,
+                              'AMOUNT' => sprintf("%.2f", round($shoppingcart->untaxedtotal, 2)),
+                              'TAXES' => sprintf("%.2f", round($shoppingcart->taxestotal, 2)),
+                              'TTC' => sprintf("%.2f", round($shoppingcart->taxedtotal, 2)));
+                $salesnotification = shop_compile_mail_template('transaction_input', $vars, '');
 
                 if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
                     $systemcontext = \context_system::instance();
@@ -86,16 +89,24 @@ class order_controller extends front_controller_base {
                     }
 
                     $title = $SITE->shortname . ' : ' . get_string('orderinput', 'local_shop');
-                    $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $salesnotification, $salesnotification, '');
+                    $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $salesnotification,
+                                              $salesnotification, '');
                     if ($sent) {
-                        shop_trace("[{$SESSION->shoppingcart->transid}] Ordering Controller : shop Transaction Confirm Notification to sales");
+                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller :";
+                        $message .= "shop Transaction Confirm Notification to sales";
+                        shop_trace($message);
                     } else {
-                        shop_trace("[{$SESSION->shoppingcart->transid}] Ordering Controller Warning : Seems no sales manager are assigned");
+                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller Warning :";
+                        $message .= " Seems no sales manager are assigned";
+                        shop_trace($message);
                     }
                 }
 
                 $next = $this->theshop->get_next_step('order');
-                $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'what' => 'place');
+                $params = array('view' => $next,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id,
+                                'what' => 'place');
                 redirect(new \moodle_url('/local/shop/front/view.php', $params));
             }
         }

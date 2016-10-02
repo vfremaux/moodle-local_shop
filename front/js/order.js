@@ -1,4 +1,5 @@
-// Javascript functions for shop/order
+// lshint undef:false, unused:false
+// Javascript functions for shop/order.
 
 function send_confirm(){
     document.forms['bill'].cmd.value = 'confirm';
@@ -23,8 +24,10 @@ function listen_to_required_changes(){
 var requiredorderfieldlist = null;
 
 function haverequireddata() {
-    if (requiredorderfieldlist == null) return true;
-    for (i = 0 ; i < requiredorderfieldlist.length ; i++) {
+    if (requiredorderfieldlist == null) {
+        return true;
+    }
+    for (i = 0; i < requiredorderfieldlist.length; i++) {
         if (document.forms['bill'].elements[requiredorderfieldlist[i]].value == '')
             return false;
     }
@@ -56,6 +59,6 @@ function delay_results() {
     $('#shop-continue-form').removeClass('shop-message-hidden');
 }
 
-setTimeout(delay_follow_up,2000);
+setTimeout(delay_follow_up, 2000);
 
-setTimeout(delay_results,5000);
+setTimeout(delay_results, 5000);

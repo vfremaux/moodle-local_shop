@@ -57,7 +57,8 @@ class Shop extends ShopObject {
         if ($idorrecord) {
 
             if ($light) {
-                return; // This builds a lightweight proxy of the Shop, without catalogue.
+                // This builds a lightweight proxy of the Shop, without catalogue.
+                return;
             }
 
             if (!empty($this->catalogid)) {
@@ -121,7 +122,6 @@ class Shop extends ShopObject {
      * Get the current currency of the shop instance
      */
     public function get_currency($long = false) {
-        global $CFG;
 
         if ($long !== false) {
             if ($long == 'symbol') {
@@ -158,6 +158,7 @@ class Shop extends ShopObject {
      * Expands back compacted params for paymodes into separate fields
      */
     public static function expand_paymodes(&$shoprec) {
+
         if (!empty($shoprec->paymodes)) {
             $expanded = unserialize(base64_decode($shoprec->paymodes));;
             $paymodeenable = array_shift($expanded);
@@ -211,7 +212,7 @@ class Shop extends ShopObject {
     }
 
     public function calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
-        global $CFG, $USER;
+        global $USER;
 
         if (is_null($user)) {
             $user = $USER;

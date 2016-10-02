@@ -46,7 +46,6 @@ class search_controller {
             $billkey = optional_param('billkey', '', PARAM_TEXT);
             $customername = optional_param('customername', '', PARAM_TEXT);
             $datefrom = optional_param('datefrom', '', PARAM_INT);
-            $during = optional_param('during', '', PARAM_TEXT);
 
             switch ($by) {
                 case 'id':
@@ -84,7 +83,7 @@ class search_controller {
                         $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $billid);
                         redirect(new moodle_url('/local/shop/bills/view.php', $params));
                     }
-                    return $bill;
+                    return $bills;
                 }
             }
         }

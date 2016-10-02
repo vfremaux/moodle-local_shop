@@ -48,13 +48,12 @@ class Customer_Form extends moodleform {
 
         // Adding fieldset.
         $attributes = 'size="45" maxlength="200"';
-        $attributes_description = 'cols="50" rows="8"';
 
         $mform->addElement('text', 'firstname', get_string('customerfirstname', 'local_shop'));
         $mform->setType('firstname', PARAM_TEXT);
         $mform->addRule('firstname', null, 'required');
 
-        $mform->addElement('text', 'lastname', get_string('customerlastname','local_shop'));
+        $mform->addElement('text', 'lastname', get_string('customerlastname', 'local_shop'));
         $mform->setType('lastname', PARAM_TEXT);
         $mform->addRule('lastname', null, 'required');
 

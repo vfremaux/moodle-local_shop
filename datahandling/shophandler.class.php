@@ -67,11 +67,10 @@ abstract class shop_handler{
         return true;
     }
 
-    /**
+    /*
      * When implemented, the cron task for this handler will be run on shop cron
      * cron can be used to notify users for end of product life, user role unassigns etc.
      */
-    // function cron() {}
 
     /**
      * What should be done to validate customer required data. Validation is addressing same rules

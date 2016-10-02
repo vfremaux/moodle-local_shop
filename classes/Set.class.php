@@ -83,8 +83,8 @@ class Set extends ShopObject {
     }
 
     public function get_taxed_price($q, $tax) {
+        global $DB, $CFG;
         static $taxcache;
-        global $DB;
 
         if (!isset($taxcache)) {
             $taxcache = array();
@@ -98,9 +98,10 @@ class Set extends ShopObject {
                 return $htprice;
             }
         }
-        $ht = $this->get_price($q);
-        $tr = $taxcache[$taxid]->ratio;
-        eval($taxcache[$taxid]->formula.';');
-        return $ttc;
+        $in['ht'] = $this->get_price($q);
+        $in['tr'] = $taxcache[$taxid]->ratio;
+        require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
+        $result = evaluate($taxcache[$taxid]->formula.';', $in, 'ttc');
+        return $result['ttc'];
     }
 }

@@ -57,7 +57,7 @@ class Shop_Form extends moodleform {
         $mform->addElement('hidden', 'what', $this->_customdata['what']);
         $mform->setType('what', PARAM_TEXT);
 
-        // The current shopid
+        // The current shopid.
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 
@@ -122,7 +122,7 @@ class Shop_Form extends moodleform {
             $mform->addHelpButton('discountrate3', 'discountrate3', 'local_shop');
             $mform->setType('discountrate3', PARAM_INT);
 
-            // Shop Currency
+            // Shop Currency.
             $currencies = shop_get_supported_currencies();
             $mform->addElement('select', 'currency', get_string('currency', 'local_shop').':', $currencies);
             $mform->addRule('currency', '', 'required', null, 'client');
@@ -160,7 +160,7 @@ class Shop_Form extends moodleform {
             $mform->addElement('select', 'printtabbedcategories', $label, $yesnochoices);
             $mform->setDefault('customerorganisationrequired', 0);
 
-            // default customer support course if
+            // Default customer support course if.
             $courseoptions = $DB->get_records_menu('course', array('visible' => 1), 'fullname', 'id,fullname');
             $courseoptions[0] = get_string('none', 'local_shop');
             $label = get_string('configdefaultcustomersupportcourse', 'local_shop');
@@ -182,23 +182,23 @@ class Shop_Form extends moodleform {
     public function set_data($defaults) {
         $context = context_system::instance();
 
-        $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'description_editor',
+        $draftideditor = file_get_submitted_draft_itemid('description_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor',
                                                $defaults->id, $this->editoroptions, $defaults->description);
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
                                                  'description', $defaults->id);
         $defaults->description_editor = array('text' => $currenttext,
                                               'format' => $defaults->descriptionformat,
-                                              'itemid' => $draftid_editor);
+                                              'itemid' => $draftideditor);
 
-        $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'eula_editor', $defaults->id,
+        $draftideditor = file_get_submitted_draft_itemid('eula_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'eula_editor', $defaults->id,
                                                $this->editoroptions, $defaults->eula);
         $defaults = file_prepare_standard_editor($defaults, 'eula', $this->editoroptions, $context, 'local_shop',
                                                  'eula', $defaults->id);
         $defaults->eula_editor = array('text' => $currenttext,
                                        'format' => $defaults->eulaformat,
-                                       'itemid' => $draftid_editor);
+                                       'itemid' => $draftideditor);
 
         parent::set_data($defaults);
     }

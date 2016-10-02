@@ -135,7 +135,7 @@ function produce_postpay(&$afullbill) {
     // Set the final COMPLETE status if has worked.
     if ($hasworked) {
         assert(true);
-        // Set bill status to COMPLETE ? 
+        // Set bill status to COMPLETE ?
     }
     return $response;
 }
