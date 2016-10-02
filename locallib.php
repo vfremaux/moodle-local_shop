@@ -23,10 +23,10 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/local/shop/classes/Shop.class.php';
-require_once $CFG->dirroot.'/local/shop/classes/CatalogItem.class.php';
-require_once $CFG->dirroot.'/local/shop/classes/Catalog.class.php';
-require_once $CFG->dirroot.'/local/shop/classes/Bill.class.php';
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
 use local_shop\Catalog;
 use local_shop\Shop;
@@ -43,9 +43,12 @@ define('PROVIDING_LOGGEDOUT_ONLY', -1);
 
 /*
  * what means the quantity ordered
- * SHOP_QUANT_NO_SEATS : will not ask for required seats to assign. Such product as physical goods f.e., or unassigned seat packs
- * SHOP_QUANT_ONE_SEAT : products gives one seat only whatever the quantity ordered. Usually quantity addresses another parameter such as course duration
- * SHOP_QUANT_AS_SEATS : products as many required seats as quantity requires. This is for assignable seats.
+ * SHOP_QUANT_NO_SEATS : will not ask for required seats to assign. Such product as physical
+ * goods f.e., or unassigned seat packs
+ * SHOP_QUANT_ONE_SEAT : products gives one seat only whatever the quantity ordered. Usually
+ * quantity addresses another parameter such as course duration
+ * SHOP_QUANT_AS_SEATS : products as many required seats as quantity requires. This is for
+ * assignable seats.
  */
 define('SHOP_QUANT_AS_SEATS', 2);
 define('SHOP_QUANT_ONE_SEAT', 1);
@@ -114,7 +117,9 @@ function shop_get_standard_handlers_options() {
     $stdhandlers = array();
     $handlers = get_list_of_plugins('/local/shop/datahandling/handlers');
     foreach ($handlers as $h) {
-        if (!preg_match('/^std|ext/', $h)) continue;
+        if (!preg_match('/^std|ext/', $h)) {
+            continue;
+        }
         $handlername = get_string('handlername', 'shophandlers_'.$h);
         $stdhandlers[$h] = get_string('generic', 'local_shop').' '.$handlername;
     }
@@ -139,7 +144,7 @@ function shop_decode_params($catalogitemcode) {
     foreach ($paramelements as $elm) {
         list($key, $value) = explode('=', $elm);
         if (empty($key)) {
-            // Ignore bad formed
+            // Ignore bad formed.
             continue;
         }
         $params[$key] = $value;
@@ -160,26 +165,26 @@ function shop_delivery_check_available_backup($courseid) {
     // Calculate the archive pattern.
     $course = $DB->get_record('course', array('id' => $courseid));
     // Calculate the backup word.
-    $backup_word = backup_get_backup_string($course);
+    $backupword = backup_get_backup_string($course);
     // Calculate the date recognition/capture patterns.
-    $backup_date_pattern = '([0-9]{8}-[0-9]{4})';
+    $backupdatepattern = '([0-9]{8}-[0-9]{4})';
     // Calculate the shortname.
-    $backup_shortname = clean_filename($course->shortname);
-    if (empty($backup_shortname) or $backup_shortname == '_' ) {
-        $backup_shortname = $course->id;
+    $backupshortname = clean_filename($course->shortname);
+    if (empty($backupshortname) or $backupshortname == '_' ) {
+        $backupshortname = $course->id;
     } else {
         // Get rid of all version information for searching archive.
-        $backup_shortname = preg_replace('/(_(\d+))+$/' , '', $backup_shortname);
+        $backupshortname = preg_replace('/(_(\d+))+$/' , '', $backupshortname);
     }
     // Calculate the final backup filename.
     // The backup word.
-    $backup_pattern = $backup_word."-";
+    $backuppattern = $backupword."-";
     // The shortname.
-    $backup_pattern .= preg_quote(moodle_strtolower($backup_shortname)).".*-";
+    $backuppattern .= preg_quote(moodle_strtolower($backupshortname)).".*-";
     // The date format.
-    $backup_pattern .= $backup_date_pattern;
+    $backuppattern .= $backupdatepattern;
     // The extension.
-    $backup_pattern .= "\\.zip";
+    $backuppattern .= "\\.zip";
     /*
      * Get the last backup in the proper location
      * backup must have moodle backup filename format
@@ -188,10 +193,10 @@ function shop_delivery_check_available_backup($courseid) {
     if (!file_exists($realdir)) {
         return false;
     }
-    if ($DIR = opendir($realdir)) {
+    if ($dir = opendir($realdir)) {
         $archives = array();
-        while ($entry = readdir($DIR)) {
-            if (preg_match("/^$backup_pattern\$/", $entry, $matches)) {
+        while ($entry = readdir($dir)) {
+            if (preg_match("/^$backuppattern\$/", $entry, $matches)) {
                 $archives[$matches[1]] = "{$realdir}/{$entry}";
             }
         }
@@ -246,7 +251,7 @@ function shop_generate_username($user) {
  * @return a user shortname that is known having NOT been used yet
  */
 function shop_generate_shortname($user) {
-    global $CFG, $DB;
+    global $DB;
 
     $username = str_replace('.', '', $user->username);
     $basename = strtoupper(substr($username, 0, 8));
@@ -275,21 +280,38 @@ function shop_generate_shortname($user) {
  * create a course from a template
  */
 function shop_create_course_from_template($templatepath, $courserec) {
-    if (empty($courserec->password)) $courserec->password = '';
-    if (empty($courserec->fullname)) $courserec->fullname = '';
-    if (empty($courserec->shortname)) print_error('errorprograming'); // Should NEVER happen... shortname needs to be resolved before creating.
-    if (empty($courserec->idnumber)) $courserec->idnumber = '';
-    if (empty($courserec->lang)) $courserec->lang = '';
-    if (empty($courserec->lang)) $courserec->lang = '';
-    if (empty($courserec->theme)) $courserec->theme = '';
-    if (empty($courserec->cost)) $courserec->cost = '';
+    if (empty($courserec->password)) {
+        $courserec->password = '';
+    }
+    if (empty($courserec->fullname)) {
+        $courserec->fullname = '';
+    }
+    if (empty($courserec->shortname)) {
+        print_error('errorprograming'); // Should NEVER happen... shortname needs to be resolved before creating.
+    }
+    if (empty($courserec->idnumber)) {
+        $courserec->idnumber = '';
+    }
+    if (empty($courserec->lang)) {
+        $courserec->lang = '';
+    }
+    if (empty($courserec->lang)) {
+        $courserec->lang = '';
+    }
+    if (empty($courserec->theme)) {
+        $courserec->theme = '';
+    }
+    if (empty($courserec->cost)) {
+        $courserec->cost = '';
+    }
 
     // First creation of record before restoring.
-    if (!$courserec->id = $DB->insert_record('course', addslashes_object($courserec))) {
+    if (!$courserec->id = $DB->insert_record('course', $courserec)) {
         return;
     }
     create_context(CONTEXT_COURSE, $courserec->id);
     import_backup_file_silently($templatepath, $courserec->id, true, false, array('restore_course_files' => 1));
+
     /*
      * this part forces some course attributes to override the given attributes in template
      * temptate attributes might come from the backup instant and are not any more consistant.
@@ -307,7 +329,7 @@ function shop_create_course_from_template($templatepath, $courserec) {
  * Create category with the given name and parentID returning a category ID
  */
 function shop_fast_make_category($catname, $description = '', $catparent = 0) {
-    global $CFG, $USER, $DB;
+    global $DB;
 
     $cname = mysql_real_escape_string($catname);
     // Check if a category with the same name and parent ID already exists.
@@ -321,7 +343,7 @@ function shop_fast_make_category($catname, $description = '', $catparent = 0) {
         }
         $cat = new StdClass;
         $cat->name = $cname;
-        $cat->description = mysql_real_escape_string($description);
+        $cat->description = $description;
         $cat->parent = $catparent;
         $cat->sortorder = 999;
         $cat->coursecount = 0;
@@ -329,10 +351,10 @@ function shop_fast_make_category($catname, $description = '', $catparent = 0) {
         $cat->depth = $parent->depth + 1;
         $cat->timemodified = time();
         if ($cat->id = $DB->insert_record('course_categories', $cat)) {
-            // must post update
+            // Must post update.
             $cat->path = $parent->path.'/'.$cat->id;
             $DB->update_record('course_categories', $cat);
-            // we must make category context
+            // We must make category context.
             create_context(CONTEXT_COURSECAT, $cat->id);
             return $cat->id;
         } else {
@@ -346,7 +368,10 @@ function shop_fast_make_category($catname, $description = '', $catparent = 0) {
  */
 function shop_switch_style($reset = 0) {
     static $style;
-    if ($reset) $style = 'odd';
+
+    if ($reset) {
+        $style = 'odd';
+    }
     if ($style == 'odd') {
         $style = 'even';
     } else {
@@ -361,23 +386,23 @@ function shop_switch_style($reset = 0) {
  * some piece of code. Do NEVER use in production systems unless hot case urgent tracking
  */
 function shop_open_trace() {
-    global $CFG, $MERCHANT_TRACE;
+    global $CFG;
 
-    if (is_null($MERCHANT_TRACE)) {
-        $MERCHANT_TRACE = fopen($CFG->dataroot.'/merchant_trace.log', 'a');
+    if (is_null($CFG->merchanttrace)) {
+        $CFG->merchanttrace = fopen($CFG->dataroot.'/merchant_trace.log', 'a');
     }
-    return !is_null($MERCHANT_TRACE);
+    return !is_null($CFG->merchanttrace);
 }
 
 /**
  * closes an open trace
  */
 function shop_close_trace() {
-    global $MERCHANT_TRACE;
+    global $CFG;
 
-    if (!is_null($MERCHANT_TRACE)) {
-        @fclose($MERCHANT_TRACE);
-        $MERCHANT_TRACE = null;
+    if (!is_null($CFG->merchanttrace)) {
+        @fclose($CFG->merchanttrace);
+        $CFG->merchanttrace = null;
     }
 }
 
@@ -386,13 +411,13 @@ function shop_close_trace() {
  * @param string $str
  */
 function shop_trace_open($str) {
-    global $MERCHANT_TRACE;
+    global $CFG;
 
-    if (!is_null($MERCHANT_TRACE)) {
+    if (!is_null($CFG->merchanttrace)) {
         $date = new DateTime();
         $u = microtime(true);
         $u = sprintf('%03d', floor(($u - floor($u)) * 1000)); // Millisecond.
-        fputs($MERCHANT_TRACE, "-- ".$date->format('Y-n-d h:i:s').' '.$u." --  ".$str."\n");
+        fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d h:i:s').' '.$u." --  ".$str."\n");
     }
 }
 
@@ -400,9 +425,9 @@ function shop_trace_open($str) {
  * write to the trace
  */
 function shop_trace($str) {
-    global $MERCHANT_TRACE;
+    global $CFG;
 
-    if (!is_null($MERCHANT_TRACE)) {
+    if (!is_null($CFG->merchanttrace)) {
         shop_trace_open($str);
     } else {
         if (shop_open_trace()) {
@@ -441,10 +466,10 @@ function shop_calculate_taxed($htprice, $taxid) {
  * from http://fr.wikipedia.org/wiki/ISO_4217
  */
 function shop_get_supported_currencies() {
-    static $CURRENCIES;
+    static $currencies;
 
-    if (!isset($CURRENCIES)) {
-        $CURRENCIES = array('EUR' => get_string('EUR', 'local_shop'), // Euro.
+    if (!isset($currencies)) {
+        $currencies = array('EUR' => get_string('EUR', 'local_shop'), // Euro.
                             'CHF' => get_string('CHF', 'local_shop'), // Swiss franc.
                             'USD' => get_string('USD', 'local_shop'), // US dollar.
                             'CAD' => get_string('CAD', 'local_shop'), // Canadian dollar.
@@ -460,7 +485,7 @@ function shop_get_supported_currencies() {
                             'MAD' => get_string('MAD', 'local_shop'), // Dinar (Marocco, internal market).
                       );
     }
-    return $CURRENCIES;
+    return $currencies;
 }
 
 /**
@@ -469,7 +494,7 @@ function shop_get_supported_currencies() {
  * @returns three object refs if they are buildable, null for other.
  */
 function shop_build_context() {
-    global $SESSION, $DB;
+    global $SESSION;
 
     $theshop = new Shop(null);
 
@@ -526,7 +551,7 @@ function shop_build_context() {
  * @return an array of user records or false
  */
 function shop_get_sales_managers($blockid) {
-    global $CFG, $DB;
+    global $DB;
 
     $salesrole = $DB->get_record('role', array('shortname' => 'sales'));
     $blockcontext = context_block::instance($blockid);
@@ -560,15 +585,19 @@ function shop_get_sales_managers($blockid) {
  * WORKING : A manual bill edition starts in working state before being placed
  */
 function shop_get_bill_states() {
-    $status = array ('PLACED' => 'PLACED',
-                     'PENDING' => 'PENDING',
-                     'PAYBACK' => 'PAYBACK',
-                     'PARTIAL' => 'PARTIAL',
-                     'SOLDOUT' => 'SOLDOUT',
-                     'RECOVERING' => 'RECOVERING',
-                     'CANCELLED' => 'CANCELLED',
-                     'COMPLETE' => 'COMPLETE',
-                     'WORKING' => 'WORKING');
+    static $status;
+
+    if (!isset($status)) {
+        $status = array ('PLACED' => 'PLACED',
+                         'PENDING' => 'PENDING',
+                         'PAYBACK' => 'PAYBACK',
+                         'PARTIAL' => 'PARTIAL',
+                         'SOLDOUT' => 'SOLDOUT',
+                         'RECOVERING' => 'RECOVERING',
+                         'CANCELLED' => 'CANCELLED',
+                         'COMPLETE' => 'COMPLETE',
+                         'WORKING' => 'WORKING');
+    }
     return $status;
 }
 
@@ -577,9 +606,13 @@ function shop_get_bill_states() {
  *
  */
 function shop_get_bill_worktypes() {
-    $worktypes = array ( 'PROD' => 'PROD',
-                        'PACK' => 'PACK',
-                        'OTHER' => 'OTHER' );
+    static $worktypes;
+
+    if (!isset($worktypes)) {
+        $worktypes = array ( 'PROD' => 'PROD',
+                            'PACK' => 'PACK',
+                            'OTHER' => 'OTHER' );
+    }
     return $worktypes;
 }
 

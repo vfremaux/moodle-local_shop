@@ -63,74 +63,8 @@ echo $OUTPUT->header();
 
 echo '<div style="max-width:780px">';
 
-$printorderlinkstr = get_string('printorderlink', 'local_shop');
-?>
-<table>
-    <tr>
-        <td><img src="<?php echo $OUTPUT->pix_url('logo', 'theme') ?>"></td>
-        <td align="right"><a href="#" onclick="window.print();return false;"><?php echo $pintorderlinkstr ?></a></td>
-    </tr>
-    <tr>
-        <td colspan="2" align="center">
-        <?php
-        $headerstring = ($afullbill->idnumber) ? get_string('bill', 'local_shop') : get_string('ordersheet', 'local_shop');
-        echo $OUTPUT->heading($headerstring, 1);
-        ?>
-        </td>
-    </tr>
-    <tr valign="top">
-      <td width="60%">
-         <b><?php echo get_string('transactioncode', 'local_shop') ?>:</b><br />
-         <code style="background-color : #E0E0E0"><?php echo $transid ?></code><br />
-         <span class="smaltext"><?php echo get_string('providetransactioncode', 'local_shop') ?></span>
-      </td>
-      <td width="40%" align="right" rowspan="5" class="order-preview-seller-address">
-         <b><?php echo get_string('on', 'local_shop') ?>:</b> <?php echo userdate($afullbill->emissiondate) ?><br />
-         <br />
-         <b><?php echo $config->sellername ?></b><br />
-         <b><?php echo $config->selleraddress ?></b><br />
-         <b><?php echo $config->sellerzip ?> <?php echo $config->sellercity ?></b><br />
-         <?php echo $config->sellercountry ?>
-      </td>
-   </tr>
-   <tr>
-      <td width="60%" valign="top">
-         <b><?php echo get_string('customer', 'local_shop') ?>: </b> <?php echo $afullbill->customer->lastname ?>
-         <?php echo $afullbill->customer->firstname ?>
-      </td>
-   </tr>
-   <tr>
-      <td width="60%" valign="top">
-         <b><?php echo get_string('city') ?>: </b>
-         <?php echo $afullbill->customer->zip ?> <?php echo $afullbill->customer->city ?>
-      </td>
-   </tr>
-   <tr>
-      <td width="60%" valign="top">
-         <b><?php echo get_string('country') ?>: </b> <?php echo  strtoupper($afullbill->customer->country) ?>
-      </td>
-      <td>
-      &nbsp;
-      </td>
-   </tr>
-   <tr>
-      <td width="60%" valign="top">
-         <b><?php echo get_string('email') ?>: </b> <?php echo $afullbill->customer->email ?>
-      </td>
-   </tr>
-   <tr>
-      <td colspan="2">
-      &nbsp;<br />
-      </td>
-   </tr>
-   <tr>
-      <td colspan="2" class="sectionHeader">
-         <?php echo $OUTPUT->heading(get_string('order', 'local_shop'), 2); ?>
-      </td>
-   </tr>
-</table>
+echo $renderer->order_popup_header($afullbill);
 
-<?php
 echo '<table>';
 echo $renderer->order_line(null);
 foreach ($afullbill->items as $item) {

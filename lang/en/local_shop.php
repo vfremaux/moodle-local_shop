@@ -177,7 +177,7 @@ $string['discountthreshold'] = 'Discount Threshold';
 $string['dispo'] = 'Avail.';
 $string['dosearch'] = 'Search';
 $string['edit_categories'] = 'Edit categories';
-$string['editshop']= 'Edit a shop instance';
+$string['editshop'] = 'Edit a shop instance';
 $string['editbundle'] = 'Bundle editing';
 $string['editcategories'] = 'Edit categories';
 $string['editcategory'] = 'Edit category';
@@ -602,17 +602,17 @@ A discount rate applied when customer has the local/shop:thirddiscountagreed cap
 ';
 
 global $CFG;
-include($CFG->dirroot.'/local/shop/lang/en/front.php');
-include($CFG->dirroot.'/local/shop/lang/en/catalogs.php');
-include($CFG->dirroot.'/local/shop/lang/en/shops.php');
-include($CFG->dirroot.'/local/shop/lang/en/bills.php');
-include($CFG->dirroot.'/local/shop/lang/en/products.php');
-include($CFG->dirroot.'/local/shop/lang/en/purchasemanager.php');
-include($CFG->dirroot.'/local/shop/lang/en/customers.php');
-include($CFG->dirroot.'/local/shop/lang/en/tax.php');
-include($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
+require($CFG->dirroot.'/local/shop/lang/en/front.php');
+require($CFG->dirroot.'/local/shop/lang/en/catalogs.php');
+require($CFG->dirroot.'/local/shop/lang/en/shops.php');
+require($CFG->dirroot.'/local/shop/lang/en/bills.php');
+require($CFG->dirroot.'/local/shop/lang/en/products.php');
+require($CFG->dirroot.'/local/shop/lang/en/purchasemanager.php');
+require($CFG->dirroot.'/local/shop/lang/en/customers.php');
+require($CFG->dirroot.'/local/shop/lang/en/tax.php');
+require($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
 
-// currencies
+// Currencies.
 
 $string['currency'] = 'Currency';
 $string['EUR'] = 'Euro';

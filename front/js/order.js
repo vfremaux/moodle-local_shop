@@ -1,4 +1,4 @@
-// lshint undef:false, unused:false
+// jshint undef:false, unused:false
 // Javascript functions for shop/order.
 
 function send_confirm(){
@@ -28,8 +28,9 @@ function haverequireddata() {
         return true;
     }
     for (i = 0; i < requiredorderfieldlist.length; i++) {
-        if (document.forms['bill'].elements[requiredorderfieldlist[i]].value == '')
+        if (document.forms['bill'].elements[requiredorderfieldlist[i]].value == '') {
             return false;
+        }
     }
 
     return true;

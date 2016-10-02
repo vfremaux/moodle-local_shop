@@ -54,7 +54,7 @@ class order_controller extends front_controller_base {
                     $items += $quant;
                 }
 
-                $vatrs= array('TRANSACTION' => $shoppingcart->transid,
+                $vars = array('TRANSACTION' => $shoppingcart->transid,
                               'SERVER' => $SITE->fullname,
                               'SERVER_URL' => $CFG->wwwroot,
                               'SELLER' => $config->sellername,

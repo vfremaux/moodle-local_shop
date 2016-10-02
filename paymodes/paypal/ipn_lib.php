@@ -14,24 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_paypal
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 /**
 * A lib to provide stuff to simulate IPN from the shop itself
-*
 */
 
 function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
     global $CFG;
+
+    $config = get_config('local_shop');
 
     $sellerexpectedname = (empty($config->test)) ? $config->paypalsellername : $config->paypalsellertestname;
 
@@ -40,7 +40,7 @@ function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
 
     $custom = $id;
 
-    $testipnstr = get_string('ipnfortest', 'local_shop', null, $CFG->dirroot.'/local/shop/paymodes/paypal/lang/');
+    $testipnstr = get_string('ipnfortest', 'shoppaymodes_paypal', null);
     echo '<form action="'.$url.'" name="ipnsimulate" method="POST" >';
     echo '<input type="hidden" name="invoice" value="'.$transid.'" />';
     echo '<input type="hidden" name="custom" value="'.$custom.'" />';
@@ -48,7 +48,7 @@ function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
     echo '<input type="hidden" name="business" value="'.$sellerexpectedname.'" />';
     echo '<input type="hidden" name="payment_status" value="Completed" />';
 
-    // catch all post values that came back from Paypal
+    // Catch all post values that came back from Paypal.
     foreach ($_POST as $key => $value) {
         $value = stripslashes($value);
         echo '<input type="hidden" name="'.$key.'" value="'.$value.'" />';

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['shop:salesadmin'] = 'Est administrateur de ventes';
-$string['shop:beassigned'] = 'Est assigné'; // check this is really used
+$string['shop:beassigned'] = 'Est assigné'; // Check this is really used.
 $string['shop:accessallowners'] = 'Peut voir toutes les données des sous-vendeurs';
 $string['shop:discountagreed'] = 'Bénéficie d\'une remise de base sur les produits';
 $string['shop:seconddiscountagreed'] = 'Bénéficie d\'une meilleure remise sur les produits';
@@ -104,7 +104,8 @@ $string['category'] = 'Catégories';
 $string['categorydescription'] = 'Description ';
 $string['categoryname'] = 'Nom de la catégorie ';
 $string['categoryowner'] = 'Propriétaire de catégorie';
-$string['categoryownerdesc'] = 'Le propriétaire d\'une catégorie peut gérer le contenu de sa catégorie et inviter des enseignants et d\'autres créateurs de cours. Il en reste respondable.';
+$string['categoryownerdesc'] = 'Le propriétaire d\'une catégorie peut gérer le contenu de sa catégorie et
+inviter des enseignants et d\'autres créateurs de cours. Il en reste respondable.';
 $string['catname'] = 'Nom';
 $string['catnum'] = 'Numéro';
 $string['chooseall'] = 'Tout';
@@ -181,15 +182,15 @@ $string['discounts'] = 'Réglages des remises';
 $string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour ristourne';
 $string['dispo'] = 'Dispo';
 $string['dosearch'] = 'Rechercher';
-$string['edit_categories']= 'Edition des catégories';
+$string['edit_categories'] = 'Edition des catégories';
 $string['editbundle'] = 'Edition du lot';
 $string['editcatalog'] = 'Modification de la description du catalogue';
-$string['editcategory']= 'Edition des catégories';
+$string['editcategory'] = 'Edition des catégories';
 $string['editproduct'] = 'Edition du produit';
 $string['editset'] = 'Edition de l\'assemblage';
 $string['editshipping'] = 'Edition d\'une règle de port';
 $string['editshippingzone'] = 'Edition de zone de port dû';
-$string['editshop']= 'Modifier une boutique';
+$string['editshop'] = 'Modifier une boutique';
 $string['edittaxe'] = 'Edition d\'une taxe';
 $string['enablehandler'] = 'Activer le traitement d\'achat';
 $string['enablepaymodes'] = 'Modes de paiement ';
@@ -611,17 +612,16 @@ $string['discountthreshold_help'] = '
 Le seuil du chiffre d\'affaire pour activer la première ristourne.
 ';
 
-
 global $CFG;
-include($CFG->dirroot.'/local/shop/lang/fr/front.php');
-include($CFG->dirroot.'/local/shop/lang/fr/catalogs.php');
-include($CFG->dirroot.'/local/shop/lang/fr/shops.php');
-include($CFG->dirroot.'/local/shop/lang/fr/bills.php');
-include($CFG->dirroot.'/local/shop/lang/fr/products.php');
-include($CFG->dirroot.'/local/shop/lang/fr/purchasemanager.php');
-include($CFG->dirroot.'/local/shop/lang/fr/customers.php');
-include($CFG->dirroot.'/local/shop/lang/fr/tax.php');
-include($CFG->dirroot.'/local/shop/lang/fr/shipzones.php');
+require($CFG->dirroot.'/local/shop/lang/fr/front.php');
+require($CFG->dirroot.'/local/shop/lang/fr/catalogs.php');
+require($CFG->dirroot.'/local/shop/lang/fr/shops.php');
+require($CFG->dirroot.'/local/shop/lang/fr/bills.php');
+require($CFG->dirroot.'/local/shop/lang/fr/products.php');
+require($CFG->dirroot.'/local/shop/lang/fr/purchasemanager.php');
+require($CFG->dirroot.'/local/shop/lang/fr/customers.php');
+require($CFG->dirroot.'/local/shop/lang/fr/tax.php');
+require($CFG->dirroot.'/local/shop/lang/fr/shipzones.php');
 
 // Currencies.
 

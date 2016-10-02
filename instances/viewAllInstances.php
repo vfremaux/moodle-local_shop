@@ -39,9 +39,9 @@ $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 $action = optional_param('what', '', PARAM_ALPHA);
 if ($action != '') {
-   include_once($CFG->dirroot.'/local/shop/instances/instances.controller.php');
-   $controller = new instances_controller();
-   $controller->process($action);
+    include_once($CFG->dirroot.'/local/shop/instances/instances.controller.php');
+    $controller = new instances_controller();
+    $controller->process($action);
 }
 
 // Fetch all product instances for the current customer account.

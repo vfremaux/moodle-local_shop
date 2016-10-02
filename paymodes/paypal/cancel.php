@@ -23,7 +23,7 @@
 
 // Get return parms and redirect to shop.
 
-include('../../../../config.php');
+require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/paypal/paypal.class.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
 

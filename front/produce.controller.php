@@ -192,7 +192,7 @@ class production_controller extends front_controller_base {
                       'SERVER_URL' => $CFG->wwwroot,
                       'SELLER' => $config->sellername,
                       'FIRSTNAME' => $customer->firstname,
-                      'LASTNAME' =>  $customer->lastname,
+                      'LASTNAME' => $customer->lastname,
                       'MAIL' => $customer->email,
                       'CITY' => $customer->city,
                       'COUNTRY' => $customer->country,
@@ -217,7 +217,7 @@ class production_controller extends front_controller_base {
 
         // Complete seller with expected fields.
         $fields = get_all_user_name_fields();
-        foreach($fields as $f) {
+        foreach ($fields as $f) {
             if (!isset($seller->$f)) {
                 $seller->$f = '';
             }

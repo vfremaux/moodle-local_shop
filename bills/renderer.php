@@ -1842,4 +1842,30 @@ class shop_bills_renderer {
 
         return $str;
     }
+
+    public short_bill_line($portlet) {
+
+        $str = '';
+
+        $str .= '<tr>';
+        $str .= '<td>';
+        $billurl = new moodle_url('/local/shop/bills/view.php', array('billid' => $portlet->id));
+        $str .= '<a href="'.$billurl.'">'.$portlet->id.'</a>';
+        $str .= '</td>';
+        $str .= '<td>';
+        $str .= $portlet->title;
+        $str .= '</td>';
+        $str .= '<td>';
+        $str .= $portlet->userid;
+        $str .= '</td>';
+        $str .= '<td>';
+        $str .= $portlet->emissiondate;
+        $str .= '</td>';
+        $str .= '<td>';
+        $str .= $portlet->transactionid;
+        $str .= '</td>';
+        $str .= '</tr>';
+
+        return $str;
+    }
 }

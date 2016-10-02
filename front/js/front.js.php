@@ -49,6 +49,7 @@ $requiredroles = $thecatalog->check_required_roles();
 $required = $thecatalog->check_required_seats();
 $assigned = shop_check_assigned_seats($requiredroles);
 $notassignedstr = str_replace("'", '\\\'', get_string('notallassigned', 'local_shop'));
+$myorderstr = str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'));
 ?>
 
 function openPopup(target) {
@@ -303,7 +304,7 @@ function ajax_delete_assign(wwwroot, assignrole, product, email) {
                 $('#next-button').css('opacity', '0.5');
                 $('#next-button').removeClass('shop-active-button');
                 $('#next-button').attr('disabled', 'disabled');
-                $('#next-button').attr('title', '<?php echo str_replace("'", '\\\'', get_string('notallassigned', 'local_shop')) ?>');
+                $('#next-button').attr('title', '<?php echo $notassignedstr ?>');
             } else {
                 $('#next-button').css('opacity', '1.0');
                 $('#next-button').addClass('shop-active-button');
@@ -382,7 +383,7 @@ function ajax_delete_unit(wwwroot, id, productname) {
         $('#next-button').attr('disabled', 'disabled');
         $('#next-button').removeClass('shop-active-button');
         $('#next-button').css('opacity', '0.5');
-        $('#next-button').attr('title', '<?php echo str_replace("'", '\\\'', get_string('emptyorder', 'local_shop')) ?>');
+        $('#next-button').attr('title', '<?php echo $myorderstr ?>');
     }
 }
 
@@ -480,10 +481,12 @@ function local_toggle_invoiceinfo(check) {
     if (check.checked) {
         $('#shop-invoiceinfo-wrapper').css('display', 'block');
         if (document.driverform.elements['invoiceinfo::organisation'].value == '') {
-            document.driverform.elements['invoiceinfo::organisation'].value = document.driverform.elements['customerinfo::organisation'].value
+            elm = document.driverform.elements['invoiceinfo::organisation'];
+            elm.value = document.driverform.elements['customerinfo::organisation'].value
         }
         if (document.driverform.elements['invoiceinfo::city'].value == '') {
-            document.driverform.elements['invoiceinfo::city'].value = document.driverform.elements['customerinfo::city'].value
+            elm = document.driverform.elements['invoiceinfo::city'];
+            elm.value = document.driverform.elements['customerinfo::city'].value
         }
     } else {
         $('#shop-invoiceinfo-wrapper').css('display', 'none');

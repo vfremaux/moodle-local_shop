@@ -105,7 +105,7 @@ abstract class catalogitemform extends moodleform {
 
     protected function add_price_group() {
 
-        $attributesprice1 = array('size' => 7, 'maxlength'=> 10, 'onchange' => 'updatetiprice(1)');
+        $attributesprice1 = array('size' => 7, 'maxlength' => 10, 'onchange' => 'updatetiprice(1)');
 
         $mform = $this->_form;
 

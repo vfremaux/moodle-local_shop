@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * @package   local_shop
@@ -131,7 +131,8 @@ if ($action == 'deleteassign') {
 
     unset($SESSION->shoppingcart->users[$shortname][$role][$ptid]);
     @$SESSION->shoppingcart->assigns[$shortname]--;
-    $SESSION->shoppingcart->assigns[$shortname] = max(0, @$SESSION->shoppingcart->assigns[$shortname]); // Secures in case of failure...
+    // Secures in case of failure...
+    $SESSION->shoppingcart->assigns[$shortname] = max(0, @$SESSION->shoppingcart->assigns[$shortname]);
     $action = 'assignlistobj';
 }
 /********************************************************************************************/

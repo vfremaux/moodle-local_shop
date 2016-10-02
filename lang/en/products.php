@@ -80,11 +80,11 @@ products tunning before publishing them.
 
 The general form of the parameters is an url encoded like string:
 
-   `param1=value1&param2=value2...`
+   \'param1=value1&param2=value2...\'
 
 Some parameters are common to all generic hanlders:
 
-    `customersupport=<%courseid%>`
+    \'customersupport=<%courseid%>\'
 
 Will provide the id of the ocurse used for customer support worplace. If not given and not defined in general shop block settings, no
 customer support enrolment will be performed.
@@ -93,15 +93,15 @@ customer support enrolment will be performed.
 
 **Settings**
 
-    `coursename=<%course shortname%>`
+    \'coursename=<%course shortname%>\'
 
 the course shortname as defined by course creator. this is supposed to be unique and always present.
 
-    `role=<%role shortname%>`
+    \'role=<%role shortname%>\'
 
 the role that will be assigned to customer in the ocurse
 
-    `duration=<%enrol duration in days%>`
+    \'duration=<%enrol duration in days%>\'
 
 the real start/end dates of the enrol will be calculated from the time the handler is run.
 
@@ -109,15 +109,15 @@ the real start/end dates of the enrol will be calculated from the time the handl
 
 **Settings**
 
-    `coursename=<%course shortname%>`
+    \'coursename=<%course shortname%>\'
 
 the course shortname as defined by course creator. this is supposed to be unique and always present.
 
-    `supervisor=<%role shortname%>`
+    \'supervisor=<%role shortname%>\'
 
 This allows designating the exact role that will be assigned for supervisors.
 
-    `duration=<%enrol duration in days%>`
+    \'duration=<%enrol duration in days%>\'
 
 the real start/end dates of the enrol will be calculated from the time the handler is run.
 
@@ -125,17 +125,17 @@ the real start/end dates of the enrol will be calculated from the time the handl
 
 **Settings**
 
-    `template=<%course template shortname%>`
+    \'template=<%course template shortname%>\'
 
 The shortname of an existing course considered as template for course. The shortname is unique and is always present
 in Moodle. Check there is a prepared backup of the course in the ocurse backup area.
 
-    `coursecategory=<%course category id%>`
+    \'coursecategory=<%course category id%>\'
 
 This will tune where the new course will be created. Note that the product owner MUST have course creation capability in
 the designated category for the operation to succeed.
 
-    `duration=<%duration in days%>`
+    \'duration=<%duration in days%>\'
 
 Duration is calculated from the purchase date and affects the teacher account enrol and is stored in the product
 metadata stub to calculate product obsolescence and trigger end of life action.
@@ -144,7 +144,7 @@ metadata stub to calculate product obsolescence and trigger end of life action.
 
 **Settings**
 
-`parentcategory=<%categoryid%>`
+    \'parentcategory=<%categoryid%>\'
 
 The parent category to which the created category will be attached to. The product owner needs to be manager of the category
 or have the relevant permissions.
@@ -153,15 +153,15 @@ or have the relevant permissions.
 
 **Settings**
 
-`contextlevel=<%contextlevelID%>`   (10 = system, 40 = category, 50 = course, 70 = module, 80 = block)
+   \'contextlevel=<%contextlevelID%>\'   (10 = system, 40 = category, 50 = course, 70 = module, 80 = block)
 
 The context level.
 
-`instance=<%instanceID%>`
+    \'instance=<%instanceID%>\'
 
 The ID of the instance attached to the context. Irrelevant for system context.
 
-`role=<%roleshortname%>`
+    \'role=<%roleshortname%>\'
 
 the shortname of the role to assign. A capability check will be performed on product owner to actually execute the product handler.
 ';

@@ -22,16 +22,16 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/local/shop/paymodes/paymode.class.php';
+require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
 /**
  * A generic sample class for credic card payment
  * not enabled in reality.
  */
-class shop_paymode_card extends shop_paymode{
+class shop_paymode_card extends shop_paymode {
 
     public function __construct(&$shop) {
-        // GENERIC PLUGIN. DO NOT ENABLE
+        // GENERIC PLUGIN. DO NOT ENABLE!
         parent::__construct('card', $shop, false);
     }
 

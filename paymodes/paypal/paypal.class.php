@@ -14,21 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_paypal
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-Use \local_shop\Bill;
-Use \local_shop\Shop;
+use \local_shop\Bill;
+use \local_shop\Shop;
 
 class shop_paymode_paypal extends shop_paymode {
 
@@ -54,7 +54,8 @@ class shop_paymode_paypal extends shop_paymode {
             $paymentinfo = $shoppingcart->customerinfo;
         }
 
-        $paypalsupportedlangs = array ('AU','AT','BE','BR','CA','CH','CN','DE','ES','GB','FR','IT','NL','PL','PT','RU','US');
+        $paypalsupportedlangs = array ('AU','AT','BE','BR','CA','CH','CN','DE','ES','GB',
+                                       'FR','IT','NL','PL','PT','RU','US');
 
         echo '<div id="shop-panel-caption">';
         echo shop_compile_mail_template('door_transfer_text', array(), 'shoppaymodes_paypal');
@@ -74,9 +75,10 @@ class shop_paymode_paypal extends shop_paymode {
         $portlet->transid = $shoppingcart->transid; // No need special format for online transaction id here.
         $portlet->shipping = @$shoppingcart->shipping;
         $portlet->currency = $this->theshop->get_currency();
-        $portlet->return_url = $CFG->wwwroot.'/local/shop/paymodes/paypal/process.php?id='.$this->theshop->id.'&transid='.$portlet->transid;
-        $portlet->notify_url = $CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php';
-        $portlet->cancel_url = $CFG->wwwroot.'/local/shop/paymodes/paypal/cancel.php?id='.$this->theshop->id.'&transid='.$portlet->transid;
+        $params = array('shopid' => $this->theshop->id, 'transid' => $portlet->transid);
+        $portlet->return_url = new moodle_url('/local/shop/paymodes/paypal/process.php', $params);
+        $portlet->notify_url = new moodle_url('/local/shop/paymodes/paypal/paypal_ipn.php');
+        $portlet->cancel_url = new moodle_url('/local/shop/paymodes/paypal/cancel.php', $params);
         $portlet->paypallogo_url = $CFG->wwwroot.'/local/shop/paymodes/paypal/pix/logo_paypal_106x29.png';
         $portlet->lang = strtoupper(current_language());
         if (!in_array($paypalsupportedlangs, $portlet->lang)) {
@@ -90,7 +92,8 @@ class shop_paymode_paypal extends shop_paymode {
 
         echo '<p><span class="shop-procedure-cancel">X</span>';
         $cancelstr = get_string('cancel');
-        $cancelurl = new moodle_url('/local/shop/front/view.php', array('step' => 'shop', 'id' => $this->theshop->id));
+        $params = array('step' => 'shop', 'id' => $this->theshop->id);
+        $cancelurl = new moodle_url('/local/shop/front/view.php', $params);
         echo '<a href="'.$cancelurl.'" class="smalltext">'.$cancelstr.'</a>';
 
         echo '</div>';
@@ -124,7 +127,8 @@ class shop_paymode_paypal extends shop_paymode {
 
         // Do not cancel shopping cart. User may need another payment method.
 
-        redirect(new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->theshop->id)));
+        $params = array('view' => 'shop', 'shopid' => $this->theshop->id);
+        redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
 
     /**
@@ -151,7 +155,8 @@ class shop_paymode_paypal extends shop_paymode {
             $afullbill->save(true);
 
             shop_trace("[$transid] Paypal Return Controller Complete : Redirecting");
-            redirect(new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'transid' => $transid)));
+            $params = array('view' => 'produce', 'shopid' => $this->theshop->id, 'transid' => $transid);
+            redirect(new moodle_url('/local/shop/front/view.php', $params));
         }
     }
 
@@ -161,7 +166,8 @@ class shop_paymode_paypal extends shop_paymode {
 
         // Get all input parms.
         $transid = required_param('invoice', PARAM_TEXT);
-        list($instanceid) = required_param('custom', PARAM_TEXT); // Get the shopid. Not sure its needed any more.
+        // Get the shopid. Not sure its needed any more.
+        list($instanceid) = required_param('custom', PARAM_TEXT);
 
         if (empty($transid)) {
             shop_trace("[ERROR] Paypal IPN : Empty Transaction ID");
@@ -207,7 +213,7 @@ class shop_paymode_paypal extends shop_paymode {
             shop_trace("[$transid] Paypal IPN : Recording paypal event");
             try {
                 $DB->insert_record('shop_paypal_ipn', $paypalipn);
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 shop_trace("[$transid] Paypal IPN : Recording paypal event error");
             }
         }

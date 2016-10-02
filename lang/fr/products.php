@@ -73,11 +73,11 @@ $string['handlerparams_help'] = '
 Certains gestionnaires d\'action génériques prennent des paramètres. Ce champ permet de passer des valeurs spécifiques selon l\'instance de produit. Par exemple, un gestionnaire d\'action générique qui donne l\'accès étudiant Ã un cours a besoin de connaitre l\'id ou le nom du cours qui est concerné. Ce champ permettra de le spécifier produit par produit.
 
 La forme générale des paramètres est une liste de paramètres nommés "à la façon" d\'une URL :
-`param1=value1&param2=value2...`
+    \'param1=value1&param2=value2...\'
 
 Certains paramètres sont systématiques à tous les gestionnaires standard :
 
-`customersupport=<%courseid%>`
+    \'customersupport=<%courseid%>\'
 
 Détermine le cours qui sera utilisé pour accueillir le client dans un espace support. S\'il n\'est pas défini, aucun espace support ne sera mise en place.
 
@@ -85,15 +85,15 @@ Détermine le cours qui sera utilisé pour accueillir le client dans un espace s
 
 **Paramètres du gestionnaire**
 
-    `coursename=<%shortname du cours%>`
+    \'coursename=<%shortname du cours%>\'
 
 Le nom court du cours étant unique dans Moodle, il ne peut y avoir ambiguité
 
-    `role=<%nom court du role (ex:student)%>`
+    \'role=<%nom court du role (ex:student)%>\'
 
 Le nom court du rôle à attribuer
 
-    `duration=<%duree en jours%>`
+    \'duration=<%duree en jours%>\'
 
 La durée est effective à partir de la date d\'exécution du gestionnaire.
 
@@ -101,16 +101,16 @@ La durée est effective à partir de la date d\'exécution du gestionnaire.
 
 **Paramètres du gestionnaire**
 
-`template=<%shortname du gabarit%>`
+    \'template=<%shortname du gabarit%>\'
 
 Le nom court du cours étant unique dans Moodle, il ne peut y avoir ambiguité
 
-`categoryid=<%id de catégorie%>`
+    \'categoryid=<%id de catégorie%>\'
 
 L\'ID numérique de la catégorie dans laquelle le cours doit être créé. Le propriétaire du produit doit être Créateur de cours
 (ou avoir les capacités adéquates) dans cette catégorie pour que le produit puisse se réaliser.
 
-`duration=<%duree en jours%>`
+    \'duration=<%duree en jours%>\'
 
 La durée est effective à partir de l\'exécution du gestionnaire.
 
@@ -118,7 +118,7 @@ La durée est effective à partir de l\'exécution du gestionnaire.
 
 **Paramètres du gestionnaire**
 
-    `parentcategory=<%categoryid%>`
+    \'parentcategory=<%categoryid%>\'
 
 La catégorie parente où sera créée la sous-categorie au nom du client. Le propriétaire du produit doit avoir
 un role de Gestionnaire ou les capacités adéquates pour permettre au produit d\'être réalisé.
@@ -127,16 +127,16 @@ un role de Gestionnaire ou les capacités adéquates pour permettre au produit d
 
 **Paramètres du gestionnaire**
 
-`contextlevel=<%contextlevelID%>`   (10 = système, 40 = catégorie, 50 = cours, 70 = module,80 = bloc)
+    \'contextlevel=<%contextlevelID%>\'   (10 = système, 40 = catégorie, 50 = cours, 70 = module,80 = bloc)
 
 Le niveau de contexte
 
-`instance=<%instanceID%>`
+    \'instance=<%instanceID%>\'
 
 L\'ID d\'instance de l\'objet selon le niveau de contexte (par exemple l\'id du cours pour le niveau 50). Le propriétaire du produit
 doit avoir des capacités adéquates sur le contexte désigné.
 
-`role=<%roleshortname%>`
+    \'role=<%roleshortname%>\'
 
 Le nom abrégé du rôle à assigner.
 ';

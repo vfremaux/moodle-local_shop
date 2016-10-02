@@ -368,11 +368,6 @@ class shop_front_renderer {
 
         $rows[0] = array();
         foreach ($categories as $cat) {
-            /*
-            if (empty($selected)) {
-                $selected = 'catli'.$cat->id;
-            }
-            */
             $params = array('view' => 'shop',
                             'category' => $cat->id,
                             'shopid' => $this->theshop->id,
@@ -564,7 +559,8 @@ class shop_front_renderer {
                 $str .= '<div class="shop-front-pricelist">';
                 $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
                 foreach ($prices as $range => $price) {
-                    $str .= '<div class="shop-front-pricerange">'.$range.' : </div><div class="shop-front-price">'.$price.' '.$product->currency.'</div>';
+                    $str .= '<div class="shop-front-pricerange">'.$range.' : </div>';
+                    $str .= '<div class="shop-front-price">'.$price.' '.$product->currency.'</div>';
                 }
                 $str .= '</div>'; // Shop-front-pricelist.
             }
@@ -572,7 +568,8 @@ class shop_front_renderer {
             if ($product->available) {
                 $str .= '<div class="shop-front-order">';
                 $buystr = get_string('buy', 'local_shop');
-                $disabled = ($product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset) ? 'disabled="disabled"' : '';
+                $isdisabled = $product->maxdeliveryquant && ($product->maxdeliveryquant == $product->preset);
+                $disabled = ($isdisabled) ? 'disabled="disabled"' : '';
                 if ($product->password) {
                     $str .= '<input type="text"
                                    id="ci-pass-'.$product->shortname.'"
@@ -678,7 +675,8 @@ class shop_front_renderer {
             $str .= '<div class="shop-front-pricelist">';
             $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
             foreach ($prices as $range => $price) {
-                $str .= '<div class="shop-front-pricerange">'.$range.' : </div><div class="shop-front-price">'.$price.' '.$bundle->currency.'</div>';
+                $str .= '<div class="shop-front-pricerange">'.$range.' : </div>';
+                $str .= '<div class="shop-front-price">'.$price.' '.$bundle->currency.'</div>';
             }
             $str .= '</div>'; // Shop-front-pricelist.
         }
@@ -724,12 +722,13 @@ class shop_front_renderer {
         $unitimage = $product->get_sales_unit_url();
 
         $str = '';
-        for ($i = 0 ; $i < 0 + @$SESSION->shoppingcart->order[$product->shortname] ; $i++) {
+        for ($i = 0; $i < 0 + @$SESSION->shoppingcart->order[$product->shortname]; $i++) {
             $str .= '&nbsp;<img src="'.$unitimage.'" align="middle" />';
         }
 
         if ($i > 0) {
-            $jshandler= 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', \''.$product->shortname.'\')';
+            $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+            $jshandler .= ', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
             $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" />';
             $str .= '</a>';
@@ -745,6 +744,8 @@ class shop_front_renderer {
             return;
         }
 
+        $shoppingcart = $SESSION->shoppingcart;
+
         $str = '';
 
         $str .= '<table width="100%" id="orderblock">';
@@ -757,9 +758,8 @@ class shop_front_renderer {
                 if ($aproduct->isset == PRODUCT_SET) {
                     foreach ($aproduct->elements as $portlet) {
                         $portlet->currency = $this->theshop->get_currency('symbol');
-                        $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ?
-                            $SESSION->shoppingcart->order[$portlet->shortname] :
-                            0;
+                        $hasshort = !empty($shoppingcart->order[$portlet->shortname]);
+                        $portlet->preset = $hasshort ? $shoppingcart->order[$portlet->shortname] : 0;
                         if ($portlet->preset) {
                             $str .= $this->product_total_line($portlet, true);
                         }
@@ -767,9 +767,8 @@ class shop_front_renderer {
                 } else {
                     $portlet = &$aproduct;
                     $portlet->currency = $this->theshop->get_currency('symbol');
-                    $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ?
-                        $SESSION->shoppingcart->order[$portlet->shortname] :
-                        0;
+                    $hasshort = !empty($shoppingcart->order[$portlet->shortname]);
+                    $portlet->preset = $hasshort ? $shoppingcart->order[$portlet->shortname] : 0;
                     if ($portlet->preset) {
                         $str .= $this->product_total_line($portlet, true);
                     }
@@ -864,33 +863,28 @@ class shop_front_renderer {
         if (isloggedin()) {
             $lastname = $USER->lastname;
             $firstname = $USER->firstname;
-            $organisation = (!empty($shoppingcart->customerinfo['organisation'])) ?
-                $shoppingcart->customerinfo['organisation'] :
-                $USER->institution;
-            $city = (!empty($shoppingcart->customerinfo['city'])) ?
-                $shoppingcart->customerinfo['city'] :
-                $USER->city;
-            $address = (!empty($shoppingcart->customerinfo['address'])) ?
-                $shoppingcart->customerinfo['address'] :
-                $USER->address;
-            $zip = (!empty($shoppingcart->customerinfo['zip'])) ?
-                $shoppingcart->customerinfo['zip'] :
-                '';
-            $country = (!empty($shoppingcart->customerinfo['country'])) ?
-                $shoppingcart->customerinfo['country'] :
-                $USER->country;
+
+            $hasorg = !empty($shoppingcart->customerinfo['organisation']);
+            $organisation = $hasorg ? $shoppingcart->customerinfo['organisation'] : $USER->institution;
+
+            $hascity = !empty($shoppingcart->customerinfo['city']);
+            $city = $hascity ? $shoppingcart->customerinfo['city'] : $USER->city;
+
+            $hasaddress = !empty($shoppingcart->customerinfo['address']);
+            $address = $hasaddress ? $shoppingcart->customerinfo['address'] : $USER->address;
+
+            $haszip = !empty($shoppingcart->customerinfo['zip']);
+            $zip = $haszip ? $shoppingcart->customerinfo['zip'] : '';
+
+            $hascountry = !empty($shoppingcart->customerinfo['country']);
+            $country = $hascountry ? $shoppingcart->customerinfo['country'] : $USER->country;
             $email = $USER->email;
+
             // Get potential ZIP code information from an eventual customer record.
             if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id))) {
-                $zip = (!empty($shoppingcart->customerinfo['zip'])) ?
-                    $shoppingcart->customerinfo['zip'] :
-                    $customer->zip;
-                $organisation = (!empty($shoppingcart->customerinfo['organisation'])) ?
-                    $shoppingcart->customerinfo['organisation'] :
-                    $customer->organisation;
-                $address = (!empty($shoppingcart->customerinfo['address'])) ?
-                    $shoppingcart->customerinfo['address'] :
-                    $customer->address;
+                $zip = $haszip ? $shoppingcart->customerinfo['zip'] : $customer->zip;
+                $organisation = $hasorg ? $shoppingcart->customerinfo['organisation'] : $customer->organisation;
+                $address = $hasaddress ? $shoppingcart->customerinfo['address'] : $customer->address;
             }
         } else {
             $lastname = @$shoppingcart->customerinfo['lastname'];
@@ -989,7 +983,7 @@ class shop_front_renderer {
         $str .= '</tr>';
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('zip','local_shop');
+        $str .= get_string('zip', 'local_shop');
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
@@ -1002,7 +996,6 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: <br>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        // $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
         $str .= html_writer::select($choices, 'customerinfo::country', $country, array('' => 'choosedots'));
@@ -1011,18 +1004,18 @@ class shop_front_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
         $str .= get_string('email', 'local_shop');
-        $str.= '<sup style="color : red">*</sup>';
-        $str.= '</td>';
-        $str.= '<td align="left">';
-        $str.= '<input type="text"
+        $str .= '<sup style="color : red">*</sup>';
+        $str .= '</td>';
+        $str .= '<td align="left">';
+        $str .= '<input type="text"
                        class="'.$mailclass.'"
                        name="customerinfo::email"
                        size="30"
                        onchange="testmail(this)" value="'.$email.'" />';
-        $str.= '</td>';
-        $str.= '</tr>';
-        $str.= '</table>';
-        $str.= '</div>';
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '</table>';
+        $str .= '</div>';
 
         return $str;
     }
@@ -1123,17 +1116,17 @@ class shop_front_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
         $str .= get_string('firstname');
-        $str.= '<sup style="color : red">*</sup>:';
-        $str.= '</td>';
-        $str.= '<td align="left">';
-        $str.= '<input type="text"
+        $str .= '<sup style="color : red">*</sup>:';
+        $str .= '</td>';
+        $str .= '<td align="left">';
+        $str .= '<input type="text"
                        class="'.$firstnameclass.'"
                        name="invoiceinfo::firstname"
                        size="20"
                        onchange="capitalizewords(this)"
                        value="'.$firstname.'" />';
-        $str.= '</td>';
-        $str.= '</tr>';
+        $str .= '</td>';
+        $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
@@ -1181,7 +1174,7 @@ class shop_front_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('zip','local_shop');
+        $str .= get_string('zip', 'local_shop');
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
@@ -1199,7 +1192,6 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: <br>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        // $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
         $attrs = array('class' => $countryclass);
@@ -1209,7 +1201,7 @@ class shop_front_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('vatcode','local_shop');
+        $str .= get_string('vatcode', 'local_shop');
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
@@ -2208,7 +2200,7 @@ class shop_front_renderer {
 
         $str = '';
 
-        // Samples for json programming
+        // Samples for json programming.
         /*
         $test = array(
             array('field' => 'coursename',
@@ -2258,7 +2250,7 @@ class shop_front_renderer {
 
                             $attributes = '';
                             if (!empty($reqobj->attrs)) {
-                                foreach($reqobj->attrs as $key => $value) {
+                                foreach ($reqobj->attrs as $key => $value) {
                                     $attributes .= " {$key}=\"{$value}\" ";
                                 }
                             }
@@ -2528,6 +2520,80 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '</tr>';
 
+        $str .= '</table>';
+
+        return $str;
+    }
+
+    public function order_popup_header($afullbill) {
+
+        $config = get_config('local_shop');
+
+        $str = '';
+
+        $str .= '<table>';
+        $str .= '<tr>';
+        $str .= '<td><img src="'.$OUTPUT->pix_url('logo', 'theme').'"></td>';
+        $printorderlinkstr = get_string('printorderlink', 'local_shop');
+        $str .= '<td align="right">';
+        $str .= '<a href="#" onclick="window.print();return false;">'.$printorderlinkstr.'</a></td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td colspan="2" align="center">';
+        $headerstring = ($afullbill->idnumber) ? get_string('bill', 'local_shop') : get_string('ordersheet', 'local_shop');
+        echo $OUTPUT->heading($headerstring, 1);
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr valign="top">';
+        $str .= '<td width="60%">';
+        $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b><br />';
+        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code><br />';
+        $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span>';
+        $str .= '</td>';
+        $str .= '<td width="40%" align="right" rowspan="5" class="order-preview-seller-address">';
+        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($afullbill->emissiondate).'<br />';
+        $str .= '<br />';
+        $str .= '<b>'.$config->sellername.'</b><br />';
+        $str .= '<b>'.$config->selleraddress.'</b><br />';
+        $str .= '<b>'.$config->sellerzip.' '.$config->sellercity.'</b><br />';
+        $str .= $config->sellercountry;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('customer', 'local_shop').': </b> '.$afullbill->customer->lastname;
+        $str .= $afullbill->customer->firstname;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('city').': </b>';
+        $str .= $afullbill->customer->zip.' '.$afullbill->customer->city;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('country').': </b> '.core_text::strtoupper($afullbill->customer->country);
+        $str .= '</td>';
+        $str .= '<td>';
+        $str .= '&nbsp;';
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('email').': </b> '.$afullbill->customer->email;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td colspan="2">';
+        $str .= '&nbsp;<br />';
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td colspan="2" class="sectionHeader">';
+        $str .= $OUTPUT->heading(get_string('order', 'local_shop'), 2);
+        $str .= '</td>';
+        $str .= '</tr>';
         $str .= '</table>';
 
         return $str;

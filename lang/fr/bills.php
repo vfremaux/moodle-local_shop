@@ -64,10 +64,6 @@ $string['unittex'] = 'Unitaire hors taxes :';
 $string['updatelettering'] = 'Mettre à jour';
 $string['pickuser'] = 'Choisissez un compte client ou un compte utilisateur';
 
-// Help strings
-
-// help_userid
-
 $string['help_userid_help'] = '
 # L\'association d\'un code client Ã une facture
 
@@ -79,8 +75,6 @@ Remplissez le champ avec l\'ID client avec un numéro de client existant
 
 Si vous souhaitez consulter, créer, gérer un compte client, rendez-vous sur la page de gestion des comptes clients dans l\'administration de la boutique';
 
-// shopform
-
 $string['shopform_help'] = '
 # Informations de compte
 
@@ -91,8 +85,6 @@ L\'utilisateur doit donc renseigné son Nom, son Prénom, sa Ville, son Pays et 
 
 L\'adresse de courriel saisie doit être dans un format valide (exemple : client@fournisseur.fr)';
 
-// tax help
-
 $string['taxhelp_help'] = '
 # L\'association d\'un code taxe à un code produit
 
@@ -101,8 +93,6 @@ Un produit doit être obligatoirement associé à un code taxe
 Sélectionnez un code taxe existant parmis la liste déroulante
 
 Si vous souhaitez créer une taxe, veuillez vous rendre dans la section de gestion des taxes de l\'administration';
-
-// description
 
 $string['description_help'] = '<!-- Version: $Id: description.html,v 1.2 2011-05-22 16:05:00 vf Exp $ -->
 
@@ -328,8 +318,6 @@ La saisie de textes fonctionne dans Moodle à peu près de la façon dont vous l
   </table>
 </div>';
 
-// Lettering.
-
 $string['lettering_help'] = '## Boutique en ligne
 
 ### Lettrage de facture
@@ -340,8 +328,6 @@ Selon les législations, des obligations légales contraignent la numérotation 
 
 Le lettrage ne peut accepter plusieurs références identiques, et ce quelque soit le catalogue utilisé par la boutique.';
 
-// Customer_account.
-
 $string['customer_account_help'] = '
 # Aide sur l\'assignation d\'une facture à un compte client
 
@@ -350,8 +336,6 @@ Une facture doit être assignée à un compte client.
 Choisissez un compte client déja créer, ou un compte utilisateur de la plateforme.
 
 Si un compte utilisateur est sélectionné, un compte client est automatiquement créé et la facture sera automatiquement assignée à ce nouveau compte client.';
-
-// Formula_creation.
 
 $string['formula_creation_help'] = '
 # Edition de formule du prix TTC
@@ -362,8 +346,6 @@ Cette formule doit intégrer les variables du prix TTC ($TTC), du prix HT ($HT),
 
 Exemple : $TTC = $HT + ($HT*$TR/100)';
 
-// Allow tax.
-
 $string['allowtax_help'] = '
 # Aide sur l\'activation de taxe
 
@@ -371,16 +353,12 @@ Vous pouvez désactiver la prise en compte de taxe pour une facture.
 
 Si vous ne prenez pas en compte les taxes, il n\'y aura pas de taxe prise en compte pour le montant total de la facture.';
 
-// Bill assignation.
-
 $string['bill_assignation_help'] = '
 # Aide sur l\'attribution du traitement d\'une facture
 
 Un traitement de facture doit être assigné à un utilisateur qui possède les droits appropriés.
 
 Sélectionnez l\'utilisateur auquel vous voulez assigné le traitement de la facture.';
-
-// Bill states.
 
 $string['billstates_help'] = '
 ## Boutique en ligne Moodle

@@ -35,12 +35,16 @@ defined('MOODLE_INTERNAL') || die;
 function shop_compile_mail_template($template, $infomap, $subplugin, $lang = '', $transactionid = '') {
     global $CFG, $USER;
 
-    if (empty($lang)) $lang = @$USER->lang;
-    if (empty($lang)) $lang = $CFG->lang;
+    if (empty($lang)) {
+        $lang = @$USER->lang;
+    }
+    if (empty($lang)) {
+        $lang = $CFG->lang;
+    }
 
     $notification = shop_get_mail_template($template, $lang, $subplugin, $transactionid);
-    foreach ($infomap as $aKey => $aValue) {
-        $notification = str_replace("<%%$aKey%%>", $aValue, $notification);
+    foreach ($infomap as $key => $value) {
+        $notification = str_replace("<%%{$key}%%>", $value, $notification);
     }
     return $notification;
 }

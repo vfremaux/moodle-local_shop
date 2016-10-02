@@ -57,7 +57,7 @@ class ShippingZone_Form extends moodleform {
         $mform->setType('description', PARAM_TEXT);
 
         // Bill scope amount when bill applied.
-        $mform->addElement('text', 'billscopeamount', get_string('billscopeamount', 'local_shop')); 
+        $mform->addElement('text', 'billscopeamount', get_string('billscopeamount', 'local_shop'));
         $mform->setType('billscopeamount', PARAM_TEXT);
 
         // Bill scope amount when bill applied.

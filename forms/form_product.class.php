@@ -95,9 +95,11 @@ class Product_Form extends catalogitemform {
             $mform->addElement('select', 'setid', get_string('set', 'local_shop'), $setopts);
         }
         $group = array();
-        $group[] = &$mform->createElement('checkbox', 'showsnameinset', '', get_string('shownameinset', 'local_shop'));
+        $label = get_string('shownameinset', 'local_shop');
+        $group[] = &$mform->createElement('checkbox', 'showsnameinset', '', $label);
         $mform->setDefault('showsnameinset', 1);
-        $group[] = &$mform->createElement('checkbox', 'showsdescriptioninset', '', get_string('showdescriptioninset', 'local_shop'));
+        $label = get_string('showdescriptioninset', 'local_shop');
+        $group[] = &$mform->createElement('checkbox', 'showsdescriptioninset', '', $label);
         $mform->setDefault('showsdescriptioninset', 1);
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
 
@@ -108,7 +110,8 @@ class Product_Form extends catalogitemform {
         $mform->addElement('header', 'h4', get_string('automation', 'local_shop'));
 
         // This may need to be translated for localised catalogs.
-        $mform->addElement('textarea', 'requireddata', get_string('requireddata', 'local_shop'), $attributesspecificdata);
+        $label = get_string('requireddata', 'local_shop');
+        $mform->addElement('textarea', 'requireddata', $label, $attributesspecificdata);
         $mform->setType('requireddata', PARAM_TEXT);
         $mform->addHelpButton('requireddata', 'requireddata', 'local_shop');
 
@@ -120,14 +123,16 @@ class Product_Form extends catalogitemform {
             $mform->addElement('select', 'enablehandler', get_string('enablehandler', 'local_shop'), $handleropts);
             $mform->setType('enablehandler', PARAM_TEXT);
 
-            $mform->addElement('textarea', 'handlerparams', get_string('handlerparams', 'local_shop'), $attributeshandlerparams);
+            $label = get_string('handlerparams', 'local_shop');
+            $mform->addElement('textarea', 'handlerparams', $label, $attributeshandlerparams);
             $mform->setType('handlerparams', PARAM_TEXT);
             $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
 
             $seatmodeoptions[SHOP_QUANT_NO_SEATS] = get_string('no');
             $seatmodeoptions[SHOP_QUANT_ONE_SEAT] = get_string('oneseat', 'local_shop');
             $seatmodeoptions[SHOP_QUANT_AS_SEATS] = get_string('yes');
-            $mform->addElement('select', 'quantaddressesusers', get_string('quantaddressesusers', 'local_shop'), $seatmodeoptions);
+            $label = get_string('quantaddressesusers', 'local_shop');
+            $mform->addElement('select', 'quantaddressesusers', $label, $seatmodeoptions);
             $mform->setType('quantaddressesusers', PARAM_INT);
             $mform->addHelpButton('quantaddressesusers', 'quantaddressesusers', 'local_shop');
 

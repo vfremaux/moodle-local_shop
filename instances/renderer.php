@@ -60,19 +60,23 @@ class shop_instances_renderer {
             $pricelines = array();
             $prices = $instance->get_printable_prices();
             foreach ($prices as $key => $price) {
-                $pricelines[] = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $pl = ;'<span class="shop-admin-pricerange">'.$key.' : </span>';
+                $pl .= '<span class="shop-admin-amount">'.$price.'</span>'
+                $pricelines[] = $pl;
             }
 
             $taxedpricelines = array();
             $prices = $product->get_printable_prices(true);
             foreach ($prices as $key => $price) {
-                $taxedpricelines[] = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $pl = '<span class="shop-admin-pricerange">'.$key.' : </span>';
+                $pl .= '<span class="shop-admin-amount">'.$price.'</span>'
+                $taxedpricelines[] = $pl;
             }
 
             $statusclass = strtolower($product->status);
             $str .= '<tr class="shop-'.$statusclass.'line shop-product-row" valign="top">';
             $slaveclass  = (@$portlet->masterrecord == 0) ? '' : 'engraved slaved';
-            $str.= '<td class="cell '.$slaveclass.'"align="center">';
+            $str .= '<td class="cell '.$slaveclass.'"align="center">';
             $str .= '<img src="'.$product->thumb.'" vspace="10" border="0" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.'" align="left">';
@@ -96,7 +100,7 @@ class shop_instances_renderer {
                     $str .= get_string('oneseat', 'local_shop');
                     break;
 
-                  case SHOP_QUANT_AS_SEATS:
+                case SHOP_QUANT_AS_SEATS:
                     $str .= get_string('yes');
                     break;
             }

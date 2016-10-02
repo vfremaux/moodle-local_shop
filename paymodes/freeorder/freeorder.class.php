@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_freeorder
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
@@ -32,16 +31,16 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 class shop_paymode_freeorder extends shop_paymode {
 
     function __construct(&$shop) {
-        // NOT ENABLED AS NOT SELECTABLE METHOD
+        // NOT ENABLED AS NOT SELECTABLE METHOD!
         parent::__construct('card', $shop, false);
     }
 
-    // prints a payment porlet in an order form
+    // Prints a payment porlet in an order form.
     function print_payment_portlet(&$billdata) {
         // No portlet.
     }
 
-    // prints a payment porlet in an order form
+    // Prints a payment porlet in an order form.
     function print_invoice_info(&$billdata = null) {
     }
 
@@ -49,26 +48,25 @@ class shop_paymode_freeorder extends shop_paymode {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
-    // processes a payment return
+    // Processes a payment return.
     function process() {
     }
 
-    // processes a payment asynchronoous confirmation
+    // Processes a payment asynchronoous confirmation.
     function process_ipn() {
     }
 
-    // provides global settings to add to shop settings when installed
+    // Provides global settings to add to shop settings when installed.
     function has_config() {
         return false;
     }
 
-    // provides global settings to add to shop settings when installed
+    // Provides global settings to add to shop settings when installed.
     function is_interactive() {
         return false;
     }
 
-    // provides global settings to add to shop settings when installed
+    // Provides global settings to add to shop settings when installed.
     function settings(&$settings) {
     }
-
 }

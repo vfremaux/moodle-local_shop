@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_check
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/local/shop/paymodes/paymode.class.php';
 
@@ -31,9 +30,8 @@ class shop_paymode_check extends shop_paymode {
         parent::__construct('check', $shop);
     }
 
-    // prints a payment porlet in an order form
+    // Prints a payment porlet in an order form.
     function print_payment_portlet(&$billdata) {
-        global $CFG;
 
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_check');
@@ -74,7 +72,7 @@ class shop_paymode_check extends shop_paymode {
 
     // Processes a payment asynchronoous confirmation.
     function process_ipn() {
-        // no IPN for offline payment.
+        // No IPN for offline payment.
     }
 
     // Provides global settings to add to shop settings when installed.

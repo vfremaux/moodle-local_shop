@@ -403,8 +403,9 @@ function isMandatory(fieldname, form) {
 function submitfinalcheck(form, datecheck) {
     dateErrors = new Array();
     mandatoryErrors = new Array();
-    for (i=0, j=0, k=0; i < form.elements.length; i++) {
-        if (form.elements[i].name.substring(form.elements[i].name.length - 2, form.elements[i].name.length) == "_D" && datecheck != "NODATE") {
+    for (i = 0, j = 0, k = 0; i < form.elements.length; i++) {
+        prfx = form.elements[i].name.substring(form.elements[i].name.length - 2, form.elements[i].name.length);
+        if (prfx == "_D" && datecheck != "NODATE") {
             var result = checkdate(form.elements[i]);
             if (result != "") {
                 dateErrors[j] = result;

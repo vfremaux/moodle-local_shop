@@ -32,7 +32,10 @@ class users_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($back = optional_param('back', '', PARAM_TEXT)) {
                 $prev = $this->theshop->get_prev_step('users');
-                $params = array('view' => $prev, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
+                $params = array('view' => $prev,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id,
+                                'back' => 1);
                 redirect(new \moodle_url('/local/shop/front/view.php', $params));
             } else {
                 $next = $this->theshop->get_next_step('users');
@@ -42,7 +45,10 @@ class users_controller extends front_controller_base {
         } else if ($cmd == 'back') {
             // This can be decided into the user page.
             $next = $this->theshop->get_prev_step('users');
-            $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
+            $params = array('view' => $next,
+                            'shopid' => $this->theshop->id,
+                            'blockid' => 0 + @$this->theblock->id,
+                            'back' => 1);
             redirect(new \moodle_url('/local/shop/front/view.php', $params));
         }
     }
