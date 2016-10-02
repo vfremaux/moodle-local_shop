@@ -60,7 +60,7 @@ class shop_instances_renderer {
             $pricelines = array();
             $prices = $instance->get_printable_prices();
             foreach ($prices as $key => $price) {
-                $pl = ;'<span class="shop-admin-pricerange">'.$key.' : </span>';
+                $pl = '<span class="shop-admin-pricerange">'.$key.' : </span>';
                 $pl .= '<span class="shop-admin-amount">'.$price.'</span>'
                 $pricelines[] = $pl;
             }

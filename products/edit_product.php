@@ -117,7 +117,8 @@ if ($data = $mform->get_data()) {
         $data->id = $data->itemid;
 
         // If product code as changed, we'd better recompute a new shortname.
-        if (empty($data->shortname) || ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
+        if (empty($data->shortname) ||
+                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
 

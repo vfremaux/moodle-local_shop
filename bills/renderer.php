@@ -1843,7 +1843,7 @@ class shop_bills_renderer {
         return $str;
     }
 
-    public short_bill_line($portlet) {
+    public function short_bill_line($portlet) {
 
         $str = '';
 

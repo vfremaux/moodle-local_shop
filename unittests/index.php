@@ -41,7 +41,7 @@ $PAGE->set_context($context);
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-$action = optional_param('what', '', PARAM_ALPHA); // the action command
+$action = optional_param('what', '', PARAM_ALPHA); // The action command.
 
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/unittests/index.controller.php');
@@ -158,9 +158,9 @@ if ($productline = $thecatalog->get_products()) {
                 if (array_key_exists($itemcode, $warnings)) {
                     echo '<tr valign="top" class="row r'.$j.'">';
                     echo '<td colspan="6">';
-                        foreach ($warnings[$itemcode] as $warning) {
-                            echo '<li class="shop-warning-result">'.$warningstr.$warning.'</li>';
-                        }
+                    foreach ($warnings[$itemcode] as $warning) {
+                        echo '<li class="shop-warning-result">'.$warningstr.$warning.'</li>';
+                    }
                     echo '</td>';
                     echo '</tr>';
                 }

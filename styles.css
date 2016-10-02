@@ -2,9 +2,9 @@
 
 .shop-table {
     display:table;
+    padding: 0px !important;
     text-align:left;
     width:100%;
-    padding: 0px !important;
 }
 
 .shop-row {
@@ -18,26 +18,26 @@
 
 .shop-cell.param {
     background-color:#d0d0d0;
-    color:white;
-    font-weight:bold;
     border-top:1px solid #fefefe;
     border-bottom:1px solid #fefefe;
+    color:white;
+    font-weight:bold;
 }
 
 .shop-cell.header {
     background-color:#a0a0a0;
-    color:white;
-    font-weight:bold;
     border-top:1px solid #fefefe;
     border-bottom:1px solid #fefefe;
+    color:white;
+    font-weight:bold;
 }
 
 .shop-cell.value {
     background-color:#fefefe;
-    color:#808080;
-    font-weight:normal;
     border-top:1px solid #d0d0d0;
     border-bottom:1px solid #d0d0d0;
+    color:#808080;
+    font-weight:normal;
 }
 
 /* Other classes */
@@ -47,14 +47,14 @@
 }
 
 .shop-article.shadowed{
+    filter:alpha(opacity=40);
     opacity:0.4;
     -moz-opacity:0.4;
-    filter:alpha(opacity=40);
 }
 
 .shop-not-available {
-    color:#a00000;
     background-color:#FFA0A0;
+    color:#a00000;
     margin:3px;
     padding:4px;
 }
@@ -70,17 +70,17 @@
 }
 
 .shop-notification{
-    padding:30px;
-    margin:10px;
     background-color:#fdfdfd;
     border:1px solid #f0f0f0;
+    margin:10px;
+    padding:30px;
 }
 
 .shop-notification-message{
      border:2px solid #A5A0CB;
-     padding:15px;
      border-radius:15px;
      font-size:1.4em;
+     padding:15px;
 }
 
 .shop-message-hidden {
@@ -93,27 +93,27 @@
 }
 
 #shop-notification-result{
-     border:2px solid #A5A0CB;
-     padding:15px;
-     border-radius:15px;
-     font-size:1.4em;
      background-color:#4AC1B3;
+     border:2px solid #A5A0CB;
+     border-radius:15px;
      color:white;
+     font-size:1.4em;
      margin-bottom:20px;
+     padding:15px;
 }
 
 .shop-description{
-    padding:10px;
-    margin:10px;
     background-color:#fdfdfd;
     border:1px solid #f0f0f0;
+    margin:10px;
+    padding:10px;
 }
 
 #shop-adminlinks{
-    margin:5px;
     background-color:#f0f0f0;
     border:1px dashed #e0e0e0;
     border-radius:7px;
+    margin:5px;
 }
 
 #shop-orderblock{
@@ -127,7 +127,7 @@
     margin-left:5px;
     margin-right:10px;
     padding:5px;
-    width:20%
++    width:20%
 }
 
 #shop-ordertotals{
@@ -146,15 +146,15 @@
 }
 
 #progress{
-    margin-bottom:20px;
     line-height:40px;
+    margin-bottom:20px;
 }
 
 #shop-customerdata,
 #shop-organisationdata{
      border:2px solid #A5A0CB;
-     padding:15px;
      border-radius:15px;
+     padding:15px;
 }
 
 #shop-customerdata td{
@@ -163,9 +163,9 @@
 
 .shop-billstate{
     background-color : #D0DDE3;
+    display:inline;
     padding : 2px;
     width:120px;
-    display:inline;
 }
 
 .shop-groupsubtotal{
@@ -174,10 +174,10 @@
 }
 
 .shop-grouphead{
-    font-size : 1.3em;
-    color : white;
-    padding:1px;
     background-color:#808090;
+    color : white;
+    font-size : 1.3em;
+    padding:1px;
 }
 
 .shop-countrybox{
@@ -186,28 +186,27 @@
 }
 
 .shop-productcontent{
-    text-align:left;
     padding-left:20px;
+    text-align:left;
 }
 
 td.shop-productpix{
     width:180px;
-    /* border-left: solid 1px #ccc; */
 }
 
-DIV.shop-bill_good{
-    font-size:0.8em;
+div.shop-bill_good{
     color:green;
-    font-style:italic;
-}
-
-DIV.shop-bill_error{
     font-size:0.8em;
-    color:red;
     font-style:italic;
 }
 
-TABLE.shop-article{
+div.shop-bill_error{
+    color:red;
+    font-size:0.8em;
+    font-style:italic;
+}
+
+table.shop-article{
     margin-bottom:10px;
     margin-right:10px;
 }
@@ -251,10 +250,10 @@ shop-products-view th{
 }
 
 .shop-billstate{
-    font-size:1.5em;
-    font-family:monospace;
-    padding:2px;
     border:1px solid #606060;
+    font-family:monospace;
+    font-size:1.5em;
+    padding:2px;
 }
 
 .shop-form-attenuated{
@@ -263,18 +262,18 @@ shop-products-view th{
 
 .shop-controls,
 .shop-setcontrols {
-    padding-left:8px;
     border-left:1px solid #D0D0D0;
-    text-align:right;
     line-height:20px;
     min-width:80px;
+    padding-left:8px;
+    text-align:right;
     width:80px;
 }
 
 .shop-product-row td {
+    padding-bottom:3px;
     padding-left:8px;
     padding-top:3px;
-    padding-bottom:3px;
 }
 
 .shop-catalog-admin {
@@ -282,8 +281,8 @@ shop-products-view th{
 }
 
 .shop-bundle-row .thumb img {
-    margin-top:8px;
     margin-bottom:8px;
+    margin-top:8px;
 }
 
 .shop-set-row,
@@ -312,11 +311,11 @@ SELECT.shop-error{
 }
 
 .flowcontrol{
-    margin-top:20px;
-    margin-left:5px;
-    margin-right:5px;
     background-color:#fafafa;
     border:1px #A0A0A0 dashed;
+    margin-left:5px;
+    margin-right:5px;
+    margin-top:20px;
     padding:5px;
 }
 
@@ -331,45 +330,45 @@ SELECT.shop-error{
 .suspendedline { background-color : #fefefe ; color : #A0A0A0 }
 .abandonnedline { background-color : #600000 ; color : #A00000 }
 .slaved { 
+    filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100);
     opacity:0.5;
     -moz-opacity:0.5;
-    filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100);
 }
 .engraved {
+    filter:progid:DXImageTransform.Microsoft.Engrave() progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100)
     opacity:0.5;
     -moz-opacity:0.5;
-    filter:progid:DXImageTransform.Microsoft.Engrave() progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100)
 }
 
 /* tabbedmenu */
+
 .tabtree .tabrow0 li.active * {
-    font-weight: bold;
     color: #000;
+    font-weight: bold;
 }
 
 .shop-role-list-container,
 .shop-information-area {
     border: 2px solid #a5a0cb;
     border-radius: 15px;
-    padding: 15px;
     margin:5px;
+    padding: 15px;
 }
 
 .shop-pricelist {
-    width:100%;
     font-size:0.9em;
     margin-bottom:10px;
     margin-top:10px;
+    width:100%;
 }
 
 .shop-pricerange{
     background-color:#EEEEEE;
+    border-radius:6px;
     color:#737379;
     font-weight:bolder;
     padding:1px;
     padding-left:5px;
-    /* border:#CCCCCC solid 1px; */
-    border-radius:6px;
     -moz-border-radius:6px;
     -webkit-border-radius:6px;
     -khtml-border-radius:6px;
@@ -397,12 +396,12 @@ SELECT.shop-error{
 }
 
 .shop-error-notice{
-    margin:20px;
+    background-color:#FBCEC6;
     border:1px red solid;
     border-radius:8px;
-    background-color:#FBCEC6;
     font-size:1.2em;
     font-weight:bold;
+    margin:20px;
 }
 
 .shop-error-result{
@@ -419,8 +418,8 @@ SELECT.shop-error{
 
 #addparticipant input,
 #participantlist input{
-    width:initial;
     font-size:0.9em;
+    width:initial;
 }
 
 .shop-products-caption th{
@@ -432,34 +431,34 @@ SELECT.shop-error{
 }
 
 div.shop-bill-abstract{
-    font-size:0.8em;
     color:#606060;
+    font-size:0.8em;
 }
 
 #euladiv{
     background-color:#f2f2f2;
-    position:absolute;
-    padding:60px;
-    top:0px;
     left:0px;
-    width:100%;
     height:100%;
+    padding:60px;
+    position:absolute;
+    top:0px;
+    width:100%;
     z-index:100000;
 }
 
 #eulas-panel{
+    background-color:#ffffff;
+    border:solid 1px #D0D0D0;
     height:60%;
-    width:85%;
+    margin-right:30px;
     overflow-y:scroll;
     padding:30px;
-    margin-right:30px;
-    border:solid 1px #D0D0D0;
-    background-color:#ffffff;
+    width:85%;
 }
 
 .short-order-name{
-    font-weight:bold;
     font-size:0.9em;
+    font-weight:bold;
 }
 
 .short-order-summary{
@@ -471,30 +470,30 @@ div.shop-bill-abstract{
 }
 
 #shop-requirement-caption {
-    margin-top:10px;
     border:1px solid #808080;
     border-radius:10px;
-    -moz-border-radius:10px;
-    padding:15px;
     font-size:1.1em;
     margin-bottom:15px;
+    margin-top:10px;
+    padding:15px;
+    -moz-border-radius:10px;
 }
 
 .shop-product-requirements {
-    margin-top:10px;
     border:1px solid #808080;
     border-radius:10px;
-    -moz-border-radius:10px;
+    margin-top:10px;
     padding:5px;
+    -moz-border-radius:10px;
 }
 
 .shop-product-requirement {
     background-color:#BABCDC;
-    color:#000;
-    padding:3px;
-    font-weight:bolder;
     border-radius:8px;
+    color:#000;
+    font-weight:bolder;
     margin-bottom:5px;
+    padding:3px;
 }
 
 .requ-label {
@@ -508,15 +507,15 @@ div.shop-bill-abstract{
 }
 
 .requ-desc {
-    padding:2px;
-    font-size:0.9em;
     color:#606060;
+    font-size:0.9em;
     font-style:italic;
+    padding:2px;
 }
 
 #requ-submit {
-    text-align:right;
     margin-top:10px;
+    text-align:right;
 }
 
 #requ-submit.unsaved input{
@@ -528,13 +527,13 @@ div.shop-bill-abstract{
 }
 
 .shop-requ-error {
-    margin:4px;
     background-color:#ffe0e0;
     border:1px solid red;
-    padding:3px;
-    color:#A00000;
     border-radius:3px;
+    color:#A00000;
     font-size:0.8em;
+    margin:4px;
+    padding:3px;
     -moz-border-radius:3px;
 }
 
@@ -561,32 +560,32 @@ table.shop-role-assignations > tr > td{
 .shop-article.product .shop-front-productpix img,
 .shop-article.bundle .shop-front-productpix img,
 .shop-article.set .shop-front-productpix img {
-    width:150px;
     height:150px;
     margin-right: 20px;
+    width:150px;
 }
 
 .shop-article.element .shop-front-productpix {
 }
 
 .shop-article.element .shop-front-productpix img {
-    width:80px;
     height:80px;
     margin-right:20px;
+    width:80px;
 }
 
 .shop-article.product,
 .shop-article.set,
 .shop-article.bundle {
-    padding:15px;
     border:1px solid #fdfdfd;
     border-radius:8px;
     margin:10px 2px;
+    padding:15px;
 }
 
 .shop-article * {
-    vertical-align:top;
     margin-top:10px;
+    vertical-align:top;
 }
 
 .shop-article h1, 
@@ -624,15 +623,15 @@ table.shop-role-assignations > tr > td{
 
 .shop-front-price {
     font-weight:bold;
-    margin-right:3em;
     margin-left:1em;
+    margin-right:3em;
 }
 
 shop-order-paymode {
-    padding:15px;
     background-color:#E0E0E0;
     border:1px solid #d0d0d0;
     border-radius:8px;
+    padding:15px;
 }
 
 .shop-shadow {
@@ -649,11 +648,11 @@ shop-order-paymode {
 }
 
 .shop-category-description {
-    padding:30px;
-    margin:10px;
     border:1px solid #f0f0f0;
     border-radius:10px;
     font-size:1.2em;
+    margin:10px;
+    padding:30px;
 }
 
 .shop-front-order * {
@@ -661,8 +660,8 @@ shop-order-paymode {
 }
 
 .shop-order-item {
-    margin-left:8px;
     display:inline-block;
+    margin-left:8px;
 }
 
 .shop-active-button {
