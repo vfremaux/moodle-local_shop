@@ -48,7 +48,7 @@ if (empty($config->test)) {
  * go further.
  */
 
-// systematic answer (tells we are listening test actually).
+// Systematic answer (tells we are listening test actually).
 
 $shopinstance = null;
 $payhandler = new shop_paymode_test($shopinstance);

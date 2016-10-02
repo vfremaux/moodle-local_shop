@@ -23,9 +23,9 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
- // TODO : check if still useful.
- 
+
+// TODO : check if still useful.
+
 defined('MOODLE_INTERNAL') || die();
 
 if ($cmd == 'updatecatalog') {
@@ -63,7 +63,11 @@ if ($cmd == 'deletecatalog') {
     include($CFG->dirroot.'/classes/Catalog.class.php');
     $thecatalog = new Catalog($catalogid);
     if ($thecatalog->ismaster) {
-        $catalogids = $DB->get_records_select_menu('local_shop_catalog', " groupid = ? AND id != groupid ", array($catalogid), '', 'id,id');
+        $select = "
+            groupid = ? AND
+            id != groupid
+        ";
+        $catalogids = $DB->get_records_select_menu('local_shop_catalog', $select, array($catalogid), '', 'id,id');
         $catalogidlist = implode("','", array_values($catalogids));
     }
     // Deletes products entries in candidate catalogs.

@@ -22,12 +22,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * Created on 22 sept. 2009
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
 $plugin = new StdClass();
 $plugin->version = 2013031900;
 $plugin->component = 'shoppaymodes_test';

@@ -25,8 +25,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 /**
-* A lib to provide stuff to simulate IPN from the shop itself
-*/
+ * A lib to provide stuff to simulate IPN from the shop itself
+ */
 
 function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
     global $CFG;
@@ -35,7 +35,7 @@ function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
 
     $sellerexpectedname = (empty($config->test)) ? $config->paypalsellername : $config->paypalsellertestname;
 
-    $txnid = substr($transid, 0,10);
+    $txnid = substr($transid, 0, 10);
     $url = $CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php';
 
     $custom = $id;

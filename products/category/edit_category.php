@@ -31,10 +31,10 @@ require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 use local_shop\Catalog;
 use local_shop\Category;
 
-// get the block reference and key context.
+// Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
-// get the block reference and key context
+// Get the block reference and key context.
 
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
 
@@ -52,7 +52,8 @@ $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('catalogue', 'local_shop'));
-$PAGE->navbar->add(format_string($thecatalog->name), new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+$viewurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts'));
+$PAGE->navbar->add(format_string($thecatalog->name), $viewurl);
 $PAGE->navbar->add(get_string('addcategory', 'local_shop'));
 
 $allcats = Category::get_instances(array('catalogid' => $thecatalog->id));
@@ -82,7 +83,8 @@ if ($categoryid) {
     $mform->set_data($formdata);
 }
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', array('id' => $theshop->id, 'view' => 'viewAllProducts')));
+    $params = array('id' => $theshop->id, 'view' => 'viewAllProducts');
+    redirect(new moodle_url('/local/shop/products/view.php', $params));
 }
 if ($data = $mform->get_data()) {
 
@@ -126,8 +128,10 @@ if ($data = $mform->get_data()) {
 
     // Process text fields from editors.
     $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-    $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'categorydescription', $data->id, array('subdirs' => true), $data->description);
-    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop', 'categorydescription', $data->id);
+    $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'categorydescription',
+                                                    $data->id, array('subdirs' => true), $data->description);
+    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
+                                            'categorydescription', $data->id);
 
     redirect(new moodle_url('/local/shop/products/category/view.php', array('id' => $theshop->id, 'view' => 'viewAllCategories')));
 }

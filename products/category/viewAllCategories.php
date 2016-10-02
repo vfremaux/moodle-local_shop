@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/products/category/viewAllCategories.controller.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
@@ -38,9 +38,16 @@ if ($action != '') {
    $controller->process($action);
 }
 
-$url = new moodle_url('/local/shop/products/category/view.php', array('id' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir));
+$params = array('id' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
+$url = new moodle_url('/local/shop/products/category/view.php', $params);
 
-$categoryCount = $DB->count_records_select('local_shop_catalogcategory', " catalogid = ? AND UPPER(name) NOT LIKE 'test%' ", array($thecatalog->id)); // eliminate tests
+// Eliminate tests.
+$select = "
+    catalogid = ? AND
+    UPPER(name) NOT LIKE 'test%'
+";
+$categoryCount = $DB->count_records_select('local_shop_catalogcategory', $select, array($thecatalog->id));
+
 
 $categories = Category::get_instances(array('catalogid' => $thecatalog->id, 'parentid' => 0), "$order $dir");
 
@@ -56,5 +63,7 @@ if (empty($categories)) {
 }
 
 $editurl = new moodle_url('/local/shop/products/category/edit_category.php', array('id' => $thecatalog->id));
-$catalogurl = new moodle_url('/local/shop/products/view.php', array('shopid' => $theshop->id, 'catalogid' => $thecatalog->id, 'view' => 'viewAllProducts'));
-echo '<div class="addlink"><a href="'.$editurl.'">'.$addcategorystr.'</a> - <a href="'.$catalogurl.'">'.$backtocatalogstr.'</a></div>';
+$params = array('shopid' => $theshop->id, 'catalogid' => $thecatalog->id, 'view' => 'viewAllProducts');
+$catalogurl = new moodle_url('/local/shop/products/view.php', $params);
+echo '<div class="addlink"><a href="'.$editurl.'">'.$addcategorystr.'</a> -';
+echo ' <a href="'.$catalogurl.'">'.$backtocatalogstr.'</a></div>';

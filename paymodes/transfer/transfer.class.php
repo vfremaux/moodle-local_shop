@@ -39,21 +39,21 @@ class shop_paymode_transfer extends shop_paymode {
         $config = get_config('local_shop');
 
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_transfer');
-        echo shop_compile_mail_template('print_procedure_text', array(
-            'SELLER' => $config->sellername,
-            'ADDRESS' => $config->sellerbillingaddress,
-            'ZIP' => $config->sellerbillingzip,
-            'CITY' => $config->sellerbillingcity,
-            'COUNTRY' => strtoupper($config->sellercountry),
-            'BANKING' => $config->banking,
-            'BANK_CODE' => $config->bankcode,
-            'BANK_OFFICE' => $config->bankoffice,
-            'BANK_ACCOUNT' => $config->bankaccount,
-            'ACCOUNT_KEY' =>  $config->bankaccountkey,
-            'IBAN' =>  $config->iban,
-            'BIC' =>  $config->bic,
-            'TVA_EUROPE' =>  $config->tvaeurope,
-            'PROC_ORDER' => $proc++  ), 'shoppaymodes_transfer');
+        $vars = array('SELLER' => $config->sellername,
+                      'ADDRESS' => $config->sellerbillingaddress,
+                      'ZIP' => $config->sellerbillingzip,
+                      'CITY' => $config->sellerbillingcity,
+                      'COUNTRY' => strtoupper($config->sellercountry),
+                      'BANKING' => $config->banking,
+                      'BANK_CODE' => $config->bankcode,
+                      'BANK_OFFICE' => $config->bankoffice,
+                      'BANK_ACCOUNT' => $config->bankaccount,
+                      'ACCOUNT_KEY' =>  $config->bankaccountkey,
+                      'IBAN' =>  $config->iban,
+                      'BIC' =>  $config->bic,
+                      'TVA_EUROPE' =>  $config->tvaeurope,
+                      'PROC_ORDER' => $proc++);
+        echo shop_compile_mail_template('print_procedure_text', $vars, 'shoppaymodes_transfer');
     }
 
     // Prints a payment porlet in an order form.
@@ -65,21 +65,21 @@ class shop_paymode_transfer extends shop_paymode {
         $config = get_config('local_shop');
 
         echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_transfer');
-        echo shop_compile_mail_template('print_procedure_text_invoice', array(
-            'SELLER' => $config->sellername,
-            'ADDRESS' => $config->sellerbillingaddress,
-            'ZIP' => $config->sellerbillingzip,
-            'CITY' => $config->sellerbillingcity,
-            'COUNTRY' => strtoupper($config->sellercountry),
-            'BANKING' => $config->banking,
-            'BANK_CODE' => $config->bankcode,
-            'BANK_OFFICE' => $config->bankoffice,
-            'BANK_ACCOUNT' => $config->bankaccount,
-            'ACCOUNT_KEY' =>  $config->bankaccountkey,
-            'IBAN' =>  $config->iban,
-            'BIC' =>  $config->bic,
-            'TVA_EUROPE' =>  $config->tvaeurope,
-            'PROC_ORDER' => $proc++), 'shoppaymodes_transfer');
+        $vars = array('SELLER' => $config->sellername,
+                      'ADDRESS' => $config->sellerbillingaddress,
+                      'ZIP' => $config->sellerbillingzip,
+                      'CITY' => $config->sellerbillingcity,
+                      'COUNTRY' => strtoupper($config->sellercountry),
+                      'BANKING' => $config->banking,
+                      'BANK_CODE' => $config->bankcode,
+                      'BANK_OFFICE' => $config->bankoffice,
+                      'BANK_ACCOUNT' => $config->bankaccount,
+                      'ACCOUNT_KEY' =>  $config->bankaccountkey,
+                      'IBAN' =>  $config->iban,
+                      'BIC' =>  $config->bic,
+                      'TVA_EUROPE' =>  $config->tvaeurope,
+                      'PROC_ORDER' => $proc++);
+        echo shop_compile_mail_template('print_procedure_text_invoice', $vars, 'shoppaymodes_transfer');
     }
 
     public function print_complete() {
@@ -88,7 +88,7 @@ class shop_paymode_transfer extends shop_paymode {
 
     // Processes a payment return.
     public function process() {
-        // Void
+        // Void.
     }
 
     // Processes a payment asynchronoous confirmation.
@@ -97,6 +97,6 @@ class shop_paymode_transfer extends shop_paymode {
     }
 
     // Provides global settings to add to shop settings when installed.
-    function settings(&$settings) {
+    public function settings(&$settings) {
     }
 }

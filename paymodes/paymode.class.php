@@ -62,22 +62,22 @@ abstract class shop_paymode {
     }
 
     // Prints a payment portlet in an order form.
-    abstract function print_payment_portlet(&$billdata);
+    public abstract function print_payment_portlet(&$billdata);
 
     // Prints a payment info on an invoice.
-    abstract function print_invoice_info(&$billdata = null);
+    public abstract function print_invoice_info(&$billdata = null);
 
     // Prints a message when transaction is complete.
-    abstract function print_complete();
+    public abstract function print_complete();
 
     // Processes a payment return.
-    abstract function process();
+    public abstract function process();
 
     // Processes a payment asynchronoous confirmation.
-    abstract function process_ipn();
+    public abstract function process_ipn();
 
     // Provides global settings to add to shop settings when installed.
-    abstract function settings(&$settings);
+    public abstract function settings(&$settings);
 
     // Provides global settings to add to shop settings when installed.
     public function add_instance_config($mform) {

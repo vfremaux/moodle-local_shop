@@ -28,16 +28,16 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 use \local_shop\Bill;
 
 /**
-* A generic class for making payment tests
-* not enabled in production.
-*/
+ * A generic class for making payment tests
+ * not enabled in production.
+ */
 class shop_paymode_test extends shop_paymode {
 
     public function __construct(&$shopblockinstance) {
         parent::__construct('test', $shopblockinstance, true, true);
     }
 
-    // prints a payment porlet in an order form
+    // Prints a payment porlet in an order form.
     public function print_payment_portlet(&$shoppingcart) {
 
         $shopurl = new moodle_url('/local/shop/front/view.php');
@@ -127,8 +127,7 @@ class shop_paymode_test extends shop_paymode {
                 shop_trace("[$transid]  Test Interactive : Payment Success");
                 return true; // Has payed.
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             shop_trace("[$transid]  Test Interactive : Transaction ID Error");
             echo $OUTPUT->notification(get_string('ipnerror', 'shoppaymodes_test'), 'error');
         }
@@ -167,8 +166,7 @@ class shop_paymode_test extends shop_paymode {
             $controller->process('produce', !$close);
 
             die;
-        }
-        catch(Exception $e) {
+        } catch(Exception $e) {
             shop_trace("[$transid]  Test IPN : Transaction ID Error");
             mtrace($OUTPUT->notification(get_string('ipnerror', 'shoppaymodes_test'), 'error'));
         }

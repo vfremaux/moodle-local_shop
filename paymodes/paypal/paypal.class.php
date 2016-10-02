@@ -54,8 +54,8 @@ class shop_paymode_paypal extends shop_paymode {
             $paymentinfo = $shoppingcart->customerinfo;
         }
 
-        $paypalsupportedlangs = array ('AU','AT','BE','BR','CA','CH','CN','DE','ES','GB',
-                                       'FR','IT','NL','PL','PT','RU','US');
+        $paypalsupportedlangs = array ('AU', 'AT', 'BE', 'BR', 'CA', 'CH', 'CN', 'DE', 'ES', 'GB',
+                                       'FR', 'IT', 'NL', 'PL', 'PT', 'RU', 'US');
 
         echo '<div id="shop-panel-caption">';
         echo shop_compile_mail_template('door_transfer_text', array(), 'shoppaymodes_paypal');
@@ -248,7 +248,8 @@ class shop_paymode_paypal extends shop_paymode {
         if ($rawresponse) {
             if ($rawresponse == 'VERIFIED') {
                 if ($data->payment_status != "Completed" and $data->payment_status != "Pending") {
-                    shop_email_paypal_error_to_admin("Paypal IPN : Status not completed nor pending. Check transaction with customer.", $data);
+                    $error = "Paypal IPN : Status not completed nor pending. Check transaction with customer.";
+                    shop_email_paypal_error_to_admin($error, $data);
 
                     if (!empty($this->_config->test)) {
                         mtrace("Paypal IPN : Status not completed nor pending. Check transaction with customer.");
@@ -257,13 +258,18 @@ class shop_paymode_paypal extends shop_paymode {
                     }
                     die;
                 }
-                $sellerexpectedname = (empty($this->_config->test)) ? $this->_config->paypalsellername : $this->_config->paypalsellertestname;
+                $prod = $this->_config->paypalsellername;
+                $test = $this->_config->paypalsellertestname;
+                $sellerexpectedname = (empty($this->_config->test)) ? $prod : $test;
                 if ($data->business != $sellerexpectedname) {   // Check that the business account is the one we want it to be.
-                    shop_email_paypal_error_to_admin("Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)", $data);
+                    $error = "Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)";
+                    shop_email_paypal_error_to_admin($error, $data);
                     if (!empty($this->_config->test)) {
                         mtrace("Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)");
                     } else {
-                        shop_trace("[$transid] Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)");
+                        $message = "[$transid] Paypal IPN :";
+                        $message .= " Business email is $data->business (not $this->_config->paypalsellername)";
+                        shop_trace($message);
                     }
                     die;
                 }

@@ -21,7 +21,6 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
@@ -29,7 +28,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 use local_shop\Catalog;
 
-// get the block reference and key context.
+// Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
@@ -48,7 +47,8 @@ $url = new moodle_url('/local/shop/products/category/view.php', array('shopid' =
 $PAGE->set_url($url);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php', array('shopid' => $theshop->id)));
+$viewurl = new moodle_url('/local/shop/index.php', array('shopid' => $theshop->id));
+$PAGE->navbar->add(get_string('salesservice', 'local_shop'), $viewurl);
 $PAGE->navbar->add(get_string('category', 'local_shop'));
 
 $renderer = shop_get_renderer('products');
@@ -56,9 +56,8 @@ $renderer->load_context($theshop, $thecatalog, $theblock);
 
 echo $OUTPUT->header();
 
-// make page content
-include $CFG->dirroot."/local/shop/products/category/$view.php";
+// Make page content.
+require($CFG->dirroot."/local/shop/products/category/{$view}.php");
 
-// make footer
 echo '<br/>';
 echo $OUTPUT->footer();

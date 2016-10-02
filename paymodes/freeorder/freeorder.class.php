@@ -30,43 +30,43 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
  */
 class shop_paymode_freeorder extends shop_paymode {
 
-    function __construct(&$shop) {
+    public function __construct(&$shop) {
         // NOT ENABLED AS NOT SELECTABLE METHOD!
         parent::__construct('card', $shop, false);
     }
 
     // Prints a payment porlet in an order form.
-    function print_payment_portlet(&$billdata) {
+    public function print_payment_portlet(&$billdata) {
         // No portlet.
     }
 
     // Prints a payment porlet in an order form.
-    function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info(&$billdata = null) {
     }
 
-    function print_complete() {
+    public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
     // Processes a payment return.
-    function process() {
+    public function process() {
     }
 
     // Processes a payment asynchronoous confirmation.
-    function process_ipn() {
+    public function process_ipn() {
     }
 
     // Provides global settings to add to shop settings when installed.
-    function has_config() {
+    public function has_config() {
         return false;
     }
 
     // Provides global settings to add to shop settings when installed.
-    function is_interactive() {
+    public function is_interactive() {
         return false;
     }
 
     // Provides global settings to add to shop settings when installed.
-    function settings(&$settings) {
+    public function settings(&$settings) {
     }
 }

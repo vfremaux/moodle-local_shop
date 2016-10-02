@@ -30,7 +30,7 @@ class category_controller {
     public function process($cmd) {
         global $DB;
 
-        //Delete a category
+        // Delete a category.
         if ($cmd == 'delete') {
             $categoryids = required_param_array('categoryids', PARAM_INT);
             $categoryidlist = implode("','", $categoryids);
