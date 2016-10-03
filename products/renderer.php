@@ -208,9 +208,9 @@ class shop_products_renderer {
                     $str .= get_string('oneseat', 'local_shop');
                     break;
 
-                  case SHOP_QUANT_AS_SEATS:
-                     $str .= get_string('yes');
-                     break;
+                case SHOP_QUANT_AS_SEATS:
+                    $str .= get_string('yes');
+                    break;
             }
 
             $str .= '</td>';
@@ -641,7 +641,7 @@ class shop_products_renderer {
         $params = array('view' => 'viewAllCategories', 'catalogid' => $this->thecatalog->id);
         $catlinkurl = new moodle_url('/local/shop/products/category/view.php', $params);
         $str .= '<a href="'.$catlinkurl.'">'.get_string('edit_categories', 'local_shop').'</a> - ';
-        if (Category::count(array('catalogid'=> $thecatalog->id))) {
+        if (Category::count(array('catalogid' => $thecatalog->id))) {
             $params = array('id' => $this->theshop->id, 'categoryid' => $categoryid);
             $producturl = new moodle_url('/local/shop/products/edit_product.php', $params);
             $str .= '<a href="'.$producturl.'">'.get_string('newproduct', 'local_shop').'</a> - ';
@@ -752,7 +752,7 @@ class shop_products_renderer {
 
         $row = array();
 
-        $class = ($category->visible) ? 'shop-shadow'  : '';
+        $class = ($category->visible) ? 'shop-shadow' : '';
         $row[] = $indent.'<span class="'.$class.'">'.$category->name.'</span>';
 
         $contextid = context_system::instance()->id;
