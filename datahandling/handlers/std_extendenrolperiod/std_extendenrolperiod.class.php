@@ -144,7 +144,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         if (!isset($data->actionparams['coursename'])) {
             $errors[$data->code][] = get_string('errornocourse', 'shophandlers_std_extendenrolperiod');
         } else {
-            if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+            if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
                 $cn = $data->actionparams['coursename'];
                 $err = get_string('errorextcoursenotexists', 'shophandlers_std_extendenrolperiod', $cn);
                 $errors[$data->code][] = $err;

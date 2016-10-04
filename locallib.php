@@ -388,7 +388,7 @@ function shop_switch_style($reset = 0) {
 function shop_open_trace() {
     global $CFG;
 
-    if (is_null($CFG->merchanttrace)) {
+    if (empty($CFG->merchanttrace)) {
         $CFG->merchanttrace = fopen($CFG->dataroot.'/merchant_trace.log', 'a');
     }
     return !is_null($CFG->merchanttrace);
@@ -400,7 +400,7 @@ function shop_open_trace() {
 function shop_close_trace() {
     global $CFG;
 
-    if (!is_null($CFG->merchanttrace)) {
+    if (!empty($CFG->merchanttrace)) {
         @fclose($CFG->merchanttrace);
         $CFG->merchanttrace = null;
     }
@@ -413,7 +413,7 @@ function shop_close_trace() {
 function shop_trace_open($str) {
     global $CFG;
 
-    if (!is_null($CFG->merchanttrace)) {
+    if (!empty($CFG->merchanttrace)) {
         $date = new DateTime();
         $u = microtime(true);
         $u = sprintf('%03d', floor(($u - floor($u)) * 1000)); // Millisecond.
@@ -427,7 +427,7 @@ function shop_trace_open($str) {
 function shop_trace($str) {
     global $CFG;
 
-    if (!is_null($CFG->merchanttrace)) {
+    if (!empty($CFG->merchanttrace)) {
         shop_trace_open($str);
     } else {
         if (shop_open_trace()) {
@@ -459,7 +459,7 @@ function shop_calculate_taxed($htprice, $taxid) {
     $in['ht'] = $htprice;
     $in['tr'] = $taxcache[$taxid]->ratio;
     require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
-    $result = evaluate($taxcache[$taxid]->formula.';', $in, 'ttc');
+    $result = evaluate(\core_text::strtolower($taxcache[$taxid]->formula).';', $in, 'ttc');
     return $result['ttc'];
 }
 
@@ -496,7 +496,7 @@ function shop_get_supported_currencies() {
  * @returns three object refs if they are buildable, null for other.
  */
 function shop_build_context() {
-    global $SESSION;
+    global $SESSION, $DB;
 
     $theshop = new Shop(null);
 

@@ -49,7 +49,7 @@ class BillItem extends ShopObject {
 
     protected $customerdata;
 
-    protected $actionparams; // Parameters decoded from handler params.
+    public $actionparams; // Parameters decoded from handler params.
 
     public function __construct($idorrec, &$bill = null, $ordering = -1) {
         global $DB;

@@ -101,7 +101,7 @@ class Set extends ShopObject {
         $in['ht'] = $this->get_price($q);
         $in['tr'] = $taxcache[$taxid]->ratio;
         require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
-        $result = evaluate($taxcache[$taxid]->formula.';', $in, 'ttc');
+        $result = evaluate(\core_text::strtolower($taxcache[$taxid]->formula).';', $in, 'ttc');
         return $result['ttc'];
     }
 }

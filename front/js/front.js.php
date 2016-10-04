@@ -88,6 +88,14 @@ function showcategory(catid, allids) {
 var required = '<?php echo $required; ?>';
 var assigned = '<?php echo $assigned; ?>';
 
+function ajax_waiter(wwwroot) {
+    return '<div class="ajax-waiter">'+
+                  '<center>'+
+                  '<img src="'+wwwroot+'/local/shop/pix/loading29.gif" />'+
+                  '<center>'+
+                  '</div>';
+}
+
 function ajax_add_user(wwwroot, formobj) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
 
@@ -495,11 +503,11 @@ function local_toggle_invoiceinfo(check) {
 
 function check_pass_code(wwwroot, productname, textinput, event) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/ajaxloader.gif" />';
-    ajax_success = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/valid.png" />';
-    ajax_failure = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/invalid.png" />';
+    ajax_waiter_img = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/ajaxloader.gif" />';
+    ajax_success_img = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/valid.png" />';
+    ajax_failure_img = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/invalid.png" />';
 
-    $('#ci-pass-status-'+productname).html(ajax_waiter);
+    $('#ci-pass-status-'+productname).html(ajax_waiter_img);
 
     var input = textinput.value + event.key;
 
@@ -515,18 +523,10 @@ function check_pass_code(wwwroot, productname, textinput, event) {
             dataobj = JSON.parse(data);
             if (dataobj.status == 'passed') {
                 $('#ci-'+productname).attr('disabled', null);
-                $('#ci-pass-status-'+productname).html(ajax_success);
+                $('#ci-pass-status-'+productname).html(ajax_success_img);
             } else {
-                $('#ci-pass-status-'+productname).html(ajax_failure);
+                $('#ci-pass-status-'+productname).html(ajax_failure_img);
             }
         }
     );
-}
-
-function ajax_waiter(wwwroot) {
-    return '<div class="ajax-waiter">'+
-                  '<center>'+
-                  '<img src="'+wwwroot+'/local/shop/pix/loading29.gif" />'+
-                  '<center>'+
-                  '</div>';
 }

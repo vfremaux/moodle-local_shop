@@ -64,9 +64,10 @@ class Tax_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    public function validation($data) {
+    public function validation($data, $files = array()) {
 
-        $errors = array();
+        $errors = parent::validation($data, $files);
+
         if (empty($data['title'])) {
             $errors['title'] = get_string('erroremptytaxtitle', 'local_shop');
         }
@@ -74,5 +75,7 @@ class Tax_Form extends moodleform {
         if (empty($data['formula'])) {
             $errors['title'] = get_string('erroremptytaxformula', 'local_shop');
         }
+
+        return $errors;
     }
 }

@@ -72,7 +72,7 @@ class unittests_controller {
             $warnings = array();
 
             $this->thecatalog->get_all_products_for_admin($products);
-            $this->theshop->thecatalog = $this->thecatalog;
+            $this->theshop->thecatalogue = $this->thecatalog;
             produce_unittests($this->theshop, $products, $this->data->selected, $errors, $warnings, $messages);
             return array($errors, $warnings, $messages);
         }

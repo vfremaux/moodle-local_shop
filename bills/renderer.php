@@ -25,6 +25,10 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+
+use local_shop\Tax;
+
 /**
  *
  */
@@ -599,7 +603,7 @@ class shop_bills_renderer {
             $params = array('id' => $this->theshop->id, 'billid' => $billitem->bill->id, 'billitemid' => $billitem->id);
             $linkurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
             $pixurl = $OUTPUT->pix_url('i/edit');
-            $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'"></a>';
+            $str .= '&nbsp;<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'"></a>';
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
                             'what' => 'deleteItem',
@@ -608,7 +612,7 @@ class shop_bills_renderer {
                             'billid' => $billitem->bill->id);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
             $pixurl = $OUTPUT->pix_url('t/delete');
-            $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" alt="'.get_string('delete').'"></a>';
+            $str .= '&nbsp;<a href="'.$linkurl.'"><img src="'.$pixurl.'" alt="'.get_string('delete').'"></a>';
         }
         $str .= '</td>';
         $str .= '</tr>';
@@ -1507,7 +1511,7 @@ class shop_bills_renderer {
             $str .= '</tr>';
 
             foreach ($taxlines as $tcode => $tamount) {
-                $tax = $DB->get_record('local_shop_tax', array('id' => $tcode));
+                $tax = new Tax($tcode);
                 $str .= '<tr class="shop-tax" valign="top">';
                 $str .= '<td align="left" class="cell c0">';
                 $str .= $tax->title;
@@ -1828,15 +1832,15 @@ class shop_bills_renderer {
         return $str;
     }
 
-    public function lettering_form($shopid, $afullbillid) {
+    public function lettering_form($shopid, &$afullbill) {
         $str = '';
 
         $str .= '<form name="billletteringform" action="" method="post" >';
         $str .= '<input type="hidden" name="view" value="viewBill" />';
         $str .= '<input type="hidden" name="shopid" value="'.$shopid.'" />';
-        $str .= '<input type="hidden" name="billid" value="'.$afullbillid.'" />';
+        $str .= '<input type="hidden" name="billid" value="'.$afullbill->id.'" />';
         $str .= '<input type="hidden" name="what" value="reclettering" />';
-        $str .= '<input type="text" name="idnumber" value="<?php echo $afullbill->idnumber ?>" />';
+        $str .= '<input type="text" name="idnumber" value="'.$afullbill->idnumber.'" />';
         $str .= '<input type="submit" name="go_lettering" value="'.get_string('updatelettering', 'local_shop').'" />';
         $str .= '</form>';
 

@@ -291,7 +291,7 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 
         case 'endtime':
             if (!array_key_exists('endtime', $handlerdata->actionparams)) {
-                if (!empty($data->renewable)) {
+                if (!empty($handlerdata->renewable)) {
                     if (!empty($handlerdata->actionparams['duration'])) {
                         return $starttime + $handlerdata->actionparams['duration'] * DAYSECS;
                     } else {
@@ -337,7 +337,7 @@ function shop_generate_product_ref(&$anitem) {
     $productref = substr(base64_encode($crypto), 0, 8);
 
     // Continue hashing till we get a real new one.
-    while ($existing = $DB->record_exists('local_shop_product', array('reference' => $productref))) {
+    while ($DB->record_exists('local_shop_product', array('reference' => $productref))) {
         $productref = substr(base64_encode(md5($productref)), 0, 8);
     }
 

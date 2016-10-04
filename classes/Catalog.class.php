@@ -128,7 +128,7 @@ class Catalog extends ShopObject {
         }
 
         // Get all master categories.
-        $mastercategories = array();
+        $mastercats = array();
         if ($this->isslave) {
             $select = " catalogid = ? AND visible = ? ";
             $params = array($this->groupid, $visible);
@@ -287,7 +287,7 @@ class Catalog extends ShopObject {
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
                             $ci1->masterrecord = 1;
-                            $ci->setElement($ci1);
+                            $ci->set_element($ci1);
                         }
                     }
 
@@ -312,7 +312,7 @@ class Catalog extends ShopObject {
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
                             $ci1->masterrecord = 0;
-                            $ci->setElement($ci1);
+                            $ci->set_element($ci1);
                         }
                     }
                     $shopproducts[$ci->code]->set = $ci;
@@ -421,7 +421,7 @@ class Catalog extends ShopObject {
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
                             $ci1->masterrecord = 1;
-                            $ci->setElement($ci1);
+                            $ci->set_element($ci1);
                             $elementcodes[$cirec->code] = $cirec->id;
                         }
                     }
@@ -444,10 +444,10 @@ class Catalog extends ShopObject {
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
                             $ci1->masterrecord = 0;
-                            $ci->setElement($ci1);
+                            $ci->set_element($ci1);
                             // Remove master version of this product.
                             if ($this->isslave) {
-                                $ci->deleteElement($elementcodes[$cirec->code]);
+                                $ci->delete_element($elementcodes[$cirec->code]);
                             }
                         }
                     }
@@ -532,8 +532,10 @@ class Catalog extends ShopObject {
             $shoppingcart = $SESSION->shoppingcart;
         }
 
+        $c = $shoppingcart->customerinfo->country;
+
         $message = "[{$shoppingcart->transid}] shop Shipping Calculation for ";
-        $message .= "[$shoppingcart->customerinfo->country][$shoppingcart->customerinfo->zipcode]";
+        $message .= "[{$c}][$shoppingcart->customerinfo->zipcode]";
         shop_trace($message);
 
         if (!$shipzones = $DB->get_records('local_shop_catalogshipzone', array('catalogid' => $this->id))) {
@@ -551,7 +553,6 @@ class Catalog extends ShopObject {
             return $v || $w;
         }
         $applicable = null;
-        $c = $shoppingcart->customerinfo->country;
         $zip = $shoppingcart->customerinfo->zipcode;
         foreach ($shipzones as $z) {
             if ($z->zonecode == '00') {
@@ -579,7 +580,7 @@ class Catalog extends ShopObject {
                     break;
                 }
                 // In spite of shipzones found in the way, none applicable.
-                shop_trace("[{$transactionid}] No shipzone applicable for [$country][$zipcode]");
+                shop_trace("[{$transactionid}] No shipzone applicable for [$c][$zip]");
                 $return->value = 0;
                 return $return;
             }
@@ -616,7 +617,7 @@ class Catalog extends ShopObject {
                             $in['ht'] = $shippedproduct->price1;
                             $in['ttc'] = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
                             $in['q'] = $order[$shippedproduct->shortname];
-                            $result = evaluate($sh->formula.';', $in, 'shp');
+                            $result = evaluate(\core_text::strtolower($sh->formula).';', $in, 'shp');
                             $return->value += 0 + @$result['shp'];
                         } else {
                             $return->value += 0;
@@ -766,7 +767,7 @@ class Catalog extends ShopObject {
         }
 
         $restricted = array();
-        if (!empty($restrictedcpountries)) {
+        if (!empty($restrictedcountries)) {
             foreach ($restrictedcountries as $rc) {
                 // Blind ignore unkown codes...
                 $cc = strtoupper($rc);
@@ -784,7 +785,6 @@ class Catalog extends ShopObject {
     }
 
     public static function get_instances_for_admin() {
-        global $DB;
 
         if ($instances = self::get_instances()) {
             foreach ($instances as $c) {

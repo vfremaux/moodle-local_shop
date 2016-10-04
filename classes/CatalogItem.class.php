@@ -28,6 +28,7 @@ namespace local_shop;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
+require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
 
 /**
  * CatalogItem object is provided for direct Object Mapping of the _catalogitem database model
@@ -73,7 +74,7 @@ class CatalogItem extends ShopObject {
                 $catalog = new Catalog($this->catalogid, true);
                 if (!empty($this->elements)) {
                     foreach ($this->elements as $elmid => $elm) {
-                        $this->elements[$elm->id]->catalog = $catalog;
+                        $this->elements[$elmid]->catalog = $catalog;
                         $this->elementsbycode[$elm->code] = $elm;
                     }
                 }
@@ -200,6 +201,10 @@ class CatalogItem extends ShopObject {
             $taxid = $this->taxcode;
         }
 
+        if ($taxid == 0) {
+            return $this->get_price($q);
+        }
+
         if (!isset($taxcache)) {
             $taxcache = array();
         }
@@ -216,7 +221,7 @@ class CatalogItem extends ShopObject {
 
         $in['ht'] = $this->get_price($q);
         $in['tr'] = $taxcache[$taxid]->ratio;
-        $result = evaluate($taxcache[$taxid]->formula.';', $in, 'ttc');
+        $result = evaluate(\core_text::strtolower($taxcache[$taxid]->formula).';', $in, 'ttc');
         $this->tax = $result['ttc'] - $in['ht'];
         return $result['ttc'];
     }
@@ -413,7 +418,7 @@ class CatalogItem extends ShopObject {
         $context = \context_system::instance();
 
         $fs = get_file_storage();
-        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id, $ignoredirs = true)) {
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id, /* $ignoredirs */ true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
             $leafletfile = array_pop($files);
             $url = \moodle_url::make_pluginfile_url($leafletfile->get_contextid(), $leafletfile->get_component(),

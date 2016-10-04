@@ -67,7 +67,10 @@ class shop_shop_renderer {
                 $commands .= ' <a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'"></a>';
             }
 
-            $table->data[] = array(format_string($sh->name),
+            $shopurl = new moodle_url('/local/shop/front/view.php', array('shopid' => $sh->id));
+            $shoplink = '<a href="'.$shopurl.'">'.format_string($sh->name).'</a>';
+
+            $table->data[] = array($shoplink,
                                    format_text($sh->description, $sh->descriptionformat),
                                    $sh->get_currency('symbol'), $catname,
                                    $blockcount,

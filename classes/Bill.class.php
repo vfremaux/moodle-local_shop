@@ -305,7 +305,8 @@ class Bill extends ShopObject {
     public function check_discount() {
         global $DB;
 
-        $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, '');
+        $reason = '';
+        $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, $reason);
 
         // Trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches.
         if ($discountrate) {

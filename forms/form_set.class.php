@@ -31,14 +31,14 @@ require_once($CFG->dirroot.'/local/shop/forms/form_catalogitem.class.php');
 
 use local_shop\Tax;
 
-class Set_Form extends catalogitemform {
+class Set_Form extends CatalogItem_Form {
 
-    protected $attributesshort;
+    public function __construct($action, $data) {
+        parent::__construct($action, $data);
+    }
 
     public function definition() {
         global $OUTPUT;
-
-        $this->attributesshort = 'size="30" maxlength="200"';
 
         // Setting variables.
         $mform =& $this->_form;

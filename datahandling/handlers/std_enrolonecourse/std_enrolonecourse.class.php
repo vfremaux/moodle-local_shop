@@ -78,7 +78,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * Pre pay information always comme from shopping session.
      */
     public function produce_prepay(&$data) {
-        global $CFG, $DB, $USER;
+        global $DB, $USER;
 
         $productionfeedback = new StdClass();
 
@@ -303,7 +303,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         if (!isset($data->actionparams['coursename'])) {
             $warnings[$data->code][] = get_string('errornocourse', 'shophandlers_std_enrolonecourse');
         } else {
-            if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+            if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
                 $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['coursename']);
                 $errors[$data->code][] = $fb;
             }
@@ -314,7 +314,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $data->actionparams['role'] = 'student';
         }
 
-        if (!$role = $DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
+        if (!$DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
             $errors[$data->code][] = get_string('errorrole', 'shophandlers_std_enrolonecourse', $data->actionparams['role']);
         }
 

@@ -68,7 +68,7 @@ $catalog = new Catalog($catalogid);
 $formdata = $catalog->record;
 $formdata->catalogid = $catalog->id;
 $formdata->id = $theshop->id;
-$formdata->blockid = $theblock->instance->id;
+$formdata->blockid = 0 + @$theblock->instance->id;
 $mform->set_data($formdata);
 
 if ($mform->is_cancelled()) {
@@ -104,7 +104,7 @@ if ($data = $mform->get_data()) {
                  * get all slaves but not me
                  * TODO : may have further side effects, but we'll see later.
                  */
-                 $select = "
+                $select = "
                     groupid = ? AND
                     groupid != id
                 ";

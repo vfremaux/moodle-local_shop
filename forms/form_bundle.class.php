@@ -32,7 +32,11 @@ require_once($CFG->dirroot.'/local/shop/forms/form_catalogitem.class.php');
 
 use local_shop\Tax;
 
-class Bundle_Form extends catalogitemform {
+class Bundle_Form extends CatalogItem_Form {
+
+    public function __construct($action, $data) {
+        parent::__construct($action, $data);
+    }
 
     public function definition() {
         global $OUTPUT;

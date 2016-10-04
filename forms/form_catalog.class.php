@@ -32,7 +32,7 @@ require_once($CFG->libdir.'/formslib.php');
 
 class Catalog_Form extends moodleform {
 
-    protected $editoroptions;
+    public $editoroptions;
 
     public function definition() {
         global $OUTPUT, $DB, $COURSE;

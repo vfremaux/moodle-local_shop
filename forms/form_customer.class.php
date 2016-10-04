@@ -90,7 +90,7 @@ class Customer_Form extends moodleform {
     public function validation($data, $files = array()) {
         global $DB;
 
-        $errors = array();
+        $errors = parent::validation($data, $files);
 
         if ($DB->record_exists('local_shop_customer', array('email' => $data['email']))) {
             $errors['email'] = get_string('erroremailexists', 'local_shop');

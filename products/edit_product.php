@@ -56,13 +56,13 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $mform = new Product_Form('', array('what' => 'edit', 'catalog' => $thecatalog));
+    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
     $itemrec = $item->record;
     $itemrec->itemid = $itemid;
     $mform->set_data($itemrec);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Product_Form('', array('what' => 'add', 'catalog' => $thecatalog));
+    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
     $itemrec = $item->record;
     $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($itemrec);

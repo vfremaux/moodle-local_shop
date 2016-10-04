@@ -33,7 +33,7 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
 class Shop_Form extends moodleform {
 
-    protected $editoroptions;
+    public $editoroptions;
 
     public function definition() {
         global $DB;

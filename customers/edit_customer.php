@@ -56,7 +56,7 @@ $PAGE->navbar->add(get_string('editcustomer', 'local_shop'));
 if ($customerid) {
     $customer = new Customer($customerid);
     $mform = new Customer_Form('', array('what' => 'edit'));
-    $mform->set_data($customer);
+    $mform->set_data($customer->record);
 } else {
     $customer = new Customer(null);
     $mform = new Customer_Form('', array('what' => 'add'));

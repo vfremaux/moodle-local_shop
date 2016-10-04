@@ -205,7 +205,7 @@ class production_controller extends front_controller_base {
                         'view' => 'bill',
                         'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
-        $customerbillviewurl = new moodle_url('/local/shop/front/view.php', $params);
+        $customerbillviewurl = new \moodle_url('/local/shop/front/view.php', $params);
 
         $seller = new \StdClass;
         $seller->id = $DB->get_field('user', 'id', array('username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id));
@@ -262,7 +262,7 @@ class production_controller extends front_controller_base {
                         'view' => 'viewBill',
                         'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
-        $administratorviewurl = new moodle_url('/local/shop/bills/view.php', $params);;
+        $administratorviewurl = new \moodle_url('/local/shop/bills/view.php', $params);;
         if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
             $title = $SITE->shortname.' : '.get_string('orderconfirm', 'local_shop');
             if (!empty($productiondata->private)) {

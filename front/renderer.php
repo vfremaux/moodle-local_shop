@@ -22,6 +22,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+
 use local_shop\Category;
 use local_shop\Catalog;
 use local_shop\Tax;
@@ -625,6 +627,7 @@ class shop_front_renderer {
     }
 
     public function product_bundle(&$bundle) {
+        global $CFG;
 
         $str = '';
 
@@ -696,7 +699,7 @@ class shop_front_renderer {
             $str .= '<div id="ci-pass-status-'.$bundle->shortname.'" class="shop-pass-state"></div>';
             $disabled = 'disabled="disabled"';
         }
-        $jshanlder = 'ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+        $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
         $jshandler .= ', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')';
         $str .= '<input type="button"
                         id="ci-'.$bundle->shortname.'"
@@ -715,7 +718,7 @@ class shop_front_renderer {
     }
 
     public function units(&$product) {
-        global $SESSION, $OUTPUT;
+        global $SESSION, $OUTPUT, $CFG;
 
         $this->check_context();
 
@@ -744,7 +747,7 @@ class shop_front_renderer {
             return;
         }
 
-        $shoppingcart = $SESSION->shoppingcart;
+        $shoppingcart = @$SESSION->shoppingcart;
 
         $str = '';
 
@@ -881,7 +884,7 @@ class shop_front_renderer {
             $email = $USER->email;
 
             // Get potential ZIP code information from an eventual customer record.
-            if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id))) {
+            if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id, 'email' => $email))) {
                 $zip = $haszip ? $shoppingcart->customerinfo['zip'] : $customer->zip;
                 $organisation = $hasorg ? $shoppingcart->customerinfo['organisation'] : $customer->organisation;
                 $address = $hasaddress ? $shoppingcart->customerinfo['address'] : $customer->address;
@@ -1719,7 +1722,7 @@ class shop_front_renderer {
 
         $config = get_config('local_shop');
 
-        $shoppingcart = $SESSION->shoppingcart;
+        $shoppingcart = @$SESSION->shoppingcart;
 
         if (!is_null($bill)) {
             $taxedtotal = $bill->ordertaxed;

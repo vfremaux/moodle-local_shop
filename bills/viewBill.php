@@ -95,7 +95,7 @@ if ($afullbill->status == 'PENDING' || $afullbill->status == 'PLACED' || $afullb
     if (!empty($letteringfeedback)) {
         echo $letteringfeedback;
     }
-    echo $renderer->lettering_form($theshop->id, $afullbill->id);
+    echo $renderer->lettering_form($theshop->id, $afullbill);
     echo '<br/>';
 }
 echo '<b>'.get_string('paymodes', 'local_shop').': </b>';

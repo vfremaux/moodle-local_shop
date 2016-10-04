@@ -175,7 +175,7 @@ class Product extends ShopObject {
                 p.catalogitemid = ci.id AND
                 p.initialbillitemid = ibi.id
                 '.$filterclause.'
-            $orderclause
+            '.$orderclause.'
         ';
 
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);

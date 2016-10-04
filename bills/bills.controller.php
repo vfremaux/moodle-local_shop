@@ -92,7 +92,7 @@ class bills_controller {
 
         if ($cmd == 'recalculate') {
             $billid = required_param('billid', PARAM_INT);
-            $bill = new Bill($billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill = new Bill($billid, $null, $null, $null, false); // Get a lightweight version.
             $bill->recalculate();
         }
 

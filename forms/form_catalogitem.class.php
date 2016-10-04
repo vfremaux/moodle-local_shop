@@ -31,18 +31,18 @@ require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Tax;
 
-abstract class catalogitemform extends moodleform {
+abstract class CatalogItem_Form extends moodleform {
 
     /*
      * Attributes for several widgets.
      */
+    public $editoroptions;
     protected $defaultattributes;
-    protected $editoroptions;
     protected $attributesshort;
     protected $attributeslong;
     protected $fpickerattributes;
 
-    public function __construct() {
+    public function __construct($action, $data) {
         global $COURSE;
 
         $maxfiles = 99;                // TODO: add some settings.
@@ -59,6 +59,7 @@ abstract class catalogitemform extends moodleform {
         $this->attributeslong = 'size="60" maxlength="255"';
         $this->fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
         $this->attributesdescription = 'cols="50" rows="8"';
+        parent::__construct($action, $data);
     }
 
     protected function add_standard_name_elements() {
@@ -351,5 +352,13 @@ abstract class catalogitemform extends moodleform {
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
                                                  'catalogitemnotes', @$defaults->id);
         $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftideditor);
+    }
+
+    public function set_data($defaults) {
+        parent::set_data($defaults);
+    }
+
+    public function is_cancelled() {
+        parent::is_cancelled();
     }
 }

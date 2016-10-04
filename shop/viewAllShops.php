@@ -42,7 +42,7 @@ if ($action != '') {
     $controller->process($action);
 }
 
-array('view' => 'viewAllShops', 'id' => $id, 'dir' => $dir, 'order' => $sortorder);
+$params = array('view' => 'viewAllShops', 'id' => $id, 'dir' => $dir, 'order' => $sortorder);
 $url = new moodle_url('/local/shop/shop/view.php', $params);
 $mainrenderer->currency_choice($cur, $url);
 
