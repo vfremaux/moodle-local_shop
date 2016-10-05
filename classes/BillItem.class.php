@@ -107,7 +107,7 @@ class BillItem extends ShopObject {
              * first creation of a record
              * itemcode is NOT a legacy record field, but comes from shopping front
              */
-            $this->record = new StdClass;
+            $this->record = new \StdClass;
             $this->record->type = $idorrec->type;
 
             if ($idorrec->type != 'BILLING') {

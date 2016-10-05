@@ -23,6 +23,7 @@
  */
 
 require('../../../config.php');
+require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
@@ -62,6 +63,7 @@ $PAGE->set_pagelayout('admin');
 $out = $OUTPUT->header();
 
 $renderer = shop_get_renderer('products');
+
 $renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Make page content.

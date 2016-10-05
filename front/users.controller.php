@@ -30,7 +30,7 @@ class users_controller extends front_controller_base {
 
     public function process($cmd) {
         if ($cmd == 'navigate') {
-            if ($back = optional_param('back', '', PARAM_TEXT)) {
+            if (optional_param('back', '', PARAM_TEXT)) {
                 $prev = $this->theshop->get_prev_step('users');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,

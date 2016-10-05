@@ -64,7 +64,7 @@ class purchasereq_controller extends front_controller_base {
             }
         } else if ($cmd == 'navigate') {
             // Comming from further form.
-            if ($back = optional_param('back', false, PARAM_BOOL)) {
+            if (optional_param('back', false, PARAM_BOOL)) {
                 $prev = $this->theshop->get_prev_step('purchaserequ');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,

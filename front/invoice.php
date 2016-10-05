@@ -117,7 +117,7 @@ echo $renderer->printable_bill_link($afullbill);
 // If testing the shop, provide a manual link to generate the paypal_ipn call.
 if ($config->test && $afullbill->paymode == 'paypal') {
     require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
-    paypal_print_test_ipn_link($afullbill->id, $transid, $id, $pinned);
+    paypal_print_test_ipn_link($transid, $theshop->id);
 }
 
 echo $OUTPUT->box_end();

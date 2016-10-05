@@ -152,9 +152,7 @@ class product_controller {
 
         /* ***** searches and filters the product list ***** */
         if ($cmd == 'search') {
-            $error = false;
-
-            $results = CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
+            return CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
         }
     }
 }

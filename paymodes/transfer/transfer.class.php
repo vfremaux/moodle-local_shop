@@ -33,7 +33,7 @@ class shop_paymode_transfer extends shop_paymode {
 
     // Prints a payment porlet in an order form.
     public function print_payment_portlet(&$billdata) {
-        global $CFG;
+
         $proc = 1;
 
         $config = get_config('local_shop');
@@ -58,7 +58,6 @@ class shop_paymode_transfer extends shop_paymode {
 
     // Prints a payment porlet in an order form.
     public function print_invoice_info(&$billdata = null) {
-        global $CFG;
 
         $proc = 1;
 

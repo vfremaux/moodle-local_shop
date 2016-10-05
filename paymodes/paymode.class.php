@@ -73,18 +73,22 @@ abstract class shop_paymode {
     // Processes a payment return.
     public abstract function process();
 
-    // Processes a payment asynchronoous confirmation.
+    /**
+     * Processes a payment asynchronoous confirmation.
+     */
     public abstract function process_ipn();
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Provides global settings to add to shop settings when installed.
+     */
     public abstract function settings(&$settings);
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Provides global settings to add to shop settings when installed.
+     */
     public function add_instance_config($mform) {
-        global $CFG;
 
         $isenabledvar = "enable".$this->get_name();
-        $enabled = @$this->theshop->$isenabledvar;
 
         $group[] = &$mform->createElement('checkbox', $isenabledvar);
         $group[] = &$mform->createElement('radio', 'defaultpaymode', '', '', $this->get_name());
@@ -136,6 +140,7 @@ abstract class shop_paymode {
      * @return the paymode plugin instance that fits the transaction
      */
     public static function resolve_transaction_identification(&$transid, &$cmd, &$paymode) {
+        global $DB;
 
         $plugins = self::shop_get_plugins(null);
         $transid = '';

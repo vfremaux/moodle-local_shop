@@ -74,6 +74,8 @@ class shop_controller extends front_controller_base {
                 $shoppingcart->taxes[$ci->taxcode] += $ttc - $ht;
             }
 
+            $reason = '';
+
             $discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->untaxedtotal, $this->context,
                                                                             $reason);
             if ($discountrate) {

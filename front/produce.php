@@ -134,5 +134,5 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
 // If testing the shop, provide a manual link to generate the paypal_ipn call.
 if ($config->test && $afullbill->paymode == 'paypal') {
     require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
-    paypal_print_test_ipn_link($afullbill->id, $SESSION->shoppingcart->transid, $theshop->id);
+    paypal_print_test_ipn_link($SESSION->shoppingcart->transid, $theshop->id);
 }

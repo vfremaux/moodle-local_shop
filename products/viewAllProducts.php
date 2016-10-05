@@ -63,7 +63,7 @@ echo $renderer->catalog_header();
 
 $params = array('view' => 'viewAllProducts', 'id' => $theshop->id, 'catalogid' => $thecatalog->id);
 $viewurl = new moodle_url('/local/shop/products/view.php', $params);
-echo $renderer->category_chooser($viewurl, $thecatalog);
+echo $renderer->category_chooser($viewurl);
 
 echo $OUTPUT->heading(get_string('products', 'local_shop'));
 

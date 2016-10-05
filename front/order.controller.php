@@ -37,7 +37,7 @@ class order_controller extends front_controller_base {
         $config = get_config('local_shop');
 
         if ($cmd == 'navigate') {
-            if ($back = optional_param('back', false, PARAM_BOOL)) {
+            if (optional_param('back', false, PARAM_BOOL)) {
                 $prev = $this->theshop->get_prev_step('order');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,
@@ -50,7 +50,7 @@ class order_controller extends front_controller_base {
                 $shoppingcart->paymode = required_param('paymode', PARAM_TEXT);
 
                 $items = 0;
-                foreach ($shoppingcart->order as $shortname => $quant) {
+                foreach (array_values($shoppingcart->order) as $quant) {
                     $items += $quant;
                 }
 

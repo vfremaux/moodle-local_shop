@@ -103,7 +103,7 @@ function shop_resolve_zone_rule($country, $zipcode, $rule) {
  * @param object $theshop the current shop.
  */
 function shop_validate_customer($theshop) {
-    global $SESSION, $DB, $CFG, $USER;
+    global $SESSION, $CFG, $USER;
 
     $shoppingcart = $SESSION->shoppingcart;
 
@@ -157,11 +157,11 @@ function shop_validate_customer($theshop) {
 }
 
 /**
- * Checks if the customer as a potential acocunt match.
+ * Checks if the customer as a potential account match.
  * @param string $email
  * @return boolean
  */
-function shop_has_potential_account($email) {
+function shop_has_potential_account() {
     global $DB, $SESSION;
 
     $shoppingcart = $SESSION->shoppingcart;
@@ -171,7 +171,7 @@ function shop_has_potential_account($email) {
         return true;
     }
 
-    if ($potentialuser = $DB->get_record('user', array('email' => $shoppingcart->customerinfo['email']))) {
+    if ($DB->record_exists('user', array('email' => $shoppingcart->customerinfo['email']))) {
         return true;
     }
 
@@ -238,8 +238,8 @@ function shop_check_assigned_seats($requiredroles) {
     }
 
     if ($requiredroles && !empty($SESSION->shoppingcart->users)) {
-        foreach ($SESSION->shoppingcart->users as $product => $roleassigns) {
-            foreach ($roleassigns as $role => $participants) {
+        foreach (array_values($SESSION->shoppingcart->users) as $roleassigns) {
+            foreach (array_values($roleassigns) as $participants) {
                 $assigned += count($participants);
             }
         }
@@ -283,6 +283,9 @@ function shop_get_payment_plugin(&$shopinstance, $pluginname = null) {
 function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 
     $starttime = (empty($handlerdata->actionparams['starttime'])) ? time() : $handlerdata->actionparams['starttime'];
+    if ($course->startdate > $starttime) {
+        $starttime = $course->startdate;
+    }
 
     switch ($fieldtoreturn) {
         case 'starttime':

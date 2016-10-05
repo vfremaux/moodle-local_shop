@@ -90,7 +90,7 @@ class shop_products_renderer {
     }
 
     public function product_admin_line($product, $return = false) {
-        global $OUTPUT, $CFG;
+        global $OUTPUT;
 
         $this->_check_context();
 
@@ -429,14 +429,7 @@ class shop_products_renderer {
         if (count($bundle->elements) == 0) {
             $str .= $OUTPUT->notification(get_string('noproductinbundle', 'local_shop'));
         } else {
-            $codestr = get_string('code', 'local_shop');
-            $namestr = get_string('name', 'local_shop');
-            $pricestr = get_string('price', 'local_shop');
-            $ttcstr = get_string('TTC', 'local_shop');
-            $availabilitystr = get_string('availability', 'local_shop');
-
             $str .= $this->bundle_admin_elements($bundle);
-
         }
         $str .= '</td>';
         $str .= '</tr>';
@@ -675,7 +668,7 @@ class shop_products_renderer {
         return $str;
     }
 
-    public function category_chooser($url, $thecatalog) {
+    public function category_chooser($url) {
         global $OUTPUT, $SESSION;
 
         // In case it was not done before, but it might.

@@ -114,7 +114,6 @@ class shop_paymode_paypal extends shop_paymode {
      * Cancels the order and return to shop
      */
     public function cancel() {
-        global $SESSION;
 
         $transid = required_param('transid', PARAM_RAW);
 
@@ -167,7 +166,7 @@ class shop_paymode_paypal extends shop_paymode {
         // Get all input parms.
         $transid = required_param('invoice', PARAM_TEXT);
         // Get the shopid. Not sure its needed any more.
-        list($instanceid) = required_param('custom', PARAM_TEXT);
+        list($shopid) = required_param('custom', PARAM_TEXT);
 
         if (empty($transid)) {
             shop_trace("[ERROR] Paypal IPN : Empty Transaction ID");
@@ -176,6 +175,12 @@ class shop_paymode_paypal extends shop_paymode {
 
         if (!$afullbill = Bill::get_by_transaction($transid)) {
             shop_trace("[$transid] Paypal IPN ERROR : No such order");
+            die;
+        }
+
+        // Integrity check : the bill must belong to the shop wich is returned as info in custom Paypal data.
+        if ($afullbill->shopid != $shopid) {
+            shop_trace("[$transid] Paypal IPN ERROR : Paypal returned info do not match the bill's shop.");
             die;
         }
 

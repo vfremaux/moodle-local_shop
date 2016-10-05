@@ -100,6 +100,7 @@ class BillItem_Form extends moodleform {
 
         $mform->addElement('text', 'itemcode', get_string('code', 'local_shop'), $this->attributesshort);
         $mform->setType('itemcode', PARAM_INT);
+        $mform->addRule('itemcode');
 
         $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop'), $this->editoroptions);
         $mform->setType('abstract', PARAM_CLEANHTML);

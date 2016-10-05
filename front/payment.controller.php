@@ -29,8 +29,8 @@ require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
-Use local_shop\Bill;
-Use local_shop\BillItem;
+use local_shop\Bill;
+use local_shop\BillItem;
 
 class payment_controller extends front_controller_base {
 
@@ -129,14 +129,14 @@ class payment_controller extends front_controller_base {
              * This is the first generation of the DB bill. All further step should rely on this
              * information and not shoppingcart anymore.
              */
-            $billid = $bill->save();
+            $bill->save();
 
             shop_trace("[{$bill->transactionid}] ".'Order placed : '.$bill->amount.' for '.$totalitems.' objects');
         }
 
         // This is for interactive payment methods.
         if ($cmd == 'navigate') {
-            if ($back = optional_param('back', false, PARAM_BOOL)) {
+            if (optional_param('back', false, PARAM_BOOL)) {
                 $prev = $this->theshop->get_prev_step('payment');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,
@@ -158,7 +158,7 @@ class payment_controller extends front_controller_base {
 
                 $afullbill = Bill::get_by_transaction($SESSION->shoppingcart->transid);
                 $paymentplugin = \shop_paymode::get_instance($this->theshop, $afullbill->paymode);
-                if ($interactivepayment = $paymentplugin->process($afullbill)) {
+                if ($paymentplugin->process($afullbill)) {
                     $next = $this->theshop->get_next_step('payment');
                     $params = array('view' => $next,
                                     'shopid' => $this->theshop->id,
@@ -169,7 +169,9 @@ class payment_controller extends front_controller_base {
                     if (empty($SESSION->shoppingcart->debug)) {
                         redirect($url);
                     } else {
+                        echo $OUTPUT->header();
                         echo $OUTPUT->continue_button($url);
+                        echo $OUTPUT->footer();
                         die;
                     }
                 } else {
@@ -183,7 +185,9 @@ class payment_controller extends front_controller_base {
                     if (empty($SESSION->shoppingcart->debug)) {
                         redirect($url);
                     } else {
+                        echo $OUTPUT->header();
                         echo $OUTPUT->continue_button($url);
+                        echo $OUTPUT->footer();
                         die;
                     }
                 }

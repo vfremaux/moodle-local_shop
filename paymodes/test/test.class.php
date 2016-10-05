@@ -153,8 +153,9 @@ class shop_paymode_test extends shop_paymode {
 
             $ipncall = true;
             $cmd = 'produce';
-            $returnstatus = include($CFG->dirroot.'/local/shop/front/produce.controller.php');
-            $controller = new \local_shop\front\production_controller($afullbill, true, true);
+            include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
+            $controller = new \local_shop\front\production_controller($afullbill, $ipncall, true);
+            $controller->process($cmd);
 
             mtrace("[$transid]  Test IPN : Payment Success, transferring to production controller");
             shop_trace("[$transid]  Test IPN : Payment Success, transferring to production controller");
@@ -174,5 +175,6 @@ class shop_paymode_test extends shop_paymode {
 
     // Provides global settings to add to shop settings when installed.
     public function settings(&$settings) {
+        return false;
     }
 }

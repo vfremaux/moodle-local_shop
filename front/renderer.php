@@ -92,7 +92,6 @@ class shop_front_renderer {
 
         $str .= '<div id="progress">';
         $str .= '<center>';
-        $lang = current_language();
 
         $steps = explode(',', $this->theshop->navsteps);
 
@@ -359,15 +358,6 @@ class shop_front_renderer {
 
         $str = '';
 
-        $catidsarr = array();
-        foreach ($categories as $cat) {
-            if (empty($selected)) {
-                $selected = $cat->id;
-            }
-            $catidsarr[] = $cat->id;
-        }
-        $catids = implode(',', $catidsarr);
-
         $rows[0] = array();
         foreach ($categories as $cat) {
             $params = array('view' => 'shop',
@@ -402,9 +392,8 @@ class shop_front_renderer {
      * @param array $catgories the full product line extractred from Catalog
      */
     public function catalog(&$categories) {
-        global $OUTPUT;
+        global $OUTPUT, $SESSION;
 
-        $config = get_config('local_shop');
         $this->check_context();
 
         if (empty($categories)) {
@@ -660,7 +649,6 @@ class shop_front_renderer {
         $str .= '<div class="shop-front-refblock">';
         $str .= '<div class="shop-front-ref">'.get_string('ref', 'local_shop').' : '.$bundle->code.'</div>';
 
-        $ttcprice = 0;
         foreach ($bundle->elements as $element) {
             $element->check_availability();
             $element->noorder = true; // Bundle can only be purchased as a group.
@@ -900,15 +888,6 @@ class shop_front_renderer {
             $email = @$shoppingcart->customerinfo['email'];
         }
 
-        $lastnameclass = '';
-        $firstnameclass = '';
-        $organisationclass = '';
-        $countryclass = '';
-        $addressclass = '';
-        $cityclass = '';
-        $zipclass = '';
-        $mailclass = '';
-
         if (!empty($shoppingcart->errors->customerinfo)) {
             foreach (array_keys($shoppingcart->errors->customerinfo) as $f) {
                 $f = str_replace('customerinfo::', '', $f);
@@ -925,7 +904,6 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$lastnameclass.'"
                         name="customerinfo::lastname"
                         size="20"
                         onchange="setupper(this)" value="'. $lastname.'" />';
@@ -938,7 +916,6 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$firstnameclass.'"
                         name="customerinfo::firstname"
                         size="20"
                         onchange="capitalizewords(this)" value="'.$firstname.'" />';
@@ -1551,7 +1528,7 @@ class shop_front_renderer {
 
         if (!empty($SESSION->shoppingcart->order)) {
             $str .= '<table width="100%">';
-            foreach ($SESSION->shoppingcart->order as $itemname => $itemcount) {
+            foreach (array_keys($SESSION->shoppingcart->order) as $itemname) {
                 $product = $this->thecatalog->get_product_by_shortname($itemname);
                 $str .= '<tr>';
                 $str .= '<td class="short-order-name">';
@@ -1582,7 +1559,6 @@ class shop_front_renderer {
             $str .= get_string('adminoptions', 'local_shop');
             $disableall = get_string('disableallmode', 'local_shop');
             $enableall = get_string('enableallmode', 'local_shop');
-            $intancesettingsstr = get_string('instancesettings', 'local_shop');
             $toproductbackofficestr = get_string('gotobackoffice', 'local_shop');
 
             if (!empty($SESSION->shopseeall)) {
@@ -1681,7 +1657,7 @@ class shop_front_renderer {
      * Prints an order line
      * @param objectref $billitem the billitem
      */
-    public function bill_line($billitem) {
+    public function bill_line($billitem, $options = null) {
 
         $str = '';
 
@@ -1689,11 +1665,11 @@ class shop_front_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td width="60%" align="left" class="c0">';
         $str .= $billitem->abstract;
-        $str .= '<div class="shop-bill-abstract">';
         if (!empty($options['description'])) {
+            $str .= '<div class="shop-bill-abstract">';
             $str .= $billitem->description;
+            $str .= '</div>';
         }
-        $str .= '</div>';
         $str .= '</td>';
         $str .= '<td width="20%" align="left" class="c1">';
         $str .= $billitem->itemcode;
@@ -1724,6 +1700,8 @@ class shop_front_renderer {
 
         $shoppingcart = @$SESSION->shoppingcart;
 
+        $reason = '';
+
         if (!is_null($bill)) {
             $taxedtotal = $bill->ordertaxed;
             $finaltaxedtotal = $bill->finaltaxedtotal;
@@ -1736,9 +1714,6 @@ class shop_front_renderer {
             $taxedtotal = $shoppingcart->taxedtotal;
             $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
             $discount = $shoppingcart->discount;
-
-            $sessionfinaltaxedtotal = $shoppingcart->finaltaxedtotal;
-            $sessionfinaluntaxedtotal = $shoppingcart->finaluntaxedtotal;
 
             if ($discountrate) {
                 $finaltaxedtotal = $taxedtotal * (1 - ($discountrate / 100));
@@ -1968,7 +1943,7 @@ class shop_front_renderer {
             foreach ($paymodes as $var) {
                 $isenabledvar = "enable$var";
 
-                $paymodeplugin = shop_paymode::get_instance($theblock, $var);
+                $paymodeplugin = shop_paymode::get_instance($this->theshop, $var);
 
                 // User must be allowed to use non immediate payment methods.
                 if (!$paymodeplugin->is_instant_payment()) {
@@ -2061,6 +2036,8 @@ class shop_front_renderer {
             }
         }
 
+        $reason = '';
+
         $discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->taxedtotal,
                                                                         $this->context, $reason);
         if ($discountrate) {
@@ -2098,7 +2075,6 @@ class shop_front_renderer {
     }
 
     public function field_start($legend, $class) {
-        global $OUTPUT;
 
         $str = '';
         $str .= '<fieldset class="'.$class."\">\n";
@@ -2327,7 +2303,7 @@ class shop_front_renderer {
                                         foreach ($options as $optkey => $optvalue) {
                                             $isselected = $optkey == @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
                                             $selected = ($isselected) ? 'selected' : '';
-                                            $str .= '<option name="'.$optkey.'">'.$optvalue.'</option>';
+                                            $str .= '<option name="'.$optkey.'" '.$selected.'>'.$optvalue.'</option>';
                                         }
                                     }
                                     $str .= '</select>';

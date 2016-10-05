@@ -28,19 +28,19 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
  * A lib to provide stuff to simulate IPN from the shop itself
  */
 
-function paypal_print_test_ipn_link($afullbillid, $transid, $id) {
-    global $CFG;
+function paypal_print_test_ipn_link($transid, $shopid) {
 
     $config = get_config('local_shop');
 
     $sellerexpectedname = (empty($config->test)) ? $config->paypalsellername : $config->paypalsellertestname;
 
     $txnid = substr($transid, 0, 10);
-    $url = $CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php';
+    $url = new moodle_url('/local/shop/paymodes/paypal/paypal_ipn.php');
 
-    $custom = $id;
+    $custom = $shopid;
 
-    $testipnstr = get_string('ipnfortest', 'shoppaymodes_paypal', null);
+    $testipnstr = get_string('ipnfortest', 'shoppaymodes_paypal');
+
     echo '<form action="'.$url.'" name="ipnsimulate" method="POST" >';
     echo '<input type="hidden" name="invoice" value="'.$transid.'" />';
     echo '<input type="hidden" name="custom" value="'.$custom.'" />';

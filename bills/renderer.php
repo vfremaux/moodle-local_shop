@@ -1488,7 +1488,7 @@ class shop_bills_renderer {
      * @param object $bill
      */
     public function full_bill_taxes($bill) {
-        global $DB, $OUTPUT;
+        global $OUTPUT;
 
         $str = '';
 

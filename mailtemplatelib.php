@@ -56,7 +56,7 @@ function shop_compile_mail_template($template, $infomap, $subplugin, $lang = '',
  * @param lang if default language must be overriden
  * @return string the template's content or false if no template file is available
  */
-function shop_get_mail_template($virtual, $lang, $subplugin = '', $transactionid = '') {
+function shop_get_mail_template($virtual, $lang, $subplugin = '') {
     global $CFG;
 
     if ($lang == '') {
