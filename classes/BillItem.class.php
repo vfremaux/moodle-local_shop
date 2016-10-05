@@ -97,20 +97,17 @@ class BillItem extends ShopObject {
                 throw new \Exception('A bill is expected to build a new BillItem');
             }
 
-            // Try whenever possible drive ordering from outside without DB calls....
             if ($ordering == -1) {
-                if ($maxordering = $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $bill->id))) {
-                    $this->ordering = $maxordering->ordering + 1;
-                } else {
-                    $this->ordering = 1;
-                }
+                $this->ordering = BillItem::last_ordering($bill->id);
             } else {
                 $this->ordering = $ordering;
             }
+
             /*
              * first creation of a record
              * itemcode is NOT a legacy record field, but comes from shopping front
              */
+            $this->record = new StdClass;
             $this->record->type = $idorrec->type;
 
             if ($idorrec->type != 'BILLING') {
@@ -224,6 +221,12 @@ class BillItem extends ShopObject {
         }
 
         parent::delete();
+    }
+
+    public static function last_ordering($billid) {
+        global $DB;
+
+        return $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $billid));
     }
 
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

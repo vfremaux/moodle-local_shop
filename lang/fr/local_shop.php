@@ -87,7 +87,6 @@ $string['billsdeleted'] = 'Factures/commandes effacées';
 $string['billsearch'] = 'Factures : Recherche';
 $string['billseq'] = 'Numero d\'ordre';
 $string['billspending'] = 'Factures : En cours';
-$string['billtitle'] = 'Titre de la facture';
 $string['billtotal'] = 'Total Facture';
 $string['blancktransactioncode'] = 'Le code de transaction n\'a jamais été <br>généré (factures manuelles)';
 $string['bundle'] = 'Assemblage';

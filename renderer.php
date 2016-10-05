@@ -36,6 +36,39 @@ use local_shop\Shop;
  */
 class local_shop_renderer extends plugin_renderer_base {
 
+    // Context references.
+    protected $theblock;
+
+    protected $theshop;
+
+    protected $thecatalog;
+
+    /**
+     * Loads the renderer with contextual objects. Most of the renderer function need
+     * at least a shop instance.
+     */
+    public function load_context(&$theshop, &$theblock = null) {
+
+        $this->theshop = $theshop;
+        $this->thecatalog = new Catalog($this->theshop->catalogid);
+        $this->theblock = $theblock;
+
+        if (!empty($this->theblock->instance->id)) {
+            $this->context = context_block::instance($this->theblock->instance->id);
+            $this->theblock->id = $this->theblock->instance->id;
+        } else {
+            $this->context = context_system::instance();
+            $this->theblock = new Stdclass();
+            $this->theblock->id = 0;
+        }
+    }
+
+    public function check_context() {
+        if (empty($this->theshop) || empty($this->thecatalog)) {
+            throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');
+        }
+    }
+
     /**
      * prints an owner menu and changes currently viewed owner if required
      */
@@ -313,6 +346,44 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '</table>';
+
+        return $str;
+    }
+
+    public function back_buttons() {
+        global $OUTPUT;
+
+        $str = '';
+
+        $options['id'] = $this->theshop->id;
+        $label = get_string('backtoshopadmin', 'local_shop');
+        $str .= $OUTPUT->single_button(new moodle_url('/local/shop/index.php', $options), $label, 'get');
+        $options['view'] = 'shop';
+        $label = get_string('backtoshop', 'local_shop');
+        $str .=  $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
+
+        return $str;
+    }
+
+    public function transaction_chooser() {
+        global $DB;
+
+        $transids = $DB->get_records('local_shop_bill', null, 'id', 'transactionid, amount');
+        $scanstr = get_string('scantrace', 'local_shop');
+
+        $str = '';
+
+        $str .= '<form name="transidform" method="POST" >';
+        print_string('picktransactionid', 'local_shop');
+        $str .= '<select name="transid" />';
+
+        foreach ($transids as $trans) {
+            $str .= '<option value="'.$trans->transactionid.'" >'.$trans->transactionid.' ('.$trans->amount.')</option>';
+        }
+
+        $str .= '</select>';
+        $str .= '<input type="submit" name="g_btn" value="'.$scanstr.'" />';
+        $str .= '</form>';
 
         return $str;
     }

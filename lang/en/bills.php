@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addbill'] = 'Add bill';
+$string['addbillitem'] = 'Add a bill item';
 $string['abstract'] = 'Abstract';
 $string['actualstate'] = 'Current state';
 $string['allowingtax'] = 'allowing tax';
@@ -38,11 +39,12 @@ $string['bill_WORKINGs'] = 'Bill working';
 $string['bill_assignation'] = 'bill assignation';
 $string['billstates'] = 'Bill states';
 $string['billtaxes'] = 'Total taxes:';
-$string['billtitle'] = 'Title';
+$string['billtitle'] = 'Title:&ensp;';
 $string['choosecustomer'] = 'Choose a customer';
 $string['chooseuser'] = 'Choose an user';
 $string['customer_account'] = 'the bill assignation to a customer account';
 $string['deadline'] = 'Deadline';
+$string['editbillitem'] = 'Edit bill item';
 $string['expectedpaiement'] = 'Expected date for payment';
 $string['exportasxls'] = 'Export as XLS';
 $string['generateacode'] = 'Generate a code';
@@ -56,18 +58,19 @@ $string['noletteringaspending'] = 'This is a pending order. <br/>Only a bill can
 $string['paiedamount'] = 'Paied amount';
 $string['paimentcode'] = 'Bill code:';
 $string['paymodes'] = 'Paymode';
+$string['biquantity'] = 'Quantity:&ensp;';
 $string['searchtimerange'] = 'Probable period for the transaction';
 $string['seethecustomerdetail'] = 'See customer details';
 $string['status'] = 'Status';
-$string['timetodo'] = 'Date to complete:';
-$string['totalTTC'] = 'Total tax included:';
-$string['totaltex'] = 'Total wt taxes:';
+$string['timetodo'] = 'Date to complete:&ensp;';
+$string['totalTTC'] = 'Total tax included:&ensp;';
+$string['totaltex'] = 'Total wt taxes:&ensp;';
 $string['totalti'] = 'Total:';
 $string['transaction'] = 'Transaction';
-$string['uniqueletteringfailure'] = '<a href="{$a}">Another bill</a> uses already this lettering code. ';
+$string['uniqueletteringfailure'] = '<a href="{$a}">Another bill</a> uses already this lettering code.';
 $string['unittex'] = 'Unit wt taxes:';
 $string['updatelettering'] = 'Update';
-$string['pickuser'] = 'Choose a customer account or an user account';
+$string['pickuser'] = 'Choose a customer account or an user account:&ensp;';
 $string['worktype'] = 'Worktype';
 
 $string['formula_creation_help'] = '

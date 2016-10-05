@@ -15,11 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addbill'] = 'Ajouter une facture';
+$string['addbillitem'] = 'Ajouter un élément de facture';
 $string['actualstate'] = 'Etat actuel';
 $string['allowingtax'] = 'l\'activation de la taxe';
 $string['assignedto'] = 'Assignée à ';
 $string['backto'] = 'Revenir à l\'état';
 $string['bill'] = 'Facture&nbsp;:&ensp;';
+$string['billtitle'] = 'Titre de la facture&nbsp;:&ensp;';
 $string['bill_ALLs'] = 'Toutes';
 $string['bill_CANCELLEDs'] = 'Factures annulées';
 $string['bill_PLACEDs'] = 'Factures placées';
@@ -38,6 +40,7 @@ $string['billstates'] = 'Etats de facture';
 $string['chooseuser'] = 'Choisir un utilisateur';
 $string['choosecustomer'] = 'Choisir un compte client';
 $string['customer_account'] = 'l\'assignation d\'une facture à un compte client';
+$string['editbillitem'] = 'Modifier un élément de facture';
 $string['exportasxls'] = 'Exporter en XLS';
 $string['generateacode'] = 'Générer un code';
 $string['goto'] = 'Aller à l\'état';
@@ -48,21 +51,22 @@ $string['nobills'] = 'Aucune facture dans cette catégorie.';
 $string['nocodegenerated'] = 'Le code de transaction n\'a jamais été <br>généré (factures manuelles):';
 $string['noletteringaspending'] = 'Ceci n\'est pas une facture. <br/>Seule une facture peut être lettrée.';
 $string['or'] = 'ou ';
-$string['paimentcode'] = 'Code réglement :';
+$string['paimentcode'] = 'Code réglement&nbsp;:&ensp;';
 $string['providetransactioncode'] = 'Fournir ce code dans toute communication à propos de votre achat';
 $string['seethecustomerdetail'] = 'Voir le compte client';
-$string['timetodo'] = 'Délai de réalisation :';
-$string['totalTTC'] = 'Total TTC :';
-$string['totaltex'] = 'Total hors taxes :';
-$string['totalti'] = 'Total produits :';
-$string['billtaxes'] = 'Total taxes :';
+$string['biquantity'] = 'Quantité&nbsp;:&ensp;';
+$string['timetodo'] = 'Délai de réalisation&nbsp;:&ensp;';
+$string['totalTTC'] = 'Total TTC&nbsp;:&ensp;';
+$string['totaltex'] = 'Total hors taxes&nbsp;:&ensp;';
+$string['totalti'] = 'Total produits&nbsp;:&ensp;';
+$string['billtaxes'] = 'Total taxes&nbsp;:&ensp;';
 $string['transaction'] = 'Transaction';
 $string['transactioncode'] = 'Code de transaction';
 $string['searchtimerange'] = 'La période probable de la transaction';
-$string['uniqueletteringfailure'] = '<a href="{$a}">Une autre facture</a> porte déjà ce lettrage. ';
-$string['unittex'] = 'Unitaire hors taxes :';
+$string['uniqueletteringfailure'] = '<a href="{$a}">Une autre facture</a> porte déjà ce lettrage.';
+$string['unittex'] = 'Unitaire hors taxes&nbsp;:&ensp;';
 $string['updatelettering'] = 'Mettre à jour';
-$string['pickuser'] = 'Choisissez un compte client ou un compte utilisateur';
+$string['pickuser'] = 'Choisissez un compte client ou un compte utilisateur&nbsp;:&ensp;';
 
 $string['help_userid_help'] = '
 # L\'association d\'un code client Ã une facture

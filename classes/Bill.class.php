@@ -205,7 +205,7 @@ class Bill extends ShopObject {
             $this->record->amount = 0;
             $this->record->currency = '';
             $this->record->convertedamount = 0;
-            $this->record->transactionid = '__'.md5(time()); // Randomize a temporary TID.
+            $this->record->transactionid = $this->generate_unique_transaction(); // Randomize a temporary TID.
             $this->record->onlinetransactionid = '';
             $this->record->expectedpaiement = 0;
             $this->record->paiedamount = 0;
@@ -217,32 +217,24 @@ class Bill extends ShopObject {
 
             $this->items = array();
 
-            $this->dirty = false;
+            $this->dirty = true;
 
-            $this->save(); // We need absolutely a DB Id for all following operations.
         }
     }
 
-    public function last_ordering() {
+    public static function last_ordering($shopid) {
         global $DB;
 
-        return $DB->get_field('local_shop_bill', 'MAX(ordering)', array());
+        return $DB->get_field('local_shop_bill', 'MAX(ordering)', array('shopid' => $shopid));
     }
 
     public function generate_unique_transaction() {
         global $DB, $CFG;
 
         // Seek for a unique transaction ID.
-        if ($CFG->dbtype == 'mysqli') {
-            $transid = strtoupper(substr(mysqli_real_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 32));
-            while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
-                $transid = strtoupper(substr(mysqli_real_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 40));
-            }
-        } else if ($CFG->dbtype == 'postgresql') {
-            $transid = strtoupper(substr(pg_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 32));
-            while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
-                $transid = strtoupper(substr(pg_escape_string(base64_encode(crypt(microtime() + rand(0, 32)))), 0, 40));
-            }
+        $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32))), 0, 32));
+        while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
+            $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32))), 0, 40));
         }
         $this->transactionid = $transid;
     }
@@ -304,6 +296,10 @@ class Bill extends ShopObject {
 
     public function check_discount() {
         global $DB;
+
+        if (empty($this->items)) {
+            return;
+        }
 
         $reason = '';
         $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, $reason);

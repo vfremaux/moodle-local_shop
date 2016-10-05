@@ -99,7 +99,7 @@ class shop_export_excel extends shop_export {
             }
 
             $text = get_string('export'.$col['name'], 'local_shop');
-            $this->worksheets[0]->write_string(0, $i, $text, $this->xls_formats[$this->datadesc[0]['colheadingformat']]);
+            $this->worksheets[0]->write_string(0, $i, $text, $this->xlsformats[$this->datadesc[0]['colheadingformat']]);
             $i++;
         }
     }
@@ -147,9 +147,9 @@ class shop_export_excel extends shop_export {
                     }
                 }
                 if ($isnumber) {
-                    $this->worksheets[0]->write_number($row, $i, $dataarr[$col['name']], $this->xls_formats[$col['format']]);
+                    $this->worksheets[0]->write_number($row, $i, $dataarr[$col['name']], $this->xlsformats[$col['format']]);
                 } else {
-                    $this->worksheets[0]->write_string($row, $i, $dataarr[$col['name']], $this->xls_formats[$col['format']]);
+                    $this->worksheets[0]->write_string($row, $i, $dataarr[$col['name']], $this->xlsformats[$col['format']]);
                 }
                 $i++;
             }

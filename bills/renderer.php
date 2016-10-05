@@ -1581,7 +1581,7 @@ class shop_bills_renderer {
         $str .= $portlet->title;
         $str .= '</td>';
         $str .= '<td width="120" class="cell c3">';
-        $params = array('transid' => $portlet->transactionid, 'id' => $this->theshop->id);
+        $params = array('transid' => $portlet->transactionid, 'shopid' => $this->theshop->id);
         $scanurl = new moodle_url('/local/shop/front/scantrace.php', $params);
         $title = get_string('scantrace', 'local_shop');
         $str .= '<code><a href="'.$scanurl.'" title="'.$title.'">'.$portlet->transactionid.'</a></code>';

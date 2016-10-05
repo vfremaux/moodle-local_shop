@@ -92,7 +92,7 @@ class Bill_Form extends moodleform {
         // Set default for user select.
         $userarray = array();
         $label = get_string('customers', 'local_shop');
-        $userarray = &$mform->createElement('select', 'userid', $label, $fullnamecustoselect, $attributesjscustomer);
+        $userarray[] = &$mform->createElement('select', 'userid', $label, $fullnamecustoselect, $attributesjscustomer);
         $label = get_string('users');
         $userarray[] = &$mform->createElement('select', 'useraccountid', $label, $fullnameuserselect, $attributesjsuser);
         $orstr = get_string('or', 'local_shop');
@@ -109,7 +109,7 @@ class Bill_Form extends moodleform {
         $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
         $context = context_system::instance();
-        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', 'u.id,'.get_all_name_fields(true, 'u'));
+        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', 'u.id,'.get_all_user_name_fields(true, 'u'));
         $editoropt = array();
         if ($billeditors) {
             foreach ($billeditors as $billeditor) {

@@ -36,7 +36,6 @@ use \local_shop\Catalog;
 use \local_shop\Bill;
 
 // Get all the shop session context objects.
-
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $PAGE->requires->js('/local/shop/js/bills.js');
@@ -78,11 +77,16 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $renderer = shop_get_renderer('bills');
 $renderer->load_context($theshop, $thecatalog, $theblock);
 $mainrenderer = $PAGE->get_renderer('local_shop');
+$mainrenderer->load_context($theshop, $theblock);
 
 $out = $OUTPUT->header();
 
 // Make page content.
 
 require($CFG->dirroot."/local/shop/bills/{$view}.php");
+
+echo '<center>';
+echo $mainrenderer->back_buttons();
+echo '</center>';
 
 echo $OUTPUT->footer();

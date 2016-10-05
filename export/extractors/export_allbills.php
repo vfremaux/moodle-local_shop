@@ -30,7 +30,7 @@ class shop_export_source_allbills {
     public function get_data_description(&$params) {
         global $DB;
 
-        $catalogue = $DB->get_record('local_shop_catalog', array('id' => $params->config->catalogue));
+        $catalogue = $DB->get_record('local_shop_catalog', array('id' => $params->catalogid));
         $desc['filename'] = get_string('allbillsfile', 'local_shop', $catalogue->name);
         $desc['title'] = get_string('allbills', 'local_shop');
         $desc['colheadingformat'] = 'bold';
@@ -144,13 +144,13 @@ class shop_export_source_allbills {
                 bi.billid = b.id AND
                 b.customerid = c.id AND
                 ci.code = bi.itemcode AND
-                ci.catalogid = {$params->config->catalogue}
+                ci.catalogid = ?
             GROUP BY
                 b.id
             ORDER BY
                 b.ordering
         ";
-        $data = $DB->get_records_sql($sql);
+        $data = $DB->get_records_sql($sql, array($params->catalogid));
 
         return array($data);
     }
