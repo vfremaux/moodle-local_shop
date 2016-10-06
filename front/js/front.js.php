@@ -28,14 +28,14 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 header("Content-type: text/javascript");
 header("Cache-Control: No-cache");
 
-// get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get the block reference and key context.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $context = context_system::instance();
 $PAGE->set_context($context);
 
-$categories = $theCatalog->get_categories();
-$shopproducts = $theCatalog->get_all_products($categories);
+$categories = $thecatalog->get_categories();
+$shopproducts = $thecatalog->get_all_products($categories);
 
 $units = 0;
 if (isset($SESSION->shoppingcart->order)) {
@@ -44,10 +44,12 @@ if (isset($SESSION->shoppingcart->order)) {
     }
 }
 
-// calculates and updates the seat count
-$requiredroles = $theCatalog->check_required_roles();
-$required = $theCatalog->check_required_seats();
+// Calculates and updates the seat count.
+$requiredroles = $thecatalog->check_required_roles();
+$required = $thecatalog->check_required_seats();
 $assigned = shop_check_assigned_seats($requiredroles);
+$notassignedstr = str_replace("'", '\\\'', get_string('notallassigned', 'local_shop'));
+$myorderstr = str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'));
 ?>
 
 function openPopup(target) {
@@ -55,7 +57,8 @@ function openPopup(target) {
 }
 
 function openSalesPopup(wwwroot) {
-   win = window.open(wwwroot + "/local/shop/popup.php?p=sales", "sales", "width=600,height=600,toolbar=0,menubar=0,statusbar=0, resizable=1,scrollbars=1");
+winparams = "width=600,height=600,toolbar=0,menubar=0,statusbar=0, resizable=1,scrollbars=1";
+   win = window.open(wwwroot + "/local/shop/popup.php?p=sales", "sales", winparams);
 }
 
 function showcategory(catid, allids) {
@@ -68,7 +71,7 @@ function showcategory(catid, allids) {
         if (c == 0) {
             $(tohidetabid).addClass('first');
         }
-        
+
         if (c == allidsarr.length - 1) {
             $(tohidetabid).addClass('last');
         }
@@ -85,18 +88,25 @@ function showcategory(catid, allids) {
 var required = '<?php echo $required; ?>';
 var assigned = '<?php echo $assigned; ?>';
 
+function ajax_waiter(wwwroot) {
+    return '<div class="ajax-waiter">'+
+                  '<center>'+
+                  '<img src="'+wwwroot+'/local/shop/pix/loading29.gif" />'+
+                  '<center>'+
+                  '</div>';
+}
+
 function ajax_add_user(wwwroot, formobj) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /></center></div>';
 
-    // kind a very simple serialize/unserialize
+    // Kind a very simple serialize/unserialize.
     rolelist = '<?php echo implode(',', $requiredroles); ?>';
     roles = rolelist.split(',');
-    <?php if (isset($SESSION->shoppingcart->order)) { 
-        echo 'productlist = \''.implode(',', array_keys($SESSION->shoppingcart->order))."';\n";
-    } else {
-        echo "productlist = '';\n";
-    } ?>
+<?php if (isset($SESSION->shoppingcart->order)) {
+    echo 'productlist = \''.implode(',', array_keys($SESSION->shoppingcart->order))."';\n";
+} else {
+    echo "productlist = '';\n";
+} ?>
     products = productlist.split(',');
 
     pt = new Object();
@@ -104,19 +114,19 @@ function ajax_add_user(wwwroot, formobj) {
     pt.firstname = formobj.firstname.value;
     pt.email = formobj.email.value;
     pt.city = formobj.city.value;
-    <?php if (!empty($theShop->enduserorganisationrequired)) { ?>
-        pt.institution = formobj.institution.value;
-    <?php } 
-    if (!empty($theShop->endusermobilephonerequired)) { ?>
-        pt.phone2 = formobj.phone2.value;
-    <?php } ?>
-    
-    $('#participantlist').html(ajax_waiter);
-    
+<?php if (!empty($theshop->enduserorganisationrequired)) { ?>
+    pt.institution = formobj.institution.value;
+<?php }
+if (!empty($theshop->endusermobilephonerequired)) { ?>
+    pt.phone2 = formobj.phone2.value;
+<?php } ?>
+
+    $('#participantlist').html(ajax_waiter(wwwroot));
+
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'addparticipant',
             participant: JSON.stringify(pt),
             roles: JSON.stringify(roles)
@@ -128,14 +138,18 @@ function ajax_add_user(wwwroot, formobj) {
             formobj.email.value = '';
             // Keep city and institution values to speed up input
             // formobj.city.value = '';
-<?php if (!empty($theShop->enduserorganisationrequired)) { ?>
+<?php
+if (!empty($theshop->enduserorganisationrequired)) {
+?>
             // formobj.institution.value = '';
-<?php 
+<?php
 }
-if (!empty($theShop->endusermobilephonerequired)) {
+if (!empty($theshop->endusermobilephonerequired)) {
 ?>
             formobj.phone2.value = '';
-<?php } ?>
+<?php
+}
+?>
 
             for (i = 0; i < roles.length; i++) {
                 for (j = 0; j < products.length; j++) {
@@ -144,9 +158,9 @@ if (!empty($theShop->endusermobilephonerequired)) {
             }
 
             $.post(
-                urlbase, 
+                urlbase,
                 {
-                    id: '<?php echo $theShop->id ?>',
+                    id: '<?php echo $theshop->id ?>',
                     action: 'assignalllistobj',
                 },
                 function(data, status) {
@@ -166,27 +180,27 @@ if (!empty($theShop->endusermobilephonerequired)) {
     );
 }
 
-
 function ajax_delete_user(wwwroot, ptmail) {
 
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /></center></div>';
 
-    // kind a very simple serialize/unserialize
+    // Kind a very simple serialize/unserialize.
     rolelist = '<?php echo implode(',', $requiredroles); ?>';
     roles = rolelist.split(',');
-    <?php if (isset($SESSION->shoppingcart->order)) { 
-        echo 'productlist = \''.implode(',', array_keys($SESSION->shoppingcart->order))."';\n";
-    } else {
-        echo "productlist = '';\n";
-    } ?>
+<?php
+if (isset($SESSION->shoppingcart->order)) {
+    echo 'productlist = \''.implode(',', array_keys($SESSION->shoppingcart->order))."';\n";
+} else {
+    echo "productlist = '';\n";
+}
+?>
     products = productlist.split(',');
 
-    $('#participantlist').html(ajax_waiter);
+    $('#participantlist').html(ajax_waiter(wwwroot));
 
-    $.post(urlbase, 
+    $.post(urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteparticipant',
             participantid: ptmail,
             roles: JSON.stringify(roles)
@@ -201,9 +215,9 @@ function ajax_delete_user(wwwroot, ptmail) {
             }
 
             $.post(
-                urlbase, 
+                urlbase,
                 {
-                    id: '<?php echo $theShop->id ?>',
+                    id: '<?php echo $theshop->id ?>',
                     action: 'assignalllistobj',
                 },
                 function(data, status) {
@@ -226,19 +240,18 @@ function ajax_delete_user(wwwroot, ptmail) {
 function ajax_add_assign(wwwroot, assignrole, product, selectobj) {
 
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /></center></div>';
 
-    requiredroles = JSON.parse('<?php echo json_encode($theCatalog->check_required_roles()); ?>');
+    requiredroles = JSON.parse('<?php echo json_encode($thecatalog->check_required_roles()); ?>');
 
     for (rix in requiredroles) {
         role = requiredroles[rix];
-        $('#'+role+'list'+product).html(ajax_waiter);
+        $('#'+role+'list'+product).html(ajax_waiter(wwwroot));
     }
-            
+
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'addassign',
             role:assignrole,
             product: product,
@@ -250,14 +263,14 @@ function ajax_add_assign(wwwroot, assignrole, product, selectobj) {
                 role = requiredroles[rix];
                 $('#'+role+'list'+product).html(rolestubs.content[role]);
             }
-            
+
             // this need be done on positive return or we might unsync
             assigned++;
             if (assigned < required) {
                 $('#next-button').css('opacity', '0.5');
                 $('#next-button').removeClass('shop-active-button');
                 $('#next-button').attr('disabled', 'disabled');
-                $('#next-button').attr('title', '<?php echo str_replace("'", '\\\'', get_string('notallassigned', 'local_shop')) ?>');
+                $('#next-button').attr('title', '<?php echo $notassignedstr ?>');
             } else {
                 $('#next-button').css('opacity', '1.0');
                 $('#next-button').addClass('shop-active-button');
@@ -270,19 +283,18 @@ function ajax_add_assign(wwwroot, assignrole, product, selectobj) {
 
 function ajax_delete_assign(wwwroot, assignrole, product, email) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
-    requiredroles = JSON.parse('<?php echo json_encode($theCatalog->check_required_roles()); ?>');
+    requiredroles = JSON.parse('<?php echo json_encode($thecatalog->check_required_roles()); ?>');
 
     for (rix in requiredroles) {
         role = requiredroles[rix];
-        $('#'+role+'list'+product).html(ajax_waiter);
+        $('#'+role+'list'+product).html(ajax_waiter(wwwroot));
     }
-        
+
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteassign',
             role: assignrole,
             product: product,
@@ -300,7 +312,7 @@ function ajax_delete_assign(wwwroot, assignrole, product, email) {
                 $('#next-button').css('opacity', '0.5');
                 $('#next-button').removeClass('shop-active-button');
                 $('#next-button').attr('disabled', 'disabled');
-                $('#next-button').attr('title', '<?php echo str_replace("'", '\\\'', get_string('notallassigned', 'local_shop')) ?>');
+                $('#next-button').attr('title', '<?php echo $notassignedstr ?>');
             } else {
                 $('#next-button').css('opacity', '1.0');
                 $('#next-button').addClass('shop-active-button');
@@ -309,26 +321,24 @@ function ajax_delete_assign(wwwroot, assignrole, product, email) {
             }
         }
     );
-
 }
 
-// this early loads from server
+// This early loads from server.
 var units = '<?php echo $units; ?>';
 
 /*
-* @TODO id to remove
-*
-*/
+ * @TODO id to remove
+ *
+ */
 function ajax_add_unit(wwwroot, id, productname, maxquant) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
-    $('#bag_'+productname).html(ajax_waiter);
+    $('#bag_'+productname).html(ajax_waiter(wwwroot));
 
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'addunit',
             productname: productname
         },
@@ -355,14 +365,13 @@ function ajax_add_unit(wwwroot, id, productname, maxquant) {
 
 function ajax_delete_unit(wwwroot, id, productname) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
-    $('#bag_'+productname).html(ajax_waiter);
+    $('#bag_'+productname).html(ajax_waiter(wwwroot));
 
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteunit',
             productname: productname,
             clearall: 0
@@ -382,18 +391,17 @@ function ajax_delete_unit(wwwroot, id, productname) {
         $('#next-button').attr('disabled', 'disabled');
         $('#next-button').removeClass('shop-active-button');
         $('#next-button').css('opacity', '0.5');
-        $('#next-button').attr('title', '<?php echo str_replace("'", '\\\'', get_string('emptyorder', 'local_shop')) ?>');
+        $('#next-button').attr('title', '<?php echo $myorderstr ?>');
     }
 }
 
 function ajax_update_totals(wwwroot, id) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
-    $('#shop-ordertotals').html(ajax_waiter);
+    $('#shop-ordertotals').html(ajax_waiter(wwwroot));
 
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: id,
             action: 'ordertotals'
@@ -407,11 +415,10 @@ function ajax_update_totals(wwwroot, id) {
 
 function ajax_update_details(wwwroot, id) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
-    $('#order-detail').html(ajax_waiter);
+    $('#order-detail').html(ajax_waiter(wwwroot));
     $.post(
-        urlbase, 
+        urlbase,
         {
             id: id,
             action: 'orderdetails'
@@ -425,17 +432,16 @@ function ajax_update_details(wwwroot, id) {
 
 function ajax_clear_product(wwwroot, id, productname) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
-    $('#bag_'+productname).html(ajax_waiter);
-    
+    $('#bag_'+productname).html(ajax_waiter(wwwroot));
+
     $('#id_'+productname).val(0);
     $('#id_total_'+productname).val(0);
 
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'deleteunit',
             productname: productname,
             clearall: 1
@@ -452,7 +458,6 @@ function ajax_clear_product(wwwroot, id, productname) {
 
 function ajax_update_product(wwwroot, id, productname, maxquant) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<div class="ajax-waiter"><center><img src="'+wwwroot+'/local/shop/pix/loading29.gif" /><center></div>';
 
     currentval = $('#id_'+productname).val();
     if (maxquant > 0 && currentval > maxquant) {
@@ -460,12 +465,12 @@ function ajax_update_product(wwwroot, id, productname, maxquant) {
     }
 
     $('#id_'+productname).val(currentval);
-    $('#bag_'+productname).html(ajax_waiter);
+    $('#bag_'+productname).html(ajax_waiter(wwwroot));
 
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'setunits',
             productname: productname,
             quant: currentval
@@ -484,10 +489,12 @@ function local_toggle_invoiceinfo(check) {
     if (check.checked) {
         $('#shop-invoiceinfo-wrapper').css('display', 'block');
         if (document.driverform.elements['invoiceinfo::organisation'].value == '') {
-            document.driverform.elements['invoiceinfo::organisation'].value = document.driverform.elements['customerinfo::organisation'].value
+            elm = document.driverform.elements['invoiceinfo::organisation'];
+            elm.value = document.driverform.elements['customerinfo::organisation'].value
         }
         if (document.driverform.elements['invoiceinfo::city'].value == '') {
-            document.driverform.elements['invoiceinfo::city'].value = document.driverform.elements['customerinfo::city'].value
+            elm = document.driverform.elements['invoiceinfo::city'];
+            elm.value = document.driverform.elements['customerinfo::city'].value
         }
     } else {
         $('#shop-invoiceinfo-wrapper').css('display', 'none');
@@ -496,18 +503,18 @@ function local_toggle_invoiceinfo(check) {
 
 function check_pass_code(wwwroot, productname, textinput, event) {
     urlbase = wwwroot+'/local/shop/front/ajax/service.php';
-    ajax_waiter = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/ajaxloader.gif" />';
-    ajax_success = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/valid.png" />';
-    ajax_failure = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/invalid.png" />';
+    ajax_waiter_img = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/ajaxloader.gif" />';
+    ajax_success_img = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/valid.png" />';
+    ajax_failure_img = '<img width="14" height="14" src="'+wwwroot+'/local/shop/pix/invalid.png" />';
 
-    $('#ci-pass-status-'+productname).html(ajax_waiter);
+    $('#ci-pass-status-'+productname).html(ajax_waiter_img);
 
     var input = textinput.value + event.key;
 
     $.post(
-        urlbase, 
+        urlbase,
         {
-            id: '<?php echo $theShop->id ?>',
+            id: '<?php echo $theshop->id ?>',
             action: 'checkpasscode',
             productname: productname,
             passcode: input
@@ -516,22 +523,10 @@ function check_pass_code(wwwroot, productname, textinput, event) {
             dataobj = JSON.parse(data);
             if (dataobj.status == 'passed') {
                 $('#ci-'+productname).attr('disabled', null);
-                $('#ci-pass-status-'+productname).html(ajax_success);
+                $('#ci-pass-status-'+productname).html(ajax_success_img);
             } else {
-                $('#ci-pass-status-'+productname).html(ajax_failure);
+                $('#ci-pass-status-'+productname).html(ajax_failure_img);
             }
         }
     );
 }
-
-/*
-window.setTimeoutOrig = window.setTimeout;
-window.setTimeout     = function(f,del) 
- { 
-   var l_stack = Error().stack.toString();
-   if (l_stack.indexOf('kis.scr.kaspersky-labs.com') > 0) 
-      { return 0; }
-
-   window.setTimeoutOrig(f,del); 
- }
-*/

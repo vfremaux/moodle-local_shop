@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  blocks
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
@@ -43,10 +42,10 @@ $capabilities = array(
         )
     ),
 
-    /**
-    * people having this capability will be allowed to see data from all individual shop
-    * subhowners.
-    */
+    /*
+     * people having this capability will be allowed to see data from all individual shop
+     * subhowners.
+     */
     'local/shop:accessallowners' => array (
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
@@ -54,9 +53,9 @@ $capabilities = array(
         )
     ),
 
-    /**
-    * people having this capability will be get a discount
-    */
+    /*
+     * people having this capability will be get a discount
+     */
     'local/shop:discountagreed' => array (
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
@@ -64,9 +63,9 @@ $capabilities = array(
         )
     ),
 
-    /**
-    * people having this capability will be get a second level discount
-    */
+    /*
+     * people having this capability will be get a second level discount
+     */
     'local/shop:seconddiscountagreed' => array (
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
@@ -74,9 +73,9 @@ $capabilities = array(
         )
     ),
 
-    /**
-    * people having this capability will be get a third level discount
-    */
+    /*
+     * people having this capability will be get a third level discount
+     */
     'local/shop:thirddiscountagreed' => array (
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
@@ -84,9 +83,9 @@ $capabilities = array(
         )
     ),
 
-    /**
-    * people having this capability can use check payment with a direct production (trusted customers)
-    */
+    /*
+     * people having this capability can use check payment with a direct production (trusted customers)
+     */
     'local/shop:paycheckoverride' => array (
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
@@ -94,9 +93,9 @@ $capabilities = array(
         )
     ),
 
-    /**
-    * people having this capability will be presented noninstantpayments methods
-    */
+    /*
+     * people having this capability will be presented noninstantpayments methods
+     */
     'local/shop:usenoninstantpayments' => array (
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,

@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A shipzone describes a geographic area where a shipping cost applies.
  *
  * @package     local_shop
  * @category    local
@@ -29,6 +25,9 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @todo : check class against shopobject model
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * CatalogShipZone object is provided for direct Object Mapping of the _catalogshipzone database model
@@ -36,15 +35,17 @@ defined('MOODLE_INTERNAL') || die();
  */
 class CatalogShipZone extends ShopObject {
 
-    static $table = 'local_shop_catalogshipzone';
+    protected static $table = 'local_shop_catalogshipzone';
 
-    function __construct($idorrecord = '', $light = false) {
-        global $DB;
+    public function __construct($idorrecord = '', $light = false) {
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the Bill, without items
+            if ($light) {
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
+            }
         } else {
             $this->record->catalogid = 0;
             $this->record->zonecode = '';
@@ -58,7 +59,7 @@ class CatalogShipZone extends ShopObject {
     /**
      *
      */
-    function get_zones($catalogid = null) {
+    public function get_zones($catalogid = null) {
         global $DB;
 
         if ($catalogid) {
@@ -67,14 +68,17 @@ class CatalogShipZone extends ShopObject {
             $zonerecs = $DB->get_records(self::$table, array());
         }
 
+        $zones = array();
         if (!empty($zonerecs)) {
             foreach ($zonerecs as $zone) {
                 $zones[$zone->id] = new CatalogShipZone($zone);
             }
         }
+
+        return $zones;
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 }

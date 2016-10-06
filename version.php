@@ -15,23 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Version details.
  *
- * @package    local_shop
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_shop
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2016 onwards Valery Fremaux (http://www.mylearningfactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016083100;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2015111000;        // Requires this Moodle version
-$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics)
-$plugin->release = "3.0.0 (Build 2016083100)";
-$plugin->dependencies = array('block_shop_access' => 2016022500, 'auth_ticket' => '2012060400');
+$plugin->version   = 2016092100;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2015111000;        // Requires this Moodle version.
+$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
+$plugin->release = '3.0.0 (Build 2016092100)';
+$plugin->maturity = MATURITY_BETA;
+$plugin->dependencies = array('auth_ticket' => '2012060400');
 
-// Non Moodle fields
-// This fields will help overmanagement code builders without forcing upgrade to play
-$plugin->codeincrement = '3.0.0002';
+// Non Moodle attributes.
+$plugin->codeincrement = '3.0.0004';
+$plugin->privacy = 'unreleased';

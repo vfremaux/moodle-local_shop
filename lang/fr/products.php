@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['searchforakeyinstructions'] = '
 Cette clef vous est donnée par un client. vous pouvez tenter une recherche en tapant les quelques premiers chiffres de la clef
@@ -58,12 +72,12 @@ $string['handlerparams_help'] = '
 
 Certains gestionnaires d\'action génériques prennent des paramètres. Ce champ permet de passer des valeurs spécifiques selon l\'instance de produit. Par exemple, un gestionnaire d\'action générique qui donne l\'accès étudiant Ã un cours a besoin de connaitre l\'id ou le nom du cours qui est concerné. Ce champ permettra de le spécifier produit par produit.
 
-La forme générale des paramètres est une liste de paramètres nommés "à la façon" d\'une URL : 
-`param1=value1&param2=value2...`
+La forme générale des paramètres est une liste de paramètres nommés "à la façon" d\'une URL :
+    \'param1=value1&param2=value2...\'
 
 Certains paramètres sont systématiques à tous les gestionnaires standard :
 
-`customersupport=<%courseid%>`
+    \'customersupport=<%courseid%>\'
 
 Détermine le cours qui sera utilisé pour accueillir le client dans un espace support. S\'il n\'est pas défini, aucun espace support ne sera mise en place.
 
@@ -71,15 +85,15 @@ Détermine le cours qui sera utilisé pour accueillir le client dans un espace s
 
 **Paramètres du gestionnaire**
 
-    `coursename=<%shortname du cours%>`
+    \'coursename=<%shortname du cours%>\'
 
 Le nom court du cours étant unique dans Moodle, il ne peut y avoir ambiguité
 
-    `role=<%nom court du role (ex:student)%>`
+    \'role=<%nom court du role (ex:student)%>\'
 
 Le nom court du rôle à attribuer
 
-    `duration=<%duree en jours%>`
+    \'duration=<%duree en jours%>\'
 
 La durée est effective à partir de la date d\'exécution du gestionnaire.
 
@@ -87,16 +101,16 @@ La durée est effective à partir de la date d\'exécution du gestionnaire.
 
 **Paramètres du gestionnaire**
 
-`template=<%shortname du gabarit%>`
+    \'template=<%shortname du gabarit%>\'
 
 Le nom court du cours étant unique dans Moodle, il ne peut y avoir ambiguité
 
-`categoryid=<%id de catégorie%>`
+    \'categoryid=<%id de catégorie%>\'
 
 L\'ID numérique de la catégorie dans laquelle le cours doit être créé. Le propriétaire du produit doit être Créateur de cours
 (ou avoir les capacités adéquates) dans cette catégorie pour que le produit puisse se réaliser.
 
-`duration=<%duree en jours%>`
+    \'duration=<%duree en jours%>\'
 
 La durée est effective à partir de l\'exécution du gestionnaire.
 
@@ -104,7 +118,7 @@ La durée est effective à partir de l\'exécution du gestionnaire.
 
 **Paramètres du gestionnaire**
 
-    `parentcategory=<%categoryid%>`
+    \'parentcategory=<%categoryid%>\'
 
 La catégorie parente où sera créée la sous-categorie au nom du client. Le propriétaire du produit doit avoir
 un role de Gestionnaire ou les capacités adéquates pour permettre au produit d\'être réalisé.
@@ -113,16 +127,16 @@ un role de Gestionnaire ou les capacités adéquates pour permettre au produit d
 
 **Paramètres du gestionnaire**
 
-`contextlevel=<%contextlevelID%>`   (10 = système, 40 = catégorie, 50 = cours, 70 = module,80 = bloc)
+    \'contextlevel=<%contextlevelID%>\'   (10 = système, 40 = catégorie, 50 = cours, 70 = module,80 = bloc)
 
 Le niveau de contexte
 
-`instance=<%instanceID%>`
+    \'instance=<%instanceID%>\'
 
 L\'ID d\'instance de l\'objet selon le niveau de contexte (par exemple l\'id du cours pour le niveau 50). Le propriétaire du produit
 doit avoir des capacités adéquates sur le contexte désigné.
 
-`role=<%roleshortname%>`
+    \'role=<%roleshortname%>\'
 
 Le nom abrégé du rôle à assigner.
 ';
@@ -130,22 +144,22 @@ Le nom abrégé du rôle à assigner.
 $string['renewable_help'] = '
 Lorsqu\'un produit est marqué comme renouvelable, cela suppose qu\'une durée de vie du produit a pu être définie, comptée à partir de la date d\'achat (en général).
 Ceci doit être géré par le gestionnaire d\'achat lié au produit, et paramétré en interne par des paramètres du gesitonnaire. Tous les gestionnaires standard ne
-supportent pas nécessairement la notion de durée. Lorsque cette option est utilisée, les interfaces clientes activeront les notifications du cycle de vie du produit, 
+supportent pas nécessairement la notion de durée. Lorsque cette option est utilisée, les interfaces clientes activeront les notifications du cycle de vie du produit,
 et permettront de renouveller l\'achat du même produit pour en étendre la durée. Le client devra alors fournir son code produit disponible dans son interface de support client.
 ';
 
 $string['producteulas_help'] = '
-Les termes de licence spécifique de chaque produit du panier seront aggrégés en une présentation globale de conditions de vente juste 
+Les termes de licence spécifique de chaque produit du panier seront aggrégés en une présentation globale de conditions de vente juste
 avant la phase de confirmation de prise de commande.
 ';
 
 $string['requireddata_help'] = '
-Certains gestionnaires nécessitent de récolter des données du client. 
+Certains gestionnaires nécessitent de récolter des données du client.
 
 La définition de ce formulaire utilise une syntaxe JSON pour définir les informations
 attendues et les élements de formulaire à utiliser dans la boutique.
 
-La description adopte la structure suivante : 
+La description adopte la structure suivante :
 
     array(
         array(\'field\' => \'the_field_name\',
@@ -170,7 +184,7 @@ L\'expression résultante est :
  {"field":"template_sample","label":"Model (sample)","type":"select","desc":"Course template (sample)",
            "options":{"MOD1":"Model1","MOD2":"Model2"}}]
 
-Vous pouvez utiliser un service en ligne comme http://www.objgen.com/json pour 
+Vous pouvez utiliser un service en ligne comme http://www.objgen.com/json pour
 vous faciliter le formatage de la structure.
 
 ';

@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -28,20 +24,27 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
 class Customer extends ShopObject {
 
-    static $table = 'local_shop_customer';
+    public static $table = 'local_shop_customer';
 
-    function __construct($idorrecord, $light = false) {
-        global $DB, $CFG;
+    public function __construct($idorrecord, $light = false) {
+        global $CFG;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the customer, without moodle user data
+            if ($light) {
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
+            }
 
             $this->bills = Bill::get_instances(array('customerid' => $this->id), 'status ASC');
         } else {
@@ -62,26 +65,26 @@ class Customer extends ShopObject {
         }
     }
 
-    function fullname() {
+    public function fullname() {
         return $this->lastname.' '.$this->firstname;
     }
 
     /**
-     * customers should not be deleted if having bills attached. Only 
+     * customers should not be deleted if having bills attached. Only
      * manually created customers might be deleted.
      */
-    function delete() {
+    public function delete() {
         $instances = Bill::get_intances(array('userid' => $this->id));
         if (empty($instances)) {
             parent::delete();
         }
     }
 
-    static function count($filter) {
+    public static function count($filter) {
         return parent::_count(self::$table, $filter);
     }
 
-    static function get_instances_for_admin($theshop) {
+    public static function get_instances_for_admin($theshop) {
         global $DB;
 
         $config = get_config('local_shop');
@@ -99,14 +102,17 @@ class Customer extends ShopObject {
             }
         }
 
+        $order = optional_param('order', 'c.id', PARAM_ALPHA);
+        $dir = optional_param('dir', '', PARAM_ALPHA);
+
         $sql = "
-            SELECT 
+            SELECT
                c.*,
                COUNT(b.id) as billCount,
                SUM(b.amount) as totalAccount
-            FROM 
+            FROM
                {local_shop_customer} as c
-            LEFT JOIN 
+            LEFT JOIN
                {local_shop_bill} as b
             ON
                b.customerid = c.id
@@ -118,23 +124,23 @@ class Customer extends ShopObject {
             WHERE
                UPPER(c.email) NOT LIKE 'TEST%'
                $catalogclause
-            GROUP BY 
+            GROUP BY
                c.id
+            ORDER BY
+               $order $dir
         ";
 
-        $order = optional_param('order', '', PARAM_ALPHA);
-        $dir = optional_param('dir', '', PARAM_ALPHA);
         $offset = optional_param('offest', '', PARAM_ALPHA);
         $customers = $DB->get_records_sql($sql, $params, $offset, $config->maxitemsperpage);
         $customersarr = array();
-        foreach($customers as $c) {
+        foreach ($customers as $c) {
             $customersarr[$c->id] = new Customer($c);
         }
 
         return $customersarr;
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 }

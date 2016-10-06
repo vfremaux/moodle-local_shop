@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['searchforakeyinstructions'] = '
 this key was given to you by a customer as a transaction reference. you can try a search typing the first chars of the key
@@ -64,13 +78,13 @@ e.g. a hanlder that enrols a student in a paied for course needs to know the cou
 Some handlers may require mandatory values, and optional params. You can use the "Test products" feature to check the integrity of your
 products tunning before publishing them.
 
-The general form of the parameters is an url encoded like string: 
+The general form of the parameters is an url encoded like string:
 
-   `param1=value1&param2=value2...`
+   \'param1=value1&param2=value2...\'
 
 Some parameters are common to all generic hanlders:
 
-    `customersupport=<%courseid%>`
+    \'customersupport=<%courseid%>\'
 
 Will provide the id of the ocurse used for customer support worplace. If not given and not defined in general shop block settings, no
 customer support enrolment will be performed.
@@ -79,15 +93,15 @@ customer support enrolment will be performed.
 
 **Settings**
 
-    `coursename=<%course shortname%>`
+    \'coursename=<%course shortname%>\'
 
 the course shortname as defined by course creator. this is supposed to be unique and always present.
 
-    `role=<%role shortname%>`
+    \'role=<%role shortname%>\'
 
 the role that will be assigned to customer in the ocurse
 
-    `duration=<%enrol duration in days%>`
+    \'duration=<%enrol duration in days%>\'
 
 the real start/end dates of the enrol will be calculated from the time the handler is run.
 
@@ -95,15 +109,15 @@ the real start/end dates of the enrol will be calculated from the time the handl
 
 **Settings**
 
-    `coursename=<%course shortname%>`
+    \'coursename=<%course shortname%>\'
 
 the course shortname as defined by course creator. this is supposed to be unique and always present.
 
-    `supervisor=<%role shortname%>`
+    \'supervisor=<%role shortname%>\'
 
 This allows designating the exact role that will be assigned for supervisors.
 
-    `duration=<%enrol duration in days%>`
+    \'duration=<%enrol duration in days%>\'
 
 the real start/end dates of the enrol will be calculated from the time the handler is run.
 
@@ -111,17 +125,17 @@ the real start/end dates of the enrol will be calculated from the time the handl
 
 **Settings**
 
-    `template=<%course template shortname%>`
+    \'template=<%course template shortname%>\'
 
 The shortname of an existing course considered as template for course. The shortname is unique and is always present
 in Moodle. Check there is a prepared backup of the course in the ocurse backup area.
 
-    `coursecategory=<%course category id%>`
+    \'coursecategory=<%course category id%>\'
 
 This will tune where the new course will be created. Note that the product owner MUST have course creation capability in
 the designated category for the operation to succeed.
 
-    `duration=<%duration in days%>`
+    \'duration=<%duration in days%>\'
 
 Duration is calculated from the purchase date and affects the teacher account enrol and is stored in the product
 metadata stub to calculate product obsolescence and trigger end of life action.
@@ -130,7 +144,7 @@ metadata stub to calculate product obsolescence and trigger end of life action.
 
 **Settings**
 
-`parentcategory=<%categoryid%>`
+    \'parentcategory=<%categoryid%>\'
 
 The parent category to which the created category will be attached to. The product owner needs to be manager of the category
 or have the relevant permissions.
@@ -139,22 +153,22 @@ or have the relevant permissions.
 
 **Settings**
 
-`contextlevel=<%contextlevelID%>`   (10 = system, 40 = category, 50 = course, 70 = module, 80 = block)
+   \'contextlevel=<%contextlevelID%>\'   (10 = system, 40 = category, 50 = course, 70 = module, 80 = block)
 
 The context level.
 
-`instance=<%instanceID%>`
+    \'instance=<%instanceID%>\'
 
 The ID of the instance attached to the context. Irrelevant for system context.
 
-`role=<%roleshortname%>`
+    \'role=<%roleshortname%>\'
 
 the shortname of the role to assign. A capability check will be performed on product owner to actually execute the product handler.
 ';
 
 $string['renewable_help'] = '
 When a product is set as renewable, it may be defined with a product duration from the purchase date. This should be handled
-by the product purchase handler and setup through an internal handler parameter. All handlers do not support duration. When enabled, 
+by the product purchase handler and setup through an internal handler parameter. All handlers do not support duration. When enabled,
 the customer account interfaces will support product end of period notification, and purchasing agin the product with a reference code
 will extend the period on the same product instance.
 ';
@@ -163,12 +177,12 @@ $string['producteulas_help'] = 'Eulas for each purchased product will be aggrega
 pre-order validation.
 ';
 
-$string['requireddata_help'] = 'some hanlders need some data to be requested from the customer for each instance. 
+$string['requireddata_help'] = 'some hanlders need some data to be requested from the customer for each instance.
 
 this required data uses a JSON format for defining an array of form widgets that will need to be pused to the
 front office.
 
-The object expressions adopt the following structure : 
+The object expressions adopt the following structure :
 
     array(
         \'p0\': array(\'field\' => \'the_field_name\',
@@ -186,7 +200,7 @@ The object expressions adopt the following structure :
                \'desc\' => \'Course template (sample)\',
                \'options\' => array(\'MOD1\' => \'Model1\', \'MOD2\' => \'Model2\')));
 
-the resuting expression is : 
+the resuting expression is :
 
 [{"field":"the_field_name","label":"some visible name","type":"textfield","desc":"some desc","attrs":{"size":80}},
  {"field":"description_sample","label":"Description (sample)","type":"textarea","desc":"Short Description (sample)"},

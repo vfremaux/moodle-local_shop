@@ -14,38 +14,36 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\back;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\back;
 
+defined('MOODLE_INTERNAL') || die();
 
 class unittests_controller {
 
     protected $data;
 
-    var $theshop;
+    protected $theshop;
 
-    var $thecatalog;
+    protected $thecatalog;
 
-    var $theblock;
+    protected $theblock;
 
-    function __construct($theShop, $theCatalog, $theBlock) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
+    public function __construct($theshop, $thecatalog, $theblock) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
     }
 
-    function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
-            // data is fed from outside.
+            // Data is fed from outside.
             $this->data = (object)$data;
             return;
         } else {
@@ -58,12 +56,12 @@ class unittests_controller {
         }
     }
 
-    function process($action) {
+    public function process($action) {
         global $CFG;
 
-        /**
+        /*
          * Performs consistancy test on all selected products and produces a report about what is OK and what is wrong.
-         * Only Catalog defined handler params are supported here. 
+         * Only Catalog defined handler params are supported here.
          */
         if ($action == 'test') {
 
@@ -73,8 +71,8 @@ class unittests_controller {
             $errors = array();
             $warnings = array();
 
-            $this->thecatalogue->get_all_products_for_admin($products);
-            $this->theshop->thecatalog = $this->thecatalog;
+            $this->thecatalog->get_all_products_for_admin($products);
+            $this->theshop->thecatalogue = $this->thecatalog;
             produce_unittests($this->theshop, $products, $this->data->selected, $errors, $warnings, $messages);
             return array($errors, $warnings, $messages);
         }

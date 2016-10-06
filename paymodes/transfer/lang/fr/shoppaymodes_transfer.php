@@ -1,4 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package     shoppaymodes_test
+ * @category    local
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 $string['enabletransfer'] = 'Réglement par transfert bancaire';
 $string['enabletransfer2'] = 'Réglement par transfert bancaire';
@@ -22,7 +43,7 @@ pas à contacter notre service commercial.</p>
 
 $string['print_procedure_text_tpl'] = '
 <p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées suivantes :<br>
-   
+
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>
 
 <p><b><u>Domiciliation bancaire</u> :</b> <em><%%BANKING%%></em><br>
@@ -58,8 +79,7 @@ $string['print_procedure_text_tpl'] = '
       </tr>
    </table>
    </center></p>
-   
-   
+
    <p><center><table border="0" cellspacing="5" class="width500">
       <tr>
          <td class="colhead">
@@ -92,7 +112,7 @@ $string['print_procedure_text_tpl'] = '
 
 $string['print_procedure_text_invoice_tpl'] = '
 <p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées suivantes :<br>
-   
+
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>
 
 <p><b><u>Domiciliation bancaire</u> :</b> <em><%%BANKING%%></em><br>
@@ -128,7 +148,7 @@ $string['print_procedure_text_invoice_tpl'] = '
       </tr>
    </table>
    <br>
-   
+
    <p><table border="0" cellspacing="5" class="width500">
       <tr>
          <td class="colhead">

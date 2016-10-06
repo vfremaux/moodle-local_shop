@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A set is a group of products that are displayed alltogether.
+ * this is an helper class.
  *
  * @package     local_shop
  * @category    local
@@ -28,19 +25,24 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
+
+
 /**
  * A Set is a set of products that may propose variants for a single product type.
  */
 class Set extends ShopObject {
 
-    static $table = 'local_shop_catalogitem';
+    protected static $table = 'local_shop_catalogitem';
 
-    function __construct($recordorid) {
+    public function __construct($recordorid) {
         parent::__construct($recordorid, self::$table);
     }
 
     // Get the accurate price against quantity ranges.
-    function get_price($q) {
+    public function get_price($q) {
         if ($this->catalogitem->range1) {
             if ($q < $this->catalogitem->range1) {
                 return $this->catalogitem->price1;
@@ -80,23 +82,26 @@ class Set extends ShopObject {
         }
     }
 
-    function get_taxed_price($q, $tax) {
-        static $TAXCACHE;
-        global $DB;
-        
-        if (!isset($TAXCACHE)) {
-            $TAXCACHE = array();
+    public function get_taxed_price($q, $taxid) {
+        global $DB, $CFG;
+        static $taxcache;
+
+        if (!isset($taxcache)) {
+            $taxcache = array();
         }
-        if (!array_key_exists($taxid, $TAXCACHE)) {
-            if ($TAXCACHE[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
-                if (empty($TAXCACHE[$taxid]->formula)) $TAXCACHE[$taxid]->formula = '$TTC = $HT';
+        if (!array_key_exists($taxid, $taxcache)) {
+            if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+                if (empty($taxcache[$taxid]->formula)) {
+                    $taxcache[$taxid]->formula = '$ttc = $ht';
+                }
             } else {
-                return $htprice;
+                return $this->get_price($q);
             }
         }
-        $HT = $this->get_price($q);
-        $TR = $TAXCACHE[$taxid]->ratio;
-        eval($TAXCACHE[$taxid]->formula.';');
-        return $TTC;
+        $in['ht'] = $this->get_price($q);
+        $in['tr'] = $taxcache[$taxid]->ratio;
+        require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
+        $result = evaluate(\core_text::strtolower($taxcache[$taxid]->formula).';', $in, 'ttc');
+        return $result['ttc'];
     }
 }

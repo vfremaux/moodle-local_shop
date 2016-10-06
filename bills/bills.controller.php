@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\bills;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -27,18 +23,23 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_shop\bills;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
 use local_shop\Bill;
 
 class bills_controller {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $DB;
 
         $null = null;
 
-        /** ******************************* Delete a full bill ****************************** **/
+        // Delete a full bill ****************************** **.
         if ($cmd == 'deletebill') {
 
             $billids = required_param_array('billid[]', PARAM_INT);
@@ -46,15 +47,15 @@ class bills_controller {
                 try {
                     $bill = new Bill($billid);
                     $bill->delete();
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     print_error('objecterror', 'local_shop', $e->message);
                 }
             }
 
-            // todo : delete filearea for the bill
+            // Todo : delete filearea for the bill.
         }
 
-        /** ******************************* delete a set of billitems inside a bill ******************** **/
+        // Delete a set of billitems inside a bill ******************** **.
         if ($cmd == 'deletebillitems') {
 
             $items = required_param_array('billitem[]', PARAM_INT);
@@ -91,11 +92,11 @@ class bills_controller {
 
         if ($cmd == 'recalculate') {
             $billid = required_param('billid', PARAM_INT);
-            $bill = new Bill($billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill = new Bill($billid, $null, $null, $null, false); // Get a lightweight version.
             $bill->recalculate();
         }
 
-        /** **************************** Generate bill code ************************* **/
+        // Generate bill code ************************* **.
         if ($cmd == 'generatecode') {
             $billid = required_param('billid', PARAM_INT);
             $bill = new Bill($billid, $null, $null, $null, true); // Get a lightweight version.
@@ -103,153 +104,172 @@ class bills_controller {
             $bill->save(true);
         }
 
-        /** **************************** Delete Single ************************* **/
+        // Delete Single ************************* **.
         if ($cmd == 'deleteItem') {
-            $itemid = required_param('billitemid', PARAM_INT);
-            $z = required_param('z', PARAM_INT); // ordering
+            $billitemid = required_param('billitemid', PARAM_INT);
+            $z = required_param('z', PARAM_INT); // Ordering.
 
-            $billItem = new BillItem($billitemid);
+            $billitem = new BillItem($billitemid);
             $billitem->delete();
-        
-            if (!$maxOrder = $DB->get_field_select('local_shop_billitem', 'MAX(ordering)', " billid = '$billid' GROUP BY billid ")) {
-                $maxOrder = 1;
+
+            $select = " billid = '$billid' GROUP BY billid ";
+            if (!$maxorder = $DB->get_field_select('local_shop_billitem', 'MAX(ordering)', $select)) {
+                $maxorder = 1;
             }
-        
-            /* reorder end of list */
+
+            // Reorder end of list.
             $i = $z;
-            if ($upperrecs = $DB->get_records_select('local_shop_billitem', " id = $billid AND ordering > $z ", 'ordering', 'id, ordering')) {
+            $select = "
+                id = $billid AND
+                ordering > ?
+            ";
+            if ($upperrecs = $DB->get_records_select('local_shop_billitem', $select, array($z), 'ordering', 'id, ordering')) {
                 foreach ($upperrecs as $upperrec) {
                     $DB->update_record('local_shop_billitem', $upperrec);
                 }
             }
         }
 
-        /** **************************** Delete Items ************************* **/
+        // Delete Items ************************* **.
         if ($cmd == 'deleteItems') {
             $items = required_param('items', PARAM_INT);
             $itemlist = str_replace(',', "','", $items);
-        
-            /* fetches item to reorder (above the smaller deleted ordering) */
+
+            // Fetches item to reorder (above the smaller deleted ordering).
             $sql = "
                 SELECT
                     id, ordering as ordering
                 FROM
-                    {local_shop_billitem} 
+                    {local_shop_billitem}
                 WHERE
-                    billid = '$billId' AND
+                    billid = '$billid' AND
                     ordering >= MIN($items) AND
                     ordering NOT IN ($items)
-                ORDER BY 
+                ORDER BY
                     ordering ASC
             ";
             if ($moveditems = $DB->get_records_sql($sql)) {
-                $minOrdering = $moveditems[0]->ordering; // Catch the min
+                $minordering = $moveditems[0]->ordering; // Catch the min.
             }
-            // delete other records
+
+            // Delete other records.
             $DB->delete_records_select('local_shop_billitem', " id IN ($itemlist) ");
-        
-            // reorder records
-            $i = $minOrdering;
+
+            // Reorder records.
+            $i = $minordering;
             foreach ($moveditems as $moveditem) {
                 $moveditem->ordering = $i;
                 $DB->update_record('local_shop_billitem', $moveditem);
                 $i++;
-           }
-           recalculate($bill->id);
+            }
+            recalculate($bill->id);
         }
-        /****************************** Relocates ***************************/
+
+        // Relocates.
         if ($cmd == 'relocate') {
-            // unlocks constraint
-            // not safe,find better algorithm
+            /*
+             * Unlocks constraint
+             * not safe,find better algorithm
+             */
             $sql = "
-                ALTER TABLE 
+                ALTER TABLE
                     {shop_}billitem}
-                DROP INDEX 
+                DROP INDEX
                     unique_ordering
             ";
             $DB->execute($sql);
-        
-            // relocates
+
+            // Relocates.
             $relocated = required_param('relocated', PARAM_INT);
             $z = required_param('z', PARAM_INT);
             $where = required_param('at', PARAM_INT);
             if ($z > $where) {
                 $gap = $z - $where;
-                for ($i = $z - 1 ; $i >= $where ; $i--) {
+                for ($i = $z - 1; $i >= $where; $i--) {
                     moveRecord(1, $i, $billid);
                 }
-                $query = "
-                    UPDATE 
-                        {shop_}billitem} 
+                $sql = "
+                    UPDATE
+                        {shop_}billitem}
                     SET
                         ordering = ordering - $gap
                     WHERE
                         id = $relocated
                 ";
                 $DB->execute($sql);
-            } elseif ($z < $where) {
-              for ($i = $z + 1 ; $i <= $where ; $i++) {
-                 moveRecord(-1, $i, $billid);
-              }
-              $gap = $where - $z;
-              $query = "
-                 UPDATE 
-                    {local_shop_billitem} 
-                 SET
-                    ordering = ordering + $gap
-                 WHERE
-                    id = '$relocated'
-              ";
-              mysql_execute($query);
-           }
-            // locks constraints back
-            // remove this : cannot support concurrent operations
+            } else if ($z < $where) {
+                for ($i = $z + 1; $i <= $where; $i++) {
+                    moveRecord(-1, $i, $billid);
+                }
+                $gap = $where - $z;
+                $sql = "
+                    UPDATE
+                        {local_shop_billitem}
+                    SET
+                        ordering = ordering + $gap
+                    WHERE
+                        id = '$relocated'
+                ";
+                $DB->execute($sql);
+            }
+            /*
+             * Locks constraints back
+             * remove this : cannot support concurrent operations
+             */
             $sql = "
-                ALTER TABLE 
+                ALTER TABLE
                     {local_shop_billitem}
-                ADD INDEX 
-                    unique_ordering ( `billid` , `ordering` )
-             ";
-              $DB->execute($sql);
+                ADD INDEX
+                    unique_ordering (billid, ordering)
+            ";
+            $DB->execute($sql);
         }
-        /************************** Unattach attachement *************************/
+
+        // Unattach attachement.
         if ($cmd == 'unattach') {
-           $bill = $DB->get_record('local_shop_bill', array('id' => $billid), " id, DATE_FORMAT(emissiondate, '%Y%m%d') as date, userid ");
-           $itemDataPath = "/bills/" . md5($bill->userid) . "/B-" . $bill->date . "-" . $billid . "/";
-           fs_deleteFile($itemDataPath . required_param('file', PARAM_TEXT));
+            $fields = " id, DATE_FORMAT(emissiondate, '%Y%m%d') as date, userid ";
+            $bill = $DB->get_record('local_shop_bill', array('id' => $billid), $fields);
+            $itemdatapath = "/bills/" . md5($bill->userid) . "/B-" . $bill->date . "-" . $billid . "/";
+            fs_deleteFile($itemdatapath . required_param('file', PARAM_TEXT));
         }
-        /************************** Unattach attachement *************************/
+
+        // Unattach attachement.
         if ($cmd == 'reclettering') {
             $lettering = required_param('idnumber', PARAM_TEXT);
             if ($checkbill = $DB->get_record('local_shop_bill', array('idnumber' => $lettering))) {
                 if ($checkbill->id != $billid) {
-                    $badbillurl = new \moodle_url('/local/shop/bills/view.php', array('id' => $this->theshop->id, 'view' => 'viewBill', 'billid' => $checkbill->id));
-                    $letteringfeedback = '<div class="bill_error">'.get_string('uniqueletteringfailure', 'local_shop', $badbillurl).'</div>';
+                    $params = array('id' => $this->theshop->id, 'view' => 'viewBill', 'billid' => $checkbill->id);
+                    $badbillurl = new \moodle_url('/local/shop/bills/view.php', $params);
+                    $errorline = get_string('uniqueletteringfailure', 'local_shop', $badbillurl);
+                    $letteringfeedback = '<div class="bill_error">'.$errorline.'</div>';
                 }
             } else {
                 $DB->set_field('local_shop_bill', 'idnumber', $lettering, array('id' => $billid));
                 $letteringfeedback = '<div class="bill_good">'.get_string('letteringupdated', 'local_shop').'</div>';
             }
         }
-        /******************************* Work flow *************************/
+
+        // Work flow.
         if ($cmd == 'flowchange') {
-            // this implements a statefull automaton on bills
-            // trigers a state change handler if needed.
-            // // Typical resolution is a manual SOLDOUT order
-            // for realizing production action when payed out.  
+            /*
+             * this implements a statefull automaton on bills
+             * trigers a state change handler if needed.
+             * Typical resolution is a manual SOLDOUT order
+             * for realizing production action when payed out.
+             */
             $status = required_param('status', PARAM_TEXT);
             $priorstatus = $DB->get_field('local_shop_bill', 'status', array('id' => $billid));
 
-            // call a transition handler
+            // Call a transition handler.
             $result = 1;
             if (file_exists($CFG->dirroot.'/local/shop/transitions.php')) {
-                include_once $CFG->dirroot.'/local/shop/transitions.php';
-                $transitionhandler = "bill_transition_{$priorstatus}_{$status}";
+                include_once($CFG->dirroot.'/local/shop/transitions.php');
+                // Lower case because Moodle validation forces all functions to be lowercase.
+                $transitionhandler = core_text::strtolower("bill_transition_{$priorstatus}_{$status}");
                 if (function_exists($transitionhandler)) {
                     $result = $transitionhandler($billid);
                 }
             }
         }
-
     }
 }

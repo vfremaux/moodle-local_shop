@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
@@ -37,19 +37,20 @@ class product_controller {
 
     protected $received = false;
 
-    function __construct($theCatalog) {
-        $this->thecatalog = $theCatalog;
+    public function __construct($thecatalog) {
+        $this->thecatalog = $thecatalog;
     }
 
     /**
      * Receives all needed parameters from outside for each action case.
      * @param string $cmd the action keyword
-     * @param array $data incoming parameters from form when directly available, otherwise the function shoudl get them from request
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function shoudl get them from request
      */
     public function receive($cmd, $data = array()) {
 
         if (!empty($data)) {
-            // data is fed from outside.
+            // Data is fed from outside.
             $this->data = (object)$data;
             return;
         } else {
@@ -67,10 +68,12 @@ class product_controller {
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
             case 'clone':
-                $this->data->itemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
+                // Item id will be given as the remote master id (no local override).
+                $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
             case 'makecopy':
-                $this->data->masteritemid = required_param('itemid', PARAM_INT); // Item id will be given as the remote master id (no local override).
+                // Item id will be given as the remote master id (no local override).
+                $this->data->masteritemid = required_param('itemid', PARAM_INT);
                 break;
             case 'freecopy' :
                 $this->data->localitemid = required_param('itemid', PARAM_INT);
@@ -112,44 +115,44 @@ class product_controller {
             }
         }
 
-        /** ***** We unlink a linked product ***** **/
+        /* ***** We unlink a linked product ***** */
         if ($cmd == 'unlink') {
             $item = new CatalogItem($this->data->itemid);
             $item->unlink();
         }
 
-        /** ****** Clone a product or a set/bundle element as a product ***** **/
+        /* ****** Clone a product or a set/bundle element as a product ***** */
         if ($cmd == 'clone') {
             $original = new CatalogItem($this->data->itemid);
             $original->clone_instance();
             redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
         }
 
-        /** ***** make a local physical clone of the master product in this slave catalog ***** **/
+        /* ***** make a local physical clone of the master product in this slave catalog ***** */
         if ($cmd == 'makecopy') {
-            // get source item in master catalog
-            $masterCatalog = new Catalog($this->thecatalog->groupid);
+            // Get source item in master catalog.
             $item = new CatalogItem($this->data->masteritemid);
-            if (empty(CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id)))) {
-                $item->catalogid = $this->thecatalog->id; // Binding to local catalog
-                $item->id = 0; // Ensure new record
+            $result = CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id));
+            if (empty($result)) {
+                $item->catalogid = $this->thecatalog->id; // Binding to local catalog.
+                $item->id = 0; // Ensure new record.
                 $item->save();
             }
-            // Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
-            // reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
+            /*
+             * Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
+             * reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
+             */
         }
 
-        /** **** Delete the local copy **** **/
+        /* **** Delete the local copy **** */
         if ($cmd == 'freecopy') {
             $localitem = new CatalogItem($this->data->localitemid);
             $localitem->delete();
         }
 
-        /** ***** searches and filters the product list ***** **/
+        /* ***** searches and filters the product list ***** */
         if ($cmd == 'search') {
-            $error = false;
-
-            $results = CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
+            return CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
         }
     }
 }

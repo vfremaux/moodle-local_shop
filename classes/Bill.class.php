@@ -14,12 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-require_once($CFG->dirroot.'/local/shop/locallib.php');
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -29,18 +23,24 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+require_once($CFG->dirroot.'/local/shop/locallib.php');
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
 
 class Bill extends ShopObject {
 
-    static $table = 'local_shop_bill';
+    protected static $table = 'local_shop_bill';
 
     /**
      * an array of BillItem objects
      */
-    var $items;
+    public $items;
 
     /**
      * the original value of the bill summating only ordered item costs
@@ -69,7 +69,7 @@ class Bill extends ShopObject {
     protected $finaltaxedtotal;
 
     /**
-     * the overal taxes 
+     * the overal taxes
      * this is stored into the $bill->record->taxes attribute in db
      */
     protected $finaltaxestotal;
@@ -99,29 +99,27 @@ class Bill extends ShopObject {
     /**
      * An array with all tax lines for individual products
      */
-    var $taxlines;
+    public $taxlines;
 
     /**
      * External object references
      */
-    var $thecatalogue;
-    var $theshop;
-    var $theblock;
-    var $context;
+    public $thecatalogue;
+    public $theshop;
+    public $theblock;
+    public $context;
+    public $customer;
+    public $customeruser;
 
-    var $customer;
-
-    var $customeruser;
-
-    // build a full bill plus billitems
-    function __construct($idorrecord, &$theShop = null, &$theCatalogue = null, &$theBlock = null, $light = false) {
+    // Build a full bill plus billitems.
+    public function __construct($idorrecord, &$theshop = null, &$thecatalogue = null, &$theblock = null, $light = false) {
         global $DB;
 
         $config = get_config('local_shop');
 
-        $this->thecatalogue = $theCatalogue;
-        $this->theshop = $theShop;
-        $this->theblock = $theBlock;
+        $this->thecatalogue = $thecatalogue;
+        $this->theshop = $theshop;
+        $this->theblock = $theblock;
 
         $this->context = \context_system::instance();
 
@@ -133,7 +131,10 @@ class Bill extends ShopObject {
 
         if ($idorrecord) {
 
-            if ($light) return; // this builds a lightweight proxy of the Bill, without items
+            if ($light) {
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
+            }
 
             if (is_object($idorrecord)) {
                 $id = $idorrecord->id;
@@ -142,7 +143,7 @@ class Bill extends ShopObject {
                 $idorrecord = $DB->get_record('local_shop_bill', array('id' => $idorrecord));
             }
 
-            // Get shop from record if not provided
+            // Get shop from record if not provided.
             if (empty($this->theshop)) {
                 $this->theshop = new Shop($this->record->shopid);
             }
@@ -173,11 +174,11 @@ class Bill extends ShopObject {
             }
 
         } else {
-            if (empty($theShop)) {
+            if (empty($theshop)) {
                 throw new \Exception('Null Shop not allowed when creating bill');
             }
 
-            if (empty($theCatalogue)) {
+            if (empty($thecatalogue)) {
                 throw new \Exception('Null Shop not allowed when creating bill');
             }
 
@@ -204,7 +205,7 @@ class Bill extends ShopObject {
             $this->record->amount = 0;
             $this->record->currency = '';
             $this->record->convertedamount = 0;
-            $this->record->transactionid = '__'.md5(time()); // randomize a temporary TID
+            $this->record->transactionid = $this->generate_unique_transaction(); // Randomize a temporary TID.
             $this->record->onlinetransactionid = '';
             $this->record->expectedpaiement = 0;
             $this->record->paiedamount = 0;
@@ -216,37 +217,34 @@ class Bill extends ShopObject {
 
             $this->items = array();
 
-            $this->dirty = false;
+            $this->dirty = true;
 
-            $this->save(); // We need absolutely a DB Id for all following operations
         }
     }
 
-    function last_ordering() {
+    public static function last_ordering($shopid) {
         global $DB;
 
-        return $DB->get_field('local_shop_bill', 'MAX(ordering)', array());
+        return $DB->get_field('local_shop_bill', 'MAX(ordering)', array('shopid' => $shopid));
     }
 
-    function generate_unique_transaction() {
-        global $DB;
+    public function generate_unique_transaction() {
+        global $DB, $CFG;
 
         // Seek for a unique transaction ID.
-        $transid = strtoupper(substr(mysql_escape_string(base64_encode(crypt(microtime() + rand(0,32)))), 0, 32));
+        $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32))), 0, 32));
         while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
-            $transid = strtoupper(substr(mysql_escape_string(base64_encode(crypt(microtime() + rand(0,32)))), 0, 40));
+            $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32))), 0, 40));
         }
         $this->transactionid = $transid;
     }
 
     /**
      * Adds a BillItem object to item list
-     * Order amounts are updated in order for the discount check to 
+     * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
      */
-    function add_item(BillItem $bi) {
-        global $USER;
-
+    public function add_item(BillItem $bi) {
         $this->items[] = $bi;
         $this->orderuntaxedamount += $bi->totalprice;
         $this->ordertaxes += $bi->get_totaltax();
@@ -256,10 +254,10 @@ class Bill extends ShopObject {
 
     /**
      * Adds an item from a DB record makin a BillItem instance
-     * Order amounts are updated in order for the discount check to 
+     * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
      */
-    function add_item_data($birec, $ordering = -1) {
+    public function add_item_data($birec, $ordering = -1) {
         $billitem = new BillItem($birec, $this, $ordering);
         $this->items[] = $billitem;
         $this->orderuntaxedamount += $billitem->totalprice;
@@ -271,7 +269,7 @@ class Bill extends ShopObject {
     /**
      * delete an item by code
      */
-    function delete_item($itemcode) {
+    public function delete_item($itemcode) {
 
         foreach ($this->items as $id => $item) {
             if ($item->itemcode == $itemcode) {
@@ -284,7 +282,7 @@ class Bill extends ShopObject {
     /**
      * delete all items from memory and DB for complete reconstruction
      */
-    function delete_items() {
+    public function delete_items() {
         global $DB;
 
         if ($this->record->id) {
@@ -296,15 +294,20 @@ class Bill extends ShopObject {
         }
     }
 
-    function check_discount() {
-        global $CFG, $USER, $SESSION, $DB;
+    public function check_discount() {
+        global $DB;
 
+        if (empty($this->items)) {
+            return;
+        }
+
+        $reason = '';
         $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, $reason);
 
-        // trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches
+        // Trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches.
         if ($discountrate) {
 
-            // Reset all discount data
+            // Reset all discount data.
             $this->discount = 0;
             $DB->delete_records('local_shop_billitem', array('billid' => $this->id, 'type' => 'DISCOUNT'));
 
@@ -324,12 +327,12 @@ class Bill extends ShopObject {
                 $this->items[] = $billitem;
 
                 /*
-                echo 'DUuc '.($birec->unitcost).'<br/>';
-                echo 'DUut '.$bi->get_tax_amount().'<br/>';
-                echo 'DUU '.($birec->totalprice - $taxamount).'<br/>';
-                echo 'DUt '.$taxamount.'<br/>';
-                echo 'DUT '.$birec->totalprice.'<br/><br/>';
-                */
+                 * echo 'DUuc '.($birec->unitcost).'<br/>';
+                 * echo 'DUut '.$bi->get_tax_amount().'<br/>';
+                 * echo 'DUU '.($birec->totalprice - $taxamount).'<br/>';
+                 * echo 'DUt '.$taxamount.'<br/>';
+                 * echo 'DUT '.$birec->totalprice.'<br/><br/>';
+                 */
 
                 $this->discount += $birec->totalprice;
                 $this->discounttaxes += $taxamount;
@@ -343,13 +346,13 @@ class Bill extends ShopObject {
         }
     }
 
-    function save($stateonly = false) {
+    public function save($stateonly = false) {
 
         if ($this->dirty) {
             $this->recalculate();
         }
 
-        $billid = parent::save(); // parent has recorded id into our record.
+        $billid = parent::save(); // Parent has recorded id into our record.
 
         // Performance optimisation when no change in Bill construction.
         if ($stateonly) {
@@ -365,9 +368,9 @@ class Bill extends ShopObject {
     }
 
     /**
-    * delete all taxlines
-    */
-    function reset_taxlines() {
+     * delete all taxlines
+     */
+    public function reset_taxlines() {
 
         if (empty($this->items)) {
             $this->taxlines = array();
@@ -378,8 +381,8 @@ class Bill extends ShopObject {
      * get bill content (elements) and calculate
      * bill totalizers
      */
-    function recalculate() {
-        global $CFG, $DB;
+    public function recalculate() {
+        global $DB;
 
         $itemrecs = $DB->get_records('local_shop_billitem', array('billid' => $this->id));
 
@@ -394,26 +397,26 @@ class Bill extends ShopObject {
 
             $billitem = new BillItem($itemrec, $this);
 
-            // deroute some special types
+            // Deroute some special types.
             if ($billitem->type == 'SHIPPING') {
-                $this->shipping = $itemrec->totalprice; // taxed
+                $this->shipping = $itemrec->totalprice; // Taxed.
                 continue;
             }
             if ($billitem->type == 'DISCOUNT') {
                 continue;
             }
 
-            // If standard BILLING line, aggregate to ordetotals
+            // If standard BILLING line, aggregate to ordetotals.
             $this->orderuntaxed += $itemrec->unitcost * $itemrec->quantity;
             $this->ordertaxed += $billitem->get_taxed_price() * $itemrec->quantity;
             $taxamount = $billitem->get_tax_amount() * $itemrec->quantity;
             $this->ordertaxes += $taxamount;
 
             /*
-            echo 'UC '.($itemrec->unitcost * $itemrec->quantity).'<br/>';
-            echo 'Ut '.$taxamount.'<br/>';
-            echo 'UT '.($billitem->get_taxed_price() * $itemrec->quantity).'<br/><br/>';
-            */
+             * echo 'UC '.($itemrec->unitcost * $itemrec->quantity).'<br/>';
+             * echo 'Ut '.$taxamount.'<br/>';
+             * echo 'UT '.($billitem->get_taxed_price() * $itemrec->quantity).'<br/><br/>';
+             */
 
             // Register tax by taxcode.
             if (array_key_exists($billitem->taxcode, $this->taxlines)) {
@@ -428,28 +431,25 @@ class Bill extends ShopObject {
 
         $this->check_discount();
 
-        /*
-        */
-
         $this->finaluntaxedtotal = $this->orderuntaxed + $this->untaxeddiscount;
         $this->finaltaxestotal = $this->ordertaxes + $this->discounttaxes;
         $this->finaltaxedtotal = $this->ordertaxed + $this->discount;
 
         /*
-        echo 'OU '.$this->orderuntaxed.'<br/>';
-        echo 'Ot '.$this->ordertaxes.'<br/>';
-        echo 'OT '.$this->ordertaxed.'<br/><br/>';
+         * echo 'OU '.$this->orderuntaxed.'<br/>';
+         * echo 'Ot '.$this->ordertaxes.'<br/>';
+         * echo 'OT '.$this->ordertaxed.'<br/><br/>';
+         *
+         * echo 'DU '.$this->untaxeddiscount.'<br/>';
+         * echo 'Dt '.$this->discounttaxes.'<br/>';
+         * echo 'DT '.$this->discount.'<br/><br/>';
+         *
+         * echo 'FU '.$this->finaluntaxedtotal.'<br/>';
+         * echo 'Ft '.$this->finaltaxestotal.'<br/>';
+         * echo 'FT '.$this->finaltaxedtotal.'<br/>';
+         */
 
-        echo 'DU '.$this->untaxeddiscount.'<br/>';
-        echo 'Dt '.$this->discounttaxes.'<br/>';
-        echo 'DT '.$this->discount.'<br/><br/>';
-
-        echo 'FU '.$this->finaluntaxedtotal.'<br/>';
-        echo 'Ft '.$this->finaltaxestotal.'<br/>';
-        echo 'FT '.$this->finaltaxedtotal.'<br/>';
-        */
-
-        // Transfer to record
+        // Transfer to record.
         $this->record->amount = $this->finaltaxedtotal;
         $this->record->taxes = $this->finaltaxestotal;
         $this->record->untaxedamount = $this->finaluntaxedtotal;
@@ -457,7 +457,7 @@ class Bill extends ShopObject {
         $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
     }
 
-    function delete() {
+    public function delete() {
 
         // Delete all bill items.
         $billitems = BillItem::get_instances(array('billid' => $this->id));
@@ -470,7 +470,7 @@ class Bill extends ShopObject {
         parent::delete();
     }
 
-    static function get_by_transaction($transid) {
+    public static function get_by_transaction($transid) {
         global $DB;
 
         if (empty($transid)) {
@@ -482,14 +482,14 @@ class Bill extends ShopObject {
             throw new \Exception('Invalid Transaction Identifier');
         }
 
-        $theShop = new Shop($record->shopid);
+        $theshop = new Shop($record->shopid);
 
-        $theCatalogue = new Catalog($theShop->catalogid);
-        $bill = new Bill($record, $theShop, $theCatalogue);
+        $thecatalogue = new Catalog($theshop->catalogid);
+        $bill = new Bill($record, $theshop, $thecatalogue);
         return $bill;
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 }

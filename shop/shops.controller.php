@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use local_shop\Shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -27,10 +23,13 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+use local_shop\Shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 class shops_controller {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $DB;
 
         if ($cmd == 'delete') {

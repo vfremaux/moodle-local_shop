@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A category organises catalog items in a catalog.
  *
  * @package     local_shop
  * @category    local
@@ -28,21 +24,27 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
 class Category extends ShopObject {
 
-    static $table = 'local_shop_catalogcategory';
+    protected static $table = 'local_shop_catalogcategory';
 
-    var $thecatalog;
+    protected $thecatalog;
 
-    function __construct($idorrecord, $light = false) {
-        global $DB;
+    public function __construct($idorrecord, $light = false) {
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the Bill, without items
+            if ($light) {
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
+            }
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -53,7 +55,7 @@ class Category extends ShopObject {
         }
     }
 
-    function get_branch() {
+    public function get_branch() {
         global $DB;
 
         $branch = array($this->id);
@@ -71,11 +73,12 @@ class Category extends ShopObject {
      * @param int $catalogid
      * @param int $categoryid the current iteration parent
      */
-    static function get_first_branch($catalogid, $categoryid = 0) {
+    public static function get_first_branch($catalogid, $categoryid = 0) {
         global $DB;
 
         $branch = array();
-        $recs = $DB->get_records('local_shop_catalogcategory', array('parentid' => $categoryid, 'catalogid' => $catalogid), 'sortorder', 'id,parentid', 0, 1);
+        $params = array('parentid' => $categoryid, 'catalogid' => $catalogid);
+        $recs = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', 'id,parentid', 0, 1);
         if ($recs) {
             $reckeys = array_keys($recs);
             $catid = array_shift($reckeys);
@@ -85,46 +88,48 @@ class Category extends ShopObject {
         return $branch;
     }
 
-    function delete() {
-        parent::delete();
-    }
-
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_count_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
     /**
-     * Geven a set of categories, and a current categoryid, 
+     * Given a set of categories, and a current categoryid,
      * filter out all categories that are NOT parentable
+     * @param arrayref $categories
+     * @param int $currentcatid
      */
-    static function filter_parentable(&$categories, $currentcat = 0) {
+    public static function filter_parentable(&$categories, $currentcatid = 0) {
         global $DB;
 
-        if (empty($categories)) return;
-        if (!$currentcat) return;
+        if (empty($categories)) {
+            return;
+        }
+        if (!$currentcatid) {
+            return;
+        }
 
         foreach ($categories as $c) {
 
-            if ($c->id == $currentcat) {
+            $cid = $c->id;
+
+            if ($c->id == $currentcatid) {
                 unset($categories[$cid]);
                 continue;
             }
 
-            $cid = $c->id;
             if ($c->parentid) {
                 while ($c->parentid) {
                     $c = $DB->get_record('local_shop_catalogcategory', array('id' => $c->parentid), 'id,parentid');
-                    if ($c->id == $currentcat) {
+                    if ($c->id == $currentcatid) {
                         unset($categories[$cid]);
                         break;
                     }
                 }
             }
         }
-
     }
 }
