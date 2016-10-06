@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/instances/renderer.php');
@@ -31,27 +30,27 @@ $customerid = required_param('customer', PARAM_INT);
 
 try {
     $customer = new Customer($customerid);
-} catch(Exception $e) {
+} catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->get_message());
 }
 
-// execute controller
-//echo "[$view:$cmd]";
+// Execute controller.
 $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 $action = optional_param('what', '', PARAM_ALPHA);
 if ($action != '') {
-   include_once($CFG->dirroot.'/local/shop/instances/instances.controller.php');
-   $controller = new instances_controller();
-   $controller->process($action);
+    include_once($CFG->dirroot.'/local/shop/instances/instances.controller.php');
+    $controller = new instances_controller();
+    $controller->process($action);
 }
 
-// Fetch all product instances for the current customer account
+// Fetch all product instances for the current customer account.
 $instances = Product::get_instances(array('customerid' => $customer->id));
 
 echo $out;
 
-echo $mainrenderer->customer_choice($customerid, new moodle_url('/local/shop/instances/view.php', array('view' => 'viewAllInstances')));
+$listurl = new moodle_url('/local/shop/instances/view.php', array('view' => 'viewAllInstances'));
+echo $mainrenderer->customer_choice($customerid, $listurl);
 
 echo $OUTPUT->heading(get_string('customer', 'local_shop'), 1);
 

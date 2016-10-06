@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * This abstract class emplements an object wrapper for a payment method
@@ -45,7 +44,7 @@ abstract class shop_paymode {
 
     protected $_config;
 
-    public $interactive; // after processing will tell if the transaction is handled in interactive mode
+    public $interactive; // After processing will tell if the transaction is handled in interactive mode.
 
     public function __construct($name, &$shop, $enabled = true, $overridelocalconfirm = false) {
         $this->name = $name;
@@ -62,39 +61,44 @@ abstract class shop_paymode {
         return false;
     }
 
-    // prints a payment portlet in an order form
-    abstract function print_payment_portlet(&$billdata);
+    // Prints a payment portlet in an order form.
+    public abstract function print_payment_portlet(&$billdata);
 
-    // prints a payment info on an invoice
-    abstract function print_invoice_info(&$billdata = null);
+    // Prints a payment info on an invoice.
+    public abstract function print_invoice_info(&$billdata = null);
 
-    // prints a message when transaction is complete
-    abstract function print_complete();
+    // Prints a message when transaction is complete.
+    public abstract function print_complete();
 
-    // processes a payment return
-    abstract function process();
+    // Processes a payment return.
+    public abstract function process();
 
-    // processes a payment asynchronoous confirmation
-    abstract function process_ipn();
+    /**
+     * Processes a payment asynchronoous confirmation.
+     */
+    public abstract function process_ipn();
 
-    // provides global settings to add to shop settings when installed
-    abstract function settings(&$settings);
+    /**
+     * Provides global settings to add to shop settings when installed.
+     */
+    public abstract function settings(&$settings);
 
-    // provides global settings to add to shop settings when installed
+    /**
+     * Provides global settings to add to shop settings when installed.
+     */
     public function add_instance_config($mform) {
-        global $CFG;
 
         $isenabledvar = "enable".$this->get_name();
-        $enabled = @$this->theshop->$isenabledvar;
 
         $group[] = &$mform->createElement('checkbox', $isenabledvar);
         $group[] = &$mform->createElement('radio', 'defaultpaymode', '', '', $this->get_name());
-        $mform->addGroup($group, 'paymode'.$this->get_name(), get_string('enable'.$this->get_name(), 'shoppaymodes_'.$this->get_name()), ' '.get_string('isdefault', 'local_shop').' ', false);
+        $label = get_string('enable'.$this->get_name(), 'shoppaymodes_'.$this->get_name());
+        $mform->addGroup($group, 'paymode'.$this->get_name(), $label, ' '.get_string('isdefault', 'local_shop').' ', false);
     }
 
     /**
-    * trivial accessor
-    */
+     * trivial accessor
+     */
     public function get_name() {
         return $this->name;
     }
@@ -112,7 +116,7 @@ abstract class shop_paymode {
      * @param string $mailtype
      * @param array $data
      */
-    function get_mail($mailtype, $data) {
+    public function get_mail($mailtype, $data) {
     }
 
     /**
@@ -120,12 +124,12 @@ abstract class shop_paymode {
      * this is the case for most instant online payment plugins
      * @return boolean
      */
-    function needslocalconfirm() {
+    public function needslocalconfirm() {
         return !$this->overridelocalconfirm;
     }
 
     /**
-     * This static function defers to each plugin the possibility to 
+     * This static function defers to each plugin the possibility to
      * catch a valid payment session identification in the query environement
      * depending on specific ways to interpret data return from remote
      * payment gateway. It returns all the technical components of a valid
@@ -136,9 +140,12 @@ abstract class shop_paymode {
      * @return the paymode plugin instance that fits the transaction
      */
     public static function resolve_transaction_identification(&$transid, &$cmd, &$paymode) {
-        $plugins = shop_paymode::shop_get_plugins(null);
+        global $DB;
+
+        $plugins = self::shop_get_plugins(null);
         $transid = '';
         $cmd = '';
+
         foreach ($plugins as $plugin) {
             $plugin->identify_transaction($transid, $cmd);
             if (!empty($transid)) {
@@ -148,7 +155,7 @@ abstract class shop_paymode {
                     $cmd = '';
                     print_error('paymodedonotmatchtoresponse', 'local_shop');
                 }
-                // we have valid transid and cmd and paymode, so process it in controller
+                // We have valid transid and cmd and paymode, so process it in controller.
                 return $plugin;
             }
         }
@@ -164,7 +171,7 @@ abstract class shop_paymode {
 
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
         foreach ($plugins as $p) {
-            include_once $CFG->dirroot.'/local/shop/paymodes/'.$p.'/'.$p.'.class.php';
+            include_once($CFG->dirroot.'/local/shop/paymodes/'.$p.'/'.$p.'.class.php');
             $classname = "shop_paymode_$p";
             $payments[$p] = new $classname($shop);
         }
@@ -176,8 +183,6 @@ abstract class shop_paymode {
      * @return an array for select
      */
     public static function get_list() {
-        global $CFG;
-
         $paylist = array();
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
         foreach ($plugins as $p) {
@@ -188,14 +193,14 @@ abstract class shop_paymode {
 
     /**
      * get one plugin instance by name (Factory)
-     * @param objectref $theBlock the shop instance we are working on
+     * @param objectref $theblock the shop instance we are working on
      * @param string $paymentpluginname instance builder from name
      */
     public static function get_instance(&$shop, $paymentpluginname) {
         global $CFG;
 
-        include_once $CFG->dirroot.'/local/shop/paymodes/'.$paymentpluginname.'/'.$paymentpluginname.'.class.php';
-        $classname = "shop_paymode_".$paymentpluginname;
+        include_once($CFG->dirroot.'/local/shop/paymodes/'.$paymentpluginname.'/'.$paymentpluginname.'.class.php');
+        $classname = 'shop_paymode_'.$paymentpluginname;
         $payment = new $classname($shop);
         return $payment;
     }
@@ -209,10 +214,11 @@ abstract class shop_paymode {
 
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
         foreach ($plugins as $p) {
-            include_once $CFG->dirroot.'/local/shop/paymodes/'.$p.'/'.$p.'.class.php';
+            include_once($CFG->dirroot.'/local/shop/paymodes/'.$p.'/'.$p.'.class.php');
             $classname = "shop_paymode_$p";
             $shop = null;
-            $pm = new $classname($shop); // no need of real shop instances here
+            $pm = new $classname($shop);
+            // No need of real shop instances here.
             if ($pm->enabled) {
                 $pm->settings($settings);
             }

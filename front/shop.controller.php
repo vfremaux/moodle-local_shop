@@ -14,22 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class shop_controller extends front_controller_base {
 
-    function process($cmd) {
+    public function process($cmd) {
         global $SESSION;
 
         if ($cmd == 'import') {
@@ -42,59 +41,67 @@ class shop_controller extends front_controller_base {
                 }
                 $SESSION->shoppingcart->order[$inputkey] = optional_param($inputkey, 0, PARAM_INT);
             }
-        } elseif ($cmd == 'clearall') {
+        } else if ($cmd == 'clearall') {
             unset($SESSION->shoppingcart);
-            redirect(new \moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
-        } elseif ($cmd == 'navigate') {
+            $params = array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            redirect(new \moodle_url('/local/shop/front/view.php', $params));
+        } else if ($cmd == 'navigate') {
 
-            // precalculates some sums
-            $SESSION->shoppingcart->untaxedtotal = 0;
-            $SESSION->shoppingcart->taxedtotal = 0;
-            $SESSION->shoppingcart->taxestotal = 0;
+            $shoppingcart = $SESSION->shoppingcart;
 
-            // reset all existing taxes counters
-            if (!empty($SESSION->shoppingcart->taxes)) {
-                foreach($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
-                    $SESSION->shoppingcart->taxes[$tcode] = 0;
+            // Precalculates some sums.
+            $shoppingcart->untaxedtotal = 0;
+            $shoppingcart->taxedtotal = 0;
+            $shoppingcart->taxestotal = 0;
+
+            // Reset all existing taxes counters.
+            if (!empty($shoppingcart->taxes)) {
+                foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
+                    $shoppingcart->taxes[$tcode] = 0;
                 }
             }
 
-            foreach ($SESSION->shoppingcart->order as $shortname => $q) {
+            foreach ($shoppingcart->order as $shortname => $q) {
                 $ci = $this->thecatalog->get_product_by_shortname($shortname);
                 $ht = $q * $ci->get_price($q);
                 $ttc = $q * $ci->get_taxed_price($q);
-                $SESSION->shoppingcart->untaxedtotal += $ht;
-                $SESSION->shoppingcart->taxedtotal += $ttc;
-                $SESSION->shoppingcart->taxestotal += $ttc - $ht;
-                if (!isset($SESSION->shoppingcart->taxes[$ci->taxcode])) {
-                    $SESSION->shoppingcart->taxes[$ci->taxcode] = 0;
+                $shoppingcart->untaxedtotal += $ht;
+                $shoppingcart->taxedtotal += $ttc;
+                $shoppingcart->taxestotal += $ttc - $ht;
+                if (!isset($shoppingcart->taxes[$ci->taxcode])) {
+                    $shoppingcart->taxes[$ci->taxcode] = 0;
                 }
-                $SESSION->shoppingcart->taxes[$ci->taxcode] += $ttc - $ht;
+                $shoppingcart->taxes[$ci->taxcode] += $ttc - $ht;
             }
 
-            $discountrate = $this->theshop->calculate_discountrate_for_user($SESSION->shoppingcart->untaxedtotal, $this->context, $reason);
+            $reason = '';
+
+            $discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->untaxedtotal, $this->context,
+                                                                            $reason);
             if ($discountrate) {
                 $discountmultiplier = $discountrate / 100;
-                $SESSION->shoppingcart->discount = $SESSION->shoppingcart->taxedtotal * $discountmultiplier;
-                $SESSION->shoppingcart->untaxeddiscount = $SESSION->shoppingcart->untaxedtotal * $discountmultiplier;
-                $SESSION->shoppingcart->finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal * (1 - $discountmultiplier);
-                $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal * (1 - $discountmultiplier);
-                $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal * (1 - $discountmultiplier);
+                $shoppingcart->discount = $shoppingcart->taxedtotal * $discountmultiplier;
+                $shoppingcart->untaxeddiscount = $shoppingcart->untaxedtotal * $discountmultiplier;
+                $shoppingcart->finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - $discountmultiplier);
+                $shoppingcart->finaltaxedtotal = $shoppingcart->taxedtotal * (1 - $discountmultiplier);
+                $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal * (1 - $discountmultiplier);
 
-                // try one : apply discount to all tax lines
-                if (!empty($SESSION->shoppingcart->taxes)) {
-                    foreach($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
-                        $SESSION->shoppingcart->taxes[$tcode] *= 1 - $discountmultiplier;
+                // Try one : apply discount to all tax lines.
+                if (!empty($shoppingcart->taxes)) {
+                    foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
+                        $shoppingcart->taxes[$tcode] *= 1 - $discountmultiplier;
                     }
                 }
             } else {
-                $SESSION->shoppingcart->discount = 0;
-                $SESSION->shoppingcart->finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal;
-                $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal;
-                $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal;
+                $shoppingcart->discount = 0;
+                $shoppingcart->finaluntaxedtotal = $shoppingcart->untaxedtotal;
+                $shoppingcart->finaltaxedtotal = $shoppingcart->taxedtotal;
+                $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal;
             }
 
-            redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('shop'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+            $next = $this->theshop->get_next_step('shop');
+            $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            redirect(new \moodle_url('/local/shop/front/view.php', $params));
         }
     }
 }

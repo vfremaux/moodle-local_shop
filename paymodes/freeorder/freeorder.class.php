@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_freeorder
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
@@ -31,44 +30,43 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
  */
 class shop_paymode_freeorder extends shop_paymode {
 
-    function __construct(&$shop) {
-        // NOT ENABLED AS NOT SELECTABLE METHOD
+    public function __construct(&$shop) {
+        // NOT ENABLED AS NOT SELECTABLE METHOD!
         parent::__construct('card', $shop, false);
     }
 
-    // prints a payment porlet in an order form
-    function print_payment_portlet(&$billdata) {
+    // Prints a payment porlet in an order form.
+    public function print_payment_portlet(&$billdata) {
         // No portlet.
     }
 
-    // prints a payment porlet in an order form
-    function print_invoice_info(&$billdata = null) {
+    // Prints a payment porlet in an order form.
+    public function print_invoice_info(&$billdata = null) {
     }
 
-    function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop') ;
+    public function print_complete() {
+        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
-    // processes a payment return
-    function process() {
+    // Processes a payment return.
+    public function process() {
     }
 
-    // processes a payment asynchronoous confirmation
-    function process_ipn() {
+    // Processes a payment asynchronoous confirmation.
+    public function process_ipn() {
     }
 
-    // provides global settings to add to shop settings when installed
-    function has_config() {
+    // Provides global settings to add to shop settings when installed.
+    public function has_config() {
         return false;
     }
 
-    // provides global settings to add to shop settings when installed
-    function is_interactive() {
+    // Provides global settings to add to shop settings when installed.
+    public function is_interactive() {
         return false;
     }
 
-    // provides global settings to add to shop settings when installed
-    function settings(&$settings) {
+    // Provides global settings to add to shop settings when installed.
+    public function settings(&$settings) {
     }
-
 }

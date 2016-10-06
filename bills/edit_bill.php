@@ -34,8 +34,8 @@ use local_shop\Catalog;
 
 $PAGE->requires->js('/local/shop/js/bills.js');
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $config = get_config('local_shop');
 
@@ -54,36 +54,26 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($billid) {
-    $bill = new Bill($billid, $theShop, $theCatalog, $theBlock);
     $mform = new Bill_Form('', array('what' => 'edit'));
-    $mform->set_data($bill);
 } else {
-    $bill = new Bill(null, $theShop, $theCatalog, $theBlock);
     $mform = new Bill_Form('', array('what' => 'add'));
-    $bill->autobill = 0;
-    $mform->set_data($bill);
 }
 
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills')));
 }
-if ($bill = $mform->get_data()) {
 
-    $now = time();
+if ($billrec = $mform->get_data()) {
 
-    if (!empty($bill->billid)) {
-        $bill->id = $bill->billid;
+    if (!empty($billrec->billid)) {
+        $bill = new Bill($billrec->billid);
+        $bill->lastactiondate = $now;
     } else {
-        $bill->id = 0;
-        $bill->generate_unique_transaction();
-        $bill->emissiondate = $now;
+        $bill = new Bill(null, $theshop, $thecatalog, $theblock);
     }
-    unset($bill->billid);
 
-    $bill->lastactiondate = $now;
-
-    if (empty($bill->currency)) {
-        $bill->currency = $theShop->defaultcurrency;
+    if (empty($billrec->currency)) {
+        $billrec->currency = $theshop->defaultcurrency;
     }
 
     $shipping = new StdClass;
@@ -94,8 +84,8 @@ if ($bill = $mform->get_data()) {
     }
 
     // Creating a customer account for a user.
-    if ($bill->useraccountid != 0) {
-        $user = $DB->get_record('user', array('id' => $bill->useraccountid));
+    if ($billrec->useraccountid != 0) {
+        $user = $DB->get_record('user', array('id' => $billrec->useraccountid));
         $customer->firstname = $user->firstname;
         $customer->lastname = $user->lastname;
         $customer->email = $user->email;
@@ -107,24 +97,29 @@ if ($bill = $mform->get_data()) {
         if (!$newcustomerid = $DB->insert_record('local_shop_customer', $customer)) {
             print_error('erroraddnewcustomer', 'local_shop');
         }
-        $bill->customerid = $newcustomerid;
+        $billrec->customerid = $newcustomerid;
     } else {
-        $bill->customerid = $bill->userid;
+        $bill->customerid = $billrec->userid;
     }
     unset($bill->userid);
     unset($bill->useraccountid);
 
-    if (empty($bill->id)) {
-
-        $lastordering = Bill::last_ordering();
-        $bill->lastordering = $lastordering + 1;
-
-        $bill->id = $DB->insert_record('local_shop_bill', $bill);
-    } else {
-        $DB->update_record('local_shop_bill', $bill);
+    // Transfer all billrec attributes to the bill object.
+    foreach ($billrec as $key => $value) {
+        $bill->$key = $value;
     }
 
-    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $bill->id)));
+    $lastordering = Bill::last_ordering($theshop->id);
+    $bill->lastordering = $lastordering + 1;
+
+    $bill->save();
+
+    redirect(new moodle_url('/local/shop/bills/view.php', array('shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id)));
+} else {
+    if ($billid) {
+        $bill = new Bill($billid);
+        $mform->set_data($bill->record);
+    }
 }
 
 echo $OUTPUT->header();

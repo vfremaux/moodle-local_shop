@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package     local_shop
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -26,14 +33,6 @@ use local_shop\Product;
 use local_shop\BillItem;
 use local_shop\CatalogItem;
 
-/**
- * @package     local_shop
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 class shop_purchasemanager_renderer {
 
     protected $theshop;
@@ -42,10 +41,10 @@ class shop_purchasemanager_renderer {
 
     protected $theblock;
 
-    function load_context(&$theShop, &$theCatalog, &$theBlock = null) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
+    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
     }
 
     private function _check_context() {
@@ -54,7 +53,7 @@ class shop_purchasemanager_renderer {
         }
     }
 
-    function productinstance_admin_line(&$productinstance) {
+    public function productinstance_admin_line(&$productinstance) {
         global $OUTPUT, $CFG;
 
         $this->_check_context();
@@ -105,30 +104,30 @@ class shop_purchasemanager_renderer {
             $expiringocunt = 0;
             $runningcount = 0;
             $statusclass = '';
-            $pend = ($product->enddate) ? date('Y/m/d h:i', $product->enddate) : 'N.C.';
-            $pstart = date('Y/m/d h:i', $product->startdate);
+            $pend = ($product->enddate) ? date('Y/m/d H:i', $product->enddate) : 'N.C.';
+            $pstart = date('Y/m/d H:i', $product->startdate);
             if ($product->renewable) {
                 if (time() > $product->enddate) {
-                    // expired
+                    // Expired.
                     $statusclass = 'cs-product-expired';
                     $expiredcount++;
-                } elseif (time() > $product->enddate - DAYSECS * 3) {
-                    // expiring
+                } else if (time() > $product->enddate - DAYSECS * 3) {
+                    // Expiring.
                     $statusclass = 'cs-product-expiring';
                 } else {
-                    // running
+                    // Running.
                     $statusclass = 'cs-product-running';
                     $runningcount++;
                 }
             }
 
             $str .= '<tr class="shop-productinstance-row '.$statusclass.'" valign="top">';
-            $str.= '<td class="cell" align="center">';
+            $str .= '<td class="cell" align="center">';
             $str .= '<img src="'.$product->get_thumb_url().'" vspace="10" border="0" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell" align="left">';
             $str .= $product->code;
-            $str . '</td>';
+            $str .= '</td>';
             $str .= '<td class="name cell" align="left">';
             $str .= $product->name;
             $str .= '</td>';

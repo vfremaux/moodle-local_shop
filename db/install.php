@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 function xmldb_local_shop_install() {
     global $DB;
@@ -58,8 +57,8 @@ function xmldb_local_shop_install() {
               'fromstate' => 'RECEIVED',
               'tostate' => 'CANCELLED'),
 
-        // bills
-        
+        // Bills.
+
         array('element' => 'bill',
               'fromstate' => 'PLACED',
               'tostate' => 'PENDING'),
@@ -119,7 +118,7 @@ function xmldb_local_shop_install() {
               'fromstate' => 'SOLDOUT',
               'tostate' => 'PAYBACK'),
 
-        // Post online payment failure resolution
+        // Post online payment failure resolution.
         array('element' => 'bill',
               'fromstate' => 'REFUSED',
               'tostate' => 'PENDING'),
@@ -131,30 +130,36 @@ function xmldb_local_shop_install() {
     foreach ($flowcodes as $fc) {
         $DB->insert_record('local_flowcontrol', (object)$fc);
     }
-    
-    // create the teacherowner role if absent
+
+    // Create the teacherowner role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'courseowner'))) {
-        $courseownerid = create_role(get_string('courseowner', 'local_shop'), 'courseowner', str_replace("'", "\\'", get_string('courseownerdesc', 'local_shop')), 'editingteacher');
+        $rolestr = get_string('courseowner', 'local_shop');
+        $roledesc = get_string('courseownerdesc', 'local_shop');
+        $courseownerid = create_role($rolestr, 'courseowner', str_replace("'", "\\'", $roledesc), 'editingteacher');
         set_role_contextlevels($courseownerid, array(CONTEXT_COURSECAT, CONTEXT_COURSE));
         $editingteacher   = $DB->get_record('role', array('shortname' => 'editingteacher'));
         role_cap_duplicate($editingteacher, $courseownerid);
     }
 
-    // create the categoryowner role if absent
+    // Create the categoryowner role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'categoryowner'))) {
-        $categoryownerid = create_role(get_string('categoryowner', 'local_shop'), 'categoryowner', str_replace("'", "\\'", get_string('categoryownerdesc', 'local_shop')), 'coursecreator');
+        $rolestr = get_string('categoryowner', 'local_shop');
+        $roledesc = get_string('categoryownerdesc', 'local_shop');
+        $categoryownerid = create_role($rolestr, 'categoryowner', str_replace("'", "\\'", $roledesc), 'coursecreator');
         set_role_contextlevels($categoryownerid, array(CONTEXT_COURSECAT));
         $coursecreator   = $DB->get_record('role', array('shortname' => 'coursecreator'));
         role_cap_duplicate($coursecreator, $categoryownerid);
     }
 
-    // create the sales manager role if absent
+    // Create the sales manager role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'sales'))) {
-        $salesroleid = create_role(get_string('salesrolename', 'local_shop'), 'sales', str_replace("'", "\\'", get_string('salesroledesc', 'local_shop')), '');
-        set_role_contextlevels($salesroleid, array(CONTEXT_BLOCK,CONTEXT_SYSTEM));
+        $rolestr = get_string('salesrolename', 'local_shop');
+        $roledesc = get_string('salesroledesc', 'local_shop');
+        $salesroleid = create_role($rolestr, 'sales', str_replace("'", "\\'", $roledesc), '');
+        set_role_contextlevels($salesroleid, array(CONTEXT_BLOCK, CONTEXT_SYSTEM));
     }
 
-    // Create first catalog for default shop
+    // Create first catalog for default shop.
     $catalog = new StdClass;
     $catalog->name = get_string('defaultcatalogname', 'local_shop');
     $catalog->description = get_string('defaultcatalogdescription', 'local_shop');
@@ -186,7 +191,7 @@ function xmldb_local_shop_install() {
     $shop->sortorder = 1;
     $shop->id = $DB->insert_record('local_shop', $shop);
 
-    // Copy old data model from block model
+    // Copy old data model from block model.
     $dbman = $DB->get_manager();
     $table = new xmldb_table('block_shop_catalog');
     if ($dbman->table_exists($table)) {
@@ -293,7 +298,8 @@ function xmldb_local_shop_install() {
         $table = new xmldb_table('flowcontrol');
         if ($fcs = $DB->get_records('flowcontrol')) {
             foreach ($fcs as $fc) {
-                if (!$DB->record_exists('local_flowcontrol', array('element' => $fc->element, 'fromstate' => $fc->fromstate, 'tostate' => $fc->tostate))) {
+                $params = array('element' => $fc->element, 'fromstate' => $fc->fromstate, 'tostate' => $fc->tostate);
+                if (!$DB->record_exists('local_flowcontrol', $params)) {
                     $DB->insert_record('local_flowcontrol', $fc);
                 }
             }

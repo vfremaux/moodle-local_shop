@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -25,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @Todo : check use of this file and redraw to standard country listing
  */
+defined('MOODLE_INTERNAL') || die();
 
 $country = array (
 

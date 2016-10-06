@@ -14,49 +14,53 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_card
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/local/shop/paymodes/paymode.class.php';
+require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
 /**
-* A generic sample class for credic card payment
-* not enabled in reality.
-*/
-class shop_paymode_card extends shop_paymode{
+ * A generic sample class for credic card payment
+ * not enabled in reality.
+ */
+class shop_paymode_card extends shop_paymode {
 
-    function __construct(&$shop) {
-        // GENERIC PLUGIN. DO NOT ENABLE
+    public function __construct(&$shop) {
+        // GENERIC PLUGIN. DO NOT ENABLE!
         parent::__construct('card', $shop, false);
     }
 
-    // prints a payment porlet in an order form
-    function print_payment_portlet(&$billdata) {
+    // Prints a payment porlet in an order form.
+    public function print_payment_portlet(&$billdata) {
+        return;
     }
 
-    // prints a payment porlet in an order form
-    function print_invoice_info(&$billdata = null) {
+    // Prints a payment porlet in an order form.
+    public function print_invoice_info(&$billdata = null) {
+        return;
     }
 
-    function print_complete() {
-        echo compile_mail_template('bill_complete_text', array(), 'local_shop') ; 
+    public function print_complete() {
+        echo compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
-    // processes a payment return
-    function process() {
+    // Processes a payment return.
+    public function process() {
+        return;
     }
 
-    // processes a payment asynchronoous confirmation
-    function process_ipn() {
+    // Processes a payment asynchronoous confirmation.
+    public function process_ipn() {
+        return;
     }
 
-    // provides global settings to add to shop settings when installed
-    function settings(&$settings) {
+    // Provides global settings to add to shop settings when installed.
+    public function settings(&$settings) {
+        return;
     }
 }

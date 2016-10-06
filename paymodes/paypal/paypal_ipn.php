@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_paypal
  * @category   local
@@ -23,23 +21,24 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// get the context back
+defined('MOODLE_INTERNAL') || die();
 
-/**
-* this process implements the IPN handler for Paypal asynchronous returns.
-* It has no reference to block id.
-*/
+// Get the context back.
 
+/*
+ * this process implements the IPN handler for Paypal asynchronous returns.
+ * It has no reference to block id.
+ */
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/paypal/paypal.class.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
-include_once($CFG->dirroot.'/local/shop/front/lib.php');
+require_once($CFG->dirroot.'/local/shop/front/lib.php');
 
-// Setup trace
+// Setup trace.
 
-debug_trace('Success Controller : IPN Paypal return');
+shop_trace('Success Controller : IPN Paypal return');
 
-// Keep eventual intruders out
+// Keep eventual intruders out.
 
 if (empty($_POST) or !empty($_GET)) {
     die("Sorry, you can not use the script that way.");

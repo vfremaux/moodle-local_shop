@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A bill item is a single order line.
  *
  * @package     local_shop
  * @category    local
@@ -27,37 +23,40 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 
 /**
- * A Bill Item represents an order line with all the context that was there when 
+ * A Bill Item represents an order line with all the context that was there when
  * it was created. It stores a freezed image of the catalog item (may be even disconnected from
  * deleted catalogs) for reference to a stable price table.
  *
  */
 class BillItem extends ShopObject {
 
-    static $table = 'local_shop_billitem';
+    protected static $table = 'local_shop_billitem';
 
-    protected $bill;
+    public $bill;
 
     public $catalogitem;
 
-    var $productiondata;
+    protected $productiondata;
 
-    var $customerdata;
+    protected $customerdata;
 
-    var $actionparams; // parameters decoded from handler params
+    public $actionparams; // Parameters decoded from handler params.
 
-    function __construct($idorrec, &$bill = null, $ordering = -1) {
+    public function __construct($idorrec, &$bill = null, $ordering = -1) {
         global $DB;
 
         $this->bill = $bill;
 
-        // here we make some assertions to check the billitem integrity
+        // Here we make some assertions to check the billitem integrity.
         parent::__construct($idorrec, self::$table);
 
         if (!empty($this->record->id)) {
@@ -65,13 +64,15 @@ class BillItem extends ShopObject {
                 $bill = new Bill($this->record->billid);
             }
 
-            if (!assert(($this->record->unitcost * $this->record->quantity) == $this->record->totalprice, " ({$this->record->unitcost} * {$this->record->quantity}) == {$this->record->totalprice} ")) {
-                print_object($this->record);
+            $message = " ({$this->record->unitcost} * {$this->record->quantity}) == {$this->record->totalprice} ";
+            if (!assert(($this->record->unitcost * $this->record->quantity) == $this->record->totalprice, $message)) {
                 debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             }
 
-            // reydrates the original catalog item stored when bill was created.
-            // This ensures getting exact prices from the moment, event if changed in catalog inbetween.
+            /*
+             * Reydrates the original catalog item stored when bill was created.
+             * This ensures getting exact prices from the moment, event if changed in catalog inbetween.
+             */
             $catalogitemdata = base64_decode($this->record->catalogitem);
             $catalogitemdata = str_replace('block_shop_catalogitem', 'local_shop_catalogitem', $catalogitemdata);
             $this->catalogitem = unserialize($catalogitemdata);
@@ -83,7 +84,7 @@ class BillItem extends ShopObject {
                     $pairs = explode('&', $this->productiondata->handlerparams);
                     if (!empty($pairs)) {
                         foreach ($pairs as $p) {
-                            list($param,$value) = explode('=', $p);
+                            list($param, $value) = explode('=', $p);
                             $this->actionparams[$param] = $value;
                         }
                     }
@@ -96,18 +97,17 @@ class BillItem extends ShopObject {
                 throw new \Exception('A bill is expected to build a new BillItem');
             }
 
-            // Try whenever possible drive ordering from outside without DB calls.... 
             if ($ordering == -1) {
-                if ($maxordering = $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $bill->id))) {
-                    $this->ordering = $maxordering->ordering + 1;
-                } else {
-                    $this->ordering = 1;
-                }
+                $this->ordering = BillItem::last_ordering($bill->id);
             } else {
                 $this->ordering = $ordering;
             }
-            // first creation of a record
-            // itemcode is NOT a legacy record field, but comes from shopping front
+
+            /*
+             * first creation of a record
+             * itemcode is NOT a legacy record field, but comes from shopping front
+             */
+            $this->record = new \StdClass;
             $this->record->type = $idorrec->type;
 
             if ($idorrec->type != 'BILLING') {
@@ -134,8 +134,10 @@ class BillItem extends ShopObject {
                 $this->record->quantity = $idorrec->quantity;
                 $this->record->abstract = $this->catalogitem->name;
                 $this->record->description = $this->catalogitem->description;
-                $this->productiondata = $idorrec->productiondata; // this gets production data from shop front end. Essentially user definitions;
-                $this->productiondata->handlerparams = $this->catalogitem->handlerparams; // this adds a freezed copy of original handler params.
+                // This gets production data from shop front end. Essentially user definitions.
+                $this->productiondata = $idorrec->productiondata;
+                // This adds a freezed copy of original handler params.
+                $this->productiondata->handlerparams = $this->catalogitem->handlerparams;
                 if (!empty($this->productiondata->handlerparams)) {
                     if (is_array($this->productiondata->handlerparams)) {
                         $this->actionparams = $this->productiondata->handlerparams;
@@ -143,72 +145,73 @@ class BillItem extends ShopObject {
                         $pairs = explode('&', $this->productiondata->handlerparams);
                         if (!empty($pairs)) {
                             foreach ($pairs as $p) {
-                                list($param,$value) = explode('=', $p);
+                                list($param, $value) = explode('=', $p);
                                 $this->actionparams[$param] = $value;
                             }
                         }
                     }
                 }
-    
-                $this->productiondata->catalogitemdata = $this->catalogitem->productiondata; // this passes some production params from catalog.
+
+                // This passes some production params from catalog.
+                $this->productiondata->catalogitemdata = $this->catalogitem->productiondata;
                 $this->customerdata = $idorrec->customerdata;
-    
-                // deshydrates sub structures in record for storage
+
+                // Deshydrates sub structures in record for storage.
                 $this->record->catalogitem = base64_encode(serialize($this->catalogitem));
                 $this->record->productiondata = base64_encode(serialize($this->productiondata));
-                $this->record->customerdata = base64_encode(serialize($this->customerdata)); // customer data comes from product requirements
+
+                // Customer data comes from product requirements.
+                $this->record->customerdata = base64_encode(serialize($this->customerdata));
             }
         }
     }
 
-    function move($dir, $z) {
-       global $DB;
+    public function move($dir, $z) {
+        global $DB;
 
-       $sql = "
-          UPDATE 
-             {local_shop_billitem} 
-          SET
-             ordering = ordering + $dir
-          WHERE
-             ordering = ? AND
-             billid = ?
-       ";
-       $DB->execute($sql, array($z, $this->id));
+        $sql = "
+            UPDATE
+                {local_shop_billitem}
+            SET
+                ordering = ordering + $dir
+            WHERE
+                ordering = ? AND
+                billid = ?
+        ";
+        $DB->execute($sql, array($z, $this->id));
     }
 
-    function get_price() {
+    public function get_price() {
         return $this->catalogitem->get_price($this->record->quantity);
     }
-    
-    function get_taxed_price() {
+
+    public function get_taxed_price() {
         return $this->catalogitem->get_taxed_price($this->record->quantity);
     }
 
-    function get_tax_amount() {
-        return $this->catalogitem->get_taxed_price($this->record->quantity) - $this->catalogitem->get_price($this->record->quantity);
+    public function get_tax_amount() {
+        $taxed = $this->catalogitem->get_taxed_price($this->record->quantity);
+        $untaxed = $this->catalogitem->get_price($this->record->quantity);
+        return $taxed - $untaxed;
     }
 
-    function get_totaltax() {
+    public function get_totaltax() {
         return $this->get_tax_amount() * $this->record->quantity;
     }
 
-    function get_totaltaxed() {
+    public function get_totaltaxed() {
         return $this->get_taxed_price($this->record->quantity) * $this->record->quantity;
     }
 
-    function get_customerid() {
+    public function get_customerid() {
         if (empty($this->bill)) {
-            // rehydrates if necessary.
+            // Rehydrates if necessary.
             $this->bill = new Bill($this->billid);
         }
         return $this->bill->customerid;
     }
 
-    function save() {
-        parent::save();
-    }
-
-    function delete() {
+    public function delete() {
         // Delete products currently attached to.
         $products = Product::get_instances(array('currentbillitemid' => $this->id));
         if ($products) {
@@ -220,7 +223,13 @@ class BillItem extends ShopObject {
         parent::delete();
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function last_ordering($billid) {
+        global $DB;
+
+        return $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $billid));
+    }
+
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 }

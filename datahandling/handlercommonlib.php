@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 define('NO_HANDLER', 0);
 define('EMPTY_HANDLER', '');
@@ -47,9 +46,10 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
         return false;
     }
 
-    if ($enrols = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+    $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+    if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
         $enrol = reset($enrols);
-        $enrolplugin = enrol_get_plugin('manual'); // the enrol object instance
+        $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
     } else {
         shop_trace("[{$transactionid}] Production Process Error : Customer support enrol failed // no enrol plugin.");
         return false;
@@ -76,13 +76,13 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
 function shop_create_customer_user(&$data, &$customer, &$newuser) {
     global $CFG, $DB;
 
-    // Create Moodle User but no assignation
+    // Create Moodle User but no assignation.
     $newuser = new StdClass();
     $newuser->username = shop_generate_username($data->customer);
     $customer->password = generate_password(8);
     $newuser->city = $data->customer->city;
-    $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country ;
-    $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang ;
+    $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country;
+    $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang;
     $newuser->firstname = $data->customer->firstname;
     $newuser->lastname = $data->customer->lastname;
     $newuser->email = $data->customer->email;
@@ -93,18 +93,21 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $newuser->timemodified = time();
     $newuser->mnethostid = $CFG->mnet_localhost_id;
 
-    if (!$olduser = $DB->get_record('user', array('firstname' => $newuser->firstname, 'lastname' => $newuser->lastname, 'email' => $newuser->email))) {
+    $params = array('firstname' => $newuser->firstname, 'lastname' => $newuser->lastname, 'email' => $newuser->email);
+    if (!$olduser = $DB->get_record('user', $params)) {
         $newuser->id = $DB->insert_record('user', $newuser);
     } else {
         $newuser->id = $olduser->id;
         $DB->update_record('user', $newuser);
     }
 
-    if (!$newuser->id) return false;
+    if (!$newuser->id) {
+        return false;
+    }
 
     $data->user = get_complete_user_data('username', $newuser->username);
 
-    // this will force cron to generate a password and send it to user's email 
+    // This will force cron to generate a password and send it to user's email.
     set_user_preference('create_password', 1, $data->user->id);
 
     if (!empty($CFG->{'auth_'.$newuser->auth.'_forcechangepassword'})) {
@@ -112,7 +115,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     }
     update_internal_user_password($data->user, $customer->password);
 
-    // bind customer record to Moodle userid
+    // Bind customer record to Moodle userid.
     $customer->hasaccount = $newuser->id;
     $DB->update_record('local_shop_customer', $customer);
 
@@ -136,17 +139,19 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
     if (!$customer = $DB->get_record('local_shop_customer', array('id' => $billitem->get_customerid()))) {
         return false;
     }
-    if (!$customeruser = $DB->get_record('user', array('id' => $customer->hasaccount))) {
+    if (!$DB->get_record('user', array('id' => $customer->hasaccount))) {
         return false;
     }
 
     $customercontext = context_user::instance($customer->hasaccount);
     $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
-    $participant->username = shop_generate_username($participant); // makes it unique
+    $participant->username = shop_generate_username($participant); // Makes it unique.
 
-    // Let cron generate passwords.
-    // $p->password = hash_internal_user_password(generate_password());
+    /*
+     * Let cron generate passwords.
+     * @see hash_internal_user_password
+     */
 
     $participant->lang = $CFG->lang;
     $participant->deleted = 0;
@@ -160,7 +165,7 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
 
     if ($participant->id = $DB->insert_record('user', $participant)) {
 
-        // passwords will be created and sent out on cron.
+        // Passwords will be created and sent out on cron.
         $pref = new StdClass();
         $pref->userid = $participant->id;
         $pref->name = 'create_password';
@@ -174,9 +179,11 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
         $DB->insert_record('user_preferences', $pref);
     }
 
-    // Assign role to customer for behalf on those users.
-    // Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to 
-    // sync the user delegation handling.
+    /*
+     * Assign role to customer for behalf on those users.
+     * Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to
+     * sync the user delegation handling.
+     */
     $usercontext = context_user::instance($participant->id);
     $now = time();
     role_assign($supervisorrole->id, $customer->hasaccount, $usercontext->id, '', 0, $now);

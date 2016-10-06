@@ -55,8 +55,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         // Get customersupportcourse designated by handler internal params
 
         if (!isset($data->actionparams['customersupport'])) {
-            $theShop = new Shop($data->shopid);
-            $data->actionparams['customersupport'] = 0 + @$theShop->defaultcustomersupportcourse;
+            $theshop = new Shop($data->shopid);
+            $data->actionparams['customersupport'] = 0 + @$theshop->defaultcustomersupportcourse;
         }
 
         // Check customer state and create account if necessary
@@ -68,7 +68,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                 // We guess if different non null id that the customer is using a new account. This should not really be possible
                 $customer->hasaccount = $USER->id;
                 $productionfeedback->public = get_string('fixaccount', 'local_shop', $USER->username);
-                $productionfeedback->private = get_string('fixnaccount', 'local_shop', $USER->username);
+                $productionfeedback->private = get_string('fixaccount', 'local_shop', $USER->username);
                 $productionfeedback->salesadmin = get_string('fixaccount', 'local_shop', $USER->username);
                 $DB->update_record('local_shop_customer', $customer);
             } else {
@@ -133,7 +133,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         }
 
         if (!$supervisorrole = $DB->get_record('role', array('shortname' => $data->actionparams['supervisor']))) {
-            shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure : Supervisor Role Do Not Exist [{$data->actionparams['supervisor']}].");
+            $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure :";
+            $message .= " Supervisor Role Do Not Exist [{$data->actionparams['supervisor']}].";
+            shop_trace($message);
             print_error(get_string('errorsupervisorrole', 'shophandlers_std_setuponecoursesession'));
         }
 
@@ -143,16 +145,20 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
 
         // Get manual enrol plugin to that course for user enrolments.
 
-        if ($enrols = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+        $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+        if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
-            $enrolplugin = enrol_get_plugin('manual'); // the enrol object instance
+            $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
         }
 
         if (empty($enrol)) {
             shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Failure : Not enrollable instance");
-            $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_setuponecoursesession', 'Code : ENROL MISSING');
-            $productionfeedback->private = get_string('productiondata_failure_private', 'shophandlers_std_setuponecoursesession', $course->id);
-            $productionfeedback->salesadmin = get_string('productiondata_failure_sales', 'shophandlers_std_setuponecoursesession', $course->id);
+            $fb = get_string('productiondata_failure_public', 'shophandlers_std_setuponecoursesession', 'Code : ENROL MISSING');
+            $productionfeedback->public = $fb;
+            $fb = get_string('productiondata_failure_private', 'shophandlers_std_setuponecoursesession', $course->id);
+            $productionfeedback->private = $fb;
+            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_setuponecoursesession', $course->id);
+            $productionfeedback->salesadmin = $fb;
             return $productionfeedback;
         }
 
@@ -165,10 +171,14 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                 foreach ($participants as $p) {
                     if (!$user = $DB->get_record('user', array('email' => $p->email))) {
                         $courseusers[$roleshort][] = shop_create_moodle_user($p, $data, $supervisorrole);
-                        shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Creating user [{$p->username}].");
+                        $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
+                        $message .= " Creating user [{$p->username}].";
+                        shop_trace($message);
                     } else {
                         $courseusers[$roleshort][] = $user;
-                        shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Registering existing user [{$user->username}].");
+                        $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
+                        $message .= " Registering existing user [{$user->username}].";
+                        shop_trace($message);
                     }
                 }
             }

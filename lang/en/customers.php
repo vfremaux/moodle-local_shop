@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['account'] = 'Account';
 $string['addcustomer'] = 'Add a customer';
@@ -21,6 +35,7 @@ $string['from'] = 'from (date)';
 $string['hour'] = '(hours)';
 $string['identification'] = 'Identification ';
 $string['lastmove'] = 'Last move';
+$string['mark'] = 'Mark';
 $string['moodleaccount'] = 'Moodle account';
 $string['newcustomer'] = 'New customer account';
 $string['newcustomeraccount'] = 'Create a new customer account';
@@ -41,6 +56,7 @@ $string['tendays'] = 'ten days';
 $string['threemonths'] = 'three months';
 $string['totalamount'] = 'Total amount';
 $string['transactionuniquekey'] = 'Unique transaction key';
+$string['unmark'] = 'Unmark';
 $string['updatecustomeraccount'] = 'Update a customer account';
 $string['viewmoodleaccount'] = 'See Moodle account';
 $string['zip'] = 'Zip';

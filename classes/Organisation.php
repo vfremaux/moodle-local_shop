@@ -14,12 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
  *
  * @package     local_shop
  * @category    local
@@ -30,7 +25,11 @@ defined('MOODLE_INTERNAL') || die();
  * @todo : Implement organisation objectivation
  */
 
-include_once $CFG->dirroot.'/local/shop/classes/ShopObject.php';
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/shop/classes/ShopObject.php');
 
 class Organisation extends ShopObject {
 }

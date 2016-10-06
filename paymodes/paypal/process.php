@@ -21,7 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-//Get DATA param string from Payal API and redirect to shop
+// Get DATA param string from Payal API and redirect to shop.
 
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/paypal/paypal.class.php');

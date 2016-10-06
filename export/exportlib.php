@@ -14,30 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-class shop_export {
+abstract class shop_export {
 
-    var $filename;
-    
-    var $data;
+    protected $filename;
 
-    var $datadesc;
+    protected $data;
+
+    protected $datadesc;
 
     /**
-    * array of export options
-    * 'addtimestamp' => 0/1
-    */
-    var $options;
+     * array of export options
+     * 'addtimestamp' => 0/1
+     */
+    protected $options;
 
-    function __construct($data, $datadesc, $options) {
+    public function __construct($data, $datadesc, $options) {
 
         $this->filename = $datadesc[0]['filename'];
         $this->data = $data;
@@ -46,20 +45,17 @@ class shop_export {
 
         if (!empty($options['addtimestamp'])) {
             $parts = pathinfo($this->filename);
-            $this->filename = $parts['filename'].'-'.date('Ymdhi', time()).'.'.$parts['extension']; 
+            $this->filename = $parts['filename'].'-'.date('Ymdhi', time()).'.'.$parts['extension'];
         }
-        
+
         if (empty($this->datadesc[0]['purpose'])) {
             $this->datadesc[0]['purpose'] = 'default';
         }
     }
 
-    function open_export() {
-    }
+    abstract public function open_export();
 
-    function render() {
-    }
-    
-    function close_export() {
-    }
+    abstract public function render();
+
+    abstract public function close_export();
 }

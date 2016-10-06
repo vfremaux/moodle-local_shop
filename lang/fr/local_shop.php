@@ -1,7 +1,21 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['shop:salesadmin'] = 'Est administrateur de ventes';
-$string['shop:beassigned'] = 'Est assigné'; // check this is really used
+$string['shop:beassigned'] = 'Est assigné'; // Check this is really used.
 $string['shop:accessallowners'] = 'Peut voir toutes les données des sous-vendeurs';
 $string['shop:discountagreed'] = 'Bénéficie d\'une remise de base sur les produits';
 $string['shop:seconddiscountagreed'] = 'Bénéficie d\'une meilleure remise sur les produits';
@@ -73,7 +87,6 @@ $string['billsdeleted'] = 'Factures/commandes effacées';
 $string['billsearch'] = 'Factures : Recherche';
 $string['billseq'] = 'Numero d\'ordre';
 $string['billspending'] = 'Factures : En cours';
-$string['billtitle'] = 'Titre de la facture';
 $string['billtotal'] = 'Total Facture';
 $string['blancktransactioncode'] = 'Le code de transaction n\'a jamais été <br>généré (factures manuelles)';
 $string['bundle'] = 'Assemblage';
@@ -90,7 +103,8 @@ $string['category'] = 'Catégories';
 $string['categorydescription'] = 'Description ';
 $string['categoryname'] = 'Nom de la catégorie ';
 $string['categoryowner'] = 'Propriétaire de catégorie';
-$string['categoryownerdesc'] = 'Le propriétaire d\'une catégorie peut gérer le contenu de sa catégorie et inviter des enseignants et d\'autres créateurs de cours. Il en reste respondable.';
+$string['categoryownerdesc'] = 'Le propriétaire d\'une catégorie peut gérer le contenu de sa catégorie et
+inviter des enseignants et d\'autres créateurs de cours. Il en reste respondable.';
 $string['catname'] = 'Nom';
 $string['catnum'] = 'Numéro';
 $string['chooseall'] = 'Tout';
@@ -131,6 +145,7 @@ $string['configsellerzip'] = 'Le code postal du commerçant';
 $string['configshopcaption'] = 'Nom de boutique';
 $string['configshopdescription'] = 'Description du service commercial';
 $string['configtestmode'] = 'Permet d\'effectuer des opérations en mode test';
+$string['configtestoverride'] = '¨Permet de lever exceptionnellement le blocage d\'achat du mode test';
 $string['configtitle'] = 'Titre du bloc ';
 $string['configtvaeurope'] = 'Le taux de tva européen';
 $string['configusedelegation'] = 'Si activé, les utilisateurs peuvent détenir des produits et les vendre pour leur compte.';
@@ -166,15 +181,15 @@ $string['discounts'] = 'Réglages des remises';
 $string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour ristourne';
 $string['dispo'] = 'Dispo';
 $string['dosearch'] = 'Rechercher';
-$string['edit_categories']= 'Edition des catégories';
+$string['edit_categories'] = 'Edition des catégories';
 $string['editbundle'] = 'Edition du lot';
 $string['editcatalog'] = 'Modification de la description du catalogue';
-$string['editcategory']= 'Edition des catégories';
+$string['editcategory'] = 'Edition des catégories';
 $string['editproduct'] = 'Edition du produit';
 $string['editset'] = 'Edition de l\'assemblage';
 $string['editshipping'] = 'Edition d\'une règle de port';
 $string['editshippingzone'] = 'Edition de zone de port dû';
-$string['editshop']= 'Modifier une boutique';
+$string['editshop'] = 'Modifier une boutique';
 $string['edittaxe'] = 'Edition d\'une taxe';
 $string['enablehandler'] = 'Activer le traitement d\'achat';
 $string['enablepaymodes'] = 'Modes de paiement ';
@@ -365,7 +380,7 @@ $string['standalone'] = 'Catalogue indépendant';
 $string['status'] = 'Statut ';
 $string['stock'] = 'Stock';
 $string['taxcode'] = 'Code Taxe :';
-$string['taxcountry'] ='Pays dans lequel la taxe est appliquée :';
+$string['taxcountry'] = 'Pays dans lequel la taxe est appliquée :';
 $string['taxe'] = 'Taxe';
 $string['taxes'] = 'Taxes';
 $string['taxformula'] = 'Formule permettant de calculer le prix TTC des produits';
@@ -373,6 +388,7 @@ $string['taxname'] = 'Nom de la taxe :';
 $string['taxratio'] = 'Ratio de la taxe :';
 $string['tendays'] = 'dix jours';
 $string['testmodeactive'] = 'Le service de vente de Moodle est en mode test. Nous n\'autorisons pas les paiements dans ce mode hormis les administrateurs pour une fonction de test.';
+$string['testoverride'] = 'Suppression du verrou de test';
 $string['threemonths'] = 'trois mois';
 $string['thumbnail'] = 'Vignette :';
 $string['timetodo'] = 'Délai de facturation ';
@@ -414,7 +430,7 @@ $string['worktype'] = 'Type de prestation ';
 
 $string['noproducts'] = "
 <h3>Catalogue vide</h3>
-<p>Le catalogue produit ne contient aucune entrée. 
+<p>Le catalogue produit ne contient aucune entrée.
 ";
 
 $string['lettering_help'] = '
@@ -435,8 +451,9 @@ $string['customer_welcome_tpl'] = '
 ';
 
 $string['delete_catalog_dialog_tpl'] = '
-Voulez-vous vraiment supprimer ce catalogue ?\n
-Catalogues maîtres : Tous les catalogues liés seront 
+Voulez-vous vraiment supprimer ce catalogue ?
+
+Catalogues maîtres : Tous les catalogues liés seront
 également supprimés.
 ';
 
@@ -452,25 +469,25 @@ Cette facture n\'a pas d\'éléments taxés
 
 $string['no_bill_attachements_tpl'] = '
 <h5>Pas d\'éléments attachés</h5>
-<p>Vous pouvez attacher des fichiers ou autre documents à la facture. Utilisez le lien ci-dessous. Vous pouvez également attacher un fichier ou document (un seul) à chacun des éléments de facture. Utilisez l\'icone <img src="images/icons/attach.gif"> de la ligne de commandes des entrées de facture. 
+<p>Vous pouvez attacher des fichiers ou autre documents à la facture. Utilisez le lien ci-dessous. Vous pouvez également attacher un fichier ou document (un seul) à chacun des éléments de facture. Utilisez l\'icone <img src="images/icons/attach.gif"> de la ligne de commandes des entrées de facture.
 ';
 
 $string['no_bills_in_account_tpl'] = '
 <h3>Aucune facture</h3>
-<p>Vous n\'avez jamais été facturé par notre société. 
+<p>Vous n\'avez jamais été facturé par notre société.
 ';
 
 $string['no_categories_tpl'] = '
-<p>Aucune catégorie n\'est définie dans le catalogue. 
+<p>Aucune catégorie n\'est définie dans le catalogue.
 ';
 
 $string['no_orders_in_acocunt_tpl'] = '
 <h3>Pas de commandes</h3>
-<p>Vous pouvez créer une commande par le lien "nouvelle commande" ci-dessous. 
+<p>Vous pouvez créer une commande par le lien "nouvelle commande" ci-dessous.
 ';
 
 $string['no_products_in_set_tpl'] = '
-<p>Aucun produit enregistré dans l\'assemblage. 
+<p>Aucun produit enregistré dans l\'assemblage.
 ';
 
 $string['no_products_tpl'] = '
@@ -480,12 +497,12 @@ $string['no_products_tpl'] = '
 
 $string['no_product_shippings_tpl'] = '
 <h3>Frais de port</h3>
-<p>Le catalogue ne définit pas de frais d\'envoi pour ce produit. 
+<p>Le catalogue ne définit pas de frais d\'envoi pour ce produit.
 ';
 
 $string['no_zones_tpl'] = '
 <h3>Zones de port</h3>
-<p>Le catalogue ne définit aucune zone de livraison. 
+<p>Le catalogue ne définit aucune zone de livraison.
 ';
 
 $string['out_euro_zone_advice_tpl'] = '
@@ -493,7 +510,7 @@ $string['out_euro_zone_advice_tpl'] = '
 ';
 
 $string['post_billing_message_tpl'] = '
-vous remercie de votre achat. Votre commande est actuellement en cours de vérification ...
+vous remercie de votre achat. Votre commande est actuellement en cours de vérification...
 <br/>
 ';
 
@@ -501,7 +518,7 @@ $string['sales_feedback_tpl'] = '
 <h3><%%SELLER%%></h3>
 <h4>Commande client</h2>
 
-<p>Vous avez effectué une commande sur le serveur <%%SERVER%%>. 
+<p>Vous avez effectué une commande sur le serveur <%%SERVER%%>.
 
 <p><u>Identification Client :</u>
 <hr/>
@@ -529,7 +546,7 @@ $string['search_bill_failed_tpl'] = '
 
 $string['search_product_failed_tpl'] = '
 <h3 class="error">Erreur dans la recherche</h3>
-<p>Aucun produit ne correspond aux critères de recherche que vous avez défini : 
+<p>Aucun produit ne correspond aux critères de recherche que vous avez défini :
 <p><code>recherche par : {$a->by} valeur : <?php echo  {$a->value} ?></code>
 <p>Veuillez modifier vos critères et retenter une recherche.
 ';
@@ -538,7 +555,7 @@ $string['transaction_confirm_tpl'] = '
 <h3><%%SELLER%%></h3>
 <h4>Confirmation commande client</h4>
 
-<p>La commande ci-dessous a été facturée sur le site <%%SERVER%%> : 
+<p>La commande ci-dessous a été facturée sur le site <%%SERVER%%> :
 
 <p><u>Identification Client :</u>
 <hr>
@@ -594,19 +611,19 @@ $string['discountthreshold_help'] = '
 Le seuil du chiffre d\'affaire pour activer la première ristourne.
 ';
 
-
 global $CFG;
-include($CFG->dirroot.'/local/shop/lang/fr/front.php');
-include($CFG->dirroot.'/local/shop/lang/fr/catalogs.php');
-include($CFG->dirroot.'/local/shop/lang/fr/shops.php');
-include($CFG->dirroot.'/local/shop/lang/fr/bills.php');
-include($CFG->dirroot.'/local/shop/lang/fr/products.php');
-include($CFG->dirroot.'/local/shop/lang/fr/purchasemanager.php');
-include($CFG->dirroot.'/local/shop/lang/fr/customers.php');
-include($CFG->dirroot.'/local/shop/lang/fr/tax.php');
-include($CFG->dirroot.'/local/shop/lang/fr/shipzones.php');
+require($CFG->dirroot.'/local/shop/lang/fr/front.php');
+require($CFG->dirroot.'/local/shop/lang/fr/catalogs.php');
+require($CFG->dirroot.'/local/shop/lang/fr/shops.php');
+require($CFG->dirroot.'/local/shop/lang/fr/bills.php');
+require($CFG->dirroot.'/local/shop/lang/fr/products.php');
+require($CFG->dirroot.'/local/shop/lang/fr/purchasemanager.php');
+require($CFG->dirroot.'/local/shop/lang/fr/customers.php');
+require($CFG->dirroot.'/local/shop/lang/fr/tax.php');
+require($CFG->dirroot.'/local/shop/lang/fr/shipzones.php');
 
-// currencies 
+// Currencies.
+
 $string['currency'] = 'Monnaie ';
 $string['EUR'] = 'Euro';
 $string['CHF'] = 'Franc Suisse';
@@ -625,7 +642,7 @@ $string['MAD'] = 'Dinar (Maroc, marché intérieur)';
 
 $string['EURsymb'] = '&euro;';
 $string['CHFsymb'] = 'F. (CH)';
-$string['USDsymb'] = '$ (US) ';
+$string['USDsymb'] = '$ (US)';
 $string['CADsymb'] = '$ (CA)';
 $string['AUDsymb'] = '$ (AU)';
 $string['GPBsymb'] = '£';
