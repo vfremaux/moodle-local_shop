@@ -20,7 +20,7 @@
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
+ *
  * Display all defined zones within the catalog.
  */
 
@@ -33,8 +33,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 use local_shop\Catalog;
 use local_shop\CatalogShipZone;
 
-// get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get the block reference and key context.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -67,13 +67,13 @@ $mainrenderer = $PAGE->get_renderer('local_shop');
 
 echo $OUTPUT->header();
 
-if ($zones = CatalogShipZone::get_instances(array('catalogid' => $theCatalog->id))) {
+if ($zones = CatalogShipZone::get_instances(array('catalogid' => $thecatalog->id))) {
 
     echo $mainrenderer->catalog_choice($url);
 
     echo $OUTPUT->heading(get_string('catalog', 'local_shop'));
 
-    echo $renderer->catalog_data($theCatalog);
+    echo $renderer->catalog_data($thecatalog);
 
     echo $OUTPUT->heading(get_string('shipzones', 'local_shop'));
 
@@ -83,16 +83,16 @@ if ($zones = CatalogShipZone::get_instances(array('catalogid' => $theCatalog->id
     echo $OUTPUT->notification(get_string('nozones', 'local_shop'));
 }
 
-// Add instance link
+// Add instance link.
 
 $addshippingzonestr = get_string('addshippingzone', 'local_shop');
 $addzoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', array('what' => 'add'));
 echo '<div class="addlink"><a href="'.$addzoneurl.'">'.$addshippingzonestr.'</a></div>';
 
-// Navigation return
+// Navigation return.
 
 echo '<center>';
-echo $OUTPUT->single_button(new moodle_url('/local/shop/index.php'), get_string('backtoshopadmin', 'local_shop'), 'get'); 
+echo $OUTPUT->single_button(new moodle_url('/local/shop/index.php'), get_string('backtoshopadmin', 'local_shop'), 'get');
 echo '</center>';
 
 echo $OUTPUT->footer();

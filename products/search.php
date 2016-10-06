@@ -14,10 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- *
  * Search view for product management
  *
  * @package    local_shop
@@ -26,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 $action = optional_param('what', '', PARAM_TEXT);
 
@@ -35,7 +33,7 @@ if ($action != '') {
     $results = $controller->process($action);
 }
 
-// print results
+// Print results.
 
 $renderer = shop_get_renderer('products');
 

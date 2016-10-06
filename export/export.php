@@ -21,16 +21,18 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-include '../../../config.php';
-include $CFG->dirroot.'/local/shop/locallib.php';
+require('../../../config.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
-$id = required_param('id', PARAM_INT); // the blockid
-$theBlock = shop_get_block_instance($id);
-$blockcontext = context_block::instance($id);
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
-// security
+// Security.
+
+$context = context_system::instance();
+
 require_login();
-require_capability('block/shop:salesadmin', $blockcontext);
+require_capability('local/shop:salesadmin', $context);
 
 $what = required_param('what', PARAM_TEXT);
 $format = required_param('format', PARAM_TEXT);
@@ -49,8 +51,10 @@ if (file_exists($CFG->dirroot.'/local/shop/export/formats/export_'.$format.'.php
 
 $extractorclass = "shop_export_source_$what";
 $extractor = new $extractorclass();
-$datadesc = $extractor->get_data_description($theBlock);
-$data = $extractor->get_data($theBlock);
+$params = new StdClass;
+$params->catalogid = $thecatalog->id;
+$datadesc = $extractor->get_data_description($params);
+$data = $extractor->get_data($params);
 
 $rendererclass = "shop_export_$format";
 $renderer = new $rendererclass($data, $datadesc, array('addtimestamp' => 1));

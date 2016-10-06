@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(defined('MOODLE_INTERNAL')) || die;
-
 /**
  * Form for editing HTML block instances.
  *
@@ -26,14 +24,16 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
-    include $CFG->dirroot.'/local/shop/bills/search.controller.php';
-    $controller = new \local_shop\bills\search_controller($theShop);
+    include($CFG->dirroot.'/local/shop/bills/search.controller.php');
+    $controller = new \local_shop\bills\search_controller($theshop);
     $bills = $controller->process($action);
 }
 
-$billCount = $DB->count_records('local_shop_bill');
+$billcount = $DB->count_records('local_shop_bill');
 
 echo $out;
 
@@ -45,24 +45,22 @@ function searchBy(criteria) {
 }
 </script>
 
-<?php 
+<?php
 
-echo $OUTPUT->heading(get_string('billsearch', 'local_shop'), 3); 
+echo $OUTPUT->heading(get_string('billsearch', 'local_shop'), 3);
 
 if (empty($bills)) {
     print_string('errorsearchbillfailed', 'local_shop');
 } else {
-?>
-    <?php echo $OUTPUT->heading(get_string('results', 'local_shop'), 2) ?>
-    <p><?php print_string('manybillsasresult', 'local_shop') ?>:
-    <table>
-<?php
+    echo $OUTPUT->heading(get_string('results', 'local_shop'), 2);
+    echo '<p>';
+    print_string('manybillsasresult', 'local_shop');
+    echo ':</p>';
+    echo '<table width="100%">';
     foreach ($bills as $portlet) {
-        include ($CFG->dirroot.'/local/shop/lib/shortBillLine.php');
+        include($CFG->dirroot.'/local/shop/lib/shortBillLine.php');
     }
-?>
-    </table>
-<?php
+    echo '</table>';
 }
 ?>
 
@@ -72,16 +70,15 @@ if (empty($bills)) {
 <input type="hidden" name="what" value="search">
 <table>
 <?php
-if ($billCount == 0) {
+if ($billcount == 0) {
 ?>
 <tr>
-   <td colspan="4" class="billRow">
-   <?php print_string('nobills', 'local_shop') ?>
-   </td>
+    <td colspan="4" class="billRow">
+    <?php print_string('nobills', 'local_shop') ?>
+    </td>
 </tr>
 <?php
-}
-else {
+} else {
 ?>
     <tr>
         <td valign="top">
@@ -95,11 +92,11 @@ else {
             <p class="smalltext"><?php print_string('searchforakeyinstructions', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('key');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+         <td align="right">
+             <a href="Javascript:searchBy('key');"><?php print_string('search') ?></a>
+         </td>
+    </tr>
     <tr>
         <td align="center">
             <?php echo $OUTPUT->heading(get_string('orclientname', 'local_shop'), 3) ?>
@@ -107,11 +104,11 @@ else {
             <p class="smalltext"><?php print_string('customersnameonbill', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('name');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('name');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
     <tr>
         <td align="center">
             <?php echo $OUTPUT->heading(get_string('orbillid', 'local_shop'), 3) ?>
@@ -119,17 +116,19 @@ else {
             <p class="smalltext"><?php print_string('billorderingnumber', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('id');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('id');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
     <tr>
         <td align="center">
             <?php echo $OUTPUT->heading(get_string('oremissiondate', 'local_shop'), 3) ?>
-            <?php print_string('from (date)', 'local_shop') ?> 
-            <input type="text" name="dateFrom" width="10" maxlength="10"> 
-            <?php print_string('hour', 'local_shop') ?> <input type="text" name="timeFrom" width="10" maxlength="10"> <?php print_string('until', 'local_shop') ?>
+            <?php print_string('from (date)', 'local_shop') ?>
+            <input type="text" name="dateFrom" width="10" maxlength="10">
+            <?php print_string('hour', 'local_shop') ?>
+            <input type="text" name="timeFrom" width="10" maxlength="10">
+            <?php print_string('until', 'local_shop') ?>
             <select name="during">
                 <option value="h"><?php print_string('onehour', 'local_shop') ?></option>
                 <option value="d"><?php print_string('oneday', 'local_shop') ?></option>
@@ -140,11 +139,11 @@ else {
             <p class="smalltext"><?php print_string('searchtimerange', 'local_shop') ?>.
         </td>
     </tr>
-   <tr>
-      <td align="right">
-         <a href="Javascript:searchBy('date');"><?php print_string('search') ?></a>
-      </td>
-   </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('date');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
 <?php
 }
 ?>

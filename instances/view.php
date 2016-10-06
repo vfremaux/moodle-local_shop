@@ -57,7 +57,7 @@ $renderer = shop_get_renderer('instances');
 $mainrenderer = $PAGE->get_renderer('local_shop');
 
 // Make page content.
-include $CFG->dirroot."/local/shop/instances/{$view}.php";
+require($CFG->dirroot."/local/shop/instances/{$view}.php");
 
 // Make footer.
 echo $OUTPUT->footer();

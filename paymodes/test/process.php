@@ -21,9 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get DATA param string from SystemPay API and redirect to shop
-
-// Return_Context : view=shop&id={$this->shopblock->instance->id}&pinned={$this->shopblock->pinned}
+// Get DATA param string from SystemPay API and redirect to shop.
 
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/test/test.class.php');
@@ -36,9 +34,11 @@ if (empty($config->test)) {
     die('Test payment plugin cannot be used when shop is in production state');
 }
 
-// we cannot know yet which block instanceplays as infomation is in the mercanet
-// cryptic answer. Process() decodes cryptic answer and get this context information to 
-// go further.
+/*
+ * we cannot know yet which block instanceplays as infomation is in the mercanet
+ * cryptic answer. Process() decodes cryptic answer and get this context information to
+ * go further.
+ */
 $blockinstance = null;
 $payhandler = new shop_paymode_test($blockinstance);
 

@@ -21,8 +21,8 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * Ajax service to get implemented taxes defines. 
- * No security required as being called potentially from the unlogged front-office 
+ * Ajax service to get implemented taxes defines.
+ * No security required as being called potentially from the unlogged front-office
  */
 
 require('../../../config.php');
@@ -30,7 +30,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Tax;
 
-// Security : 
+// Security.
 // No special security required. Tax definition is open data.
 
 echo Tax::get_json_taxset();

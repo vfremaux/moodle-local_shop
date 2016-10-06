@@ -14,37 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
-use local_shop\Category;
-use local_shop\Catalog;
-use local_shop\Tax;
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+
+use local_shop\Category;
+use local_shop\Catalog;
+use local_shop\Tax;
 
 class shop_front_renderer {
 
-    // Context references
-    var $theblock;
+    // Context references.
+    protected $theblock;
 
-    var $theshop;
+    protected $theshop;
 
-    var $thecatalog;
+    protected $thecatalog;
 
-    var $context;
+    protected $context;
 
-    var $view;
+    protected $view;
 
     /**
      * Loads the renderer with contextual objects. Most of the renderer function need
      * at least a shop instance.
      */
-    function load_context(&$theshop, &$theblock = null) {
+    public function load_context(&$theshop, &$theblock = null) {
 
         $this->theshop = $theshop;
         $this->thecatalog = new Catalog($this->theshop->catalogid);
@@ -60,7 +61,7 @@ class shop_front_renderer {
         }
     }
 
-    function check_context() {
+    public function check_context() {
         if (empty($this->theshop) || empty($this->thecatalog)) {
             throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');
         }
@@ -70,7 +71,7 @@ class shop_front_renderer {
      * prints a purchase procedure progression bar
      * @param string $progress the progress state
      */
-    function progress($progress) {
+    public function progress($progress) {
         global $OUTPUT, $SESSION;
 
         $str = '';
@@ -91,7 +92,6 @@ class shop_front_renderer {
 
         $str .= '<div id="progress">';
         $str .= '<center>';
-        $lang = current_language();
 
         $steps = explode(',', $this->theshop->navsteps);
 
@@ -128,8 +128,8 @@ class shop_front_renderer {
     /**
      * Prints a summary form for the purchase
      */
-    function order_totals() {
-        global $CFG, $SESSION;
+    public function order_totals() {
+        global $SESSION;
 
         $this->check_context();
 
@@ -173,7 +173,6 @@ class shop_front_renderer {
             $str .= '<tr>';
             $str .= '<td colspan="2">';
             $str .= $reason;
-            // $str .= get_string('yougetdiscountof', 'local_shop');
             $str .= ' : <b>'.$discountrate.' %</b>.<br/>';
             $str .= '</td>';
             $str .= '</tr>';
@@ -195,7 +194,10 @@ class shop_front_renderer {
             $str .= '<tr>';
             $str .= '<td align="left" colspan="2">';
             $str .= '<span class="smalltext">(*)'. get_string('shippingadded', 'local_shop') .'<br/></span>';
-            $str .= '<input type="checkbox" name="shipping" value="1" '.sprintf('%.2f', $shipchecked).' /> '.get_string('askforshipping', 'local_shop');
+            $str .= '<input type="checkbox"
+                            name="shipping"
+                            value="1"
+                            '.sprintf('%.2f', $shipchecked).' /> '.get_string('askforshipping', 'local_shop');
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -208,12 +210,12 @@ class shop_front_renderer {
      *
      *
      */
-    function printable_bill_link(&$bill) {
-        global $CFG, $DB, $OUTPUT;
+    public function printable_bill_link(&$bill) {
+        global $DB, $OUTPUT;
 
         $str = '';
 
-        $popup  = ($bill->status == SHOP_BILL_SOLDOUT || $bill->status == SHOP_BILL_COMPLETE) ? 'bill' : 'order' ;
+        $popup = ($bill->status == SHOP_BILL_SOLDOUT || $bill->status == SHOP_BILL_COMPLETE) ? 'bill' : 'order';
 
         $popupurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php');
         $str .= '<form name="bill" action="'.$popupurl.'" target="_blank" />';
@@ -223,7 +225,11 @@ class shop_front_renderer {
         $str .= '<input type="hidden" name="blockid" value="'.(0 + @$this->theblock->id).'\">';
         $str .= '<table><tr valign="top"><td align="center">';
         $str .= '<br /><br /><br /><br />';
-        $billurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php', array('shopid' => $this->theshop->id, 'blockid' => (0 + @$this->theblock->id), 'billid' => $bill->id, 'transid' => $bill->transactionid));
+        $params = array('shopid' => $this->theshop->id,
+                        'blockid' => (0 + @$this->theblock->id),
+                        'billid' => $bill->id,
+                        'transid' => $bill->transactionid);
+        $billurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php', $params);
         $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $bill->id));
         if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
             $billuser = $DB->get_record('user', array('id' => $userid));
@@ -241,7 +247,7 @@ class shop_front_renderer {
      * Prints the customer info summary
      * @param object $bill
      */
-    function customer_info(&$bill = null) {
+    public function customer_info(&$bill = null) {
         global $SESSION;
 
         $usedistinctinvoiceinfo = false;
@@ -325,7 +331,7 @@ class shop_front_renderer {
      *
      *
      */
-    function local_confirmation_form($requireddata) {
+    public function local_confirmation_form($requireddata) {
 
         $confirmstr = get_string('confirm', 'local_shop');
         $disabled = (!empty($requireddata)) ? 'disabled="disabled"' : '';
@@ -334,7 +340,8 @@ class shop_front_renderer {
         $str .= '<form name="confirmation" method="POST" action="'.$formurl.'" style="display : inline">';
         $str .= '<table style="display : block ; visibility : visible" width="100%"><tr><td align="center">';
         if (!empty($disabled)) {
-            $str .= '<br><span id="disabled-advice-span" class="error">'.get_string('requiredataadvice', 'local_shop').'</span><br/>';
+            $errstr = get_string('requiredataadvice', 'local_shop');
+            $str .= '<br><span id="disabled-advice-span" class="error">'.$errstr.'</span><br/>';
         }
         $str .= '<input type="button" name="go_confirm" value="'.$confirmstr.'" onclick="send_confirm();" '.$disabled.' />';
         $str .= '</td></tr></table>';
@@ -346,32 +353,19 @@ class shop_front_renderer {
 
     /**
      * prints tabs for js activation of the category panel
-     *
      */
-    function category_tabs(&$categories, $selected, $parent, $isactive, $isvisiblebranch) {
+    public function category_tabs(&$categories, $selected, $parent, $isactive, $isvisiblebranch) {
 
         $str = '';
 
-        $catidsarr = array();
-        foreach ($categories as $cat) {
-            if (empty($selected)) {
-                $selected = $cat->id;
-            }
-            $catidsarr[] = $cat->id;
-        }
-        $catids = implode(',', $catidsarr);
-
         $rows[0] = array();
         foreach ($categories as $cat) {
-            /*
-            if (empty($selected)) {
-                $selected = 'catli'.$cat->id;
-            }
-            */
-            $params = array('view' => 'shop', 'category' => $cat->id, 'shopid' => $this->theshop->id, 'blockid' => $this->theblock->id);
+            $params = array('view' => 'shop',
+                            'category' => $cat->id,
+                            'shopid' => $this->theshop->id,
+                            'blockid' => $this->theblock->id);
             $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
             $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
-            // $rows[0][] = new tabobject('catli'.$cat->id, "javascript:showcategory('.$cat->id.', \''.$catids.'\')", format_string($cat->name));
         }
 
         if ($isvisiblebranch) {
@@ -394,13 +388,12 @@ class shop_front_renderer {
 
     /**
      * prints a full catalog on screen
-     * @param objectref $theBlock the shop block instance
+     * @param objectref $theblock the shop block instance
      * @param array $catgories the full product line extractred from Catalog
      */
-    function catalog(&$categories) {
-        global $CFG, $OUTPUT;
+    public function catalog(&$categories) {
+        global $OUTPUT, $SESSION;
 
-        $config = get_config('local_shop');
         $this->check_context();
 
         if (empty($categories)) {
@@ -420,7 +413,7 @@ class shop_front_renderer {
         if ($withtabs) {
             $categoryid = optional_param('category', null, PARAM_INT);
 
-            // Get the tree branch below the category
+            // Get the tree branch below the category.
             if ($categoryid) {
                 $category = new Category($categoryid);
                 $branch = array_reverse($category->get_branch());
@@ -428,20 +421,23 @@ class shop_front_renderer {
                 $branch = array_reverse(Category::get_first_branch($this->thecatalog->id, 0));
             }
 
-            // Render all upper branch choices, with presected items in the active branch
+            // Render all upper branch choices, with presected items in the active branch.
             while ($catid = array_shift($branch)) {
                 $cat = new Category($catid);
-                $levelcategories = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid), 'sortorder');
-                $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $cat->id == $categoryid, true);
+                $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid);
+                $levelcategories = Category::get_instances($params, 'sortorder');
+                $iscurrent = $cat->id == $categoryid;
+                $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true);
 
                 // Print childs.
-                if ($subs = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id), 'sortorder')) {
+                $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
+                if ($subs = Category::get_instances($attrs, 'sortorder')) {
                     $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid);
                 }
             }
         }
 
-        // print catalog product line on the active category if tabbed
+        // Print catalog product line on the active category if tabbed.
         $catids = array_keys($categories);
         $category = optional_param('category', $catids[0], PARAM_INT);
 
@@ -451,8 +447,10 @@ class shop_front_renderer {
             if ($withtabs && ($category != $cat->id)) {
                 continue;
             }
-            if (!isset($firstcatid)) $firstcatid = $cat->id;
-    
+            if (!isset($firstcatid)) {
+                $firstcatid = $cat->id;
+            }
+
             if ($withtabs) {
                 $str .= '<div class="shopcategory" id="category'.$cat->id.'" />';
             } else {
@@ -494,12 +492,11 @@ class shop_front_renderer {
                 $str .= '</div>';
             }
         }
-        // $str .= "<script type=\"text/javascript\">showcategory(".@$firstcatid.", '{$catids}');</script>";
 
         return $str;
     }
 
-    function product_block(&$product) {
+    public function product_block(&$product) {
         global $CFG;
 
         $this->check_context();
@@ -535,13 +532,15 @@ class shop_front_renderer {
 
         if ($product->has_leaflet()) {
             $leafleturl = $product->get_leaflet_url();
-            $str .= '<div class="shop-front-leaflet"><a href="'.$leafleturl.'" target="_blank">'.get_string('leafletlink', 'local_shop').'</a></div>';
+            $str .= '<div class="shop-front-leaflet">';
+            $str .= '<a href="'.$leafleturl.'" target="_blank">'.get_string('leafletlink', 'local_shop').'</a>';
+            $str .= '</div>';
         }
 
         if (empty($product->noorder)) {
             $str .= '<div class="shop-front-refblock">';
             $str .= '<div class="shop-front-ref">'.get_string('ref', 'local_shop').' : '.$product->code.'</div>';
-    
+
             $prices = $product->get_printable_prices(true);
             if (count($prices) <= 1) {
                 $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
@@ -551,36 +550,49 @@ class shop_front_renderer {
                 $str .= '<div class="shop-front-pricelist">';
                 $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
                 foreach ($prices as $range => $price) {
-                    $str .= '<div class="shop-front-pricerange">'.$range.' : </div><div class="shop-front-price">'.$price.' '.$product->currency.'</div>';
+                    $str .= '<div class="shop-front-pricerange">'.$range.' : </div>';
+                    $str .= '<div class="shop-front-price">'.$price.' '.$product->currency.'</div>';
                 }
-                $str .= '</div>'; // shop-front-pricelist
+                $str .= '</div>'; // Shop-front-pricelist.
             }
 
             if ($product->available) {
                 $str .= '<div class="shop-front-order">';
                 $buystr = get_string('buy', 'local_shop');
-                $disabled = ($product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset) ? 'disabled="disabled"' : '';
+                $isdisabled = $product->maxdeliveryquant && ($product->maxdeliveryquant == $product->preset);
+                $disabled = ($isdisabled) ? 'disabled="disabled"' : '';
                 if ($product->password) {
-                   $str .= '<input type="text" id="ci-pass-'.$product->shortname.'" value="" maxlength="8" size="8" onkeypress="check_pass_code(\''.$CFG->wwwroot.'\', \''.$product->shortname.'\', this, event)" title="'.get_string('needspasscodetobuy', 'local_shop').'" /> <div id="ci-pass-status-'.$product->shortname.'" class="shop-pass-state"></div>';
-                   $disabled = 'disabled="disabled"';
+                    $str .= '<input type="text"
+                                   id="ci-pass-'.$product->shortname.'"
+                                   value=""
+                                   maxlength="8"
+                                   size="8"
+                                   onkeypress="check_pass_code(\''.$CFG->wwwroot.'\', \''.$product->shortname.'\', this, event)"
+                                   title="'.get_string('needspasscodetobuy', 'local_shop').'" />';
+                    $str .= '<div id="ci-pass-status-'.$product->shortname.'" class="shop-pass-state"></div>';
+                    $disabled = 'disabled="disabled"';
                 }
-                $str .= '<input type="button" id="ci-'.$product->shortname.'" value="'.$buystr.'" onclick="ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')" '.$disabled.' />';
+                $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\','.$this->theshop->id;
+                $jshandler .= ', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')';
+                $str .= '<input type="button"
+                                id="ci-'.$product->shortname.'"
+                                value="'.$buystr.'"
+                                onclick="'.$jshandler.'" '.$disabled.' />';
                 $str .= '<div class="shop-order-item" id="bag_'.$product->shortname.'">';
                 $str .= $this->units($product);
                 $str .= '</div>';
-                $str .= '</div>'; // shop-front-order
+                $str .= '</div>'; // Shop-front-order.
             }
-            $str .= '</div>'; // shop-front-refblock
+            $str .= '</div>'; // Shop-front-refblock.
         }
 
-        $str .= '</div>'; // shop-front-productdef
-        $str .= '</div>'; // front-article
+        $str .= '</div>'; // Shop-front-productdef.
+        $str .= '</div>'; // Front-article.
 
         return $str;
     }
 
-    function product_set(&$set) {
-        global $CFG;
+    public function product_set(&$set) {
 
         $str = '';
 
@@ -588,22 +600,22 @@ class shop_front_renderer {
         $str .= '<div class="shop-front-setcaption">';
         $str .= '<h2>'.$set->name.'</h2>';
         $str .= '<div class="shop-front-description">'.$set->description.'</div>';
-        $str .= '</div>'; // shop-front-setcaption
+        $str .= '</div>'; // Shop-front-setcaption.
 
         $str .= '<div class="shop-front-elements">';
         foreach ($set->elements as $element) {
             $element->check_availability();
-            $element->noorder = false; // Bundle can only be purchased as a group
-            $element->ispart = true; // reduced title
+            $element->noorder = false; // Bundle can only be purchased as a group.
+            $element->ispart = true; // Reduced title.
             $str .= $this->product_block($element);
         }
-        $str .= '</div>'; // shop-front-elements
-        $str .= '</div>'; // shop-article
+        $str .= '</div>'; // Shop-front-elements.
+        $str .= '</div>'; // Shop-article.
 
         return $str;
     }
 
-    function product_bundle(&$bundle) {
+    public function product_bundle(&$bundle) {
         global $CFG;
 
         $str = '';
@@ -630,17 +642,17 @@ class shop_front_renderer {
 
         if ($bundle->has_leaflet()) {
             $leafleturl = $bundle->get_leaflet_url();
-            $str .= '<div class="shop-front-leaflet"><a href="'.$leafleturl.'" target="_blank">'.get_string('leafletlink', 'local_shop').'</a></div>';
+            $linklabel = get_string('leafletlink', 'local_shop');
+            $str .= '<div class="shop-front-leaflet"><a href="'.$leafleturl.'" target="_blank">'.$linklabel.'</a></div>';
         }
 
         $str .= '<div class="shop-front-refblock">';
         $str .= '<div class="shop-front-ref">'.get_string('ref', 'local_shop').' : '.$bundle->code.'</div>';
 
-        $TTCprice = 0;
         foreach ($bundle->elements as $element) {
             $element->check_availability();
-            $element->noorder = true; // Bundle can only be purchased as a group
-            $element->ispart = true; // reduced title
+            $element->noorder = true; // Bundle can only be purchased as a group.
+            $element->ispart = true; // Reduced title.
             $str .= $this->product_block($element);
         }
 
@@ -654,76 +666,100 @@ class shop_front_renderer {
             $str .= '<div class="shop-front-pricelist">';
             $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
             foreach ($prices as $range => $price) {
-                $str .= '<div class="shop-front-pricerange">'.$range.' : </div><div class="shop-front-price">'.$price.' '.$bundle->currency.'</div>';
+                $str .= '<div class="shop-front-pricerange">'.$range.' : </div>';
+                $str .= '<div class="shop-front-price">'.$price.' '.$bundle->currency.'</div>';
             }
-            $str .= '</div>'; // shop-front-pricelist
+            $str .= '</div>'; // Shop-front-pricelist.
         }
 
         $str .= '<div class="shop-front-order">';
         $buystr = get_string('buy', 'local_shop');
-        $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '' ;
+        $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '';
         if ($bundle->password) {
-           $str .= '<input type="text" id="ci-pass-'.$bundle->shortname.'" value="" maxlength="8" size="8" onkeypress="check_pass_code(\''.$CFG->wwwroot.'\', \''.$bundle->shortname.'\', this, event)" title="'.get_string('needspasscodetobuy', 'local_shop').'" /> <div id="ci-pass-status-'.$bundle->shortname.'" class="shop-pass-state"></div>';
-           $disabled = 'disabled="disabled"';
+            $jshandler = 'check_pass_code(\''.$CFG->wwwroot.'\', \''.$bundle->shortname.'\', this, event)';
+            $str .= '<input type="text"
+                           id="ci-pass-'.$bundle->shortname.'"
+                           value=""
+                           maxlength="8"
+                           size="8"
+                           onkeypress="'.$jshandler.'"
+                           title="'.get_string('needspasscodetobuy', 'local_shop').'" />';
+            $str .= '<div id="ci-pass-status-'.$bundle->shortname.'" class="shop-pass-state"></div>';
+            $disabled = 'disabled="disabled"';
         }
-        $str .= '<input type="button" id="ci-'.$bundle->shortname.'" value="'.$buystr.'" onclick="ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')" '.$disabled.' />';
+        $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+        $jshandler .= ', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')';
+        $str .= '<input type="button"
+                        id="ci-'.$bundle->shortname.'"
+                        value="'.$buystr.'"
+                        onclick="'.$jshandler.'" '.$disabled.' />';
         $str .= '<div class="shop-order-item" id="bag_'.$bundle->shortname.'">';
         $str .= $this->units($bundle);
         $str .= '</div>';
-        $str .= '</div>'; // shop-front-order
-        $str .= '</div>'; // shop-front-refblock
+        $str .= '</div>'; // Shop-front-order.
+        $str .= '</div>'; // Shop-front-refblock.
 
-        $str .= '</div>'; // shop-front-productdef
-        $str .= '</div>'; // shop-article
+        $str .= '</div>'; // Shop-front-productdef.
+        $str .= '</div>'; // Shop-article.
 
         return $str;
     }
 
-    function units(&$product) {
-        global $SESSION, $CFG, $OUTPUT;
+    public function units(&$product) {
+        global $SESSION, $OUTPUT, $CFG;
 
         $this->check_context();
 
         $unitimage = $product->get_sales_unit_url();
 
         $str = '';
-        for ($i = 0 ; $i < 0 + @$SESSION->shoppingcart->order[$product->shortname] ; $i++) {
+        for ($i = 0; $i < 0 + @$SESSION->shoppingcart->order[$product->shortname]; $i++) {
             $str .= '&nbsp;<img src="'.$unitimage.'" align="middle" />';
         }
 
         if ($i > 0) {
-            $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', \''.$product->shortname.'\')"><img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" /></a>';
+            $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+            $jshandler .= ', \''.$product->shortname.'\')';
+            $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
+            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" />';
+            $str .= '</a>';
         }
 
         return $str;
     }
 
-    function order_detail(&$categories) {
-        global $SESSION, $CFG, $OUTPUT;
+    public function order_detail(&$categories) {
+        global $SESSION;
 
         if (empty($categories)) {
             return;
         }
 
+        $shoppingcart = @$SESSION->shoppingcart;
+
         $str = '';
 
         $str .= '<table width="100%" id="orderblock">';
 
-        foreach ($categories as $aCategory) {
-            if (empty($aCategory->products)) continue;
-            foreach ($aCategory->products as $aProduct) {
-                if ($aProduct->isset == PRODUCT_SET) {
-                    foreach ($aProduct->elements as $portlet) {
+        foreach ($categories as $acategory) {
+            if (empty($acategory->products)) {
+                continue;
+            }
+            foreach ($acategory->products as $aproduct) {
+                if ($aproduct->isset == PRODUCT_SET) {
+                    foreach ($aproduct->elements as $portlet) {
                         $portlet->currency = $this->theshop->get_currency('symbol');
-                        $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ? $SESSION->shoppingcart->order[$portlet->shortname] : 0;
+                        $hasshort = !empty($shoppingcart->order[$portlet->shortname]);
+                        $portlet->preset = $hasshort ? $shoppingcart->order[$portlet->shortname] : 0;
                         if ($portlet->preset) {
                             $str .= $this->product_total_line($portlet, true);
                         }
                     }
                 } else {
-                    $portlet = &$aProduct;
+                    $portlet = &$aproduct;
                     $portlet->currency = $this->theshop->get_currency('symbol');
-                    $portlet->preset = !empty($SESSION->shoppingcart->order[$portlet->shortname]) ? $SESSION->shoppingcart->order[$portlet->shortname] : 0;
+                    $hasshort = !empty($shoppingcart->order[$portlet->shortname]);
+                    $portlet->preset = $hasshort ? $shoppingcart->order[$portlet->shortname] : 0;
                     if ($portlet->preset) {
                         $str .= $this->product_total_line($portlet, true);
                     }
@@ -735,15 +771,15 @@ class shop_front_renderer {
         return $str;
     }
 
-    function product_total_line(&$product) {
+    public function product_total_line(&$product) {
         global $CFG, $OUTPUT;
 
         $this->check_context();
 
         $str = '';
 
-        $TTCprice = $product->get_taxed_price($product->preset, $product->taxcode);
-        $product->total = $TTCprice * $product->preset;
+        $ttcprice = $product->get_taxed_price($product->preset, $product->taxcode);
+        $product->total = $ttcprice * $product->preset;
 
         $str .= '<tr id="producttotalcaption_'.$product->shortname.'">';
         $str .= '<td class="shop-ordercaptioncell" colspan="3">';
@@ -754,16 +790,36 @@ class shop_front_renderer {
         $str .= '<td class="shop-ordercell">';
         $disabled = ' disabled="disabled" ';
         if ($this->view == 'shop') {
-            $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="Javascript:ajax_clear_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', '.$this->theblock->id.', \''.$product->shortname.'\')"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+            $jshandler = 'Javascript:ajax_clear_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+            $jshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
+            $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
+            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+            $str .= '</a>';
             $disabled = '';
         }
-        $str .= '<input type="text" class="order-detail" id="id_'.$product->shortname.'" name="'.$product->shortname.'" value="'.$product->preset.'" size="3" style="width:40px" onChange="ajax_update_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id.', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')" '.$disabled.' >';
+        $jshandler = 'ajax_update_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+        $jshandler .= ', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')';
+        $str .= '<input type="text"
+                        class="order-detail"
+                        id="id_'.$product->shortname.'"
+                        name="'.$product->shortname.'"
+                        value="'.$product->preset.'"
+                        size="3"
+                        style="width:40px"
+                        onChange="'.$jshandler.'" '.$disabled.' >';
         $str .= '</td>';
         $str .= '<td class="shop-ordercell">';
-        $str .= '<p>x '.sprintf("%.2f", round($TTCprice, 2)).' '.$product->currency.' : ';
+        $str .= '<p>x '.sprintf("%.2f", round($ttcprice, 2)).' '.$product->currency.' : ';
         $str .= '</td>';
         $str .= '<td class="shop-ordercell">';
-        $str .= '<input type="text" class="order-detail" id="id_total_'.$product->shortname.'" name="'.$product->shortname.'_total" value="'.sprintf("%.2f", round($product->total, 2)).'" size="6" disabled class="totals" >';
+        $str .= '<input type="text"
+                        class="order-detail"
+                        id="id_total_'.$product->shortname.'"
+                        name="'.$product->shortname.'_total"
+                        value="'.sprintf("%.2f", round($product->total, 2)).'"
+                        size="6"
+                        disabled
+                        class="totals" >';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -772,56 +828,68 @@ class shop_front_renderer {
 
     /**
      * Prints the customer information form
-     * @param object $theBlock
-     * @param object $theCatalog
+     * @param object $theblock
+     * @param object $thecatalog
      */
-    function customer_info_form() {
+    public function customer_info_form() {
         global $USER, $OUTPUT, $DB, $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         $this->check_context();
 
         $str = '';
 
-        $checked = (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) ? 'checked="checked"' : '';
+        $checked = (!empty($shoppingcart->usedistinctinvoiceinfo)) ? 'checked="checked"' : '';
 
-        $str .= $OUTPUT->heading(get_string('customerinformation', 'local_shop').' <input type="checkbox" value="1" name="usedistinctinvoiceinfo" onchange="local_toggle_invoiceinfo(this)" '.$checked.' /><span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>' );
+        $heading = get_string('customerinformation', 'local_shop');
+        $heading .= ' <input type="checkbox"
+                         value="1"
+                         name="usedistinctinvoiceinfo"
+                         onchange="local_toggle_invoiceinfo(this)"
+                         '.$checked.' />';
+        $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
+        $str .= $OUTPUT->heading($heading);
+
         if (isloggedin()) {
             $lastname = $USER->lastname;
             $firstname = $USER->firstname;
-            $organisation = (!empty($SESSION->shoppingcart->customerinfo['organisation'])) ? $SESSION->shoppingcart->customerinfo['organisation'] : $USER->institution;
-            $city = (!empty($SESSION->shoppingcart->customerinfo['city'])) ? $SESSION->shoppingcart->customerinfo['city'] : $USER->city;
-            $address = (!empty($SESSION->shoppingcart->customerinfo['address'])) ? $SESSION->shoppingcart->customerinfo['address'] : $USER->address;
-            $zip = (!empty($SESSION->shoppingcart->customerinfo['zip'])) ? $SESSION->shoppingcart->customerinfo['zip'] : '';
-            $country = (!empty($SESSION->shoppingcart->customerinfo['country'])) ? $SESSION->shoppingcart->customerinfo['country'] : $USER->country;
+
+            $hasorg = !empty($shoppingcart->customerinfo['organisation']);
+            $organisation = $hasorg ? $shoppingcart->customerinfo['organisation'] : $USER->institution;
+
+            $hascity = !empty($shoppingcart->customerinfo['city']);
+            $city = $hascity ? $shoppingcart->customerinfo['city'] : $USER->city;
+
+            $hasaddress = !empty($shoppingcart->customerinfo['address']);
+            $address = $hasaddress ? $shoppingcart->customerinfo['address'] : $USER->address;
+
+            $haszip = !empty($shoppingcart->customerinfo['zip']);
+            $zip = $haszip ? $shoppingcart->customerinfo['zip'] : '';
+
+            $hascountry = !empty($shoppingcart->customerinfo['country']);
+            $country = $hascountry ? $shoppingcart->customerinfo['country'] : $USER->country;
             $email = $USER->email;
-            // get potential ZIP code information from an eventual customer record
-            if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id))) {
-                $zip = (!empty($SESSION->shoppingcart->customerinfo['zip'])) ? $SESSION->shoppingcart->customerinfo['zip'] : $customer->zip;
-                $organisation = (!empty($SESSION->shoppingcart->customerinfo['organisation'])) ? $SESSION->shoppingcart->customerinfo['organisation'] : $customer->organisation;
-                $address = (!empty($SESSION->shoppingcart->customerinfo['address'])) ? $SESSION->shoppingcart->customerinfo['address'] : $customer->address;
+
+            // Get potential ZIP code information from an eventual customer record.
+            if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id, 'email' => $email))) {
+                $zip = $haszip ? $shoppingcart->customerinfo['zip'] : $customer->zip;
+                $organisation = $hasorg ? $shoppingcart->customerinfo['organisation'] : $customer->organisation;
+                $address = $hasaddress ? $shoppingcart->customerinfo['address'] : $customer->address;
             }
         } else {
-            $lastname = @$SESSION->shoppingcart->customerinfo['lastname'];
-            $firstname = @$SESSION->shoppingcart->customerinfo['firstname'];
-            $organisation = @$SESSION->shoppingcart->customerinfo['organisation'];
-            $country = @$SESSION->shoppingcart->customerinfo['country'];
-            $address = @$SESSION->shoppingcart->customerinfo['address'];
-            $city = @$SESSION->shoppingcart->customerinfo['city'];
-            $zip = @$SESSION->shoppingcart->customerinfo['zip'];
-            $email = @$SESSION->shoppingcart->customerinfo['email'];
+            $lastname = @$shoppingcart->customerinfo['lastname'];
+            $firstname = @$shoppingcart->customerinfo['firstname'];
+            $organisation = @$shoppingcart->customerinfo['organisation'];
+            $country = @$shoppingcart->customerinfo['country'];
+            $address = @$shoppingcart->customerinfo['address'];
+            $city = @$shoppingcart->customerinfo['city'];
+            $zip = @$shoppingcart->customerinfo['zip'];
+            $email = @$shoppingcart->customerinfo['email'];
         }
 
-        $lastnameclass = '';
-        $firstnameclass = '';
-        $organisationclass = '';
-        $countryclass = '';
-        $addressclass = '';
-        $cityclass = '';
-        $zipclass = '';
-        $mailclass = '';
-
-        if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
-            foreach (array_keys($SESSION->shoppingcart->errors->customerinfo) as $f) {
+        if (!empty($shoppingcart->errors->customerinfo)) {
+            foreach (array_keys($shoppingcart->errors->customerinfo) as $f) {
                 $f = str_replace('customerinfo::', '', $f);
                 $var = "{$f}class";
                 $$var = 'shop-error';
@@ -835,7 +903,10 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>:';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$lastnameclass.'" name="customerinfo::lastname" size="20" onchange="setupper(this)" value="'. $lastname.'" />';
+        $str .= '<input type="text"
+                        name="customerinfo::lastname"
+                        size="20"
+                        onchange="setupper(this)" value="'. $lastname.'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -844,7 +915,10 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>:';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$firstnameclass.'" name="customerinfo::firstname" size="20" onchange="capitalizewords(this)" value="'.$firstname.'" />';
+        $str .= '<input type="text"
+                        name="customerinfo::firstname"
+                        size="20"
+                        onchange="capitalizewords(this)" value="'.$firstname.'" />';
         $str .= '</td>';
         $str .= '</tr>';
         if (!empty($this->theshop->customerorganisationrequired)) {
@@ -853,7 +927,11 @@ class shop_front_renderer {
             $str .= get_string('organisation', 'local_shop');
             $str .= ':</td>';
             $str .= '<td align="left">';
-            $str .= '<input type="text" name="customerinfo::organisation" size="26" maxlength="64" value="'.$organisation.'" />';
+            $str .= '<input type="text"
+                            name="customerinfo::organisation"
+                            size="26"
+                            maxlength="64"
+                            value="'.$organisation.'" />';
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -863,7 +941,10 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: ';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text"  class="'.$addressclass.'"name="customerinfo::address" size="26" onchange="setupper(this)" value="'. $address .'" />';
+        $str .= '<input type="text"
+                        name="customerinfo::address"
+                        size="26"
+                        onchange="setupper(this)" value="'. $address .'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -872,16 +953,22 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: ';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text"  class="'.$cityclass.'"name="customerinfo::city" size="26" onchange="setupper(this)" value="'. $city .'" />';
+        $str .= '<input type="text"
+                        name="customerinfo::city"
+                        size="26"
+                        onchange="setupper(this)" value="'. $city .'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('zip','local_shop');
+        $str .= get_string('zip', 'local_shop');
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text"  class="'.$zipclass.'" name="customerinfo::zip" size="6" value="'. $zip .'" />';
+        $str .= '<input type="text"
+                        name="customerinfo::zip"
+                        size="6"
+                        value="'. $zip .'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -890,7 +977,6 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: <br>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        // $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
         $str .= html_writer::select($choices, 'customerinfo::country', $country, array('' => 'choosedots'));
@@ -899,41 +985,45 @@ class shop_front_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
         $str .= get_string('email', 'local_shop');
-        $str.= '<sup style="color : red">*</sup>';
-        $str.= '</td>';
-        $str.= '<td align="left">';
-        $str.= '<input type="text"  class="'.$mailclass.'" name="customerinfo::email" size="30" onchange="testmail(this)" value="'.$email.'" />';
-        $str.= '</td>';
-        $str.= '</tr>';
-        $str.= '</table>';
-        $str.= '</div>';
+        $str .= '<sup style="color : red">*</sup>';
+        $str .= '</td>';
+        $str .= '<td align="left">';
+        $str .= '<input type="text"
+                       name="customerinfo::email"
+                       size="30"
+                       onchange="testmail(this)" value="'.$email.'" />';
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '</table>';
+        $str .= '</div>';
 
         return $str;
     }
 
     /**
      * Prints the form for invoicing customer identity
-     * @param object $theBlock
-     * @param object $theCatalog
+     * @param object $theblock
+     * @param object $thecatalog
      */
-    function invoicing_info_form() {
+    public function invoicing_info_form() {
         global $OUTPUT, $SESSION;
 
         $this->check_context();
 
         $str = '';
 
-        $institution = @$SESSION->shoppingcart->invoiceinfo['organisation'];
-        $department = @$SESSION->shoppingcart->invoiceinfo['department'];
-        $lastname = @$SESSION->shoppingcart->invoiceinfo['lastname'];
-        $firstname = @$SESSION->shoppingcart->invoiceinfo['firstname'];
-        $email = @$SESSION->shoppingcart->invoiceinfo['email'];
-        $address = @$SESSION->shoppingcart->invoiceinfo['address'];
-        $zip = @$SESSION->shoppingcart->invoiceinfo['zip'];
-        $city = @$SESSION->shoppingcart->invoiceinfo['city'];
-        $country = @$SESSION->shoppingcart->invoiceinfo['country'];
-        $vatcode = @$SESSION->shoppingcart->invoiceinfo['vatcode'];
-        // $plantcode = @$SESSION->shoppingcart->invoiceinfo['plantcode'];
+        $shoppingcart = $SESSION->shoppingcart;
+
+        $institution = @$shoppingcart->invoiceinfo['organisation'];
+        $department = @$shoppingcart->invoiceinfo['department'];
+        $lastname = @$shoppingcart->invoiceinfo['lastname'];
+        $firstname = @$shoppingcart->invoiceinfo['firstname'];
+        $email = @$shoppingcart->invoiceinfo['email'];
+        $address = @$shoppingcart->invoiceinfo['address'];
+        $zip = @$shoppingcart->invoiceinfo['zip'];
+        $city = @$shoppingcart->invoiceinfo['city'];
+        $country = @$shoppingcart->invoiceinfo['country'];
+        $vatcode = @$shoppingcart->invoiceinfo['vatcode'];
 
         $lastnameclass = '';
         $firstnameclass = '';
@@ -947,15 +1037,15 @@ class shop_front_renderer {
         $vatcodeclass = '';
         $plantcodeclass = '';
 
-        if (!empty($SESSION->shoppingcart->errors->invoiceinfo)) {
-            foreach (array_keys($SESSION->shoppingcart->errors->invoiceinfo) as $f) {
+        if (!empty($shoppingcart->errors->invoiceinfo)) {
+            foreach (array_keys($shoppingcart->errors->invoiceinfo) as $f) {
                 $f = str_replace('invoiceinfo::', '', $f);
                 $var = "{$f}class";
                 $$var = 'shop-error';
             }
         }
 
-        $str .= $OUTPUT->heading(get_string('invoiceinformation', 'local_shop')); 
+        $str .= $OUTPUT->heading(get_string('invoiceinformation', 'local_shop'));
 
         $str .= '<div id="shop-organisationdata">';
         $str .= '<table cellspacing="3" width="100%">';
@@ -965,7 +1055,12 @@ class shop_front_renderer {
         $str .= get_string('organisation', 'local_shop');
         $str .= ':</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$organisationclass.'" name="invoiceinfo::organisation" size="26" maxlength="64" value="'.$institution.'" />';
+        $str .= '<input type="text"
+                        class="'.$organisationclass.'"
+                        name="invoiceinfo::organisation"
+                        size="26"
+                        maxlength="64"
+                        value="'.$institution.'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -974,7 +1069,12 @@ class shop_front_renderer {
         $str .= get_string('department');
         $str .= ':</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$departmentclass.'" name="invoiceinfo::department" size="26" maxlength="64" value="'.$department.'" />';
+        $str .= '<input type="text"
+                        class="'.$departmentclass.'"
+                        name="invoiceinfo::department"
+                        size="26"
+                        maxlength="64"
+                        value="'.$department.'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -984,26 +1084,41 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>:';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$lastnameclass.'" name="invoiceinfo::lastname" size="20" onchange="setupper(this)" value="'. $lastname.'" />';
+        $str .= '<input type="text"
+                        class="'.$lastnameclass.'"
+                        name="invoiceinfo::lastname"
+                        size="20"
+                        onchange="setupper(this)"
+                        value="'. $lastname.'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
         $str .= get_string('firstname');
-        $str.= '<sup style="color : red">*</sup>:';
-        $str.= '</td>';
-        $str.= '<td align="left">';
-        $str.= '<input type="text" class="'.$firstnameclass.'" name="invoiceinfo::firstname" size="20" onchange="capitalizewords(this)" value="'.$firstname.'" />';
-        $str.= '</td>';
-        $str.= '</tr>';
+        $str .= '<sup style="color : red">*</sup>:';
+        $str .= '</td>';
+        $str .= '<td align="left">';
+        $str .= '<input type="text"
+                       class="'.$firstnameclass.'"
+                       name="invoiceinfo::firstname"
+                       size="20"
+                       onchange="capitalizewords(this)"
+                       value="'.$firstname.'" />';
+        $str .= '</td>';
+        $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
         $str .= get_string('email');
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$emailclass.'" name="invoiceinfo::email" size="50" onchange="" value="'. $email .'" />';
+        $str .= '<input type="text"
+                        class="'.$emailclass.'"
+                        name="invoiceinfo::email"
+                        size="50"
+                        onchange=""
+                        value="'. $email .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1013,7 +1128,12 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: ';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$addressclass.'" name="invoiceinfo::address" size="26" onchange="setupper(this)" value="'. $address .'" />';
+        $str .= '<input type="text"
+                        class="'.$addressclass.'"
+                        name="invoiceinfo::address"
+                        size="26"
+                        onchange="setupper(this)"
+                        value="'. $address .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1023,17 +1143,26 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: ';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$cityclass.'" name="invoiceinfo::city" size="26" onchange="setupper(this)" value="'. $city .'" />';
+        $str .= '<input type="text"
+                        class="'.$cityclass.'"
+                        name="invoiceinfo::city"
+                        size="26"
+                        onchange="setupper(this)"
+                        value="'. $city .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('zip','local_shop');
+        $str .= get_string('zip', 'local_shop');
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$zipclass.'" name="invoiceinfo::zip" size="6" value="'. $zip .'" />';
+        $str .= '<input type="text"
+                        class="'.$zipclass.'"
+                        name="invoiceinfo::zip"
+                        size="6"
+                        value="'. $zip .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1043,29 +1172,31 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>: <br>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        // $country = 'FR';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        $str .= html_writer::select($choices, 'invoiceinfo::country', $country, array('' => 'choosedots'), array('class' => $countryclass));
+        $attrs = array('class' => $countryclass);
+        $str .= html_writer::select($choices, 'invoiceinfo::country', $country, array('' => 'choosedots'), $attrs);
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        $str .= get_string('vatcode','local_shop');
+        $str .= get_string('vatcode', 'local_shop');
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$vatcodeclass.'" name="invoiceinfo::vatcode" size="15" value="'. $vatcode .'" />';
+        $str .= '<input type="text"
+                        class="'.$vatcodeclass.'"
+                        name="invoiceinfo::vatcode"
+                        size="15"
+                        value="'. $vatcode .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td align="right">';
-        // print_string('plantcode','local_shop');
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="hidden" class="'.$plantcodeclass.'" name="invoiceinfo::plantcode" value="" />';
-        // echo '<input type="text" class="'.$plantcodeclass.'" name="invoiceinfo::plantcode" size="20" value="'. $plantcode .'" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1075,8 +1206,8 @@ class shop_front_renderer {
         return $str;
     }
 
-    function participant_row($participant = null) {
-        global $CFG, $OUTPUT, $SITE;
+    public function participant_row($participant = null) {
+        global $CFG, $OUTPUT, $SITE, $PAGE;
 
         $this->check_context();
 
@@ -1110,20 +1241,26 @@ class shop_front_renderer {
             $str .= '<td align="left">';
             if (@$participant->moodleid) {
                 if (file_exists($CFG->dirroot.'/theme/'.$PAGE->theme->name.'/favicon.jpg')) {
-                    $str .= '<img src="'.$OUTPUT->pix_url('favicon').'" title="'.get_string('isuser', 'local_shop', $SITE->shortname).'" />';
+                    $title = get_string('isuser', 'local_shop', $SITE->shortname);
+                    $str .= '<img src="'.$OUTPUT->pix_url('favicon').'" title="'.$title.'" />';
                 } else {
-                    $str .= '<img src="'.$OUTPUT->pix_url('i/moodle_host').'" title="'.get_string('isuser', 'local_shop', $SITE->shortname).'" />';
+                    $title = get_string('isuser', 'local_shop', $SITE->shortname);
+                    $str .= '<img src="'.$OUTPUT->pix_url('i/moodle_host').'" title="'.$title.'" />';
                 }
             } else {
-                $str .= '<img src="'.$OUTPUT->pix_url('new', 'local_shop').'" title="'.get_string('isnotuser', 'local_shop', $SITE->shortname).'" />';
+                $title = get_string('isnotuser', 'local_shop', $SITE->shortname);
+                $str .= '<img src="'.$OUTPUT->pix_url('new', 'local_shop').'" title="'.$title.'" />';
             }
             $str .= '</td>';
             $str .= '<td align="right">';
-            $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'" href="Javascript:ajax_delete_user(\''.$CFG->wwwroot.'\', \''.$participant->email.'\')"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+            $jshandler = 'Javascript:ajax_delete_user(\''.$CFG->wwwroot.'\', \''.$participant->email.'\')';
+            $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'" href="'.$jshandler.'">';
+            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+            $str .= '</a>';
             $str .= '</td>';
             $str .= '</tr>';
         } else {
-            // print a caption row
+            // Print a caption row.
             $str .= '<tr>';
             $str .= '<th align="left">';
             $str .= get_string('lastname');
@@ -1157,8 +1294,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function participant_blankrow() {
-        global $CFG, $OUTPUT;
+    public function participant_blankrow() {
 
         $this->check_context();
 
@@ -1168,25 +1304,49 @@ class shop_front_renderer {
 
         $str .= '<tr>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" name="lastname_foo_'.$i.'" size="15" disabled="disabled" class="shop-disabled" />';
+        $str .= '<input type="text"
+                        name="lastname_foo_'.$i.'"
+                        size="15"
+                        disabled="disabled"
+                        class="shop-disabled" />';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" name="firstname_foo_'.$i.'" size="15" disabled="disabled" class="shop-disabled" />';
+        $str .= '<input type="text"
+                        name="firstname_foo_'.$i.'"
+                        size="15"
+                        disabled="disabled"
+                        class="shop-disabled" />';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" name="mail_foo_'.$i.'" size="20" disabled="disabled" class="shop-disabled" />';
+        $str .= '<input type="text"
+                        name="mail_foo_'.$i.'"
+                        size="20"
+                        disabled="disabled"
+                        class="shop-disabled" />';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" name="city_foo_'.$i.'" size="14" disabled="disabled" class="shop-disabled" />';
+        $str .= '<input type="text"
+                        name="city_foo_'.$i.'"
+                        size="14"
+                        disabled="disabled"
+                        class="shop-disabled" />';
         $str .= '</td>';
         if (!empty($this->theshop->endusermobilephonerequired)) {
             $str .= '<td align="left">';
-            $str .= '<input type="text" name="phone2_foo_'.$i.'" size="13" disabled="disabled" class="shop-disabled" />';
+            $str .= '<input type="text"
+                            name="phone2_foo_'.$i.'"
+                            size="13"
+                            disabled="disabled"
+                            class="shop-disabled" />';
             $str .= '</td>';
         }
         if (!empty($this->theshop->enduserorganisationrequired)) {
             $str .= '<td align="left">';
-            $str .= '<input type="text" name="institution_foo_'.$i.'" size="13" disabled="disabled" class="shop-disabled" />';
+            $str .= '<input type="text"
+                            name="institution_foo_'.$i.'"
+                            size="13"
+                            disabled="disabled"
+                            class="shop-disabled" />';
             $str .= '</td>';
         }
         $str .= '<td align="left">';
@@ -1200,8 +1360,8 @@ class shop_front_renderer {
         return $str;
     }
 
-    function new_participant_row() {
-        global $CFG, $SESSION;
+    public function new_participant_row() {
+        global $CFG;
 
         $this->check_context();
 
@@ -1259,7 +1419,9 @@ class shop_front_renderer {
             $str .= '</td>';
         }
         $str .= '<td align="right">';
-        $str .= '<input type="button" value="'.get_string('addparticipant', 'local_shop').'" name="add_button" onclick="ajax_add_user(\''.$CFG->wwwroot.'\', document.forms[\'participant\'])" />';
+        $jshandler = 'ajax_add_user(\''.$CFG->wwwroot.'\', document.forms[\'participant\'])';
+        $label = get_string('addparticipant', 'local_shop');
+        $str .= '<input type="button" value="'.$label.'" name="add_button" onclick="'.$jshandler.'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '</table>';
@@ -1268,7 +1430,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function assignation_row($participant, $role, $shortname) {
+    public function assignation_row($participant, $role, $shortname) {
         global $CFG, $OUTPUT;
 
         $str = '';
@@ -1281,7 +1443,9 @@ class shop_front_renderer {
         $str .= @$participant->firstname;
         $str .= '</td>';
         $str .= '<td align="right">';
-        $str .= '<a href="Javascript:ajax_delete_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname.'\', \''.$participant->email.'\')"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+        $jshandler = 'Javascript:ajax_delete_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname;
+        $jshandler .= '\', \''.$participant->email.'\')';
+        $str .= '<a href="'.$jshandler.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1289,36 +1453,41 @@ class shop_front_renderer {
     }
 
     /**
-    * prints a user selector for a product/role list from declared
-    * participants removing already assigned people.
-    */
-    function assignation_select($role, $shortname) {
+     * prints a user selector for a product/role list from declared
+     * participants removing already assigned people.
+     */
+    public function assignation_select($role, $shortname) {
         global $SESSION, $CFG;
 
         $str = '';
 
-        if (empty($SESSION->shoppingcart)) return;
+        if (empty($SESSION->shoppingcart)) {
+            return;
+        }
+        $shoppingcart = $SESSION->shoppingcart;
 
-        if (!empty($SESSION->shoppingcart->users[$shortname][$role])) {
-            $rkeys = array_keys($SESSION->shoppingcart->users[$shortname][$role]);
+        if (!empty($shoppingcart->users[$shortname][$role])) {
+            $rkeys = array_keys($shoppingcart->users[$shortname][$role]);
         } else {
             $rkeys = array();
         }
 
         $options = array();
-        if (!empty($SESSION->shoppingcart->participants)) {
-            foreach ($SESSION->shoppingcart->participants as $email => $pt) {
+        if (!empty($shoppingcart->participants)) {
+            foreach ($shoppingcart->participants as $email => $pt) {
                 if (!in_array($email, $rkeys)) {
                     $options[$email] = $pt->lastname.' '.$pt->firstname;
                 }
             }
         }
-        $str .= html_writer::select($options, 'addassign'.$role.'_'.$shortname, '', array('' => get_string('chooseparticipant', 'local_shop')), array('onchange' => 'ajax_add_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname.'\', this)'));
+        $params = array('' => get_string('chooseparticipant', 'local_shop'));
+        $attrs = array('onchange' => 'ajax_add_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname.'\', this)');
+        $str .= html_writer::select($options, 'addassign'.$role.'_'.$shortname, '', $params, $attrs);
 
         return $str;
     }
 
-    function role_list($role, $shortname) {
+    public function role_list($role, $shortname) {
         global $OUTPUT, $SESSION;
 
         $this->check_context();
@@ -1327,13 +1496,13 @@ class shop_front_renderer {
 
         $roleassigns = @$SESSION->shoppingcart->users;
 
-        $str .= $OUTPUT->heading(get_string(str_replace('_', '', $role), 'local_shop'));  // remove pseudo roles markers
+        $str .= $OUTPUT->heading(get_string(str_replace('_', '', $role), 'local_shop'));  // Remove pseudo roles markers.
         if (!empty($roleassigns[$shortname][$role])) {
             $str .= '<div class="shop-role-list-container">';
             $str .= '<table width="100%" class="shop-role-list">';
-                foreach ($roleassigns[$shortname][$role] as $participant) {
-                    $str .= $this->assignation_row($participant, $role, $shortname, true);
-                }
+            foreach ($roleassigns[$shortname][$role] as $participant) {
+                $str .= $this->assignation_row($participant, $role, $shortname, true);
+            }
             $str .= '</table>';
             $str .= '</div>';
         } else {
@@ -1341,7 +1510,7 @@ class shop_front_renderer {
             $str .= '<div class="shop-role-list">';
             $str .= get_string('noassignation', 'local_shop');
             $str .= '</div>';
-            $str.= '</div>';
+            $str .= '</div>';
         }
         if (@$SESSION->shoppingcart->assigns[$shortname] < $SESSION->shoppingcart->order[$shortname]) {
             $str .= $this->assignation_select($role, $shortname, true);
@@ -1352,21 +1521,24 @@ class shop_front_renderer {
         return $str;
     }
 
-    function cart_summary() {
-        global $SESSION, $CFG;
+    public function cart_summary() {
+        global $SESSION;
 
         $str = '';
 
         if (!empty($SESSION->shoppingcart->order)) {
             $str .= '<table width="100%">';
-            foreach ($SESSION->shoppingcart->order as $itemname => $itemcount) {
+            foreach (array_keys($SESSION->shoppingcart->order) as $itemname) {
                 $product = $this->thecatalog->get_product_by_shortname($itemname);
                 $str .= '<tr>';
-                $str .= '<td class="short-order-name"><span title="'.$product->name.'" alt="'.$product->name.'">'.$product->code.'</span></td>';
+                $str .= '<td class="short-order-name">';
+                $str .= '<span title="'.$product->name.'" alt="'.$product->name.'">'.$product->code.'</span>';
+                $str .= '</td>';
                 $str .= '<td class="short-order-quantity">'.$SESSION->shoppingcart->order[$itemname].'</td>';
                 $str .= '</tr>';
                 $str .= '<tr>';
-                $str .= '<td colspan="2"  class="short-order-summary">'.shorten_text(strip_tags($product->description), 120).'</td>';
+                $desc = shorten_text(strip_tags($product->description), 120);
+                $str .= '<td colspan="2"  class="short-order-summary">'.$desc.'</td>';
                 $str .= '</tr>';
             }
             $str .= '</table>';
@@ -1375,8 +1547,8 @@ class shop_front_renderer {
         return $str;
     }
 
-    function admin_options() {
-        global $OUTPUT, $SESSION, $DB;
+    public function admin_options() {
+        global $OUTPUT, $SESSION;
 
         $this->check_context();
 
@@ -1387,17 +1559,27 @@ class shop_front_renderer {
             $str .= get_string('adminoptions', 'local_shop');
             $disableall = get_string('disableallmode', 'local_shop');
             $enableall = get_string('enableallmode', 'local_shop');
-            $intancesettingsstr = get_string('instancesettings', 'local_shop');
             $toproductbackofficestr = get_string('gotobackoffice', 'local_shop');
 
             if (!empty($SESSION->shopseeall)) {
-                $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'seeall' => 0, 'id' => $this->theshop->id, 'blockid' => $this->theblock->id));
+                $params = array('view' => 'shop',
+                                'seeall' => 0,
+                                'id' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id);
+                $shopurl = new moodle_url('/local/shop/front/view.php', $params);
                 $str .= '<a href="'.$shopurl.'">'.$disableall.'</a>';
             } else {
-                $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'seeall' => 1, 'id' => $this->theshop->id, 'blockid' => $this->theblock->id));
+                $params = array('view' => 'shop',
+                                'seeall' => 1,
+                                'id' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id);
+                $shopurl = new moodle_url('/local/shop/front/view.php', $params);
                 $str .= '<a href="'.$shopurl.'">'.$enableall.'</a>';
             }
-            $backofficeurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $this->thecatalog->id, 'blockid' => $this->theblock->id));
+            $params = array('view' => 'viewAllProducts',
+                            'catalogid' => $this->thecatalog->id,
+                            'blockid' => $this->theblock->id);
+            $backofficeurl = new moodle_url('/local/shop/products/view.php', $params);
             $str .= '&nbsp;-&nbsp;<a href="'.$backofficeurl.'">'.$toproductbackofficestr.'</a>';
 
             $str .= $OUTPUT->box_end();
@@ -1408,13 +1590,12 @@ class shop_front_renderer {
 
     /**
      * Prints an order line
-     * @param objectref $theCatalog the whole catalog reference
+     * @param objectref $thecatalog the whole catalog reference
      * @param string $shortname the product short code
      * @param int $q quantity
      * @param array $options
-     * @param boolean $return if true returns a string
      */
-    function order_line($shortname = null, $q = null, $options = null) {
+    public function order_line($shortname = null, $q = null, $options = null) {
         global $SESSION;
 
         $this->check_context();
@@ -1464,7 +1645,7 @@ class shop_front_renderer {
             $str .= $q;
             $str .= '</td>';
             $str .= '<td width="8%" align="right" style="text-align:right" class="lastcol">';
-            $str .= sprintf('%.2f', $catalogitem->get_taxed_price($q) *  $q);
+            $str .= sprintf('%.2f', $catalogitem->get_taxed_price($q) * $q);
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -1474,14 +1655,9 @@ class shop_front_renderer {
 
     /**
      * Prints an order line
-     * @param objectref $theCatalog the whole catalog reference
-     * @param string $shortname the product short code
-     * @param int $q quantity
-     * @param array $options
-     * @param boolean $return if true returns a string
+     * @param objectref $billitem the billitem
      */
-    function bill_line($billitem) {
-        global $SESSION;
+    public function bill_line($billitem, $options = null) {
 
         $str = '';
 
@@ -1489,11 +1665,11 @@ class shop_front_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td width="60%" align="left" class="c0">';
         $str .= $billitem->abstract;
-        $str .= '<div class="shop-bill-abstract">';
         if (!empty($options['description'])) {
+            $str .= '<div class="shop-bill-abstract">';
             $str .= $billitem->description;
+            $str .= '</div>';
         }
-        $str .= '</div>';
         $str .= '</td>';
         $str .= '<td width="20%" align="left" class="c1">';
         $str .= $billitem->itemcode;
@@ -1512,12 +1688,19 @@ class shop_front_renderer {
         return $str;
     }
 
-    function full_order_totals($bill = null) {
-        global $SESSION, $CFG;
+    /**
+     * @param object $bill
+     */
+    public function full_order_totals($bill = null) {
+        global $SESSION;
 
         $this->check_context();
 
         $config = get_config('local_shop');
+
+        $shoppingcart = @$SESSION->shoppingcart;
+
+        $reason = '';
 
         if (!is_null($bill)) {
             $taxedtotal = $bill->ordertaxed;
@@ -1527,38 +1710,22 @@ class shop_front_renderer {
             $discount = $bill->discount;
             $shippingtaxedvalue = 0;
             $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-
-            /*
-            foreach ($bill->items as $bi) {
-                if ($bi->type == 'SHIPPING') {
-                    $shippingtaxedvalue = 0 + $bi->totalprice;
-                }
-                if ($bi->type == 'DISCOUNT') {
-                    $discount = 0 + $bi->totalprice;
-                }
-                $finalshippedtaxedtotal = $finaltaxedtotal + $shippingtaxedvalue;
-            }
-            */
-            
         } else {
-            $taxedtotal = $SESSION->shoppingcart->taxedtotal;
+            $taxedtotal = $shoppingcart->taxedtotal;
             $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-            $discount = $SESSION->shoppingcart->discount;
-
-            $sessionfinaltaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
-            $sessionfinaluntaxedtotal = $SESSION->shoppingcart->finaluntaxedtotal;
+            $discount = $shoppingcart->discount;
 
             if ($discountrate) {
                 $finaltaxedtotal = $taxedtotal * (1 - ($discountrate / 100));
-                $finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
+                $finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
             } else {
-                $finaltaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
-                $finaluntaxedtotal = $SESSION->shoppingcart->finaluntaxedtotal;
+                $finaltaxedtotal = $shoppingcart->finaltaxedtotal;
+                $finaluntaxedtotal = $shoppingcart->finaluntaxedtotal;
             }
 
-            $finaltaxestotal = @$SESSION->shoppingcart->finaltaxestotal;
-            $shippingtaxedvalue = 0 + @$SESSION->shoppingcart->shipping->taxedvalue;
-            $finalshippedtaxedtotal = $SESSION->shoppingcart->finalshippedtaxedtotal;
+            $finaltaxestotal = @$shoppingcart->finaltaxestotal;
+            $shippingtaxedvalue = 0 + @$shoppingcart->shipping->taxedvalue;
+            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal;
         }
 
         $str = '';
@@ -1580,7 +1747,7 @@ class shop_front_renderer {
         $str .= sprintf("%0.2f", round($taxedtotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
         $str .= '</td>';
         $str .= '</tr>';
-    
+
         if ($discountrate) {
             $str .= '<tr valign="top">';
             $str .= '<td width="40%" class="cell c0">';
@@ -1605,20 +1772,6 @@ class shop_front_renderer {
             $str .= '<b>'.sprintf("%0.2f", round($discount, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;</b>';
             $str .= '</td>';
             $str .= '</tr>';
-
-            /*
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle cell c1">';
-            $str .= get_string('totaldiscounted', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" style="text-align:right" class="shop-totals cell c2">';
-            $str .= sprintf("%0.2f", round($finaltaxedtotal, 2)).'&nbsp;'.shop_currency($theBlock, 'symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
-            */
         }
 
         $str .= '<tr valign="top">';
@@ -1630,9 +1783,11 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">';
         if (empty($config->hasshipping)) {
-            $str .= '<b>'.sprintf("%0.2f", round($finaltaxedtotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
+            $str .= '<b>'.sprintf("%0.2f", round($finaltaxedtotal, 2)).'&nbsp;';
+            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
         } else {
-            $str .= '<b>'.sprintf("%0.2f", round($finaltaxedtotal + $shippingtaxedvalue), 2).'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
+            $str .= '<b>'.sprintf("%0.2f", round($finaltaxedtotal + $shippingtaxedvalue), 2).'&nbsp;';
+            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
         }
         $str .= '</td>';
         $str .= '</tr>';
@@ -1645,7 +1800,8 @@ class shop_front_renderer {
         $str .= '&nbsp;';
         $str .= '</td>';
         $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">';
-        $str .= sprintf("%0.2f", round($finaluntaxedtotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
+        $str .= sprintf("%0.2f", round($finaluntaxedtotal, 2)).'&nbsp;';
+        $str .= $this->theshop->get_currency('symbol').'&nbsp;';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1658,7 +1814,8 @@ class shop_front_renderer {
             $str .= get_string('shipping', 'local_shop').' :';
             $str .= '</td>';
             $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 shop-totals">';
-            $str .= sprintf("%0.2f", round($shippingtaxedvalue, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
+            $str .= sprintf("%0.2f", round($shippingtaxedvalue, 2)).'&nbsp;';
+            $str .= $this->theshop->get_currency('symbol').'&nbsp;';
             $str .= '</td>';
             $str .= '</tr>';
 
@@ -1670,7 +1827,8 @@ class shop_front_renderer {
             $str .= '&nbsp;';
             $str .= '</td>';
             $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">';
-            $str .= '<b>'.sprintf("%0.2f", round($finalshippedtaxedtotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
+            $str .= '<b>'.sprintf("%0.2f", round($finalshippedtaxedtotal, 2)).'&nbsp;';
+            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -1680,8 +1838,11 @@ class shop_front_renderer {
         return $str;
     }
 
-    function full_order_taxes(&$bill = null) {
-        global $SESSION, $CFG, $DB, $OUTPUT;
+    /**
+     * @param object $bill
+     */
+    public function full_order_taxes(&$bill = null) {
+        global $SESSION, $OUTPUT;
 
         $this->check_context();
 
@@ -1736,7 +1897,8 @@ class shop_front_renderer {
             $str .= '&nbsp;';
             $str .= '</td>';
             $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol shop-taxes">';
-            $str .= sprintf("%0.2f", round($finaltaxestotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
+            $str .= sprintf("%0.2f", round($finaltaxestotal, 2)).'&nbsp;';
+            $str .= $this->theshop->get_currency('symbol').'&nbsp;';
             $str .= '</td>';
             $str .= '</tr>';
 
@@ -1750,8 +1912,8 @@ class shop_front_renderer {
      * prints the payment block on GUI
      *
      */
-    function payment_block() {
-        global $SESSION, $OUTPUT, $USER, $CFG;
+    public function payment_block() {
+        global $SESSION, $OUTPUT, $CFG;
 
         $config = get_config('local_shop');
         $this->check_context();
@@ -1769,7 +1931,7 @@ class shop_front_renderer {
         $str .= '</td></tr>';
         $str .= '<tr><td valign="top" align="left">';
 
-        // Checking  paymodes availability and creating radios
+        // Checking  paymodes availability and creating radios.
         if ($SESSION->shoppingcart->finalshippedtaxedtotal == 0) {
             $str .= '<input type="hidden" name="paymode" value="freeorder" />';
             $str .= '<em>'.get_string('freeordersignal', 'local_shop').'</em>';
@@ -1781,35 +1943,40 @@ class shop_front_renderer {
             foreach ($paymodes as $var) {
                 $isenabledvar = "enable$var";
 
-                $paymodeplugin = shop_paymode::get_instance($theBlock, $var);
+                $paymodeplugin = shop_paymode::get_instance($this->theshop, $var);
 
-                // user must be allowed to use non immediate payment methods.
+                // User must be allowed to use non immediate payment methods.
                 if (!$paymodeplugin->is_instant_payment()) {
-                    if (!has_capability('local/shop:paycheckoverride', $this->context) && !has_capability('local/shop:usenoninstantpayments', $this->context)) {
+                    if (!has_capability('local/shop:paycheckoverride', $this->context) &&
+                        !has_capability('local/shop:usenoninstantpayments', $this->context)) {
                         continue;
                     }
                 }
 
-                // if test payment, check if we are logged in and admin, or logged in from an admin behalf
+                // If test payment, check if we are logged in and admin, or logged in from an admin behalf.
 
                 if (($var == 'test') && (!$config->test)) {
-                    if (!isloggedin()) continue;
+                    if (!isloggedin()) {
+                        continue;
+                    }
 
                     if (!empty($USER->realuser)) {
                         $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->realuser);
                     } else {
                         $isrealadmin = false;
                     }
-                    if (!is_siteadmin() && !$isrealadmin) continue;
+                    if (!is_siteadmin() && !$isrealadmin) {
+                        continue;
+                    }
                 }
 
                 $check = $this->theshop->{$isenabledvar};
 
                 if ($check) {
-                    // set default paymode as first available.
+                    // Set default paymode as first available.
                     if (empty($SESSION->shoppingcart->paymode)) {
                         $default = (empty($this->theshop->defaultpaymode)) ? $var : $this->theshop->defaultpaymode;
-                        $SESSION->shoppingcart->paymode = $default ;
+                        $SESSION->shoppingcart->paymode = $default;
                         $paymode = $default;
                     } else {
                         $paymode = $SESSION->shoppingcart->paymode;
@@ -1829,8 +1996,10 @@ class shop_front_renderer {
     /**
      *
      */
-    function order_short() {
-        global $CFG, $SESSION, $DB;
+    public function order_short() {
+        global $SESSION, $DB;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         $this->check_context();
 
@@ -1851,11 +2020,11 @@ class shop_front_renderer {
         $str .= '<td>';
         $str .= get_string('untaxedtotal', 'local_shop');
         $str .= '</td><td>';
-        $str .= sprintf('%.2f', $SESSION->shoppingcart->untaxedtotal).' '.$this->theshop->get_currency('symbol');
+        $str .= sprintf('%.2f', $shoppingcart->untaxedtotal).' '.$this->theshop->get_currency('symbol');
         $str .= '</td>';
         $str .= '</tr>';
-        if (!empty($SESSION->shoppingcart->taxes)) {
-            foreach ($SESSION->shoppingcart->taxes as $taxcode => $taxsum) {
+        if (!empty($shoppingcart->taxes)) {
+            foreach ($shoppingcart->taxes as $taxcode => $taxsum) {
                 $tax = $DB->get_record('local_shop_tax', array('id' => $taxcode));
                 $str .= '<tr>';
                 $str .= '<td class="shop-tax-line">';
@@ -1867,22 +2036,28 @@ class shop_front_renderer {
             }
         }
 
-        $discountrate = $this->theshop->calculate_discountrate_for_user($SESSION->shoppingcart->taxedtotal, $this->context, $reason);
+        $reason = '';
+
+        $discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->taxedtotal,
+                                                                        $this->context, $reason);
         if ($discountrate) {
             $str .= '<tr>';
             $str .= '<td>';
             $str .= get_string('discount', 'local_shop');
             $str .= '</td><td>';
-            $str .= sprintf('%.2f', $SESSION->shoppingcart->taxedtotal * ($discountrate / 100)).' '.$this->theshop->get_currency('symbol'); // taxed value
+            // Taxed value.
+            $str .= sprintf('%.2f', $shoppingcart->taxedtotal * ($discountrate / 100)).'&nbsp;';
+            $str .= $this->theshop->get_currency('symbol');
             $str .= '</td>';
             $str .= '</tr>';
         }
-        if (!empty($SESSION->shoppingcart->shipping)) {
+        if (!empty($shoppingcart->shipping)) {
             $str .= '<tr>';
             $str .= '<td>';
             $str .= get_string('shipping', 'local_shop');
             $str .= '</td><td>';
-            $str .= sprintf('%.2f', $SESSION->shoppingcart->shipping->value).' '.$this->theshop->get_currency('symbol');
+            $str .= sprintf('%.2f', $shoppingcart->shipping->value).'&nbsp;';
+            $str .= $this->theshop->get_currency('symbol');
             $str .= '</td>';
             $str .= '</tr>';
         }
@@ -1890,7 +2065,8 @@ class shop_front_renderer {
         $str .= '<td>';
         $str .= get_string('finaltotal', 'local_shop');
         $str .= '</td><td>';
-        $str .= sprintf('%.2f', 0 + $SESSION->shoppingcart->finalshippedtaxedtotal).' '.$this->theshop->get_currency('symbol');
+        $str .= sprintf('%.2f', 0 + $shoppingcart->finalshippedtaxedtotal).'&nbsp;';
+        $str .= $this->theshop->get_currency('symbol');
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '</table>';
@@ -1898,8 +2074,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function field_start($legend, $class) {
-        global $OUTPUT;
+    public function field_start($legend, $class) {
 
         $str = '';
         $str .= '<fieldset class="'.$class."\">\n";
@@ -1908,7 +2083,7 @@ class shop_front_renderer {
         return $str;
     }
 
-    function field_end() {
+    public function field_end() {
         return '</field></fieldset>';
     }
 
@@ -1916,12 +2091,13 @@ class shop_front_renderer {
      *
      * @see users.php
      */
-    function seat_roles_assignation_form(&$catalogentry, &$requiredroles, $shortname, $q) {
+    public function seat_roles_assignation_form(&$catalogentry, &$requiredroles, $shortname, $q) {
 
         $str = '';
 
         $str .= '<fieldset>';
-        $str .= '<legend><h2>'.get_string('seatassignation', 'local_shop', $q).' : '.$catalogentry->name.'</h2></legend>';
+        $title = get_string('seatassignation', 'local_shop', $q).' : '.$catalogentry->name;
+        $str .= '<legend><h2>'.$title.'</h2></legend>';
 
         $colwidth = floor(100 / (2 + count($requiredroles)));
         $str .= '<table width="100%" class="shop-role-assignations">';
@@ -1946,7 +2122,7 @@ class shop_front_renderer {
      * @param string $view the current view
      * @param array $options additional information as an array
      */
-    function action_form($view, $options) {
+    public function action_form($view, $options) {
 
         $this->check_context();
 
@@ -1975,7 +2151,13 @@ class shop_front_renderer {
             $str .= '<input type="submit" name="back" value="'.get_string('previous', 'local_shop').'" />';
         }
         if (empty($options['hidenext'])) {
-            $str .= '&nbsp;<input title="'.@$options['overtext'].'" type="submit" id="next-button" name="go" value="'.get_string($options['nextstring'], 'local_shop').'" '.@$options['nextdisabled'].' style="'.@$options['nextstyle'].'" />';
+            $str .= '&nbsp;<input title="'.@$options['overtext'].'"
+                                  type="submit"
+                                  id="next-button"
+                                  name="go"
+                                  value="'.get_string($options['nextstring'], 'local_shop').'"
+                                  '.@$options['nextdisabled'].'
+                                  style="'.@$options['nextstyle'].'" />';
         }
         if (empty($options['inform'])) {
             $str .= '</form>';
@@ -1990,15 +2172,14 @@ class shop_front_renderer {
      * products.
      * @return an HTML string with the form
      */
-    function customer_requirements(&$errors) {
-        global $SESSION, $CFG;
+    public function customer_requirements(&$errors) {
+        global $SESSION;
 
         $this->check_context();
 
         $str = '';
 
-        
-        // Samples for json programming
+        // Samples for json programming.
         /*
         $test = array(
             array('field' => 'coursename',
@@ -2019,7 +2200,9 @@ class shop_front_renderer {
             echo json_encode($test);
         */
 
-        if (!empty($SESSION->shoppingcart->order)) {
+        $shoppingcart = $SESSION->shoppingcart;
+
+        if (!empty($shoppingcart->order)) {
             $str .= '<form name="shop-requirements">';
             $str .= '<input type="hidden" name="view" value="purchaserequ">';
             $str .= '<input type="hidden" name="id" value="'.$this->theshop->id.'">';
@@ -2029,22 +2212,24 @@ class shop_front_renderer {
             $str .= '<div id="shop-requirement-caption">';
             $str .= get_string('requireddatacaption', 'local_shop');
             $str .= '</div>';
-            foreach ($SESSION->shoppingcart->order as $itemname => $itemcount) {
+            foreach ($shoppingcart->order as $itemname => $itemcount) {
                 $product = $this->thecatalog->get_product_by_shortname($itemname);
-                $requireddata = $product->requireddata; // Take care, result of magic _get() is not directly testable.
+                $requireddata = $product->requireddata;
+                // Take care, result of magic _get() is not directly testable.
                 $requirements = array_values((array)json_decode($requireddata));
                 if (!empty($requirements)) {
                     $str .= '<div class="shop-product-requ">';
                     $str .= '<div class="shop-product-name">'.$product->name.'</div>';
-                    for ($i = 0; $i < $itemcount ; $i++) {
+                    for ($i = 0; $i < $itemcount; $i++) {
                         $str .= '<div class="shop-product-requirements">';
-                        $str .= '<div class="shop-product-requirement">'.get_string('instance', 'local_shop', $i + 1).'</div>';
+                        $label = get_string('instance', 'local_shop', $i + 1);
+                        $str .= '<div class="shop-product-requirement">'.$label.'</div>';
                         foreach ($requirements as $requ) {
                             $reqobj = (object)$requ;
 
                             $attributes = '';
                             if (!empty($reqobj->attrs)) {
-                                foreach($reqobj->attrs as $key => $value) {
+                                foreach ($reqobj->attrs as $key => $value) {
                                     $attributes .= " {$key}=\"{$value}\" ";
                                 }
                             }
@@ -2064,7 +2249,13 @@ class shop_front_renderer {
                                 case 'text':
                                 case 'textfield':
                                     $str .= '<div class="requ-param">';
-                                    $str .= '<input type"text" name="'.$itemname.'/'.$reqobj->field.$i.'" id="id-'.$reqobj->field.$i.'" value="'.@$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i].'" '.$attributes.' '.$inputclass.'/>';
+                                    $value = @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
+                                    $str .= '<input type"text"
+                                                    name="'.$itemname.'/'.$reqobj->field.$i.'"
+                                                    id="id-'.$reqobj->field.$i.'"
+                                                    value="'.$value.'"
+                                                    '.$attributes.'
+                                                    '.$inputclass.'/>';
                                     $str .= '<div class="requ-desc">';
                                     $str .= @$reqobj->desc;
                                     $str .= '</div>'; // Closing requ-desc.
@@ -2073,7 +2264,12 @@ class shop_front_renderer {
 
                                 case 'textarea':
                                     $str .= '<div class="requ-param">';
-                                    $str .= '<textarea name="'.$itemname.'/'.$reqobj->field.$i.'" id="id-'.$reqobj->field.$i.'" '.$attributes.' '.$inputclass.'>'.@$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i].'</textarea>';
+                                    $str .= '<textarea name="'.$itemname.'/'.$reqobj->field.$i.'"
+                                                       id="id-'.$reqobj->field.$i.'"
+                                                       '.$attributes.'
+                                                       '.$inputclass.'>';
+                                    $str .= @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
+                                    $str .= '</textarea>';
                                     $str .= '<div class="requ-desc">';
                                     $str .= $reqobj->desc;
                                     $str .= '</div>';
@@ -2081,9 +2277,15 @@ class shop_front_renderer {
                                     break;
 
                                 case 'checkbox':
-                                    $checked = (@$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i]) ? 'checked="checked"' : '';
+                                    $ischecked = @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
+                                    $checked = ($ischecked) ? 'checked="checked"' : '';
                                     $str .= '<div class="requ-param">';
-                                    $str .= '<input type="checkbox" name="'.$itemname.'/'.$reqobj->field.$i.'" id="id-'.$reqobj->field.$i.'" '.$checked.' '.$attributes.' '.$inputclass.'>';
+                                    $str .= '<input type="checkbox"
+                                                    name="'.$itemname.'/'.$reqobj->field.$i.'"
+                                                    id="id-'.$reqobj->field.$i.'"
+                                                    '.$checked.'
+                                                    '.$attributes.'
+                                                    '.$inputclass.'>';
                                     $str .= '<div class="requ-desc">';
                                     $str .= $reqobj->desc;
                                     $str .= '</div>';
@@ -2092,12 +2294,16 @@ class shop_front_renderer {
 
                                 case 'select':
                                     $str .= '<div class="requ-param">';
-                                    $str .= '<select name="'.$itemname.'/'.$reqobj->field.$i.'" id="id-'.$reqobj->field.$i.'" '.$attributes.' '.$inputclass.'>';
+                                    $str .= '<select name="'.$itemname.'/'.$reqobj->field.$i.'"
+                                                     id="id-'.$reqobj->field.$i.'"
+                                                     '.$attributes.'
+                                                     '.$inputclass.'>';
                                     $options = $reqobj->options;
                                     if ($options) {
                                         foreach ($options as $optkey => $optvalue) {
-                                        $selected = ($optkey == @$SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i]) ? 'selected' : '';
-                                            $str.= '<option name="'.$optkey.'">'.$optvalue.'</option>';
+                                            $isselected = $optkey == @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
+                                            $selected = ($isselected) ? 'selected' : '';
+                                            $str .= '<option name="'.$optkey.'" '.$selected.'>'.$optvalue.'</option>';
                                         }
                                     }
                                     $str .= '</select>';
@@ -2108,7 +2314,10 @@ class shop_front_renderer {
                                     break;
 
                                 default:
-                                    $str .= '<div class="shop-error">'.get_string('errorrequirementfieldtype', 'local_shop', "{$itemname}|{$reqobj->field}|{$reqobj->type}").'</div>';
+                                    $str .= '<div class="shop-error">';
+                                    $a = "{$itemname}|{$reqobj->field}|{$reqobj->type}";
+                                    $str .= get_string('errorrequirementfieldtype', 'local_shop', $a);
+                                    $str .= '</div>';
                             }
                             $str .= '</div>'; // Closing shop-requirement.
                         }
@@ -2116,9 +2325,10 @@ class shop_front_renderer {
                     }
                 }
             }
-            $extraclass = (empty($SESSION->shoppingcart->customerdata)) ? 'unsaved' : '';
+            $extraclass = (empty($shoppingcart->customerdata)) ? 'unsaved' : '';
             $str .= '<div id="requ-submit" class="'.$extraclass.'">';
-            $str .= '<input type="submit" name="go_btn" value="'.get_string('saverequs', 'local_shop').'" style="width:200px" />';
+            $label = get_string('saverequs', 'local_shop');
+            $str .= '<input type="submit" name="go_btn" value="'.$label.'" style="width:200px" />';
             $str .= '</div>'; // Closes requ-submit.
             $str .= '</div>';
             $str .= '</form>';
@@ -2128,15 +2338,15 @@ class shop_front_renderer {
     }
 
     /**
-     * This function checks for any product having an EULA url defined. 
+     * This function checks for any product having an EULA url defined.
      * If there are some, an EULA cover div will ask customer to agree with EULA
      * conditions, before accedding to the order confirm form.
      *
-     * @param array $catalog catalog structure for product line reference 
+     * @param array $catalog catalog structure for product line reference
      * @param array $bill
      */
-    function check_and_print_eula_conditions() {
-        global $CFG, $SESSION, $SITE;
+    public function check_and_print_eula_conditions() {
+        global $SESSION, $SITE;
 
         $eulastr = '';
 
@@ -2159,8 +2369,13 @@ class shop_front_renderer {
             $eulastr .= $eula;
             $eulastr .= '<center>';
             $eulastr .= '<form name="eulaform" id="eula-form-validate">';
-            $eulastr .= '<input type="checkbox" name="agreeeula" id="agreeeula" value="1">  '.get_string('eulaagree', 'local_shop');
-            $eulastr .= '<br/><br/><input type="button" name="accept_btn" value="'.$confirmstr.'" onclick="accept_eulas(this)">';
+            $eulastr .= '<input type="checkbox" name="agreeeula" id="agreeeula" value="1"> ';
+            $eulastr .= get_string('eulaagree', 'local_shop');
+            $eulastr .= '<br/><br/>';
+            $eulastr .= '<input type="button"
+                                name="accept_btn"
+                                value="'.$confirmstr.'"
+                                onclick="accept_eulas(this)">';
             $eulastr .= '</form>';
             $eulastr .= '</center>';
             $eulastr .= '</div>';
@@ -2169,58 +2384,43 @@ class shop_front_renderer {
         return $eulastr;
     }
 
-    function login_form() {
-
-        /**
-        $str = '<div id="shop-loginbox">';
-        $str .= '<table cellspacing="3" width="100%">';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('login');
-        $str .= ':</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text" class="" name="login" size="20" maxlength="20" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('password');
-        $str .= ':</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text" class="" name="login" size="20" maxlength="20" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '</table>';
-        $str .= '</div>';
-        */
+    public function login_form() {
 
         $str = '<div id="shop-loginbox">';
-        $thisurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'shopid' => $this->theshop->id, 'blockid' => (0 + @$this->theblock->instance->id)));
+        $params = array('view' => 'customer',
+                        'shopid' => $this->theshop->id,
+                        'blockid' => (0 + @$this->theblock->instance->id));
+        $thisurl = new moodle_url('/local/shop/front/view.php', $params);
         $loginurl = new moodle_url('/login/index.php', array('wantsurl' => $thisurl));
-        $str .= '<a href="'.$loginurl.'"><input type="button" class="shop-login-button" name="gologin" value="'.get_string('signin', 'local_shop').'" ></a>';
+        $str .= '<a href="'.$loginurl.'">';
+        $str .= '<input type="button"
+                        class="shop-login-button"
+                        name="gologin"
+                        value="'.get_string('signin', 'local_shop').'" >';
+        $str .= '</a>';
         $str .= '</div>';
         return $str;
     }
 
-    function my_total_link() {
+    public function my_total_link() {
         $totalurl = new moodle_url('/local/shop/front/view.php', array('shopid' => $this->theshop->id));
-        return '<center><div id="shop-total-link"><a href="'.$totalurl.'#total"><input type="button" value="'.get_string('mytotal', 'local_shop').'" /></a></div><center>';
+        $button = '<input type="button" value="'.get_string('mytotal', 'local_shop').'" />';
+        $str = '<center><div id="shop-total-link"><a href="'.$totalurl.'#total">'.$button.'</a></div><center>';
+        return $str;
     }
 
-    function invoice_header(&$aFullBill) {
+    public function invoice_header(&$afullbill) {
         global $OUTPUT;
 
         $config = get_config('local_shop');
 
         $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL);
-        
-        if (!in_array($aFullBill->status, $realized)) {
-        $headerstring = get_string('ordersheet', 'local_shop');
-        print_string('ordertempstatusadvice', 'local_shop');
+
+        if (!in_array($afullbill->status, $realized)) {
+            $headerstring = get_string('ordersheet', 'local_shop');
+            $headerstring .= get_string('ordertempstatusadvice', 'local_shop');
         } else {
-            if (empty($aFullBill->idnumber)) {
+            if (empty($afullbill->idnumber)) {
                 $headerstring = get_string('proformabill', 'local_shop');
             } else {
                 $headerstring = get_string('bill', 'local_shop');
@@ -2230,7 +2430,7 @@ class shop_front_renderer {
         $str = '';
 
         $str .= '<table>';
-        if (!empty($aFullBill->withlogo)) {
+        if (!empty($afullbill->withlogo)) {
             $str .= '<tr>';
             $str .= '<td><img src="'.$OUTPUT->pix_url('logo', 'theme').'"></td>';
             $str .= '<td align="right"></td>';
@@ -2246,11 +2446,11 @@ class shop_front_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
         $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b><br />';
-        $str .= '<code style="background-color : #E0E0E0">'.$aFullBill->transactionid.'</code><br />';
+        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code><br />';
         $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span>';
         $str .= '</td>';
         $str .= '<td width="40%" align="right" rowspan="5" class="order-preview-seller-address">';
-        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($aFullBill->emissiondate).'<br />';
+        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($afullbill->emissiondate).'<br />';
         $str .= '<br />';
         $str .= '<b>'.$config->sellername.'</b><br />';
         $str .= '<b>'.$config->selleraddress.'</b><br />';
@@ -2261,20 +2461,21 @@ class shop_front_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('customer', 'local_shop').': </b> '.$aFullBill->customer->lastname.' '.$aFullBill->customer->firstname;
+        $custname = $afullbill->customer->lastname.' '.$afullbill->customer->firstname;
+        $str .= '<b>'.get_string('customer', 'local_shop').': </b> '.$custname;
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr>';
         $str .= '<td width="60%">';
         $str .= '<b>'.get_string('city').': </b>';
-        $str .= $aFullBill->customer->zip.' '.$aFullBill->customer->city;
+        $str .= $afullbill->customer->zip.' '.$afullbill->customer->city;
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('country').': </b> '.strtoupper($aFullBill->customer->country);
+        $str .= '<b>'.get_string('country').': </b> '.strtoupper($afullbill->customer->country);
         $str .= '</td>';
         $str .= '<td>';
         $str .= '&nbsp;';
@@ -2283,7 +2484,7 @@ class shop_front_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('email').': </b>'.$aFullBill->customer->email;
+        $str .= '<b>'.get_string('email').': </b>'.$afullbill->customer->email;
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr>';
@@ -2298,6 +2499,80 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '</tr>';
 
+        $str .= '</table>';
+
+        return $str;
+    }
+
+    public function order_popup_header($afullbill) {
+
+        $config = get_config('local_shop');
+
+        $str = '';
+
+        $str .= '<table>';
+        $str .= '<tr>';
+        $str .= '<td><img src="'.$OUTPUT->pix_url('logo', 'theme').'"></td>';
+        $printorderlinkstr = get_string('printorderlink', 'local_shop');
+        $str .= '<td align="right">';
+        $str .= '<a href="#" onclick="window.print();return false;">'.$printorderlinkstr.'</a></td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td colspan="2" align="center">';
+        $headerstring = ($afullbill->idnumber) ? get_string('bill', 'local_shop') : get_string('ordersheet', 'local_shop');
+        echo $OUTPUT->heading($headerstring, 1);
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr valign="top">';
+        $str .= '<td width="60%">';
+        $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b><br />';
+        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code><br />';
+        $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span>';
+        $str .= '</td>';
+        $str .= '<td width="40%" align="right" rowspan="5" class="order-preview-seller-address">';
+        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($afullbill->emissiondate).'<br />';
+        $str .= '<br />';
+        $str .= '<b>'.$config->sellername.'</b><br />';
+        $str .= '<b>'.$config->selleraddress.'</b><br />';
+        $str .= '<b>'.$config->sellerzip.' '.$config->sellercity.'</b><br />';
+        $str .= $config->sellercountry;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('customer', 'local_shop').': </b> '.$afullbill->customer->lastname;
+        $str .= $afullbill->customer->firstname;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('city').': </b>';
+        $str .= $afullbill->customer->zip.' '.$afullbill->customer->city;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('country').': </b> '.core_text::strtoupper($afullbill->customer->country);
+        $str .= '</td>';
+        $str .= '<td>';
+        $str .= '&nbsp;';
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('email').': </b> '.$afullbill->customer->email;
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td colspan="2">';
+        $str .= '&nbsp;<br />';
+        $str .= '</td>';
+        $str .= '</tr>';
+        $str .= '<tr>';
+        $str .= '<td colspan="2" class="sectionHeader">';
+        $str .= $OUTPUT->heading(get_string('order', 'local_shop'), 2);
+        $str .= '</td>';
+        $str .= '</tr>';
         $str .= '</table>';
 
         return $str;

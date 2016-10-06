@@ -14,11 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
-use local_shop\Shop;
-
 /**
  * @package     local_shop
  * @category    local
@@ -27,15 +22,20 @@ use local_shop\Shop;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+use local_shop\Shop;
+
 class shop_customers_renderer {
 
-    var $theshop;
+    protected $theshop;
 
-    function load_context(&$theShop) {
-        $this->theshop = $theShop;
+    public function load_context(&$theshop) {
+        $this->theshop = $theshop;
     }
 
-    function customers($customers) {
+    public function customers($customers) {
         global $OUTPUT;
 
         $customerstr = get_string('customer', 'local_shop');
@@ -46,16 +46,23 @@ class shop_customers_renderer {
 
         $table = new html_table();
         $table->width = '100%';
-        $table->head = array('', "<b>$customerstr</b>", "<b>$lastnamestr</b>", "<b>$firstnamestr</b>", "<b>$purchasesstr</b>", "<b>$totalamountstr</b>", '');
+        $table->head = array('',
+                             "<b>$customerstr</b>",
+                             "<b>$lastnamestr</b>",
+                             "<b>$firstnamestr</b>",
+                             "<b>$purchasesstr</b>",
+                             "<b>$totalamountstr</b>",
+                             '');
         $table->align = array('center', 'left', 'left', 'left', 'center', 'center', 'right');
 
-        $emptyAccounts = 0;
+        $emptyaccounts = 0;
         foreach ($customers as $c) {
             if ($c->billcount == 0) {
-                $emptyAccounts++;
+                $emptyaccounts++;
             }
             $row = array();
-            $customerurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewCustomer', 'customer' => $c->id));
+            $params = array('view' => 'viewCustomer', 'customer' => $c->id);
+            $customerurl = new moodle_url('/local/shop/customers/view.php', $params);
             $row[] = '<a href="'.$customerurl.'">'.$c->id.'</a>';
             $row[] = $c->lastname;
             $row[] = $c->firstname;
@@ -63,7 +70,8 @@ class shop_customers_renderer {
             $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));
             $cmd = '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"/></a>';
             if ($c->billcount == 0) {
-                $deleteurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers', 'customerid[]' => $c->id, 'what' => 'deletecustomer'));
+                $params = array('view' => 'viewAllCustomers', 'customerid[]' => $c->id, 'what' => 'deletecustomer');
+                $deleteurl = new moodle_url('/local/shop/customers/view.php', $params);
                 $cmd .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'"/></a>';
             }
             $row[] = $cmd;
@@ -73,7 +81,11 @@ class shop_customers_renderer {
         return html_writer::table($table);
     }
 
-    function customer_detail($customer) {
+    /**
+     * Detail information for a customer
+     * @param \local_shop\Customer $customer
+     */
+    public function customer_detail($customer) {
         $str = '<table class="generaltable">';
         $str .= '<tr>';
         $str .= '<td>';
@@ -116,7 +128,12 @@ class shop_customers_renderer {
         return $str;
     }
 
-    function customer_bills($billset, $status) {
+    /**
+     * Bills for a customer
+     * @param array $billset
+     * @param string $status filtering on bill state
+     */
+    public function customer_bills($billset, $status) {
         global $OUTPUT;
 
         $config = get_config('local_shop');
@@ -130,10 +147,19 @@ class shop_customers_renderer {
 
         $table = new html_table();
         $table->heading = print_string('bill_' . $status.'s', 'local_shop');
-        $table->head = array("<b>$numstr</b>", "<b>$idnumberstr</b>", "<b>$emissiondatestr</b>", "<b>$lastmovestr</b>", "<b>$titlestr</b>", "<b>$amountstr</b>", '');
+        $table->head = array("<b>$numstr</b>",
+                             "<b>$idnumberstr</b>",
+                             "<b>$emissiondatestr</b>",
+                             "<b>$lastmovestr</b>",
+                             "<b>$titlestr</b>",
+                             "<b>$amountstr</b>",
+                             '');
         $table->size = array('5%', '5%', '%10', '10%', '50%', '10%', '10%');
         $table->width = '100%';
         $table->data = array();
+
+        $markstr = get_string('mark', 'local_shop');
+        $unmarkstr = get_string('unmark', 'local_shop');
 
         foreach ($billset as $portlet) {
             $row = array();
@@ -145,11 +171,18 @@ class shop_customers_renderer {
             $row[] = $portlet->title;
             $row[] = sprintf("%.2f", round($portlet->amount, 2)).' '.$config->defaultcurrency;
             if ($portlet->status == 'PENDING') {
-                $markstr = get_string('mark', 'local_shop');
-                $url = new moodle_url('/local/shop/view.php', array('view' => 'viewCustomer', 'what' => 'sellout', 'billid' => $portlet->id, 'customer' => $portlet->userid));
+                $params = array('view' => 'viewCustomer',
+                                'what' => 'sellout',
+                                'billid' => $portlet->id,
+                                'customer' => $portlet->userid);
+                $url = new moodle_url('/local/shop/view.php', $params);
                 $row[] = '<a href="'.$url.'" alt="'.$markstr.'"><img src="'.$OUTPUT->pix_url('mark', 'local_shop').'"/></a>';
-            } elseif ($portlet->status == 'SOLDOUT') {
-                $url = new moodle_url('/local/shop/view.php', array('view' => 'viewCustomer', 'what' => 'unmark', 'billid' => $portlet->id, 'customer' => $portlet->userid));
+            } else if ($portlet->status == 'SOLDOUT') {
+                $params = array('view' => 'viewCustomer',
+                                'what' => 'unmark',
+                                'billid' => $portlet->id,
+                                'customer' => $portlet->userid);
+                $url = new moodle_url('/local/shop/view.php', $params);
                 $row[] = '<a href="'.$url.'" alt="'.$unmarkstr.'"><img src="'.$OUTPUT->pix_url('unmark', 'local_shop').'" ></a>';
             }
             $table->data[] = $row;
