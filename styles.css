@@ -47,9 +47,9 @@
 }
 
 .shop-article.shadowed{
+    -moz-opacity:0.4;
     filter:alpha(opacity=40);
     opacity:0.4;
-    -moz-opacity:0.4;
 }
 
 .shop-not-available {
@@ -127,7 +127,7 @@
     margin-left:5px;
     margin-right:10px;
     padding:5px;
-+    width:20%
+    width:20%
 }
 
 #shop-ordertotals{
@@ -303,8 +303,8 @@ shop-products-view th{
     border: 1px dashed #B0B0B0;
 }
 
-INPUT.shop-error,
-SELECT.shop-error{
+input.shop-error,
+select.shop-error{
     background-color:#FBCEC6 !important;
     background-image:url([[pix:theme|images/input_bg_error]]) !important;
     color:black !important;
@@ -330,14 +330,14 @@ SELECT.shop-error{
 .suspendedline { background-color : #fefefe ; color : #A0A0A0 }
 .abandonnedline { background-color : #600000 ; color : #A00000 }
 .slaved { 
+    -moz-opacity:0.5;
     filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100);
     opacity:0.5;
-    -moz-opacity:0.5;
 }
 .engraved {
+    -moz-opacity:0.5;
     filter:progid:DXImageTransform.Microsoft.Engrave() progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100)
     opacity:0.5;
-    -moz-opacity:0.5;
 }
 
 /* tabbedmenu */
@@ -363,15 +363,15 @@ SELECT.shop-error{
 }
 
 .shop-pricerange{
+    -moz-border-radius:6px;
+    -webkit-border-radius:6px;
+    -khtml-border-radius:6px;
     background-color:#EEEEEE;
     border-radius:6px;
     color:#737379;
     font-weight:bolder;
     padding:1px;
     padding-left:5px;
-    -moz-border-radius:6px;
-    -webkit-border-radius:6px;
-    -khtml-border-radius:6px;
 }
 
 .shop-priceamount{
@@ -470,21 +470,21 @@ div.shop-bill-abstract{
 }
 
 #shop-requirement-caption {
+    -moz-border-radius:10px;
     border:1px solid #808080;
     border-radius:10px;
     font-size:1.1em;
     margin-bottom:15px;
     margin-top:10px;
     padding:15px;
-    -moz-border-radius:10px;
 }
 
 .shop-product-requirements {
+    -moz-border-radius:10px;
     border:1px solid #808080;
     border-radius:10px;
     margin-top:10px;
     padding:5px;
-    -moz-border-radius:10px;
 }
 
 .shop-product-requirement {
@@ -527,6 +527,7 @@ div.shop-bill-abstract{
 }
 
 .shop-requ-error {
+    -moz-border-radius:3px;
     background-color:#ffe0e0;
     border:1px solid red;
     border-radius:3px;
@@ -534,7 +535,6 @@ div.shop-bill-abstract{
     font-size:0.8em;
     margin:4px;
     padding:3px;
-    -moz-border-radius:3px;
 }
 
 .shop-requ-input-error {
@@ -635,8 +635,8 @@ shop-order-paymode {
 }
 
 .shop-shadow {
-    opacity:60%;
     -moz-opacity:60%;
+    opacity:60%;
 }
 
 .shop-main-menu td {
@@ -679,8 +679,8 @@ shop-order-paymode {
 }
 
 .path-local-shop.pagelayout-popup #page {
-    padding-left:20px;
     max-width:unset;
+    padding-left:20px;
 }
 
 .form-filter-menus,
