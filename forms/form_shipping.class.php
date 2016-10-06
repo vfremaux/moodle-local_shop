@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
@@ -23,13 +21,14 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
 class ProductShipping_Form extends moodleform {
 
-    function definition() {
-        global $CFG, $OUTPUT;
+    public function definition() {
+        global $OUTPUT;
 
         $codeattributes = 'size="10" maxlength="10"';
 
@@ -42,7 +41,7 @@ class ProductShipping_Form extends moodleform {
         $mform->addElement('select', 'productcode', get_string('productcode', 'local_shop'), $this->_customdata['products']);
         $mform->addRule('productcode', null, 'required');
 
-        $mform->addElement('select', 'zoneid', get_string('shippingzone', 'local_shop'), $this->_customdata['shippingzones']); 
+        $mform->addElement('select', 'zoneid', get_string('shippingzone', 'local_shop'), $this->_customdata['shippingzones']);
         $mform->addRule('zoneid', null, 'required');
 
         $mform->addElement('text', 'value', get_string('shippingfixedvalue', 'local_shop'));
@@ -54,27 +53,24 @@ class ProductShipping_Form extends moodleform {
         $mform->setType('formula', PARAM_TEXT);
         $mform->addHelpButton('formula', 'formula', 'local_shop');
 
-        $mform->addElement('text', 'a', get_string('param_a', 'local_shop'));
+        $mform->addElement('text', 'a', get_string('param_a', 'local_shop'), $codeattributes);
         $mform->setAdvanced('a');
         $mform->setType('a', PARAM_NUMBER);
 
-        $mform->addElement('text', 'b', get_string('param_b', 'local_shop'));
+        $mform->addElement('text', 'b', get_string('param_b', 'local_shop'), $codeattributes);
         $mform->setAdvanced('b');
         $mform->setType('b', PARAM_NUMBER);
 
-        $mform->addElement('text', 'c', get_string('param_c', 'local_shop'));
+        $mform->addElement('text', 'c', get_string('param_c', 'local_shop'), $codeattributes);
         $mform->setAdvanced('c');
         $mform->setType('c', PARAM_NUMBER);
 
-        // Adding submit and reset button
+        // Adding submit and reset button.
 
         $this->add_action_buttons(true);
-    } 
-
-    function validation($data, $files = array()) {
     }
 
-    function freeze($field) {
+    public function freeze($field) {
         $mform = $this->_form;
         $mform->freeze($field);
     }

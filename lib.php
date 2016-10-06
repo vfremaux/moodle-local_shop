@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 function local_shop_has_leaflet($itemid) {
 
@@ -41,7 +40,7 @@ function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $
 
     $areas = local_shop_get_file_areas();
 
-    // filearea must contain a real area
+    // Filearea must contain a real area.
     if (!isset($areas[$filearea])) {
         return false;
     }
@@ -59,7 +58,7 @@ function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $
     $oldpath = "/$context->id/block_shop/$filearea/$itemid/$relativepath";
 
     if (!$file = $fs->get_file_by_hash(sha1($fullpath))) {
-        // Try getting an old file when shop was a block;
+        // Try getting an old file when shop was a block.
 
         if (!$oldfile = $fs->get_file_by_hash(sha1($oldpath)) or $oldfile->is_directory()) {
             return false;
@@ -80,14 +79,14 @@ function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $
         }
     }
 
-    // finally send the file
+    // Finally send the file.
     send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
 }
 
 /**
-* maps back all used fileareas to the table where the
-* item entity resides
-*/
+ * maps back all used fileareas to the table where the
+ * item entity resides
+ */
 function local_shop_get_file_areas() {
     return array(
         'catalogdescription' => 'local_shop_catalog',

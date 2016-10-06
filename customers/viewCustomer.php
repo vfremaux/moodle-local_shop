@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * View a single customer.
  *
  * @package     local_shop
  * @category    local
@@ -25,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
@@ -45,7 +44,7 @@ try {
     print_error('objecterror', 'local_shop', $e->message);
 }
 
-// dispatch bills into status boxes.
+// Dispatch bills into status boxes.
 $bills = array();
 if (is_array($customer->bills)) {
     foreach ($customer->bills as $abill) {

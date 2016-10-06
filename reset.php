@@ -26,8 +26,8 @@ require('../../config.php');
 require_once($CFG->dirroot.'/local/shop/forms/form_reset.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -36,24 +36,26 @@ require_capability('local/shop:salesadmin', context_system::instance());
 
 // Prepare page.
 
-$url = new moodle_url('/local/shop/reset.php', array('id' => $id));
+$url = new moodle_url('/local/shop/reset.php', array('shopid' => $theshop->id));
 $PAGE->set_url($url);
 
+$context = context_system::instance();
 $PAGE->set_context($context);
 
 $PAGE->set_title('shop');
 $PAGE->set_heading('shop');
-$PAGE->navbar->add(get_string('salesservice', 'local_shop'), $CFG->wwwroot."/local/shop/index.php?id={$id}");
+$PAGE->navbar->add(get_string('salesservice', 'local_shop'), $CFG->wwwroot."/local/shop/index.php?shopid={$theshop->id}");
 $PAGE->navbar->add(get_string('reset', 'local_shop'));
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable('');
 
 $out = '';
 
-$mform = new ResetForm($id);
+$mform = new ResetForm();
+
 if ($mform->is_cancelled()) {
     redirect($url);
-} elseif ($data = $mform->get_data()) {
+} else if ($data = $mform->get_data()) {
     if (!empty($data->bills) || !empty($data->customers) || !empty($data->catalogs)) {
         $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
         $DB->delete_records('local_shop_bill', null);
@@ -65,8 +67,8 @@ if ($mform->is_cancelled()) {
     }
     if (!empty($data->catalogs)) {
         $out .= $OUTPUT->notification(get_string('catalogsdeleted', 'local_shop'));
-        $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theBlock->config->catalogid));
-        $DB->delete_records('local_shop_catalog', array('id' => $theBlock->config->catalogid));
+        $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theblock->config->catalogid));
+        $DB->delete_records('local_shop_catalog', array('id' => $theblock->config->catalogid));
     }
 }
 echo $OUTPUT->header();
@@ -81,6 +83,9 @@ echo $OUTPUT->heading(get_string('reset', 'local_shop'));
 echo $OUTPUT->box_start();
 print_string('resetguide', 'local_shop');
 
+$formdata = new StdClass;
+$formdata->shopid = $theshop->id;
+$mform->set_data($formdata);
 $mform->display();
 echo $OUTPUT->box_end();
 

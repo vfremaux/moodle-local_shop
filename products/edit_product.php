@@ -34,8 +34,8 @@ $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/shopadmin.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 
-// get all the shop session context objects.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $itemid = optional_param('itemid', 0, PARAM_INT);
 
@@ -56,13 +56,13 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $mform = new Product_Form('', array('what' => 'edit', 'catalog' => $theCatalog));
+    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
     $itemrec = $item->record;
     $itemrec->itemid = $itemid;
     $mform->set_data($itemrec);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Product_Form('', array('what' => 'add', 'catalog' => $theCatalog));
+    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
     $itemrec = $item->record;
     $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($itemrec);
@@ -77,7 +77,7 @@ if ($data = $mform->get_data()) {
     $data->enablehandler = optional_param('enablehandler', 0, PARAM_TEXT);
 
     $data->id = $data->itemid;
-    $data->catalogid = $theCatalog->id;
+    $data->catalogid = $thecatalog->id;
 
     $data->description = $data->description_editor['text'];
     $data->descriptionformat = $data->description_editor['format'];
@@ -108,16 +108,17 @@ if ($data = $mform->get_data()) {
                 $DB->update_record('local_shop_catalogitem', $record);
             }
         }
-        // If slave catalogue must insert a master copy
-        if ($theCatalog->isslave) {
-            $data->catalogid = $theCatalog->groupid;
+        // If slave catalogue must insert a master copy.
+        if ($thecatalog->isslave) {
+            $data->catalogid = $thecatalog->groupid;
             $DB->insert_record('local_shop_catalogitem', $data);
         }
     } else {
         $data->id = $data->itemid;
 
         // If product code as changed, we'd better recompute a new shortname.
-        if (empty($data->shortname) || ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
+        if (empty($data->shortname) ||
+                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
 
@@ -125,17 +126,23 @@ if ($data = $mform->get_data()) {
     }
 
     // Process text fields from editors.
-    $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-    $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogitemdescription', $data->id, array('subdirs' => true), $data->description);
-    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop', 'catalogitemdescription', $data->id);
+    $draftideditor = file_get_submitted_draft_itemid('description_editor');
+    $data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemdescription',
+                                                    $data->id, array('subdirs' => true), $data->description);
+    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
+                                            'catalogitemdescription', $data->id);
 
-    $draftid_editor = file_get_submitted_draft_itemid('notes_editor');
-    $data->notes = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogitemnotes', $data->id, array('subdirs' => true), $data->notes);
-    $data = file_postupdate_standard_editor($data, 'notes', $mform->editoroptions, $context, 'local_shop', 'catalogitemnotes', $data->id);
+    $draftideditor = file_get_submitted_draft_itemid('notes_editor');
+    $data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
+                                              $data->id, array('subdirs' => true), $data->notes);
+    $data = file_postupdate_standard_editor($data, 'notes', $mform->editoroptions, $context, 'local_shop',
+                                            'catalogitemnotes', $data->id);
 
-    $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
-    $data->eula = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogitemeula', $data->id, array('subdirs' => true), $data->eula);
-    $data = file_postupdate_standard_editor($data, 'eula', $mform->editoroptions, $context, 'local_shop', 'catalogitemeula', $data->id);
+    $draftideditor = file_get_submitted_draft_itemid('eula_editor');
+    $data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
+                                             $data->id, array('subdirs' => true), $data->eula);
+    $data = file_postupdate_standard_editor($data, 'eula', $mform->editoroptions, $context, 'local_shop',
+                                            'catalogitemeula', $data->id);
 
     $fs = get_file_storage();
 

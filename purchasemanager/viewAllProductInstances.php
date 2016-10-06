@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 
@@ -42,14 +42,13 @@ if (!has_capability('local/shop:accessallowners', $context)) {
     $ownermenu = $shoprenderer->print_owner_menu($url);
 }
 
-// execute controller
-//echo "[$view:$cmd]";
+// Execute controller.
 
 if ($action != '') {
-   include_once($CFG->dirroot.'/local/shop/purchasemanager/productinstances.controller.php');
-   $controller = new productinstances_controller($theCatalogue);
-   $controller->receive($action);
-   $controller->process($action);
+    include_once($CFG->dirroot.'/local/shop/purchasemanager/productinstances.controller.php');
+    $controller = new productinstances_controller($thecatalogue);
+    $controller->receive($action);
+    $controller->process($action);
 }
 
 $customermenu = $shoprenderer->print_customer_menu($url);
@@ -58,7 +57,8 @@ $productinstances = Product::get_instances_on_context(array('ci.userid' => 0 + $
 
 echo $out;
 
-$viewurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances', 'customerid' => $customerid, 'shopowner' => $shopowner));
+$params = array('view' => 'viewAllProductInstances', 'customerid' => $customerid, 'shopowner' => $shopowner);
+$viewurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
 echo $OUTPUT->heading(get_string('productinstances', 'local_shop'));
 
@@ -72,7 +72,7 @@ echo '</div>';
 echo '</div>';
 
 if (count(array_keys($productinstances)) == 0) {
-   echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
+    echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
 } else {
     $formurl = new moodle_url('/local/shop/purchasemanager/view.php');
     echo '<form name="selection" action="'.$formurl.'" method="get">';

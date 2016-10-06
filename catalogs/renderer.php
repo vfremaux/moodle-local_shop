@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * Local renderer for catalogs management.
  *
  * @package     local_shop
  * @categroy    local
@@ -25,14 +23,16 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 
 class shop_catalogs_renderer {
 
     /**
      * @param object $catalog
      */
-    function catalog_admin_line($catalog) {
-        global $CFG, $OUTPUT;
+    public function catalog_admin_line($catalog) {
+        global $OUTPUT;
 
         if (is_null($catalog)) {
             $str = '<tr>';
@@ -62,7 +62,8 @@ class shop_catalogs_renderer {
         if ($catalog->isslave) {
             $str .= '<img src="'.$OUTPUT->pix_url('link', 'local_shop').'" />';
         }
-        $catalogurl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $catalog->id));
+        $params = array('view' => 'viewAllProducts', 'catalogid' => $catalog->id);
+        $catalogurl = new moodle_url('/local/shop/products/view.php', $params);
         $str .= '<a href="'.$catalogurl.'">'.format_string($catalog->name).'</a>';
         $str .= '</td>';
         $str .= '<td>';
@@ -75,7 +76,8 @@ class shop_catalogs_renderer {
         $editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php', array('catalogid' => $catalog->id));
         $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"></a>';
         if ($catalog->is_not_used()) {
-            $deleteurl = new moodle_url('/local/shop/index.php', array('catalogid' => $catalog->id, 'what' => 'deletecatalog'));
+            $params = array('catalogid' => $catalog->id, 'what' => 'deletecatalog');
+            $deleteurl = new moodle_url('/local/shop/index.php', $params);
             $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('/t/delete').'"></a>';
         }
         $str .= '</td>';
@@ -88,7 +90,7 @@ class shop_catalogs_renderer {
      * Prints an admin list of catalogs
      * @param array $catalogs
      */
-    function catalogs($catalogs) {
+    public function catalogs($catalogs) {
 
         $str = '';
         $str .= '<table width="100%" cellspacing="10">';

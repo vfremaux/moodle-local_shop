@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Defines form to add a new project
  *
@@ -26,16 +24,89 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Tax;
 
-abstract class catalogitemform extends moodleform {
+abstract class CatalogItem_Form extends moodleform {
+
+    /*
+     * Attributes for several widgets.
+     */
+    public $editoroptions;
+    protected $defaultattributes;
+    protected $attributesshort;
+    protected $attributeslong;
+    protected $fpickerattributes;
+
+    public function __construct($action, $data) {
+        global $COURSE;
+
+        $maxfiles = 99;                // TODO: add some settings.
+        $maxbytes = $COURSE->maxbytes; // TODO: add some settings.
+        $context = context_system::instance();
+        $this->editoroptions = array('trusttext' => true,
+                                     'subdirs' => false,
+                                     'maxfiles' => $maxfiles,
+                                     'maxbytes' => $maxbytes,
+                                     'context' => $context);
+
+        $this->defaultattributes = 'size="50" maxlength="200"';
+        $this->attributesshort = 'size="24" maxlength="24"';
+        $this->attributeslong = 'size="60" maxlength="255"';
+        $this->fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
+        $this->attributesdescription = 'cols="50" rows="8"';
+        parent::__construct($action, $data);
+    }
+
+    protected function add_standard_name_elements() {
+        global $DB;
+
+        $config = get_config('local_shop');
+
+        $mform = $this->_form;
+
+        $mform->addElement('text', 'code', get_string('code', 'local_shop'), $this->attributesshort);
+        $mform->setType('code', PARAM_ALPHANUMEXT);
+        $mform->addRule('code', null, 'required');
+
+        $mform->addElement('text', 'name', get_string('name', 'local_shop'), $this->attributeslong);
+        $mform->setType('name', PARAM_TEXT);
+        $mform->addRule('name', null, 'required');
+
+        $mform->addElement('editor', 'description_editor', get_string('description'), null, $this->editoroptions);
+        $mform->setType('description_editor', PARAM_CLEANHTML);
+        $mform->addHelpButton('description_editor', 'description', 'local_shop');
+
+        if (!empty($config->multipleowners)) {
+            $fields = 'hasaccount,firstname,lastname';
+            $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), $fields);
+
+            $ownersmenu = array('' => get_string('sitelevel', 'local_shop'));
+            if ($potentialowners) {
+                foreach ($potentialowners as $accountid => $owner) {
+                    $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
+                }
+            }
+
+            $mform->addElement('select', 'userid', get_string('productowner', 'local_shop'), $ownersmenu);
+            $mform->setType('userid', PARAM_INT);
+        } else {
+            $mform->addElement('hidden', 'userid', 0);
+            $mform->setType('userid', PARAM_INT);
+        }
+
+        $statusopts = shop_get_status();
+        $mform->addElement('select', 'status', get_string('status', 'local_shop'), $statusopts);
+        $mform->setType('status', PARAM_TEXT);
+    }
 
     protected function add_price_group() {
 
-        $attributesprice1 = array('size' => 7, 'maxlength'=> 10, 'onchange' => 'updatetiprice(1)');
+        $attributesprice1 = array('size' => 7, 'maxlength' => 10, 'onchange' => 'updatetiprice(1)');
 
         $mform = $this->_form;
 
@@ -55,7 +126,6 @@ abstract class catalogitemform extends moodleform {
         $ttc1 = &$mform->createElement('static', 'ti1', '', '<span id="id_price1ti">TTC : </span>');
         $pricegroup[] = $ttc1;
         $mform->addGroup($pricegroup, 'priceset1', get_string('unitprice1', 'local_shop'), ' ', false);
-        // $mform->addRule('price1', '', 'required');
 
         $pricegroup = array();
         $price2 = &$mform->createElement('text', 'price2', '', $attributesprice1);
@@ -77,7 +147,7 @@ abstract class catalogitemform extends moodleform {
         $pricegroup = array();
         $price3 = &$mform->createElement('text', 'price3', '', $attributesprice1);
         $price3->updateAttributes(array('onchange' => 'updatetiprice(3)'));
-        $pricegroup[] = $price3; 
+        $pricegroup[] = $price3;
         $mform->setType('price3', PARAM_NUMBER);
         $from3 = &$mform->createElement('text', 'from3', '');
         $mform->setType('from3', PARAM_INT);
@@ -117,14 +187,12 @@ abstract class catalogitemform extends moodleform {
         $from5->updateAttributes(array('disabled' => 'disabled', 'size' => 7));
         $mform->setType('from5', PARAM_INT);
         $pricegroup[] = $from5;
-        // $to5 = &$mform->createElement('text', 'range5', '', $attributesprice1);
         $to5 = &$mform->createElement('static', 'range5', '', '');
         $pricegroup[] = $to5;
         $mform->setType('range5', PARAM_INT);
         $ttc5 = &$mform->createElement('static', 'ti5', '', '<span id="id_price5ti">TTC : </span>');
         $pricegroup[] = $ttc5;
         $mform->addGroup($pricegroup, 'priceset5', get_string('unitprice5', 'local_shop'), ' ', false);
-
     }
 
     protected function add_tax_select() {
@@ -132,7 +200,8 @@ abstract class catalogitemform extends moodleform {
         $mform = $this->_form;
 
         $taxcodeopts = Tax::get_instances_menu(array(), 'title');
-        $mform->addElement('select', 'taxcode', get_string('taxcode', 'local_shop'), $taxcodeopts, array('onchange' => 'updatetiprice(1)'));
+        $label = get_string('taxcode', 'local_shop');
+        $mform->addElement('select', 'taxcode', $label, $taxcodeopts, array('onchange' => 'updatetiprice(1)'));
         $mform->setDefault('taxcode', null);
         $mform->setType('taxcode', PARAM_INT);
         $mform->addHelpButton('taxcode', 'taxhelp', 'local_shop');
@@ -160,7 +229,8 @@ abstract class catalogitemform extends moodleform {
                                   '20' => '20',
                                   '50' => '50'
                                   );
-            $mform->addElement('select', 'maxdeliveryquant', get_string('maxdeliveryquant', 'local_shop'), $maxquantopts);
+            $label = get_string('maxdeliveryquant', 'local_shop');
+            $mform->addElement('select', 'maxdeliveryquant', $label, $maxquantopts);
             $mform->setType('maxdeliveryquant', PARAM_INT);
         } else {
             $mform->addElement('hidden', 'stock');
@@ -182,7 +252,8 @@ abstract class catalogitemform extends moodleform {
         $mform->addGroup($radiogroup, 'loggedingroup', get_string('onlyfor', 'local_shop'), array(' '), false);
         $mform->setDefault('onlyforloggedin', 0);
 
-        $mform->addelement('text', 'password', get_string('productpassword', 'local_shop'), '', array('size' => 8, 'maxlength' => 8));
+        $label = get_string('productpassword', 'local_shop');
+        $mform->addelement('text', 'password', $label, '', array('size' => 8, 'maxlength' => 8));
         $mform->setType('password', PARAM_TEXT);
     }
 
@@ -190,60 +261,104 @@ abstract class catalogitemform extends moodleform {
         global $COURSE;
 
         $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
-        $leafletfpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.pdf'));
+        $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.pdf'));
 
         $mform = $this->_form;
 
         $group = array();
-        $group[0] = & $mform->createElement('filepicker', 'leaflet', get_string('leaflet', 'local_shop'), $leafletfpickerattributes);
+        $label = get_string('leaflet', 'local_shop');
+        $group[0] = & $mform->createElement('filepicker', 'leaflet', $label, $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearleaflet', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grleaflet', get_string('leaflet', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $label = get_string('leaflet', 'local_shop');
+        $mform->addGroup($group, 'grleaflet', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
         $group[0] = & $mform->createElement('filepicker', 'image', get_string('image', 'local_shop'), $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearimage', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grimage', get_string('image', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ',false);
+        $label = get_string('image', 'local_shop');
+        $mform->addGroup($group, 'grimage', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
-        $group[0] = & $mform->createElement('filepicker', 'thumb', get_string('thumbnail', 'local_shop'), $fpickerattributes);
+        $label = get_string('thumbnail', 'local_shop');
+        $group[0] = & $mform->createElement('filepicker', 'thumb', $label, $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearthumb', get_string('clear', 'local_shop'));
 
-        $mform->addGroup($group, 'grthumb', get_string('thumbnail', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $label = get_string('thumbnail', 'local_shop');
+        $mform->addGroup($group, 'grthumb', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
-        $group[0] = & $mform->createElement('filepicker', 'unit', get_string('unitpix', 'local_shop'), $fpickerattributes);
+        $label = get_string('unitpix', 'local_shop');
+        $group[0] = & $mform->createElement('filepicker', 'unit', $label, $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearunit', get_string('clear', 'local_shop'));
-        $mform->addGroup($group, 'grunit', get_string('unitpix', 'local_shop'), array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $label = get_string('unitpix', 'local_shop');
+        $mform->addGroup($group, 'grunit', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
-        $mform->addElement('editor', 'eula_editor', get_string('eula', 'local_shop'), null, $this->editoroptions);
+        $label = get_string('eula', 'local_shop');
+        $mform->addElement('editor', 'eula_editor', $label, null, $this->editoroptions);
         $mform->setType('eula', PARAM_URL);
         $mform->addHelpButton('eula_editor', 'producteulas', 'local_shop');
+
+        $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
+        $mform->setType('notes_editor', PARAM_CLEANHTML);
+        $mform->addHelpButton('notes_editor', 'description', 'local_shop');
+    }
+
+    protected function set_name_data(&$defaults, $context) {
+        $draftideditor = file_get_submitted_draft_itemid('description_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor', @$defaults->id,
+                                                array('subdirs' => true), $defaults->description);
+        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogdescription', @$defaults->id);
+        $defaults->description_editor = array('text' => $currenttext,
+                                              'format' => $defaults->descriptionformat,
+                                              'itemid' => $draftideditor);
     }
 
     protected function set_document_asset_data(&$defaults, $context) {
         global $COURSE;
 
         $draftitemid = file_get_submitted_draft_itemid('leaflet');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->id,
+                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grleaflet = array('leaflet' => $draftitemid);
 
         $draftitemid = file_get_submitted_draft_itemid('image');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->id,
+                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grimage = array('image' => $draftitemid);
 
         $draftitemid = file_get_submitted_draft_itemid('thumb');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->id,
+                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grthumb = array('thumb' => $draftitemid);
 
         $draftitemid = file_get_submitted_draft_itemid('unit');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id, array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id,
+                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grunit = array('unit' => $draftitemid);
 
-        $draftid_editor = file_get_submitted_draft_itemid('eula_editor');
-        $currenttext = file_prepare_draft_area($draftid_editor, $context->id, 'local_shop', 'eula_editor', @$defaults->id, array('subdirs' => true), $defaults->eula);
-        $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop', 'catalogitemeula', @$defaults->id);
-        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftid_editor);
+        $draftideditor = file_get_submitted_draft_itemid('eula_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'eula_editor', @$defaults->id,
+                                               array('subdirs' => true), $defaults->eula);
+        $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogitemeula', @$defaults->id);
+        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftideditor);
+
+        $draftideditor = file_get_submitted_draft_itemid('notes_editor');
+        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'notes_editor', @$defaults->id,
+                                               array('subdirs' => true), $defaults->notes);
+        $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogitemnotes', @$defaults->id);
+        $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftideditor);
+    }
+
+    public function set_data($defaults) {
+        parent::set_data($defaults);
+    }
+
+    public function is_cancelled() {
+        parent::is_cancelled();
     }
 }

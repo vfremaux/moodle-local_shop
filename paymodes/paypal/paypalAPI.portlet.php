@@ -14,17 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    shoppaymodes_paypal
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 $lang = substr(current_language(), 0, 2);
-if ($lang == 'en') $lang = 'us';
+if ($lang == 'en') {
+    $lang = 'us';
+}
 $ulang = strtoupper($lang);
 ?>
 <div align="center">
@@ -60,17 +61,11 @@ if (!empty($config->test)) {
 <input type="hidden" name="quantity" value="1">
 <input type="hidden" name="item_number" value="">
 <input type="hidden" name="shipping" value="">
-<!-- input type="hidden" name="shipping2" value="" --> 
-<!-- input type="hidden" name="handling" value="" --> 
-<!-- input type="hidden" name="tax" value="" --> 
 <input type="hidden" name="for_auction" value="false" />
 <input type="hidden" name="no_shipping" value="1" >
-<!-- input type="hidden" name="cn" value="" -->
-<input type="hidden" name="no_note" value="1">  
+<input type="hidden" name="no_note" value="1">
 <input type="hidden" name="on0" value="<?php print_string("user") ?>" />
 <input type="hidden" name="os0" value="<?php p($portlet->lastname.' '.$portlet->firstname) ?>" />
-<!-- input type="hidden" name="on1" value="" -->
-<!-- input type="hidden" name="os1" value="" -->
 <input type="hidden" name="custom" value="<?php echo $this->theshop->id ?>">
 <input type="hidden" name="invoice" value="<?php echo $portlet->transid ?>">
 <input type="hidden" name="notify_url" value="<?php echo $portlet->notify_url ?>">
@@ -89,11 +84,6 @@ if (!empty($config->test)) {
 <input type="hidden" name="city" value="<?php echo $portlet->city ?>">
 <input type="hidden" name="country" value="<?php echo $portlet->country ?>">
 <input type="hidden" name="zip" value="<?php echo $portlet->zip ?>">
-
-<!-- input type="hidden" name="night_phone_a" value="1">
-<input type="hidden" name="night_phone_b" value="1">
-<input type="hidden" name="day_phone_a" value="1">
-<input type="hidden" name="day_phone_b" value="1" -->
 
 <input type="submit" value="<?php print_string("paypalmsg", "shoppaymodes_paypal") ?>" />
 

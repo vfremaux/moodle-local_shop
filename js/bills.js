@@ -1,6 +1,9 @@
+/*
+ * jshint undef:false, unused:false
+ */
 
 function listClear(nonSelect) {
-nonSelect.selectedIndex = 0;
+    nonSelect.selectedIndex = 0;
 }
 
 function flowcontrol_toggle(wwwroot) {

@@ -35,6 +35,7 @@ $view = optional_param('view', '', PARAM_TEXT);
 $id = optional_param('shopid', '', PARAM_INT);
 
 // Security.
+
 $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
@@ -49,7 +50,7 @@ $PAGE->navbar->add(get_string('shops', 'local_shop'), new moodle_url('/local/sho
 $PAGE->set_pagelayout('admin');
 
 if ($view == 'viewShop') {
-    $id = required_param('shopid', PARAM_INT); // just for bocking
+    $id = required_param('shopid', PARAM_INT); // Just for backing.
     $shop = new Shop($id);
     $PAGE->navbar->add(get_string('shop', 'local_shop'), $shop->name);
 }
@@ -61,10 +62,10 @@ $PAGE->set_cacheable(true);
 
 echo $OUTPUT->header();
 
-// make page content
+// Make page content.
 
-include_once($CFG->dirroot."/local/shop/shop/{$view}.php");
+require_once($CFG->dirroot."/local/shop/shop/{$view}.php");
 
-// make footer
+// Make footer.
 
 echo $OUTPUT->footer();

@@ -127,6 +127,7 @@ $string['configsellername'] = 'The official name of the vendor';
 $string['configsellerphonesupport'] = 'Phone number of the sales customer support team';
 $string['configsellerzip'] = 'Zip code for the seller identity';
 $string['configtestmode'] = 'Enables the mode test for the payments';
+$string['configtestoverride'] = 'Overrides test lock on purchase to test simulated external users';
 $string['configcatalog'] = 'Catalog to bind';
 $string['configcurrency'] = 'Currency';
 $string['configcustomerorganisationrequired'] = 'Organisation required (customer)';
@@ -176,7 +177,7 @@ $string['discountthreshold'] = 'Discount Threshold';
 $string['dispo'] = 'Avail.';
 $string['dosearch'] = 'Search';
 $string['edit_categories'] = 'Edit categories';
-$string['editshop']= 'Edit a shop instance';
+$string['editshop'] = 'Edit a shop instance';
 $string['editbundle'] = 'Bundle editing';
 $string['editcategories'] = 'Edit categories';
 $string['editcategory'] = 'Edit category';
@@ -188,8 +189,8 @@ $string['error'] = 'Error: ';
 $string['eulaheading'] = 'End User Licence Agreement';
 $string['eulaagree'] = 'Confirm agreement to EULA';
 $string['eula_help'] = 'Please read and validate the following End User Licence Agreement before any purchase on {$a}. Confirming the form will provide acceptance of the herein conditions.';
-$string['warning'] = 'Warning: ';
-$string['message'] = 'Message: ';
+$string['warning'] = 'Warning:';
+$string['message'] = 'Message:';
 $string['usinghandler'] = 'Using handler {$a}';
 $string['editcatalog'] = 'Update catalog definition';
 $string['erroraddbill'] = 'Could not add bill record';
@@ -273,7 +274,7 @@ $string['leafletlink'] = 'Download the leaflet';
 $string['leafleturl'] = 'Leaflet URL:';
 $string['link'] = 'Link ';
 $string['login'] = 'You have a customer account ';
-$string['manybillsasresult'] = 'Several bills are matching your actual criterias. Choose in ';
+$string['manybillsasresult'] = 'Several bills are matching your actual criterias. Choose in&nbsp;';
 $string['manageshipping'] = 'Manage shipping';
 $string['managetaxes'] = 'Manage taxes';
 $string['manageshippingdesc'] = 'Manages shipping definitions';
@@ -414,13 +415,15 @@ $string['taxhelp_help'] = 'Taxes Help';
 $string['tax'] = 'Tax';
 $string['taxes'] = 'Taxes';
 $string['tendays'] = 'ten days';
-$string['testmodeactive'] = 'Moodle Shop is in test mode. We do not allow payments at the moment.';
+$string['testmodeactive'] = 'Moodle Shop is in test mode. We do not allow payments at the moment unless admin users for testing purpose.';
+$string['testoverride'] = 'Test lock override';
 $string['threemonths'] = 'three months';
 $string['thumbnail'] = 'Thumbnail:';
 $string['title'] = 'Title';
 $string['total'] = 'Total';
 $string['totalprice'] = 'Total amount';
 $string['totaltaxed'] = 'Total TI';
+$string['totaltaxes'] = 'Taxes (total)';
 $string['totaluntaxed'] = 'Total WT';
 $string['tracescan'] = 'Scann';
 $string['tracescandesc'] = 'Grep in trace for a single transaction';
@@ -449,7 +452,7 @@ $string['vendorinfo'] = 'Information about vendor\'s identity';
 
 $string['noproducts'] = "
 <h3>Empty catalog</h3>
-<p>The product line is empty. 
+<p>The product line is empty.
 ";
 
 $string['countryrestrictions_help'] = '
@@ -491,7 +494,7 @@ $string['no_bill_attachements_tpl'] = '
 
 $string['no_bills_in_account_tpl'] = '
 <h3>No bills</h3>
-<pThere is no bills in this account.</p> 
+<pThere is no bills in this account.</p>
 ';
 
 $string['no_categories_tpl'] = '
@@ -500,7 +503,7 @@ $string['no_categories_tpl'] = '
 
 $string['no_orders_in_account_tpl'] = '
 <h3>No orders</h3>
-<p>You may manually add an order using the "Add order" link beneath.</p> 
+<p>You may manually add an order using the "Add order" link beneath.</p>
 ';
 
 $string['no_products_in_set_tpl'] = '
@@ -533,31 +536,6 @@ $string['out_zone_euro_advice_tpl'] = '
 
 $string['post_billing_message_tpl'] = '
 thanks you for your purchase. The order is actually pending for your payement... <br/><br/>
-';
-
-$string['sales_feedback_tpl'] = '
-<h3><%%SELLER%%></h3>
-<h4>Customer order</h4>
-
-<p>You just ordered on the website : <%%SERVER%%>. </p>
-
-<p><u>Customer identification :</u> </p>
-<hr />
-<b>Firstname :</b> <%%FIRSTNAME%%><br />
-<b>Lastname :</b> <%%LASTNAME%%><br />
-<b>Mail :</b> <%%MAIL%%><br />
-<b>City :</b> <%%CITY%%><br />
-<b>Country :</b> <%%COUNTRY%%><br />
-<hr />
-<p><u>Order summary :</u> </p>
-<hr />
-<b>Total untaxed amount :</b> <%%AMOUNT%%><br />
-<b>Pat mode :</b> <%%PAYMODE%%><br />
-<b>Items :</b> <%%ITEMS%%> 
-<hr />
-<%%PRODUCTION_DATA%%>
-<hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
-. 
 ';
 
 $string['search_bill_failed_tpl'] = '
@@ -604,23 +582,39 @@ $string['upload_success_tpl'] = '
 ';
 
 $string['bill_complete_text_tpl'] = '
-This order is now saved.<br/>
+This order has been saved.<br/>
+';
+
+$string['discountrate_help'] = '
+A discount rate applied on the overall amount. May be applied inconditionally if customer has the local/shop:discountagreed capability on
+';
+
+$string['discountthreshold_help'] = '
+A threshold that triggers the effectivity of the discount
+';
+
+$string['discountrate2_help'] = '
+A discount rate applied when customer has the local/shop:seconddiscountagreed capability on
+';
+
+$string['discountrate3_help'] = '
+A discount rate applied when customer has the local/shop:thirddiscountagreed capability on
 ';
 
 global $CFG;
-include($CFG->dirroot.'/local/shop/lang/en/front.php');
-include($CFG->dirroot.'/local/shop/lang/en/catalogs.php');
-include($CFG->dirroot.'/local/shop/lang/en/shops.php');
-include($CFG->dirroot.'/local/shop/lang/en/bills.php');
-include($CFG->dirroot.'/local/shop/lang/en/products.php');
-include($CFG->dirroot.'/local/shop/lang/en/purchasemanager.php');
-include($CFG->dirroot.'/local/shop/lang/en/customers.php');
-include($CFG->dirroot.'/local/shop/lang/en/tax.php');
-include($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
+require($CFG->dirroot.'/local/shop/lang/en/front.php');
+require($CFG->dirroot.'/local/shop/lang/en/catalogs.php');
+require($CFG->dirroot.'/local/shop/lang/en/shops.php');
+require($CFG->dirroot.'/local/shop/lang/en/bills.php');
+require($CFG->dirroot.'/local/shop/lang/en/products.php');
+require($CFG->dirroot.'/local/shop/lang/en/purchasemanager.php');
+require($CFG->dirroot.'/local/shop/lang/en/customers.php');
+require($CFG->dirroot.'/local/shop/lang/en/tax.php');
+require($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
 
-// currencies
+// Currencies.
 
-$string['currency'] = 'Currency ';
+$string['currency'] = 'Currency';
 $string['EUR'] = 'Euro';
 $string['CHF'] = 'Swiss franc';
 $string['USD'] = 'US dollar';
@@ -638,7 +632,7 @@ $string['MAD'] = 'Dinar (Marocco, internal market)';
 
 $string['EURsymb'] = '&euro;';
 $string['CHFsymb'] = 'CHF';
-$string['USDsymb'] = '$ (US) ';
+$string['USDsymb'] = '$ (US)';
 $string['CADsymb'] = '$ (CA)';
 $string['AUDsymb'] = '$ (AU)';
 $string['GPBsymb'] = '£';

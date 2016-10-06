@@ -34,17 +34,19 @@ $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/shopadmin.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $bundleid = optional_param('itemid', 0, PARAM_INT);
 
-// Security
+// Security.
+
 $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-// make page header and navigation
+// Make page header and navigation.
 
 $url = new moodle_url('/local/shop/products/edit_bundle.php');
 $PAGE->set_url($url);
@@ -54,13 +56,13 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($bundleid) {
     $bundle = $DB->get_record('local_shop_catalogitem', array('id' => $bundleid));
-    $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $theCatalog));
+    $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $thecatalog));
     $bundle->bundleid = $bundleid;
     unset($bundle->id);
     $mform->set_data($bundle);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Bundle_Form('', array('what' => 'add', 'catalog' => $theCatalog));
+    $mform = new Bundle_Form('', array('what' => 'add', 'catalog' => $thecatalog));
     $bundlerec = $item->record;
     $bundlerec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($bundlerec);
@@ -73,7 +75,7 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
     global $USER;
 
-    $data->catalogid = $theCatalog->id;
+    $data->catalogid = $thecatalog->id;
     $data->isset = PRODUCT_BUNDLE;
 
     $data->description = $data->description_editor['text'];
@@ -91,7 +93,7 @@ if ($data = $mform->get_data()) {
             print_error('erroraddbundle', 'local_shop');
         }
 
-        // we have items in the set. update relevant products    
+        // We have items in the set. update relevant products.
         $productsinbundle = optional_param('productsinset', array(), PARAM_INT);
         if (is_array($productsinbundle)) {
             foreach ($productsinbundle as $productid) {
@@ -101,9 +103,9 @@ if ($data = $mform->get_data()) {
                 $DB->update_record('local_shop_catalogitem', $record);
             }
         }
-        // if slave catalogue must insert a master copy
-        if ($theCatalog->isslave) {
-            $data->catalogid = $theCatalog->groupid;
+        // If slave catalogue must insert a master copy.
+        if ($thecatalog->isslave) {
+            $data->catalogid = $thecatalog->groupid;
             $DB->insert_record('local_shop_catalogitem', $data);
         }
     } else {
@@ -111,19 +113,22 @@ if ($data = $mform->get_data()) {
         unset($data->bundleid);
 
         // If bundle code as changed, we'd better recompute a new shortname.
-        if (empty($data->shortname) || ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
+        if (empty($data->shortname) ||
+                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
-        
+
         if (!$data->id = $DB->update_record('local_shop_catalogitem', $data)) {
             print_error('errorupdatebundle', 'local_shop');
         }
     }
 
-    // process text fields from editors
-    $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-    $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogitemdescription', $data->id, array('subdirs' => true), $data->description);
-    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop', 'catalogitemdescription', $data->id);
+    // Process text fields from editors.
+    $draftideditor = file_get_submitted_draft_itemid('description_editor');
+    $data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemdescription',
+                                                    $data->id, array('subdirs' => true), $data->description);
+    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
+                                            'catalogitemdescription', $data->id);
 
     $fs = get_file_storage();
 
@@ -165,7 +170,7 @@ if ($data = $mform->get_data()) {
     if (!empty($data->grunit['clearunit'])) {
         $fs->delete_area_files($context->id, 'local_shop', 'catalogitemunit', $data->id);
     }
-    
+
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
 }
 

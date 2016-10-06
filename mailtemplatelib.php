@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-(defined('MOODLE_INTERNAL')) || die;
-
 /**
  * Form for editing HTML block instances.
  *
@@ -25,6 +23,7 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * useful templating functions from an older project of mine, hacked for Moodle
@@ -36,24 +35,28 @@
 function shop_compile_mail_template($template, $infomap, $subplugin, $lang = '', $transactionid = '') {
     global $CFG, $USER;
 
-    if (empty($lang)) $lang = @$USER->lang;
-    if (empty($lang)) $lang = $CFG->lang;
+    if (empty($lang)) {
+        $lang = @$USER->lang;
+    }
+    if (empty($lang)) {
+        $lang = $CFG->lang;
+    }
 
     $notification = shop_get_mail_template($template, $lang, $subplugin, $transactionid);
-    foreach ($infomap as $aKey => $aValue) {
-        $notification = str_replace("<%%$aKey%%>", $aValue, $notification);
+    foreach ($infomap as $key => $value) {
+        $notification = str_replace("<%%{$key}%%>", $value, $notification);
     }
     return $notification;
 }
 
-/*
+/**
  * resolves and get the content of a Mail template, acoording to the user's current language.
  * @param virtual the virtual mail template name
  * @param module the current module
  * @param lang if default language must be overriden
  * @return string the template's content or false if no template file is available
  */
-function shop_get_mail_template($virtual, $lang, $subplugin = '', $transactionid = '') {
+function shop_get_mail_template($virtual, $lang, $subplugin = '') {
     global $CFG;
 
     if ($lang == '') {

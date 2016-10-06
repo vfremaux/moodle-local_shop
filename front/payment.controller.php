@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -25,54 +21,58 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
-Use local_shop\Bill;
-Use local_shop\BillItem;
+use local_shop\Bill;
+use local_shop\BillItem;
 
 class payment_controller extends front_controller_base {
 
-    function process($cmd) {
-        global $SESSION, $DB, $USER;
+    public function process($cmd) {
+        global $SESSION, $DB, $USER, $OUTPUT;
+
+        $SESSION->shoppingcart->debug = optional_param('debug', @$SESSION->shoppingcart->debug, PARAM_BOOL);
 
         if ($cmd == 'place') {
-
-        // Convert all data in bill records.
-
+            // Convert all data in bill records.
             // Customer info.
             $customer = (object)$SESSION->shoppingcart->customerinfo;
-            if ($customerrec = $DB->get_record('local_shop_customer', array('email' => $customer->email, 'lastname' => strtoupper($customer->lastname)))) {
+            $params = array('email' => $customer->email, 'lastname' => strtoupper($customer->lastname));
+            if ($customerrec = $DB->get_record('local_shop_customer', $params)) {
                 $DB->update_record('local_shop_customer', $customer);
                 $customer->id = $customerrec->id;
-                unset($customerrec); // free some memory
+                unset($customerrec); // Free some memory.
             } else {
                 $customer->timecreated = time();
-        
+
                 /*
-                 * if we could login when validating the customer info that attach to internal account. 
+                 * if we could login when validating the customer info that attach to internal account.
                  * Note this process needs to be very carfully designed against authentication or security hole may allow
                  * people to steel moodle accounts.
                  */
                 if (isloggedin()) {
                     $customer->hasaccount = $USER->id;
                 }
-        
+
                 $customer->id = $DB->insert_record('local_shop_customer', $customer);
             }
-            
+
             // Invoice info.
             if ($oldbillrec = $DB->get_record('local_shop_bill', array('transactionid' => $SESSION->shoppingcart->transid))) {
                 $bill = new Bill($oldbillrec, $this->theshop, $this->thecatalog, $this->theblock, true);
-                // clear all items as they might have changed
+                // Clear all items as they might have changed.
                 $bill->delete_items();
                 $bill->reset_taxlines();
             } else {
                 $bill = new Bill(null, $this->theshop, $this->thecatalog, $this->theblock, true);
             }
-        
+
             $bill->transactionid = $SESSION->shoppingcart->transid;
             $bill->blockid = 0 + @$this->theblock->id;
             $bill->onlinetransactionid = '';
@@ -114,38 +114,82 @@ class payment_controller extends front_controller_base {
                 $itemrec->itemcode = $shortname;
                 $itemrec->type = 'BILLING';
                 $itemrec->productiondata = new \StdClass;
-                $itemrec->productiondata->users = @$SESSION->shoppingcart->users[$shortname]; // be carefull that production data may aggregate more data from catalog
-                $itemrec->productiondata->id = $this->theshop->id; // for further reference to some origin shop parameters and defaults
-                $itemrec->productiondata->blockid = 0 + @$this->theblock->id; // for further reference to some origin block parameters and defaults
+                // Be carefull that production data may aggregate more data from catalog.
+                $itemrec->productiondata->users = @$SESSION->shoppingcart->users[$shortname];
+                // For further reference to some origin shop parameters and defaults.
+                $itemrec->productiondata->id = $this->theshop->id;
+                // For further reference to some origin block parameters and defaults.
+                $itemrec->productiondata->blockid = 0 + @$this->theblock->id;
                 $itemrec->customerdata = @$SESSION->shoppingcart->customerdata[$shortname];
                 $bill->add_item_data($itemrec, $ordering++);
                 $totalitems += $quant;
             }
 
-            // This is the first generation of the DB bill. All further step should rely on this information and not shoppingcart anymore.
-            $billid = $bill->save();
+            /*
+             * This is the first generation of the DB bill. All further step should rely on this
+             * information and not shoppingcart anymore.
+             */
+            $bill->save();
 
             shop_trace("[{$bill->transactionid}] ".'Order placed : '.$bill->amount.' for '.$totalitems.' objects');
         }
 
         // This is for interactive payment methods.
         if ($cmd == 'navigate') {
-            if ($back = optional_param('back', false, PARAM_BOOL)) {
-                $params = array('view' => $this->theshop->get_prev_step('payment'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'back' => 1);
-                redirect(new \moodle_url('/local/shop/front/view.php', $params));
+            if (optional_param('back', false, PARAM_BOOL)) {
+                $prev = $this->theshop->get_prev_step('payment');
+                $params = array('view' => $prev,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id,
+                                'back' => 1);
+                $url = new \moodle_url('/local/shop/front/view.php', $params);
+                if (empty($SESSION->shoppingcart->debug)) {
+                    redirect($url);
+                } else {
+                    echo $OUTPUT->continue_button($url);
+                }
             } else {
                 confirm_sesskey();
-                // security. No one should be able to trigger this case from outside
-                // if it has been possible to continue, trigger the payment module interactive processing function and go ahead
+                /*
+                 * security. No one should be able to trigger this case from outside
+                 * if it has been possible to continue, trigger the payment module interactive
+                 * processing function and go ahead
+                 */
 
-                $aFullBill = Bill::get_by_transaction($SESSION->shoppingcart->transid);
-                $paymentplugin = \shop_paymode::get_instance($this->theshop, $aFullBill->paymode);
-                if ($interactivepayment = $paymentplugin->process($aFullBill)) {
-                    $params = array('view' => $this->theshop->get_next_step('payment'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'what' => 'produce', 'transid' => $aFullBill->transactionid);
-                    redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                $afullbill = Bill::get_by_transaction($SESSION->shoppingcart->transid);
+                $paymentplugin = \shop_paymode::get_instance($this->theshop, $afullbill->paymode);
+                if ($paymentplugin->process($afullbill)) {
+                    $next = $this->theshop->get_next_step('payment');
+                    $params = array('view' => $next,
+                                    'shopid' => $this->theshop->id,
+                                    'blockid' => 0 + @$this->theblock->id,
+                                    'what' => 'produce',
+                                    'transid' => $afullbill->transactionid);
+                    $url = new \moodle_url('/local/shop/front/view.php', $params);
+                    if (empty($SESSION->shoppingcart->debug)) {
+                        redirect($url);
+                    } else {
+                        echo $OUTPUT->header();
+                        echo $OUTPUT->continue_button($url);
+                        echo $OUTPUT->footer();
+                        die;
+                    }
                 } else {
-                    $params = array('view' => $this->theshop->get_next_step('payment'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id, 'what' => 'confirm', 'transid' => $aFullBill->transactionid);
-                    redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                    $next = $this->theshop->get_next_step('payment');
+                    $params = array('view' => $next,
+                                    'shopid' => $this->theshop->id,
+                                    'blockid' => 0 + @$this->theblock->id,
+                                    'what' => 'confirm',
+                                    'transid' => $afullbill->transactionid);
+                    $url = new \moodle_url('/local/shop/front/view.php', $params);
+                    if (empty($SESSION->shoppingcart->debug)) {
+                        redirect($url);
+                    } else {
+                        echo $OUTPUT->header();
+                        echo $OUTPUT->continue_button($url);
+                        echo $OUTPUT->footer();
+                        die;
+                    }
                 }
             }
         }

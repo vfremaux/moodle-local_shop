@@ -21,10 +21,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * This script is a simple tool for salesadmins for 
+/*
+ * This script is a simple tool for salesadmins for
  * extracting and inspecting a transaton backtrace.
  * It is provided for problem or claim solving.
+ *
+ * TODO : relocate elsewhere but not in front.
  */
 
 require('../../../config.php');
@@ -34,10 +36,12 @@ require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 use \local_shop\Shop;
 
 $transid = optional_param('transid', '', PARAM_TEXT);
-$id = required_param('id', PARAM_INT);
-$theShop = new Shop($id);
+
+// Get the block reference and key context.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
+
 $context = context_system::instance();
 require_capability('local/shop:salesadmin', $context);
 
@@ -47,12 +51,14 @@ $PAGE->set_context($context);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
+$renderer = $PAGE->get_renderer('local_shop');
+$renderer->load_context($theshop, $theblock);
+
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('scantrace', 'local_shop'));
 
 $scanstr = get_string('scantrace', 'local_shop');
-$transids = $DB->get_records('local_shop_bill', null, 'id', 'transactionid, amount');
 
 echo $OUTPUT->box_start();
 
@@ -64,18 +70,8 @@ echo '</form>';
 
 echo get_string('or', 'local_shop');
 
-echo '<form name="transidform" method="POST" >';
+echo $renderer->transaction_chooser();
 
-print_string('picktransactionid', 'local_shop');
-echo '<select name="transid" />';
-
-foreach ($transids as $trans) {
-    echo '<option value="'.$trans->transactionid.'" >'.$trans->transactionid.' ('.$trans->amount.')</option>';
-}
-
-echo '</select>';
-echo '<input type="submit" name="g_btn" value="'.$scanstr.'" />';
-echo '</form>';
 echo $OUTPUT->box_end();
 
 if ($transid) {
@@ -93,10 +89,7 @@ if ($transid) {
 }
 echo '<br/>';
 echo '<center>';
-$options['id'] = $theShop->id;
-echo $OUTPUT->single_button(new moodle_url('/local/shop/index.php', $options), get_string('backtoshopadmin', 'local_shop'), 'get');
-$options['view'] = 'shop';
-echo $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), get_string('backtoshop', 'local_shop'), 'get');
+echo $renderer->back_buttons();
 echo '</center>';
 
 echo $OUTPUT->footer();

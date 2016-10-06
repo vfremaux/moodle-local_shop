@@ -35,8 +35,8 @@ use local_shop\Catalog;
 use local_shop\CatalogShipping;
 use local_shop\CatalogShipZone;
 
-// get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get the block reference and key context.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $zoneid = optional_param('zoneid', 0, PARAM_INT);
 
@@ -64,18 +64,19 @@ if (!empty($action)) {
 $url = new moodle_url('/local/shop/shipzones/zoneindex.php');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('shipzones', 'local_shop'), new moodle_url('/local/shop/shipzones/index.php', array('id' => $theShop->id)));
+$zonesurl = new moodle_url('/local/shop/shipzones/index.php', array('id' => $theshop->id));
+$PAGE->navbar->add(get_string('shipzones', 'local_shop'), $zonesurl);
 $PAGE->set_url($url);
 
 $renderer = shop_get_renderer('shipzones');
-$renderer->load_context($theCatalog);
+$renderer->load_context($thecatalog);
 
 echo $OUTPUT->header();
 
-// if slave get entries in master catalog and then overrides whith local descriptions
-echo $OUTPUT->heading(format_string($theCatalog->name));
+// If slave get entries in master catalog and then overrides whith local descriptions.
+echo $OUTPUT->heading(format_string($thecatalog->name));
 
-echo $renderer->catalog_data($theCatalog);
+echo $renderer->catalog_data($thecatalog);
 
 echo $OUTPUT->heading(get_string('shipzone', 'local_shop'));
 
@@ -94,7 +95,7 @@ $addshippingurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', arra
 echo '<div class="addlink"><a href="'.$addshippingurl.'">'.$addshippingstr.'</a></div>';
 
 echo '<br/><center>';
-echo $OUTPUT->single_button(new moodle_url('/local/shop/shipzones/index.php'), get_string('backtoshopadmin', 'local_shop'), 'get'); 
+echo $OUTPUT->single_button(new moodle_url('/local/shop/shipzones/index.php'), get_string('backtoshopadmin', 'local_shop'), 'get');
 echo '</center><br/>';
 
 echo $OUTPUT->footer();

@@ -1,6 +1,21 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addbill'] = 'Add bill';
+$string['addbillitem'] = 'Add a bill item';
 $string['abstract'] = 'Abstract';
 $string['actualstate'] = 'Current state';
 $string['allowingtax'] = 'allowing tax';
@@ -24,11 +39,12 @@ $string['bill_WORKINGs'] = 'Bill working';
 $string['bill_assignation'] = 'bill assignation';
 $string['billstates'] = 'Bill states';
 $string['billtaxes'] = 'Total taxes:';
-$string['billtitle'] = 'Title';
+$string['billtitle'] = 'Title:&ensp;';
 $string['choosecustomer'] = 'Choose a customer';
 $string['chooseuser'] = 'Choose an user';
 $string['customer_account'] = 'the bill assignation to a customer account';
 $string['deadline'] = 'Deadline';
+$string['editbillitem'] = 'Edit bill item';
 $string['expectedpaiement'] = 'Expected date for payment';
 $string['exportasxls'] = 'Export as XLS';
 $string['generateacode'] = 'Generate a code';
@@ -42,18 +58,19 @@ $string['noletteringaspending'] = 'This is a pending order. <br/>Only a bill can
 $string['paiedamount'] = 'Paied amount';
 $string['paimentcode'] = 'Bill code:';
 $string['paymodes'] = 'Paymode';
+$string['biquantity'] = 'Quantity:&ensp;';
 $string['searchtimerange'] = 'Probable period for the transaction';
 $string['seethecustomerdetail'] = 'See customer details';
 $string['status'] = 'Status';
-$string['timetodo'] = 'Date to complete:';
-$string['totalTTC'] = 'Total tax included:';
-$string['totaltex'] = 'Total wt taxes:';
+$string['timetodo'] = 'Date to complete:&ensp;';
+$string['totalTTC'] = 'Total tax included:&ensp;';
+$string['totaltex'] = 'Total wt taxes:&ensp;';
 $string['totalti'] = 'Total:';
 $string['transaction'] = 'Transaction';
-$string['uniqueletteringfailure'] = '<a href="{$a}">Another bill</a> uses already this lettering code. ';
+$string['uniqueletteringfailure'] = '<a href="{$a}">Another bill</a> uses already this lettering code.';
 $string['unittex'] = 'Unit wt taxes:';
 $string['updatelettering'] = 'Update';
-$string['pickuser'] = 'Choose a customer account or an user account';
+$string['pickuser'] = 'Choose a customer account or an user account:&ensp;';
 $string['worktype'] = 'Worktype';
 
 $string['formula_creation_help'] = '
@@ -66,7 +83,7 @@ This formula must integrate variables of the taxed price ($TTC), the non-taxed p
 Exemple : $TTC = $HT + ($HT*$TR/100)';
 
 $string['description_help'] = '
-# Help on writing text Writing text in Moodle works pretty much the way you would expect, but you also have the ability to include "smilies", "URL addresses" and some HTML tags in your text. 
+# Help on writing text Writing text in Moodle works pretty much the way you would expect, but you also have the ability to include "smilies", "URL addresses" and some HTML tags in your text.
 
 ## Smilies (emoticons)
 
@@ -74,7 +91,7 @@ $string['description_help'] = '
   <p>
     To embed these small icons in your text, just type the associated code. These codes themselves are like little pictures if you turn your head to the left when looking at them.
   </p>
-  
+
   <table border="1">
     <tr valign="top">
       <td>
@@ -83,281 +100,281 @@ $string['description_help'] = '
             <td>
               <img alt="" src="pix/s/smiley.gif" class="icon" />
             </td>
-            
+
             <td>
               smile
             </td>
-            
+
             <td>
               <code>:-)</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/biggrin.gif" class="icon" />
             </td>
-            
+
             <td>
               big grin
             </td>
-            
+
             <td>
               <code>:-D</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/wink.gif" class="icon" />
             </td>
-            
+
             <td>
               wink
             </td>
-            
+
             <td>
               <code>;-)</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/mixed.gif" class="icon" />
             </td>
-            
+
             <td>
               mixed
             </td>
-            
+
             <td>
               <code>:-/</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/thoughtful.gif" class="icon" />
             </td>
-            
+
             <td>
               thoughtful
             </td>
-            
+
             <td>
               <code>V-.</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/tongueout.gif" class="icon" />
             </td>
-            
+
             <td>
               tongue out
             </td>
-            
+
             <td>
               <code>:-P</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/cool.gif" class="icon" />
             </td>
-            
+
             <td>
               cool
             </td>
-            
+
             <td>
               <code>B-)</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/approve.gif" class="icon" />
             </td>
-            
+
             <td>
               approve
             </td>
-            
+
             <td>
               <code>^-)</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/wideeyes.gif" class="icon" />
             </td>
-            
+
             <td>
               wide eyes
             </td>
-            
+
             <td>
               <code>8-)</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/surprise.gif" class="icon" />
             </td>
-            
+
             <td>
               surprise
             </td>
-            
+
             <td>
               <code>8-o</code>
             </td>
           </tr>
         </table>
       </td>
-      
+
       <td>
         <table border="0" cellpadding="10">
           <tr>
             <td>
               <img alt="" src="pix/s/sad.gif" class="icon" />
             </td>
-            
+
             <td>
               sad
             </td>
-            
+
             <td>
               <code>:-(</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/shy.gif" class="icon" />
             </td>
-            
+
             <td>
               shy
             </td>
-            
+
             <td>
               <code>8-.</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/blush.gif" class="icon" />
             </td>
-            
+
             <td>
               blush
             </td>
-            
+
             <td>
               <code>:-I</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/kiss.gif" class="icon" />
             </td>
-            
+
             <td>
               kisses
             </td>
-            
+
             <td>
               <code>:-X</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/clown.gif" class="icon" />
             </td>
-            
+
             <td>
               clown
             </td>
-            
+
             <td>
               <code>:o)</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/blackeye.gif" class="icon" />
             </td>
-            
+
             <td>
               black eye
             </td>
-            
+
             <td>
               <code>P-|</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/angry.gif" class="icon" />
             </td>
-            
+
             <td>
               angry
             </td>
-            
+
             <td>
               <code>8-[</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/dead.gif" class="icon" />
             </td>
-            
+
             <td>
               dead
             </td>
-            
+
             <td>
               <code>xx-P</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/sleepy.gif" class="icon" />
             </td>
-            
+
             <td>
               sleepy
             </td>
-            
+
             <td>
               <code>|-.</code>
             </td>
           </tr>
-          
+
           <tr>
             <td>
               <img alt="" src="pix/s/evil.gif" class="icon" />
             </td>
-            
+
             <td>
               evil
             </td>
-            
+
             <td>
               <code>}-]</code>
             </td>
@@ -374,7 +391,7 @@ $string['description_help'] = '
   <p>
     Any "word" starting with <b>www.</b> or <b>http://</b> will automatically be turned into a clickable link.
   </p>
-  
+
   <p>
     For example: <a href="http://www.yahoo.com">www.yahoo.com</a> or <a href="http://curtin.edu">http://curtin.edu</a>
   </p>
@@ -386,59 +403,59 @@ $string['description_help'] = '
   <p>
     You can use a limited subset of HTML tags to add emphasis to your texts.
   </p>
-  
+
   <table border="0" cellpadding="5" cellspacing="5">
     <tr>
       <th scope="col">
         HTML tags
       </th>
-      
+
       <th scope="col">
         Produces
       </th>
     </tr>
-    
+
     <tr>
       <td>
         <b> bold </b>
       </td>
-      
+
       <td>
         <b>bold text</b>
       </td>
     </tr>
-    
+
     <tr>
       <td>
         <i> italic </i>
       </td>
-      
+
       <td>
         <i>italic text</i>
       </td>
     </tr>
-    
+
     <tr>
       <td>
         <u> underline </u>
       </td>
-      
+
       <td>
         <u>underlined text</u>
       </td>
     </tr>
-    
+
     <tr>
       <td>
         <font color="green"> example </font>
       </td>
-      
+
       <td>
         <font color="green">example</font> </tr> <tr>
           <td valign="top">
             <ul> <li>one</li> <li>two</li> </ul>
           </td>
-          
+
           <td valign="top">
             <ul>
               <li>
@@ -447,7 +464,7 @@ $string['description_help'] = '
                     <td>
                       <hr />
                     </td>
-                    
+
                     <td>
                       <hr />
                     </td>
@@ -486,9 +503,9 @@ If you want to create a tax, please go on the tax manager in the administration 
 
 $string['customer_account_help'] = '# Help on customer account assignation for bills
 
-Bill must be assigned to a customer account. 
+Bill must be assigned to a customer account.
 
-Select between an existing customer account, or an user account on the plateform. 
+Select between an existing customer account, or an user account on the plateform.
 
 If an user account is selected, a customer account is automaticly created and the bill will be assigned to this new customer account.';
 
@@ -517,21 +534,21 @@ Completed bills (COMPLETE)
 Cancelled orders (CANCELLED)
 :   Back-office operators an cancel orders that have not been entered into real accountance path.
 
-Failed payement bills (FAILED)</dd> 
+Failed payement bills (FAILED)</dd>
 :   This bills mark online payement failed process.
 
-Payback orders (PAYBACK)</dd> 
+Payback orders (PAYBACK)</dd>
 :   Orders abusively invoiced or in case of possibility of the customer to revert his purchase might be marked as payback orders at benefit of the customer.</dl>';
 
-$string['bill_assignation_help'] = '# Help on the bill assignation 
+$string['bill_assignation_help'] = '# Help on the bill assignation
 
-A bill traitment must be assignate to an user with bill traitment right 
+A bill traitment must be assignate to an user with bill traitment right
 
 Select the user you want to assign bill traitment to';
 
-$string['allowtax_help'] = '# Help on allowing tax 
+$string['allowtax_help'] = '# Help on allowing tax
 
-You can desactivate tax for bills 
+You can desactivate tax for bills
 
 If you desactivate tax, tax will not be included in the amount of the bill';
 
@@ -539,6 +556,6 @@ $sring['lettering_help'] = '
 #Lettering
 
 Lettering help you to match your official accountance registers. On line bills in some regulations cannot be
-registered as official invoices, because of invoice numbering and identification. Using the letterig field, 
+registered as official invoices, because of invoice numbering and identification. Using the letterig field,
 you will be able to match and document the online bills with their matching IDNumber in your accountance
 software.';

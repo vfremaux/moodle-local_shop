@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['FR'] = 'Port dû zone FRANCE';
 $string['EU'] = 'Port dû zone EUROPE';
@@ -55,14 +69,16 @@ $string['deleteparticipant'] = 'Supprimer ce participant';
 $string['delivery'] = 'Livraison';
 $string['designation'] = 'Désignation';
 $string['disableallmode'] = 'Désactiver la "vue complète" (contrôle de connexion actif - normal) ';
-$string['discount'] = 'Remise ';
+$string['discount'] = 'Remise (taux)';
+$string['discountamount'] = 'Montant de remise (TTC)';
 $string['email'] = 'Mél ';
 $string['emptybasket'] = 'Ce panier est vide. La commande ne peut être lancée.';
 $string['emptybill'] = 'Commande vide. Aucun élément.';
 $string['emptyorder'] = 'Il n\'y a aucun objet dans votre commande. Vous devez sélectioner des produits pour continuer.';
 $string['enableallmode'] = 'Activer la "vue complete" (suppression du contrôle de connexion) ';
 $string['existingmailpleaselogin'] = 'Cette adresse mél est déjà utilisée par un compte sur cette plate-forme. Si vous êtes propriétaire de ce compte, <a href="{$a->wwwroot}/login/index.php">connectez-vous avec votre compte</a>. Vous serez automatiquement redirigé vers cette page et pourrez continuer en mode connecté.';
-$string['finaltotal'] = 'Total à payer';
+$string['finaltotal'] = 'Total à payer (TTC)';
+$string['finaltotalprice'] = 'Total à régler (TTC)';
 $string['finish'] = 'Terminer';
 $string['fixaccount'] = 'Correction de compte client : {$a}';
 $string['for'] = 'pour';
@@ -157,7 +173,7 @@ $string['shipping'] = 'Frais de port ';
 $string['shippingadded'] = 'Frais de port en sus (calcul sur bon de commande à suivre)';
 $string['specialdiscount'] = 'vous bénéficiez d\'<b>une remise exceptionnelle de</b>';
 $string['student'] = 'Apprenants';
-$string['subtotal'] = 'Sous total ';
+$string['subtotal'] = 'Sous total (TTC)';
 $string['supervisor'] = 'Superviseur';
 $string['supplyinstructions'] = '<b><span style="color:red">Choisissez votre mode de paiement</span></b>';
 $string['tax'] = 'Taxe';
@@ -191,7 +207,7 @@ $string['transaction_input_tpl'] = '
 <h3><%%SELLER%%></h3>
 <h4>Commande client</h4>
 
-<p>Une commande a été entrée sur le site <%%SERVER%%> par : 
+<p>Une commande a été entrée sur le site <%%SERVER%%> par :
 
 <p><u>Identification Client :</u>
 <hr>

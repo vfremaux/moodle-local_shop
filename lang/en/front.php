@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['FR'] = 'Shipping zone FRANCE';
 $string['EU'] = 'Shipping zone EUROPE';
@@ -53,15 +67,16 @@ $string['deleteparticipant'] = 'Delete this participant';
 $string['delivery'] = 'Delivery';
 $string['designation'] = 'Designation';
 $string['disableallmode'] = 'Disable "all products view" (let connection check) ';
-$string['discount'] = 'Discount';
+$string['discount'] = 'Discount rate';
+$string['discountamount'] = 'Discount amount (TI)';
 $string['earthmailonprepay'] = 'Earth post parcel after pre payment';
 $string['email'] = 'Mail ';
 $string['emptybill'] = 'Empty bill. No items.';
 $string['emptyorder'] = 'Your basket is empty. You need choose some products to pursue.';
 $string['enableallmode'] = 'Enable "all products view" (override connection check) ';
 $string['existingmailpleaselogin'] = 'This mail address is already used. If you are owner of this account, <a href="{$a->wwwroot}/login/index.php">login</a>. You will driven back to the shop in connected mode';
-$string['finaltotal'] = 'Order total';
-$string['finaltotalprice'] = 'Final total';
+$string['finaltotal'] = 'Order total (TI)';
+$string['finaltotalprice'] = 'Final total (TI)';
 $string['finish'] = 'Finish';
 $string['fixaccount'] = 'Fixing User Account to {$a}';
 $string['for'] = 'for';
@@ -161,7 +176,7 @@ $string['shippingadded'] = 'Shipping added (calculation on next step)';
 $string['shopform'] = 'Shop form ';
 $string['specialdiscount'] = 'your got an <b>exceptional discount of</b>';
 $string['student'] = 'Learners';
-$string['subtotal'] = 'Subtotal';
+$string['subtotal'] = 'Subtotal (TI)';
 $string['supervisor'] = 'Supervisors';
 $string['supplyinstructions'] = '<b><span style="color:red">Choose pay mode</span></b>';
 $string['tax'] = 'Tax';
@@ -193,7 +208,7 @@ $string['transaction_input_tpl'] = '
 <h3><%%SELLER%%></h3>
 <h4>Customer ordering</h4>
 
-<p>An ordering has been input on <%%SERVER%%> by: 
+<p>An ordering has been input on <%%SERVER%%> by:
 
 <p><u>Customer Identification:</u>
 <hr/>
@@ -215,4 +230,28 @@ $string['transaction_input_tpl'] = '
 <p>Online order view (authorized persons only)
 <hr/>
 <a href="<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>">Watch this order in sales back-office</a>
+';
+
+$string['sales_feedback_tpl'] = '
+<h3><%%SELLER%%></h3>
+<h4>Customer order</h4>
+
+<p>You just ordered on the website : <%%SERVER%%>. </p>
+
+<p><u>Customer identification :</u> </p>
+<hr />
+<b>Firstname :</b> <%%FIRSTNAME%%><br />
+<b>Lastname :</b> <%%LASTNAME%%><br />
+<b>Mail :</b> <%%MAIL%%><br />
+<b>City :</b> <%%CITY%%><br />
+<b>Country :</b> <%%COUNTRY%%><br />
+<hr />
+<p><u>Order summary :</u> </p>
+<hr />
+<b>Total untaxed amount :</b> <%%AMOUNT%%><br />
+<b>Pat mode :</b> <%%PAYMODE%%><br />
+<b>Items :</b> <%%ITEMS%%>
+<hr />
+<%%PRODUCTION_DATA%%>
+<hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
 ';

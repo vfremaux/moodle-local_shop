@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * Defines form to add a new customer
  *
  * @package    local_shop
@@ -33,8 +32,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Customer;
 
-// get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get the block reference and key context.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $customerid = optional_param('customerid', '', PARAM_INT);
 
@@ -57,7 +56,7 @@ $PAGE->navbar->add(get_string('editcustomer', 'local_shop'));
 if ($customerid) {
     $customer = new Customer($customerid);
     $mform = new Customer_Form('', array('what' => 'edit'));
-    $mform->set_data($customer);
+    $mform->set_data($customer->record);
 } else {
     $customer = new Customer(null);
     $mform = new Customer_Form('', array('what' => 'add'));

@@ -14,19 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package    local_shop
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 class shop_instances_renderer {
 
-    function instance_admin_line($instance) {
-        global $OUTPUT, $CFG;
+    public function instance_admin_line($instance) {
+        global $OUTPUT;
 
         $str = '';
 
@@ -61,19 +60,23 @@ class shop_instances_renderer {
             $pricelines = array();
             $prices = $instance->get_printable_prices();
             foreach ($prices as $key => $price) {
-                $pricelines[] = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $pl = '<span class="shop-admin-pricerange">'.$key.' : </span>';
+                $pl .= '<span class="shop-admin-amount">'.$price.'</span>';
+                $pricelines[] = $pl;
             }
 
             $taxedpricelines = array();
             $prices = $product->get_printable_prices(true);
             foreach ($prices as $key => $price) {
-                $taxedpricelines[] = '<span class="shop-admin-pricerange">'.$key.' : </span><span class="shop-admin-amount">'.$price.'</span>';
+                $pl = '<span class="shop-admin-pricerange">'.$key.' : </span>';
+                $pl .= '<span class="shop-admin-amount">'.$price.'</span>';
+                $taxedpricelines[] = $pl;
             }
 
             $statusclass = strtolower($product->status);
             $str .= '<tr class="shop-'.$statusclass.'line shop-product-row" valign="top">';
-            $slaveclass  = (@$portlet->masterrecord == 0) ? '' : 'engraved slaved' ;
-            $str.= '<td class="cell '.$slaveclass.'"align="center">';
+            $slaveclass  = (@$portlet->masterrecord == 0) ? '' : 'engraved slaved';
+            $str .= '<td class="cell '.$slaveclass.'"align="center">';
             $str .= '<img src="'.$product->thumb.'" vspace="10" border="0" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.'" align="left">';
@@ -85,7 +88,7 @@ class shop_instances_renderer {
             $str .= '<td class="amount cell '.$slaveclass.'"align="right">';
             $str .= implode('<br/>', $taxedpricelines);
             $str .= '<br/>';
-            $str .= '</td>'; 
+            $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             switch ($product->quantaddressesusers) {
 
@@ -97,7 +100,7 @@ class shop_instances_renderer {
                     $str .= get_string('oneseat', 'local_shop');
                     break;
 
-                  case SHOP_QUANT_AS_SEATS:
+                case SHOP_QUANT_AS_SEATS:
                     $str .= get_string('yes');
                     break;
             }
@@ -111,7 +114,8 @@ class shop_instances_renderer {
             }
 
             $deletestr = get_string('deleteproduct', 'local_shop');
-            $deleteurl = new moodle_url('/local/shop/instances/view.php', array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id));
+            $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id);
+            $deleteurl = new moodle_url('/local/shop/instances/view.php', $params);
             $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$deletestr.'"></a>';
 
             $str .= '</td>';
@@ -120,7 +124,7 @@ class shop_instances_renderer {
         return $str;
     }
 
-    function global_commands() {
+    public function global_commands() {
         $str = '';
 
         $str .= '<table width="100%">';
@@ -134,5 +138,4 @@ class shop_instances_renderer {
 
         return $str;
     }
-
 }

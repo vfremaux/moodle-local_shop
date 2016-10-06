@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -25,6 +23,8 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
@@ -82,8 +82,7 @@ if ($bills = Bill::get_instances($filter)) {
 
 echo $OUTPUT->heading_with_help(get_string('billing', 'local_shop'), 'billstates', 'local_shop');
 
-
-// print tabs
+// Print tabs.
 $total = new StdClass;
 $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $curclause");
 $total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $curclause");
@@ -94,19 +93,28 @@ $total->CANCELLED = $DB->count_records_select('local_shop_bill', " status = 'CAN
 $total->FAILED = $DB->count_records_select('local_shop_bill', "status = 'FAILED' $curclause");
 $total->PAYBACK = $DB->count_records_select('local_shop_bill', "status = 'PAYBACK' $curclause");
 $total->ALL = $DB->count_records_select('local_shop_bill', " 1 $curclause ");
-$rows[0][] = new tabobject('WORKING', "$url&status=WORKING&cur=$cur", get_string('bill_WORKINGs', 'local_shop').' ('.$total->WORKING.')');
-$rows[0][] = new tabobject('PLACED', "$url&status=PLACED&cur=$cur", get_string('bill_PLACEDs', 'local_shop').' ('.$total->PLACED.')');
-$rows[0][] = new tabobject('PENDING', "$url&status=PENDING&cur=$cur", get_string('bill_PENDINGs', 'local_shop').' ('.$total->PENDING.')');
-$rows[0][] = new tabobject('SOLDOUT', "$url&status=SOLDOUT&cur=$cur", get_string('bill_SOLDOUTs', 'local_shop').' ('.$total->SOLDOUT.')');
-$rows[0][] = new tabobject('COMPLETE', "$url&status=COMPLETE&cur=$cur", get_string('bill_COMPLETEs', 'local_shop').' ('.$total->COMPLETE.')');
-$rows[0][] = new tabobject('CANCELLED', "$url&status=CANCELLED&cur=$cur", get_string('bill_CANCELLEDs', 'local_shop').' ('.$total->CANCELLED.')');
-$rows[0][] = new tabobject('FAILED', "$url&status=FAILED&cur=$cur", get_string('bill_FAILEDs', 'local_shop').' ('.$total->FAILED.')');
-$rows[0][] = new tabobject('PAYBACK', "$url&status=PAYBACK&cur=$cur", get_string('bill_PAYBACKs', 'local_shop').' ('.$total->PAYBACK.')');
-$rows[0][] = new tabobject('ALL', "$url&status=ALL&cur=$cur", get_string('bill_ALLs', 'local_shop').' ('.$total->ALL.')');
+$label = get_string('bill_WORKINGs', 'local_shop');
+$rows[0][] = new tabobject('WORKING', "$url&status=WORKING&cur=$cur", $label.' ('.$total->WORKING.')');
+$label = get_string('bill_PLACEDs', 'local_shop');
+$rows[0][] = new tabobject('PLACED', "$url&status=PLACED&cur=$cur", $label.' ('.$total->PLACED.')');
+$label = get_string('bill_PENDINGs', 'local_shop');
+$rows[0][] = new tabobject('PENDING', "$url&status=PENDING&cur=$cur", $label.' ('.$total->PENDING.')');
+$label = get_string('bill_SOLDOUTs', 'local_shop');
+$rows[0][] = new tabobject('SOLDOUT', "$url&status=SOLDOUT&cur=$cur", $label.' ('.$total->SOLDOUT.')');
+$label = get_string('bill_COMPLETEs', 'local_shop');
+$rows[0][] = new tabobject('COMPLETE', "$url&status=COMPLETE&cur=$cur", $label.' ('.$total->COMPLETE.')');
+$label = get_string('bill_CANCELLEDs', 'local_shop');
+$rows[0][] = new tabobject('CANCELLED', "$url&status=CANCELLED&cur=$cur", $label.' ('.$total->CANCELLED.')');
+$label = get_string('bill_FAILEDs', 'local_shop');
+$rows[0][] = new tabobject('FAILED', "$url&status=FAILED&cur=$cur", $label.' ('.$total->FAILED.')');
+$label = get_string('bill_PAYBACKs', 'local_shop');
+$rows[0][] = new tabobject('PAYBACK', "$url&status=PAYBACK&cur=$cur", $label.' ('.$total->PAYBACK.')');
+$label = get_string('bill_ALLs', 'local_shop');
+$rows[0][] = new tabobject('ALL', "$url&status=ALL&cur=$cur", $label.' ('.$total->ALL.')');
 
 print_tabs($rows, $status);
 
-// print bills
+// Print bills.
 
 $subtotal = 0;
 if (empty($billsbystate)) {
@@ -114,30 +122,28 @@ if (empty($billsbystate)) {
     echo get_string('nobills', 'local_shop');
     echo $OUTPUT->box_end();
 } else {
-?>
-<table width="100%" class="generaltable">
-<?php
+
+    echo '<table width="100%" class="generaltable">';
     echo $renderer->bill_merchant_line(null);
-   $i = 0;
-   foreach (array_keys($billsbystate) as $status) {
-?>
-    <tr>
-        <td colspan="5" class="grouphead">
-           <b><?php print_string('bill_' . $status . 's', 'local_shop') ?></b>
-        </td>
-    </tr>
-<?php
-    $CFG->subtotal = 0;
-    foreach ($billsbystate[$status] as $portlet) {
-        $subtotal += floor($portlet->amount * 100) / 100;
-        echo $renderer->bill_merchant_line($portlet);
-    }
+    $i = 0;
+    foreach (array_keys($billsbystate) as $status) {
+        echo '<tr>';
+        echo '<td colspan="5" class="grouphead">';
+        echo '<b>'.get_string('bill_' . $status . 's', 'local_shop').'</b>';
+        echo '</td>';
+        echo '</tr>';
+
+        $CFG->subtotal = 0;
+        foreach ($billsbystate[$status] as $portlet) {
+            $subtotal += floor($portlet->amount * 100) / 100;
+            echo $renderer->bill_merchant_line($portlet);
+        }
 ?>
     <tr>
         <td colspan="2" class="groupSubtotal">
         </td>
         <td colspan="3" align="right" class="groupsubtotal">
-            <?php 
+            <?php
             if ($samecurrency) {
                 echo sprintf('%.2f', round($subtotal, 2));
                 echo ' ';
@@ -149,10 +155,13 @@ if (empty($billsbystate)) {
         </td>
     </tr>
 <?php
-    $i++;
+        $i++;
     }
     echo '</table>';
 }
+
+$excelurl = new moodle_url('/local/shop/export/export.php', array('what' => 'allbills', 'format' => 'excel'));
+$billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
 ?>
 
 <table width="100%">
@@ -160,8 +169,8 @@ if (empty($billsbystate)) {
       <td align="left">
       </td>
       <td align="right">
-         <a href="<?php echo $CFG->wwwroot."/local/shop/export/export.php?what=allbills&format=excel" ?>" target="_blanck"><?php print_string('exportasxls', 'local_shop') ?></a>
-          - <a href="<?php echo $CFG->wwwroot.'/local/shop/bills/edit_bill.php' ?>"><?php print_string('newbill', 'local_shop') ?></a>
+         <a href="<?php echo ''.$excelurl ?>" target="_blanck"><?php print_string('exportasxls', 'local_shop') ?></a>
+          - <a href="<?php echo ''.$billurl ?>"><?php print_string('newbill', 'local_shop') ?></a>
       </td>
    </tr>
 </table>
