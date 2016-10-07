@@ -327,7 +327,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= $OUTPUT->single_button(new moodle_url('/local/shop/index.php', $options), $label, 'get');
         $options['view'] = 'shop';
         $label = get_string('backtoshop', 'local_shop');
-        $str .=  $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
+        $str .= $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
 
         return $str;
     }

@@ -98,7 +98,7 @@ class BillItem extends ShopObject {
             }
 
             if ($ordering == -1) {
-                $this->ordering = BillItem::last_ordering($bill->id);
+                $this->ordering = self::last_ordering($bill->id);
             } else {
                 $this->ordering = $ordering;
             }
