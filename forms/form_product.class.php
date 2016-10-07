@@ -69,25 +69,13 @@ class Product_Form extends CatalogItem_Form {
         $mform->addElement('header', 'h1', get_string('financials', 'local_shop'));
 
         $this->add_price_group();
-
         $this->add_tax_select();
 
         $mform->addElement('header', 'h2', get_string('behaviour', 'local_shop'));
 
         $this->add_sales_params();
-
         $this->add_target_market();
-
-        if ($cats = $this->_customdata['catalog']->get_categories()) {
-            foreach ($cats as $cat) {
-                $sectionopts[$cat->id] = $cat->name;
-            }
-            $mform->addElement('select', 'categoryid', get_string('section', 'local_shop'), $sectionopts);
-            $mform->setType('categoryid', PARAM_INT);
-            $mform->addRule('categoryid', null, 'required');
-        } else {
-            $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
-        }
+        $this->add_category();
 
         if (!$this->_customdata['catalog']->isslave) {
             $setopts[0] = get_string('outofset', 'local_shop');

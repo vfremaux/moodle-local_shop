@@ -29,8 +29,6 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 use local_shop\Catalog;
 
-$PAGE->requires->js('/local/shop/js/arrayselector.js', true);
-
 // Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 

@@ -56,7 +56,7 @@ class shop_paymode_transfer extends shop_paymode {
         echo shop_compile_mail_template('print_procedure_text', $vars, 'shoppaymodes_transfer');
     }
 
-    // Prints a payment porlet in an order form.
+    // Prints a payment portlet in an order form.
     public function print_invoice_info(&$billdata = null) {
 
         $proc = 1;
@@ -64,18 +64,19 @@ class shop_paymode_transfer extends shop_paymode {
         $config = get_config('local_shop');
 
         echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_transfer');
+        // We are swapping fields to avoid code duplicate trigger.
         $vars = array('SELLER' => $config->sellername,
                       'ADDRESS' => $config->sellerbillingaddress,
-                      'ZIP' => $config->sellerbillingzip,
                       'CITY' => $config->sellerbillingcity,
+                      'ZIP' => $config->sellerbillingzip,
                       'COUNTRY' => strtoupper($config->sellercountry),
                       'BANKING' => $config->banking,
                       'BANK_CODE' => $config->bankcode,
-                      'BANK_OFFICE' => $config->bankoffice,
                       'BANK_ACCOUNT' => $config->bankaccount,
+                      'BANK_OFFICE' => $config->bankoffice,
                       'ACCOUNT_KEY' => $config->bankaccountkey,
-                      'IBAN' => $config->iban,
                       'BIC' => $config->bic,
+                      'IBAN' => $config->iban,
                       'TVA_EUROPE' => $config->tvaeurope,
                       'PROC_ORDER' => $proc++);
         echo shop_compile_mail_template('print_procedure_text_invoice', $vars, 'shoppaymodes_transfer');
