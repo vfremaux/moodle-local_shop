@@ -993,18 +993,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $country = @$shoppingcart->invoiceinfo['country'];
         $vatcode = @$shoppingcart->invoiceinfo['vatcode'];
 
-        $lastnameclass = '';
-        $firstnameclass = '';
-        $organisationclass = '';
-        $departmentclass = '';
-        $countryclass = '';
-        $addressclass = '';
-        $emailclass = '';
-        $cityclass = '';
-        $zipclass = '';
-        $vatcodeclass = '';
-        $plantcodeclass = '';
-
         if (!empty($shoppingcart->errors->invoiceinfo)) {
             foreach (array_keys($shoppingcart->errors->invoiceinfo) as $f) {
                 $f = str_replace('invoiceinfo::', '', $f);
@@ -1024,7 +1012,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= ':</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$organisationclass.'"
                         name="invoiceinfo::organisation"
                         size="26"
                         maxlength="64"
@@ -1038,7 +1025,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= ':</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$departmentclass.'"
                         name="invoiceinfo::department"
                         size="26"
                         maxlength="64"
@@ -1053,7 +1039,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$lastnameclass.'"
                         name="invoiceinfo::lastname"
                         size="20"
                         onchange="setupper(this)"
@@ -1068,7 +1053,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                       class="'.$firstnameclass.'"
                        name="invoiceinfo::firstname"
                        size="20"
                        onchange="capitalizewords(this)"
@@ -1082,7 +1066,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$emailclass.'"
                         name="invoiceinfo::email"
                         size="50"
                         onchange=""
@@ -1097,7 +1080,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$addressclass.'"
                         name="invoiceinfo::address"
                         size="26"
                         onchange="setupper(this)"
@@ -1112,7 +1094,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$cityclass.'"
                         name="invoiceinfo::city"
                         size="26"
                         onchange="setupper(this)"
@@ -1127,7 +1108,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$zipclass.'"
                         name="invoiceinfo::zip"
                         size="6"
                         value="'. $zip .'" />';
@@ -1153,7 +1133,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$vatcodeclass.'"
                         name="invoiceinfo::vatcode"
                         size="15"
                         value="'. $vatcode .'" />';
@@ -1164,7 +1143,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td align="right">';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="hidden" class="'.$plantcodeclass.'" name="invoiceinfo::plantcode" value="" />';
+        $str .= '<input type="hidden"
+                        name="invoiceinfo::plantcode"
+                        value="" />';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1175,9 +1156,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     public function participant_row($participant = null) {
-        global $CFG, $OUTPUT, $SITE, $PAGE;
-
-        $this->check_context();
+        global $CFG, $OUTPUT;
 
         $str = '';
 
@@ -1208,23 +1187,17 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
             $str .= '<td align="left">';
             if (@$participant->moodleid) {
-                if (file_exists($CFG->dirroot.'/theme/'.$PAGE->theme->name.'/favicon.jpg')) {
-                    $title = get_string('isuser', 'local_shop', $SITE->shortname);
-                    $str .= '<img src="'.$OUTPUT->pix_url('favicon').'" title="'.$title.'" />';
-                } else {
-                    $title = get_string('isuser', 'local_shop', $SITE->shortname);
-                    $str .= '<img src="'.$OUTPUT->pix_url('i/moodle_host').'" title="'.$title.'" />';
-                }
+                $pixurl = $OUTPUT->pix_url('i/moodle_host');
+                $str .= '<img src="'.$pixurl.'" title="'.get_string('isuser', 'local_shop').'" />';
             } else {
-                $title = get_string('isnotuser', 'local_shop', $SITE->shortname);
-                $str .= '<img src="'.$OUTPUT->pix_url('new', 'local_shop').'" title="'.$title.'" />';
+                $pixurl = $OUTPUT->pix_url('new', 'local_shop');
+                $str .= '<img src="'.$pixurl.'" title="'.get_string('isnotuser', 'local_shop').'" />';
             }
             $str .= '</td>';
             $str .= '<td align="right">';
-            $jshandler = 'Javascript:ajax_delete_user(\''.$CFG->wwwroot.'\', \''.$participant->email.'\')';
-            $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
-            $str .= '</a>';
+            $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'"
+                        href="Javascript:ajax_delete_user(\''.$CFG->wwwroot.'\', \''.$participant->email.'\')">';
+            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
             $str .= '</td>';
             $str .= '</tr>';
         } else {
@@ -1242,12 +1215,12 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= '<th align="left">';
             $str .= get_string('city');
             $str .= '</th>';
-            if (!empty($this->shop->endusermobilephonerequired)) {
+            if (!empty($this->theshop->endusermobilephonerequired)) {
                 $str .= '<th align="left">';
                 $str .= get_string('phone2');
                 $str .= '</th>';
             }
-            if (!empty($this->shop->enduserorganisationrequired)) {
+            if (!empty($this->theshop->enduserorganisationrequired)) {
                 $str .= '<th align="left">';
                 $str .= get_string('institution');
                 $str .= '</th>';
@@ -1259,6 +1232,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= '</th>';
             $str .= '</tr>';
         }
+
         return $str;
     }
 
