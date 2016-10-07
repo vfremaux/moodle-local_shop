@@ -34,40 +34,7 @@ use local_shop\Shop;
  * It will provide generic functions that may be used in several services inside
  * the shop front and backoffice implementation.
  */
-class local_shop_renderer extends plugin_renderer_base {
-
-    // Context references.
-    protected $theblock;
-
-    protected $theshop;
-
-    protected $thecatalog;
-
-    /**
-     * Loads the renderer with contextual objects. Most of the renderer function need
-     * at least a shop instance.
-     */
-    public function load_context(&$theshop, &$theblock = null) {
-
-        $this->theshop = $theshop;
-        $this->thecatalog = new Catalog($this->theshop->catalogid);
-        $this->theblock = $theblock;
-
-        if (!empty($this->theblock->instance->id)) {
-            $this->context = context_block::instance($this->theblock->instance->id);
-            $this->theblock->id = $this->theblock->instance->id;
-        } else {
-            $this->context = context_system::instance();
-            $this->theblock = new Stdclass();
-            $this->theblock->id = 0;
-        }
-    }
-
-    public function check_context() {
-        if (empty($this->theshop) || empty($this->thecatalog)) {
-            throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');
-        }
-    }
+class local_shop_renderer extends local_shop_base_renderer {
 
     /**
      * prints an owner menu and changes currently viewed owner if required
@@ -360,7 +327,7 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= $OUTPUT->single_button(new moodle_url('/local/shop/index.php', $options), $label, 'get');
         $options['view'] = 'shop';
         $label = get_string('backtoshop', 'local_shop');
-        $str .=  $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
+        $str .= $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
 
         return $str;
     }
@@ -386,5 +353,44 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= '</form>';
 
         return $str;
+    }
+}
+
+/**
+ * A base class to centralize all common things
+ */
+class local_shop_base_renderer extends plugin_renderer_base {
+
+    // Context references.
+    protected $theblock;
+
+    protected $theshop;
+
+    protected $thecatalog;
+
+    /**
+     * Loads the renderer with contextual objects. Most of the renderer function need
+     * at least a shop instance.
+     */
+    public function load_context(&$theshop, &$theblock = null) {
+
+        $this->theshop = $theshop;
+        $this->thecatalog = new Catalog($this->theshop->catalogid);
+        $this->theblock = $theblock;
+
+        if (!empty($this->theblock->instance->id)) {
+            $this->context = context_block::instance($this->theblock->instance->id);
+            $this->theblock->id = $this->theblock->instance->id;
+        } else {
+            $this->context = context_system::instance();
+            $this->theblock = new Stdclass();
+            $this->theblock->id = 0;
+        }
+    }
+
+    public function check_context() {
+        if (empty($this->theshop) || empty($this->thecatalog)) {
+            throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');
+        }
     }
 }

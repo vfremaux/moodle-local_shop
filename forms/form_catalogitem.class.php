@@ -361,4 +361,17 @@ abstract class CatalogItem_Form extends moodleform {
     public function is_cancelled() {
         parent::is_cancelled();
     }
+
+    public function add_category() {
+        if ($cats = $this->_customdata['catalog']->get_categories()) {
+            foreach ($cats as $cat) {
+                $sectionopts[$cat->id] = $cat->name;
+            }
+            $mform->addElement('select', 'categoryid', get_string('section', 'local_shop'), $sectionopts);
+            $mform->setType('categoryid', PARAM_INT);
+            $mform->addRule('categoryid', null, 'required');
+        } else {
+            $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
+        }
+    }
 }
