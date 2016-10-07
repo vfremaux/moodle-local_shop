@@ -23,49 +23,17 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+require_once($CFG->dirroot.'/local/shop/renderer.php');
 
 use local_shop\Category;
 use local_shop\Catalog;
 use local_shop\Tax;
 
-class shop_front_renderer {
-
-    // Context references.
-    protected $theblock;
-
-    protected $theshop;
-
-    protected $thecatalog;
+class shop_front_renderer extends local_shop_base_renderer {
 
     protected $context;
 
     protected $view;
-
-    /**
-     * Loads the renderer with contextual objects. Most of the renderer function need
-     * at least a shop instance.
-     */
-    public function load_context(&$theshop, &$theblock = null) {
-
-        $this->theshop = $theshop;
-        $this->thecatalog = new Catalog($this->theshop->catalogid);
-        $this->theblock = $theblock;
-
-        if (!empty($this->theblock->instance->id)) {
-            $this->context = context_block::instance($this->theblock->instance->id);
-            $this->theblock->id = $this->theblock->instance->id;
-        } else {
-            $this->context = context_system::instance();
-            $this->theblock = new Stdclass();
-            $this->theblock->id = 0;
-        }
-    }
-
-    public function check_context() {
-        if (empty($this->theshop) || empty($this->thecatalog)) {
-            throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');
-        }
-    }
 
     /**
      * prints a purchase procedure progression bar
@@ -849,7 +817,7 @@ class shop_front_renderer {
                          onchange="local_toggle_invoiceinfo(this)"
                          '.$checked.' />';
         $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
-        $str .= $str .= $OUTPUT->heading($heading);
+        $str .= $OUTPUT->heading($heading);
 
         if (isloggedin()) {
             $lastname = $USER->lastname;
@@ -942,7 +910,6 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$addressclass.'"
                         name="customerinfo::address"
                         size="26"
                         onchange="setupper(this)" value="'. $address .'" />';
@@ -955,7 +922,6 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                        class="'.$cityclass.'"
                         name="customerinfo::city"
                         size="26"
                         onchange="setupper(this)" value="'. $city .'" />';
@@ -967,7 +933,10 @@ class shop_front_renderer {
         $str .= '<sup style="color : red">*</sup>';
         $str .= '</td>';
         $str .= '<td align="left">';
-        $str .= '<input type="text" class="'.$zipclass.'" name="customerinfo::zip" size="6" value="'. $zip .'" />';
+        $str .= '<input type="text"
+                        name="customerinfo::zip"
+                        size="6"
+                        value="'. $zip .'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -988,7 +957,6 @@ class shop_front_renderer {
         $str .= '</td>';
         $str .= '<td align="left">';
         $str .= '<input type="text"
-                       class="'.$mailclass.'"
                        name="customerinfo::email"
                        size="30"
                        onchange="testmail(this)" value="'.$email.'" />';
