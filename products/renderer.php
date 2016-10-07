@@ -24,6 +24,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/renderer.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
@@ -31,25 +32,7 @@ use local_shop\Shop;
 use local_shop\Tax;
 use local_shop\Category;
 
-class shop_products_renderer {
-
-    protected $theshop;
-
-    protected $thecatalog;
-
-    protected $theblock;
-
-    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
-        $this->theshop = $theshop;
-        $this->thecatalog = $thecatalog;
-        $this->theblock = $theblock;
-    }
-
-    private function _check_context() {
-        if (empty($this->thecatalog)) {
-            throw new coding_exception('context not ready in products_renderer. Missing Catalog instance');
-        }
-    }
+class shop_products_renderer extends local_shop_base_renderer {
 
     public function catalog_header() {
 

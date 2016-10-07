@@ -23,6 +23,7 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
+require_once($CFG->dirroot.'/local/shop/products/lib.php');
 require_once($CFG->dirroot.'/local/shop/forms/form_product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
@@ -154,35 +155,10 @@ if ($data = $mform->get_data()) {
     }
 
     if (!empty($data->grleaflet['clearleaflet'])) {
-        $fs->delete_area_files($storagecontext->id, 'local_shop', 'catalogitemleaflet', $data->id);
+        $fs->delete_area_files($context->id, 'local_shop', 'catalogitemleaflet', $data->id);
     }
 
-    $filepickeritemid = $data->grimage['image'];
-    if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
-        file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemimage', $data->id);
-    }
-
-    if (!empty($data->grimage['clearimage'])) {
-        $fs->delete_area_files($storagecontext->id, 'local_shop', 'catalogitemimage', $data->id);
-    }
-
-    $filepickeritemid = $data->grthumb['thumb'];
-    if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
-        file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemthumb', $data->id);
-    }
-
-    if (!empty($data->grthumb['clearthumb'])) {
-        $fs->delete_area_files($context->id, 'local_shop', 'catalogitemthumb', $data->id);
-    }
-
-    $filepickeritemid = $data->grunit['unit'];
-    if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
-        file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemunit', $data->id);
-    }
-
-    if (!empty($data->grunit['clearunit'])) {
-        $fs->delete_area_files($storagecontext->id, 'local_shop', 'catalogitemunit', $data->id);
-    }
+    shop_products_process_files($data, $context, $usercontext);
 
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
 }
