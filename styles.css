@@ -2,7 +2,7 @@
 
 .shop-table {
     display:table;
-    padding: 0px !important;
+    padding: 0 !important;
     text-align:left;
     width:100%;
 }
@@ -18,24 +18,24 @@
 
 .shop-cell.param {
     background-color:#d0d0d0;
-    border-top:1px solid #fefefe;
     border-bottom:1px solid #fefefe;
+    border-top:1px solid #fefefe;
     color:white;
     font-weight:bold;
 }
 
 .shop-cell.header {
     background-color:#a0a0a0;
-    border-top:1px solid #fefefe;
     border-bottom:1px solid #fefefe;
+    border-top:1px solid #fefefe;
     color:white;
     font-weight:bold;
 }
 
 .shop-cell.value {
     background-color:#fefefe;
-    border-top:1px solid #d0d0d0;
     border-bottom:1px solid #d0d0d0;
+    border-top:1px solid #d0d0d0;
     color:#808080;
     font-weight:normal;
 }
@@ -236,7 +236,7 @@ table.shop-article{
     border:1px white solid;
 }
 
-/** more gobal effect styles **/
+/* more gobal effect styles */
 
 #shop-bills-view td,
 #shop-bills-view th,
@@ -336,7 +336,7 @@ select.shop-error{
 }
 .engraved {
     -moz-opacity:0.5;
-    filter:progid:DXImageTransform.Microsoft.Engrave() progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100)
+    filter:progid:DXImageTransform.Microsoft.Engrave() progid:DXImageTransform.Microsoft.Alpha(Opacity=50, FinishOpacity=50, Style=0, StartX=0,  FinishX=100, StartY=0, FinishY=100);
     opacity:0.5;
 }
 
@@ -363,15 +363,15 @@ select.shop-error{
 }
 
 .shop-pricerange{
+    -khtml-border-radius:6px;
     -moz-border-radius:6px;
     -webkit-border-radius:6px;
-    -khtml-border-radius:6px;
     background-color:#EEEEEE;
     border-radius:6px;
     color:#737379;
     font-weight:bolder;
-    padding:1px;
     padding-left:5px;
+    padding:1px;
 }
 
 .shop-priceamount{
@@ -427,7 +427,7 @@ select.shop-error{
 }
 
 .shop-product-row .lastcol{
-    padding:0px;
+    padding:0;
 }
 
 div.shop-bill-abstract{
@@ -437,11 +437,11 @@ div.shop-bill-abstract{
 
 #euladiv{
     background-color:#f2f2f2;
-    left:0px;
     height:100%;
+    left:0;
     padding:60px;
     position:absolute;
-    top:0px;
+    top:0;
     width:100%;
     z-index:100000;
 }
@@ -471,8 +471,8 @@ div.shop-bill-abstract{
 
 #shop-requirement-caption {
     -moz-border-radius:10px;
-    border:1px solid #808080;
     border-radius:10px;
+    border:1px solid #808080;
     font-size:1.1em;
     margin-bottom:15px;
     margin-top:10px;
@@ -481,8 +481,8 @@ div.shop-bill-abstract{
 
 .shop-product-requirements {
     -moz-border-radius:10px;
-    border:1px solid #808080;
     border-radius:10px;
+    border:1px solid #808080;
     margin-top:10px;
     padding:5px;
 }
@@ -529,8 +529,8 @@ div.shop-bill-abstract{
 .shop-requ-error {
     -moz-border-radius:3px;
     background-color:#ffe0e0;
-    border:1px solid red;
     border-radius:3px;
+    border:1px solid red;
     color:#A00000;
     font-size:0.8em;
     margin:4px;
@@ -590,7 +590,7 @@ table.shop-role-assignations > tr > td{
 
 .shop-article h1, 
 .shop-article h2 {
-    margin-top:0px;
+    margin-top:0;
 } 
 
 
@@ -656,7 +656,7 @@ shop-order-paymode {
 }
 
 .shop-front-order * {
-    margin-top:0px !important;
+    margin-top:0 !important;
 }
 
 .shop-order-item {
