@@ -8,7 +8,7 @@ var taxeratios;
 $(function() {
     $.get("/local/shop/ajax/loadtaxes.php", function(data, textStatus) {
         obj = JSON.parse(data);
-        taxeratios = $.map(obj, function(el) { return el });
+        taxeratios = $.map(obj, function(el) { return el; });
     });
 });
 
@@ -21,12 +21,15 @@ function updatetiprice(item) {
 
     priceid = 'price' + item;
     pricefield = document.getElementById('id_' + priceid);
-    tidivid = 'id_' + priceid + 'ti';
+    tidivid = 'id_'+priceid+'ti';
     tidiv = document.getElementById(tidivid);
-    HT = parseFloat(pricefield.value);
-    TR = parseFloat(taxeratios[taxid]['ratio']);
-    eval(taxeratios[taxid]['formula']);
-    tidiv.innerHTML = TTC.toFixed(2) + ' (' + taxeratios[taxid]['formula'] + ')';
+
+    input = new Array();
+    input['ht'] = ht = parseFloat(pricefield.value);
+    input['tr'] = tr = parseFloat(taxeratios[taxid].ratio);
+
+    output = evaluate(taxeratios[taxid].formula, input);
+    tidiv.innerHTML = ttc.toFixed(2) + ' (' + taxeratios[taxid].formula+')';
 }
 
 function checkprices(item) {
