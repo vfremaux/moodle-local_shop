@@ -63,7 +63,7 @@ echo $OUTPUT->header();
 
 echo '<div style="max-width:780px">';
 
-echo $renderer->order_popup_header($afullbill);
+echo $renderer->invoice_header($afullbill);
 
 echo '<table>';
 echo $renderer->order_line(null);
