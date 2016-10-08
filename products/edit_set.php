@@ -33,6 +33,7 @@ use local_shop\Catalog;
 use local_shop\CatalogItem;
 
 $PAGE->requires->jquery();
+$PAGE->requires->js('/local/shop/extlib/js.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 
@@ -133,19 +134,6 @@ if ($data = $mform->get_data()) {
                                                     $data->id, array('subdirs' => true), $data->description);
     $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                             'catalogitemdescription', $data->id);
-
-    $fs = get_file_storage();
-
-    $usercontext = context_user::instance($USER->id);
-
-    $filepickeritemid = $data->grleaflet['leaflet'];
-    if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
-        file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemleaflet', $data->id);
-    }
-
-    if (!empty($data->grleaflet['clearleaflet'])) {
-        $fs->delete_area_files($context->id, 'local_shop', 'catalogitemleaflet', $data->id);
-    }
 
     shop_products_process_files($data, $context, $usercontext);
 
