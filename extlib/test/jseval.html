@@ -1,0 +1,27 @@
+<html>
+
+
+<body>
+<h1> Testing evaluator </h1>
+<script type="text/javascript">
+
+function evaluate(expression, vars, outputfields) {
+
+    for(k in vars) {
+        eval(k+' = '+vars[k])
+    }
+
+    eval(expression);
+}
+
+expr = 'ttc = ht * (1 + rt / 100)';
+vrs = {ht:100, rt:20};
+out = 'ttc';
+
+evaluate(expr, vrs, out);
+alert(ttc);
+
+</script>
+</body>
+
+</html>

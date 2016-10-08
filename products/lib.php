@@ -23,8 +23,20 @@
 defined('MOODLE_INTERNAL') || die;
 
 function shop_products_process_files($data, $context, $usercontext) {
+    global $USER;
 
     $fs = get_file_storage();
+
+    $usercontext = context_user::instance($USER->id);
+
+    $filepickeritemid = $data->grleaflet['leaflet'];
+    if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
+        file_save_draft_area_files($filepickeritemid, $context->id, 'local_shop', 'catalogitemleaflet', $data->id);
+    }
+
+    if (!empty($data->grleaflet['clearleaflet'])) {
+        $fs->delete_area_files($context->id, 'local_shop', 'catalogitemleaflet', $data->id);
+    }
 
     $filepickeritemid = $data->grimage['image'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {
