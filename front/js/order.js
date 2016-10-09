@@ -1,7 +1,7 @@
-// jshint undef:false, unused:false
 /*
  * jshint undef:false, unused:false
  */
+// jshint undef:false, unused:false
 
 function send_confirm(){
     document.forms.bill.cmd.value = 'confirm';
@@ -10,6 +10,8 @@ function send_confirm(){
     document.forms.bill.target = '_self';
     document.forms.bill.submit();
 }
+
+var requiredorderfieldlist = null;
 
 function haverequireddata() {
     if (requiredorderfieldlist === null) {
@@ -35,8 +37,6 @@ function listen_to_required_changes() {
         advicediv.style.visibility = 'visible';
     }
 }
-
-var requiredorderfieldlist = null;
 
 function accept_eulas(buttonobj){
     if (buttonobj.form.agreeeula.checked){
