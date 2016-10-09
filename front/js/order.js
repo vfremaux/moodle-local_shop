@@ -11,20 +11,6 @@ function send_confirm(){
     document.forms.bill.submit();
 }
 
-function listen_to_required_changes(){
-    if (haverequireddata()){
-        document.forms.confirmation.elements.go_confirm.disabled = false;
-        advicediv = document.getElementById('shop-disabled-advice-span');
-        advicediv.style.visibility = 'hidden';
-    } else {
-        document.forms.confirmation.elements.go_confirm.disabled = true;
-        advicediv = document.getElementById('shop-disabled-advice-span');
-        advicediv.style.visibility = 'visible';
-    }
-}
-
-var requiredorderfieldlist = null;
-
 function haverequireddata() {
     if (requiredorderfieldlist === null) {
         return true;
@@ -37,6 +23,20 @@ function haverequireddata() {
 
     return true;
 }
+
+function listen_to_required_changes() {
+    if (haverequireddata()){
+        document.forms.confirmation.elements.go_confirm.disabled = false;
+        advicediv = document.getElementById('shop-disabled-advice-span');
+        advicediv.style.visibility = 'hidden';
+    } else {
+        document.forms.confirmation.elements.go_confirm.disabled = true;
+        advicediv = document.getElementById('shop-disabled-advice-span');
+        advicediv.style.visibility = 'visible';
+    }
+}
+
+var requiredorderfieldlist = null;
 
 function accept_eulas(buttonobj){
     if (buttonobj.form.agreeeula.checked){
