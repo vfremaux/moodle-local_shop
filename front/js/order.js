@@ -24,7 +24,7 @@ function haverequireddata() {
     return true;
 }
 
-function listen_to_required_changes(){
+function listen_to_required_changes() {
     if (haverequireddata()){
         document.forms.confirmation.elements.go_confirm.disabled = false;
         advicediv = document.getElementById('shop-disabled-advice-span');
