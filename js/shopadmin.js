@@ -24,9 +24,9 @@ function updatetiprice(item) {
     tidivid = 'id_' + priceid + 'ti';
     tidiv = document.getElementById(tidivid);
 
-    input = new Array();
-    input['ht'] = ht = parseFloat(pricefield.value);
-    input['tr'] = tr = parseFloat(taxeratios[taxid].ratio);
+    input = [];
+    input.ht = ht = parseFloat(pricefield.value);
+    input.tr = tr = parseFloat(taxeratios[taxid].ratio);
 
     output = evaluate(taxeratios[taxid].formula, input);
     tidiv.innerHTML = ttc.toFixed(2) + ' (' + taxeratios[taxid].formula + ')';
