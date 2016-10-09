@@ -404,7 +404,7 @@ class CatalogItem extends ShopObject {
                  * global config key as default setting.
                  */
                 if ($config->hideproductswhennotavailable) {
-                    continue;
+                    return;
                 } else {
                     $this->available = false;
                 }
