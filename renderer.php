@@ -359,7 +359,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 /**
  * A base class to centralize all common things
  */
-class local_shop_base_renderer extends plugin_renderer_base {
+class local_shop_base_renderer {
 
     // Context references.
     protected $theblock;
