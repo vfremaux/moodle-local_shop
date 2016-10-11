@@ -363,6 +363,9 @@ abstract class CatalogItem_Form extends moodleform {
     }
 
     public function add_category() {
+
+        $mform = $this->_form;
+
         if ($cats = $this->_customdata['catalog']->get_categories()) {
             foreach ($cats as $cat) {
                 $sectionopts[$cat->id] = $cat->name;
