@@ -66,6 +66,9 @@ class BillItem_Form extends moodleform {
         // Setting variables.
         $mform =& $this->_form;
 
+        $mform->addelement('hidden', 'billid');
+        $mform->setType('billid', PARAM_INT);
+
         // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'billitem', 'local_shop')));
 
@@ -100,7 +103,7 @@ class BillItem_Form extends moodleform {
 
         $mform->addElement('text', 'itemcode', get_string('code', 'local_shop'), $this->attributesshort);
         $mform->setType('itemcode', PARAM_INT);
-        $mform->addRule('itemcode');
+        $mform->addRule('itemcode', get_string('missingcode', 'local_shop'), 'required', '', 'client');
 
         $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop'), $this->editoroptions);
         $mform->setType('abstract', PARAM_CLEANHTML);

@@ -31,10 +31,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-Use local_shop\Product;
-Use local_shop\Shop;
+use local_shop\Product;
+use local_shop\ProductEvent;
+use local_shop\Shop;
 
 class shop_handler_std_enrolonecourse extends shop_handler {
 
@@ -146,6 +148,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
     /**
      * Post pay information can come from session or from production data stored in delayed bills.
+     * @param objectref &$data a full filled billitem object.
      */
     public function produce_postpay(&$data) {
         global $DB, $USER;
@@ -166,30 +169,21 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $rolename = 'student';
         }
 
-        $startdate = @$data->actionparams['startdate'];
-        if (empty($startdate)) {
-            $startdate = time();
-        }
-
-        // Computes infinite, relative of fixed enddate.
-        $enddate = @$data->actionparams['enddate'];
-        if (preg_match('/^\+(\d+)$/', $enddate, $matches)) {
-            $enddate = $startdate + $matches[1];
-        } else if (empty($enddate)) {
-            $enddate = 0;
-        }
-
-        $enrolname = @$data->actionparams['enrol'];
-        if (empty($enrolname)) {
-            $enrolname = 'manual';
-        }
-
         // Perform operations.
 
         // Assign Student role in course for the period.
         if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course id");
             print_error("Bad target course for product");
+        }
+
+        // Compute start and end time.
+        $starttime = shop_compute_enrol_time($data, 'starttime', $course);
+        $endtime = shop_compute_enrol_time($data, 'endtime', $course);
+
+        $enrolname = @$data->actionparams['enrol'];
+        if (empty($enrolname)) {
+            $enrolname = 'manual';
         }
 
         $role = $DB->get_record('role', array('shortname' => $rolename));
@@ -202,10 +196,13 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
 
         try {
-            $enrolplugin->enrol_user($enrol, $USER->id, $role->id, $startdate, $enddate, ENROL_USER_ACTIVE);
+            $enrolplugin->enrol_user($enrol, $USER->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
         } catch (Exception $exc) {
+            $e = new StdClass;
+            $e->code = $data->code;
+            $e->errorcode = 'Code : ROLE ASSIGN ISSUE';
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed...");
-            $fb = get_string('productiondata_failure_public', 'shophandlers_std_enrolonecourse', 'Code : ROLE ASSIGN');
+            $fb = get_string('productiondata_failure_public', 'shophandlers_std_enrolonecourse', $e);
             $productionfeedback->public = $fb;
             $fb = get_string('productiondata_failure_private', 'shophandlers_std_enrolonecourse', $course->id);
             $productionfeedback->private = $fb;
@@ -214,6 +211,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             return $productionfeedback;
         }
 
+        // Get the user enrolment record as instance for product record.
+        $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $USER->id));
+
         // Create product instance in product table.
 
         $product = new StdClass();
@@ -221,21 +221,22 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $product->initialbillitemid = $data->id; // Data is a billitem.
         $product->currentbillitemid = $data->id; // Data is a billitem.
         $product->customerid = $data->bill->customerid;
-        $product->contexttype = 'enrol';
-        $product->instanceid = $enrol->id;
-        $product->startdate = $startdate;
-        $product->enddate = $enddate;
+        $product->contexttype = 'userenrol';
+        $product->instanceid = $ue->id;
+        $product->startdate = $starttime;
+        $product->enddate = $endtime;
         $product->reference = shop_generate_product_ref($data);
-        $product->productiondata = Product::compile_production_data($data->actionparams);
+        $extra = array('handler' => 'std_enrolonecourse');
+        $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
         $product->test = $config->test;
         $product->id = $DB->insert_record('local_shop_product', $product);
 
         // Record a productevent.
-        $productevent = new StdClass();
+        $productevent = new ProductEvent(null);
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
         $productevent->datecreated = $now = time();
-        $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
+        $productevent->save();
 
         $fb = get_string('productiondata_assign_public', 'shophandlers_std_enrolonecourse');
         $productionfeedback->public = $fb;
@@ -279,13 +280,62 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
 
         // Add user to customer support.
+
         if (!empty($data->actionparams['customersupport'])) {
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay : Registering Customer Support");
             shop_register_customer_support($data->actionparams['customersupport'], $USER, $data->transactionid);
         }
 
-        shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Completed in $coursename...");
+        shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Completed for $coursename...");
         return $productionfeedback;
+    }
+
+    /**
+     * Dismounts all effects of the handler production when a product is deleted.
+     * The contexttype will denote the type of Moodle object that was created. some
+     * hanlders may deal with several contexttypes if they have a complex production
+     * operation. the instanceid is moslty a moodle table id that points the concerned instance 
+     * within the context type scope.
+     *
+     * In enrolonecourse plugin, unenrols the target user from course using the user enrolment record
+     * assigned to the product. Other enrol sources remain unchanged.
+     *
+     * @param string $contexttype type of context to dismount
+     * @param integer/string $instanceid identifier of the instance
+     */
+    public function delete(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $enrol = $DB->get_record('enrol', array('id' => $ue->enrolid));
+                $enrolplugin = enrol_get_plugin($enrol->enrol);
+                shop_trace('[] Deleting user enrolment on {$ue->enrolid} for user {$ue->userid}');
+                $enrolplugin->unenrol_user($enrol, $ue->userid);
+            }
+        }
+    }
+
+    public function soft_delete(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $ue->status = 1;
+                $DB->update_record('user_enrolments', $ue);
+            }
+        }
+    }
+
+    public function soft_restore(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $ue->status = 0;
+                $DB->update_record('user_enrolments', $ue);
+            }
+        }
     }
 
     /**

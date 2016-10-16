@@ -61,7 +61,7 @@ class BillItem extends ShopObject {
 
         if (!empty($this->record->id)) {
             if (empty($this->bill)) {
-                $bill = new Bill($this->record->billid);
+                $this->bill = new Bill($this->record->billid);
             }
 
             $message = " ({$this->record->unitcost} * {$this->record->quantity}) == {$this->record->totalprice} ";
@@ -73,9 +73,12 @@ class BillItem extends ShopObject {
              * Reydrates the original catalog item stored when bill was created.
              * This ensures getting exact prices from the moment, event if changed in catalog inbetween.
              */
-            $catalogitemdata = base64_decode($this->record->catalogitem);
-            $catalogitemdata = str_replace('block_shop_catalogitem', 'local_shop_catalogitem', $catalogitemdata);
-            $this->catalogitem = unserialize($catalogitemdata);
+            if ($catalogitemdata = base64_decode($this->record->catalogitem)) {
+                $catalogitemdata = str_replace('block_shop_catalogitem', 'local_shop_catalogitem', $catalogitemdata);
+                $this->catalogitem = unserialize($catalogitemdata);
+            } else {
+                $this->catalogitem = '';
+            }
             $this->productiondata = unserialize(base64_decode($this->record->productiondata));
             $this->customerdata = unserialize(base64_decode($this->record->customerdata));
 
@@ -93,12 +96,12 @@ class BillItem extends ShopObject {
                 }
             }
         } else {
-            if (empty($bill)) {
+            if (empty($this->bill)) {
                 throw new \Exception('A bill is expected to build a new BillItem');
             }
 
             if ($ordering == -1) {
-                $this->ordering = self::last_ordering($bill->id);
+                $this->ordering = self::last_ordering($this->bill->id);
             } else {
                 $this->ordering = $ordering;
             }
@@ -112,13 +115,20 @@ class BillItem extends ShopObject {
 
             if ($idorrec->type != 'BILLING') {
                 // These are pseudo products.
-                $this->catalogitem = $bill->thecatalogue->get_product_by_code($idorrec->itemcode);
                 $this->record->billid = $bill->id;
                 $this->record->itemcode = $idorrec->itemcode;
-                $this->record->catalogitem = base64_encode(serialize($this->catalogitem));
+                if ($this->catalogitem = $bill->thecatalogue->get_product_by_code($idorrec->itemcode)) {
+                    $this->record->catalogitem = base64_encode(serialize($this->catalogitem));
+                } else {
+                    $this->record->catalogitem = '';
+                }
                 $this->record->unitcost = $idorrec->unitcost;
-                $this->record->taxcode = $this->catalogitem->taxcode;
-                $this->record->totalprice = $idorrec->totalprice;
+                if ($this->catalogitem) {
+                    $this->record->taxcode = $this->catalogitem->taxcode;
+                } else {
+                    $this->record->taxcode = $idorrec->taxcode;
+                }
+                $this->record->totalprice = $idorrec->unitcost * $idorrec->quantity;
                 $this->record->quantity = $idorrec->quantity;
                 $this->record->abstract = '';
                 $this->record->description = '';
@@ -182,16 +192,55 @@ class BillItem extends ShopObject {
     }
 
     public function get_price() {
-        return $this->catalogitem->get_price($this->record->quantity);
+        if (!empty($this->catalogitem)) {
+            return $this->catalogitem->get_price($this->record->quantity);
+        } else {
+            return $this->unitcost;
+        }
     }
 
     public function get_taxed_price() {
-        return $this->catalogitem->get_taxed_price($this->record->quantity);
+        global $DB;
+        static $taxcache;
+
+        if (!empty($this->catalogitem)) {
+            return $this->catalogitem->get_taxed_price($this->record->quantity);
+        } else {
+            // Calculate with real tax.
+
+            if (empty($taxid)) {
+                $taxid = $this->taxcode;
+            }
+
+            if ($taxid == 0) {
+                return $this->get_price();
+            }
+
+            if (!isset($taxcache)) {
+                $taxcache = array();
+            }
+            if (!array_key_exists($taxid, $taxcache)) {
+                if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+                    if (empty($taxcache[$taxid]->formula)) {
+                        $taxcache[$taxid]->formula = '$ttc = $ht';
+                    }
+                } else {
+                    return $this->get_price();
+                }
+            }
+
+            $in['ht'] = $this->get_price();
+            $in['tr'] = $taxcache[$taxid]->ratio;
+            $result = evaluate(\core_text::strtolower($taxcache[$taxid]->formula).';', $in, 'ttc');
+            $this->tax = $result['ttc'] - $in['ht'];
+
+            return $result['ttc'];
+        }
     }
 
     public function get_tax_amount() {
-        $taxed = $this->catalogitem->get_taxed_price($this->record->quantity);
-        $untaxed = $this->catalogitem->get_price($this->record->quantity);
+        $taxed = $this->get_taxed_price();
+        $untaxed = $this->get_price();
         return $taxed - $untaxed;
     }
 
@@ -209,6 +258,14 @@ class BillItem extends ShopObject {
             $this->bill = new Bill($this->billid);
         }
         return $this->bill->customerid;
+    }
+
+    public function save() {
+        if ($this->billid) {
+            $bill = new Bill($this->bill);
+            $bill->dirty = true;
+            $bill->save(true); // Save light. Bill will be recalculated later.
+        }
     }
 
     public function delete() {

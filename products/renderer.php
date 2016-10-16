@@ -36,7 +36,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
     public function catalog_header() {
 
-        $this->_check_context();
+        $this->check_context();
 
         $str = '';
 
@@ -75,7 +75,7 @@ class shop_products_renderer extends local_shop_base_renderer {
     public function product_admin_line($product, $return = false) {
         global $OUTPUT;
 
-        $this->_check_context();
+        $this->check_context();
 
         $str = '';
 
@@ -245,7 +245,7 @@ class shop_products_renderer extends local_shop_base_renderer {
     public function set_admin_line($set) {
         global $OUTPUT;
 
-        $this->_check_context();
+        $this->check_context();
 
         $slaveclass = (!$this->thecatalog->isslave || (@$set->masterrecord == 1)) ? 'master' : 'slave';
 
@@ -319,7 +319,7 @@ class shop_products_renderer extends local_shop_base_renderer {
     public function bundle_admin_line($bundle) {
         global $OUTPUT;
 
-        $this->_check_context();
+        $this->check_context();
 
         $slaveclass = (!$this->thecatalog->isslave || (@$bundle->masterrecord == 1)) ? 'master' : 'slaved';
 
@@ -580,7 +580,7 @@ class shop_products_renderer extends local_shop_base_renderer {
     public function catlinks($thecatalog) {
         global $OUTPUT, $SESSION;
 
-        $this->_check_context();
+        $this->check_context();
 
         $categoryid = 0 + @$SESSION->shop->categoryid;
 

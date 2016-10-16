@@ -93,6 +93,7 @@ class Shop_Form extends moodleform {
 
         $mform->addElement('text', 'navsteps', get_string('navsteps', 'local_shop'), $attributeslong);
         $mform->setType('navsteps', PARAM_TEXT);
+        $mform->setDefault('navsteps', $config->defaultnavsteps);
         $mform->setAdvanced('navsteps');
 
         if (!empty($cats)) {
@@ -200,5 +201,17 @@ class Shop_Form extends moodleform {
                                        'itemid' => $draftideditor);
 
         parent::set_data($defaults);
+    }
+
+    public function validation($data, $files = array()) {
+        global $DB;
+
+        $errors = parent::validation($data, $files);
+
+        if ($DB->record_exists('local_shop', array('name' => $data['name']))) {
+            $errors['name'] = get_string('errorshopexists', 'local_shop');
+        }
+
+        return $errors;
     }
 }

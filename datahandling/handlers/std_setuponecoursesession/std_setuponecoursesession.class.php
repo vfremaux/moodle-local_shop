@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * STD_SETUP_ONE_COURSE_SESSION is a standard shop product action handler that allows the shop operator to
@@ -32,40 +31,42 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-Use local_shop\Product;
-Use local_shop\Shop;
+use local_shop\Product;
+use local_shop\ProductEvent;
+use local_shop\Shop;
 
 class shop_handler_std_setuponecoursesession extends shop_handler {
 
-    var $requiredroles;
+    protected $requiredroles;
 
-    function __construct($label) {
-        $this->name = 'std_setuponecoursesession'; // for unit test reporting
+    public function __construct($label) {
+        $this->name = 'std_setuponecoursesession'; // For unit test reporting.
         parent::__construct($label);
         $this->requiredroles = array('student', 'teacher', 'supervisor', 'owner');
     }
 
-    function produce_prepay(&$data) {
-        global $CFG, $DB, $USER;
+    public function produce_prepay(&$data) {
+        global $DB, $USER;
 
         $productionfeedback = new StdClass();
 
-        // Get customersupportcourse designated by handler internal params
+        // Get customersupportcourse designated by handler internal params.
 
         if (!isset($data->actionparams['customersupport'])) {
             $theshop = new Shop($data->shopid);
             $data->actionparams['customersupport'] = 0 + @$theshop->defaultcustomersupportcourse;
         }
 
-        // Check customer state and create account if necessary
+        // Check customer state and create account if necessary.
 
         $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
         if (isloggedin()) {
             if ($customer->hasaccount != $USER->id) {
-                // do it quick in this case. Actual user could authentify, so it is the legitimate account.
-                // We guess if different non null id that the customer is using a new account. This should not really be possible
+                // Do it quick in this case. Actual user could authentify, so it is the legitimate account.
+                // We guess if different non null id that the customer is using a new account. This should not really be possible.
                 $customer->hasaccount = $USER->id;
                 $productionfeedback->public = get_string('fixaccount', 'local_shop', $USER->username);
                 $productionfeedback->private = get_string('fixaccount', 'local_shop', $USER->username);
@@ -79,9 +80,11 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                 return $productionfeedback;
             }
         } else {
-            // In this case we can have a early Customer that never confirmed a product or a brand new Customer comming in.
-            // The Customer cannot match with an existing user (this has been checked in customer.controller.php)
-            // TODO : If a collision is to be detected, a question should be asked to the customer.
+            /*
+             * In this case we can have a early Customer that never confirmed a product or a brand new Customer comming in.
+             * The Customer cannot match with an existing user (this has been checked in customer.controller.php)
+             * TODO : If a collision is to be detected, a question should be asked to the customer.
+             */
 
             if (!shop_create_customer_user($data, $customer, $newuser)) {
                 shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay Error : User could not be created {$newuser->username}.");
@@ -107,8 +110,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      * One course, a list of accounts to enrol or create and enrol.
      * List of accounts comme from production data, previously from $SESSION->shoppingcart->$roles
      */
-    function produce_postpay(&$data) {
-        global $CFG, $DB;
+    public function produce_postpay(&$data) {
+        global $DB;
 
         $config = get_config('local_shop');
 
@@ -118,7 +121,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
 
-        // Get course designated by handler internal params
+        // Get course designated by handler internal params.
         $coursename = $data->actionparams['coursename'];
 
         if ($course = $DB->get_record('course', array('shortname' => $coursename))) {
@@ -202,15 +205,15 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                             $enrolplugin->enrol_user($enrol, $u->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
                             shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : $u->lastname $u->firstname ($u->username) enrolled.");
 
-                            $enrolmentid = $DB->get_field('user_enrolments', 'id', array('userid' => $u->id, 'enrolid' => $enrol->id));
-                            // Register a product (userenrol instance) for each
+                            $ueid = $DB->get_field('user_enrolments', 'id', array('userid' => $u->id, 'enrolid' => $enrol->id));
+                            // Register a product (userenrol instance) for each.
                             $product = new StdClass();
                             $product->catalogitemid = $data->catalogitem->id;
-                            $product->initialbillitemid = $data->id; // Data is a billitem
-                            $product->currentbillitemid = $data->id; // Data is a billitem
+                            $product->initialbillitemid = $data->id; // Data is a billitem.
+                            $product->currentbillitemid = $data->id; // Data is a billitem.
                             $product->customerid = $data->bill->customerid;
-                            $product->contexttype = 'enrol';
-                            $product->instanceid = $enrolmentid;
+                            $product->contexttype = 'userenrol';
+                            $product->instanceid = $ueid;
                             $product->startdate = $starttime;
                             $product->enddate = $endtime;
                             $product->reference = shop_generate_product_ref($data);
@@ -223,18 +226,19 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                             $itemproductiondata['starttime'] = $starttime;
                             $itemproductiondata['endtime'] = $endtime;
                             $itemproductiondata['supervisor'] = $data->actionparams['supervisor'];
-                            $product->productiondata = Product::compile_production_data($itemproductiondata); // This data is the data required to produce again this product
-                            unset($itemproductiondata); // clean some mem
+                            // This data is the data required to produce again this product.
+                            $product->productiondata = Product::compile_production_data($itemproductiondata);
+                            unset($itemproductiondata); // Clean some mem.
                             $product->id = $DB->insert_record('local_shop_product', $product);
 
-                            // Should we record a productevent
-                            $productevent = new StdClass();
+                            // Should we record a productevent.
+                            $productevent = new ProductEvent(null);
                             $productevent->productid = $product->id;
                             $productevent->billitemid = $data->id;
                             $productevent->datecreated = $now = time();
-                            $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
+                            $productevent->save();
 
-                            // GC a bit intermediate stuctures
+                            // GC a bit intermediate stuctures.
                             unset($product);
                             unset($productevent);
                         }
@@ -265,16 +269,17 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         }
 
         // Add all created users to group.
-
-        foreach ($courseusers as $roleshort => $users) {
-            foreach ($users as $u) {
-                if (!$DB->record_exists('groups_members', array('groupid' => $group->id, 'userid' => $u->id))) {
-                    $groupmember = new StdClass();
-                    $groupmember->groupid = $group->id;
-                    $groupmember->userid = $u->id;
-                    $groupmember->timeadded = time();
-                    $DB->insert_record('groups_members', $groupmember);
-                    shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Binding ({$u->username} in group ['customer_{$customeruser->username}].");
+        if (!empty($courseusers)) {
+            foreach ($courseusers as $roleshort => $users) {
+                foreach ($users as $u) {
+                    if (!$DB->record_exists('groups_members', array('groupid' => $group->id, 'userid' => $u->id))) {
+                        $groupmember = new StdClass();
+                        $groupmember->groupid = $group->id;
+                        $groupmember->userid = $u->id;
+                        $groupmember->timeadded = time();
+                        $DB->insert_record('groups_members', $groupmember);
+                        shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Binding ({$u->username} in group ['customer_{$customeruser->username}].");
+                    }
                 }
             }
         }
@@ -308,10 +313,36 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
     }
 
     /**
+     * Dismounts all effects of the handler production when a product is deleted.
+     * The contexttype will denote the type of Moodle object that was created. some
+     * hanlders may deal with several contexttypes if they have a complex production
+     * operation. the instanceid is moslty a moodle table id that points the concerned instance 
+     * within the context type scope.
+     *
+     * In assignroleoncontext plugin, removes the role assignation
+     * assigned to the product. Other role assignations will remain unchanged.
+     *
+     * @param string $contexttype type of context to dismount
+     * @param integer/string $instanceid identifier of the instance
+     */
+    public function delete(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $enrol = $DB->get_record('enrol', array('id' => $ue->enrolid));
+                $enrolplugin = enrol_get_plugin($enrol->enrol);
+                shop_trace('[] Deleting user enrolment on {$ue->enrolid} for user {$ue->userid}');
+                $enrolplugin->unenrol_user($enrol, $ue->userid);
+            }
+        }
+    }
+
+    /**
      * unit tests check input conditions from product setup without doing anything, collects input errors and warnings
      *
      */
-    function unit_test($data, &$errors, &$warnings, &$messages) {
+    public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
@@ -325,7 +356,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                 $errors[$data->code][] = get_string('errorcoursenotexists', 'shophandlers_std_setuponecoursesession', $data->actionparams['coursename']);
             }
 
-            // check enrollability
+            // Check enrollability.
             if ($enrols = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
                 $enrol = reset($enrols);
             }
@@ -351,14 +382,14 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
      *
-     * // TODO : Generalize to all logstores
+     * TODO : Generalize to all logstores
      */
-    function display_product_actions($pid, $params) {
-        global $CFG, $COURSE, $DB;
+    public function display_product_actions($pid, $params) {
+        global $DB;
 
-        // here we can unassign a product if it has not been used.
-        // check this in logs
-        $params = (array)$params; // just to be sure
+        // Here we can unassign a product if it has not been used.
+        // Check this in logs.
+        $params = (array)$params; // Just to be sure.
 
         $sqlparams = array($params['courseid'], $params['userid'], $params['starttime']);
 
@@ -374,7 +405,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         if (!$hasentered) {
             $str = '';
             $freeassignstr = get_string('freeassign', 'shophandlers_std_setuponecoursesession');
-            $postprodurl = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $params['courseid'], 'pid' => $pid, 'method' => 'freeassign'));
+            $params = array('id' => $params['courseid'], 'pid' => $pid, 'method' => 'freeassign');
+            $postprodurl = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
             $str .= '<a href="'.$postprodurl.'">'.$freeassignstr.'</a>';
         } else {
             $str = get_string('nonmutable', 'local_shop');
@@ -383,26 +415,13 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
     }
 
     /**
-     * this frees assignation on this product, and reverts it to a reassignable generated seat product
-     */
-    function postprod_freeassign(&$product, &$productioninfo) {
-        global $COURSE, $CFG, $OUTPUT, $DB;
-
-        // first unenrol user from course
-
-        $product->contexttype = 'user_enrolment';
-
-        // TODO : Finish processing
-    }
-
-    /**
      * this method renders user formated information about production information (contextually to handler)
      * for products generated with this handler
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
      */
-    function display_product_infos($pid, $pinfo) {
-        global $CFG, $COURSE, $DB;
+    public function display_product_infos($pid, $pinfo) {
+        global $DB;
 
         $str = '';
 

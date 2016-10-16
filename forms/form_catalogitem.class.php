@@ -274,7 +274,8 @@ abstract class CatalogItem_Form extends moodleform {
         $mform->addGroup($group, 'grleaflet', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
         $group = array();
-        $group[0] = & $mform->createElement('filepicker', 'image', get_string('image', 'local_shop'), $fpickerattributes);
+        $label = get_string('image', 'local_shop');
+        $group[0] = & $mform->createElement('filepicker', 'image', $label, $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearimage', get_string('clear', 'local_shop'));
 
         $label = get_string('image', 'local_shop');
@@ -292,6 +293,7 @@ abstract class CatalogItem_Form extends moodleform {
         $label = get_string('unitpix', 'local_shop');
         $group[0] = & $mform->createElement('filepicker', 'unit', $label, $fpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearunit', get_string('clear', 'local_shop'));
+
         $label = get_string('unitpix', 'local_shop');
         $mform->addGroup($group, 'grunit', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
@@ -363,6 +365,9 @@ abstract class CatalogItem_Form extends moodleform {
     }
 
     public function add_category() {
+
+        $mform = $this->_form;
+
         if ($cats = $this->_customdata['catalog']->get_categories()) {
             foreach ($cats as $cat) {
                 $sectionopts[$cat->id] = $cat->name;

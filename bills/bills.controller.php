@@ -24,31 +24,121 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_shop\bills;
+namespace local_shop\backoffice;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 use local_shop\Bill;
+use local_shop\BillItem;
 
-class bills_controller {
+class bill_controller {
+
+    protected $data;
+
+    protected $received;
+
+    protected $theshop;
+
+    protected $thecatalog;
+
+    protected $theblock;
+
+    protected $mform;
+
+    public function __construct(&$theshop, &$thecatalog, $theblock) {
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
+    }
+
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            $this->received = true;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'deletebill':
+                $this->data->billids = required_param_array('billid[]', PARAM_INT);
+                break;
+
+            case 'deletemillitems':
+                $this->data->items = required_param_array('billitem[]', PARAM_INT);
+                break;
+
+            case 'changestate':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                $this->data->status = required_param('status', PARAM_TEXT);
+                break;
+
+            case 'ignoretax':
+            case 'restoretax':
+            case 'recalculate':
+            case 'generatecode':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                break;
+
+            case 'relocate':
+                $this->data->relocated = required_param('relocated', PARAM_INT);
+                $this->data->z = required_param('z', PARAM_INT);
+                $this->data->where = required_param('at', PARAM_INT);
+                break;
+
+            case 'flowchange':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                $this->data->status = required_param('status', PARAM_TEXT);
+                break;
+
+            case 'unattachall':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                break;
+
+            case 'unattach':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                $this->data->filepath = required_param('filepath', PARAM_INT);
+                $this->data->filename = required_param('filename', PARAM_INT);
+                break;
+
+            case 'reclettering':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                $this->data->lettering = required_param('idnumber', PARAM_TEXT);
+                break;
+
+            case 'edit':
+                // Let data come from $data attributes.
+                break;
+        }
+
+        $this->received = true;
+    }
 
     public function process($cmd) {
         global $DB;
+
+        if (!$this->received) {
+            throw (new \Exception('Bill Controller triggered without data'));
+        }
 
         $null = null;
 
         // Delete a full bill ****************************** **.
         if ($cmd == 'deletebill') {
 
-            $billids = required_param_array('billid[]', PARAM_INT);
-            foreach ($billids as $billid) {
-                try {
-                    $bill = new Bill($billid);
-                    $bill->delete();
-                } catch (\Exception $e) {
-                    print_error('objecterror', 'local_shop', $e->message);
+            if (!empty($this->data->billids)) {
+                foreach ($this->data->billids as $billid) {
+                    try {
+                        $bill = new Bill($billid);
+                        $bill->delete();
+                    } catch (\Exception $e) {
+                        print_error('objecterror', 'local_shop', $e->message);
+                    }
                 }
             }
 
@@ -58,80 +148,51 @@ class bills_controller {
         // Delete a set of billitems inside a bill ******************** **.
         if ($cmd == 'deletebillitems') {
 
-            $items = required_param_array('billitem[]', PARAM_INT);
-            if (!empty($items)) {
-                foreach ($items as $bid) {
+            if (!empty($this->data->items)) {
+                foreach ($this->data->items as $bid) {
                     $billitem = new BillItem($bid);
                     $billitem->delete();
                 }
             }
         }
 
+        // Change bill state without triggering transition ******************** **.
+
         if ($cmd == 'changestate') {
 
-            $billid = required_param('billid', PARAM_INT);
-            $bill = new Bill($billid, $null, $null, $null, true); // Get a lightweight version.
-            $bill->status = required_param('status', PARAM_TEXT);
+            $bill = new Bill($this->data->billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill->status = $this->data->status;
             $bill->save();
         }
 
         if ($cmd == 'ignoretax') {
 
-            $billid = required_param('billid', PARAM_INT);
-            $bill = new Bill($billid); // Get a lightweight version.
+            $bill = new Bill($this->data->billid); // Get a lightweight version.
             $bill->ignoretax = 1;
             $bill->save();
         }
 
         if ($cmd == 'restoretax') {
-            $billid = required_param('billid', PARAM_INT);
-            $bill = new Bill($billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill = new Bill($this->data->billid, $null, $null, $null, true); // Get a lightweight version.
             $bill->ignoretax = 0;
             $bill->save();
         }
 
         if ($cmd == 'recalculate') {
-            $billid = required_param('billid', PARAM_INT);
-            $bill = new Bill($billid, $null, $null, $null, false); // Get a lightweight version.
+            $bill = new Bill($this->data->billid, $null, $null, $null, false); // Get a lightweight version.
             $bill->recalculate();
         }
 
         // Generate bill code ************************* **.
         if ($cmd == 'generatecode') {
-            $billid = required_param('billid', PARAM_INT);
-            $bill = new Bill($billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill = new Bill($this->data->billid, $null, $null, $null, true); // Get a lightweight version.
             $bill->transactionid = md5(session_id() . time());
             $bill->save(true);
         }
 
-        // Delete Single ************************* **.
-        if ($cmd == 'deleteItem') {
-            $billitemid = required_param('billitemid', PARAM_INT);
-            $z = required_param('z', PARAM_INT); // Ordering.
-
-            $billitem = new BillItem($billitemid);
-            $billitem->delete();
-
-            $select = " billid = '$billid' GROUP BY billid ";
-            if (!$maxorder = $DB->get_field_select('local_shop_billitem', 'MAX(ordering)', $select)) {
-                $maxorder = 1;
-            }
-
-            // Reorder end of list.
-            $i = $z;
-            $select = "
-                id = $billid AND
-                ordering > ?
-            ";
-            if ($upperrecs = $DB->get_records_select('local_shop_billitem', $select, array($z), 'ordering', 'id, ordering')) {
-                foreach ($upperrecs as $upperrec) {
-                    $DB->update_record('local_shop_billitem', $upperrec);
-                }
-            }
-        }
-
         // Delete Items ************************* **.
-        if ($cmd == 'deleteItems') {
+        /* Probably obsolete, calls undefined functions */
+        if ($cmd == 'deleteitems') {
             $items = required_param('items', PARAM_INT);
             $itemlist = str_replace(',', "','", $items);
 
@@ -162,7 +223,7 @@ class bills_controller {
                 $DB->update_record('local_shop_billitem', $moveditem);
                 $i++;
             }
-            recalculate($bill->id);
+            $bill->recalculate();
         }
 
         // Relocates.
@@ -173,24 +234,24 @@ class bills_controller {
              */
             $sql = "
                 ALTER TABLE
-                    {shop_}billitem}
+                    {local_shop_billitem}
                 DROP INDEX
                     unique_ordering
             ";
             $DB->execute($sql);
 
             // Relocates.
-            $relocated = required_param('relocated', PARAM_INT);
-            $z = required_param('z', PARAM_INT);
-            $where = required_param('at', PARAM_INT);
+            $relocated = $this->data->relocated;
+            $z = $thie->data->z;
+            $where = $this->data->where;
             if ($z > $where) {
                 $gap = $z - $where;
                 for ($i = $z - 1; $i >= $where; $i--) {
-                    moveRecord(1, $i, $billid);
+                    moveRecord(1, $i, $this->data->billid);
                 }
                 $sql = "
                     UPDATE
-                        {shop_}billitem}
+                        {local_shop_billitem}
                     SET
                         ordering = ordering - $gap
                     WHERE
@@ -225,31 +286,40 @@ class bills_controller {
             $DB->execute($sql);
         }
 
-        // Unattach attachement.
-        if ($cmd == 'unattach') {
-            $fields = " id, DATE_FORMAT(emissiondate, '%Y%m%d') as date, userid ";
-            $bill = $DB->get_record('local_shop_bill', array('id' => $billid), $fields);
-            $itemdatapath = "/bills/" . md5($bill->userid) . "/B-" . $bill->date . "-" . $billid . "/";
-            fs_deleteFile($itemdatapath . required_param('file', PARAM_TEXT));
+        // Unattach attachements.
+        if ($cmd == 'unattachall') {
+            $fs = get_file_storage();
+            $context = context_system::instance();
+            $fs->delete_area_files($context->id, 'local_shop', 'billattachments', $this->data->billid);
         }
 
-        // Unattach attachement.
+        // Unattach attachements.
+        if ($cmd == 'unattach') {
+            $fs = get_file_storage();
+            $context = context_system::instance();
+            $fs->delete_area_files($context->id, 'local_shop', 'billattachments', $this->data->billid, $this->data->filepath, $this->data->filename);
+        }
+
+        // Registers accountance lettering **************************************.
         if ($cmd == 'reclettering') {
-            $lettering = required_param('idnumber', PARAM_TEXT);
-            if ($checkbill = $DB->get_record('local_shop_bill', array('idnumber' => $lettering))) {
-                if ($checkbill->id != $billid) {
-                    $params = array('id' => $this->theshop->id, 'view' => 'viewBill', 'billid' => $checkbill->id);
+            if ($billrec = $DB->get_record('local_shop_bill', array('idnumber' => $this->data->lettering))) {
+                if ($billrec->id != $this->data->billid) {
+                    $params = array('view' => 'viewBill', 'billid' => $billrec->id);
                     $badbillurl = new \moodle_url('/local/shop/bills/view.php', $params);
                     $errorline = get_string('uniqueletteringfailure', 'local_shop', $badbillurl);
-                    $letteringfeedback = '<div class="bill_error">'.$errorline.'</div>';
+                    return '<div class="bill_error">'.$errorline.'</div>';
                 }
+                $bill = new Bill($billrec);
             } else {
-                $DB->set_field('local_shop_bill', 'idnumber', $lettering, array('id' => $billid));
-                $letteringfeedback = '<div class="bill_good">'.get_string('letteringupdated', 'local_shop').'</div>';
+                $bill = new Bill($this->data->billid);
             }
+
+            $bill->idnumber = $this->data->lettering;
+            $bill->save(true); // Light save.
         }
 
-        // Work flow.
+        // Change bill state and triggers transition ******************** **.
+
         if ($cmd == 'flowchange') {
             /*
              * this implements a statefull automaton on bills
@@ -257,18 +327,89 @@ class bills_controller {
              * Typical resolution is a manual SOLDOUT order
              * for realizing production action when payed out.
              */
-            $status = required_param('status', PARAM_TEXT);
-            $priorstatus = $DB->get_field('local_shop_bill', 'status', array('id' => $billid));
+            $bill = new Bill($this->data->billid);
+            $bill->work($this->data->status);
+        }
 
-            // Call a transition handler.
-            $result = 1;
-            if (file_exists($CFG->dirroot.'/local/shop/transitions.php')) {
-                include_once($CFG->dirroot.'/local/shop/transitions.php');
-                // Lower case because Moodle validation forces all functions to be lowercase.
-                $transitionhandler = core_text::strtolower("bill_transition_{$priorstatus}_{$status}");
-                if (function_exists($transitionhandler)) {
-                    $result = $transitionhandler($billid);
+        if ($cmd == 'edit') {
+
+            $billrec = $this->data;
+
+            if (!empty($billrec->billid)) {
+                $bill = new Bill($billrec->billid);
+                $bill->lastactiondate = $now;
+            } else {
+                $bill = new Bill(null, $this->theshop, $this->thecatalog, $this->theblock);
+            }
+
+            if (empty($billrec->currency)) {
+                $billrec->currency = $theshop->defaultcurrency;
+            }
+
+            $shipping = new \StdClass;
+            if (!empty($config->useshipping)) {
+                $shipping->value = 0;
+                // TODO : Call shipping calculation.
+            } else {
+                $shipping->value = 0;
+            }
+
+            // Creating a customer account for a user if missing.
+            if ($billrec->useraccountid != 0) {
+                $user = $DB->get_record('user', array('id' => $billrec->useraccountid));
+                if (!$potcustomers = $DB->get_records('local_shop_customer', array('hasaccount' => $user->id))) {
+                    $customer = new Customer(null);
+                    $customer->firstname = $user->firstname;
+                    $customer->lastname = $user->lastname;
+                    $customer->email = $user->email;
+                    $customer->address = $user->address;
+                    $customer->city = $user->city;
+                    $customer->zip = '';
+                    $customer->country = $user->country;
+                    $customer->hasaccount = $user->id;
+                    $customer->save();
+                    $billrec->customerid = $customer->id; // Will be transfered to bill a bit later.
                 }
+            } else {
+                $bill->customerid = $billrec->userid;
+            }
+            unset($bill->userid);
+            unset($bill->useraccountid);
+
+            // Transfer all billrec attributes to the bill object.
+            foreach ($billrec as $key => $value) {
+                $bill->$key = $value;
+            }
+
+            $lastordering = Bill::last_ordering($this->theshop->id);
+            $bill->lastordering = $lastordering + 1;
+
+            $bill->save();
+
+            return $bill;
+        }
+
+        if ($cmd == 'edititem') {
+
+            /*
+             * TODO : change form and add a way to select a product in catalog,
+             * in which case the billitem type is BILLING.
+             */
+
+            $billitemrec = $this->data;
+            $billitemrec->type = 'MANUAL';
+
+            if (empty($billitemrec->billitemid)) {
+                $bill = new Bill($billitemrec->billid, $this->theshop);
+                $bill->add_item_data($billitemrec, -1);
+            } else {
+                $billitem = new BillItem($billitemrec->billitemid);
+                unset($billitemrec->id);
+                unset($billitemrec->billitemid);
+                foreach ($billitemrec as $k => $v) {
+                    $billitem->$k = $v;
+                }
+                $billitem->save();
             }
         }
     }

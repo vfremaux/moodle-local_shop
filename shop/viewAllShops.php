@@ -38,7 +38,8 @@ $cur = optional_param('cur', '', PARAM_TEXT);
 
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/shop/shops.controller.php');
-    $controller = new shops_controller();
+    $controller = new local_shop\backoffice\shop_controller();
+    $controller->receive($action);
     $controller->process($action);
 }
 

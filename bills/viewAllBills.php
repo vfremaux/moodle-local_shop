@@ -52,7 +52,8 @@ if (!empty($cur)) {
 
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
-    $controller = new bills_controller();
+    $controller = new \local_shop\backoffice\bills_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
     $controller->process($action);
 }
 
