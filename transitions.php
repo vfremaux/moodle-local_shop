@@ -32,7 +32,7 @@ use local_shop\Bill;
 /*
  * perform a transition from state to state for a workflowed object
  */
-function bill_transition_pending_soldout($billid) {
+function bill_transition_pending_soldout($billorid) {
     global $CFG, $SITE, $USER, $DB, $OUTPUT;
 
     $config = get_config('local_shop');
@@ -43,7 +43,13 @@ function bill_transition_pending_soldout($billid) {
      * - the operator needs to sold out manually the bill and realize all billitems production.
      */
 
-    if ($bill = new Bill($billid)) {
+    if (is_object($billorid)) {
+        $bill = $billorid;
+    } else {
+        $bill = new Bill($billid);
+    }
+
+    if ($bill) {
 
         // Start marking soldout status. Final may be COMPLETE if production occurs.
         $message = "[{$bill->transactionid}] Bill Controller :";
@@ -113,7 +119,7 @@ function bill_transition_failure_soldout($billid) {
  * a PLACED to PENDING should try to recover pre_payment production if performed
  * manually
  */
-function bill_transition_placed_pending($billid) {
+function bill_transition_placed_pending($billorid) {
     global $CFG, $SITE, $USER, $DB, $OUTPUT;
 
     $config = get_config('local_shop');
@@ -124,7 +130,13 @@ function bill_transition_placed_pending($billid) {
      * - the operator needs to sold out manually the bill and realize all billitems production.
      */
 
-    if ($bill = new Bill($billid)) {
+    if (is_object($billorid)) {
+        $bill = $billorid;
+    } else {
+        $bill = new Bill($billid);
+    }
+
+    if ($bill) {
 
         include_once($CFG->dirroot.'/local/shop/datahandling/production.php');
 
@@ -173,7 +185,7 @@ function bill_transition_placed_pending($billid) {
     }
 }
 
-function bill_transition_soldout_complete($billid) {
+function bill_transition_soldout_complete($billorid) {
     global $CFG, $SITE, $USER, $DB;
 
     /*
@@ -185,7 +197,13 @@ function bill_transition_soldout_complete($billid) {
      * the operator needs to COMPLETE manually the bill and realize all billitems production
      */
 
-    if ($bill = new Bill($billid)) {
+    if (is_object($billorid)) {
+        $bill = $billorid;
+    } else {
+        $bill = new Bill($billid);
+    }
+
+    if ($bill) {
         // Start marking soldout status. Final may be COMPLETE if production occurs.
         $message = "[{$bill->transactionid}] Bill Controller :";
         $message .= " Transaction Complete Operation on seller behalf by $USER->username";

@@ -28,6 +28,44 @@ require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class customer_controller extends front_controller_base {
 
+    /**
+     *
+     */
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'revalidate':
+                break;
+            case 'navigate':
+                $this->data->usedistinctinvoiceinfo = optional_param('usedistinctinvoiceinfo', 0, PARAM_BOOL);
+
+                $customerinfofields = preg_grep('/customerinfo::/', array_keys($_POST));
+                foreach ($customerinfofields as $cif) {
+                    $cifshort = str_replace('customerinfo::', '', $cif);
+                    $this->data->customerinfo[$cifshort] = optional_param($cif, '', PARAM_TEXT);
+                }
+    
+                $invoiceinfofields = preg_grep('/invoiceinfo::/', array_keys($_POST));
+                if (!empty($invoiceinfofields)) {
+                    foreach ($invoiceinfofields as $iif) {
+                        $iifshort = str_replace('invoiceinfo::', '', $iif);
+                        $this->data->invoiceinfo[$iifshort] = optional_param($iif, '', PARAM_TEXT);
+                    }
+                }
+
+                $this->data->back = optional_param('back', 0, PARAM_TEXT);
+
+                break;
+        }
+    }
+
     public function process($cmd) {
         global $SESSION, $USER, $DB;
 
@@ -42,19 +80,15 @@ class customer_controller extends front_controller_base {
 
             $shoppingcart = $SESSION->shoppingcart;
 
-            $shoppingcart->usedistinctinvoiceinfo = optional_param('usedistinctinvoiceinfo', 0, PARAM_BOOL);
+            $shoppingcart->usedistinctinvoiceinfo = $this->data->usedistinctinvoiceinfo;
 
-            $customerinfofields = preg_grep('/customerinfo::/', array_keys($_POST));
-            foreach ($customerinfofields as $cif) {
-                $cifshort = str_replace('customerinfo::', '', $cif);
-                $shoppingcart->customerinfo[$cifshort] = optional_param($cif, '', PARAM_TEXT);
+            foreach ($this->data->customerinfo as $cifshort  => $cif) {
+                $shoppingcart->customerinfo[$cifshort] = $cif;
             }
 
-            $invoiceinfofields = preg_grep('/invoiceinfo::/', array_keys($_POST));
-            if (!empty($invoiceinfofields)) {
-                foreach ($invoiceinfofields as $iif) {
-                    $iifshort = str_replace('invoiceinfo::', '', $iif);
-                    $shoppingcart->invoiceinfo[$iifshort] = optional_param($iif, '', PARAM_TEXT);
+            if (!empty($this->data->invoiceinfo)) {
+                foreach ($this->data->invoiceinfo as $iifshort => $iif) {
+                    $shoppingcart->invoiceinfo[$iifshort] = $iif;
                 }
             }
 
@@ -66,7 +100,7 @@ class customer_controller extends front_controller_base {
                 $SESSION->shoppingcart->finalshippedtaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
             }
 
-            if (optional_param('back', '', PARAM_TEXT)) {
+            if ($this->data->back) {
                 $params = array('view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1);
                 redirect(new \moodle_url('/local/shop/front/view.php', $params));
             } else {

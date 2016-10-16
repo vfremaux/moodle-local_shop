@@ -32,6 +32,7 @@ $transid = required_param('transid', PARAM_RAW);
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/invoice.controller.php');
     $controller = new \local_shop\front\invoice_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
     $result = $controller->process($action);
 }
 

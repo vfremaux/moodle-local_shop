@@ -38,6 +38,7 @@ class Catalog_Form extends moodleform {
         global $OUTPUT, $DB, $COURSE;
 
         $context = context_system::instance();
+        $config = get_config('local_shop');
 
         $maxfiles = 99;                // TODO: add some setting.
         $maxbytes = $COURSE->maxbytes; // TODO: add some setting.
@@ -69,12 +70,12 @@ class Catalog_Form extends moodleform {
         $mform->setType('name', PARAM_TEXT);
 
         $label = get_string('description', 'local_shop');
-        $mform->addElement('editor', 'description_editor', $label, $this->editoroptions);
+        $mform->addElement('editor', 'description_editor', $label, '', $this->editoroptions);
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
         $mform->addRule('description_editor', null, 'required');
 
         $label = get_string('salesconditions', 'local_shop');
-        $mform->addElement('editor', 'salesconditions_editor', $label, $this->editoroptions);
+        $mform->addElement('editor', 'salesconditions_editor', $label, '', $this->editoroptions);
 
         $label = get_string('countrycodelist', 'local_shop');
         $mform->addElement('text', 'countryrestrictions', $label, $attributes);
@@ -83,30 +84,38 @@ class Catalog_Form extends moodleform {
 
         // Add catalog mode settings.
 
-        $sql = "
-           SELECT DISTINCT
-              ci.*
-           FROM
-              {local_shop_catalog} as ci
-           WHERE
-             ci.id = ci.groupid
-        ";
-        $mastercatalogoptions = array();
-        if ($mastercatalogs = $DB->get_records_sql($sql)) {
-            foreach ($mastercatalogs as $acat) {
-                $mastercatalogoptions[$acat->id] = $acat->name;
-            }
-        }
+        if ($config->useslavecatalogs) {
+            $linkedarray = array();
+            $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('standalone', 'local_shop'), 'free');
 
-        $linkedarray = array();
-        $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('standalone', 'local_shop'), 'free');
-        $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('master', 'local_shop'), 'master');
-        if (!empty($mastercatalogoptions)) {
-            $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('slaveto', 'local_shop'), 'slave');
-            $linkedarray[] = &$mform->createElement('select', 'groupid', '', $mastercatalogoptions);
+            $sql = "
+               SELECT DISTINCT
+                  ci.*
+               FROM
+                  {local_shop_catalog} as ci
+               WHERE
+                 ci.id = ci.groupid
+            ";
+            $mastercatalogoptions = array();
+            if ($mastercatalogs = $DB->get_records_sql($sql)) {
+                foreach ($mastercatalogs as $acat) {
+                    $mastercatalogoptions[$acat->id] = $acat->name;
+                }
+            }
+
+            $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('master', 'local_shop'), 'master');
+            if (!empty($mastercatalogoptions)) {
+                $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('slaveto', 'local_shop'), 'slave');
+                $linkedarray[] = &$mform->createElement('select', 'groupid', '', $mastercatalogoptions);
+            }
+            $mform->addGroup($linkedarray, 'linkedarray', '', array(' '), false);
+            $mform->setDefault('linked', 'free');
+        } else {
+            $mform->addElement('hidden', 'linked', 'free');
+            $mform->setType('linked', PARAM_TEXT);
+            $mform->addElement('hidden', 'groupid', 0);
+            $mform->setType('groupid', PARAM_BOOL);
         }
-        $mform->addGroup($linkedarray, 'linkedarray', '', array(' '), false);
-        $mform->setDefault('linked', 'free');
 
         // Adding submit and reset button.
         $this->add_action_buttons();

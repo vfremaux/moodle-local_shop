@@ -32,14 +32,17 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 use \local_shop\Bill;
 use \local_shop\BillItem;
 
+/*
 $relocated = optional_param('relocated', '', PARAM_TEXT);
 $z = optional_param('z', '', PARAM_TEXT);
+*/
 
 /* perform local commands on orderitems */
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
-    $controller = new \local_shop\bills\bills_controller();
+    $controller = new \local_shop\backoffice\bill_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
     $controller->process($action);
 }
 
@@ -79,7 +82,7 @@ if ($afullbill->onlinetransactionid != '') {
 }
 if ($afullbill->transactionid == '') {
     echo get_string('nocodegenerated', 'local_shop').'<br/>';
-    echo '<a href="'.$url.'&cmd=generatecode">'.get_string('generateacode', 'local_shop').'</a>';
+    echo '<a href="'.$url.'&what=generatecode">'.get_string('generateacode', 'local_shop').'</a>';
 }
 echo '</td>';
 

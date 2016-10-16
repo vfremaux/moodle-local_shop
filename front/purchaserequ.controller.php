@@ -30,6 +30,44 @@ require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
 class purchasereq_controller extends front_controller_base {
 
+    public function receive($cmd, $data = array()) {
+        global $SESSION;
+
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        $shoppingcart = $SESSION->shoppingcart;
+
+        switch ($cmd) {
+            case 'collect':
+                foreach ($shoppingcart->order as $itemname => $itemcount) {
+                    $catalogitem = $this->thecatalog->get_product_by_shortname($itemname);
+
+                    $handler = $catalogitem->get_handler();
+
+                    $requireddata = $catalogitem->requireddata; // Take care, result of magic _get() is not directly testable.
+                    $requirements = json_decode($requireddata);
+                    if (!empty($requirements)) {
+                        foreach ($requirements as $reqobj) {
+                            for ($i = 0; $i < $itemcount; $i++) {
+                                $param = required_param($itemname.'/'.$reqobj->field.$i, PARAM_TEXT);
+                                $this->data->customerdata[$itemname][$reqobj->field][$i] = $param;
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'navigate':
+                $this->data->back = optional_param('back', false, PARAM_BOOL);
+                break;
+        }
+    }
+
     public function process($cmd) {
         global $SESSION;
 
@@ -50,7 +88,7 @@ class purchasereq_controller extends front_controller_base {
                 if (!empty($requirements)) {
                     foreach ($requirements as $reqobj) {
                         for ($i = 0; $i < $itemcount; $i++) {
-                            $param = required_param($itemname.'/'.$reqobj->field.$i, PARAM_TEXT);
+                            $param = $this->data->customerdata[$itemname][$reqobj->field][$i];
                             if (!is_null($handler) && !($handler === false)) {
                                 if (!$handler->validate_required_data($itemname, $reqobj->field, $i, $param, $errors)) {
                                     $shoppingcart->customerdata['completed'] = false;
@@ -63,8 +101,8 @@ class purchasereq_controller extends front_controller_base {
                 }
             }
         } else if ($cmd == 'navigate') {
-            // Comming from further form.
-            if (optional_param('back', false, PARAM_BOOL)) {
+            // Coming from further form.
+            if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('purchaserequ');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,

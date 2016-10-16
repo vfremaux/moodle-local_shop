@@ -32,6 +32,11 @@ abstract class front_controller_base {
 
     protected $theblock;
 
+    /**
+     * The received data
+     */
+    protected $data;
+
     protected $context;
 
     public function __construct(&$theshop, &$thecatalog, &$theblock = null) {
@@ -46,5 +51,17 @@ abstract class front_controller_base {
         }
     }
 
+    /**
+     * Receives data from a data source, or get data from query input
+     * if not feed from the arguments (empty array).
+     */
+    abstract public function receive($cmd, $data = array());
+
+    /**
+     * Process processes received data (assumes data has been received and loaded 
+     * into controller instance. A processor should NEVER receive data from direct
+     * query decoding function such as required_param or optional_param, nor
+     * directly read from any input global such as $_GET or $_POST.
+     */
     abstract public function process($cmd);
 }

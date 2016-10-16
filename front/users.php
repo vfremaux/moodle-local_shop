@@ -51,6 +51,7 @@ if (!$required = $thecatalog->check_required_seats()) {
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/users.controller.php');
     $controller = new \local_shop\front\users_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
     $controller->process($action);
 }
 

@@ -37,6 +37,8 @@ class product_controller {
 
     protected $received = false;
 
+    protected $mform;
+
     public function __construct($thecatalog) {
         $this->thecatalog = $thecatalog;
     }
@@ -47,11 +49,12 @@ class product_controller {
      * @param array $data incoming parameters from form when directly available, otherwise the
      * function shoudl get them from request
      */
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = null, $mform = null) {
 
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new StdClass;

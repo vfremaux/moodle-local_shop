@@ -79,7 +79,7 @@ class Shop extends ShopObject {
             $this->record->sortorder = $lastordering;
             $this->record->name = get_string('newshopinstance', 'local_shop');
             $this->record->description = '';
-            $this->record->descriptionformat = FORMAT_MOODLE;
+            $this->record->descriptionformat = FORMAT_HTML;
             $this->record->currency = $config->defaultcurrency;
             $this->record->catalogid = 0;
             $this->record->customerorganisationrequired = 0;
@@ -94,6 +94,7 @@ class Shop extends ShopObject {
             $this->record->discountrate2 = $config->discountrate2;
             $this->record->discountrate3 = $config->discountrate3;
             $this->record->eula = '';
+            $this->record->eulaformat = FORMAT_HTML;
             $this->record->navsteps = $config->defaultnavsteps;
             $this->_build_nav_order();
         }

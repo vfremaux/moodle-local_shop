@@ -34,10 +34,30 @@ use local_shop\BillItem;
 
 class payment_controller extends front_controller_base {
 
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        $this->data->debug = optional_param('debug', @$SESSION->shoppingcart->debug, PARAM_BOOL);
+
+        switch ($cmd) {
+            case 'place':
+                break;
+            case 'navigate':
+                $this->data->back = optional_param('back', false, PARAM_BOOL);
+                break;
+        }
+    }
+
     public function process($cmd) {
         global $SESSION, $DB, $USER, $OUTPUT;
 
-        $SESSION->shoppingcart->debug = optional_param('debug', @$SESSION->shoppingcart->debug, PARAM_BOOL);
+        $SESSION->shoppingcart->debug = $this->data->debug;
 
         if ($cmd == 'place') {
             // Convert all data in bill records.
@@ -97,6 +117,10 @@ class payment_controller extends front_controller_base {
             $bill->ignoretax = 0;
             $bill->paymentfee = 0;
 
+            // First save of the bill in order bill items can be added. We need a first id. We save "light".
+            // The bill will be full save back later.
+            $bill->id = $bill->save(true);
+
             $select = "
                 billid = ? AND
                 ordering = (SELECT MAX(ordering) FROM {local_shop_billitem} WHERE billid = ?)
@@ -126,17 +150,19 @@ class payment_controller extends front_controller_base {
             }
 
             /*
-             * This is the first generation of the DB bill. All further step should rely on this
-             * information and not shoppingcart anymore.
+             * Now save everything in.
              */
-            $bill->save();
+            $billid = $bill->save();
+
+            // Confirm transaction ID. This should not be necessary.
+            $DB->set_field('local_shop_bill', 'transactionid', $bill->transactionid, array('id' => $billid));
 
             shop_trace("[{$bill->transactionid}] ".'Order placed : '.$bill->amount.' for '.$totalitems.' objects');
         }
 
         // This is for interactive payment methods.
         if ($cmd == 'navigate') {
-            if (optional_param('back', false, PARAM_BOOL)) {
+            if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('payment');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,

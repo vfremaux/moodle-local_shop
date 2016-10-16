@@ -45,6 +45,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 if ($action) {
     include($CFG->dirroot.'/local/shop/front/customer.controller.php');
     $controller = new \local_shop\front\customer_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
     $controller->process($action);
 }
 

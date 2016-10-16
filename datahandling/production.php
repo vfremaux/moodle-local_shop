@@ -89,6 +89,10 @@ function produce_postpay(&$afullbill) {
     $response->private = '';
     $response->salesadmin = '';
 
+    if (empty($afullbill->items)) {
+        return;
+    }
+
     foreach ($afullbill->items as $anitem) {
 
         if ($anitem->type != 'BILLING') {

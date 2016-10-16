@@ -20,6 +20,8 @@
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace \local_shop\backoffice;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
@@ -28,14 +30,52 @@ use local_shop\Tax;
 
 class taxes_controller {
 
+    protected $data;
+
+    protected $received;
+
+    public function receive($cmd, $data = null) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            $this->received = true;
+            return;
+        } else {
+            $this->data = new StdClass;
+        }
+
+        switch ($cmd) {
+            case 'delete':
+                $this->data->taxid = required_param('taxid', PARAM_INT);
+                break;
+
+            case 'edit':
+                // Let data come from $data attribute.
+                break;
+        }
+
+        $this->received = true;
+    }
+
     public function process($cmd) {
         global $DB;
 
         // Delete a tax.
         if ($cmd == 'delete') {
-            $taxid = required_param('taxid', PARAM_INT);
-            $tax = new Tax($taxid);
+            $tax = new Tax($this->data->taxid);
             $tax->delete();
+        }
+
+        if ($cmd == 'edit') {
+            $tax = $this->data;
+            if (empty($tax->taxid)) {
+                $tax->id = $DB->insert_record('local_shop_tax', $tax);
+            } else {
+                $tax->id = $tax->taxid;
+                unset($tax->taxid);
+                $DB->update_record('local_shop_tax', $tax);
+            }
+            return new Tax($tax->id);
         }
     }
 }
