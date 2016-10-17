@@ -60,7 +60,7 @@ $mform = new ResetForm();
 if ($mform->is_cancelled()) {
     redirect($url);
 } else if ($data = $mform->get_data()) {
-    include_once($CFG->dirroot('/local/shop/reset.controller.php');
+    include_once($CFG->dirroot.'/local/shop/reset.controller.php');
     $controller = new \local_shop\backoffice\reset_controller();
     $controller->receive('reset', $data);
     $controller->process('reset');
