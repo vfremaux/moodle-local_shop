@@ -294,7 +294,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * Dismounts all effects of the handler production when a product is deleted.
      * The contexttype will denote the type of Moodle object that was created. some
      * hanlders may deal with several contexttypes if they have a complex production
-     * operation. the instanceid is moslty a moodle table id that points the concerned instance 
+     * operation. the instanceid is moslty a moodle table id that points the concerned instance
      * within the context type scope.
      *
      * In enrolonecourse plugin, unenrols the target user from course using the user enrolment record

@@ -41,7 +41,9 @@ class shop_import_categories {
         global $DB;
 
         foreach ($this->data as $object) {
+
             $results = array();
+
             foreach ($this->overrides as $ovk => $ovv) {
                 $object->$ovk = $ovv;
                 $object->id = $DB->insert_record($table, $record);
