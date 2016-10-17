@@ -415,6 +415,7 @@ $string['tvaeurope'] = 'Numéro de TVA intracommunautaire';
 $string['type'] = 'Type';
 $string['unit'] = 'Unit. (HT)';
 $string['unitpix'] = 'Icone d\'unité de vente&nbsp;:&ensp;';
+$string['tenunitspix'] = 'Icone pour 10 unités de vente&nbsp;:&ensp;';
 $string['unitprice1'] = 'Prix unit. HT (1)&nbsp;:&ensp;';
 $string['unitprice1'] = 'Prix unitaire HT';
 $string['unitprice2'] = 'Prix unit. HT (2)&nbsp;:&ensp;';

@@ -679,13 +679,22 @@ class shop_front_renderer extends local_shop_base_renderer {
         $this->check_context();
 
         $unitimage = $product->get_sales_unit_url();
+        $tenunitsimage = $product->get_sales_ten_units_url();
+
+        $q = @$SESSION->shoppingcart->order[$product->shortname];
+        $packs = floor($q / 10);
+        $units = $q % 10;
 
         $str = '';
-        for ($i = 0; $i < 0 + @$SESSION->shoppingcart->order[$product->shortname]; $i++) {
+        for ($i = 0; $i < 0 + $packs; $i++) {
+            $str .= '&nbsp;<img src="'.$tenunitsimage.'" align="middle" />';
+        }
+
+        for ($j = 0; $j < 0 + $units; $j++) {
             $str .= '&nbsp;<img src="'.$unitimage.'" align="middle" />';
         }
 
-        if ($i > 0) {
+        if (($i * 10 + $j) > 0) {
             $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
             $jshandler .= ', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
