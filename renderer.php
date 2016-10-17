@@ -228,7 +228,11 @@ class local_shop_renderer extends local_shop_base_renderer {
     }
 
     public function main_menu($theshop) {
+
+        $config = get_config('local_shop');
+
         $str = '<table class="shop-main-menu">';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops'));
@@ -238,6 +242,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= get_string('allshopsdesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
@@ -246,6 +251,8 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= '<td width="75%">';
         $str .= get_string('searchinbills', 'local_shop');
         $str .= '</td>';
+        $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances'));
@@ -255,7 +262,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= get_string('searchinproductinstances', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
-        $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers'));
@@ -265,6 +272,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= get_string('searchincustomers', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes'));
@@ -274,15 +282,19 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= get_string('managetaxesdesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/shipzones/index.php');
-        $str .= '<a href="'.$linkurl.'">'.get_string('manageshipping', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('manageshippingdesc', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
+
+        if (!empty($config->useshipping)) {
+            $str .= '<tr valign="top">';
+            $str .= '<td width="25%">';
+            $linkurl = new moodle_url('/local/shop/shipzones/index.php');
+            $str .= '<a href="'.$linkurl.'">'.get_string('manageshipping', 'local_shop').'</a>';
+            $str .= '</td>';
+            $str .= '<td width="75%">';
+            $str .= get_string('manageshippingdesc', 'local_shop');
+            $str .= '</td>';
+            $str .= '</tr>';
+        }
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));
@@ -292,6 +304,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= get_string('tracescandesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         if (has_capability('moodle/site:config', context_system::instance())) {
             $str .= '<tr valign="top">';
             $str .= '<td width="25%">';
@@ -303,6 +316,7 @@ class local_shop_renderer extends local_shop_base_renderer {
             $str .= '</td>';
             $str .= '</tr>';
         }
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
@@ -312,6 +326,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $str .= get_string('resetdesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         $str .= '</table>';
 
         return $str;

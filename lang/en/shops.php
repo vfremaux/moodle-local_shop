@@ -16,3 +16,4 @@
 
 $string['linkedblocks'] = 'Used blocks';
 $string['allshops'] = 'All shops';
+$string['errorshopexists'] = 'A shop with this name exists already.';

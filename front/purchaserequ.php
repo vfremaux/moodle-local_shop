@@ -66,6 +66,7 @@ $errors = array();
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/purchaserequ.controller.php');
     $controller = new \local_shop\front\purchasereq_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
     $controller->process($action);
 }
 

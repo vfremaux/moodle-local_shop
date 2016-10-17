@@ -67,3 +67,20 @@ $string['productiondata_assign_sales'] = '
 <p>Customer access have been open on course.</p>
 <p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a}">Access to course</a></p>
 ';
+
+$string['productiondata_failure_public'] = '
+<p><b>Product Production error</b></p>
+<p>Something failed when setting up the product referenced by {$a->code}.</p>
+<p>Administrators should have been notified with this error and should contact you to solve the issue</p>
+';
+
+$string['productiondata_failure_private'] = '
+<p><b>Product Production error</b></p>
+<p>Something failed when setting up the product referenced by : {$a->code}.</p>
+';
+
+$string['productiondata_failure_sales'] = '
+<p><b>Product Production error</b></p>
+<p>Something failed when setting up the product instance referenced by : {$a->code}
+error code : {$a->errorcode}.</p>
+';

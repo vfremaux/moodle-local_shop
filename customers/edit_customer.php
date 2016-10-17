@@ -68,18 +68,12 @@ if ($mform->is_cancelled()) {
 }
 
 if ($data = $mform->get_data()) {
-    if ($DB->record_exists('user', array('email' => $data->email))) {
-        $account = $DB->get_record('user', array('email' => $data->email));
-        $data->hasaccount = $account->id;
-    } else {
-        $data->hasaccount = 0;
-    }
-    $data->timecreated = time();
-    if (empty($data->id)) {
-        $newid = $DB->insert_record('local_shop_customer', $data);
-    } else {
-        $updateid = $DB->update_record('local_shop_customer', $data);
-    }
+
+    include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
+    $controller = new \local_shop\backoffice\customer_controller();
+    $controller->receive('edit', $data);
+    $controller->process('edit');
+
     redirect(new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers')));
 }
 

@@ -69,16 +69,6 @@ if ($hassiteconfig) {
     $desc = get_string('configtestoverride', 'local_shop');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
-    $key = 'local_shop/useshipping';
-    $label = get_string('useshipping', 'local_shop');
-    $desc = get_string('configuseshipping', 'local_shop');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
-
-    $key = 'local_shop/usedelegation';
-    $label = get_string('usedelegation', 'local_shop');
-    $desc = get_string('configusedelegation', 'local_shop');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
-
     $key = 'local_shop/maxitemsperpage';
     $label = get_string('maxitemsperpage', 'local_shop');
     $desc = get_string('configmaxitemsperpage', 'local_shop');
@@ -178,6 +168,11 @@ if ($hassiteconfig) {
     $desc = get_string('configsellerbillingcountry', 'local_shop');
     $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
 
+    $key = 'local_shop/sellerlogo';
+    $label = get_string('sellerlogo', 'local_shop');
+    $desc = get_string('configsellerlogo', 'local_shop');
+    $settings->add(new admin_setting_configstoredfile($key, $label, $desc, 'shoplogo'));
+
     shop_paymode::shop_add_paymode_settings($settings);
 
     $key = 'local_shop/bankinginfo';
@@ -222,5 +217,28 @@ if ($hassiteconfig) {
     $label = get_string('tvaeurope', 'local_shop');
     $desc = get_string('configtvaeurope', 'local_shop');
     $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
+
+    $key = 'local_shop/experimental';
+    $settings->add(new admin_setting_heading($key, get_string('experimental', 'local_shop'), ''));
+
+    $key = 'local_shop/useshipping';
+    $label = get_string('useshipping', 'local_shop');
+    $desc = get_string('configuseshipping', 'local_shop');
+    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
+
+    $key = 'local_shop/usedelegation';
+    $label = get_string('usedelegation', 'local_shop');
+    $desc = get_string('configusedelegation', 'local_shop');
+    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
+
+    $key = 'local_shop/useslavecatalogs';
+    $label = get_string('useslavecatalogs', 'local_shop');
+    $desc = get_string('configuseslavecatalogs', 'local_shop');
+    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
+
+    $key = 'local_shop/userenewableproducts';
+    $label = get_string('userenewableproducts', 'local_shop');
+    $desc = get_string('configuserenewableproducts', 'local_shop');
+    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
 }

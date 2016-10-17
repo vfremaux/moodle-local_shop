@@ -20,26 +20,37 @@
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require('../../../config.php');
+defined('MOODLE_INTERNAL') || die();
 
-$test = array(
-        array('field' => 'the_field_name',
-              'label' => 'some visible name',
-              'type' => 'textfield',
-              'desc' => 'some desc',
-              'attrs' => array('size' => 80)),
-         array('field' => 'description_sample',
-               'label' => 'Description (sample)',
-               'type' => 'textarea',
-               'desc' => 'Short Description (sample)'),
-         array('name' => 'template_sample',
-               'label' => 'Model (sample)',
-               'type' => 'select',
-               'desc' => 'Course template (sample)',
-               'options' => array('MOD1' => 'Model1', 'MOD2' => 'Model2')));
+class shop_import_categories {
 
-echo "JSON\n <br/>";
-echo json_encode($test);
-echo '<br/>';
-echo "Serialize\n <br/>";
-echo serialize($test);
+    protected $data;
+
+    protected $overrides;
+
+    public function __construct($table, $data) {
+        $this->data = $data;
+        $this->overrides = array();
+    }
+
+    public function set_overrides($overrides) {
+        $this->overrides = $overrides;
+    }
+
+    public function import() {
+        global $DB;
+
+        foreach ($this->data as $object) {
+
+            $results = array();
+
+            foreach ($this->overrides as $ovk => $ovv) {
+                $object->$ovk = $ovv;
+                $object->id = $DB->insert_record($table, $record);
+                $results[$object->id] = $object;
+            }
+        }
+
+        return $results;
+    }
+}

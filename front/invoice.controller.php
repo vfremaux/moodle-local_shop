@@ -28,12 +28,28 @@ require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class invoice_controller extends front_controller_base {
 
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'navigate':
+                $this->data->customerservice = optional_param('customerservice', '', PARAM_TEXT);
+                break;
+        }
+    }
+
     public function process($cmd) {
         global $SESSION;
 
         if ($cmd == 'navigate') {
 
-            if (optional_param('customerservice', '', PARAM_TEXT)) {
+            if ($this->data->customerservice) {
                 if (!empty($theshop->defaultcustomersupportcourse) && $SESSION->shoppingcart->customerinfo->hasaccount) {
                     $targeturl = new \moodle_url('/course/view.php', array('id' => $theshop->defaultcustomersupportcourse));
                     if (isloggedin()) {

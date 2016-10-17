@@ -34,7 +34,7 @@ if (!defined('PHP_ROUND_HALF_ODD')) {
     define('PHP_ROUND_HALF_ODD', 3);
 }
 
-/*
+/**
  * this function calculates an overall shipping additional line to be added to bill
  * regarding order elements and location of customer. It will use all rules defined
  * in shipping zones and shipping meta-information.
@@ -66,10 +66,11 @@ if (!defined('PHP_ROUND_HALF_ODD')) {
  * Rule sample : [*][*000] similar to above
  * Rule sample : [fr][^9.....$] zip with 6 digits starting with 9 in france (DOM-TOM)
  * Rule sample : [fr][06...,83...,04...,05...] all cities in south east of france
- */
-
-/**
- * resolves a single geographic rule
+ *
+ * @param string $country the country of the submitter
+ * @param string $zipcode the zipcode of the submitter
+ * @param string $rule a [countrylist][zipcodeslist] rule
+ * @return true if the submitter matches
  */
 function shop_resolve_zone_rule($country, $zipcode, $rule) {
 
@@ -86,7 +87,7 @@ function shop_resolve_zone_rule($country, $zipcode, $rule) {
         if ($zipcodes != '*') {
             $ziprules = explode(',', $zipcodes);
             foreach ($ziprules as $ru) {
-                if (preg_match("/$ru/", $zipcode)) {
+                if (preg_match("/{$ru}/", $zipcode)) {
                     return true;
                 }
             }
@@ -98,9 +99,9 @@ function shop_resolve_zone_rule($country, $zipcode, $rule) {
 }
 
 /**
- * Validates customer information. checks if every data
+ * Validates customer information from the session stored shoppingcart. checks if every data
  * is receivable.
- * @param object $theshop the current shop.
+ * @param object $theshop the current shop to get settings from.
  */
 function shop_validate_customer($theshop) {
     global $SESSION, $CFG, $USER;
@@ -249,20 +250,11 @@ function shop_check_assigned_seats($requiredroles) {
 }
 
 /**
- * ensures a transaction id is unique.
- */
-function shop_get_transid() {
-    global $DB;
-
-    $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 16), 'MOODLE_SHOP')), 0, 16));
-    while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
-        $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 16))), 0, 16));
-    }
-    return $transid;
-}
-
-/**
- *
+ * Provides a full built instance of a payment plugin initialized
+ * on a shop reference.
+ * @param objectref &$shopinstance a Shop instance
+ * @param string $pluginname the payment plugin name
+ * @return a shop_handler subclass instance.
  */
 function shop_get_payment_plugin(&$shopinstance, $pluginname = null) {
     global $CFG, $SESSION;
@@ -278,9 +270,12 @@ function shop_get_payment_plugin(&$shopinstance, $pluginname = null) {
 
 /**
  * computes and defaults enrolement start and end time, against some local course
- *
+ * startdata constraint.
+ * @param arrayref &$handlerdata a complete parameter set for the product based on a billitem object.
+ * @param string $fieldtoreturn 'starttime' or 'endtime'
+ * @param objectref &$course a reference course
  */
-function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
+function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, &$course) {
 
     $starttime = (empty($handlerdata->actionparams['starttime'])) ? time() : $handlerdata->actionparams['starttime'];
     if ($course->startdate > $starttime) {
@@ -294,12 +289,21 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 
         case 'endtime':
             if (!array_key_exists('endtime', $handlerdata->actionparams)) {
-                if (!empty($handlerdata->renewable)) {
+                // Do NOT use empty here for testing as results comes from a magic __get()!
+                if ($handlerdata->catalogitem->renewable == 1) {
+                    /*
+                     * Note that renewable products MUST have an end time, either given
+                     * by an explicit endtime timestamp, or a duration value.
+                     * In case none of definitions are available, we default with a
+                     * 1 year duration.
+                     */
                     if (!empty($handlerdata->actionparams['duration'])) {
-                        return $starttime + $handlerdata->actionparams['duration'] * DAYSECS;
+                        $endtime = $starttime + $handlerdata->actionparams['duration'] * DAYSECS;
+                        return $endtime;
                     } else {
                         // Ensure we have a non null product end time.
-                        return $starttime + (365 * DAYSECS);
+                        $endtime = $starttime + (365 * DAYSECS);
+                        return $endtime;
                     }
                 } else {
                     // Product end time is null standing for illimited purchase.
@@ -307,9 +311,9 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
                 }
             }
 
-            // Relative forms of endtime.
+            // Relative forms of endtime. This applies to renewable or not renewable products.
             if (is_numeric($handlerdata->actionparams['endtime'])) {
-                return $endtime;
+                return $handlerdata->actionparams['endtime'];
             }
 
             if (preg_match('/\+(\d+))D/', $handlerdata->actionparams['endtime'], $matches)) {

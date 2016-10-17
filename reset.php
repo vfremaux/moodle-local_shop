@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Resets all or parts of the shop data.
+ *
  * @package     local_shop
  * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -27,6 +29,7 @@ require_once($CFG->dirroot.'/local/shop/forms/form_reset.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 // Get all the shop session context objects.
+
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
@@ -44,7 +47,8 @@ $PAGE->set_context($context);
 
 $PAGE->set_title('shop');
 $PAGE->set_heading('shop');
-$PAGE->navbar->add(get_string('salesservice', 'local_shop'), $CFG->wwwroot."/local/shop/index.php?shopid={$theshop->id}");
+$salesurl = new moodle_url('/local/shop/index.php', array('shopid' => $theshop->id));
+$PAGE->navbar->add(get_string('salesservice', 'local_shop'), $salesurl);
 $PAGE->navbar->add(get_string('reset', 'local_shop'));
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable('');
@@ -56,20 +60,10 @@ $mform = new ResetForm();
 if ($mform->is_cancelled()) {
     redirect($url);
 } else if ($data = $mform->get_data()) {
-    if (!empty($data->bills) || !empty($data->customers) || !empty($data->catalogs)) {
-        $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
-        $DB->delete_records('local_shop_bill', null);
-        $DB->delete_records('local_shop_billitem', null);
-    }
-    if (!empty($data->customers)) {
-        $out .= $OUTPUT->notification(get_string('customersdeleted', 'local_shop'));
-        $DB->delete_records('local_shop_customer', null);
-    }
-    if (!empty($data->catalogs)) {
-        $out .= $OUTPUT->notification(get_string('catalogsdeleted', 'local_shop'));
-        $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theblock->config->catalogid));
-        $DB->delete_records('local_shop_catalog', array('id' => $theblock->config->catalogid));
-    }
+    include_once($CFG->dirroot.'/local/shop/reset.controller.php');
+    $controller = new \local_shop\backoffice\reset_controller();
+    $controller->receive('reset', $data);
+    $controller->process('reset');
 }
 echo $OUTPUT->header();
 

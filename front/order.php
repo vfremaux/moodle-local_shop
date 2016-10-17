@@ -32,6 +32,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/order.controller.php');
     $controller = new \local_shop\front\order_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
     $controller->process($action);
 }
 

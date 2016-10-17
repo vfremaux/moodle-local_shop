@@ -119,8 +119,10 @@ class ShopObject {
     public function delete() {
         global $DB;
 
+        $class = get_called_class();
+
         // Finally delete record.
-        $DB->delete_records(self::$table, array('id' => $this->id));
+        $DB->delete_records($class::$table, array('id' => $this->id));
     }
 
     static protected function _count($table, $filter = array()) {

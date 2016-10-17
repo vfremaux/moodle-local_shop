@@ -24,6 +24,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/enrollib.php');
+require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
+
+use local_shop\ProductEvent;
 
 class shop_handler_std_extendenrolperiod extends shop_handler {
 
@@ -116,11 +119,11 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         $DB->update_record('local_shop_product', $product);
 
         // Record an event.
-        $productevent = new StdClass();
+        $productevent = new ProductEvent(null);
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
         $productevent->datecreated = $now = time();
-        $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
+        $productevent->save();
 
         $maildata->courseid = $course->id;
         $maildata->extension = $rangeextension / DAYSECS; // Given in days.

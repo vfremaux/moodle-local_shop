@@ -16,4 +16,4 @@
 
 $string['linkedblocks'] = 'Blocs liés';
 $string['allshops'] = 'Toutes les boutiques';
-
+$string['errorshopexists'] = 'Une boutique existe déjà avec ce nom.';

@@ -170,14 +170,14 @@ class shop_customers_renderer {
             $row[] = userdate($portlet->lastactiondate);
             $row[] = $portlet->title;
             $row[] = sprintf("%.2f", round($portlet->amount, 2)).' '.$config->defaultcurrency;
-            if ($portlet->status == 'PENDING') {
+            if ($portlet->status == SHOP_BILL_PENDING) {
                 $params = array('view' => 'viewCustomer',
                                 'what' => 'sellout',
                                 'billid' => $portlet->id,
                                 'customer' => $portlet->userid);
                 $url = new moodle_url('/local/shop/view.php', $params);
                 $row[] = '<a href="'.$url.'" alt="'.$markstr.'"><img src="'.$OUTPUT->pix_url('mark', 'local_shop').'"/></a>';
-            } else if ($portlet->status == 'SOLDOUT') {
+            } else if ($portlet->status == SHOP_BILL_SOLDOUT) {
                 $params = array('view' => 'viewCustomer',
                                 'what' => 'unmark',
                                 'billid' => $portlet->id,
