@@ -24,7 +24,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_shop\product;
+namespace local_shop\backoffice;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -61,7 +61,7 @@ class productinstances_controller {
         global $DB;
 
         if (!$this->received) {
-            throw (new \Exception('Product Intances Controller triggered without data'));
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         // Delete a product instances ****************************** **.

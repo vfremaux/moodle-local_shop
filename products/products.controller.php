@@ -21,6 +21,8 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\backoffice;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
@@ -57,7 +59,7 @@ class product_controller {
             $this->received = true;
             return;
         } else {
-            $this->data = new StdClass;
+            $this->data = new \StdClass;
         }
 
         switch ($cmd) {
@@ -98,7 +100,7 @@ class product_controller {
     public function process($cmd) {
 
         if (!$this->received) {
-            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         if ($cmd == 'delete') {

@@ -41,7 +41,7 @@ class taxes_controller {
             $this->received = true;
             return;
         } else {
-            $this->data = new StdClass;
+            $this->data = new \StdClass;
         }
 
         switch ($cmd) {
@@ -59,6 +59,10 @@ class taxes_controller {
 
     public function process($cmd) {
         global $DB;
+
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
 
         // Delete a tax.
         if ($cmd == 'delete') {

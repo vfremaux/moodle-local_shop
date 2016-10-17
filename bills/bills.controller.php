@@ -123,7 +123,7 @@ class bill_controller {
         global $DB;
 
         if (!$this->received) {
-            throw (new \Exception('Bill Controller triggered without data'));
+            throw new \Exception('Bill Controller triggered without data');
         }
 
         $null = null;
@@ -297,7 +297,8 @@ class bill_controller {
         if ($cmd == 'unattach') {
             $fs = get_file_storage();
             $context = context_system::instance();
-            $fs->delete_area_files($context->id, 'local_shop', 'billattachments', $this->data->billid, $this->data->filepath, $this->data->filename);
+            $fs->delete_area_files($context->id, 'local_shop', 'billattachments', $this->data->billid,
+                                   $this->data->filepath, $this->data->filename);
         }
 
         // Registers accountance lettering **************************************.

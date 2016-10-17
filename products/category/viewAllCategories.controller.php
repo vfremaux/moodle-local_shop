@@ -68,7 +68,7 @@ class category_controller {
         global $DB;
 
         if (!$this->received) {
-            throw (new \Exception('Category Controller triggered without data'));
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         // Delete a category.
