@@ -66,7 +66,7 @@ class catalog_controller {
         global $DB;
 
         if (!$this->received) {
-            throw (new \Exception('Reset Controller triggered without data'));
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         if ($cmd == 'deletecatalog') {

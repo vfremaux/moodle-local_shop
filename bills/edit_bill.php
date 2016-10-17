@@ -70,7 +70,8 @@ if ($billrec = $mform->get_data()) {
     $controller->receive('edit', $billrec, $mform);
     $bill = $controller->process('edit');
 
-    redirect(new moodle_url('/local/shop/bills/view.php', array('shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id)));
+    $params = array('shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id);
+    redirect(new moodle_url('/local/shop/bills/view.php', $params));
 } else {
     if ($billid) {
         $bill = new Bill($billid);

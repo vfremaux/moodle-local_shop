@@ -32,10 +32,9 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 use \local_shop\Bill;
 use \local_shop\BillItem;
 
-/*
+// We needs them later in this script.
 $relocated = optional_param('relocated', '', PARAM_TEXT);
 $z = optional_param('z', '', PARAM_TEXT);
-*/
 
 /* perform local commands on orderitems */
 $action = optional_param('what', '', PARAM_TEXT);

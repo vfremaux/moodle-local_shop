@@ -48,7 +48,7 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/purchasemanager/productinstances.controller.php');
-    $controller = new \local_shop\product\productinstances_controller();
+    $controller = new \local_shop\backoffice\productinstances_controller();
     $controller->receive($action);
     $controller->process($action);
     redirect(new moodle_url('/local/shop/purchasemanager/view.php', $viewparams));
