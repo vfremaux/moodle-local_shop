@@ -8,7 +8,7 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
@@ -76,7 +76,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                 $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
                 $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);
                 $productionfeedback->salesadmin = get_string('knownaccount', 'local_shop', $USER->username);
-                shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay : Known account {$USER->username} at process entry.");
+                $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay :";
+                $message .= " Known account {$USER->username} at process entry.";
+                shop_trace();
                 return $productionfeedback;
             }
         } else {
@@ -87,7 +89,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
              */
 
             if (!shop_create_customer_user($data, $customer, $newuser)) {
-                shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay Error : User could not be created {$newuser->username}.");
+                $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay Error :";
+                $message .= " User could not be created {$newuser->username}.";
+                shop_trace($message);
                 $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
                 $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
                 $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
@@ -98,8 +102,10 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $a = new StdClass();
             $a->username = $newuser->username;
             $a->password = $customer->password;
-            $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_setuponecoursesession', $a);
-            $productionfeedback->salesadmin = get_string('productiondata_sales', 'shophandlers_std_setuponecoursesession', $newuser->username);
+            $fb = get_string('productiondata_private', 'shophandlers_std_setuponecoursesession', $a);
+            $productionfeedback->private = $fb;
+            $fb = get_string('productiondata_sales', 'shophandlers_std_setuponecoursesession', $newuser->username);
+            $productionfeedback->salesadmin = $fb;
         }
 
         return $productionfeedback;
@@ -127,7 +133,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         if ($course = $DB->get_record('course', array('shortname' => $coursename))) {
             $context = context_course::instance($course->id);
         } else {
-            shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure : Target Course Error [{$coursename}].");
+            $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure :";
+            $message .= " Target Course Error [{$coursename}].";
+            shop_trace($message);
             print_error(get_string('errorbadtarget', 'shophandlers_std_setuponecoursesession'));
         }
 
@@ -203,7 +211,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
 
                         foreach ($users as $u) {
                             $enrolplugin->enrol_user($enrol, $u->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
-                            shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : $u->lastname $u->firstname ($u->username) enrolled.");
+                            $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
+                            $ùessage .= " $u->lastname $u->firstname ($u->username) enrolled.";
+                            shop_trace($message);
 
                             $ueid = $DB->get_field('user_enrolments', 'id', array('userid' => $u->id, 'enrolid' => $enrol->id));
                             // Register a product (userenrol instance) for each.
@@ -244,10 +254,15 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         }
                     }
                 } catch (Exception $exc) {
-                    shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Failure : enrolled failed with exception ({$exc->getMessage()}...");
-                    $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_setuponecoursesession', 'Code : ROLE ASSIGN');
-                    $productionfeedback->private = get_string('productiondata_failure_private', 'shophandlers_std_setuponecoursesession', $course->id);
-                    $productionfeedback->salesadmin = get_string('productiondata_failure_sales', 'shophandlers_std_setuponecoursesession', $course->id);
+                    $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Failure :";
+                    $message .= " enrolled failed with exception ({$exc->getMessage()}...";
+                    shop_trace($message);
+                    $fb = get_string('productiondata_failure_public', 'shophandlers_std_setuponecoursesession', 'Code : ROLE ASSIGN');
+                    $productionfeedback->public = $fb;
+                    $fb = get_string('productiondata_failure_private', 'shophandlers_std_setuponecoursesession', $course->id);
+                    $productionfeedback->private = $fb;
+                    $fb = get_string('productiondata_failure_sales', 'shophandlers_std_setuponecoursesession', $course->id);
+                    $productionfeedback->salesadmin = $fb;
                     return $productionfeedback;
                 }
             }
@@ -265,7 +280,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $group->timecreated = $now;
             $group->timemodified = $now;
             $group->id = $DB->insert_record('groups', $group);
-            shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Creating group ['customer_{$customeruser->username}].");
+            $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
+            $message .= " Creating group ['customer_{$customeruser->username}].";
+            shop_trace($message);
         }
 
         // Add all created users to group.
@@ -278,7 +295,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         $groupmember->userid = $u->id;
                         $groupmember->timeadded = time();
                         $DB->insert_record('groups_members', $groupmember);
-                        shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Binding ({$u->username} in group ['customer_{$customeruser->username}].");
+                        $messgae = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
+                        $message .= " Binding ({$u->username} in group ['customer_{$customeruser->username}].";
+                        shop_trace($message);
                     }
                 }
             }
@@ -305,9 +324,12 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         // Finished.
         shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : All complete in $coursename.");
 
-        $productionfeedback->public = get_string('productiondata_assign_public', 'shophandlers_std_setuponecoursesession');
-        $productionfeedback->private = get_string('productiondata_assign_private', 'shophandlers_std_setuponecoursesession', $course->id);
-        $productionfeedback->salesadmin = get_string('productiondata_assign_sales', 'shophandlers_std_setuponecoursesession', $course->id);
+        $fb = get_string('productiondata_assign_public', 'shophandlers_std_setuponecoursesession');
+        $productionfeedback->public = $fb;
+        $fb = get_string('productiondata_assign_private', 'shophandlers_std_setuponecoursesession', $course->id);
+        $productionfeedback->private = $fb;
+        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_setuponecoursesession', $course->id);
+        $productionfeedback->salesadmin = $fb;
 
         return $productionfeedback;
     }
@@ -316,7 +338,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      * Dismounts all effects of the handler production when a product is deleted.
      * The contexttype will denote the type of Moodle object that was created. some
      * hanlders may deal with several contexttypes if they have a complex production
-     * operation. the instanceid is moslty a moodle table id that points the concerned instance 
+     * operation. the instanceid is moslty a moodle table id that points the concerned instance
      * within the context type scope.
      *
      * In assignroleoncontext plugin, removes the role assignation
@@ -353,16 +375,21 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $errors[$data->code][] = get_string('errornotarget', 'shophandlers_std_setuponecoursesession');
         } else {
             if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-                $errors[$data->code][] = get_string('errorcoursenotexists', 'shophandlers_std_setuponecoursesession', $data->actionparams['coursename']);
+                $cn = $data->actionparams['coursename'];
+                $err = get_string('errorcoursenotexists', 'shophandlers_std_setuponecoursesession', $cn);
+                $errors[$data->code][] = $err;
             }
 
             // Check enrollability.
-            if ($enrols = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+            $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+            if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
                 $enrol = reset($enrols);
             }
 
             if (empty($enrol)) {
-                $errors[$data->code][] = get_string('errorcoursenotenrollable', 'shophandlers_std_setuponecoursesession', $data->actionparams['coursename']);
+                $cn = $data->actionparams['coursename'];
+                $err = get_string('errorcoursenotenrollable', 'shophandlers_std_setuponecoursesession', $cn);
+                $errors[$data->code][] = $err;
             }
         }
 
@@ -372,7 +399,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         }
 
         if (!$role = $DB->get_record('role', array('shortname' => $data->actionparams['supervisor']))) {
-            $errors[$data->code][] = get_string('errorsupervisorrole', 'shophandlers_std_setuponecoursesession', $data->actionparams['supervisor']);
+            $err = get_string('errorsupervisorrole', 'shophandlers_std_setuponecoursesession', $data->actionparams['supervisor']);
+            $errors[$data->code][] = $err;
         }
     }
 
