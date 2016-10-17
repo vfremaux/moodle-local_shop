@@ -15,6 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * STD_SETUP_ONE_COURSE_SESSION is a standard shop product action handler that allows the shop operator to
+ * prepare and setup a training session for other stakeholders
+ * actiondata is defined as an action customized information for a specific product in the
+ * product definition, where one standard handler is choosen.
+ *
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
@@ -22,12 +27,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * STD_SETUP_ONE_COURSE_SESSION is a standard shop product action handler that allows the shop operator to
- * prepare and setup a training session for other stakeholders
- * actiondata is defined as an action customized information for a specific product in the
- * product definition, where one standard handler is choosen.
- */
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
