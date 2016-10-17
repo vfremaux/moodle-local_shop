@@ -297,6 +297,14 @@ abstract class CatalogItem_Form extends moodleform {
         $label = get_string('unitpix', 'local_shop');
         $mform->addGroup($group, 'grunit', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
+        $group = array();
+        $label = get_string('tenunitspix', 'local_shop');
+        $group[0] = & $mform->createElement('filepicker', 'tenunits', $label, $fpickerattributes);
+        $group[1] = & $mform->createElement('checkbox', 'cleartenunits', get_string('clear', 'local_shop'));
+
+        $label = get_string('tenunitspix', 'local_shop');
+        $mform->addGroup($group, 'grtenunits', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+
         $label = get_string('eula', 'local_shop');
         $mform->addElement('editor', 'eula_editor', $label, null, $this->editoroptions);
         $mform->setType('eula', PARAM_URL);
@@ -340,6 +348,11 @@ abstract class CatalogItem_Form extends moodleform {
         file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grunit = array('unit' => $draftitemid);
+
+        $draftitemid = file_get_submitted_draft_itemid('tenunits');
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', @$defaults->id,
+                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
+        $defaults->grtenunits = array('tenunits' => $draftitemid);
 
         $draftideditor = file_get_submitted_draft_itemid('eula_editor');
         $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'eula_editor', @$defaults->id,
