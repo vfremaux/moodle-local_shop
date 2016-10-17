@@ -272,6 +272,27 @@ class CatalogItem extends ShopObject {
      *
      *
      */
+    public function get_sales_ten_units_url() {
+        global $OUTPUT;
+
+        $context = \context_system::instance();
+
+        $fs = get_file_storage();
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemtenunits', $this->id, $ignoredirs = true)) {
+            $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemtenunits', $this->id);
+            $unitpix = array_pop($files);
+            $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
+                                                    $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
+        } else {
+            $url = $OUTPUT->pix_url(current_language().'/ten_units', 'local_shop');
+        }
+        return $url;
+    }
+
+    /**
+     *
+     *
+     */
     public function get_image_url() {
 
         $context = \context_system::instance();

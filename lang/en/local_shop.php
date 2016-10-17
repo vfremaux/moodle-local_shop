@@ -451,6 +451,7 @@ $string['unitprice4'] = 'Unit price (Range 4):';
 $string['unitprice5'] = 'Unit price (Range 5):';
 $string['unit'] = 'Unit Picture';
 $string['unitpix'] = 'Sales unit pix:';
+$string['tenunitspix'] = 'Sales pix for ten units pack:';
 $string['unity'] = 'Unity';
 $string['unitycost'] = 'Unit cost';
 $string['until'] = 'till to';
