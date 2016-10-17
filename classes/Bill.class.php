@@ -25,10 +25,9 @@
  */
 namespace local_shop;
 
-require_once($CFG->dirroot.'/local/shop/locallib.php');
-
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');

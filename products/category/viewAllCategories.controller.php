@@ -140,8 +140,8 @@ class category_controller {
             $draftideditor = file_get_submitted_draft_itemid('description_editor');
             $category->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'categorydescription',
                                                             $category->id, array('subdirs' => true), $category->description);
-            $category = file_postupdate_standard_editor($category, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                    'categorydescription', $category->id);
+            $category = file_postupdate_standard_editor($category, 'description', $this->mform->editoroptions, $context,
+                                                        'local_shop', 'categorydescription', $category->id);
         }
     }
 
