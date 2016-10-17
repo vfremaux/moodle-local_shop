@@ -326,9 +326,13 @@ $string['lettering_help'] = '## Boutique en ligne
 
 ### Lettrage de facture
 
-Le lettrage de facture permet d\'enregistrer la correspondance entre les factures en ligne de la boutique et un logiciel de facuration externe.
+Le lettrage de facture permet d\'enregistrer la correspondance entre les factures en ligne de la boutique
+et un logiciel de facturation externe.
 
-Selon les législations, des obligations légales contraignent la numérotation des factures. La boutique en ligne Moodle enregistre des factures en ligne poru la seule activité de vente sur Moodle. Il est indispensable de pouvoir effectuer la correspondance entre les transactions en ligne et les factures "officiellement" établies dans un logiciel de comptabilité.
+Selon les législations, des obligations légales contraignent la numérotation des factures. La boutique en
+ligne Moodle enregistre des factures en ligne poru la seule activité de vente sur Moodle. Il est indispensable
+de pouvoir effectuer la correspondance entre les transactions en ligne et les factures "officiellement" établies
+dans un logiciel de comptabilité.
 
 Le lettrage ne peut accepter plusieurs références identiques, et ce quelque soit le catalogue utilisé par la boutique.';
 
@@ -339,16 +343,16 @@ Une facture doit être assignée à un compte client.
 
 Choisissez un compte client déja créer, ou un compte utilisateur de la plateforme.
 
-Si un compte utilisateur est sélectionné, un compte client est automatiquement créé et la facture sera automatiquement assignée à ce nouveau compte client.';
+Si un compte utilisateur est sélectionné, un compte client est automatiquement créé et la facture sera automatiquement
+assignée à ce nouveau compte client.';
 
 $string['formula_creation_help'] = '
 # Edition de formule du prix TTC
 
-L\'utilisateur doit saisir la formule permettant de calculer le prix TTC d\'un article en fonction de la taxe
+L\'utilisateur doit saisir la formule permettant de calculer le prix TTC d\'un article en fonction de la taxe.
+Cette formule doit intégrer les variables du prix TTC ($ttc), du prix HT ($ht), et du ratio de la taxe ($tr)
 
-Cette formule doit intégrer les variables du prix TTC ($TTC), du prix HT ($HT), et du ratio de la taxe ($TR)
-
-Exemple : $TTC = $HT + ($HT*$TR/100)';
+Exemple : $ttc = $ht + ($ht*$tr/100)';
 
 $string['allowtax_help'] = '
 # Aide sur l\'activation de taxe
@@ -380,13 +384,16 @@ Placées (PLACED)
 :   Les factures placées sont des bons de commande non encore confirmées par les utilisateurs.
 
 Commandes à réaliser (PENDING)
-:   Les factures à réaliser ont été confirmées, mais ont un mode de paiement et de prodution non automatique qui doit être supervisé par les opérateurs de la boutique.
+:   Les factures à réaliser ont été confirmées, mais ont un mode de paiement et de prodution non automatique qui doit
+être supervisé par les opérateurs de la boutique.
 
 Factures payées (SOLDOUT)
-:   Les factures ont été intégralement payées, soit par un procédé automatique en ligne soit par marquage manuel par les opérateurs de la boutique (après contrôle de réception de paiement).
+:   Les factures ont été intégralement payées, soit par un procédé automatique en ligne soit par marquage manuel par les
+opérateurs de la boutique (après contrôle de réception de paiement).
 
 Factures réalisées (COMPLETE)
-:   Les factures payées ont été produites, automatiquement, par activation des gestionnaires de production des produits ou marqués manuellement comme telles si la production n\'est pas numérique.
+:   Les factures payées ont été produites, automatiquement, par activation des gestionnaires de production des produits
+ou marqués manuellement comme telles si la production n\'est pas numérique.
 
 Factures annulées (CANCELLED)
 :   Les factures annulée par l\'opérateur (mise à l\'écart des factures gelées).

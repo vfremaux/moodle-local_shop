@@ -15,20 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Form for editing HTML block instances.
+ *
+ * @package     local_shop
+ * @categroy    local
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace \local_shop\backoffice;
+
+namespace local_shop\backoffice;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 
-use local_shop\Tax;
+use local_shop\Product;
 
-class taxes_controller {
+class productinstances_controller {
 
     protected $data;
 
@@ -46,11 +50,7 @@ class taxes_controller {
 
         switch ($cmd) {
             case 'delete':
-                $this->data->taxid = required_param('taxid', PARAM_INT);
-                break;
-
-            case 'edit':
-                // Let data come from $data attribute.
+                $this->data->productids = required_param_array('productids', PARAM_INT);
                 break;
         }
 
@@ -64,22 +64,25 @@ class taxes_controller {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
-        // Delete a tax.
+        // Delete a product instances ****************************** **.
         if ($cmd == 'delete') {
-            $tax = new Tax($this->data->taxid);
-            $tax->delete();
-        }
 
-        if ($cmd == 'edit') {
-            $tax = $this->data;
-            if (empty($tax->taxid)) {
-                $tax->id = $DB->insert_record('local_shop_tax', $tax);
-            } else {
-                $tax->id = $tax->taxid;
-                unset($tax->taxid);
-                $DB->update_record('local_shop_tax', $tax);
+            require_sesskey();
+
+            if (!empty($this->data->productids)) {
+                foreach ($this->data->productids as $pid) {
+                    try {
+                        $product = new Product($pid);
+                        $product->delete();
+                    } catch (\Exception $e) {
+                        print_error('objecterror', 'local_shop', $e->getMessage());
+                    }
+                }
             }
-            return new Tax($tax->id);
         }
+    }
+
+    public static function info() {
+        return array('delete' => array('productids' => 'Array of integers pointing local_shop_product records.'));
     }
 }

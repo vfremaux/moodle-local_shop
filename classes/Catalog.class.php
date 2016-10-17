@@ -64,14 +64,18 @@ class Catalog extends ShopObject {
             }
             $this->categories = $this->get_categories();
 
+            // These are fake fields to drive the editors in form.
+            $this->record->descriptionformat = FORMAT_HTML;
+            $this->record->salesconditionsformat = FORMAT_HTML;
+
         } else {
             $this->record->name = get_string('newcatalog', 'local_shop');
             $this->record->description = '';
-            $this->record->descriptionformat = FORMAT_MOODLE;
+            $this->record->descriptionformat = FORMAT_HTML;
             $this->record->isslave = 0;
             $this->record->ismaster = 0;
             $this->record->salesconditions = '';
-            $this->record->salesconditionsformat = FORMAT_MOODLE;
+            $this->record->salesconditionsformat = FORMAT_HTML;
             $this->record->groupid = 0;
             $this->record->countryrestrictions = '';
         }

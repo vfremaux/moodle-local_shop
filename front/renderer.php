@@ -2351,8 +2351,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * Prints the header on printable invoices and ordering documents.
+     */
     public function invoice_header(&$afullbill) {
-        global $OUTPUT;
+        global $OUTPUT, $CFG;
 
         $config = get_config('local_shop');
 
@@ -2373,8 +2376,21 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str .= '<table>';
         if (!empty($afullbill->withlogo)) {
+
+            if (!empty($config->sellerlogo)) {
+                $syscontext = context_system::instance();
+                $component = 'local_shop';
+                $filearea = 'shoplogo';
+                $itemid = 0;
+                $filepath = $config->sellerlogo;
+                $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
+                $pixurl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
+            } else {
+                $pixurl = $OUTPUT->pix_url('logo', 'theme');
+            }
+
             $str .= '<tr>';
-            $str .= '<td><img src="'.$OUTPUT->pix_url('logo', 'theme').'"></td>';
+            $str .= '<td><img src="'.$pixurl.'"></td>';
             $str .= '<td align="right"></td>';
             $str .= '</tr>';
         }

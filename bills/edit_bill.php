@@ -65,56 +65,13 @@ if ($mform->is_cancelled()) {
 
 if ($billrec = $mform->get_data()) {
 
-    if (!empty($billrec->billid)) {
-        $bill = new Bill($billrec->billid);
-        $bill->lastactiondate = $now;
-    } else {
-        $bill = new Bill(null, $theshop, $thecatalog, $theblock);
-    }
+    include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
+    $controller = new \local_shop\backoffice\bill_controller($theshop, $thecatalog, $theblock);
+    $controller->receive('edit', $billrec, $mform);
+    $bill = $controller->process('edit');
 
-    if (empty($billrec->currency)) {
-        $billrec->currency = $theshop->defaultcurrency;
-    }
-
-    $shipping = new StdClass;
-    if (!empty($config->useshipping)) {
-        $shipping = shop_calculate_shipping($catalogid, $country, $order);
-    } else {
-        $shipping->value = 0;
-    }
-
-    // Creating a customer account for a user.
-    if ($billrec->useraccountid != 0) {
-        $user = $DB->get_record('user', array('id' => $billrec->useraccountid));
-        $customer->firstname = $user->firstname;
-        $customer->lastname = $user->lastname;
-        $customer->email = $user->email;
-        $customer->address = $user->address;
-        $customer->city = $user->city;
-        $customer->zip = '';
-        $customer->country = $user->country;
-        $customer->hasaccount = $user->id;
-        if (!$newcustomerid = $DB->insert_record('local_shop_customer', $customer)) {
-            print_error('erroraddnewcustomer', 'local_shop');
-        }
-        $billrec->customerid = $newcustomerid;
-    } else {
-        $bill->customerid = $billrec->userid;
-    }
-    unset($bill->userid);
-    unset($bill->useraccountid);
-
-    // Transfer all billrec attributes to the bill object.
-    foreach ($billrec as $key => $value) {
-        $bill->$key = $value;
-    }
-
-    $lastordering = Bill::last_ordering($theshop->id);
-    $bill->lastordering = $lastordering + 1;
-
-    $bill->save();
-
-    redirect(new moodle_url('/local/shop/bills/view.php', array('shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id)));
+    $params = array('shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id);
+    redirect(new moodle_url('/local/shop/bills/view.php', $params));
 } else {
     if ($billid) {
         $bill = new Bill($billid);

@@ -38,13 +38,13 @@ $string['PREPROD'] = 'Réalisée par anticipation';
 $string['PREVIEW'] = 'Prévision';
 $string['PROVIDING'] = 'Réappro';
 $string['RECOVERING'] = 'Contentieux';
-$string['SHIP_'] = 'Port dû ';
+$string['SHIP_'] = 'Port dû&nbsp;';
 $string['SOLDOUT'] = 'Payée';
 $string['SUSPENDED'] = 'Suspendu';
 $string['TTC'] = 'TTC';
 $string['WORKING'] = 'En établissement (interne)';
 $string['a'] = 'Arg A';
-$string['abstract'] = 'Intitulé ';
+$string['abstract'] = 'Intitulé&nbsp;';
 $string['addcustomeraccount'] = 'Ajouter un nouveau compte client';
 $string['addshipping'] = 'Ajouter une définition de port';
 $string['addshippingzone'] = 'Ajouter une zone de livraison';
@@ -86,7 +86,7 @@ $string['billscopeamount'] = 'Forfait H.T.';
 $string['billsdeleted'] = 'Factures/commandes effacées';
 $string['billsearch'] = 'Factures : Recherche';
 $string['billseq'] = 'Numero d\'ordre';
-$string['billspending'] = 'Factures : En cours';
+$string['billspending'] = 'Factures&nbsp;: En cours';
 $string['billtotal'] = 'Total Facture';
 $string['blancktransactioncode'] = 'Le code de transaction n\'a jamais été <br>généré (factures manuelles)';
 $string['bundle'] = 'Assemblage';
@@ -100,8 +100,8 @@ $string['cataloguemanagement'] = 'Gestion du catalogue';
 $string['catalogues'] = 'Catalogues';
 $string['catdescription'] = 'Description';
 $string['category'] = 'Catégories';
-$string['categorydescription'] = 'Description ';
-$string['categoryname'] = 'Nom de la catégorie ';
+$string['categorydescription'] = 'Description&nbsp;';
+$string['categoryname'] = 'Nom de la catégorie&nbsp;';
 $string['categoryowner'] = 'Propriétaire de catégorie';
 $string['categoryownerdesc'] = 'Le propriétaire d\'une catégorie peut gérer le contenu de sa catégorie et
 inviter des enseignants et d\'autres créateurs de cours. Il en reste respondable.';
@@ -120,10 +120,10 @@ $string['configcatalog'] = 'Catalogue';
 $string['configcustomerorganisationrequired'] = 'Organisation demandée (client)';
 $string['configdefaultcurrency'] = 'Suffixe de devise mentionnée derrière tous les montants';
 $string['configdefaultcustomersupportcourse'] = 'Cours par défaut pour le support client';
-$string['configdiscountrate'] = 'Fixe un taux de ristourne';
-$string['configdiscountrate2'] = 'Fixe un taux de ristourne pour les utilisateurs ayant la capacité local/shop:seconddiscountagreed activée';
-$string['configdiscountrate3'] = 'Fixe un taux de ristourne pour les utilisateurs ayant la capacité local/shop:thirddiscountagreed activée';
-$string['configdiscounttheshold'] = 'Le seuil du chiffre d\'affaire pour ristournes';
+$string['configdiscountrate'] = 'Fixe un taux de remise';
+$string['configdiscountrate2'] = 'Fixe un taux de remise pour les utilisateurs ayant la capacité local/shop:seconddiscountagreed activée';
+$string['configdiscountrate3'] = 'Fixe un taux de remise pour les utilisateurs ayant la capacité local/shop:thirddiscountagreed activée';
+$string['configdiscounttheshold'] = 'Le seuil du chiffre d\'affaire pour remises';
 $string['configendusermobilephonerequired'] = 'Téléphone mobile demandé (participant)';
 $string['configenduserorganisationrequired'] = 'Organisation demandée (participant)';
 $string['configeula'] = 'Conditions de vente';
@@ -137,6 +137,7 @@ $string['configsellerbillingcountry'] = 'Le pays du service comptable du commer�
 $string['configsellerbillingzip'] = 'Le code postal du service comptable du commerçant';
 $string['configsellercity'] = 'La ville du commerçant';
 $string['configsellercountry'] = 'Le pays du commerçant';
+$string['configsellerlogo'] = 'Le logo imprimé sur bons de commande, factures et devis.';
 $string['configsellermail'] = 'L\'adresse mail du commerçant';
 $string['configsellermailsupport'] = 'Adresse mail du support client';
 $string['configsellername'] = 'Doit être le nom officiel du commerçant apparaissant sur les documents commerciaux.';
@@ -172,13 +173,13 @@ $string['deletealllinkedproducts'] = 'Supprimer tous les produits liés';
 $string['deletebillitems'] = 'Supprimer des éléments';
 $string['deletebills'] = 'Supprimer factures';
 $string['deleteproduct'] = 'Supprimer le produit';
-$string['description'] = 'Description :';
+$string['description'] = 'Description&nbsp;:&ensp;';
 $string['disabled'] = 'Désactivé';
-$string['discountrate'] = 'Taux de ristourne';
-$string['discountrate2'] = 'Taux de ristourne 2';
-$string['discountrate3'] = 'Taux de ristourne 3';
+$string['discountrate'] = 'Taux de remise';
+$string['discountrate2'] = 'Taux de remise 2';
+$string['discountrate3'] = 'Taux de remise 3';
 $string['discounts'] = 'Réglages des remises';
-$string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour ristourne';
+$string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour remise';
 $string['dispo'] = 'Dispo';
 $string['dosearch'] = 'Rechercher';
 $string['edit_categories'] = 'Edition des catégories';
@@ -192,21 +193,24 @@ $string['editshippingzone'] = 'Edition de zone de port dû';
 $string['editshop'] = 'Modifier une boutique';
 $string['edittaxe'] = 'Edition d\'une taxe';
 $string['enablehandler'] = 'Activer le traitement d\'achat';
-$string['enablepaymodes'] = 'Modes de paiement ';
-$string['error'] = 'Erreur : ';
+$string['enablepaymodes'] = 'Modes de paiement&nbsp;';
+$string['error'] = 'Erreur&nbsp;:&ensp;';
+$string['errorbadhandler'] = 'Le fichier de ce gestionnaire ({$a}) n\'existe pas. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
+$string['errorunimplementedhandlermethod'] = 'Cette methode de postproduction ({$a}) n\'est pas écrite dans ce gestionnaire. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
 $string['errornotownedbill'] = 'Cette facture ne vous appartient pas.';
 $string['errorrequirementfieldtype'] = 'Type de champ inconnu {$a} dans les définitions de données requises';
 $string['eula'] = 'Texte des conditions de vente et d\'utilisation';
 $string['eula_help'] = 'Vous devez prendre connaissance et accepter les conditions de vente suivantes avant de procéder à un achat sur {$a}. La validation de ce formulaire vaut pour acceptation de ces conditions.';
 $string['eulaagree'] = 'J\'accepte les conditions de ventes';
 $string['eulaheading'] = 'Conditions générales de ventes';
-$string['expectedpaiement'] = 'Délai de paiement ';
+$string['expectedpaiement'] = 'Délai de paiement&nbsp;';
+$string['experimental'] = 'Fonctionnalités expérimentales';
 $string['formula'] = 'Formule';
 $string['from'] = 'depuis (date)';
 $string['generalsettings'] = 'Accède au formulaire de paramètres globaux dans l\'administration Moodle';
 $string['generateacode'] = 'Générer un code';
 $string['generic'] = 'Générique :';
-$string['genericerror'] = 'Erreur interne : {$a}';
+$string['genericerror'] = 'Erreur interne&nbsp;:&ensp;{$a}';
 $string['globalsettings'] = 'Réglages généraux';
 $string['gotest'] = 'Lancer le test';
 $string['gotobackoffice'] = 'Aller au backoffice';
@@ -226,11 +230,11 @@ $string['isdefault'] = 'Par défault';
 $string['items'] = 'Items';
 $string['knownaccount'] = 'Compte enregistré';
 $string['label'] = 'Label ';
-$string['leaflet'] = 'Brochure :';
+$string['leaflet'] = 'Brochure&nbsp;:&ensp;';
 $string['leafletlink'] = 'Télécharger la brochure';
-$string['leafleturl'] = 'Url de Brochure :';
+$string['leafleturl'] = 'Url de Brochure&nbsp;:&ensp;';
 $string['link'] = 'Liaison ';
-$string['login'] = 'vous avez déjà un compte ';
+$string['login'] = 'vous avez déjà un compte';
 $string['manageshipping'] = 'Gérer les frais de port';
 $string['manageshippingdesc'] = 'Gère les zones de port et les frais par produits';
 $string['managetaxes'] = 'Gérer les taxes';
@@ -238,10 +242,11 @@ $string['manybillsasresult'] = 'Plusieurs factures sont candidates pour les crit
 $string['master'] = 'Catalogue maître';
 $string['maxdeliveryquant'] = 'Quantité maximale par transaction :';
 $string['maxitemsperpage'] = 'Taille de liste max';
-$string['message'] = 'Message : ';
+$string['message'] = 'Message&nbsp;:&ensp;';
 $string['miscellaneous'] = 'Autres options';
+$string['missingcode'] = 'Un code produit doit être mentionné';
 $string['mytotal'] = 'Voir mon total panier';
-$string['name'] = 'Nom :';
+$string['name'] = 'Nom&nbsp;:&ensp;';
 $string['nametaxe'] = 'Nom de taxe';
 $string['newbill'] = 'Nouvelle facture';
 $string['newbillitem'] = 'Nouvel élément de facture';
@@ -256,7 +261,7 @@ $string['nonmutable'] = 'Poduit non modifiable';
 $string['nosamecurrency'] = 'Toutes les factures n\'ont pas la même unité. La somme n\'est pas consistante.';
 $string['noshops'] = 'Aucune boutique définie';
 $string['notaxes'] = 'Pas de taxes enregistrées';
-$string['notes'] = 'Notes :';
+$string['notes'] = 'Notes&nbsp;:&ensp;';
 $string['notowner'] = 'Cet item ne vous appartient pas';
 $string['notrace'] = 'Aucune trace pour cette transaction';
 $string['num'] = 'N°';
@@ -275,12 +280,12 @@ $string['orders'] = 'Commandes';
 $string['outofcategory'] = 'Hors catégorie (racine)';
 $string['outofset'] = 'Hors assemblage';
 $string['paiedamount'] = 'Montant payé';
-$string['param_a'] = 'Paramètre A ';
-$string['param_b'] = 'Paramètre B ';
-$string['param_c'] = 'Paramètre C ';
+$string['param_a'] = 'Paramètre A&nbsp;';
+$string['param_b'] = 'Paramètre B&nbsp;';
+$string['param_c'] = 'Paramètre C&nbsp;';
 $string['pastetransactionid'] = 'Coller un ID de transaction ';
 $string['paymentmethods'] = 'Modes de paiement';
-$string['paymodes'] = 'Mode de paiement ';
+$string['paymodes'] = 'Mode de paiement&nbsp;';
 $string['picktransactionid'] = 'Choisir un ID de transaction ';
 $string['pluginname'] = 'Boutique';
 $string['pluginname'] = 'e-Boutique';
@@ -289,24 +294,26 @@ $string['price'] = 'Prix';
 $string['price2'] = 'Prix 2';
 $string['price3'] = 'Prix 3';
 $string['printbill'] = 'Voir la version imprimable';
-$string['printbilllink'] = 'Imprimer cette facture maintenant !';
-$string['printorderlink'] = 'Imprimer ce bon de commande maintenant !';
+$string['printbilllink'] = 'Imprimer cette facture maintenant&nbsp;!';
+$string['printorderlink'] = 'Imprimer ce bon de commande maintenant&nbsp;!';
 $string['product'] = 'Produit :';
 $string['productcode'] = 'Code produit :';
 $string['productid'] = 'Identifiant produit';
 $string['productlabel'] = 'Label de produit';
 $string['productline'] = 'Catalogue Produit ';
 $string['productname'] = 'Nom de produit';
+$string['productionresults'] = 'Résultats de production';
+$string['productioncomplete'] = 'Votre commande a été traitée.';
 $string['productoperation'] = 'Opération sur votre produit';
 $string['productpostprocess'] = 'Actions sur les produits (post production)';
-$string['products'] = 'Produits :';
+$string['products'] = 'Produits&nbsp;:&ensp;';
 $string['proforma'] = 'Facture Proforma';
 $string['providedbymoodleshop'] = 'Groupe créé par la boutique moodle';
 $string['provisionalnumber'] = 'Numérotation provisoire';
 $string['quant'] = 'Quant';
 $string['quantaddressesusers'] = 'La quantité adresse des sièges';
 $string['quantaddressesusers_help'] = 'Les produits utilisant cette option affectent l\'étape de saisie des utilisateurs.';
-$string['quantity'] = 'Quantité ';
+$string['quantity'] = 'Quantité&nbsp;';
 $string['rate'] = 'Taux';
 $string['ratiotaxe'] = 'Ratio';
 $string['recalculate'] = 'Recalculer';
@@ -322,10 +329,10 @@ $string['resetdesc'] = 'Réinitialise la boutique';
 $string['resetguide'] = 'Cette commande permet d\'effacer tout ou partie des données de la boutique. Certaines valeurs sont liées : par exemple<br/><ul><li>Si vous effacez la base client, vous effacez nécessairement les factures</li><li>Si vous effacez les catalogues, vous pouvez garder la base client, mais toutes les commandes/factures seront effacées.</li></ul>';
 $string['resetitems'] = 'Eléments à effacer';
 $string['results'] = 'Résultats';
-$string['runningbills'] = 'Factures : En cours';
+$string['runningbills'] = 'Factures&nbsp;: En cours';
 $string['sales'] = 'Ventes';
 $string['salesconditions'] = 'Conditions de vente :';
-$string['salesroledesc'] = 'Les personnes qui ont ce rôle peuvent contrôler les opérations de la boutique en ligne ';
+$string['salesroledesc'] = 'Les personnes qui ont ce rôle peuvent contrôler les opérations de la boutique en ligne';
 $string['salesrolename'] = 'Commercial';
 $string['salesservice'] = 'Service commercial';
 $string['saverequs'] = 'Enregistrer votre configuration des produits';
@@ -337,7 +344,7 @@ $string['searchincustomers'] = 'Visualiser et effectuer des recherches dans tous
 $string['searchinproductinstances'] = 'Visualiser et effectuer des recherches dans les ventes';
 $string['searchinproducts'] = 'Visualiser et effectuer des recherches dans le(s) catalogue(s) produits.';
 $string['searchintaxes'] = 'Visualiser et éditer les taxes.';
-$string['section'] = 'Rubrique :';
+$string['section'] = 'Catégorie&nbsp;:&ensp;';
 $string['seebigger'] = 'Voir en plus grand';
 $string['sel'] = 'Sel';
 $string['sellerID'] = 'Identifiant légal du commercçant';
@@ -348,12 +355,13 @@ $string['sellerbillingcountry'] = 'Pays comptable du commerçant';
 $string['sellerbillingzip'] = 'Code postal comptable du commerçant';
 $string['sellercity'] = 'Ville du commerçant';
 $string['sellercountry'] = 'Pays du commerçant';
+$string['sellerlogo'] = 'Logo du commerçant';
 $string['sellermail'] = 'Mél du commerçant';
 $string['sellermailsupport'] = 'Support par courriel';
 $string['sellername'] = 'Nom du commerçant';
 $string['sellerphonesupport'] = 'Support téléphonique';
 $string['sellerzip'] = 'Code postal du commerçant';
-$string['set'] = 'Assemblage :';
+$string['set'] = 'Assemblage&nbsp;:&ensp;';
 $string['setid'] = 'Code assemblage ';
 $string['settings'] = 'Réglages généraux';
 $string['shipping'] = 'Règle tarifaire';
@@ -369,28 +377,30 @@ $string['shopproductcreated'] = 'Créé par une postproduction de la Boutique Mo
 $string['shops'] = 'Boutiques';
 $string['shops_help'] = 'Des boutiques sont des instances de vente appuyées sur un catalogue et opérant selon certaines modalités.';
 $string['shortname'] = 'Nom court';
-$string['showdescriptioninset'] = ' Affichage de la description ';
-$string['shownameinset'] = ' Affichage du nom ';
+$string['showdescriptioninset'] = 'Affichage de la description ';
+$string['shownameinset'] = 'Affichage du nom ';
 $string['signin'] = 'Se connecter';
 $string['slave'] = 'Catalogue lié';
 $string['slavegroupcannotbeedited'] = 'Un groupement d\'un produit esclave ne peut être modifié.';
-$string['slaveto'] = 'Lié à ';
-$string['sold'] = 'Ventes :';
+$string['slaveto'] = 'Lié à&nbsp;';
+$string['sold'] = 'Ventes&nbsp;:&ensp;';
+$string['softdelete'] = 'Désactiver le produit';
+$string['softrestore'] = 'Réactiver le produit';
 $string['standalone'] = 'Catalogue indépendant';
-$string['status'] = 'Statut ';
+$string['status'] = 'Statut&nbsp;';
 $string['stock'] = 'Stock';
-$string['taxcode'] = 'Code Taxe :';
+$string['taxcode'] = 'Code Taxe&nbsp;:&ensp;';
 $string['taxcountry'] = 'Pays dans lequel la taxe est appliquée :';
 $string['taxe'] = 'Taxe';
 $string['taxes'] = 'Taxes';
 $string['taxformula'] = 'Formule permettant de calculer le prix TTC des produits';
-$string['taxname'] = 'Nom de la taxe :';
+$string['taxname'] = 'Nom de la taxe&nbsp;:&ensp;';
 $string['taxratio'] = 'Ratio de la taxe :';
 $string['tendays'] = 'dix jours';
 $string['testmodeactive'] = 'Le service de vente de Moodle est en mode test. Nous n\'autorisons pas les paiements dans ce mode hormis les administrateurs pour une fonction de test.';
 $string['testoverride'] = 'Suppression du verrou de test';
 $string['threemonths'] = 'trois mois';
-$string['thumbnail'] = 'Vignette :';
+$string['thumbnail'] = 'Vignette&nbsp;:&ensp;';
 $string['timetodo'] = 'Délai de facturation ';
 $string['title'] = 'Intitulé';
 $string['total'] = 'Total';
@@ -404,29 +414,29 @@ $string['transactionid'] = 'Code Transaction';
 $string['tvaeurope'] = 'Numéro de TVA intracommunautaire';
 $string['type'] = 'Type';
 $string['unit'] = 'Unit. (HT)';
-$string['unitpix'] = 'Icone d\'unité de vente :';
-$string['unitprice1'] = 'Prix unit. HT (1) :';
+$string['unitpix'] = 'Icone d\'unité de vente&nbsp;:&ensp;';
+$string['unitprice1'] = 'Prix unit. HT (1)&nbsp;:&ensp;';
 $string['unitprice1'] = 'Prix unitaire HT';
-$string['unitprice2'] = 'Prix unit. HT (2) :';
-$string['unitprice3'] = 'Prix unit. HT (3) :';
-$string['unitprice4'] = 'Prix unit. HT (3) :';
-$string['unitprice5'] = 'Prix unit. HT (3) :';
+$string['unitprice2'] = 'Prix unit. HT (2)&nbsp;:&ensp;';
+$string['unitprice3'] = 'Prix unit. HT (3)&nbsp;:&ensp;';
+$string['unitprice4'] = 'Prix unit. HT (3)&nbsp;:&ensp;';
+$string['unitprice5'] = 'Prix unit. HT (3)&nbsp;:&ensp;';
 $string['unittests'] = 'Tester les produits';
 $string['unity'] = 'Unitaire';
 $string['unitycost'] = 'Coût unitaire';
 $string['until'] = 'jusqu\'à';
 $string['usedelegation'] = 'Délégation de vente';
 $string['usedentries'] = 'Produits attribués';
-$string['user_enrolment'] = 'Inscription';
+$string['userenrol'] = 'Inscription';
 $string['userdiscountagreed'] = 'Remise 1';
 $string['userdiscountagreed2'] = 'Remise 2';
 $string['userdiscountagreed3'] = 'Remise 3';
 $string['useshipping'] = 'Frais de port';
-$string['usinghandler'] = 'Gestionnaire utilisé : {$a}';
+$string['usinghandler'] = 'Gestionnaire utilisé&nbsp;: {$a}';
 $string['value'] = 'Valeur fixe';
 $string['vendorinfo'] = 'Identité du vendeur';
-$string['warning'] = 'Alerte : ';
-$string['worktype'] = 'Type de prestation ';
+$string['warning'] = 'Alerte&nbsp;:&ensp;';
+$string['worktype'] = 'Type de prestation';
 
 $string['noproducts'] = "
 <h3>Catalogue vide</h3>
@@ -442,12 +452,14 @@ Cette commande est enregistrée.<br/>
 ';
 
 $string['buy_instructions_tpl'] = '
-Vous pouvez régler par des procédures différentes. Cochez ici le mode de règlement choisi, puis laissez-vous guider par la procédure qui vous sera indiquée :
+Vous pouvez régler par des procédures différentes. Cochez ici le mode de règlement choisi, puis laissez-vous
+guider par la procédure qui vous sera indiquée :
 ';
 
 $string['customer_welcome_tpl'] = '
 <h3>Bienvenue dans l\'espace client</h3>
-<p>Vous pouvez dans cet espace accéder à toutes les informations qui vous concernent. Vous pourrez suivre l\'historique de vos factures, de vos tickets d\'assistance, de l\'état de nos opérations vous concernant.
+<p>Vous pouvez dans cet espace accéder à toutes les informations qui vous concernent. Vous pourrez suivre
+l\'historique de vos factures, de vos tickets d\'assistance, de l\'état de nos opérations vous concernant.
 ';
 
 $string['delete_catalog_dialog_tpl'] = '
@@ -469,7 +481,9 @@ Cette facture n\'a pas d\'éléments taxés
 
 $string['no_bill_attachements_tpl'] = '
 <h5>Pas d\'éléments attachés</h5>
-<p>Vous pouvez attacher des fichiers ou autre documents à la facture. Utilisez le lien ci-dessous. Vous pouvez également attacher un fichier ou document (un seul) à chacun des éléments de facture. Utilisez l\'icone <img src="images/icons/attach.gif"> de la ligne de commandes des entrées de facture.
+<p>Vous pouvez attacher des fichiers ou autre documents à la facture. Utilisez le lien ci-dessous. Vous pouvez
+également attacher un fichier ou document (un seul) à chacun des éléments de facture. Utilisez l\'icone
+<img src="images/icons/attach.gif"> de la ligne de commandes des entrées de facture.
 ';
 
 $string['no_bills_in_account_tpl'] = '
@@ -506,7 +520,8 @@ $string['no_zones_tpl'] = '
 ';
 
 $string['out_euro_zone_advice_tpl'] = '
-<b>Attention :</b> en raison des frais bancaires prohibitifs, nous ne pouvons accepter ni les chèques hors zone euro, ni les règlements par swift. Merci de votre compréhension.
+<b>Attention :</b> en raison des frais bancaires prohibitifs, nous ne pouvons accepter ni les chèques hors
+zone euro, ni les règlements par swift. Merci de votre compréhension.
 ';
 
 $string['post_billing_message_tpl'] = '
@@ -541,13 +556,14 @@ Vous pouvez accéder à votre facture par <a href="<%%SERVER_URL%%>/login/index.
 
 $string['search_bill_failed_tpl'] = '
 <h3 class="error">Erreur dans la recherche</h3>
-<p>Aucune facture ne correspond aux critères de recherche que vous avez défini. Veuillez modifier vos critères et retenter une recherche.
+<p>Aucune facture ne correspond aux critères de recherche que vous avez défini. Veuillez modifier vos
+critères et retenter une recherche.
 ';
 
 $string['search_product_failed_tpl'] = '
 <h3 class="error">Erreur dans la recherche</h3>
-<p>Aucun produit ne correspond aux critères de recherche que vous avez défini :
-<p><code>recherche par : {$a->by} valeur : <?php echo  {$a->value} ?></code>
+<p>Aucun produit ne correspond aux critères de recherche que vous avez défini&nbsp;:
+<p><code>recherche par&nbsp;: {$a->by} valeur&nbsp;: <?php echo  {$a->value} ?></code>
 <p>Veuillez modifier vos critères et retenter une recherche.
 ';
 
@@ -559,20 +575,20 @@ $string['transaction_confirm_tpl'] = '
 
 <p><u>Identification Client :</u>
 <hr>
-<b>Nom :</b> <%%FIRSTNAME%%><br>
-<b>Prénom :</b> <%%LASTNAME%%><br>
-<b>Mel :</b> <%%MAIL%%><br>
-<b>Ville :</b> <%%CITY%%><br>
-<b>Pays :</b> <%%COUNTRY%%><br>
+<b>Nom&nbsp;:</b> <%%FIRSTNAME%%><br>
+<b>Prénom&nbsp;:</b> <%%LASTNAME%%><br>
+<b>Mel&nbsp;:</b> <%%MAIL%%><br>
+<b>Ville&nbsp;:</b> <%%CITY%%><br>
+<b>Pays&nbsp;:</b> <%%COUNTRY%%><br>
 <hr>
 <p><u>Résumé Commande</u>
 <hr>
-<b>Montant total H.T. :</b> <%%AMOUNT%%><br>
-<b>Taxes :</b> <%%TAXES%%><br>
-<b>TTC :</b> <%%TTC%%><br>
-<b>Mode de paiement envisagé :</b> <%%PAYMODE%%><br>
-<b>Nombre d\'objets :</b> <%%ITEMS%%><br>
-<b>Code transaction :</b> <code><%%TRANSACTION%%></code>
+<b>Montant total H.T.&nbsp;:</b> <%%AMOUNT%%><br>
+<b>Taxes&nbsp;:</b> <%%TAXES%%><br>
+<b>TTC&nbsp;:</b> <%%TTC%%><br>
+<b>Mode de paiement envisagé&nbsp;:</b> <%%PAYMODE%%><br>
+<b>Nombre d\'objets&nbsp;:</b> <%%ITEMS%%><br>
+<b>Code transaction&nbsp;:</b> <code><%%TRANSACTION%%></code>
 <hr/>
 <%%PRODUCTION_DATA%%>
 <hr/>
@@ -588,27 +604,29 @@ $string['upload_failure_tpl'] = '
 
 $string['upload_success_tpl'] = '
 <h5>Chargement effectué</h5>
-<p>Votre fichier est maintenant attaché à sa cible. Utilisez le lien ci-dessous si votre écran de travail n\'est pas restauré au delà des 5 prochaines secondes.
+<p>Votre fichier est maintenant attaché à sa cible. Utilisez le lien ci-dessous si votre écran de travail n\'est
+pas restauré au delà des 5 prochaines secondes.
 ';
 
 $string['upload_text'] = '
 <h5>Zone de téléchargement</h5>
-<p>Choisissez un fichier sur votre poste de travail par le bouton "Parcourir". Validez l\'envoi. Vous pouvez être confrontés à des limites de taille. La limite actuelle est de {$a} Mo.
+<p>Choisissez un fichier sur votre poste de travail par le bouton "Parcourir". Validez l\'envoi. Vous pouvez être
+confrontés à des limites de taille. La limite actuelle est de {$a} Mo.
 ';
 
 $string['discountrate_help'] = '
-Fixe un taux de ristourne
+Fixe un taux de remise
 ';
 $string['discountrate2_help'] = '
-Fixe un taux de ristourne pour les utilisateurs ayant la capacité local/shop:seconddiscountagreed activée
+Fixe un taux de remise pour les utilisateurs ayant la capacité local/shop:seconddiscountagreed activée
 ';
 
 $string['discountrate3_help'] = '
-Fixe un taux de ristourne pour les utilisateurs ayant la capacité local/shop:thirddiscountagreed activée
+Fixe un taux de remise pour les utilisateurs ayant la capacité local/shop:thirddiscountagreed activée
 ';
 
 $string['discountthreshold_help'] = '
-Le seuil du chiffre d\'affaire pour activer la première ristourne.
+Le seuil du chiffre d\'affaire pour activer la première remise.
 ';
 
 global $CFG;

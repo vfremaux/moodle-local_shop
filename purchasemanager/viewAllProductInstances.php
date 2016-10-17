@@ -33,6 +33,8 @@ $order = optional_param('order', 'code', PARAM_ALPHA);
 $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
 $customerid = optional_param('customer', 0, PARAM_INT);
 
+$viewparams = array('view' => $view, 'customer' => $customerid, 'order' => $order, 'dir' => $dir);
+
 $ownermenu = '';
 if (!has_capability('local/shop:accessallowners', $context)) {
     $shopowner = $USER->id;
@@ -46,9 +48,10 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/purchasemanager/productinstances.controller.php');
-    $controller = new productinstances_controller($thecatalogue);
+    $controller = new \local_shop\backoffice\productinstances_controller();
     $controller->receive($action);
     $controller->process($action);
+    redirect(new moodle_url('/local/shop/purchasemanager/view.php', $viewparams));
 }
 
 $customermenu = $shoprenderer->print_customer_menu($url);
@@ -84,8 +87,8 @@ if (count(array_keys($productinstances)) == 0) {
     $portlet = null;
     echo $renderer->productinstance_admin_line($portlet);
 
-    foreach (array_values($productinstances) as $portlet) {
-        echo $renderer->productinstance_admin_line($portlet);
+    foreach (array_values($productinstances) as $instance) {
+        echo $renderer->productinstance_admin_line($instance, $viewparams);
     }
 }
 echo '</table>';

@@ -29,6 +29,25 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 class order_controller extends front_controller_base {
 
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'navigate':
+                $this->data->back = optional_param('back', false, PARAM_BOOL);
+                if (!$this->data->back) {
+                    $this->data->paymode = required_param('paymode', PARAM_TEXT);
+                }
+                break;
+        }
+    }
+
     public function process($cmd) {
         global $SESSION, $CFG, $SITE, $DB;
 
@@ -37,7 +56,7 @@ class order_controller extends front_controller_base {
         $config = get_config('local_shop');
 
         if ($cmd == 'navigate') {
-            if (optional_param('back', false, PARAM_BOOL)) {
+            if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('order');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,
@@ -47,7 +66,7 @@ class order_controller extends front_controller_base {
             } else {
 
                 // Register paymode.
-                $shoppingcart->paymode = required_param('paymode', PARAM_TEXT);
+                $shoppingcart->paymode = $this->data->paymode;
 
                 $items = 0;
                 foreach (array_values($shoppingcart->order) as $quant) {

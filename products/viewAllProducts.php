@@ -47,7 +47,7 @@ $hashandlersstr = get_string('hashandlers', 'local_shop');
 
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/products/products.controller.php');
-    $controller = new product_controller($thecatalog);
+    $controller = new \local_shop\backoffice\product_controller($thecatalog);
     $controller->receive($action);
     $controller->process($action);
 }

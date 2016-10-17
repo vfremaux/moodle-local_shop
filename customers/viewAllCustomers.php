@@ -29,11 +29,12 @@ require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Customer;
 
-$action = optional_param('action', '', PARAM_TEXT);
+$action = optional_param('what', '', PARAM_TEXT);
 
 if (!empty($action)) {
     include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
-    $controller = new customer_controller();
+    $controller = new \local_shop\backoffice\customer_controller();
+    $controller->receive($action);
     $controller->process($action);
 }
 

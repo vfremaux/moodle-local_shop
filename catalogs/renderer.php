@@ -73,6 +73,7 @@ class shop_catalogs_renderer {
         $str .= $catalog->items;
         $str .= '</td>';
         $str .= '<td>';
+        $str .= '<div class="shop-line-commands">';
         $editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php', array('catalogid' => $catalog->id));
         $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"></a>';
         if ($catalog->is_not_used()) {
@@ -80,6 +81,7 @@ class shop_catalogs_renderer {
             $deleteurl = new moodle_url('/local/shop/index.php', $params);
             $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('/t/delete').'"></a>';
         }
+        $str .= '</div>';
         $str .= '</td>';
         $str .= '</tr>';
 

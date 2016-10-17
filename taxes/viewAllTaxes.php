@@ -88,7 +88,7 @@ if (empty($taxes)) {
             $deleteurl = new moodle_url('/local/shop/taxes/view.php', $params);
             $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
         }
-        $row[] = $commands;
+        $row[] = '<div class="shop-line-commands">'.$commands.'</div>';
 
         $table->data[] = $row;
     }

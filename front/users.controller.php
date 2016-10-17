@@ -28,9 +28,25 @@ require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class users_controller extends front_controller_base {
 
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'navigate':
+                $this->data->back = optional_param('back', '', PARAM_TEXT);
+                break;
+        }
+    }
+
     public function process($cmd) {
         if ($cmd == 'navigate') {
-            if (optional_param('back', '', PARAM_TEXT)) {
+            if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('users');
                 $params = array('view' => $prev,
                                 'shopid' => $this->theshop->id,

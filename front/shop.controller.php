@@ -28,18 +28,47 @@ require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class shop_controller extends front_controller_base {
 
+    /**
+     * In this case, all the data resides already in session.
+     * there is nothing to get from a query.
+     */
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'import':
+                foreach (array_keys($_GET) as $inputkey) {
+                    if ($inputkey == 'shipping') {
+                        continue;
+                    }
+                    $this->data[$inputkey] = optional_param($inputkey, 0, PARAM_INT);
+                }
+                break;
+            case 'clearall':
+                break;
+            case 'navigate':
+                break;
+        }
+    }
+
     public function process($cmd) {
         global $SESSION;
 
         if ($cmd == 'import') {
             unset($SESSION->shoppingcart);
-            $SESSION->shoppingcart = new StdClass;
+            $SESSION->shoppingcart = new \StdClass;
             $SESSION->shoppingcart->order = array();
-            foreach (array_keys($_GET) as $inputkey) {
+            foreach (array_keys($this->data) as $inputkey) {
                 if ($inputkey == 'shipping') {
                     continue;
                 }
-                $SESSION->shoppingcart->order[$inputkey] = optional_param($inputkey, 0, PARAM_INT);
+                $SESSION->shoppingcart->order[$inputkey] = $this->data[$inputkey];
             }
         } else if ($cmd == 'clearall') {
             unset($SESSION->shoppingcart);
