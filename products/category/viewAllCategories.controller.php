@@ -151,7 +151,7 @@ class category_controller {
             'up' => array('categoryid' => 'Numeric ID pointing a Category'),
             'down' => array('categoryid' => 'Numeric ID pointing a Category'),
             'show' => array('categoryid' => 'Numeric ID pointing a Category'),
-            'hide' => array('categoryid' => 'Numeric ID pointing a Category')
+            'hide' => array('categoryid' => 'Numeric ID pointing a Category'),
             'edit' => array(
                 'name' => 'String',
                 'parentid' => 'Numeric ID pointing another categroy',

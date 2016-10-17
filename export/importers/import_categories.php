@@ -37,7 +37,7 @@ class shop_import_categories {
         $this->overrides = $overrides;
     }
 
-    public public import() {
+    public function import() {
         global $DB;
 
         foreach ($this->data as $object) {
