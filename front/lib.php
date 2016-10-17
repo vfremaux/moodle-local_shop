@@ -294,7 +294,7 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, &$course) {
                     /*
                      * Note that renewable products MUST have an end time, either given
                      * by an explicit endtime timestamp, or a duration value.
-                     * In case none of definitions are available, we default with a 
+                     * In case none of definitions are available, we default with a
                      * 1 year duration.
                      */
                     if (!empty($handlerdata->actionparams['duration'])) {

@@ -66,7 +66,7 @@ class reset_controller {
     public function process($cmd) {
 
         if (!$this->received) {
-            throw (new \Exception('Reset Controller triggered without data'));
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         if (!empty($this->data->bills) || !empty($this->data->customers) || !empty($this->data->catalogs)) {

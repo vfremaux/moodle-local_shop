@@ -58,7 +58,7 @@ abstract class front_controller_base {
     abstract public function receive($cmd, $data = array());
 
     /**
-     * Process processes received data (assumes data has been received and loaded 
+     * Process processes received data (assumes data has been received and loaded
      * into controller instance. A processor should NEVER receive data from direct
      * query decoding function such as required_param or optional_param, nor
      * directly read from any input global such as $_GET or $_POST.

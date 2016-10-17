@@ -97,7 +97,7 @@ class catalog_controller {
             $catalog->description = $catalog->description_editor['text'];
             $catalog->salesconditionsformat = $catalog->salesconditions_editor['format'];
             $catalog->salesconditions = $catalog->salesconditions_editor['text'];
-        
+
             if (empty($catalog->catalogid)) {
                 // Creating new.
                 $catalog->groupid = 0;
@@ -146,8 +146,9 @@ class catalog_controller {
                                                     'requirementdescription', $catalog->id);
 
             $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
-            $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogsalesconditions',
-                                                                $catalog->id, array('subdirs' => true), $catalog->salesconditions);
+            $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
+                                                                   'catalogsalesconditions', $catalog->id, array('subdirs' => true),
+                                                                   $catalog->salesconditions);
             $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
                                                     'requirementsalesconditions', $catalog->id);
 
@@ -160,7 +161,7 @@ class catalog_controller {
                      'edit' => array(
                         'catalogid' => 'Numeric ID for update',
                         'name' => 'String',
-                        'description_editor' =>  'Array of text,format,itemid',
+                        'description_editor' => 'Array of text,format,itemid',
                         'salesconditions_editor' => 'Array of text,format,itemid',
                         'countryrestrictions' => 'Comma separated list of lowercase country codes',
                         'linked' => 'One of \'master|slave|free\'',

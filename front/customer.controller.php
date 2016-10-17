@@ -51,7 +51,7 @@ class customer_controller extends front_controller_base {
                     $cifshort = str_replace('customerinfo::', '', $cif);
                     $this->data->customerinfo[$cifshort] = optional_param($cif, '', PARAM_TEXT);
                 }
-    
+
                 $invoiceinfofields = preg_grep('/invoiceinfo::/', array_keys($_POST));
                 if (!empty($invoiceinfofields)) {
                     foreach ($invoiceinfofields as $iif) {
@@ -82,7 +82,7 @@ class customer_controller extends front_controller_base {
 
             $shoppingcart->usedistinctinvoiceinfo = $this->data->usedistinctinvoiceinfo;
 
-            foreach ($this->data->customerinfo as $cifshort  => $cif) {
+            foreach ($this->data->customerinfo as $cifshort => $cif) {
                 $shoppingcart->customerinfo[$cifshort] = $cif;
             }
 

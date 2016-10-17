@@ -48,7 +48,7 @@ class customers_controller {
             $this->data = (object)$data;
             return;
         } else {
-            $this->data = new StdClass;
+            $this->data = new \StdClass;
         }
 
         switch ($cmd) {
@@ -71,7 +71,7 @@ class customers_controller {
     public function process($cmd) {
 
         if (!$this->received) {
-            throw (new \Exception('Reset Controller triggered without data'));
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         if ($cmd == 'deletecustomer') {
