@@ -615,7 +615,7 @@ class shop_bills_renderer {
             $params = array('id' => $this->theshop->id, 'billid' => $billitem->bill->id, 'billitemid' => $billitem->id);
             $linkurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
             $pixurl = $OUTPUT->pix_url('i/edit');
-            $pix = <img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'">;
+            $pix = '<img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'">';
             $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$editstr.'">'.$pix.'</a>';
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
