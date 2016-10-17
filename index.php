@@ -56,7 +56,7 @@ $PAGE->set_pagelayout('admin');
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
-    $controller = new catalog_controller();
+    $controller = new \local_shop\backoffice\catalog_controller();
     $controller->receive($action);
     $controller->process($action);
 }

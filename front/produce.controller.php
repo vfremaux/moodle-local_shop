@@ -35,10 +35,34 @@ class production_controller extends front_controller_base {
     public $interactive;
     protected $abill;
 
-    public function __construct(&$afullbill, $ipncall = false, $interactive = false) {
+    public function __construct(&$theshop, &$thecatalog, &$theblock, &$afullbill, $ipncall = false, $interactive = false) {
         $this->abill = $afullbill;
         $this->ipncall = $ipncall;
         $this->interactive = $interactive;
+        parent::__construct($theshop, $thecatalog, $theblock);
+    }
+
+    /**
+     * In this case, all the data resides already in session.
+     * there is nothing to get from a query.
+     */
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'navigate':
+                break;
+            case 'confirm':
+                break;
+            case 'produce':
+                break;
+        }
     }
 
     public function process($cmd, $holding = false) {

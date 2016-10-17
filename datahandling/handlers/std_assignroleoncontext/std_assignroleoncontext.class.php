@@ -35,10 +35,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-Use local_shop\Product;
-Use local_shop\Shop;
+use local_shop\Product;
+use local_shop\ProductEvent;
+use local_shop\Shop;
 
 class shop_handler_std_assignroleoncontext extends shop_handler {
 
@@ -204,18 +206,9 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             }
         }
 
-        $startdate = @$data->actionparams['startdate'];
-        if (empty($startdate)) {
-            $startdate = time();
-        }
-
-        // Computes infinite, relative of fixed enddate.
-        $enddate = @$data->actionparams['enddate'];
-        if (preg_match('/^+(\d+)$/', $enddate, $matches)) {
-            $enddate = $startdate + $matches[1];
-        } else if (empty($enddate)) {
-            $enddate = 0;
-        }
+        // Compute start and end time.
+        $starttime = shop_compute_enrol_time($data, 'starttime', $course);
+        $endtime = shop_compute_enrol_time($data, 'endtime', $course);
 
         // Perform operations.
 
@@ -243,18 +236,19 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $product->customerid = $data->bill->customerid;
         $product->contexttype = 'roleassign';
         $product->instanceid = $raid; // Register role assign instance.
-        $product->startdate = $startdate;
-        $product->enddate = $enddate;
+        $product->startdate = $starttime;
+        $product->enddate = $endtime;
         $product->reference = shop_generate_product_ref($data);
-        $product->productiondata = Product::compile_production_data($data->actionparams);
+        $extra = array('handler' => 'std_assignroleoncontext');
+        $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
         $product->id = $DB->insert_record('local_shop_product', $product);
 
         // Record a productevent.
-        $productevent = new StdClass();
+        $productevent = new ProductEvent(null);
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
         $productevent->datecreated = $now = time();
-        $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
+        $productevent->save();
 
         // Add user to customer support.
         if (!empty($data->actionparams['customersupport'])) {
@@ -271,6 +265,30 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
         shop_trace("[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay : Completed in $instancename...");
         return $productionfeedback;
+    }
+
+    /**
+     * Dismounts all effects of the handler production when a product is deleted.
+     * The contexttype will denote the type of Moodle object that was created. some
+     * hanlders may deal with several contexttypes if they have a complex production
+     * operation. the instanceid is moslty a moodle table id that points the concerned instance
+     * within the context type scope.
+     *
+     * In assignroleoncontext plugin, removes the role assignation
+     * assigned to the product. Other role assignations will remain unchanged.
+     *
+     * @param string $contexttype type of context to dismount
+     * @param integer/string $instanceid identifier of the instance
+     */
+    public function delete(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'roleassign') {
+            if ($ra = $DB->get_record('role_assignments', array('id' => $product->instanceid))) {
+                shop_trace('[] Deleting roleassignement on {$ra->contextid} for user {$ra->userid}');
+                role_unassign($ra->roleid, $ra->userid, $ra->contextid);
+            }
+        }
     }
 
     /**

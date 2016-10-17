@@ -518,6 +518,15 @@ class shop_bills_renderer {
 
     public function billitem_line($billitem) {
         global $OUTPUT;
+        static $movestr;
+        static $editstr;
+        static $deletestr;
+
+        if (!isset($movestr)) {
+            $movestr = get_string('move');
+            $editstr = get_string('edit');
+            $deletestr = get_string('delete');
+        }
 
         $str = '';
 
@@ -586,6 +595,7 @@ class shop_bills_renderer {
         $str .= $billitem->taxcode;
         $str .= '</td>';
         $str .= '<td width="60" class="cell lastcol">';
+        $str .= '<div class="shop-line-commands">';
 
         if (empty($billitem->bill->idnumber)) {
             /*
@@ -599,11 +609,14 @@ class shop_bills_renderer {
                             'z' => $billitem->ordering);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
             $pixurl = $OUTPUT->pix_url('t/move');
-            $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('move').'"></a>';
+            $pix = '<img src="'.$pixurl.'" border="0" alt="'.get_string('move').'">';
+            $str .= '<a href="'.$linkurl.'" title="'.$movestr.'">'.$pix.'</a>';
+
             $params = array('id' => $this->theshop->id, 'billid' => $billitem->bill->id, 'billitemid' => $billitem->id);
             $linkurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
             $pixurl = $OUTPUT->pix_url('i/edit');
-            $str .= '&nbsp;<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'"></a>';
+            $pix = '<img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'">';
+            $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$editstr.'">'.$pix.'</a>';
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
                             'what' => 'deleteItem',
@@ -612,8 +625,10 @@ class shop_bills_renderer {
                             'billid' => $billitem->bill->id);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
             $pixurl = $OUTPUT->pix_url('t/delete');
-            $str .= '&nbsp;<a href="'.$linkurl.'"><img src="'.$pixurl.'" alt="'.get_string('delete').'"></a>';
+            $pix = '<img src="'.$pixurl.'" alt="'.get_string('delete').'">';
+            $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$deletestr.'">'.$pix.'</a>';
         }
+        $str .= '</div>';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '<tr valign="top">';
@@ -972,7 +987,7 @@ class shop_bills_renderer {
         if ($froms) {
             foreach ($froms as $from) {
                 $statestr = get_string($from->fromstate, 'local_shop');
-                $str .= '<li><a href="'.$url.'&cmd=flowchange&status='.$from->fromstate.'">'.$statestr.'</a></li>';
+                $str .= '<li><a href="'.$url.'&what=flowchange&status='.$from->fromstate.'">'.$statestr.'</a></li>';
             }
         } else {
             $str .= get_string('flowControlNetStart', 'local_shop');
@@ -982,7 +997,7 @@ class shop_bills_renderer {
         if ($tos) {
             foreach ($tos as $to) {
                 $statestr = get_string($to->tostate, 'local_shop');
-                $str .= '<li><a href="'.$url.'&cmd=flowchange&status='.$to->tostate.'">'.$statestr.'</a></li>';
+                $str .= '<li><a href="'.$url.'&what=flowchange&status='.$to->tostate.'">'.$statestr.'</a></li>';
             }
         } else {
              $str .= get_string('flowControlNetEnd', 'local_shop');

@@ -146,6 +146,7 @@ if ($data = $mform->get_data()) {
     $data = file_postupdate_standard_editor($data, 'eula', $mform->editoroptions, $context, 'local_shop',
                                             'catalogitemeula', $data->id);
 
+    $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);
 
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));

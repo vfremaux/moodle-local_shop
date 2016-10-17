@@ -25,10 +25,9 @@
  */
 namespace local_shop;
 
-require_once($CFG->dirroot.'/local/shop/locallib.php');
-
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
@@ -87,7 +86,8 @@ class Bill extends ShopObject {
     protected $discount;
 
     /**
-     * tells something has changed and recalulation is needed
+     * tells something has changed and recalculation is needed bifore any display or
+     * use.
      */
     protected $dirty;
 
@@ -229,13 +229,9 @@ class Bill extends ShopObject {
     }
 
     public function generate_unique_transaction() {
-        global $DB, $CFG;
+        global $DB, $CFG, $SITE;
 
-        // Seek for a unique transaction ID.
-        $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32))), 0, 32));
-        while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
-            $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32))), 0, 40));
-        }
+        $transid = shop_get_transid();
         $this->transactionid = $transid;
     }
 
@@ -468,6 +464,26 @@ class Bill extends ShopObject {
         }
 
         parent::delete();
+    }
+
+    public function work($tostatus) {
+        global $CFG;
+
+        // Call a transition handler.
+        $result = 1;
+
+        include_once($CFG->dirroot.'/local/shop/transitions.php');
+        // Lower case because Moodle validation forces all functions to be lowercase.
+
+        $transitionhandler = \core_text::strtolower("bill_transition_{$this->record->status}_{$tostatus}");
+
+        if (function_exists($transitionhandler)) {
+            $result = $transitionhandler($this);
+        } else {
+            // Just pass to final status.
+            $this->status = $tostatus;
+            $this->save();
+        }
     }
 
     public static function get_by_transaction($transid) {

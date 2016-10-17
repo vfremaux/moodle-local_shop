@@ -74,6 +74,13 @@ class Product extends ShopObject {
      * Full deletes the product instance with all product events
      */
     public function delete() {
+        // Dismount product effect in Moodle using delete method of the attached product handler.
+        list($handler, $method) = $this->get_handler_info(null);
+
+        if (!is_null($handler)) {
+            $handler->delete($this);
+        }
+
         // Delete all events linked to product.
         $events = ProductEvent::get_instances(array('productid' => $this->id));
         if ($events) {
@@ -83,6 +90,46 @@ class Product extends ShopObject {
         }
 
         parent::delete();
+    }
+
+    public function soft_delete() {
+        $this->record->deleted = 1;
+        $this->save(true);
+
+        // Dismount product effect in Moodle using soft_delete method of the attached product handler.
+        list($handler, $method) = $this->get_handler_info(null);
+
+        if (!is_null($handler)) {
+            $handler->soft_delete($this);
+        }
+
+        // Record an event.
+        $productevent = new ProductEvent(null);
+        $productevent->productid = $product->id;
+        $productevent->billitemid = 0;
+        $productevent->datecreated = $now = time();
+        $productevent->eventtype = 'delete';
+        $productevent->save();
+    }
+
+    public function soft_restore() {
+        $this->record->deleted = 0;
+        $this->save(true);
+
+        // Restores product effect in Moodle using soft_restore method of the attached product handler.
+        list($handler, $method) = $this->get_handler_info(null);
+
+        if (!is_null($handler)) {
+            $handler->soft_restore($this);
+        }
+
+        // Record an event.
+        $productevent = new ProductEvent(null);
+        $productevent->productid = $product->id;
+        $productevent->billitemid = 0;
+        $productevent->datecreated = $now = time();
+        $productevent->eventtype = 'restore';
+        $productevent->save();
     }
 
     /**
@@ -256,16 +303,26 @@ class Product extends ShopObject {
 
         $productinfo = $this->extract_production_data();
 
-        $h = $productinfo->handler;
-        if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
-            print_error('errorbadhandler', 'local_shop');
+        $handler = null;
+        $methodname = null;
+        if (!empty($productinfo->handler)) {
+            $h = $productinfo->handler;
+            if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
+                print_error('errorbadhandler', 'local_shop', $h);
+            }
+
+            include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
+
+            $classname = 'shop_handler_'.$productinfo->handler;
+            $handler = new $classname('');
+
+            if (!empty($method)) {
+                $methodname = 'postprod_'.$method;
+                if (!method_exists($classname, $methdname)) {
+                    print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
+                }
+            }
         }
-
-        require_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
-
-        $classname = 'shop_handler_'.$productinfo->handler;
-        $handler = new $classname('');
-        $methodname = 'postprod_'.$method;
         return array($handler, $methodname);
     }
 

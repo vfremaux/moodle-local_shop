@@ -518,25 +518,31 @@ function shop_build_context() {
         $theshop = new Shop($shop->id);
     }
 
+    if (!$theshop) {
+        print_error('errornoshopdefined', 'local_shop');
+    }
+
     /*
      * Logic : forces session catalog to be operative,
      * Defaults to the current shop bound catalog.
      */
     $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
-    if (empty($SESSION->shop->catalogid)) {
+    if (empty($SESSION->shop->catalogid) || !$DB->record_exists('local_shop_catalog', array('id' => $SESSION->shop->catalogid))) {
+        // If no catalog defined in session or catalog is missing after deletion.
         if ($theshop->id) {
+            // ... If we have a shop take the catalog of this shop ...
             try {
                 $thecatalog = new Catalog($theshop->catalogid);
                 $SESSION->shop->catalogid = $thecatalog->id;
             } catch (Exception $e) {
-                print_error('objecterror', 'local_shop', $e->get_message());
+                print_error('objecterror', 'local_shop', $e->getMessage());
             }
         }
     }
     try {
         $thecatalog = new Catalog($SESSION->shop->catalogid);
     } catch (Exception $e) {
-        print_error('objecterror', 'local_shop', $e->get_message());
+        print_error('objecterror', 'local_shop', $e->getMessage());
     }
 
     $theblock = null;
@@ -619,4 +625,16 @@ function shop_get_bill_worktypes() {
     return $worktypes;
 }
 
+/**
+ * ensures a transaction id is unique.
+ */
+function shop_get_transid() {
+    global $DB, $SITE;
 
+    // Seek for a unique transaction ID.
+    $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32), 'MOODLE_SHOP')), 0, 30));
+    while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
+        $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32), 'MOODLE_SHOP')), 0, 30));
+    }
+    return $transid;
+}

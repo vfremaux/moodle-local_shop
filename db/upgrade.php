@@ -33,7 +33,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
 
     $dbman = $DB->get_manager();
 
-    if ($result && $oldversion < 2016022900) {
+    if ($oldversion < 2016022900) {
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop');
@@ -67,7 +67,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016022900, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016083100) {
+    if ($oldversion < 2016083100) {
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop_catalogitem');
@@ -81,7 +81,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016083100, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016090800) {
+    if ($oldversion < 2016090800) {
 
         // Define table local_shop to be created.
         $table = new xmldb_table('local_shop');
@@ -113,7 +113,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016090800, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016090804) {
+    if ($oldversion < 2016090804) {
         // New version in version.php.
         // Purge a weird record.
         $DB->delete_records_select('capabilities', " name LIKE 'local/shop:%' AND component = 'local_block'" );
@@ -121,7 +121,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016090804, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016091000) {
+    if ($oldversion < 2016091000) {
         // New version in version.php.
 
         // Add field to local_shop_customer.
@@ -145,7 +145,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016091000, 'local', 'shop');
     }
 
-    if ($result && $oldversion < 2016092100) {
+    if ($oldversion < 2016092100) {
         // New version in version.php.
 
         // Add field to local_shop.
@@ -176,6 +176,30 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         }
 
         upgrade_plugin_savepoint(true, 2016092100, 'local', 'shop');
+    }
+
+    if ($oldversion < 2016101500) {
+        // New version in version.php.
+
+        // Add field to local_shop_product.
+        $table = new xmldb_table('local_shop_product');
+
+        $field = new xmldb_field('deleted');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, null, null, null, 'productiondata');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add field to local_shop_productevent.
+        $table = new xmldb_table('local_shop_productevent');
+
+        $field = new xmldb_field('eventtype');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 32, null, null, null, null, 'billitemid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016101500, 'local', 'shop');
     }
 
     return $result;

@@ -57,7 +57,8 @@ $interactive = true;
 if ($action != '') {
     $instanceid = $theshop->id; // Unify interactive and non interactive processing.
     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
-    $controller = new \local_shop\front\production_controller($afullbill, false, $interactive);
+    $controller = new \local_shop\front\production_controller($theshop, $thecatalog, $theblock, $afullbill, false, $interactive);
+    $controller->receive($action);
     $result = $controller->process($action);
 }
 
@@ -101,6 +102,10 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
     // A specific report.
     if (!empty($afullbill->onlinefeedback->public)) {
         echo $OUTPUT->box_start('shop-message-hidden', 'shop-notification-result');
+        echo $OUTPUT->heading(get_string('productionresults', 'local_shop'));
+        if (empty($afullbill->onlinefeedback->public)) {
+            $afullbill->onlinefeedback->public = get_string('productioncomplete', 'local_shop');
+        }
         echo $afullbill->onlinefeedback->public;
         echo $OUTPUT->box_end();
     }

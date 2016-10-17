@@ -49,6 +49,7 @@ class ProductEvent extends ShopObject {
             $this->record->id = 0;
             $this->record->productid = 0;
             $this->record->billitemid = 0;
+            $this->record->eventtype = 'billed';
             $this->record->datecreated = time();
         }
     }

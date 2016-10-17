@@ -35,6 +35,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 if (!empty($action)) {
     include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
     $controller = new customers_controller();
+    $controller->receive($action);
     $controller->process($action);
 }
 

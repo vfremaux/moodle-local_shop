@@ -82,29 +82,13 @@ if ($mform->is_cancelled()) {
 }
 
 if ($billitem = $mform->get_data()) {
-    $billitem->totalprice = $billitem->quantity * $billitem->unitcost;
-    $bill->totalprice += ($billitem->unitcost * $billitem->quantity);
-    $bill->untaxedamount += $bill->totalprice;
-    $billitem->id = $billitem->billitemid;
-    unset($billitem->billitemid);
 
-    if ($bill->ignoretax == 0) {
-        $tax = new Tax($billitem->taxcode);
-        $bill->taxes += (($bill->totalprice * $tax->ratio) / 100);
-    }
+    include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
+    $controller = new \local_shop\backoffice\bill_controller($theshop, $thecatalog, $theblock);
+    $controller->receive('edititem', $billitem);
+    $controller->process('edititem');
 
-    $bill->amount = $bill->amount + ($bill->untaxedamount + $bill->taxes);
-    $billitem->billid = $billid;
-
-    if (empty($billitem->id)) {
-        $billitem->id = $DB->insert_record('local_shop_billitem', $billitem);
-    } else {
-        $DB->update_record('local_shop_billitem', $billitem);
-    }
-
-    $DB->update_record('local_shop_bill', $bill);
-
-    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $billid)));
+    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $billitem->billid)));
 }
 
 echo $OUTPUT->header();
