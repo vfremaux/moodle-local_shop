@@ -609,7 +609,7 @@ class shop_bills_renderer {
                             'z' => $billitem->ordering);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
             $pixurl = $OUTPUT->pix_url('t/move');
-            $pix = <img src="'.$pixurl.'" border="0" alt="'.get_string('move').'">;
+            $pix = '<img src="'.$pixurl.'" border="0" alt="'.get_string('move').'">';
             $str .= '<a href="'.$linkurl.'" title="'.$movestr.'">'.$pix.'</a>';
 
             $params = array('id' => $this->theshop->id, 'billid' => $billitem->bill->id, 'billitemid' => $billitem->id);
@@ -625,7 +625,7 @@ class shop_bills_renderer {
                             'billid' => $billitem->bill->id);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
             $pixurl = $OUTPUT->pix_url('t/delete');
-            $pix = <img src="'.$pixurl.'" alt="'.get_string('delete').'">;
+            $pix = '<img src="'.$pixurl.'" alt="'.get_string('delete').'">';
             $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$deletestr.'">'.$pix.'</a>';
         }
         $str .= '</div>';
