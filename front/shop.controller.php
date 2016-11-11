@@ -111,7 +111,6 @@ class shop_controller extends front_controller_base {
             }
             @$SESSION->shoppingcart->order[$this->data->shortname] = $this->data->quant;
 
-            // $theblock->view = 'shop'; // We are necessarily in shop.
             $output = new \StdClass();
             $output->html = $this->renderer->units($product);
             $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
@@ -185,7 +184,6 @@ class shop_controller extends front_controller_base {
                 $output->status = 'product error';
             }
             $output = json_encode($output);
-
 
         } else if ($cmd == 'navigate') {
 
