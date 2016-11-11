@@ -806,7 +806,6 @@ class Catalog extends ShopObject {
             $indent = str_repeat('    ', $level);
         }
 
-
         $level--;
 
         return $yml;

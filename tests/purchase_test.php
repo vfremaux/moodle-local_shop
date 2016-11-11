@@ -245,5 +245,8 @@ class local_shop_purchase_testcase extends advanced_testcase {
         // Navigate and pay with test payment.
         $controller->receive('navigate');
         $return = $controller->process('navigate');
+
+        $bill = $DB->get_record('local_shop_bill', array('id' => $bill->id));
+        $this->assertTrue($bill->status == SHOP_BILL_SOLDOUT);
     }
 }

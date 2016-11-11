@@ -130,7 +130,7 @@ class local_shop_generator extends component_generator_base {
         return $controller->process('edit');
     }
 
-    public function create_category($data = null) {
+    public function create_category($thecatalog, $data = null) {
         global $CFG;
 
         include_once($CFG->dirroot.'/local/shop/products/category/viewAllCategories.controller.php');
@@ -146,7 +146,7 @@ class local_shop_generator extends component_generator_base {
             );
         }
 
-        $controller = new \local_shop\backoffice\category_controller();
+        $controller = new \local_shop\backoffice\category_controller($thecatalog);
         $controller->receive('edit', $data);
         return $controller->process('edit');
     }

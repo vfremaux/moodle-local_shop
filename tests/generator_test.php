@@ -24,6 +24,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/tests/generator/lib.php');
+
 /**
  * Generator tests class for local_shop.
  */
@@ -35,12 +37,14 @@ class local_shop_generator_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $this->assertFalse($DB->record_exists('local_shop'));
-        $shop = $this->getDataGenerator()->create_shop_instance();
+        $generator = new local_shop_generator();
+
+        $this->assertFalse($DB->count_records('local_shop', array()));
+        $shop = $generator->create_shop_instance();
         $this->assertTrue($DB->record_exists('local_shop', array('id' => $shop->id)));
 
         $shop->delete();
-        $this->assertFalse($DB->record_exists('local_shop'));
+        $this->assertFalse($DB->count_records('local_shop', array()));
     }
 
     public function test_create_catalog() {
@@ -49,31 +53,47 @@ class local_shop_generator_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $this->assertFalse($DB->record_exists('local_shop'));
-        $catalog = $this->getDataGenerator()->create_catalog_instance();
-        $this->assertTrue($DB->record_exists('local_shop', array('id' => $catalog->id)));
+        $generator = new local_shop_generator();
+
+        $this->assertFalse($DB->count_records('local_shop_catalog', array()));
+        $catalog = $generator->create_catalog_instance();
+        $this->assertTrue($DB->record_exists('local_shop_catalog', array('id' => $catalog->id)));
 
         $catalog->delete();
-        $this->assertFalse($DB->record_exists('local_shop'));
+        $this->assertFalse($DB->count_records('local_shop_catalog', array()));
     }
 
-    public function test_build_catalog() {
+    public function test_create_tax() {
         global $DB;
 
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $this->assertFalse($DB->record_exists('local_shop'));
-        $catalog = $this->getDataGenerator()->create_catalog_instance();
+        $generator = new local_shop_generator();
 
-        $categorydef = (object) array(
-            'name' => 'Category 1',
-            'parentid' => 0,
-            'description_editor' => array('text' => 'Top category 1', 'format' => 1, 'itemid' => 0),
-            'visible' => false,
-        );
-        $category1 = $this->getDataGenerator()->create_catalog_category($categorydef);
+        $this->assertFalse($DB->count_records('local_shop_tax', array()));
+        $tax = $generator->create_tax();
+        $this->assertTrue($DB->record_exists('local_shop_tax', array('id' => $tax->id)));
 
+        $tax->delete();
+        $this->assertFalse($DB->count_records('local_shop_tax', array()));
     }
 
+    public function test_create_category() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $generator = new local_shop_generator();
+
+        $catalog = $generator->create_catalog();
+
+        $this->assertFalse($DB->count_records('local_shop_catalog_category', array()));
+        $cat = $generator->create_category($catalog);
+        $this->assertTrue($DB->record_exists('local_shop_catalog_category', array('id' => $cat->id)));
+
+        $tax->delete();
+        $this->assertFalse($DB->count_records('local_shop_catalog_category', array()));
+    }
 }

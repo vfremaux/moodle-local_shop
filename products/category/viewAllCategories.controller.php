@@ -33,6 +33,12 @@ class category_controller {
 
     protected $mform;
 
+    protected $thecatalog;
+
+    public function __construct($thecatalog) {
+        $this->thecatalog = $thecatalog;
+    }
+
     public function receive($cmd, $data = null, $mform = null) {
         if (!empty($data)) {
             // Data is fed from outside.
@@ -99,7 +105,7 @@ class category_controller {
                 $category->visible = 0;
             }
 
-            $category->catalogid = $thecatalog->id;
+            $category->catalogid = $this->thecatalog->id;
 
             $category->description = $category->description_editor['text'];
             $category->descriptionformat = 0 + $category->description_editor['format'];
