@@ -22,6 +22,7 @@
  * @copyright  2013 Valery Fremaux
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Generator tests class for local_shop.
@@ -69,7 +70,7 @@ class local_shop_generator_testcase extends advanced_testcase {
             'name' => 'Category 1',
             'parentid' => 0,
             'description_editor' => array('text' => 'Top category 1', 'format' => 1, 'itemid' => 0),
-            'visible' => false),
+            'visible' => false,
         );
         $category1 = $this->getDataGenerator()->create_catalog_category($categorydef);
 

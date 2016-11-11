@@ -159,6 +159,12 @@ class local_shop_generator extends component_generator_base {
         static $prodix = 1;
 
         if (is_null($data)) {
+
+            $requireddata = '[{"field":"requ1","label":"Requirement 1","type":"textfield",';
+            $requireddata .= '"desc":"Testing collecting testfield","attrs":{"size":80}}, ';
+            $requireddata .= '{"field":"requ2","label":"Requirement 2","type":"select",';
+            $requireddata .= '"desc":"Testing colecting form select", "options":{"MOD1":"Model1","MOD2":"Model2"}}]';
+
             $data = (object) array(
                 'code' => 'TESTPROD',
                 'name' => 'Test product',
@@ -203,7 +209,7 @@ class local_shop_generator extends component_generator_base {
                     'itemid' => 0,
                 ),
 
-                'requireddata' => '[{"field":"requ1","label":"Requirement 1","type":"textfield","desc":"Testing collecting testfield","attrs":{"size":80}}, {"field":"requ2","label":"Requirement 2","type":"select","desc":"Testing colecting form select", "options":{"MOD1":"Model1","MOD2":"Model2"}}]',
+                'requireddata' => $requireddata,
                 'enablehandler' => 'std_setuponecoursesession',
                 'handlerparams' => 'coursename=TESTPROD',
                 'quantaddressesusers' => 2,

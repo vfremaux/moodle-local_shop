@@ -31,8 +31,8 @@ function local_shop_has_leaflet($itemid) {
 
 }
 
-function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    global $CFG, $DB;
+function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $DB;
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;

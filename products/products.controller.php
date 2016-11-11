@@ -163,8 +163,9 @@ class product_controller {
 
             // Process text fields from editors.
             $draftideditor = file_get_submitted_draft_itemid('description_editor');
-            $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemdescription',
-                                                            $data->id, array('subdirs' => true), $this->data->description);
+            $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
+                                                                  'catalogitemdescription',$data->id,
+                                                                  array('subdirs' => true), $this->data->description);
             $this->data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                                     'catalogitemdescription', $this->data->id);
 
@@ -173,7 +174,7 @@ class product_controller {
                                                       $data->id, array('subdirs' => true), $this->data->notes);
             $this->data = file_postupdate_standard_editor($data, 'notes', $mform->editoroptions, $context, 'local_shop',
                                                     'catalogitemnotes', $this->data->id);
-        
+
             $draftideditor = file_get_submitted_draft_itemid('eula_editor');
             $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
                                                      $data->id, array('subdirs' => true), $this->data->eula);
@@ -278,7 +279,7 @@ class product_controller {
                 'enablehandler' => 'String, handler name',
                 'handlerparams' => 'param,value pairs string',
                 'quantaddressesusers' => '0 (no), 1 (one seat per trans), 2 (yes)',
-                'renewable' => 'Boolean as 0,2',
+                'renewable' => 'Boolean as 0,2'
             ),
             'unlink' => array('itemid' => 'Numeric ID pointing a catalog item ID'),
             'clone' => array('itemid' => 'Numeric ID pointing a catalog item ID'),
@@ -288,7 +289,7 @@ class product_controller {
                 'by' => 'field name as  code, shortname or name',
                 'code' => 'String',
                 'name' => 'String',
-                'shortname' => 'String',),
+                'shortname' => 'String')
         );
     }
 }

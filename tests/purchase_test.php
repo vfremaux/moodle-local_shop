@@ -22,7 +22,7 @@
  * @copyright  2013 Valery Fremaux
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -33,7 +33,7 @@ use \local_shop\Shop;
 
 // Get all front controllers.
 $controllerfiles = glob($CFG->dirroot.'/local/shop/front/*.controller.php');
-foreach($controllerfiles as $c) {
+foreach ($controllerfiles as $c) {
     require_once($c);
 }
 
@@ -56,7 +56,7 @@ class local_shop_purchase_testcase extends advanced_testcase {
         // Setup moodle content environment.
 
         $category = $this->getDataGenerator()->create_category();
-        $params = array('name'=>'Test course', 'shortname' => 'TESTPROD', 'category' => $category->id);
+        $params = array('name' => 'Test course', 'shortname' => 'TESTPROD', 'category' => $category->id);
         $course = $this->getDataGenerator()->create_course($params);
 
         // Setup the shop structure.
@@ -77,16 +77,16 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $shops = $DB->get_record('local_shop', array(), 'id', '*', 0, 1);
         $shop = array_shift($shops);
 
-        // Start setting purchase order in session
+        // Start setting purchase order in session.
 
-        // Run shop controller, with an imported order
+        // Run shop controller, with an imported order.
         $controller = new \local_shop\front\shop_controller();
         $order = array('TESTPROD' => 10);
         $controller->receive('import', $order);
         $controller->process('import');
         $this->assertTrue(@$SESSION->shoppingcart->order->testproduct == 10);
 
-        // Test order cleanup
+        // Test order cleanup.
         $controller->receive('clearall', $order);
         $controller->process('clearall');
         $this->assertTrue(empty($SESSION->shoppingcart));
@@ -116,7 +116,7 @@ class local_shop_purchase_testcase extends advanced_testcase {
 
         // Run users controller.
         $controller = new \local_shop\front\users_controller();
-        // Add participants
+        // Add participants.
         $pts = array(
             (object) array('firstname' => 'Paul', 'lastname' => 'Teacher', 'email' => 'paul.teacher@foo.com', 'city' => 'COMMENY'),
             (object) array('firstname' => 'John', 'lastname' => 'Learn1', 'email' => 'john.learn1@foo.com', 'city' => 'COMMENY'),
