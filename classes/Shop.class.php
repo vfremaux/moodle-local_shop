@@ -251,7 +251,7 @@ class Shop extends ShopObject {
     /**
      * Exports the shop into a YML string.
      */
-    public function export() {
+    public function export($level = 0) {
         $yml = '';
 
         $yml .= "shop:\n";

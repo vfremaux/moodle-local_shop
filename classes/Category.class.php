@@ -68,7 +68,7 @@ class Category extends ShopObject {
         return $branch;
     }
 
-    public function export($level) {
+    public function export($level = 0) {
 
         $indent = str_repeat('    ', $level);
 

@@ -191,7 +191,7 @@ class ShopObject {
         return $instancemenu;
     }
 
-    protected function export($level) {
+    protected function export($level = 0) {
 
         $indent = str_repeat('    ', $level);
 

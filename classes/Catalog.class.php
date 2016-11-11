@@ -768,7 +768,7 @@ class Catalog extends ShopObject {
         parent::delete();
     }
 
-    public function export($level) {
+    public function export($level = 0) {
 
         $level++;
         $indent = str_repeat('    ', $level);
