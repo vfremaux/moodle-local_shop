@@ -164,7 +164,7 @@ class product_controller {
             // Process text fields from editors.
             $draftideditor = file_get_submitted_draft_itemid('description_editor');
             $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
-                                                                  'catalogitemdescription',$data->id,
+                                                                  'catalogitemdescription', $data->id,
                                                                   array('subdirs' => true), $this->data->description);
             $this->data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                                     'catalogitemdescription', $this->data->id);
