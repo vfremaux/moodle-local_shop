@@ -68,6 +68,20 @@ class Category extends ShopObject {
         return $branch;
     }
 
+    public function export($level) {
+
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+        $yml .= $indent.'category:'."\n";
+
+        $level ++;
+        $yml .= parent::export($level);
+        $level--;
+
+        return $yml;
+    }
+
     /**
      * Recurse down to fetch first deeper branch. Stops when no more childs are found.
      * @param int $catalogid
