@@ -28,7 +28,11 @@ require_once($CFG->dirroot.'/local/shop/front/lib.php');
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
-class purchasereq_controller extends front_controller_base {
+class purchaserequ_controller extends front_controller_base {
+
+    protected $data;
+
+    protected $received;
 
     public function receive($cmd, $data = array()) {
         global $SESSION;
@@ -36,6 +40,7 @@ class purchasereq_controller extends front_controller_base {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -66,10 +71,16 @@ class purchasereq_controller extends front_controller_base {
                 $this->data->back = optional_param('back', false, PARAM_BOOL);
                 break;
         }
+
+        $this->received = true;
     }
 
     public function process($cmd) {
         global $SESSION;
+
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
 
         $shoppingcart = $SESSION->shoppingcart;
 

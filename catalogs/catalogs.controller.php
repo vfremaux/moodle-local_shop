@@ -74,14 +74,14 @@ class catalog_controller {
             // If master catalog, must delete all slaves.
             $thecatalog = new Catalog($this->data->catalogid);
             if ($thecatalog->ismaster) {
-                $select = " groupid = '{$this->data->catalogid}' ";
-                $catalogids = $DB->get_records_select_menu('local_shop_catalog', $select, array(), 'id', 'id,name');
-                $catalogidlist = implode("','", array_keys($catalogids));
+                $slaves = $thecatalog->get_slaves();
+                if (!empty($slaves)) {
+                    foreach ($slaves as $s) {
+                        $s->delete();
+                    }
+                }
+                $thecatalog->delete();
             }
-            // Deletes products entries in candidate catalogs.
-            $DB->delete_records_select('local_shop_catalogitem', " catalogid IN ('$catalogidlist') ");
-            $DB->delete_records_select('local_shop_catalogcategory', " catalogid IN ('$catalogidlist') ");
-            $DB->delete_records_select('local_shop_catalog', " id IN ('$catalogidlist') ");
 
             redirect(new \moodle_url('/local/shop/index.php'));
         }

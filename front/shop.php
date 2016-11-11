@@ -35,7 +35,10 @@ if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/shop.controller.php');
     $controller = new \local_shop\front\shop_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
-    $result = $controller->process($action);
+    $resulturl = $controller->process($action);
+    if ($resulturl) {
+        redirect($resulturl);
+    }
 }
 
 // Choose a category.

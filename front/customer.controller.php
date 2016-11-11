@@ -102,7 +102,7 @@ class customer_controller extends front_controller_base {
 
             if ($this->data->back) {
                 $params = array('view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1);
-                redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
 
                 $errors = shop_validate_customer($this->theblock);
@@ -142,7 +142,7 @@ class customer_controller extends front_controller_base {
 
                     $next = $this->theshop->get_next_step('customer');
                     $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-                    redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                    return new \moodle_url('/local/shop/front/view.php', $params);
                 }
             }
         }

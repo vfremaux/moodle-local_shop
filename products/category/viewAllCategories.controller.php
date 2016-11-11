@@ -153,8 +153,9 @@ class category_controller {
             'show' => array('categoryid' => 'Numeric ID pointing a Category'),
             'hide' => array('categoryid' => 'Numeric ID pointing a Category'),
             'edit' => array(
+                'catalogid' => 'ID of product catalog as Integer',
                 'name' => 'String',
-                'parentid' => 'Numeric ID pointing another categroy',
+                'parentid' => 'Numeric ID pointing another category',
                 'description_editor' => 'Array of text|format|itemid',
                 'visible' => 'Boolean'),
         );

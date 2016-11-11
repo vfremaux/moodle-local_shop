@@ -34,10 +34,15 @@ use local_shop\BillItem;
 
 class payment_controller extends front_controller_base {
 
+    protected $data;
+
+    protected $received;
+
     public function receive($cmd, $data = array()) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -49,13 +54,23 @@ class payment_controller extends front_controller_base {
             case 'place':
                 break;
             case 'navigate':
+                /*
+                 * security. No one should be able to trigger this case from outside
+                 */
+                confirm_sesskey();
                 $this->data->back = optional_param('back', false, PARAM_BOOL);
                 break;
         }
+
+        $this->received = true;
     }
 
     public function process($cmd) {
         global $SESSION, $DB, $USER, $OUTPUT;
+
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
 
         $SESSION->shoppingcart->debug = $this->data->debug;
 
@@ -65,6 +80,7 @@ class payment_controller extends front_controller_base {
             $customer = (object)$SESSION->shoppingcart->customerinfo;
             $params = array('email' => $customer->email, 'lastname' => strtoupper($customer->lastname));
             if ($customerrec = $DB->get_record('local_shop_customer', $params)) {
+                // Customer should already be pre recorded so this is expected to be the mostly used case.
                 $DB->update_record('local_shop_customer', $customer);
                 $customer->id = $customerrec->id;
                 unset($customerrec); // Free some memory.
@@ -170,14 +186,12 @@ class payment_controller extends front_controller_base {
                                 'back' => 1);
                 $url = new \moodle_url('/local/shop/front/view.php', $params);
                 if (empty($SESSION->shoppingcart->debug)) {
-                    redirect($url);
+                    return $url;
                 } else {
                     echo $OUTPUT->continue_button($url);
                 }
             } else {
-                confirm_sesskey();
                 /*
-                 * security. No one should be able to trigger this case from outside
                  * if it has been possible to continue, trigger the payment module interactive
                  * processing function and go ahead
                  */
@@ -193,7 +207,7 @@ class payment_controller extends front_controller_base {
                                     'transid' => $afullbill->transactionid);
                     $url = new \moodle_url('/local/shop/front/view.php', $params);
                     if (empty($SESSION->shoppingcart->debug)) {
-                        redirect($url);
+                        return $url;
                     } else {
                         echo $OUTPUT->header();
                         echo $OUTPUT->continue_button($url);
@@ -209,7 +223,7 @@ class payment_controller extends front_controller_base {
                                     'transid' => $afullbill->transactionid);
                     $url = new \moodle_url('/local/shop/front/view.php', $params);
                     if (empty($SESSION->shoppingcart->debug)) {
-                        redirect($url);
+                        return $url;
                     } else {
                         echo $OUTPUT->header();
                         echo $OUTPUT->continue_button($url);

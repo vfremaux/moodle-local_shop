@@ -82,4 +82,16 @@ class taxes_controller {
             return new Tax($tax->id);
         }
     }
+
+    public function info() {
+        return array(
+            'delete' => array('taxid' => 'Numeric ID'),
+            'edit' => array(
+                'title' => 'String',
+                'ratio' => 'Number',
+                'country' => '2 digits uppercase coutry code',
+                'formula' => 'String (expression)',
+            ),
+        );
+    }
 }

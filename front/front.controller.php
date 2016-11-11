@@ -32,6 +32,8 @@ abstract class front_controller_base {
 
     protected $theblock;
 
+    protected $renderer;
+
     /**
      * The received data
      */
@@ -49,6 +51,9 @@ abstract class front_controller_base {
         } else {
             $this->context = \context_system::instance();
         }
+
+        $this->renderer = shop_get_renderer();
+        $this->renderer->load_context($theshop, $theblock);
     }
 
     /**

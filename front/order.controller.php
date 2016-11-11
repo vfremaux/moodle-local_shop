@@ -29,6 +29,10 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 class order_controller extends front_controller_base {
 
+    protected $data;
+
+    protected $received;
+
     public function receive($cmd, $data = array()) {
         if (!empty($data)) {
             // Data is fed from outside.
@@ -46,10 +50,16 @@ class order_controller extends front_controller_base {
                 }
                 break;
         }
+
+        $this->received = true;
     }
 
     public function process($cmd) {
         global $SESSION, $CFG, $SITE, $DB;
+
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
 
         $shoppingcart = $SESSION->shoppingcart;
 
@@ -62,7 +72,7 @@ class order_controller extends front_controller_base {
                                 'shopid' => $this->theshop->id,
                                 'blockid' => 0 + @$this->theblock->id,
                                 'back' => 1);
-                redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
 
                 // Register paymode.
@@ -107,7 +117,7 @@ class order_controller extends front_controller_base {
                         }
                     }
 
-                    $title = $SITE->shortname . ' : ' . get_string('orderinput', 'local_shop');
+                    $title = $SITE->shortname.' : '.get_string('orderinput', 'local_shop');
                     $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $salesnotification,
                                               $salesnotification, '');
                     if ($sent) {
@@ -126,7 +136,7 @@ class order_controller extends front_controller_base {
                                 'shopid' => $this->theshop->id,
                                 'blockid' => 0 + @$this->theblock->id,
                                 'what' => 'place');
-                redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                return new \moodle_url('/local/shop/front/view.php', $params);
             }
         }
     }

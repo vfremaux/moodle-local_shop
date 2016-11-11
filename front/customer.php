@@ -46,7 +46,10 @@ if ($action) {
     include($CFG->dirroot.'/local/shop/front/customer.controller.php');
     $controller = new \local_shop\front\customer_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
-    $controller->process($action);
+    $resulturl = $controller->process($action);
+    if (!empty($resulturl)) {
+        redirect($resulturl);
+    }
 }
 
 echo $out;
@@ -88,7 +91,7 @@ echo '<form name="driverform" action="'.$shopurl.'" method="post">';
 echo '<fieldset>';
 if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
     echo $OUTPUT->box_start('shop-error-notice');
-    echo implode(' ', array_values($SESSION->shoppingcart->errors->customerinfo));
+    echo implode('<br/>', array_values($SESSION->shoppingcart->errors->customerinfo));
     echo $OUTPUT->box_end();
 }
 echo '</fieldset>';
