@@ -24,6 +24,8 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
+global $CFG;
+
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/tests/lib.php');
