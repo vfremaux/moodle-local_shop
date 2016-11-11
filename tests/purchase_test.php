@@ -28,7 +28,7 @@ global $CFG;
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
-require_once($CFG->dirroot.'/local/shop/tests/lib.php');
+require_once($CFG->dirroot.'/local/shop/tests/generator/lib.php');
 
 use \local_shop\Catalog;
 use \local_shop\Shop;
