@@ -248,6 +248,23 @@ class Shop extends ShopObject {
         return $discountrate;
     }
 
+    /**
+     * Exports the shop into a YML string.
+     */
+    public function export() {
+        $yml = '';
+
+        $yml .= "shop:\n";
+
+        $yml .= parent::export(1);
+
+        $yml = "\n";
+
+        if (!empty($this->thecatalogue) {
+            $yml .= $this->thecatalogue->export();
+        }
+    }
+
     public static function count($filter) {
         return parent::_count(self::$table, $filter);
     }

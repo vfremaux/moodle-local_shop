@@ -190,4 +190,18 @@ class ShopObject {
         }
         return $instancemenu;
     }
+
+    protected function export($level) {
+
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+        if (!empty($this->record)) {
+            foreach ($this->record as $key => $value) {
+                $yml .= $indent.$key.': '.$value."\n";
+            }
+        }
+
+        return $yml;
+    }
 }

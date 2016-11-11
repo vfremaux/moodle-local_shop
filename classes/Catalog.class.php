@@ -768,6 +768,50 @@ class Catalog extends ShopObject {
         parent::delete();
     }
 
+    public function export($level) {
+
+        $level++;
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+
+        $yml .= "catalog:\n";
+
+        $yml .= parent::export($level);
+
+        $yml = "\n";
+
+        if (!empty($this->categories)) {
+            $yml .= $indent.'categories:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($this->categories as $acategory) {
+                $yml .= $indent.'- '.$acategory->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+        $this->get_all_products_for_admin($shopproducts);
+        if (!empty($shoppproducts)) {
+            $yml .= $indent.'items:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($shopproducts as $ci) {
+                $yml .= $indent.$ci->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+
+        $level--;
+
+        return $yml;
+    }
+
     /**
      * Restricts list of available countries per catalog.
      */
