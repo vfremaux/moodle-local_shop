@@ -65,6 +65,7 @@ class reset_controller {
      * @param string $cmd
      */
     public function process($cmd) {
+        global $OUTPUT, $DB;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
