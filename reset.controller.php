@@ -42,6 +42,7 @@ class reset_controller {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
