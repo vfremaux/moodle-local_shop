@@ -39,7 +39,7 @@ class local_shop_generator_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $generator = new local_shop_generator();
+        $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
         $this->assertFalse($DB->count_records('local_shop', array()));
         $shop = $generator->create_shop_instance();
@@ -55,7 +55,7 @@ class local_shop_generator_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $generator = new local_shop_generator();
+        $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
         $this->assertFalse($DB->count_records('local_shop_catalog', array()));
         $catalog = $generator->create_catalog_instance();
@@ -71,7 +71,7 @@ class local_shop_generator_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $generator = new local_shop_generator();
+        $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
         $this->assertFalse($DB->count_records('local_shop_tax', array()));
         $tax = $generator->create_tax();
@@ -87,7 +87,7 @@ class local_shop_generator_testcase extends advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $generator = new local_shop_generator();
+        $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
         $catalog = $generator->create_catalog();
 

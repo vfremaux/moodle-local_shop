@@ -63,7 +63,7 @@ class local_shop_purchase_testcase extends advanced_testcase {
 
         // Setup the shop structure.
 
-        $generator = new local_shop_generator();
+        $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
         $tax = $generator->create_tax();
         $shop = $generator->create_shop();
