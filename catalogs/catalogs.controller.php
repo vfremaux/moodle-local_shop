@@ -146,7 +146,7 @@ class catalog_controller {
                                                                 $catalog->id, array('subdirs' => true), $catalog->description);
                 $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
                                                         'requirementdescription', $catalog->id);
-    
+
                 $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
                 $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
                                                                        'catalogsalesconditions', $catalog->id, array('subdirs' => true),

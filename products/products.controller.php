@@ -170,13 +170,13 @@ class product_controller {
                                                                       array('subdirs' => true), $this->data->description);
                 $this->data = file_postupdate_standard_editor($this->data, 'description', $mform->editoroptions, $context, 'local_shop',
                                                         'catalogitemdescription', $this->data->id);
-    
+
                 $draftideditor = file_get_submitted_draft_itemid('notes_editor');
                 $this->data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
                                                           $this->data->id, array('subdirs' => true), $this->data->notes);
                 $this->data = file_postupdate_standard_editor($this->data, 'notes', $mform->editoroptions, $context, 'local_shop',
                                                         'catalogitemnotes', $this->data->id);
-    
+
                 $draftideditor = file_get_submitted_draft_itemid('eula_editor');
                 $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
                                                          $this->data->id, array('subdirs' => true), $this->data->eula);
