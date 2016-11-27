@@ -58,8 +58,10 @@ class production_controller extends front_controller_base {
         switch ($cmd) {
             case 'navigate':
                 break;
+
             case 'confirm':
                 break;
+
             case 'produce':
                 break;
         }

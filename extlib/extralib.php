@@ -26,7 +26,7 @@ function evaluate($code, $inputvars, $outputvars) {
 
     extract($inputvars);
 
-    eval($code);
+    @eval($code);
 
     $vars = explode(',', $outputvars);
 

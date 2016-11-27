@@ -33,7 +33,10 @@ if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/order.controller.php');
     $controller = new \local_shop\front\order_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
-    $controller->process($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
 // As we sould know enough about customer here, we can calculate shipping and eventuel discount.

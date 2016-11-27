@@ -20,7 +20,7 @@
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace \local_shop\backoffice;
+namespace local_shop\backoffice;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -81,5 +81,17 @@ class taxes_controller {
             }
             return new Tax($tax->id);
         }
+    }
+
+    public function info() {
+        return array(
+            'delete' => array('taxid' => 'Numeric ID'),
+            'edit' => array(
+                'title' => 'String',
+                'ratio' => 'Number',
+                'country' => '2 digits uppercase coutry code',
+                'formula' => 'String (expression)',
+            ),
+        );
     }
 }
