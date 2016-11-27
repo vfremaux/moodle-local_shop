@@ -32,14 +32,22 @@ abstract class front_controller_base {
 
     protected $theblock;
 
+    protected $renderer;
+
     /**
      * The received data
      */
     protected $data;
 
+    /**
+     * True if data is loaded for processing.
+     */
+    protected $received;
+
     protected $context;
 
     public function __construct(&$theshop, &$thecatalog, &$theblock = null) {
+
         $this->theshop = $theshop;
         $this->thecatalog = $thecatalog;
         $this->theblock = $theblock;
@@ -49,6 +57,9 @@ abstract class front_controller_base {
         } else {
             $this->context = \context_system::instance();
         }
+
+        $this->renderer = shop_get_renderer();
+        $this->renderer->load_context($theshop, $theblock);
     }
 
     /**

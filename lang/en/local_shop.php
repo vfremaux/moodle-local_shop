@@ -421,6 +421,7 @@ $string['sold'] = 'Sold:';
 $string['standalone'] = 'Standalone catalog';
 $string['status'] = 'Status';
 $string['stock'] = 'Stock:';
+$string['task_cron'] = 'Automated shop actions';
 $string['taxcode'] = 'Tax code:';
 $string['taxhelp'] = 'Taxes';
 $string['taxhelp_help'] = 'Taxes Help';

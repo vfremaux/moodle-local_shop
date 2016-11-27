@@ -25,6 +25,10 @@ namespace local_shop\backoffice;
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+
+use local_shop\Shop;
+
 class reset_controller {
 
     protected $data;
@@ -42,6 +46,7 @@ class reset_controller {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -64,10 +69,13 @@ class reset_controller {
      * @param string $cmd
      */
     public function process($cmd) {
+        global $OUTPUT, $DB;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
+
+        $out = '';
 
         if (!empty($this->data->bills) || !empty($this->data->customers) || !empty($this->data->catalogs)) {
             $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
@@ -105,9 +113,15 @@ class reset_controller {
             $DB->delete_records('local_shop_customer', null);
         }
         if (!empty($this->data->catalogs)) {
+            if (!empty($this->data->shopid)) {
+                $theshop = new Shop($this->data->shopid);
+                $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theshop->config->catalogid));
+                $DB->delete_records('local_shop_catalog', array('id' => $this->theshop->config->catalogid));
+            } else {
+                $DB->delete_records('local_shop_catalogitem', array());
+                $DB->delete_records('local_shop_catalog', array());
+            }
             $out .= $OUTPUT->notification(get_string('catalogsdeleted', 'local_shop'));
-            $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theshop->config->catalogid));
-            $DB->delete_records('local_shop_catalog', array('id' => $theshop->config->catalogid));
         }
     }
 }
