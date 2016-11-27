@@ -96,18 +96,20 @@ class shop_controller {
             }
 
             // Process text fields from editors.
-            $draftideditor = file_get_submitted_draft_itemid('description_editor');
-            $shoprec->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'description',
-                                                               $shoprec->id, array('subdirs' => true), $shoprec->description);
-            $shoprec = file_postupdate_standard_editor($shoprec, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                       'description', $shoprec->id);
-
-            $draftideditor = file_get_submitted_draft_itemid('eula_editor');
-            $shoprec->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'eula',
-                                                        $shoprec->id, array('subdirs' => true), $shoprec->eula);
-            $shoprec = file_postupdate_standard_editor($shoprec, 'eula', $this->mform->editoroptions, $context,
-                                                       'local_shop', 'eula', $shoprec->id);
-
+            if ($this->mform) {
+                // We do not have form when runing tests.
+                $draftideditor = file_get_submitted_draft_itemid('description_editor');
+                $shoprec->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'description',
+                                                                   $shoprec->id, array('subdirs' => true), $shoprec->description);
+                $shoprec = file_postupdate_standard_editor($shoprec, 'description', $this->mform->editoroptions, $context, 'local_shop',
+                                                           'description', $shoprec->id);
+    
+                $draftideditor = file_get_submitted_draft_itemid('eula_editor');
+                $shoprec->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'eula',
+                                                            $shoprec->id, array('subdirs' => true), $shoprec->eula);
+                $shoprec = file_postupdate_standard_editor($shoprec, 'eula', $this->mform->editoroptions, $context,
+                                                           'local_shop', 'eula', $shoprec->id);
+            }
             return new Shop($shoprec);
         }
     }

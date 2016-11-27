@@ -26,6 +26,7 @@ namespace local_shop\front;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
+require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
@@ -33,10 +34,6 @@ use local_shop\Bill;
 use local_shop\BillItem;
 
 class payment_controller extends front_controller_base {
-
-    protected $data;
-
-    protected $received;
 
     public function receive($cmd, $data = array()) {
         if (!empty($data)) {
@@ -72,7 +69,7 @@ class payment_controller extends front_controller_base {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
-        $SESSION->shoppingcart->debug = $this->data->debug;
+        $SESSION->shoppingcart->debug = @$this->data->debug;
 
         if ($cmd == 'place') {
             // Convert all data in bill records.

@@ -39,9 +39,15 @@ abstract class front_controller_base {
      */
     protected $data;
 
+    /**
+     * True if data is loaded for processing.
+     */
+    protected $received;
+
     protected $context;
 
     public function __construct(&$theshop, &$thecatalog, &$theblock = null) {
+
         $this->theshop = $theshop;
         $this->thecatalog = $thecatalog;
         $this->theblock = $theblock;

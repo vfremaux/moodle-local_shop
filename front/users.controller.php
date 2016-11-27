@@ -73,7 +73,7 @@ class users_controller extends front_controller_base {
     }
 
     public function process($cmd) {
-        global $SESSION, $DB;
+        global $SESSION, $DB, $OUTPUT;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
@@ -88,11 +88,11 @@ class users_controller extends front_controller_base {
                                 'shopid' => $this->theshop->id,
                                 'blockid' => 0 + @$this->theblock->id,
                                 'back' => 1);
-                redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
                 $next = $this->theshop->get_next_step('users');
                 $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-                redirect(new \moodle_url('/local/shop/front/view.php', $params));
+                return new \moodle_url('/local/shop/front/view.php', $params);
             }
         } else if ($cmd == 'back') {
             // This can be decided into the user page.
@@ -101,12 +101,15 @@ class users_controller extends front_controller_base {
                             'shopid' => $this->theshop->id,
                             'blockid' => 0 + @$this->theblock->id,
                             'back' => 1);
-            redirect(new \moodle_url('/local/shop/front/view.php', $params));
+            return new \moodle_url('/local/shop/front/view.php', $params);
+
         } else if ($cmd == 'addparticipant') {
+
             $pt = (object) json_decode($this->data->participant);
 
             if (empty($pt->lastname) || empty($pt->lastname) || empty($pt->email)) {
                 $result = get_string('missingdata', 'local_shop');
+                return $result;
             } else {
 
                 if (!isset($SESSION->shoppingcart)) {
@@ -125,7 +128,9 @@ class users_controller extends front_controller_base {
                 $SESSION->shoppingcart->participants[$pt->email] = $pt;
             }
             $cmd = 'participantlist';
+
         } else if ($cmd == 'deleteparticipant') {
+
             $ptid = $this->data->participantid; // The ptid is email.
             $requiredroles = $this->thecatalog->check_required_roles();
 
@@ -160,7 +165,7 @@ class users_controller extends front_controller_base {
                     $i++;
                 }
             }
-            for (; $i < $SESSION->shoppingcart->seats; $i++) {
+            for (; $i < (0 + @$SESSION->shoppingcart->seats); $i++) {
                 $output .= $this->renderer->participant_blankrow();
             }
         }
@@ -176,7 +181,9 @@ class users_controller extends front_controller_base {
             $SESSION->shoppingcart->users[$sn][$r][$pt] = $SESSION->shoppingcart->participants[$pt];
             @$SESSION->shoppingcart->assigns[$sn]++;
             $cmd = 'assignlistobj';
+
         } else if ($cmd == 'deleteassign') {
+
             $sn = $this->data->shortname;
             $r = $this->data->role;
             $pt = $this->data->ptid;
@@ -185,11 +192,16 @@ class users_controller extends front_controller_base {
             // Secures in case of failure...
             $SESSION->shoppingcart->assigns[$sn] = max(0, @$SESSION->shoppingcart->assigns[$sn]);
             $cmd = 'assignlistobj';
+
         } else if ($cmd == 'assignlist') {
+
             $this->renderer->role_list($this->data->role, $this->data->shortname);
+
         }
+
         // Needing bounce here.
         if ($cmd == 'assignlistobj') {
+
             $requiredroles = $this->thecatalog->check_required_roles();
 
             $a = new \StdClass;
@@ -199,7 +211,9 @@ class users_controller extends front_controller_base {
             }
 
             $output = json_encode($a);
+
         } else if ($cmd == 'assignalllistobj') {
+
             $requiredroles = $this->thecatalog->check_required_roles();
 
             $a = new \StdClass;

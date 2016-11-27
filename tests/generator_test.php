@@ -41,12 +41,13 @@ class local_shop_generator_testcase extends advanced_testcase {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
-        $this->assertFalse($DB->count_records('local_shop', array()));
-        $shop = $generator->create_shop_instance();
+        // There is one default shop at install time.
+        $this->assertTrue(1 == $DB->count_records('local_shop', array()));
+        $shop = $generator->create_shop();
         $this->assertTrue($DB->record_exists('local_shop', array('id' => $shop->id)));
 
         $shop->delete();
-        $this->assertFalse($DB->count_records('local_shop', array()));
+        $this->assertTrue(1 == $DB->count_records('local_shop', array()));
     }
 
     public function test_create_catalog() {
@@ -57,12 +58,12 @@ class local_shop_generator_testcase extends advanced_testcase {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
-        $this->assertFalse($DB->count_records('local_shop_catalog', array()));
-        $catalog = $generator->create_catalog_instance();
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalog', array()));
+        $catalog = $generator->create_catalog();
         $this->assertTrue($DB->record_exists('local_shop_catalog', array('id' => $catalog->id)));
 
         $catalog->delete();
-        $this->assertFalse($DB->count_records('local_shop_catalog', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalog', array()));
     }
 
     public function test_create_tax() {
@@ -73,12 +74,12 @@ class local_shop_generator_testcase extends advanced_testcase {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
-        $this->assertFalse($DB->count_records('local_shop_tax', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_tax', array()));
         $tax = $generator->create_tax();
         $this->assertTrue($DB->record_exists('local_shop_tax', array('id' => $tax->id)));
 
         $tax->delete();
-        $this->assertFalse($DB->count_records('local_shop_tax', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_tax', array()));
     }
 
     public function test_create_category() {
@@ -91,11 +92,12 @@ class local_shop_generator_testcase extends advanced_testcase {
 
         $catalog = $generator->create_catalog();
 
-        $this->assertFalse($DB->count_records('local_shop_catalog_category', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalogcategory', array()));
         $cat = $generator->create_category($catalog);
-        $this->assertTrue($DB->record_exists('local_shop_catalog_category', array('id' => $cat->id)));
+        $this->assertTrue(!empty($cat));
+        $this->assertTrue($DB->record_exists('local_shop_catalogcategory', array('id' => $cat->id)));
 
-        $tax->delete();
-        $this->assertFalse($DB->count_records('local_shop_catalog_category', array()));
+        $cat->delete();
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalogcategory', array()));
     }
 }

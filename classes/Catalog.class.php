@@ -763,6 +763,8 @@ class Catalog extends ShopObject {
         // Clear all fileareas linked with products.
         $fs = get_file_storage();
 
+        $contextid = \context_system::instance()->id;
+
         $fs->delete_area_files($contextid, 'local_shop', 'catalogdescription', $this->id);
 
         parent::delete();

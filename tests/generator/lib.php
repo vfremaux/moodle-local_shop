@@ -81,7 +81,7 @@ class local_shop_generator extends component_generator_base {
                 'enduserorganisationrequired' => true,
                 'endusermobilephonerequired' => true,
                 'printtabbedcategories' => true,
-                'defaultcustomersupportcourse' => 'CUSTOMERSUPPORT',
+                'defaultcustomersupportcourse' => 0,
                 'eula_editor' => array('text' => 'Test shop eulas', 'format' => 1, 'itemid' => 0),
             );
         }
@@ -93,7 +93,7 @@ class local_shop_generator extends component_generator_base {
 
     public function create_tax($data = null) {
 
-        $taxid = 1;
+        $taxix = 1;
 
         if (is_null($data)) {
             $data = (object) array(

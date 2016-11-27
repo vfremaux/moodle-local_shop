@@ -36,6 +36,7 @@ class shop_controller extends front_controller_base {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -75,10 +76,17 @@ class shop_controller extends front_controller_base {
             case 'navigate':
                 break;
         }
+        $this->received = true;
     }
 
     public function process($cmd) {
         global $SESSION;
+
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
+
+        $output = '';
 
         if ($cmd == 'import') {
             unset($SESSION->shoppingcart);
@@ -88,7 +96,7 @@ class shop_controller extends front_controller_base {
                 if ($inputkey == 'shipping') {
                     continue;
                 }
-                $SESSION->shoppingcart->order[$inputkey] = $this->data[$inputkey];
+                $SESSION->shoppingcart->order[$inputkey] = $this->data->$inputkey;
             }
         } else if ($cmd == 'clearall') {
             unset($SESSION->shoppingcart);

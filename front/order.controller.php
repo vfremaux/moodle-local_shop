@@ -29,14 +29,11 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 class order_controller extends front_controller_base {
 
-    protected $data;
-
-    protected $received;
-
     public function receive($cmd, $data = array()) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -74,6 +71,11 @@ class order_controller extends front_controller_base {
                                 'back' => 1);
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
+
+                if (empty($shoppingcart->transid)) {
+                    // Locks a transition ID for new incomers.
+                    $shoppingcart->transid = shop_get_transid();
+                }
 
                 // Register paymode.
                 $shoppingcart->paymode = $this->data->paymode;

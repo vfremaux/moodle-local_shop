@@ -61,32 +61,44 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $params = array('name' => 'Test course', 'shortname' => 'TESTPROD', 'category' => $category->id);
         $course = $this->getDataGenerator()->create_course($params);
 
+        // Create customersupport default course
+        $params = array('name' => 'Test Customer Support course', 'shortname' => 'CUSTOMERSUPPORT', 'category' => $category->id);
+        $customersupportcourse = $this->getDataGenerator()->create_course($params);
+
         // Setup the shop structure.
 
         $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
         $tax = $generator->create_tax();
         $shop = $generator->create_shop();
+        $this->assertTrue(!empty($shop));
+
         $catalog = $generator->create_catalog();
-        $category = $generator->create_category();
+        $this->assertTrue(!empty($catalog));
+
+        // Bind catalog to shop.
+        $shop->catalogid = $catalog->id;
+        $shop->save(true);
+        $this->assertTrue($catalog->id == $DB->get_field('local_shop', 'catalogid', array('id' => $shop->id)));
+
+        $category = $generator->create_category($catalog);
+        $this->assertTrue(!empty($category));
+
         $product = $generator->create_product($catalog, $category, $tax);
+        $this->assertTrue(!empty($product));
 
         // Keep unconnected while executing the purchase process.
 
-        $this->assertTrue($DB->record_exists('local_shop'));
-
-        // Take first available shop.
-        $shops = $DB->get_record('local_shop', array(), 'id', '*', 0, 1);
-        $shop = array_shift($shops);
+        $this->assertTrue($DB->record_exists('local_shop_catalogitem', array('id' => $product->id)));
 
         // Start setting purchase order in session.
 
         // Run shop controller, with an imported order.
-        $controller = new \local_shop\front\shop_controller();
+        $controller = new \local_shop\front\shop_controller($shop, $catalog);
         $order = array('TESTPROD' => 10);
         $controller->receive('import', $order);
         $controller->process('import');
-        $this->assertTrue(@$SESSION->shoppingcart->order->testproduct == 10);
+        $this->assertTrue(@$SESSION->shoppingcart->order['TESTPROD'] == 10);
 
         // Test order cleanup.
         $controller->receive('clearall', $order);
@@ -104,20 +116,33 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $this->assertTrue(isset($SESSION->shoppingcart->finaltaxedtotal));
 
         // Run purchaserequ controller.
-        $controller = new \local_shop\front\purchaserequ_controller();
-        $collected = array('TESTPROD/requ1'.'0' => 'value1');
-        $collected = array('TESTPROD/requ2'.'0' => 'value2');
+        // Test required 5 product units. 
+        $controller = new \local_shop\front\purchaserequ_controller($shop, $catalog);
+        $collected['customerdata']['TESTPROD']['requ1'][0] = 'value1';
+        $collected['customerdata']['TESTPROD']['requ1'][1] = 'value12';
+        $collected['customerdata']['TESTPROD']['requ1'][2] = 'value13';
+        $collected['customerdata']['TESTPROD']['requ1'][3] = 'value14';
+        $collected['customerdata']['TESTPROD']['requ1'][4] = 'value15';
+        $collected['customerdata']['TESTPROD']['requ2'][0] = 'value2';
+        $collected['customerdata']['TESTPROD']['requ2'][1] = 'value22';
+        $collected['customerdata']['TESTPROD']['requ2'][2] = 'value23';
+        $collected['customerdata']['TESTPROD']['requ2'][3] = 'value24';
+        $collected['customerdata']['TESTPROD']['requ2'][4] = 'value25';
+
         $controller->receive('collect', $collected);
         $controller->process('collect');
+
         $this->assertTrue($SESSION->shoppingcart->customerdata['TESTPROD']['requ1'][0] == 'value1');
         $this->assertTrue($SESSION->shoppingcart->customerdata['TESTPROD']['requ2'][0] == 'value2');
+        $this->assertTrue($SESSION->shoppingcart->customerdata['TESTPROD']['requ1'][4] == 'value15');
+        $this->assertTrue($SESSION->shoppingcart->customerdata['TESTPROD']['requ2'][4] == 'value25');
 
         // Simulate nav to users controller, with an imported order.
         $controller->receive('navigate', $collected);
         $controller->process('navigate');
 
         // Run users controller.
-        $controller = new \local_shop\front\users_controller();
+        $controller = new \local_shop\front\users_controller($shop, $catalog);
         // Add participants.
         $pts = array(
             (object) array('firstname' => 'Paul', 'lastname' => 'Teacher', 'email' => 'paul.teacher@foo.com', 'city' => 'COMMENY'),
@@ -130,50 +155,58 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $i = 1;
         foreach ($pts as $pt) {
             $jspt = json_encode($pt);
-            $data = array('participant' => json_encode($jspt));
+            $data = array('participant' => $jspt);
             $controller->receive('addparticipant', $data);
-            $controller->process('addparticipant');
-            $this->assertTrue(count($SESSION->shoppingcart->participants) == $i);
+            $result = $controller->process('addparticipant');
+            $this->assertTrue($result != get_string('missingdata', 'local_shop'));
+
+            $this->assertTrue(count(@$SESSION->shoppingcart->participants) == $i);
             $i++;
         }
 
         // Test participant deletion.
         $i--;
-        $data = array('participant' => 'to.delete@foo.com');
+        $i--;
+        $data = array('participantid' => 'to.delete@foo.com');
         $controller->receive('deleteparticipant', $data);
         $controller->process('deleteparticipant');
         $this->assertTrue(count($SESSION->shoppingcart->participants) == $i);
 
         // Test execution of assignlists with no data.
+        $data['role'] = 'student';
+        $data['shortname'] = 'TESTPROD';
         $controller->receive('assignlistobj', $data);
         $controller->process('assignlistobj');
         $controller->receive('assignalllistobj', $data);
         $controller->process('assignalllistobj');
 
+        // Remove deleted participant.
+        array_pop($pts);
+
         // Assign roles.
         $roles = array('teacher', 'student', 'student', 'student', 'student');
         $i = 0;
         foreach ($pts as $pt) {
-            $data = array('participantid' => $pt->email, 'role' => $roles[$i], 'shortname' => 'testproduct');
+            $data = array('ptid' => $pt->email, 'role' => $roles[$i], 'shortname' => 'TESTPROD');
             $controller->receive('addassign', $data);
             $controller->process('addassign');
             $i++;
-            $this->assertTrue(@$SESSION->shoppingcart->assigns == $i);
+            $this->assertTrue(@$SESSION->shoppingcart->assigns['TESTPROD'] == $i);
         }
 
         // Test assign delete on last. (using last pt).
         $i--;
-        $data = array('participantid' => $pt->email, 'role' => $roles[$i], 'shortname' => 'testproduct');
-        $controller->receive('addassign', $data);
-        $controller->process('addassign');
-        $this->assertTrue(@$SESSION->shoppingcart->assigns == $i);
+        $data = array('ptid' => $pt->email, 'role' => $roles[$i], 'shortname' => 'TESTPROD');
+        $controller->receive('deleteassign', $data);
+        $controller->process('deleteassign');
+        $this->assertTrue(@$SESSION->shoppingcart->assigns['TESTPROD'] == $i);
 
         // Reassigning last.
-        $data = array('participantid' => $pt->email, 'role' => $roles[$i], 'shortname' => 'testproduct');
+        $data = array('ptid' => $pt->email, 'role' => $roles[$i], 'shortname' => 'TESTPROD');
         $controller->receive('addassign', $data);
         $controller->process('addassign');
         $i++;
-        $this->assertTrue(@$SESSION->shoppingcart->assigns == $i);
+        $this->assertTrue(@$SESSION->shoppingcart->assigns['TESTPROD'] == $i);
 
         // Test execution of assignlist with data.
         $controller->receive('assignlistobj', $data);
@@ -182,7 +215,7 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $controller->process('assignalllistobj');
 
         // Run customer controller.
-        $controller = new \local_shop\front\customer_controller();
+        $controller = new \local_shop\front\customer_controller($shop, $catalog);
         $data = array(
             'usedistinctinvoiceinfo' => 1,
             'customerinfo' => array(
@@ -207,17 +240,19 @@ class local_shop_purchase_testcase extends advanced_testcase {
                 'vatcode' => 'FR9998887776666',
                 'email' => 'stephen.pro.customer@foo.com',
             ),
+            'back' => false,
         );
         $controller->receive('navigate', $data);
         $return = $controller->process('navigate');
         // No expected return here. Data should be ok.
-        $this->assertTrue(empty($return));
+        $this->assertTrue($return instanceof moodle_url);
         $customer = $DB->get_record('local_shop_customer', array('email' => 'stephen.customer@foo.com'));
         $this->assertTrue(!empty($customer));
 
         // Run order controller.
-        $controller = new \local_shop\front\order_controller();
-        $data = array('paymode' => 'test');
+        $controller = new \local_shop\front\order_controller($shop, $catalog);
+        $data = array('paymode' => 'test',
+                      'back' => false);
         $controller->receive('navigate', $data);
         $return = $controller->process('navigate');
         $this->assertTrue($return instanceof moodle_url);
@@ -226,7 +261,7 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $this->assertTrue($billnum == 0);
 
         // Run payment controller to place the order.
-        $controller = new \local_shop\front\payment_controller();
+        $controller = new \local_shop\front\payment_controller($shop, $catalog);
         $controller->receive('place', $data);
         $return = $controller->process('place');
         $this->assertTrue(empty($return));
@@ -237,13 +272,13 @@ class local_shop_purchase_testcase extends advanced_testcase {
         // Get the first bill.
         $bills = $DB->get_records('local_shop_bill', array(), 'id', '*', 0, 1);
         $bill = array_shift($bills);
-        $this->assertTrue($bill->customerid == $customerid);
+        $this->assertTrue($bill->customerid == $customer->id);
         $this->assertTrue($bill->shopid == $shop->id);
 
         $this->assertTrue($DB->record_exists('local_shop_billitem', array('billid' => $bill->id, 'itemcode' => 'TESTPROD')));
 
         // Navigate and pay with test payment.
-        $controller->receive('navigate');
+        $controller->receive('navigate', array('back' => false));
         $return = $controller->process('navigate');
 
         $bill = $DB->get_record('local_shop_bill', array('id' => $bill->id));

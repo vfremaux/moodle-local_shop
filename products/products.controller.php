@@ -110,7 +110,7 @@ class product_controller {
 
         if ($cmd == 'edit') {
 
-            $this->data->id = $this->data->itemid;
+            $this->data->id = @$this->data->itemid;
             $this->data->catalogid = $this->thecatalog->id;
 
             $this->data->description = $this->data->description_editor['text'];
@@ -133,7 +133,7 @@ class product_controller {
                 $this->data->id = $DB->insert_record('local_shop_catalogitem', $this->data);
 
                 // We have items in the set. update relevant products.
-                if (is_array($this->data->productsinset)) {
+                if (!empty($this->data->productsinset) && is_array($this->data->productsinset)) {
                     foreach ($this->productsinset as $productid) {
                         $record = new \StdClass;
                         $record->id = $productid;
@@ -145,7 +145,7 @@ class product_controller {
                 // If slave catalogue must insert a master copy.
                 if ($this->thecatalog->isslave) {
                     $this->data->catalogid = $this->thecatalog->groupid;
-                    $DB->insert_record('local_shop_catalogitem', $this->data);
+                    $this->data->id = $DB->insert_record('local_shop_catalogitem', $this->data);
                 }
             } else {
                 unset($this->data->itemid);
@@ -162,28 +162,32 @@ class product_controller {
             $context = \context_system::instance();
 
             // Process text fields from editors.
-            $draftideditor = file_get_submitted_draft_itemid('description_editor');
-            $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
-                                                                  'catalogitemdescription', $data->id,
-                                                                  array('subdirs' => true), $this->data->description);
-            $this->data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
-                                                    'catalogitemdescription', $this->data->id);
+            if ($this->mform) {
+                // We do not have form in unit tests.
+                $draftideditor = file_get_submitted_draft_itemid('description_editor');
+                $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
+                                                                      'catalogitemdescription', $this->data->id,
+                                                                      array('subdirs' => true), $this->data->description);
+                $this->data = file_postupdate_standard_editor($this->data, 'description', $mform->editoroptions, $context, 'local_shop',
+                                                        'catalogitemdescription', $this->data->id);
+    
+                $draftideditor = file_get_submitted_draft_itemid('notes_editor');
+                $this->data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
+                                                          $this->data->id, array('subdirs' => true), $this->data->notes);
+                $this->data = file_postupdate_standard_editor($this->data, 'notes', $mform->editoroptions, $context, 'local_shop',
+                                                        'catalogitemnotes', $this->data->id);
+    
+                $draftideditor = file_get_submitted_draft_itemid('eula_editor');
+                $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
+                                                         $this->data->id, array('subdirs' => true), $this->data->eula);
+                $this->data = file_postupdate_standard_editor($this->data, 'eula', $mform->editoroptions, $context, 'local_shop',
+                                                        'catalogitemeula', $this->data->id);
 
-            $draftideditor = file_get_submitted_draft_itemid('notes_editor');
-            $this->data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
-                                                      $data->id, array('subdirs' => true), $this->data->notes);
-            $this->data = file_postupdate_standard_editor($data, 'notes', $mform->editoroptions, $context, 'local_shop',
-                                                    'catalogitemnotes', $this->data->id);
+                $usercontext = context_user::instance($USER->id);
+                shop_products_process_files($this->data, $context, $usercontext);
+            }
 
-            $draftideditor = file_get_submitted_draft_itemid('eula_editor');
-            $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
-                                                     $data->id, array('subdirs' => true), $this->data->eula);
-            $this->data = file_postupdate_standard_editor($data, 'eula', $mform->editoroptions, $context, 'local_shop',
-                                                    'catalogitemeula', $this->data->id);
-
-            $usercontext = context_user::instance($USER->id);
-            shop_products_process_files($this->data, $context, $usercontext);
-
+            return new CatalogItem($this->data->id);
         } else if ($cmd == 'delete') {
 
             foreach ($this->data->productids as $ciid) {
