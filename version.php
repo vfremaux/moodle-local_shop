@@ -31,7 +31,8 @@ $plugin->requires  = 2014110400;        // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
 $plugin->release = '2.8.0 (Build 2016092100)';
 $plugin->maturity = MATURITY_BETA;
-$plugin->dependencies = array('block_shop_access' => 2016022500, 'auth_ticket' => '2012060400');
+$plugin->dependencies = array('auth_ticket' => '2012060400');
 
 // Non Moodle attributes.
 $plugin->codeincrement = '2.8.0004';
+$plugin->privacy = 'unreleased';

@@ -20,7 +20,6 @@
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 require('../../../config.php');
 
@@ -71,7 +70,7 @@ header("Content-type: text/javascript");
  * textfield : the textfield that contains the password as a text value
  *
  * checkedformlaunch(form)
- * vérifie le formulaire et le lance si pas d'erreur
+ * verifie le formulaire et le lance si pas d'erreur
  * form : nom du formulaire
  */
 
@@ -322,8 +321,9 @@ function capitalizewords(textfield) {
                     fieldvalue += textfield.value.charAt(i);
                 }
                 break;
+
             case 1 :
-                // first word char
+                // First word char.
                 if ((textfield.value.charAt(i) >= 'a' &&
                         textfield.value.charAt(i) <= 'z') ||
                                 (textfield.value.charAt(i) >= 'A' &&
@@ -345,7 +345,7 @@ function capitalizewords(textfield) {
                     fieldvalue += textfield.value.charAt(i);
                     cap_state = 0;
                 }
-            }
+                break;
         }
     }
     textfield.value = fieldvalue;

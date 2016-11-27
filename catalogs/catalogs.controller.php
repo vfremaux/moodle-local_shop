@@ -74,14 +74,14 @@ class catalog_controller {
             // If master catalog, must delete all slaves.
             $thecatalog = new Catalog($this->data->catalogid);
             if ($thecatalog->ismaster) {
-                $select = " groupid = '{$this->data->catalogid}' ";
-                $catalogids = $DB->get_records_select_menu('local_shop_catalog', $select, array(), 'id', 'id,name');
-                $catalogidlist = implode("','", array_keys($catalogids));
+                $slaves = $thecatalog->get_slaves();
+                if (!empty($slaves)) {
+                    foreach ($slaves as $s) {
+                        $s->delete();
+                    }
+                }
+                $thecatalog->delete();
             }
-            // Deletes products entries in candidate catalogs.
-            $DB->delete_records_select('local_shop_catalogitem', " catalogid IN ('$catalogidlist') ");
-            $DB->delete_records_select('local_shop_catalogcategory', " catalogid IN ('$catalogidlist') ");
-            $DB->delete_records_select('local_shop_catalog', " id IN ('$catalogidlist') ");
 
             redirect(new \moodle_url('/local/shop/index.php'));
         }
@@ -139,18 +139,21 @@ class catalog_controller {
             }
 
             // Process text fields from editors.
-            $draftideditor = file_get_submitted_draft_itemid('description_editor');
-            $catalog->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogdescription',
-                                                            $catalog->id, array('subdirs' => true), $catalog->description);
-            $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                    'requirementdescription', $catalog->id);
+            if ($this->mform) {
+                // When playing tests we do not have form.
+                $draftideditor = file_get_submitted_draft_itemid('description_editor');
+                $catalog->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogdescription',
+                                                                $catalog->id, array('subdirs' => true), $catalog->description);
+                $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
+                                                        'requirementdescription', $catalog->id);
 
-            $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
-            $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
-                                                                   'catalogsalesconditions', $catalog->id, array('subdirs' => true),
-                                                                   $catalog->salesconditions);
-            $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                    'requirementsalesconditions', $catalog->id);
+                $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
+                $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
+                                                                       'catalogsalesconditions', $catalog->id, array('subdirs' => true),
+                                                                       $catalog->salesconditions);
+                $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
+                                                        'requirementsalesconditions', $catalog->id);
+            }
 
             return new Catalog($catalog);
         }

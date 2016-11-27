@@ -84,12 +84,6 @@ function shop_get_status() {
     return $status;
 }
 
-function print_order_call($fielname, $context = '') {
-    global $CFG;
-
-    echo " <a href=\"$context&order=$fielname\">v</a>";
-}
-
 /**
  * get a block instance for the shop
  */
@@ -112,7 +106,6 @@ function shop_get_block_instance($instanceid) {
  * @return an array of options for a select.
  */
 function shop_get_standard_handlers_options() {
-    global $CFG;
 
     $stdhandlers = array();
     $handlers = get_list_of_plugins('/local/shop/datahandling/handlers');
@@ -629,7 +622,7 @@ function shop_get_bill_worktypes() {
  * ensures a transaction id is unique.
  */
 function shop_get_transid() {
-    global $DB, $SITE;
+    global $DB;
 
     // Seek for a unique transaction ID.
     $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32), 'MOODLE_SHOP')), 0, 30));

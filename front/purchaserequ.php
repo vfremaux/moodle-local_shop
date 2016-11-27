@@ -65,9 +65,12 @@ if (!$datarequired) {
 $errors = array();
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/purchaserequ.controller.php');
-    $controller = new \local_shop\front\purchasereq_controller($theshop, $thecatalog, $theblock);
+    $controller = new \local_shop\front\purchaserequ_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
-    $controller->process($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
 echo $out;

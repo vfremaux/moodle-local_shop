@@ -106,11 +106,16 @@ class shop_paymode_test extends shop_paymode {
     }
 
     // Processes a payment return.
-    public function process() {
+    public function process($afullbill = null) {
         global $OUTPUT;
 
-        $delayed = optional_param('delayed', 0, PARAM_BOOL);
-        $transid = required_param('transid', PARAM_TEXT);
+        if (!$afullbill) {
+            $delayed = optional_param('delayed', 0, PARAM_BOOL);
+            $transid = required_param('transid', PARAM_TEXT);
+        } else {
+            $transid = $afullbill->transactionid;
+            $delayed = @$afullbill->delayed;
+        }
         shop_trace("[$transid]  Test Processing : paying");
 
         try {

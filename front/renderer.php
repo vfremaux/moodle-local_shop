@@ -535,12 +535,12 @@ class shop_front_renderer extends local_shop_base_renderer {
                                    value=""
                                    maxlength="8"
                                    size="8"
-                                   onkeypress="check_pass_code(\''.$CFG->wwwroot.'\', \''.$product->shortname.'\', this, event)"
+                                   onkeypress="check_pass_code(\''.$product->shortname.'\', this, event)"
                                    title="'.get_string('needspasscodetobuy', 'local_shop').'" />';
                     $str .= '<div id="ci-pass-status-'.$product->shortname.'" class="shop-pass-state"></div>';
                     $disabled = 'disabled="disabled"';
                 }
-                $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\','.$this->theshop->id;
+                $jshandler = 'ajax_add_unit('.$this->theshop->id;
                 $jshandler .= ', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')';
                 $str .= '<input type="button"
                                 id="ci-'.$product->shortname.'"
@@ -644,7 +644,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $buystr = get_string('buy', 'local_shop');
         $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '';
         if ($bundle->password) {
-            $jshandler = 'check_pass_code(\''.$CFG->wwwroot.'\', \''.$bundle->shortname.'\', this, event)';
+            $jshandler = 'check_pass_code(\''.$bundle->shortname.'\', this, event)';
             $str .= '<input type="text"
                            id="ci-pass-'.$bundle->shortname.'"
                            value=""
@@ -655,7 +655,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= '<div id="ci-pass-status-'.$bundle->shortname.'" class="shop-pass-state"></div>';
             $disabled = 'disabled="disabled"';
         }
-        $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+        $jshandler = 'ajax_add_unit('.$this->theshop->id;
         $jshandler .= ', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')';
         $str .= '<input type="button"
                         id="ci-'.$bundle->shortname.'"
@@ -695,8 +695,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         if (($i * 10 + $j) > 0) {
-            $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
-            $jshandler .= ', \''.$product->shortname.'\')';
+            $jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
             $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" />';
             $str .= '</a>';
@@ -767,14 +766,14 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td class="shop-ordercell">';
         $disabled = ' disabled="disabled" ';
         if ($this->view == 'shop') {
-            $jshandler = 'Javascript:ajax_clear_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+            $jshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
             $jshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
             $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
             $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
             $str .= '</a>';
             $disabled = '';
         }
-        $jshandler = 'ajax_update_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+        $jshandler = 'ajax_update_product('.$this->theshop->id;
         $jshandler .= ', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')';
         $str .= '<input type="text"
                         class="order-detail"
@@ -1205,7 +1204,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= '</td>';
             $str .= '<td align="right">';
             $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'"
-                        href="Javascript:ajax_delete_user(\''.$CFG->wwwroot.'\', \''.$participant->email.'\')">';
+                        href="Javascript:ajax_delete_user(\''.$participant->email.'\')">';
             $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
             $str .= '</td>';
             $str .= '</tr>';
@@ -1370,7 +1369,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= '</td>';
         }
         $str .= '<td align="right">';
-        $jshandler = 'ajax_add_user(\''.$CFG->wwwroot.'\', document.forms[\'participant\'])';
+        $jshandler = 'ajax_add_user(document.forms[\'participant\'])';
         $label = get_string('addparticipant', 'local_shop');
         $str .= '<input type="button" value="'.$label.'" name="add_button" onclick="'.$jshandler.'" />';
         $str .= '</td>';
@@ -1394,7 +1393,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= @$participant->firstname;
         $str .= '</td>';
         $str .= '<td align="right">';
-        $jshandler = 'Javascript:ajax_delete_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname;
+        $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
         $jshandler .= '\', \''.$participant->email.'\')';
         $str .= '<a href="'.$jshandler.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
         $str .= '</td>';
@@ -1432,7 +1431,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
         $params = array('' => get_string('chooseparticipant', 'local_shop'));
-        $attrs = array('onchange' => 'ajax_add_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname.'\', this)');
+        $attrs = array('onchange' => 'ajax_add_assign(\''.$role.'\', \''.$shortname.'\', this)');
         $str .= html_writer::select($options, 'addassign'.$role.'_'.$shortname, '', $params, $attrs);
 
         return $str;

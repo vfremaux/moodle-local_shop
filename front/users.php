@@ -52,7 +52,10 @@ if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/users.controller.php');
     $controller = new \local_shop\front\users_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
-    $controller->process($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
 // Calculates and updates the seat count and add to session cart.

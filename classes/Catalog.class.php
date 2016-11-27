@@ -739,8 +739,9 @@ class Catalog extends ShopObject {
      */
     public function process_country_restrictions(&$choices) {
         $restricted = array();
-        if (!empty($catalog->countryrestrictions)) {
-            $restrictedcountries = explode(',', $catalog->countryrestrictions);
+
+        if ($this->countryrestrictions != '') {
+            $restrictedcountries = explode(',', $this->countryrestrictions);
             foreach ($restrictedcountries as $rc) {
                 // Blind ignore unkown codes...
                 $cc = strtoupper($rc);
@@ -750,6 +751,66 @@ class Catalog extends ShopObject {
             }
             $choices = $restricted;
         }
+    }
+
+    public function delete() {
+        global $DB;
+
+        // Deletes all our direct dependencies.
+        $DB->delete_records('local_shop_catalogitem', array('catalogid' => $this->id));
+        $DB->delete_records('local_shop_catalogcategory', array('catalogid' => $this->id));
+
+        // Clear all fileareas linked with products.
+        $fs = get_file_storage();
+
+        $contextid = \context_system::instance()->id;
+
+        $fs->delete_area_files($contextid, 'local_shop', 'catalogdescription', $this->id);
+
+        parent::delete();
+    }
+
+    public function export($level = 0) {
+
+        $level++;
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+
+        $yml .= "catalog:\n";
+
+        $yml .= parent::export($level);
+
+        $yml = "\n";
+
+        if (!empty($this->categories)) {
+            $yml .= $indent.'categories:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($this->categories as $acategory) {
+                $yml .= $indent.'- '.$acategory->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+        $this->get_all_products_for_admin($shopproducts);
+        if (!empty($shoppproducts)) {
+            $yml .= $indent.'items:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($shopproducts as $ci) {
+                $yml .= $indent.$ci->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+        $level--;
+
+        return $yml;
     }
 
     /**
