@@ -103,7 +103,7 @@ class shop_controller {
                                                                    $shoprec->id, array('subdirs' => true), $shoprec->description);
                 $shoprec = file_postupdate_standard_editor($shoprec, 'description', $this->mform->editoroptions, $context, 'local_shop',
                                                            'description', $shoprec->id);
-    
+
                 $draftideditor = file_get_submitted_draft_itemid('eula_editor');
                 $shoprec->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'eula',
                                                             $shoprec->id, array('subdirs' => true), $shoprec->eula);

@@ -116,7 +116,7 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $this->assertTrue(isset($SESSION->shoppingcart->finaltaxedtotal));
 
         // Run purchaserequ controller.
-        // Test required 5 product units. 
+        // Test required 5 product units.
         $controller = new \local_shop\front\purchaserequ_controller($shop, $catalog);
         $collected['customerdata']['TESTPROD']['requ1'][0] = 'value1';
         $collected['customerdata']['TESTPROD']['requ1'][1] = 'value12';
