@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
-class bill_controller extends front_controller {
+class bill_controller extends front_controller_base {
 
     public function receive($cmd, $data = array()) {
         return;

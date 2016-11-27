@@ -318,7 +318,7 @@ class Product extends ShopObject {
 
             if (!empty($method)) {
                 $methodname = 'postprod_'.$method;
-                if (!method_exists($classname, $methdname)) {
+                if (!method_exists($classname, $methodname)) {
                     print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
                 }
             }

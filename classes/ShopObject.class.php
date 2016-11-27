@@ -47,7 +47,7 @@ class ShopObject {
         } else if (is_numeric($recordorid)) {
             $this->record = $DB->get_record(self::$table, array('id' => $recordorid));
             if (!$this->record) {
-                throw new \Exception('Missing record exception in table '.self::$table.' for ID $recordorid ');
+                throw new \Exception('Missing record exception in table '.self::$table." for ID $recordorid ");
             }
         } else {
             $this->record = $recordorid;
@@ -189,5 +189,19 @@ class ShopObject {
             }
         }
         return $instancemenu;
+    }
+
+    protected function export($level = 0) {
+
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+        if (!empty($this->record)) {
+            foreach ($this->record as $key => $value) {
+                $yml .= $indent.$key.': '.$value."\n";
+            }
+        }
+
+        return $yml;
     }
 }
