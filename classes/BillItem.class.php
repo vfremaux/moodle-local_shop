@@ -261,11 +261,7 @@ class BillItem extends ShopObject {
     }
 
     public function save() {
-        if ($this->billid) {
-            $bill = new Bill($this->bill);
-            $bill->dirty = true;
-            $bill->save(true); // Save light. Bill will be recalculated later.
-        }
+        parent::save();
     }
 
     public function delete() {
