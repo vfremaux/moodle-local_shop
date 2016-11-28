@@ -132,6 +132,7 @@ class local_shop_purchase_testcase extends advanced_testcase {
         $controller->receive('collect', $collected);
         $controller->process('collect');
 
+        $this->assertTrue($SESSION->shoppingcart->customerdata['completed'] == true);
         $this->assertTrue($SESSION->shoppingcart->customerdata['TESTPROD']['requ1'][0] == 'value1');
         $this->assertTrue($SESSION->shoppingcart->customerdata['TESTPROD']['requ2'][0] == 'value2');
         $this->assertTrue($SESSION->shoppingcart->customerdata['TESTPROD']['requ1'][4] == 'value15');
