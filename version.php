@@ -36,7 +36,7 @@ $plugin->dependencies = array('auth_ticket' => '2012060400');
 // Non moodle attributes.
 $plugin->codeincrement = '2.7.0004';
 $plugin->privacy = 'dualrelease';
-$plugin->prolocation = array(
+$plugin->prolocations = array(
     'datahandling/handlers/std_addtrainingcredits',
     'datahandling/handlers/std_createcategory',
     'datahandling/handlers/std_createcourse',
@@ -45,4 +45,9 @@ $plugin->prolocation = array(
     'datahandling/handlers/std_openltiaccess',
     'datahandling/handlers/std_setuponecoursesession',
     'datahandling/handlers/std_unlockpdcertificate',
+    'paymodes/mercanet',
+    'paymodes/systempay',
+    'paymodes/ogone',
+    'paymodes/paypalapi',
+    'paymodes/publicmandate',
 );
