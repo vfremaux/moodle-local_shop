@@ -76,7 +76,8 @@ echo $out;
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
-if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_COMPLETE || $return == -1) {
+$completestates = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
+if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo '<center>';
 
     echo $renderer->progress('PRODUCE');
@@ -115,6 +116,7 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
     $options['transid'] = $afullbill->transactionid;
     $options['hideback'] = true;
     echo $renderer->action_form('produce', $options);
+    echo $renderer->shop_return_button($theshop);
     echo $OUTPUT->box_end();
 
 } else {
@@ -133,7 +135,10 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
 
     echo $OUTPUT->box_end();
 
-    echo $renderer->printable_bill_link($afullbill->id, $afullbill->transactionid, $theshop->id);
+    echo '<div id="shop-buttons">';
+    echo $renderer->printable_bill_link($afullbill);
+    echo $renderer->shop_return_button($theshop);
+    echo '</div>';
 }
 
 // If testing the shop, provide a manual link to generate the paypal_ipn call.
