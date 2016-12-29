@@ -218,6 +218,39 @@ if ($hassiteconfig) {
     $desc = get_string('configtvaeurope', 'local_shop');
     $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
 
+    $key = 'local_shop/apparence';
+    $settings->add(new admin_setting_heading($key, get_string('apparence', 'local_shop'), ''));
+
+    $key = 'local_shop/productimageheight';
+    $label = get_string('productimageheight', 'local_shop');
+    $desc = get_string('configproductimageheight', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 150, PARAM_INT));
+
+    $key = 'local_shop/productimagewidth';
+    $label = get_string('productimagewidth', 'local_shop');
+    $desc = get_string('configproductimagewidth', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 150, PARAM_INT));
+
+    $key = 'local_shop/productimagermargin';
+    $label = get_string('productimagermargin', 'local_shop');
+    $desc = get_string('configproductimagermargin', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 40, PARAM_INT));
+
+    $key = 'local_shop/elementimageheight';
+    $label = get_string('elementimageheight', 'local_shop');
+    $desc = get_string('configelementimageheight', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 80, PARAM_INT));
+
+    $key = 'local_shop/elementimagewidth';
+    $label = get_string('elementimagewidth', 'local_shop');
+    $desc = get_string('configelementimagewidth', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 80, PARAM_INT));
+
+    $key = 'local_shop/elementimagermargin';
+    $label = get_string('elementimagermargin', 'local_shop');
+    $desc = get_string('configelementimagermargin', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 25, PARAM_INT));
+
     $key = 'local_shop/experimental';
     $settings->add(new admin_setting_heading($key, get_string('experimental', 'local_shop'), ''));
 

@@ -40,6 +40,7 @@ class Bill extends ShopObject {
      * an array of BillItem objects
      */
     public $items;
+    public $itemcount;
 
     /**
      * the original value of the bill summating only ordered item costs
@@ -388,6 +389,7 @@ class Bill extends ShopObject {
         $this->finaluntaxedtotal = 0;
         $this->finaltaxestotal = 0;
         $this->finaltaxedtotal = 0;
+        $this->itemcount = 0;
 
         foreach ($itemrecs as $itemrec) {
 
@@ -407,6 +409,7 @@ class Bill extends ShopObject {
             $this->ordertaxed += $billitem->get_taxed_price() * $itemrec->quantity;
             $taxamount = $billitem->get_tax_amount() * $itemrec->quantity;
             $this->ordertaxes += $taxamount;
+            $this->itemcount += $itemrec->quantity;
 
             /*
              * echo 'UC '.($itemrec->unitcost * $itemrec->quantity).'<br/>';

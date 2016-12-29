@@ -42,10 +42,8 @@ $thecatalog = new Catalog($theshop->catalogid);
 $output = '';
 
 $action = optional_param('action', '', PARAM_TEXT);
-
 require_once($CFG->dirroot.'/local/shop/front/'.$service.'.controller.php');
 $controllerclass = "\\local_shop\\front\\{$service}_controller";
-
 $controller = new $controllerclass($theshop, $thecatalog);
 $controller->receive($action);
 echo $controller->process($action);
