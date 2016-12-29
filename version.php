@@ -48,5 +48,6 @@ $plugin->prolocations = array(
     'paymodes/mercanet',
     'paymodes/systempay',
     'paymodes/ogone',
+    'paymodes/paypalapi',
     'paymodes/publicmandate',
 );
