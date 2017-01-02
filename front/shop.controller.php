@@ -89,6 +89,7 @@ class shop_controller extends front_controller_base {
         $output = '';
 
         if ($cmd == 'import') {
+
             unset($SESSION->shoppingcart);
             $SESSION->shoppingcart = new \StdClass;
             $SESSION->shoppingcart->order = array();
@@ -98,17 +99,22 @@ class shop_controller extends front_controller_base {
                 }
                 $SESSION->shoppingcart->order[$inputkey] = $this->data->$inputkey;
             }
+
         } else if ($cmd == 'clearall') {
+
             unset($SESSION->shoppingcart);
             $params = array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
             return new \moodle_url('/local/shop/front/view.php', $params);
+
         } else if ($cmd == 'addunit') {
+
             @$SESSION->shoppingcart->order[$this->data->shortname]++;
             $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
             $output = new \StdClass();
             $output->html = $this->renderer->units($product);
             $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
             $output = json_encode($output);
+
         } else if ($cmd == 'setunits') {
             $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
 
@@ -123,7 +129,9 @@ class shop_controller extends front_controller_base {
             $output->html = $this->renderer->units($product);
             $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
             $output = json_encode($output);
+
         } else if ($cmd == 'deleteunit') {
+
             if ($this->data->clearall) {
                 unset($SESSION->shoppingcart->order[$this->data->shortname]);
             } else {
@@ -166,21 +174,27 @@ class shop_controller extends front_controller_base {
                 }
             }
 
-            $output = new \StdClass();
-            $output->html = $this->renderer->units($catalogitem);
-            $output->quant = 0 + @$SESSION->shoppingcart->order[$this->data->shortname];
-            $output = json_encode($output);
+            $outputobj = new \StdClass();
+            $outputobj->html = $this->renderer->units($catalogitem);
+            $outputobj->quant = 0 + @$SESSION->shoppingcart->order[$this->data->shortname];
+            $output = json_encode($outputobj);
+
         } else if ($cmd == 'orderdetails') {
+
             $categories = $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
             $output = new \StdClass;
             $output->html = $this->renderer->order_detail($categories);
             $output = json_encode($output);
+
         } else if ($cmd == 'ordertotals') {
+
             $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
             $output = new \StdClass;
             $output->html = $this->renderer->order_totals($this->thecatalog);
             $output = json_encode($output);
+
         } else if ($cmd == 'checkpasscode') {
+
             $output = new \StdClass;
             if ($product = $this->data->thecatalog->get_product_by_shortname($this->data->shortname)) {
                 if ($this->data->passcode == $product->password) {

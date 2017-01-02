@@ -26,15 +26,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/tests/generator/shophandler_generator_base.php');
 require_once($CFG->dirroot.'/local/shop/products/products.controller.php');
 
 /**
  * Data generator class for tests.
  */
-class shophandler_std_extendenrolperiod_generator extends component_generator_base {
+class shophandler_std_extendenrolperiod_generator extends shophandler_generator_base {
 
     public function create_product($thecatalog, $category, $tax, $params, $data = null) {
-        global $CFG;
 
         static $prodix = 1;
 

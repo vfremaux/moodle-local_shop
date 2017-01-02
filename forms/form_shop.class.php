@@ -208,8 +208,11 @@ class Shop_Form extends moodleform {
 
         $errors = parent::validation($data, $files);
 
-        if ($DB->record_exists('local_shop', array('name' => $data['name']))) {
-            $errors['name'] = get_string('errorshopexists', 'local_shop');
+        if (empty($data['shopid'])) {
+            // Only if creating new.
+            if ($DB->record_exists('local_shop', array('name' => $data['name']))) {
+                $errors['name'] = get_string('errorshopexists', 'local_shop');
+            }
         }
 
         return $errors;
