@@ -26,13 +26,28 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016092100;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2014050800;        // Requires this Moodle version.
+$plugin->version   = 2016101500; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2014050800; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '2.7.0 (Build 2016092100)';
+$plugin->release = '2.7.0 (Build 2016101500)';
 $plugin->maturity = MATURITY_BETA;
 $plugin->dependencies = array('auth_ticket' => '2012060400');
 
-// Non Moodle attributes.
+// Non moodle attributes.
 $plugin->codeincrement = '2.7.0004';
-$plugin->privacy = 'unreleased';
+$plugin->privacy = 'dualrelease';
+$plugin->prolocations = array(
+    'datahandling/handlers/std_addtrainingcredits',
+    'datahandling/handlers/std_createcategory',
+    'datahandling/handlers/std_createcourse',
+    'datahandling/handlers/std_createvinstance',
+    'datahandling/handlers/std_generateseats',
+    'datahandling/handlers/std_openltiaccess',
+    'datahandling/handlers/std_setuponecoursesession',
+    'datahandling/handlers/std_unlockpdcertificate',
+    'paymodes/mercanet',
+    'paymodes/systempay',
+    'paymodes/ogone',
+    'paymodes/paypalapi',
+    'paymodes/publicmandate',
+);

@@ -383,6 +383,18 @@ class local_shop_base_renderer {
 
     protected $thecatalog;
 
+    protected $output;
+
+    /**
+     * this is to cope with subrenderers standards
+     * @TODO : reshape renderers into core fashion subrenderers.
+     */
+    public function __construct() {
+        global $OUTPUT;
+
+        $this->output = $OUTPUT;
+    }
+
     /**
      * Loads the renderer with contextual objects. Most of the renderer function need
      * at least a shop instance.
