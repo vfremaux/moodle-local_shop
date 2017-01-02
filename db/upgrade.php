@@ -52,8 +52,9 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         $table->add_field('forcedownloadleaflet', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
         $table->add_field('allowtax', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
         $table->add_field('eula', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('catalogid', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('sortorder', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('eulaformat', XMLDB_TYPE_INTEGER, '4', null, null, null, '0');
+        $table->add_field('catalogid', XMLDB_TYPE_INTEGER, '4', null, null, null, '0');
+        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '4', null, null, null, '0');
 
         // Adding keys to table local_shop.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));

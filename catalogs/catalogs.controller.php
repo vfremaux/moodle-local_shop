@@ -45,6 +45,8 @@ class catalog_controller {
 
         if (!empty($data)) {
             $this->data = (object)$data;
+            $this->received = true;
+            return;
         } else {
             $this->data = new \StdClass;
         }
@@ -80,10 +82,10 @@ class catalog_controller {
                         $s->delete();
                     }
                 }
-                $thecatalog->delete();
             }
+            $thecatalog->delete();
 
-            redirect(new \moodle_url('/local/shop/index.php'));
+            return new \moodle_url('/local/shop/index.php');
         }
 
         if ($cmd == 'edit') {
@@ -100,7 +102,7 @@ class catalog_controller {
 
             if (empty($catalog->catalogid)) {
                 // Creating new.
-                $catalog->groupid = 0;
+                @$catalog->groupid += 0;
                 $catalog->id = $DB->insert_record('local_shop_catalog', $catalog);
                 if ($catalog->linked == 'master') {
                     $DB->set_field('local_shop_catalog', 'groupid', $catalog->id, array('id' => $catalog->id));

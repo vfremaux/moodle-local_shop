@@ -102,7 +102,7 @@ class Catalog extends ShopObject {
             ORDER BY
                 ismaster DESC
         ";
-        $members = $DB->get_records_sql($sql, array($this->id));
+        $members = array_keys($DB->get_records_sql($sql, array($this->id)));
         if (count($members) == 0) {
             $members[] = $this->id;
         }

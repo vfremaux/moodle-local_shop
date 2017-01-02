@@ -111,7 +111,7 @@ class order_controller extends front_controller_base {
                     $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
                     // Add other name fields required by fullname.
-                    if ($morefields = get_all_user_name_fields(false)) {
+                    if ($morefields = get_all_user_name_fields()) {
                         foreach ($morefields as $f) {
                             if (!isset($seller->$f)) {
                                 $seller->$f = '';
@@ -119,18 +119,22 @@ class order_controller extends front_controller_base {
                         }
                     }
 
-                    $title = $SITE->shortname.' : '.get_string('orderinput', 'local_shop');
+                    $title = $SITE->shortname.' Backoffice : '.get_string('orderinput', 'local_shop');
                     $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $salesnotification,
                                               $salesnotification, '');
                     if ($sent) {
-                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller :";
-                        $message .= "shop Transaction Confirm Notification to sales";
+                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller:";
+                        $message .= " Shop Transaction Confirm Notification to sales";
                         shop_trace($message);
                     } else {
-                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller Warning :";
-                        $message .= " Seems no sales manager are assigned";
+                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller Warning:";
+                        $message .= " Failed emitting to at least one manager.";
                         shop_trace($message);
                     }
+                } else {
+                    $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller Warning :";
+                    $message .= " Seems no sales manager are assigned";
+                    shop_trace($message);
                 }
 
                 $next = $this->theshop->get_next_step('order');

@@ -33,6 +33,7 @@ require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\Product;
 use local_shop\ProductEvent;
@@ -57,7 +58,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $params = array('shortname' => $catalogitem->handlerparams['coursename']);
             $course = $DB->get_record('course', $params);
         } else if (!empty($catalogitem->handlerparams['courseid'])) {
-            $params = array('shortname' => $catalogitem->handlerparams['courseid']);
+            $params = array('id' => $catalogitem->handlerparams['courseid']);
             $course = $DB->get_record('course', $params);
         }
 

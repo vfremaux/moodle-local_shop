@@ -78,7 +78,7 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
 
     $controller = new \local_shop\backoffice\product_controller($thecatalog);
-    $controller->receive('edit', $data);
+    $controller->receive('edit', $data, $mform);
     $controller->process('edit');
 
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));

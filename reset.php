@@ -63,7 +63,7 @@ if ($mform->is_cancelled()) {
     include_once($CFG->dirroot.'/local/shop/reset.controller.php');
     $controller = new \local_shop\backoffice\reset_controller();
     $controller->receive('reset', $data);
-    $controller->process('reset');
+    $out .= $controller->process('reset');
 }
 echo $OUTPUT->header();
 

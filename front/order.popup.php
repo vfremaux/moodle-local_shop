@@ -72,8 +72,8 @@ foreach ($afullbill->items as $item) {
 }
 echo '</table>';
 
-echo $renderer->full_order_totals();
-echo $renderer->full_order_taxes();
+echo $renderer->full_order_totals($afullbill);
+echo $renderer->full_order_taxes($afullbill);
 
 echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
