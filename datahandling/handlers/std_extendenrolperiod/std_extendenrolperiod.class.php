@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\ProductEvent;
 

@@ -37,6 +37,7 @@ use local_shop\Catalog;
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/form_protection.js.php');
 $PAGE->requires->js('/local/shop/front/js/order.js');
+$PAGE->requires->css('/local/shop/stylesdyn.php');
 
 $config = get_config('local_shop');
 

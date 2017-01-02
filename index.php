@@ -58,7 +58,10 @@ $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
     $controller = new \local_shop\backoffice\catalog_controller();
     $controller->receive($action);
-    $controller->process($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
 echo $OUTPUT->header();

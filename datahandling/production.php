@@ -119,7 +119,7 @@ function produce_postpay(&$afullbill) {
                     $response->private .= "<br/>\n".$itemresponse->private;
                     $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;
                 } else {
-                    shop_trace("[{$afullbill->transactionid}] Postpay Production Error : empty response fpr {$anitem->itemcode}");
+                    shop_trace("[{$afullbill->transactionid}] Postpay Production Error : empty response for {$anitem->itemcode}");
                 }
             } else {
                 shop_trace("[{$afullbill->transactionid}] Postpay Production Warning : No handler for $anitem->itemcode");
