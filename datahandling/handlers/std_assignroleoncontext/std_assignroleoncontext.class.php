@@ -304,7 +304,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         parent::unit_test($data, $errors, $warnings, $messages);
 
         if (!isset($data->required['foruser'])) {
-            if ($data->onlyforloggedin != PROVIDING_LOGGEDIN_ONLY) {
+            if ($data->onlyforloggedin < PROVIDING_LOGGEDIN_ONLY) {
                 $errors[$data->code][] = get_string('erroremptyuserrisk', 'shophandlers_std_assignroleoncontext');
             }
             $warnings[$data->code][] = get_string('warningonlyforselfproviding', 'shophandlers_std_assignroleoncontext');

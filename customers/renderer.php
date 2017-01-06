@@ -38,7 +38,6 @@ class shop_customers_renderer {
     public function customers($customers) {
         global $OUTPUT;
 
-        $customerstr = get_string('customer', 'local_shop');
         $lastnamestr = get_string('lastname');
         $firstnamestr = get_string('firstname');
         $purchasesstr = get_string('purchases', 'local_shop');
@@ -47,7 +46,6 @@ class shop_customers_renderer {
         $table = new html_table();
         $table->width = '100%';
         $table->head = array('',
-                             "<b>$customerstr</b>",
                              "<b>$lastnamestr</b>",
                              "<b>$firstnamestr</b>",
                              "<b>$purchasesstr</b>",
