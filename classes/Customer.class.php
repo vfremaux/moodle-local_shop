@@ -97,7 +97,7 @@ class Customer extends ShopObject {
             $params[] = $theshop->id;
 
             if ($theshop->catalogid) {
-                $catalogclause = ' AND sh.catalogid = ? ';
+                $catalogclause = ' AND (sh.catalogid = ? OR sh.catalogid IS NULL) ';
                 $params[] = $theshop->catalogid;
             }
         }
