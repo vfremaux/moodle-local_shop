@@ -46,6 +46,7 @@ class customers_controller {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -69,6 +70,7 @@ class customers_controller {
     }
 
     public function process($cmd) {
+        global $DB;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');

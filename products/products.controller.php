@@ -272,7 +272,7 @@ class product_controller {
                 'stock' => 'Integer',
                 'sold' => 'Integer',
                 'maxdeliveryquant' => 'Integer',
-                'onlyforloggedin' => '0 (indifferent),1, or 2',
+                'onlyforloggedin' => '-1, 0 (indifferent), 1 (loggedin), or 2 (referenced customers)',
                 'password' => 'String or empty',
                 'categoryid' => 'Numeric ID of a category',
                 'setid' => 'Numeric ID of a set',
