@@ -57,6 +57,7 @@ $string['allowtax_help'] = 'If enabled, will apply all local taxes on product ca
 $string['apparence'] = 'Apparence';
 $string['amonth'] = 'one month';
 $string['amount'] = 'Amount';
+$string['apparence'] = 'Apparence';
 $string['attach'] = 'Attach a file';
 $string['attachements'] = 'Attachments';
 $string['availableproducts'] = 'Available products';
