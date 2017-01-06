@@ -246,9 +246,10 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
-        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedin', 'local_shop'), 1);
-        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('both', 'local_shop'), 0);
-        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedout', 'local_shop'), -1);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('customer', 'local_shop'), PROVIDING_CUSTOMER_ONLY);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedin', 'local_shop'), PROVIDING_LOGGEDIN_ONLY);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('both', 'local_shop'), PROVIDING_BOTH);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedout', 'local_shop'), PROVIDING_LOGGEDOUT_ONLY);
         $mform->addGroup($radiogroup, 'loggedingroup', get_string('onlyfor', 'local_shop'), array(' '), false);
         $mform->setDefault('onlyforloggedin', 0);
 
