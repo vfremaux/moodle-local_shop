@@ -37,6 +37,7 @@ define('PRODUCT_STANDALONE', 0);
 define('PRODUCT_SET', 1);
 define('PRODUCT_BUNDLE', 2);
 
+define('PROVIDING_CUSTOMER_ONLY', 2);
 define('PROVIDING_LOGGEDIN_ONLY', 1);
 define('PROVIDING_BOTH', 0);
 define('PROVIDING_LOGGEDOUT_ONLY', -1);
@@ -84,12 +85,6 @@ function shop_get_status() {
     return $status;
 }
 
-function print_order_call($fielname, $context = '') {
-    global $CFG;
-
-    echo " <a href=\"$context&order=$fielname\">v</a>";
-}
-
 /**
  * get a block instance for the shop
  */
@@ -97,7 +92,8 @@ function shop_get_block_instance($instanceid) {
     global $DB;
 
     if (!$instance = $DB->get_record('block_instances', array('id' => $instanceid))) {
-        print_error('errorinvalidblock', 'local_shop');
+        // Silently forget the block.
+        return null;
     }
     if (!$theblock = block_instance('shop_access', $instance)) {
         print_error('errorbadblockinstance', 'local_shop');
@@ -112,7 +108,6 @@ function shop_get_block_instance($instanceid) {
  * @return an array of options for a select.
  */
 function shop_get_standard_handlers_options() {
-    global $CFG;
 
     $stdhandlers = array();
     $handlers = get_list_of_plugins('/local/shop/datahandling/handlers');
@@ -385,55 +380,91 @@ function shop_switch_style($reset = 0) {
  * IMPORTANT : check very carefully the path and name of the file or it might destroy
  * some piece of code. Do NEVER use in production systems unless hot case urgent tracking
  */
-function shop_open_trace() {
+function shop_open_trace($output) {
     global $CFG;
 
-    if (empty($CFG->merchanttrace)) {
-        $CFG->merchanttrace = fopen($CFG->dataroot.'/merchant_trace.log', 'a');
+    if (empty($output)) {
+        $file = 'merchant_trace.log';
+    } else if ($output == 'mail') {
+        $file = 'merchant_mail_trace.log';
     }
-    return !is_null($CFG->merchanttrace);
+
+    if (empty($stream)) {
+        $stream = fopen($CFG->dataroot.'/'.$file, 'a');
+    }
+
+    if (empty($output)) {
+        $CFG->merchanttrace = $stream;
+    } else if ($output == 'mail') {
+        $CFG->merchantmailtrace = $stream;
+    }
+
+    return !is_null($stream);
 }
 
 /**
  * closes an open trace
  */
-function shop_close_trace() {
+function shop_close_trace($output) {
     global $CFG;
 
-    if (!empty($CFG->merchanttrace)) {
-        @fclose($CFG->merchanttrace);
-        $CFG->merchanttrace = null;
+    if (empty($output)) {
+        if (!empty($CFG->merchanttrace)) {
+            @fclose($CFG->merchanttrace);
+            $CFG->merchanttrace = null;
+        }
+    } else if ($output == 'mail') {
+        if (!empty($CFG->merchantmailtrace)) {
+            @fclose($CFG->merchantmailtrace);
+            $CFG->merchantmailtrace = null;
+        }
     }
+
 }
 
 /**
  * outputs into an open trace (ligther than debug_trace)
  * @param string $str
  */
-function shop_trace_open($str) {
+function shop_trace_open($str, $output) {
     global $CFG;
 
-    if (!empty($CFG->merchanttrace)) {
-        $date = new DateTime();
-        $u = microtime(true);
-        $u = sprintf('%03d', floor(($u - floor($u)) * 1000)); // Millisecond.
-        fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d h:i:s').' '.$u." --  ".$str."\n");
+    $date = new DateTime();
+    $u = microtime(true);
+    $u = sprintf('%03d', floor(($u - floor($u)) * 1000)); // Millisecond.
+
+    if (empty($output)) {
+        if (!empty($CFG->merchanttrace)) {
+            fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+        }
+    } else if ($output == 'mail') {
+        if (!empty($CFG->merchantmailtrace)) {
+            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+        }
     }
 }
 
 /**
  * write to the trace
  */
-function shop_trace($str) {
+function shop_trace($str, $output = '') {
     global $CFG;
 
-    if (!empty($CFG->merchanttrace)) {
-        shop_trace_open($str);
-    } else {
-        if (shop_open_trace()) {
-            shop_trace_open($str);
-            shop_close_trace();
+    if (empty($output)) {
+        if (!empty($CFG->merchanttrace)) {
+            shop_trace_open($str, $output);
+            return;
         }
+    } else if ($output == 'mail') {
+        if (!empty($CFG->merchantmailtrace)) {
+            shop_trace_open($str, $output);
+            return;
+        }
+    }
+
+    if (shop_open_trace($output)) {
+        shop_trace_open($str, $output);
+        shop_close_trace($output);
     }
 }
 
@@ -629,7 +660,7 @@ function shop_get_bill_worktypes() {
  * ensures a transaction id is unique.
  */
 function shop_get_transid() {
-    global $DB, $SITE;
+    global $DB;
 
     // Seek for a unique transaction ID.
     $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32), 'MOODLE_SHOP')), 0, 30));

@@ -25,6 +25,10 @@ namespace local_shop\backoffice;
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+
+use local_shop\Shop;
+
 class reset_controller {
 
     protected $data;
@@ -42,6 +46,7 @@ class reset_controller {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -64,13 +69,15 @@ class reset_controller {
      * @param string $cmd
      */
     public function process($cmd) {
+        global $OUTPUT, $DB;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
+        $out = '';
+
         if (!empty($this->data->bills) || !empty($this->data->customers) || !empty($this->data->catalogs)) {
-            $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
             $params = array();
             if (!empty($this->data->shopid)) {
                 $params = array('shopid' => $this->data->shopid);
@@ -78,18 +85,26 @@ class reset_controller {
                 $deletedbills = $DB->get_records('local_shop_bill', $params, 'id', 'id,id');
                 $DB->delete_records('local_shop_bill', $params);
 
-                $deletedbillitems = $DB->get_record_list('local_shop_billitems', 'billid', array_keys($deletedbills));
+                $deletedbillitems = $DB->get_records_list('local_shop_billitem', 'billid', array_keys($deletedbills));
 
-                foreach ($deletedbills as $bid) {
-                    $DB->delete_records_select('local_shop_billitems', array('billid' => $bid));
+                if ($deletedbills) {
+                    foreach ($deletedbills as $bid) {
+                        $DB->delete_records_select('local_shop_billitem', array('billid' => $bid));
+                    }
                 }
 
                 // Delete products.
-                $deletedproducts = $DB->get_records('local_shop_product', $params, 'id', 'id,id');
-                $DB->delete_records('local_shop_product', $params);
+                if ($deletebillitems) {
+                    foreach (array_keys($deletebillitems) as $biid) {
+                        $deletedproducts = $DB->get_records_select('local_shop_product', 'currentbillitemid = ? or initialbillid = ?', array($biid, $biid), 'id', 'id,id');
+                        $DB->delete_records_select('local_shop_product', 'currentbillitemid = ? or initialbillid = ?', array($biid, $biid));
 
-                foreach ($deletedproducts as $pid) {
-                    $DB->delete_records_select('local_shop_productevent', array('productid' => $pid));
+                        if ($deletedproducts) {
+                            foreach ($deletedproducts as $pid) {
+                                $DB->delete_records('local_shop_productevent', array('productid' => $pid));
+                            }
+                        }
+                    }
                 }
 
             } else {
@@ -99,15 +114,24 @@ class reset_controller {
                 $DB->delete_records('local_shop_product', null);
                 $DB->delete_records('local_shop_productevent', null);
             }
+            $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
         }
         if (!empty($this->data->customers)) {
-            $out .= $OUTPUT->notification(get_string('customersdeleted', 'local_shop'));
             $DB->delete_records('local_shop_customer', null);
+            $out .= $OUTPUT->notification(get_string('customersdeleted', 'local_shop'));
         }
         if (!empty($this->data->catalogs)) {
+            if (!empty($this->data->shopid)) {
+                $theshop = new Shop($this->data->shopid);
+                $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theshop->config->catalogid));
+                $DB->delete_records('local_shop_catalog', array('id' => $this->theshop->config->catalogid));
+            } else {
+                $DB->delete_records('local_shop_catalogitem', array());
+                $DB->delete_records('local_shop_catalog', array());
+            }
             $out .= $OUTPUT->notification(get_string('catalogsdeleted', 'local_shop'));
-            $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theshop->config->catalogid));
-            $DB->delete_records('local_shop_catalog', array('id' => $theshop->config->catalogid));
         }
+
+        return $out;
     }
 }

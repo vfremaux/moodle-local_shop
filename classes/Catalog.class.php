@@ -102,7 +102,7 @@ class Catalog extends ShopObject {
             ORDER BY
                 ismaster DESC
         ";
-        $members = $DB->get_records_sql($sql, array($this->id));
+        $members = array_keys($DB->get_records_sql($sql, array($this->id)));
         if (count($members) == 0) {
             $members[] = $this->id;
         }
@@ -175,7 +175,7 @@ class Catalog extends ShopObject {
      * @param arrayref &$shopproducts an array to be filled
      */
     public function get_all_products(&$shopproducts) {
-        global $SESSION, $DB;
+        global $SESSION, $DB, $USER;
 
         $categories = $this->get_categories();
 
@@ -184,8 +184,19 @@ class Catalog extends ShopObject {
         }
 
         $isloggedinclause = '';
+        $modes = array();
         if (empty($SESSION->shopseeall)) {
-            $isloggedinclause = (isloggedin() && !isguestuser()) ? ' AND ci.onlyforloggedin > -1 ' : ' AND ci.onlyforloggedin < 1';
+            if (isloggedin() && !isguestuser()) {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDIN_ONLY;
+                if ($DB->record_exists('local_shop_customer', array('hasaccount' => $USER->id))) {
+                    $modes[] = PROVIDING_CUSTOMER_ONLY;
+                }
+            } else {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDOUT_ONLY;
+            }
+            $isloggedinclause = ' AND ci.onlyforloggedin IN ('.implode(',', $modes).') ';
         }
 
         $shopproducts = array();
@@ -703,7 +714,30 @@ class Catalog extends ShopObject {
      * @TODO : scan shoping cart and get role req info from products
      */
     public function check_required_roles() {
-        return array('student', '_supervisor');
+        global $SESSION;
+
+        $requiredroles = array('student'=> true);
+
+        if (!empty($SESSION->shoppingcart->order)) {
+            foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
+                $product = $this->get_product_by_shortname($shortname);
+                $handlerparams = $product->get_serialized_handlerparams();
+                $params = json_decode($handlerparams);
+                if (!empty($params->requiredroles)) {
+                    $roles = explode(',', $params->requiredroles);
+                    foreach ($roles as $r) {
+                        // Make it unique.
+                        if ($r == 'supervisor') {
+                            // Special case.
+                            $r = '_supervisor';
+                        }
+                        $requiredroles[$r] = true;
+                    }
+                }
+            }
+        }
+
+        return array_keys($requiredroles);
     }
 
     /**
@@ -739,8 +773,9 @@ class Catalog extends ShopObject {
      */
     public function process_country_restrictions(&$choices) {
         $restricted = array();
-        if (!empty($catalog->countryrestrictions)) {
-            $restrictedcountries = explode(',', $catalog->countryrestrictions);
+
+        if ($this->countryrestrictions != '') {
+            $restrictedcountries = explode(',', $this->countryrestrictions);
             foreach ($restrictedcountries as $rc) {
                 // Blind ignore unkown codes...
                 $cc = strtoupper($rc);
@@ -750,6 +785,66 @@ class Catalog extends ShopObject {
             }
             $choices = $restricted;
         }
+    }
+
+    public function delete() {
+        global $DB;
+
+        // Deletes all our direct dependencies.
+        $DB->delete_records('local_shop_catalogitem', array('catalogid' => $this->id));
+        $DB->delete_records('local_shop_catalogcategory', array('catalogid' => $this->id));
+
+        // Clear all fileareas linked with products.
+        $fs = get_file_storage();
+
+        $contextid = \context_system::instance()->id;
+
+        $fs->delete_area_files($contextid, 'local_shop', 'catalogdescription', $this->id);
+
+        parent::delete();
+    }
+
+    public function export($level = 0) {
+
+        $level++;
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+
+        $yml .= "catalog:\n";
+
+        $yml .= parent::export($level);
+
+        $yml = "\n";
+
+        if (!empty($this->categories)) {
+            $yml .= $indent.'categories:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($this->categories as $acategory) {
+                $yml .= $indent.'- '.$acategory->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+        $this->get_all_products_for_admin($shopproducts);
+        if (!empty($shoppproducts)) {
+            $yml .= $indent.'items:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($shopproducts as $ci) {
+                $yml .= $indent.$ci->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+        $level--;
+
+        return $yml;
     }
 
     /**

@@ -36,6 +36,7 @@ class shop_controller extends front_controller_base {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
+            $this->received = true;
             return;
         } else {
             $this->data = new \StdClass;
@@ -47,33 +48,165 @@ class shop_controller extends front_controller_base {
                     if ($inputkey == 'shipping') {
                         continue;
                     }
-                    $this->data[$inputkey] = optional_param($inputkey, 0, PARAM_INT);
+                    $this->data->$inputkey = optional_param($inputkey, 0, PARAM_INT);
                 }
                 break;
             case 'clearall':
                 break;
+
+            case 'addunit':
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                break;
+
+            case 'setunits':
+                $this->data->quant = required_param('quant', PARAM_INT);
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                break;
+
+            case 'deleteunit':
+                $this->data->clearall = optional_param('clearall', false, PARAM_BOOL);
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                break;
+
+            case 'checkpasscode':
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                $this->data->passcode = required_param('passcode', PARAM_TEXT);
+                break;
+
             case 'navigate':
                 break;
         }
+        $this->received = true;
     }
 
     public function process($cmd) {
         global $SESSION;
 
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
+
+        $output = '';
+
         if ($cmd == 'import') {
+
             unset($SESSION->shoppingcart);
             $SESSION->shoppingcart = new \StdClass;
             $SESSION->shoppingcart->order = array();
-            foreach (array_keys($this->data) as $inputkey) {
+            foreach (array_keys((array)$this->data) as $inputkey) {
                 if ($inputkey == 'shipping') {
                     continue;
                 }
-                $SESSION->shoppingcart->order[$inputkey] = $this->data[$inputkey];
+                $SESSION->shoppingcart->order[$inputkey] = $this->data->$inputkey;
             }
+
         } else if ($cmd == 'clearall') {
+
             unset($SESSION->shoppingcart);
             $params = array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-            redirect(new \moodle_url('/local/shop/front/view.php', $params));
+            return new \moodle_url('/local/shop/front/view.php', $params);
+
+        } else if ($cmd == 'addunit') {
+
+            @$SESSION->shoppingcart->order[$this->data->shortname]++;
+            $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
+            $output = new \StdClass();
+            $output->html = $this->renderer->units($product);
+            $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
+            $output = json_encode($output);
+
+        } else if ($cmd == 'setunits') {
+            $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
+
+            if ($product->maxdeliveryquant) {
+                if ($this->data->quant > $product->maxdeliveryquant) {
+                    $this->data->quant = $product->maxdeliveryquant;
+                }
+            }
+            @$SESSION->shoppingcart->order[$this->data->shortname] = $this->data->quant;
+
+            $output = new \StdClass();
+            $output->html = $this->renderer->units($product);
+            $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
+            $output = json_encode($output);
+
+        } else if ($cmd == 'deleteunit') {
+
+            if ($this->data->clearall) {
+                unset($SESSION->shoppingcart->order[$this->data->shortname]);
+            } else {
+                @$SESSION->shoppingcart->order[$this->data->shortname]--;
+            }
+            if (@$SESSION->shoppingcart->order[$this->data->shortname] == 0) {
+                unset($SESSION->shoppingcart->order[$this->data->shortname]);
+            }
+
+            $catalogitem = $this->thecatalog->get_product_by_shortname($this->data->shortname);
+
+            $requiredroles = $this->thecatalog->check_required_roles();
+
+            if ($catalogitem->quantaddressesusers) {
+                // If seat based, remove last assign per unit removed.
+                foreach ($requiredroles as $role) {
+                    if (isset($SESSION->shoppingcart->{$role})) {
+                        array_pop($SESSION->shoppingcart->{$role});
+                    }
+                    if (empty($SESSION->shoppingcart->{$role})) {
+                        unset($SESSION->shoppingcart->{$role});
+                    }
+                }
+                if (!empty($SESSION->shoppingcart->assigns) &&
+                        array_key_exists($this->data->shortname, $SESSION->shoppingcart->assigns)) {
+                    $SESSION->shoppingcart->assigns[$this->data->shortname]--;
+                    if ($SESSION->shoppingcart->assigns[$this->data->shortname] == 0) {
+                        unset($SESSION->shoppingcart->assigns[$this->data->shortname]);
+                    }
+                }
+            } else {
+                // If non seat based, remove assign only when last unit is removed.
+                foreach ($requiredroles as $role) {
+                    if (isset($SESSION->shoppingcart->{$role})) {
+                        unset($SESSION->shoppingcart->{$role});
+                    }
+                }
+                if (!isset($SESSION->shoppingcart->order[$this->data->shortname])) {
+                    unset($SESSION->shoppingcart->assigns[$this->data->shortname]);
+                }
+            }
+
+            $outputobj = new \StdClass();
+            $outputobj->html = $this->renderer->units($catalogitem);
+            $outputobj->quant = 0 + @$SESSION->shoppingcart->order[$this->data->shortname];
+            $output = json_encode($outputobj);
+
+        } else if ($cmd == 'orderdetails') {
+
+            $categories = $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
+            $output = new \StdClass;
+            $output->html = $this->renderer->order_detail($categories);
+            $output = json_encode($output);
+
+        } else if ($cmd == 'ordertotals') {
+
+            $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
+            $output = new \StdClass;
+            $output->html = $this->renderer->order_totals($this->thecatalog);
+            $output = json_encode($output);
+
+        } else if ($cmd == 'checkpasscode') {
+
+            $output = new \StdClass;
+            if ($product = $this->data->thecatalog->get_product_by_shortname($this->data->shortname)) {
+                if ($this->data->passcode == $product->password) {
+                    $output->status = 'passed';
+                } else {
+                    $output->status = 'failed';
+                }
+            } else {
+                $output->status = 'product error';
+            }
+            $output = json_encode($output);
+
         } else if ($cmd == 'navigate') {
 
             $shoppingcart = $SESSION->shoppingcart;
@@ -130,7 +263,10 @@ class shop_controller extends front_controller_base {
 
             $next = $this->theshop->get_next_step('shop');
             $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-            redirect(new \moodle_url('/local/shop/front/view.php', $params));
+            return new \moodle_url('/local/shop/front/view.php', $params);
         }
+
+        // Other controller output cases.
+        return $output;
     }
 }

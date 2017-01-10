@@ -40,7 +40,10 @@ if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/payment.controller.php');
     $controller = new \local_shop\front\payment_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
-    $result = $controller->process($action);
+    $resulturl = $controller->process($action);
+    if (!empty($resulturl)) {
+        redirect($resulturl);
+    }
 }
 
 echo $out;

@@ -31,8 +31,8 @@ function local_shop_has_leaflet($itemid) {
 
 }
 
-function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    global $CFG, $DB;
+function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $DB;
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
@@ -60,7 +60,7 @@ function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $
     if (!$file = $fs->get_file_by_hash(sha1($fullpath))) {
         // Try getting an old file when shop was a block.
 
-        if (!$oldfile = $fs->get_file_by_hash(sha1($oldpath)) or $oldfile->is_directory()) {
+        if ((!$oldfile = $fs->get_file_by_hash(sha1($oldpath))) || $oldfile->is_directory()) {
             return false;
         }
 
@@ -80,7 +80,7 @@ function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $
     }
 
     // Finally send the file.
-    send_stored_file($file, 0, 0, true, $options); // download MUST be forced - security!
+    send_stored_file($file, 0, 0, true, $options); // Download MUST be forced - security!
 }
 
 /**

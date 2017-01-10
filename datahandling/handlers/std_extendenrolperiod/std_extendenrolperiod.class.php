@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\ProductEvent;
 
@@ -56,13 +57,20 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
 
         $productionfeedback = new StdClass();
 
-        if (!isset($data->actionparams['coursename'])) {
+        if (empty($data->actionparams['coursename']) && empty($data->actionparams['courseid'])) {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
 
-        // Assign Student role in course for the period.
-        if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-            print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+        if (!empty($data->actionparams['coursename'])) {
+            if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+                shop_trace("[{$data->transactionid}] STD_EXTEND_ENROL_PERIOD PostPay : failed... Bad course shortname");
+                print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+            }
+        } else {
+            if (!$course = $DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
+                shop_trace("[{$data->transactionid}] STD_EXTEND_ENROL_PERIOD PostPay : failed... Bad course id");
+                print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+            }
         }
 
         if (!isset($data->actionparams['enroltype'])) {

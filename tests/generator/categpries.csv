@@ -1,0 +1,10 @@
+name;parentid;description;visible
+Top Category 1;0;Top category 1 for tests;1
+Top Category 2;0;Top category 2 for tests;1
+Top Category 3;0;Top category 3 for tests;1
+Sub Category 1.1;1;Sub category 1.1 for tests;1
+Sub Category 1.2;1;Sub category 1.2 for tests;1
+Sub Category 2.1;2;Sub category 2.1 for tests;1
+Sub Category 2.2;2;Sub category 2.2 for tests;1
+Sub Category 3.1;3;Sub category 3.1 for tests;1
+Sub Category 3.2;3;Sub category 3.2 for tests;1

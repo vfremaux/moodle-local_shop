@@ -40,7 +40,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param string $progress the progress state
      */
     public function progress($progress) {
-        global $OUTPUT, $SESSION;
+        global $SESSION;
 
         $str = '';
 
@@ -84,7 +84,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $iconstate = '_dis';
             }
 
-            $stepicon = $OUTPUT->pix_url(current_language().'/'.$icon.$iconstate, 'local_shop');
+            $stepicon = $this->output->pix_url(current_language().'/'.$icon.$iconstate, 'local_shop');
             $str .= '<img src="'.$stepicon.'" />&nbsp;';
         }
         $str .= '</center>';
@@ -179,11 +179,12 @@ class shop_front_renderer extends local_shop_base_renderer {
      *
      */
     public function printable_bill_link(&$bill) {
-        global $DB, $OUTPUT;
+        global $DB;
 
         $str = '';
 
-        $popup = ($bill->status == SHOP_BILL_SOLDOUT || $bill->status == SHOP_BILL_COMPLETE) ? 'bill' : 'order';
+        $states = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
+        $popup = (in_array($bill->status, $states)) ? 'bill' : 'order';
 
         $popupurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php');
         $str .= '<form name="bill" action="'.$popupurl.'" target="_blank" />';
@@ -191,22 +192,39 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<input type="hidden" name="billid" value="'.$bill->id.'">';
         $str .= '<input type="hidden" name="shopid" value="'.$this->theshop->id.'\">';
         $str .= '<input type="hidden" name="blockid" value="'.(0 + @$this->theblock->id).'\">';
-        $str .= '<table><tr valign="top"><td align="center">';
+        $str .= '<div id="shop-printable-link">'; // Table.
+        $str .= '<div class="shop-row">'; // Row.
+        $str .= '<div class="shop-cell">'; // Cell.
         $str .= '<br /><br /><br /><br />';
+
         $params = array('shopid' => $this->theshop->id,
                         'blockid' => (0 + @$this->theblock->id),
                         'billid' => $bill->id,
                         'transid' => $bill->transactionid);
+
         $billurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php', $params);
         $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $bill->id));
+
         if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
             $billuser = $DB->get_record('user', array('id' => $userid));
             $ticket = ticket_generate($billuser, 'immediate access', $billurl);
             $options = array('ticket' => $ticket);
-            $str .= $OUTPUT->single_button('/login/index.php', get_string('printbill', 'local_shop'), 'post',  $options);
+            $str .= $this->output->single_button('/login/index.php', get_string('printbill', 'local_shop'), 'post',  $options);
         }
-        $str .= '</td></tr></table>';
+
+        $str .= '</div>'; // Cell.
+        $str .= '</div>'; // Row.
+        $str .= '</div>'; // Table.
         $str .= '</form>';
+
+        return $str;
+    }
+
+    public function shop_return_button($theshop) {
+
+        $str = '';
+        $options['id'] = $theshop->id;
+        $str .= $this->output->single_button('/local/shop/front/view.php', get_string('backtoshop', 'local_shop'), 'post',  $options);
 
         return $str;
     }
@@ -360,12 +378,12 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param array $catgories the full product line extractred from Catalog
      */
     public function catalog(&$categories) {
-        global $OUTPUT, $SESSION;
+        global $SESSION;
 
         $this->check_context();
 
         if (empty($categories)) {
-            return $OUTPUT->notification(get_string('nocats', 'local_shop'));
+            return $this->output->notification(get_string('nocats', 'local_shop'));
         }
 
         $str = '';
@@ -423,7 +441,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $str .= '<div class="shopcategory" id="category'.$cat->id.'" />';
             } else {
                 $cat->level = 1;
-                $str .= $OUTPUT->heading($cat->name, $cat->level);
+                $str .= $this->output->heading($cat->name, $cat->level);
             }
 
             if (!empty($cat->description)) {
@@ -535,12 +553,12 @@ class shop_front_renderer extends local_shop_base_renderer {
                                    value=""
                                    maxlength="8"
                                    size="8"
-                                   onkeypress="check_pass_code(\''.$CFG->wwwroot.'\', \''.$product->shortname.'\', this, event)"
+                                   onkeypress="check_pass_code(\''.$product->shortname.'\', this, event)"
                                    title="'.get_string('needspasscodetobuy', 'local_shop').'" />';
                     $str .= '<div id="ci-pass-status-'.$product->shortname.'" class="shop-pass-state"></div>';
                     $disabled = 'disabled="disabled"';
                 }
-                $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\','.$this->theshop->id;
+                $jshandler = 'ajax_add_unit('.$this->theshop->id;
                 $jshandler .= ', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')';
                 $str .= '<input type="button"
                                 id="ci-'.$product->shortname.'"
@@ -644,7 +662,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $buystr = get_string('buy', 'local_shop');
         $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '';
         if ($bundle->password) {
-            $jshandler = 'check_pass_code(\''.$CFG->wwwroot.'\', \''.$bundle->shortname.'\', this, event)';
+            $jshandler = 'check_pass_code(\''.$bundle->shortname.'\', this, event)';
             $str .= '<input type="text"
                            id="ci-pass-'.$bundle->shortname.'"
                            value=""
@@ -655,7 +673,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= '<div id="ci-pass-status-'.$bundle->shortname.'" class="shop-pass-state"></div>';
             $disabled = 'disabled="disabled"';
         }
-        $jshandler = 'ajax_add_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+        $jshandler = 'ajax_add_unit('.$this->theshop->id;
         $jshandler .= ', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')';
         $str .= '<input type="button"
                         id="ci-'.$bundle->shortname.'"
@@ -674,7 +692,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     public function units(&$product) {
-        global $SESSION, $OUTPUT, $CFG;
+        global $SESSION, $CFG;
 
         $this->check_context();
 
@@ -695,10 +713,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         if (($i * 10 + $j) > 0) {
-            $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
-            $jshandler .= ', \''.$product->shortname.'\')';
+            $jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" />';
+            $str .= '<img src="'.$this->output->pix_url('t/delete').'" valign="center" />';
             $str .= '</a>';
         }
 
@@ -749,7 +766,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     public function product_total_line(&$product) {
-        global $CFG, $OUTPUT;
+        global $CFG;
 
         $this->check_context();
 
@@ -767,14 +784,14 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td class="shop-ordercell">';
         $disabled = ' disabled="disabled" ';
         if ($this->view == 'shop') {
-            $jshandler = 'Javascript:ajax_clear_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+            $jshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
             $jshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
             $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+            $str .= '<img src="'.$this->output->pix_url('t/delete').'" />';
             $str .= '</a>';
             $disabled = '';
         }
-        $jshandler = 'ajax_update_product(\''.$CFG->wwwroot.'\', '.$this->theshop->id;
+        $jshandler = 'ajax_update_product('.$this->theshop->id;
         $jshandler .= ', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')';
         $str .= '<input type="text"
                         class="order-detail"
@@ -809,7 +826,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param object $thecatalog
      */
     public function customer_info_form() {
-        global $USER, $OUTPUT, $DB, $SESSION;
+        global $USER, $DB, $SESSION;
 
         $shoppingcart = $SESSION->shoppingcart;
 
@@ -826,7 +843,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                          onchange="local_toggle_invoiceinfo(this)"
                          '.$checked.' />';
         $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
-        $str .= $OUTPUT->heading($heading);
+        $str .= $this->output->heading($heading);
 
         if (isloggedin()) {
             $lastname = $USER->lastname;
@@ -983,7 +1000,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param object $thecatalog
      */
     public function invoicing_info_form() {
-        global $OUTPUT, $SESSION;
+        global $SESSION;
 
         $this->check_context();
 
@@ -1010,7 +1027,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-        $str .= $OUTPUT->heading(get_string('invoiceinformation', 'local_shop'));
+        $str .= $this->output->heading(get_string('invoiceinformation', 'local_shop'));
 
         $str .= '<div id="shop-organisationdata">';
         $str .= '<table cellspacing="3" width="100%">';
@@ -1165,7 +1182,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     public function participant_row($participant = null) {
-        global $CFG, $OUTPUT;
+        global $CFG;
 
         $str = '';
 
@@ -1196,17 +1213,17 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
             $str .= '<td align="left">';
             if (@$participant->moodleid) {
-                $pixurl = $OUTPUT->pix_url('i/moodle_host');
+                $pixurl = $this->output->pix_url('i/moodle_host');
                 $str .= '<img src="'.$pixurl.'" title="'.get_string('isuser', 'local_shop').'" />';
             } else {
-                $pixurl = $OUTPUT->pix_url('new', 'local_shop');
+                $pixurl = $this->output->pix_url('new', 'local_shop');
                 $str .= '<img src="'.$pixurl.'" title="'.get_string('isnotuser', 'local_shop').'" />';
             }
             $str .= '</td>';
             $str .= '<td align="right">';
             $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'"
-                        href="Javascript:ajax_delete_user(\''.$CFG->wwwroot.'\', \''.$participant->email.'\')">';
-            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+                        href="Javascript:ajax_delete_user(\''.$participant->email.'\')">';
+            $str .= '<img src="'.$this->output->pix_url('t/delete').'" /></a>';
             $str .= '</td>';
             $str .= '</tr>';
         } else {
@@ -1370,7 +1387,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= '</td>';
         }
         $str .= '<td align="right">';
-        $jshandler = 'ajax_add_user(\''.$CFG->wwwroot.'\', document.forms[\'participant\'])';
+        $jshandler = 'ajax_add_user(document.forms[\'participant\'])';
         $label = get_string('addparticipant', 'local_shop');
         $str .= '<input type="button" value="'.$label.'" name="add_button" onclick="'.$jshandler.'" />';
         $str .= '</td>';
@@ -1382,7 +1399,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     public function assignation_row($participant, $role, $shortname) {
-        global $CFG, $OUTPUT;
+        global $CFG;
 
         $str = '';
 
@@ -1394,9 +1411,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= @$participant->firstname;
         $str .= '</td>';
         $str .= '<td align="right">';
-        $jshandler = 'Javascript:ajax_delete_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname;
+        $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
         $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+        $str .= '<a href="'.$jshandler.'"><img src="'.$this->output->pix_url('t/delete').'" /></a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1432,14 +1449,14 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
         $params = array('' => get_string('chooseparticipant', 'local_shop'));
-        $attrs = array('onchange' => 'ajax_add_assign(\''.$CFG->wwwroot.'\', \''.$role.'\', \''.$shortname.'\', this)');
+        $attrs = array('onchange' => 'ajax_add_assign(\''.$role.'\', \''.$shortname.'\', this)');
         $str .= html_writer::select($options, 'addassign'.$role.'_'.$shortname, '', $params, $attrs);
 
         return $str;
     }
 
     public function role_list($role, $shortname) {
-        global $OUTPUT, $SESSION;
+        global $SESSION;
 
         $this->check_context();
 
@@ -1447,7 +1464,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $roleassigns = @$SESSION->shoppingcart->users;
 
-        $str .= $OUTPUT->heading(get_string(str_replace('_', '', $role), 'local_shop'));  // Remove pseudo roles markers.
+        $str .= $this->output->heading(get_string(str_replace('_', '', $role), 'local_shop'));  // Remove pseudo roles markers.
         if (!empty($roleassigns[$shortname][$role])) {
             $str .= '<div class="shop-role-list-container">';
             $str .= '<table width="100%" class="shop-role-list">';
@@ -1499,14 +1516,14 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     public function admin_options() {
-        global $OUTPUT, $SESSION;
+        global $SESSION;
 
         $this->check_context();
 
         $str = '';
 
         if (isloggedin() && has_capability('moodle/site:config', context_system::instance())) {
-            $str .= $OUTPUT->box_start('', 'shop-adminlinks');
+            $str .= $this->output->box_start('', 'shop-adminlinks');
             $str .= get_string('adminoptions', 'local_shop');
             $disableall = get_string('disableallmode', 'local_shop');
             $enableall = get_string('enableallmode', 'local_shop');
@@ -1533,7 +1550,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $backofficeurl = new moodle_url('/local/shop/products/view.php', $params);
             $str .= '&nbsp;-&nbsp;<a href="'.$backofficeurl.'">'.$toproductbackofficestr.'</a>';
 
-            $str .= $OUTPUT->box_end();
+            $str .= $this->output->box_end();
         }
 
         return $str;
@@ -1793,7 +1810,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param object $bill
      */
     public function full_order_taxes(&$bill = null) {
-        global $SESSION, $OUTPUT;
+        global $SESSION;
 
         $this->check_context();
 
@@ -1809,7 +1826,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         if ($taxlines = $taxes) {
 
-            $str .= $OUTPUT->heading(get_string('taxes', 'local_shop'), 2, '', true);
+            $str .= $this->output->heading(get_string('taxes', 'local_shop'), 2, '', true);
 
             $str .= '<table cellspacing="5" class="generaltable" width="100%">';
 
@@ -1864,7 +1881,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      *
      */
     public function payment_block() {
-        global $SESSION, $OUTPUT, $CFG;
+        global $SESSION, $CFG;
 
         $config = get_config('local_shop');
         $this->check_context();
@@ -1873,7 +1890,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $systemcontext = context_system::instance();
 
-        $str = $OUTPUT->heading(get_string('paymentmethod', 'local_shop'));
+        $str = $this->output->heading(get_string('paymentmethod', 'local_shop'));
         $str .= '<table width="100%" id="shop-paymodes">';
         $str .= '<tr>';
         $str .= '<td valign="top" colspan="1">';
@@ -2364,7 +2381,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * Prints the header on printable invoices and ordering documents.
      */
     public function invoice_header(&$afullbill) {
-        global $OUTPUT, $CFG;
+        global $CFG;
 
         $config = get_config('local_shop');
 
@@ -2395,7 +2412,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
                 $pixurl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
             } else {
-                $pixurl = $OUTPUT->pix_url('logo', 'theme');
+                $pixurl = $this->output->pix_url('logo', 'theme');
             }
 
             $str .= '<tr>';
@@ -2406,7 +2423,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td colspan="2" align="center">';
-        $str .= $OUTPUT->heading($headerstring, 1);
+        $str .= $this->output->heading($headerstring, 1);
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -2462,7 +2479,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td colspan="2" class="sectionHeader">';
-        $str .= $OUTPUT->heading(get_string('order', 'local_shop'), 2);
+        $str .= $this->output->heading(get_string('order', 'local_shop'), 2);
         $str .= '</td>';
         $str .= '</tr>';
 

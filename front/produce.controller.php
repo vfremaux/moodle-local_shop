@@ -58,8 +58,10 @@ class production_controller extends front_controller_base {
         switch ($cmd) {
             case 'navigate':
                 break;
+
             case 'confirm':
                 break;
+
             case 'produce':
                 break;
         }
@@ -92,7 +94,7 @@ class production_controller extends front_controller_base {
         $afullbill = $this->abill;
 
         // Trap any non defined command here (increase security).
-        if ($cmd != 'produce' && $cmd != 'confirm') {
+        if (($cmd != 'produce') && ($cmd != 'confirm')) {
             return;
         }
 
@@ -154,7 +156,8 @@ class production_controller extends front_controller_base {
                 mtrace($message);
             }
 
-            if ($afullbill->status == SHOP_BILL_PENDING || $afullbill->status == SHOP_BILL_SOLDOUT || $overriding) {
+            $pendingstates = array(SHOP_BILL_PENDING, SHOP_BILL_SOLDOUT);
+            if (in_array($afullbill->status, $pendingstates) || $overriding) {
                 /*
                  * when using the controller to finish a started production, do not
                  * preproduce again (paypal IPN finalization)
@@ -164,7 +167,7 @@ class production_controller extends front_controller_base {
                 }
                 $productionfeedback = produce_prepay($afullbill);
 
-                if ($afullbill->status == SHOP_BILL_SOLDOUT || $overriding) {
+                if (($afullbill->status == SHOP_BILL_SOLDOUT) || $overriding) {
                     shop_trace("[{$afullbill->transactionid}] ".'Production Controller : Post Pay process');
                     if ($this->interactive && $this->ipncall) {
                         mtrace("[{$afullbill->transactionid}] ".'Production Controller : Post Pay process');
@@ -175,9 +178,14 @@ class production_controller extends front_controller_base {
                         $productionfeedback->private .= '<br/>'.$productionfeedback2->private;
                         $productionfeedback->salesadmin .= '<br/>'.$productionfeedback2->salesadmin;
                         if ($overriding) {
-                            $afullbill->status = SHOP_BILL_PREPROD; // Let replay for test.
+                            /*
+                             * this marks the purchase is not paied, but has been allowed to
+                             * produce because the customer is trusted.
+                             */
+                            $afullbill->status = SHOP_BILL_PREPROD;
                         } else {
-                            $afullbill->status = SHOP_BILL_COMPLETE; // Let replay for test.
+                            // Purchase has been fully completed and paied.
+                            $afullbill->status = SHOP_BILL_COMPLETE;
                         }
                         if (!$holding) {
                             // If holding for repeatable tests, do not complete the bill.
@@ -248,17 +256,33 @@ class production_controller extends front_controller_base {
         }
 
         $title = $SITE->shortname . ' : ' . get_string('yourorder', 'local_shop');
-        if (!empty($productiondata->private)) {
-            $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->private, $notification);
+
+        if (!empty($productionfeedback->private)) {
+            $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productionfeedback->private, $notification);
         } else {
             $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', '', $notification);
         }
+
         if (empty($afullbill->customeruser)) {
             $afullbill->customeruser = $DB->get_record('user', array('id' => $afullbill->customer->hasaccount));
         }
 
         if ($afullbill->customeruser) {
-            ticket_notify($afullbill->customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
+            $sent = ticket_notify($afullbill->customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
+            if ($sent) {
+                $message = "[{$afullbill->transactionid}] Production Controller :";
+                $message .= " shop Transaction Confirm Notification to Customer";
+                shop_trace($message);
+                shop_trace($sentnotification, 'mail');
+            } else {
+                $message = "[{$afullbill->transactionid}] Production Controller Warning :";
+                $message .= " Failed to notify notification to Customer";
+                shop_trace($message);
+            }
+        } else {
+            $message = "[{$afullbill->transactionid}] Production Controller Warning :";
+            $message .= " No customer to send notification to.";
+            shop_trace($message);
         }
 
         if ($this->interactive && $this->ipncall) {
@@ -281,20 +305,29 @@ class production_controller extends front_controller_base {
                       'AMOUNT' => sprintf("%.2f", round($afullbill->untaxedamount, 2)),
                       'TAXES' => sprintf("%.2f", round($afullbill->taxes, 2)),
                       'TTC' => sprintf("%.2f", round($afullbill->amount, 2)));
+
         $salesnotification = shop_compile_mail_template('transaction_confirm', $vars, '');
+
         $params = array('id' => $afullbill->shopid,
                         'view' => 'viewBill',
                         'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
+
         $administratorviewurl = new \moodle_url('/local/shop/bills/view.php', $params);;
+
         if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
-            $title = $SITE->shortname.' : '.get_string('orderconfirm', 'local_shop');
-            if (!empty($productiondata->private)) {
-                $sn = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->salesadmin, $salesnotification);
+            // If the sales role is defined.
+
+            $title = $SITE->shortname.' Backoffice : '.get_string('orderconfirm', 'local_shop');
+
+            if (!empty($productionfeedback->private)) {
+                $sn = str_replace('<%%PRODUCTION_DATA%%>', $productionfeedback->salesadmin, $salesnotification);
             } else {
                 $sn = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);
             }
+
             $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $sn, $sn, $administratorviewurl);
+
             if ($sent) {
                 $message = "[{$afullbill->transactionid}] Production Controller :";
                 $message .= " shop Transaction Confirm Notification to sales";

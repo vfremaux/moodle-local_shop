@@ -93,7 +93,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $newuser->timemodified = time();
     $newuser->mnethostid = $CFG->mnet_localhost_id;
 
-    $params = array('firstname' => $newuser->firstname, 'lastname' => $newuser->lastname, 'email' => $newuser->email);
+    $params = array('lastname' => $newuser->lastname, 'email' => $newuser->email);
     if (!$olduser = $DB->get_record('user', $params)) {
         $newuser->id = $DB->insert_record('user', $newuser);
     } else {

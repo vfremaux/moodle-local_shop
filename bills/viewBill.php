@@ -65,7 +65,7 @@ if ($afullbill->status == 'PENDING' || $afullbill->status == 'PLACED') {
     $heading = get_string('bill', 'local_shop');
 }
 $billunique = 'B-'.date('Ymd', $afullbill->emissiondate).'-'.$afullbill->id;
-$heading .= '<span class="titleData">'.$billunique.'</span></h1><br/>';
+$heading .= ' <span class="titleData">'.$billunique.'</span></h1><br/>';
 $heading .= userdate($afullbill->emissiondate);
 
 echo $OUTPUT->heading($heading);
@@ -73,7 +73,9 @@ echo '</td>';
 
 echo '<td colspan="3">';
 echo '<b>'.get_string('transactionid', 'local_shop').': </b><br />';
-echo '<div id="transactionid">'.$afullbill->transactionid.'</div><br />';
+$params = array('id' => $theshop->id, 'transid' => $afullbill->transactionid);
+$scanurl = new moodle_url('/local/shop/front/scantrace.php', $params);
+echo '<div id="transactionid"><a href="'.$scanurl.'" target="_blank">'.$afullbill->transactionid.'</a></div><br />';
 
 if ($afullbill->onlinetransactionid != '') {
     echo '<b>'.get_string('paimentcode', 'local_shop').'</b><br />';

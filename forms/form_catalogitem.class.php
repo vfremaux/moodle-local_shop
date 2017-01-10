@@ -246,9 +246,10 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
-        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedin', 'local_shop'), 1);
-        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('both', 'local_shop'), 0);
-        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedout', 'local_shop'), -1);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('customer', 'local_shop'), PROVIDING_CUSTOMER_ONLY);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedin', 'local_shop'), PROVIDING_LOGGEDIN_ONLY);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('both', 'local_shop'), PROVIDING_BOTH);
+        $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedout', 'local_shop'), PROVIDING_LOGGEDOUT_ONLY);
         $mform->addGroup($radiogroup, 'loggedingroup', get_string('onlyfor', 'local_shop'), array(' '), false);
         $mform->setDefault('onlyforloggedin', 0);
 
@@ -260,14 +261,14 @@ abstract class CatalogItem_Form extends moodleform {
     protected function add_document_assets() {
         global $COURSE;
 
-        $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
-        $fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.pdf'));
+        $imgfpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
+        $docfpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.pdf'));
 
         $mform = $this->_form;
 
         $group = array();
         $label = get_string('leaflet', 'local_shop');
-        $group[0] = & $mform->createElement('filepicker', 'leaflet', $label, $fpickerattributes);
+        $group[0] = & $mform->createElement('filepicker', 'leaflet', $label, $docfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearleaflet', get_string('clear', 'local_shop'));
 
         $label = get_string('leaflet', 'local_shop');
@@ -275,7 +276,7 @@ abstract class CatalogItem_Form extends moodleform {
 
         $group = array();
         $label = get_string('image', 'local_shop');
-        $group[0] = & $mform->createElement('filepicker', 'image', $label, $fpickerattributes);
+        $group[0] = & $mform->createElement('filepicker', 'image', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearimage', get_string('clear', 'local_shop'));
 
         $label = get_string('image', 'local_shop');
@@ -283,7 +284,7 @@ abstract class CatalogItem_Form extends moodleform {
 
         $group = array();
         $label = get_string('thumbnail', 'local_shop');
-        $group[0] = & $mform->createElement('filepicker', 'thumb', $label, $fpickerattributes);
+        $group[0] = & $mform->createElement('filepicker', 'thumb', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearthumb', get_string('clear', 'local_shop'));
 
         $label = get_string('thumbnail', 'local_shop');
@@ -291,7 +292,7 @@ abstract class CatalogItem_Form extends moodleform {
 
         $group = array();
         $label = get_string('unitpix', 'local_shop');
-        $group[0] = & $mform->createElement('filepicker', 'unit', $label, $fpickerattributes);
+        $group[0] = & $mform->createElement('filepicker', 'unit', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearunit', get_string('clear', 'local_shop'));
 
         $label = get_string('unitpix', 'local_shop');
@@ -299,7 +300,7 @@ abstract class CatalogItem_Form extends moodleform {
 
         $group = array();
         $label = get_string('tenunitspix', 'local_shop');
-        $group[0] = & $mform->createElement('filepicker', 'tenunits', $label, $fpickerattributes);
+        $group[0] = & $mform->createElement('filepicker', 'tenunits', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'cleartenunits', get_string('clear', 'local_shop'));
 
         $label = get_string('tenunitspix', 'local_shop');

@@ -33,6 +33,7 @@ require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\Product;
 use local_shop\ProductEvent;
@@ -57,7 +58,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $params = array('shortname' => $catalogitem->handlerparams['coursename']);
             $course = $DB->get_record('course', $params);
         } else if (!empty($catalogitem->handlerparams['courseid'])) {
-            $params = array('shortname' => $catalogitem->handlerparams['courseid']);
+            $params = array('id' => $catalogitem->handlerparams['courseid']);
             $course = $DB->get_record('course', $params);
         }
 
@@ -159,11 +160,10 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         // Check for params validity (internals).
 
-        if (!isset($data->actionparams['coursename'])) {
+        if (empty($data->actionparams['coursename']) && empty($data->actionparams['courseid'])) {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
 
-        $coursename = $data->actionparams['coursename'];
         $rolename = @$data->actionparams['role'];
         if (empty($rolename)) {
             $rolename = 'student';
@@ -172,9 +172,18 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         // Perform operations.
 
         // Assign Student role in course for the period.
-        if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
-            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course id");
-            print_error("Bad target course for product");
+        if (!empty($data->actionparams['coursename'])) {
+            $coursename = $data->actionparams['coursename'];
+            if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
+                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course name");
+                print_error("Bad target course shortname for product");
+            }
+        } else {
+            $courseid = $data->actionparams['courseid'];
+            if (!$course = $DB->get_record('course', array('shortname' => $courseid))) {
+                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course id");
+                print_error("Bad target course id for product");
+            }
         }
 
         // Compute start and end time.

@@ -117,7 +117,7 @@ function shop_validate_customer($theshop) {
         $shoppingcart->errors->customerinfo['customerinfo::email'] = '';
     }
 
-    if (!isloggedin() && shop_has_potential_account($shoppingcart->customerinfo['email'])) {
+    if ((!isloggedin() || isguestuser()) && shop_has_potential_account($shoppingcart->customerinfo['email'])) {
         $params = array('view' => 'customer', 'id' => $theshop->id, 'what' => 'revalidate');
         $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', $params);
         $a = new StdClass();
@@ -132,25 +132,25 @@ function shop_validate_customer($theshop) {
     }
 
     if ($shoppingcart->customerinfo['lastname'] == '') {
-        $shoppingcart->errors->customerinfo['customerinfo::lastname'] = '';
+        $shoppingcart->errors->customerinfo['customerinfo::lastname'] = get_string('emptyfieldlastname', 'local_shop');
     }
 
     if ($shoppingcart->customerinfo['firstname'] == '') {
-        $shoppingcart->errors->customerinfo['customerinfo::firstname'] = '';
+        $shoppingcart->errors->customerinfo['customerinfo::firstname'] = get_string('emptyfieldfirstname', 'local_shop');
     }
 
     if ($shoppingcart->customerinfo['city'] == '') {
-        $shoppingcart->errors->customerinfo['customerinfo::city'] = '';
+        $shoppingcart->errors->customerinfo['customerinfo::city'] = get_string('emptyfieldcity', 'local_shop');
     }
 
     // We just require it if we are billing to the user.
     if (!$shoppingcart->usedistinctinvoiceinfo) {
         if ($shoppingcart->customerinfo['address'] == '') {
-            $shoppingcart->errors->customerinfo['customerinfo::address'] = '';
+            $shoppingcart->errors->customerinfo['customerinfo::address'] = get_string('emptyfieldaddress', 'local_shop');
         }
 
         if ($shoppingcart->customerinfo['zip'] == '') {
-            $shoppingcart->errors->customerinfo['customerinfo::zip'] = '';
+            $shoppingcart->errors->customerinfo['customerinfo::zip'] = get_string('emptyfieldzip', 'local_shop');
         }
     }
 

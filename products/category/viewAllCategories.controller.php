@@ -25,6 +25,10 @@ namespace local_shop\backoffice;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
+
+use local_shop\Category;
+
 class category_controller {
 
     protected $data;
@@ -32,6 +36,12 @@ class category_controller {
     protected $received;
 
     protected $mform;
+
+    protected $thecatalog;
+
+    public function __construct($thecatalog) {
+        $this->thecatalog = $thecatalog;
+    }
 
     public function receive($cmd, $data = null, $mform = null) {
         if (!empty($data)) {
@@ -99,13 +109,13 @@ class category_controller {
                 $category->visible = 0;
             }
 
-            $category->catalogid = $thecatalog->id;
+            $category->catalogid = $this->thecatalog->id;
 
             $category->description = $category->description_editor['text'];
             $category->descriptionformat = 0 + $category->description_editor['format'];
 
             if (empty($category->categoryid)) {
-                $params = array('catalogid' => $this->data->thecatalog->id);
+                $params = array('catalogid' => $this->thecatalog->id);
                 $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
                 $category->sortorder = $maxorder + 1;
                 if (!$category->id = $DB->insert_record('local_shop_catalogcategory', $category)) {
@@ -123,7 +133,7 @@ class category_controller {
                 }
 
                 // If slave catalogue must insert a master copy.
-                if ($thecatalog->isslave) {
+                if ($this->thecatalog->isslave) {
                     $category->catalogid = $thecatalog->groupid;
                     $DB->insert_record('local_shop_catalogcategory', $category);
                 }
@@ -137,11 +147,16 @@ class category_controller {
             $context = \context_system::instance();
 
             // Process text fields from editors.
-            $draftideditor = file_get_submitted_draft_itemid('description_editor');
-            $category->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'categorydescription',
-                                                            $category->id, array('subdirs' => true), $category->description);
-            $category = file_postupdate_standard_editor($category, 'description', $this->mform->editoroptions, $context,
-                                                        'local_shop', 'categorydescription', $category->id);
+            if ($this->mform) {
+                // We do not have form runnig tests.
+                $draftideditor = file_get_submitted_draft_itemid('description_editor');
+                $category->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'categorydescription',
+                                                                $category->id, array('subdirs' => true), $category->description);
+                $category = file_postupdate_standard_editor($category, 'description', $this->mform->editoroptions, $context,
+                                                            'local_shop', 'categorydescription', $category->id);
+            }
+
+            return new Category($category->id);
         }
     }
 
@@ -153,8 +168,9 @@ class category_controller {
             'show' => array('categoryid' => 'Numeric ID pointing a Category'),
             'hide' => array('categoryid' => 'Numeric ID pointing a Category'),
             'edit' => array(
+                'catalogid' => 'ID of product catalog as Integer',
                 'name' => 'String',
-                'parentid' => 'Numeric ID pointing another categroy',
+                'parentid' => 'Numeric ID pointing another category',
                 'description_editor' => 'Array of text|format|itemid',
                 'visible' => 'Boolean'),
         );
