@@ -52,7 +52,7 @@ class Catalog extends ShopObject {
                 return; // This builds a lightweight proxy of the catalogue.
             }
 
-            if ($this->record->groupid) {
+            if (!empty($this->record->groupid)) {
                 if ($this->record->id == $this->record->groupid) {
                     $this->ismaster = 1;
                 } else {
