@@ -52,7 +52,7 @@ class Catalog extends ShopObject {
                 return; // This builds a lightweight proxy of the catalogue.
             }
 
-            if ($this->record->groupid) {
+            if (!empty($this->record->groupid)) {
                 if ($this->record->id == $this->record->groupid) {
                     $this->ismaster = 1;
                 } else {
@@ -175,7 +175,7 @@ class Catalog extends ShopObject {
      * @param arrayref &$shopproducts an array to be filled
      */
     public function get_all_products(&$shopproducts) {
-        global $SESSION, $DB;
+        global $SESSION, $DB, $USER;
 
         $categories = $this->get_categories();
 
@@ -184,8 +184,19 @@ class Catalog extends ShopObject {
         }
 
         $isloggedinclause = '';
+        $modes = array();
         if (empty($SESSION->shopseeall)) {
-            $isloggedinclause = (isloggedin() && !isguestuser()) ? ' AND ci.onlyforloggedin > -1 ' : ' AND ci.onlyforloggedin < 1';
+            if (isloggedin() && !isguestuser()) {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDIN_ONLY;
+                if ($DB->record_exists('local_shop_customer', array('hasaccount' => $USER->id))) {
+                    $modes[] = PROVIDING_CUSTOMER_ONLY;
+                }
+            } else {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDOUT_ONLY;
+            }
+            $isloggedinclause = ' AND ci.onlyforloggedin IN ('.implode(',', $modes).') ';
         }
 
         $shopproducts = array();
@@ -703,7 +714,30 @@ class Catalog extends ShopObject {
      * @TODO : scan shoping cart and get role req info from products
      */
     public function check_required_roles() {
-        return array('student', '_supervisor');
+        global $SESSION;
+
+        $requiredroles = array('student'=> true);
+
+        if (!empty($SESSION->shoppingcart->order)) {
+            foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
+                $product = $this->get_product_by_shortname($shortname);
+                $handlerparams = $product->get_serialized_handlerparams();
+                $params = json_decode($handlerparams);
+                if (!empty($params->requiredroles)) {
+                    $roles = explode(',', $params->requiredroles);
+                    foreach ($roles as $r) {
+                        // Make it unique.
+                        if ($r == 'supervisor') {
+                            // Special case.
+                            $r = '_supervisor';
+                        }
+                        $requiredroles[$r] = true;
+                    }
+                }
+            }
+        }
+
+        return array_keys($requiredroles);
     }
 
     /**
