@@ -70,7 +70,7 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
 
     include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
-    $controller = new \local_shop\backoffice\customer_controller();
+    $controller = new \local_shop\backoffice\customers_controller();
     $controller->receive('edit', $data);
     $controller->process('edit');
 
