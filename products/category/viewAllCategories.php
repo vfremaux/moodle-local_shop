@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/products/category/viewAllCategories.controller.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
-use local_shop\products\category_controller;
 use local_shop\Category;
 
 $action = optional_param('what', '', PARAM_TEXT);
@@ -34,7 +33,7 @@ $order = optional_param('order', 'sortorder', PARAM_TEXT);
 $dir = optional_param('dir', 'ASC', PARAM_TEXT);
 
 if ($action != '') {
-    $controller = new \local_shop\products\category_controller();
+    $controller = new \local_shop\backoffice\category_controller();
     $controller->process($action);
 }
 

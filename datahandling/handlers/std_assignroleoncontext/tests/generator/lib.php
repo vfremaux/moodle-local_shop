@@ -18,7 +18,7 @@
  * local_shop/handler data generator.
  *
  * @package     local_shop
- * @subpackage  shophandler_std_enrolonecourse
+ * @subpackage  shophandler_std_assignroleoncontext
  * @category    test
  * @copyright   2016 Valery Fremaux
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,26 +31,27 @@ require_once($CFG->dirroot.'/local/shop/products/products.controller.php');
 
 /**
  * Data generator class for tests.
- * This class has no override of test_customerdata nor test_productiondata as enrolling the current
- * user in the product level defined targets.
  */
-class shophandler_std_enrolonecourse_generator extends shophandler_generator_base {
+class shophandler_std_assignroleoncontext_generator extends shophandler_generator_base {
 
     public function create_product($thecatalog, $category, $tax, $params, $data = null) {
-        global $CFG;
 
         static $prodix = 1;
 
         if (is_null($data)) {
 
-            $handlerparams = 'courseid='.$params['course'].'&role=student&duration=365&customersupport=CUSTOMERSUPPORT';
+            $handlerparams = 'role=student&contextlevel=50&instance='.$params['context']->id;
             $requireddata = '';
+            if (!empty($params['user'])) {
+                $requireddata = '[{"field":"foruser","label":"for user","type":"textfield",';
+                $requireddata .= '"desc":"Testing forcing user","attrs":{"size":80}}] ';
+            }
 
             $data = (object) array(
-                'code' => 'TESTPRODENROLONECOURSE',
-                'name' => 'Test product for enrolling in a course',
+                'code' => 'TESTPRODASSIGNROLE',
+                'name' => 'Test product assigining a role on context',
                 'description_editor' => array(
-                    'text' => '<p>Product for unit testing. Single price, Automated on enrolling in a course.</p>',
+                    'text' => '<p>Product for unit testing. Single price, Automated on assigning a role on some context.</p>',
                     'format' => '1',
                     'itemid' => 0,
                 ),
@@ -68,30 +69,30 @@ class shophandler_std_enrolonecourse_generator extends shophandler_generator_bas
                 'range4' => 0,
                 'price5' => 0,
                 'taxcode' => $tax->id,
-                'stock' => 0,
+                'stock' => 100000,
                 'sold' => 0,
-                'maxdeliveryquant' => 1,
+                'maxdeliveryquant' => 5,
                 'onlyforloggedin' => 0,
                 'password' => '',
                 'categoryid' => $category->id,
                 'setid' => 0,
-                'showsnameinset' => 0,
-                'showsdescriptioninset' => 0,
+                'showsnameinset' => 1,
+                'showsdescriptioninset' => 1,
 
                 'eula_editor' => array (
-                        'text' => '<p>Sales conditions / Creating course</p>',
+                        'text' => '<p>Sales conditions / Assigning role on context</p>',
                         'format' => 1,
                         'itemid' => 0,
                 ),
 
                 'notes_editor' => array (
-                    'text' => '<p>Test notes / Creating course</p>',
+                    'text' => '<p>Test notes / Assigning role on context</p>',
                     'format' => 1,
                     'itemid' => 0,
                 ),
 
                 'requireddata' => $requireddata,
-                'enablehandler' => 'std_createcourse',
+                'enablehandler' => 'std_assignroleoncontext',
                 'handlerparams' => $handlerparams,
                 'quantaddressesusers' => 0,
                 'renewable' => 0,
