@@ -53,6 +53,7 @@ class product_controller {
      */
     public function receive($cmd, $data = null, $mform = null) {
 
+        $this->mform = $mform;
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -102,7 +103,7 @@ class product_controller {
      * @param string $cmd
      */
     public function process($cmd) {
-        global $DB;
+        global $DB, $USER;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
@@ -168,22 +169,22 @@ class product_controller {
                 $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
                                                                       'catalogitemdescription', $this->data->id,
                                                                       array('subdirs' => true), $this->data->description);
-                $this->data = file_postupdate_standard_editor($this->data, 'description', $mform->editoroptions, $context, 'local_shop',
+                $this->data = file_postupdate_standard_editor($this->data, 'description', $this->mform->editoroptions, $context, 'local_shop',
                                                         'catalogitemdescription', $this->data->id);
 
                 $draftideditor = file_get_submitted_draft_itemid('notes_editor');
                 $this->data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
                                                           $this->data->id, array('subdirs' => true), $this->data->notes);
-                $this->data = file_postupdate_standard_editor($this->data, 'notes', $mform->editoroptions, $context, 'local_shop',
+                $this->data = file_postupdate_standard_editor($this->data, 'notes', $this->mform->editoroptions, $context, 'local_shop',
                                                         'catalogitemnotes', $this->data->id);
 
                 $draftideditor = file_get_submitted_draft_itemid('eula_editor');
                 $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
                                                          $this->data->id, array('subdirs' => true), $this->data->eula);
-                $this->data = file_postupdate_standard_editor($this->data, 'eula', $mform->editoroptions, $context, 'local_shop',
+                $this->data = file_postupdate_standard_editor($this->data, 'eula', $this->mform->editoroptions, $context, 'local_shop',
                                                         'catalogitemeula', $this->data->id);
 
-                $usercontext = context_user::instance($USER->id);
+                $usercontext = \context_user::instance($USER->id);
                 shop_products_process_files($this->data, $context, $usercontext);
             }
 
@@ -271,7 +272,7 @@ class product_controller {
                 'stock' => 'Integer',
                 'sold' => 'Integer',
                 'maxdeliveryquant' => 'Integer',
-                'onlyforloggedin' => '0 (indifferent),1, or 2',
+                'onlyforloggedin' => '-1, 0 (indifferent), 1 (loggedin), or 2 (referenced customers)',
                 'password' => 'String or empty',
                 'categoryid' => 'Numeric ID of a category',
                 'setid' => 'Numeric ID of a set',

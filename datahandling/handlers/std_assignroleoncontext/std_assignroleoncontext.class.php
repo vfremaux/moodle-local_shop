@@ -37,6 +37,7 @@ require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\Product;
 use local_shop\ProductEvent;
@@ -303,7 +304,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         parent::unit_test($data, $errors, $warnings, $messages);
 
         if (!isset($data->required['foruser'])) {
-            if ($data->onlyforloggedin != PROVIDING_LOGGEDIN_ONLY) {
+            if ($data->onlyforloggedin < PROVIDING_LOGGEDIN_ONLY) {
                 $errors[$data->code][] = get_string('erroremptyuserrisk', 'shophandlers_std_assignroleoncontext');
             }
             $warnings[$data->code][] = get_string('warningonlyforselfproviding', 'shophandlers_std_assignroleoncontext');

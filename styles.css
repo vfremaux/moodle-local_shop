@@ -554,28 +554,6 @@ table.shop-role-assignations > tr > td{
     padding-left:30px;
 }
 
-.shop-article.product .shop-front-productpix,
-.shop-article.bundle .shop-front-productpix,
-.shop-article.set .shop-front-productpix {
-}
-
-.shop-article.product .shop-front-productpix img,
-.shop-article.bundle .shop-front-productpix img,
-.shop-article.set .shop-front-productpix img {
-    height:150px;
-    margin-right: 20px;
-    width:150px;
-}
-
-.shop-article.element .shop-front-productpix {
-}
-
-.shop-article.element .shop-front-productpix img {
-    height:80px;
-    margin-right:20px;
-    width:80px;
-}
-
 .shop-article.product,
 .shop-article.set,
 .shop-article.bundle {
@@ -713,4 +691,10 @@ shop-order-paymode {
     border: 1px solid #d0d0d0;
     background-color: #e8e8e8;
     border-radius:5px;
+}
+
+.access-code {
+    display:block;
+    font-size:2.0em;
+    padding:10px;
 }
