@@ -105,9 +105,13 @@ class catalog_controller {
                 @$catalog->groupid += 0;
                 $catalog->id = $DB->insert_record('local_shop_catalog', $catalog);
                 if ($catalog->linked == 'master') {
+                    // Set reference to ourself. We are the leader of a catalog group.
                     $DB->set_field('local_shop_catalog', 'groupid', $catalog->id, array('id' => $catalog->id));
                 } else if ($catalog->linked == 'slave') {
-                    $DB->set_field('local_shop_catalog', 'groupid', $catalog->id, array('id' => $catalog->groupid));
+                    // Set reference to the master in group.
+                    $DB->set_field('local_shop_catalog', 'groupid', $catalog->groupid, array('id' => $catalog->id));
+                } else {
+                    $DB->set_field('local_shop_catalog', 'groupid', 0, array('id' => $catalog->id));
                 }
             } else {
                 // Updating.
@@ -132,9 +136,11 @@ class catalog_controller {
                         }
                     }
                 }
-                $catalog->id = $DB->update_record('local_shop_catalog', $catalog);
+                $DB->update_record('local_shop_catalog', $catalog);
 
                 if ($catalog->linked == 'master') {
+                    // Deslave the catalog giving it its own groupid.
+                    // TODO : check what happens to product clones in there.
                     $DB->set_field('local_shop_catalog', 'groupid', $catalog->id, array('id' => $catalog->id));
                 }
 

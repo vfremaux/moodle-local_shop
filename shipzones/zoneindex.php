@@ -69,7 +69,7 @@ $PAGE->navbar->add(get_string('shipzones', 'local_shop'), $zonesurl);
 $PAGE->set_url($url);
 
 $renderer = shop_get_renderer('shipzones');
-$renderer->load_context($thecatalog);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 echo $OUTPUT->header();
 

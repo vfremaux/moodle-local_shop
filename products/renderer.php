@@ -23,8 +23,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/renderer.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
@@ -677,7 +677,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $table->class = 'generaltable';
         $table->head = array("<b>$namestr</b>", "<b>$parentcatstr</b>", "<b>$catdescstr</b>", "<b>$prodcountstr</b>", '');
         $table->width = '100%';
-        $table->align = array('left', 'left', 'center', 'right');
+        $table->align = array('left', 'left', 'left', 'center', 'right');
         $table->size = array('20%', '20%', '30%', '10%', '20%');
 
         foreach ($categories as $cat) {
@@ -706,10 +706,13 @@ class shop_products_renderer extends local_shop_base_renderer {
         $class = ($category->visible) ? 'shop-shadow' : '';
         $row[] = $indent.'<span class="'.$class.'">'.$category->name.'</span>';
 
+        $row[] = $category->get_parent_name();
+
         $contextid = context_system::instance()->id;
         $category->description = file_rewrite_pluginfile_urls($category->description, 'pluginfile.php',
                                                               $contextid, 'local_shop', 'categorydescription', $category->id);
         $row[] = format_text($category->description);
+
         $row[] = $DB->count_records('local_shop_catalogitem', array('categoryid' => $category->id));
 
         if ($category->visible) {

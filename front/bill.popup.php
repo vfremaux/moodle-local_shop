@@ -72,7 +72,7 @@ $PAGE->set_pagelayout('popup');
 // Get active catalog from block.
 
 $renderer = shop_get_renderer();
-$renderer->load_context($theshop, $theblock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL);
 
