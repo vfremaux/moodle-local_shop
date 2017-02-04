@@ -27,14 +27,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2016101500; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2016051900; // Requires this Moodle version.
+$plugin->requires  = 2016120500; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '3.1.0 (Build 2016101500)';
+$plugin->release = '3.2.0 (Build 2016092100)';
 $plugin->maturity = MATURITY_BETA;
 $plugin->dependencies = array('auth_ticket' => '2012060400');
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.1.0004';
+$plugin->codeincrement = '3.2.0004';
 $plugin->privacy = 'dualrelease';
 $plugin->prolocations = array(
     'datahandling/handlers/std_addtrainingcredits',
