@@ -74,7 +74,6 @@ if ($mform->is_cancelled()) {
 }
 
 if ($data = $mform->get_data()) {
-    global $USER;
 
     $data->catalogid = $thecatalog->id;
     $data->isset = PRODUCT_SET;
@@ -135,6 +134,7 @@ if ($data = $mform->get_data()) {
     $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                             'catalogitemdescription', $data->id);
 
+    $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);
 
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));

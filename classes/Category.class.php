@@ -55,6 +55,14 @@ class Category extends ShopObject {
         }
     }
 
+    public function get_parent_name() {
+        global $DB;
+
+        if ($this->perentid) {
+            return format_string($DB->get_field('shop_catalog_category', 'name', array('id' => $this->parentid)));
+        }
+    }
+
     public function get_branch() {
         global $DB;
 

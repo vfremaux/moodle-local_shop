@@ -77,7 +77,7 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $renderer = shop_get_renderer('bills');
 $renderer->load_context($theshop, $thecatalog, $theblock);
 $mainrenderer = $PAGE->get_renderer('local_shop');
-$mainrenderer->load_context($theshop, $theblock);
+$mainrenderer->load_context($theshop, $thecatalog, $theblock);
 
 $out = $OUTPUT->header();
 

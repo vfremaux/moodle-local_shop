@@ -28,6 +28,7 @@ namespace local_shop;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
 /**
  * User object is provided for direct Object Mapping of the _user database model
@@ -52,7 +53,7 @@ class Catalog extends ShopObject {
                 return; // This builds a lightweight proxy of the catalogue.
             }
 
-            if ($this->record->groupid) {
+            if (!empty($this->record->groupid)) {
                 if ($this->record->id == $this->record->groupid) {
                     $this->ismaster = 1;
                 } else {
@@ -110,7 +111,7 @@ class Catalog extends ShopObject {
     }
 
     /**
-     * Get catalogs known categories
+     * Get catalog known categories
      */
     public function get_categories($local = false, $visible = 1) {
         global $DB;
@@ -374,7 +375,7 @@ class Catalog extends ShopObject {
                    ORDER BY
                       ci.shortname
                 ";
-                $catalogitems = $DB->get_records_sql($sql, array($this->groupid, $this->id));
+                $catalogitems = $DB->get_records_sql($sql, array($this->groupid, $cat->id));
                 foreach ($catalogitems as $cirec) {
                     $ci = new CatalogItem($cirec);
                     $ci->thumb = $ci->get_thumb_url();
@@ -656,7 +657,7 @@ class Catalog extends ShopObject {
     public function is_not_used() {
         global $DB;
 
-        return 0 == $DB->count_records('local_shop', array('catalogid' => $this->id));
+        return 0 == $DB->count_records('local_shop', array('catalogid' => 0 + $this->id));
     }
 
     /**
@@ -885,8 +886,9 @@ class Catalog extends ShopObject {
 
     public static function get_instances_for_admin() {
 
-        if ($instances = self::get_instances()) {
+        if ($instances = self::get_instances(array(), 'groupid,id')) {
             foreach ($instances as $c) {
+                $instances[$c->id]->categories = Category::count(array('catalogid' => $c->id));
                 $instances[$c->id]->items = CatalogItem::count(array('catalogid' => $c->id));
             }
         }
