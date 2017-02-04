@@ -26,13 +26,14 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+require_once($CFG->dirroot.'/local/shop/renderer.php');
 
 use local_shop\Tax;
 
 /**
  *
  */
-class shop_bills_renderer {
+class shop_bills_renderer extends local_shop_base_renderer {
 
     protected $theshop;
     protected $thecatalog;
@@ -40,19 +41,10 @@ class shop_bills_renderer {
 
     /**
      *
-     */
-    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
-        $this->theshop = $theshop;
-        $this->thecatalog = $thecatalog;
-        $this->theblock = $theblock;
-    }
-
-    /**
-     *
      *
      */
     public function printable_bill_link($billid, $transid) {
-        global $DB, $OUTPUT;
+        global $DB;
 
         $str = '';
 
@@ -68,7 +60,7 @@ class shop_bills_renderer {
             $billuser = $DB->get_record('user', array('id' => $userid));
             $ticket = ticket_generate($billuser, 'immediate access', $billurl);
             $options = array('ticket' => $ticket);
-            $str .= $OUTPUT->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
+            $str .= $this->output->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
         }
         $backtoshopstr = get_string('backtoshop', 'local_shop');
         $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));

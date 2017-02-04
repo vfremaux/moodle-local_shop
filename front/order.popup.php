@@ -36,7 +36,7 @@ $config = get_config('local_shop');
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $renderer = shop_get_renderer('front');
-$renderer->load_context($theshop, $theblock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Security.
 
