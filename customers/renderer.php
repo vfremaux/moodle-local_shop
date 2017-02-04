@@ -25,18 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/renderer.php');
+
 use local_shop\Shop;
 
-class shop_customers_renderer {
-
-    protected $theshop;
-
-    public function load_context(&$theshop) {
-        $this->theshop = $theshop;
-    }
+class shop_customers_renderer extends local_shop_base_renderer {
 
     public function customers($customers) {
-        global $OUTPUT;
 
         $lastnamestr = get_string('lastname');
         $firstnamestr = get_string('firstname');
@@ -66,11 +61,11 @@ class shop_customers_renderer {
             $row[] = $c->firstname;
             $row[] = sprintf("%.2f", round($c->totalaccount, 2)).' '.$this->theshop->defaultcurrency;
             $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));
-            $cmd = '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"/></a>';
+            $cmd = '<a href="'.$editurl.'"><img src="'.$this->output->pix_url('t/edit').'"/></a>';
             if ($c->billcount == 0) {
                 $params = array('view' => 'viewAllCustomers', 'customerid[]' => $c->id, 'what' => 'deletecustomer');
                 $deleteurl = new moodle_url('/local/shop/customers/view.php', $params);
-                $cmd .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'"/></a>';
+                $cmd .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$this->output->pix_url('t/delete').'"/></a>';
             }
             $row[] = $cmd;
             $table->data[] = $row;

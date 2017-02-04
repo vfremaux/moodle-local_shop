@@ -23,6 +23,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/renderer.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
@@ -33,25 +34,7 @@ use local_shop\Product;
 use local_shop\BillItem;
 use local_shop\CatalogItem;
 
-class shop_purchasemanager_renderer {
-
-    protected $theshop;
-
-    protected $thecatalog;
-
-    protected $theblock;
-
-    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
-        $this->theshop = $theshop;
-        $this->thecatalog = $thecatalog;
-        $this->theblock = $theblock;
-    }
-
-    private function _check_context() {
-        if (empty($this->thecatalog)) {
-            throw new coding_exception('context not ready in products_renderer. Missing Catlaog instance');
-        }
-    }
+class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Displays a single product instance admin line.
