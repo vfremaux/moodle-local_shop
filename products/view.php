@@ -61,7 +61,6 @@ $PAGE->set_pagelayout('admin');
 $out = $OUTPUT->header();
 
 $renderer = shop_get_renderer('products');
-
 $renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Make page content.
