@@ -399,10 +399,10 @@ class local_shop_base_renderer {
      * Loads the renderer with contextual objects. Most of the renderer function need
      * at least a shop instance.
      */
-    public function load_context(&$theshop, &$theblock = null) {
+    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
 
         $this->theshop = $theshop;
-        $this->thecatalog = new Catalog($this->theshop->catalogid);
+        $this->thecatalog = $thecatalog;
         $this->theblock = $theblock;
 
         if (!empty($this->theblock->instance->id)) {

@@ -57,6 +57,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         if (!empty($catalogitem->handlerparams['coursename'])) {
             $params = array('shortname' => $catalogitem->handlerparams['coursename']);
             $course = $DB->get_record('course', $params);
+        } else if (!empty($catalogitem->handlerparams['courseidnumber'])) {
+            $params = array('idnumber' => $catalogitem->handlerparams['courseidnumber']);
+            $course = $DB->get_record('course', $params);
         } else if (!empty($catalogitem->handlerparams['courseid'])) {
             $params = array('id' => $catalogitem->handlerparams['courseid']);
             $course = $DB->get_record('course', $params);
@@ -177,6 +180,12 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course name");
                 print_error("Bad target course shortname for product");
+            }
+        } else if (!empty($data->actionparams['courseidnumber'])) {
+            $idnumber = $data->actionparams['courseidnumber'];
+            if (!$course = $DB->get_record('course', array('idnumber' => $idnumber))) {
+                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course idnumber");
+                print_error("Bad target course id for product");
             }
         } else {
             $courseid = $data->actionparams['courseid'];
@@ -359,12 +368,28 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         parent::unit_test($data, $errors, $warnings, $messages);
 
-        if (!isset($data->actionparams['coursename'])) {
+        if (!isset($data->actionparams['coursename']) &&
+                !isset($data->actionparams['courseid']) &&
+                        !isset($data->actionparams['courseidnumber'])) {
             $warnings[$data->code][] = get_string('errornocourse', 'shophandlers_std_enrolonecourse');
         } else {
-            if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-                $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['coursename']);
-                $errors[$data->code][] = $fb;
+            if (!empty($data->actionparams['coursename'])) {
+                if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+                    $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['coursename']);
+                    $errors[$data->code][] = $fb;
+                }
+            }
+            if (!empty($data->actionparams['courseid'])) {
+                if (!$DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
+                    $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['courseid']);
+                    $errors[$data->code][] = $fb;
+                }
+            }
+            if (!empty($data->actionparams['courseidnumber'])) {
+                if (!$DB->get_record('course', array('idnumber' => $data->actionparams['courseidnumber']))) {
+                    $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['courseidnumber']);
+                    $errors[$data->code][] = $fb;
+                }
             }
         }
 

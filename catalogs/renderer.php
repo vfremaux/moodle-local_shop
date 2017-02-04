@@ -25,14 +25,14 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/renderer.php');
 
-class shop_catalogs_renderer {
+class shop_catalogs_renderer extends local_shop_base_renderer {
 
     /**
      * @param object $catalog
      */
     public function catalog_admin_line($catalog) {
-        global $OUTPUT;
 
         if (is_null($catalog)) {
             $str = '<tr>';
@@ -41,6 +41,9 @@ class shop_catalogs_renderer {
             $str .= '</th>';
             $str .= '<th align="left" class="header c1">';
             $str .= get_string('description', 'local_shop');
+            $str .= '</th>';
+            $str .= '<th align="left" class="header c2">';
+            $str .= get_string('categories', 'local_shop');
             $str .= '</th>';
             $str .= '<th align="left" class="header c2">';
             $str .= get_string('items', 'local_shop');
@@ -60,7 +63,7 @@ class shop_catalogs_renderer {
         $str .= '<td>';
 
         if ($catalog->isslave) {
-            $str .= '<img src="'.$OUTPUT->pix_url('link', 'local_shop').'" />';
+            $str .= '<img src="'.$this->output->pix_url('link', 'local_shop').'" />';
         }
         $params = array('view' => 'viewAllProducts', 'catalogid' => $catalog->id);
         $catalogurl = new moodle_url('/local/shop/products/view.php', $params);
@@ -70,16 +73,21 @@ class shop_catalogs_renderer {
         $str .= $catalog->description;
         $str .= '</td>';
         $str .= '<td>';
+        if (!$catalog->isslave) {
+            $str .= $catalog->categories;
+        }
+        $str .= '</td>';
+        $str .= '<td>';
         $str .= $catalog->items;
         $str .= '</td>';
         $str .= '<td>';
         $str .= '<div class="shop-line-commands">';
         $editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php', array('catalogid' => $catalog->id));
-        $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"></a>';
+        $str .= '<a href="'.$editurl.'"><img src="'.$this->output->pix_url('t/edit').'"></a>';
         if ($catalog->is_not_used()) {
             $params = array('catalogid' => $catalog->id, 'what' => 'deletecatalog');
             $deleteurl = new moodle_url('/local/shop/index.php', $params);
-            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('/t/delete').'"></a>';
+            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$this->output->pix_url('/t/delete').'"></a>';
         }
         $str .= '</div>';
         $str .= '</td>';

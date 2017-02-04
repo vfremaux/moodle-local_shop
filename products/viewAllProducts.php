@@ -144,4 +144,10 @@ if (count(array_keys($products)) == 0) {
 echo '</table>';
 echo '</form>';
 
-echo $renderer->catlinks($thecatalog);
+if (!$thecatalog->isslave) {
+    echo $renderer->catlinks($thecatalog);
+} else {
+    echo '<div class="shop-cat-notice">';
+    print_string('nocatsslave', 'local_shop');
+    echo '</div>';
+}
