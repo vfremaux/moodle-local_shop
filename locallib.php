@@ -545,12 +545,14 @@ function shop_build_context() {
     } else {
         // Shopid is null. get lowest available shop as default.
         $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
-        $shop = array_pop($shops);
-        $theshop = new Shop($shop->id);
+        if ($shop = array_pop($shops)) {
+            $theshop = new Shop($shop->id);
+        }
     }
 
     if (!$theshop) {
-        print_error('errornoshopdefined', 'local_shop');
+        // No shops available at all. Redirect o shop management.
+        redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
     }
 
     /*
@@ -573,7 +575,12 @@ function shop_build_context() {
     try {
         $thecatalog = new Catalog($SESSION->shop->catalogid);
     } catch (Exception $e) {
-        print_error('objecterror', 'local_shop', $e->getMessage());
+        if (preg_match('/local\/shop\/index.php/', $_SERVER['PHP_SELF'])) {
+            unset($SESSION->shop->catalogid);
+            redirect(me());
+        } else {
+            print_error('objecterror', 'local_shop', $e->getMessage());
+        }
     }
 
     $theblock = null;
