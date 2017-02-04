@@ -52,7 +52,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
 $renderer = $PAGE->get_renderer('local_shop');
-$renderer->load_context($theshop, $theblock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 echo $OUTPUT->header();
 

@@ -64,7 +64,7 @@ if ($view == 'viewCustomer') {
 // Getting needed renderers.
 $mainrenderer = $PAGE->get_renderer('local_shop');
 $renderer = shop_get_renderer('customers');
-$renderer->load_context($theshop);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Make page content.
 

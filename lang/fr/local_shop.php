@@ -205,6 +205,8 @@ $string['editshipping'] = 'Edition d\'une règle de port';
 $string['editshippingzone'] = 'Edition de zone de port dû';
 $string['editshop'] = 'Modifier une boutique';
 $string['edittaxe'] = 'Edition d\'une taxe';
+$string['emulatecommunity'] = 'Emuler la version communautaire';
+$string['emulatecommunity_desc'] = 'Si elle est activée, cette option force le composant à fonctionner en version communautaire. Certaines fonctionnalités ne seront plus disponibles.';
 $string['enablehandler'] = 'Activer le traitement d\'achat';
 $string['enablepaymodes'] = 'Modes de paiement&nbsp;';
 $string['error'] = 'Erreur&nbsp;:&ensp;';
@@ -300,8 +302,8 @@ $string['pastetransactionid'] = 'Coller un ID de transaction ';
 $string['paymentmethods'] = 'Modes de paiement';
 $string['paymodes'] = 'Mode de paiement&nbsp;';
 $string['picktransactionid'] = 'Choisir un ID de transaction ';
+$string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Boutique';
-$string['pluginname'] = 'e-Boutique';
 $string['postproduction'] = 'Action sur un produit';
 $string['price'] = 'Prix';
 $string['price2'] = 'Prix 2';
@@ -688,3 +690,10 @@ $string['KRWsymb'] = 'Won (corea)';
 $string['JPYsymb'] = 'Yen (japan)';
 $string['TNDsymb'] = 'Dn (TU)';
 $string['MADsymb'] = 'Dn (MA)';
+
+$string['plugindist_desc'] = '<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
+correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugn existe et est distribuée
+sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
+<p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
+<ul><li><a href="http://service.activeprolearn.com/local/shop/front/view.php?id=1">ActiveProLearn SAS</a></li>
+<li><a href="http://www.edunao.com">Edunao SAS</a></li></ul>';
