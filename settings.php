@@ -274,4 +274,18 @@ if ($hassiteconfig) {
     $desc = get_string('configuserenewableproducts', 'local_shop');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
+    if (local_shop_supports_feature('emulate/community')) {
+        // This will accept any
+        $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'report_trainingsessions'), ''));
+
+        $key = 'report_trainingsessions/emulatecommunity';
+        $label = get_string('emulatecommunity', 'report_trainingsessions');
+        $desc = get_string('emulatecommunity_desc', 'report_trainingsessions');
+        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
+    } else {
+        $label = get_string('plugindist', 'report_trainingsessions');
+        $desc = get_string('plugindist_desc', 'report_trainingsessions');
+        $settings->add(new admin_setting_heading('plugindisthdr', $label, $desc));
+    }
+
 }

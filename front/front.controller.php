@@ -59,7 +59,7 @@ abstract class front_controller_base {
         }
 
         $this->renderer = shop_get_renderer();
-        $this->renderer->load_context($theshop, $theblock);
+        $this->renderer->load_context($theshop, $thecatalog, $theblock);
     }
 
     /**

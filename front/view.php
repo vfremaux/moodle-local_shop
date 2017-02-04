@@ -78,7 +78,7 @@ if (empty($config->sellername)) {
 $out = $OUTPUT->header();
 
 $renderer = shop_get_renderer('front');
-$renderer->load_context($theshop, $theblock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 // Fetch view.
 if (is_readable($CFG->dirroot."/local/shop/front/{$view}.php")) {

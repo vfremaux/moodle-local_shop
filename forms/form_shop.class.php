@@ -85,7 +85,7 @@ class Shop_Form extends moodleform {
             $str = get_string('nocatalogs', 'local_shop');
             if (has_capability('local/shop:salesadmin', $context)) {
                 $gotoadminstr = get_string('gotoadminlink', 'local_shop');
-                $catalogadminurl = new moodle_url('/blocks/shop/index.php');
+                $catalogadminurl = new moodle_url('/local/shop/index.php');
                 $str .= '. <a href="'.$catalogadminurl.'">'.$gotoadminstr.'</a>';
             }
             $mform->addElement('static', 'catalogidlabel', get_string('configcatalog', 'local_shop'), $str);

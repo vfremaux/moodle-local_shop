@@ -23,6 +23,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/renderer.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogShipping.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -31,19 +32,7 @@ use local_shop\CatalogShipping;
 use local_shop\Tax;
 use local_shop\Shop;
 
-class shop_shipzones_renderer {
-
-    protected $thecatalog;
-
-    public function load_context(&$thecatalog) {
-        $this->thecatalog = $thecatalog;
-    }
-
-    protected function _check_context() {
-        if (empty($this->thecatalog)) {
-            throw new \Exception('Catalog instance is missing in ShipZones renderer');
-        }
-    }
+class shop_shipzones_renderer extends local_shop_base_renderer {
 
     public function catalog_data($catalog) {
 

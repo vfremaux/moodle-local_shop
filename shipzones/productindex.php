@@ -60,7 +60,7 @@ try {
 }
 
 $renderer = shop_get_renderer('shipzones');
-$renderer->load_context($thecatalog);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 if ($allitemswithshipping = CatalogShipping::get_products_with_shipping($catalogid)) {
     foreach ($allitemswithshipping as $ci) {
