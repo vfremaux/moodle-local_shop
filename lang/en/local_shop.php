@@ -57,6 +57,7 @@ $string['allowtax_help'] = 'If enabled, will apply all local taxes on product ca
 $string['apparence'] = 'Apparence';
 $string['amonth'] = 'one month';
 $string['amount'] = 'Amount';
+$string['apparence'] = 'Apparence';
 $string['attach'] = 'Attach a file';
 $string['attachements'] = 'Attachments';
 $string['availableproducts'] = 'Available products';
@@ -305,6 +306,9 @@ $string['miscellaneous'] = 'Miscellaneous';
 $string['missingcode'] = 'Code must be given';
 $string['mytotal'] = 'See your cart total';
 $string['name'] = 'Name:';
+$string['plugindist'] = 'Plugin distribution';
+$string['emulatecommunity'] = 'Emulate community version';
+$string['emulatecommunity_desc'] = 'If enabled, the plugin will behave as the public community version. This might loose features !';
 $string['newbill'] = 'New bill';
 $string['newbillitem'] = 'New bill item';
 $string['newcatalog'] = 'New catalog';
@@ -674,3 +678,10 @@ $string['KRWsymb'] = 'Won (corea)';
 $string['JPYsymb'] = 'Yen (japan)';
 $string['TNDsymb'] = 'Dn (TU)';
 $string['MADsymb'] = 'Dn (MA)';
+
+$string['plugindist_desc'] = '<p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
+core application. A "pro" version of this plugin exists and is distributed under conditions to feed the life cycle, upgrade, documentation
+and improvement effort.</p>
+<p>Please contact one of our distributors to get "Pro" version support.</p>
+<ul><li><a href="http://service.activeprolearn.com/local/shop/front/view.php?id=1">ActiveProLearn SAS</a></li>
+<li><a href="http://www.edunao.com">Edunao SAS</a></li></ul>';
