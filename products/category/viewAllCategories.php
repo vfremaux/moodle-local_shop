@@ -33,7 +33,8 @@ $order = optional_param('order', 'sortorder', PARAM_TEXT);
 $dir = optional_param('dir', 'ASC', PARAM_TEXT);
 
 if ($action != '') {
-    $controller = new \local_shop\backoffice\category_controller();
+    $controller = new \local_shop\backoffice\category_controller($thecatalog);
+    $controller->receive($action);
     $controller->process($action);
 }
 

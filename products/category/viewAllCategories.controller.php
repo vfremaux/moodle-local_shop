@@ -50,7 +50,7 @@ class category_controller {
             $this->received = true;
             return;
         } else {
-            $this->data = new StdClass;
+            $this->data = new \StdClass;
         }
 
         switch ($cmd) {
@@ -125,7 +125,7 @@ class category_controller {
                 $productsinset = optional_param('productsinset', array(), PARAM_INT);
                 if (is_array($productsinset)) {
                     foreach ($productsinset as $productid) {
-                        $record = new StdClass;
+                        $record = new \StdClass;
                         $record->id = $productid;
                         $record->setid = $category->id;
                         $DB->update_record('local_shop_catalogitem', $record);

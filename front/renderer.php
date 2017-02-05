@@ -365,7 +365,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($isactive) {
             $str .= print_tabs($rows, $selected, '', '', true);
         } else {
-            $str .= print_tabs($rows, null, null, null, true);
+            $str .= print_tabs($rows, '', '', array($selected), true);
         }
         $str .= '</div>';
 
@@ -375,7 +375,8 @@ class shop_front_renderer extends local_shop_base_renderer {
     /**
      * prints a full catalog on screen
      * @param objectref $theblock the shop block instance
-     * @param array $catgories the full product line extractred from Catalog
+     * @param array $catgories the full product line extracted from Catalog. 
+     * Only visible categories are provided.
      */
     public function catalog(&$categories) {
         global $SESSION;
@@ -388,6 +389,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str = '';
 
+        // Make a comma list of all category ids.
         $catidsarr = array();
         foreach ($categories as $cat) {
             $catidsarr[] = $cat->id;
@@ -399,7 +401,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($withtabs) {
             $categoryid = optional_param('category', null, PARAM_INT);
 
-            // Get the tree branch below the category.
+            // Get the tree branch up to the category starting from the top.
             if ($categoryid) {
                 $category = new Category($categoryid);
                 $branch = array_reverse($category->get_branch());
@@ -407,18 +409,20 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $branch = array_reverse(Category::get_first_branch($this->thecatalog->id, 0));
             }
 
-            // Render all upper branch choices, with presected items in the active branch.
+            // Render all upper branch choices, with preselected items in the active branch.
             while ($catid = array_shift($branch)) {
                 $cat = new Category($catid);
-                $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid);
-                $levelcategories = Category::get_instances($params, 'sortorder');
-                $iscurrent = $cat->id == $categoryid;
-                $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true);
-
-                // Print childs.
-                $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
-                if ($subs = Category::get_instances($attrs, 'sortorder')) {
-                    $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid);
+                if ($cat->visible) {
+                    $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid, 'visible' => 1);
+                    $levelcategories = Category::get_instances($params, 'sortorder');
+                    $iscurrent = $cat->id == $categoryid;
+                    $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true);
+    
+                    // Print childs.
+                    $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
+                    if ($subs = Category::get_instances($attrs, 'sortorder')) {
+                        $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid);
+                    }
                 }
             }
         }
