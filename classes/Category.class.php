@@ -63,6 +63,10 @@ class Category extends ShopObject {
         }
     }
 
+    /**
+     * This get all the upper branch from the current category up to the root.
+     * @return an array of cat ids from the current on to the top.
+     */
     public function get_branch() {
         global $DB;
 
@@ -94,13 +98,15 @@ class Category extends ShopObject {
      * Recurse down to fetch first deeper branch. Stops when no more childs are found.
      * @param int $catalogid
      * @param int $categoryid the current iteration parent
+     * @return a branch list of categoryids from bottom to top formed with first category at each level.
      */
     public static function get_first_branch($catalogid, $categoryid = 0) {
         global $DB;
 
         $branch = array();
         $params = array('parentid' => $categoryid, 'catalogid' => $catalogid);
-        $recs = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', 'id,parentid', 0, 1);
+        // Get the first rec in order and follow th path.
+        $recs = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', 'id, parentid', 0, 1);
         if ($recs) {
             $reckeys = array_keys($recs);
             $catid = array_shift($reckeys);
