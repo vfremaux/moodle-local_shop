@@ -477,7 +477,7 @@ class Catalog extends ShopObject {
 
     /**
      * Get a single catalogitem using short code as key
-     * @param string $code the priduct shortcode
+     * @param string $code the product shortcode
      * @return a CatalogItem object
      */
     public function get_product_by_code($code) {
