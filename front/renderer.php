@@ -365,7 +365,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($isactive) {
             $str .= print_tabs($rows, $selected, '', '', true);
         } else {
-            $str .= print_tabs($rows, null, null, null, true);
+            $str .= print_tabs($rows, '', '', array($selected), true);
         }
         $str .= '</div>';
 
