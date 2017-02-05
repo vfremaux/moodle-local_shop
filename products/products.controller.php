@@ -217,7 +217,7 @@ class product_controller {
         if ($cmd == 'clone') {
             $original = new CatalogItem($this->data->itemid);
             $original->clone_instance();
-            redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
         }
 
         /* ***** make a local physical clone of the master product in this slave catalog ***** */
