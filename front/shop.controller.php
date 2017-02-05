@@ -196,7 +196,7 @@ class shop_controller extends front_controller_base {
         } else if ($cmd == 'checkpasscode') {
 
             $output = new \StdClass;
-            if ($product = $this->data->thecatalog->get_product_by_shortname($this->data->shortname)) {
+            if ($product = $this->thecatalog->get_product_by_shortname($this->data->shortname)) {
                 if ($this->data->passcode == $product->password) {
                     $output->status = 'passed';
                 } else {
