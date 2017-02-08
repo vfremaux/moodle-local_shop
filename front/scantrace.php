@@ -70,7 +70,7 @@ echo '</form>';
 
 echo get_string('or', 'local_shop');
 
-echo $renderer->transaction_chooser();
+echo $renderer->transaction_chooser($transid);
 
 echo $OUTPUT->box_end();
 

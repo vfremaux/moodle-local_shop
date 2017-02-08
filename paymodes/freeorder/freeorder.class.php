@@ -32,7 +32,7 @@ class shop_paymode_freeorder extends shop_paymode {
 
     public function __construct(&$shop) {
         // NOT ENABLED AS NOT SELECTABLE METHOD!
-        parent::__construct('card', $shop, false);
+        parent::__construct('freeorder', $shop, false);
     }
 
     // Prints a payment porlet in an order form.
