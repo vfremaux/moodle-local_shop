@@ -224,7 +224,8 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str = '';
         $options['id'] = $theshop->id;
-        $str .= $this->output->single_button('/local/shop/front/view.php', get_string('backtoshop', 'local_shop'), 'post',  $options);
+        $label = get_string('backtoshop', 'local_shop');
+        $str .= $this->output->single_button('/local/shop/front/view.php', $label, 'post',  $options);
 
         return $str;
     }
@@ -375,7 +376,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     /**
      * prints a full catalog on screen
      * @param objectref $theblock the shop block instance
-     * @param array $catgories the full product line extracted from Catalog. 
+     * @param array $catgories the full product line extracted from Catalog.
      * Only visible categories are provided.
      */
     public function catalog(&$categories) {
@@ -417,7 +418,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $levelcategories = Category::get_instances($params, 'sortorder');
                     $iscurrent = $cat->id == $categoryid;
                     $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true);
-    
+
                     // Print childs.
                     $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
                     if ($subs = Category::get_instances($attrs, 'sortorder')) {
