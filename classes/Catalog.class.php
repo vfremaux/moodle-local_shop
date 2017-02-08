@@ -717,7 +717,7 @@ class Catalog extends ShopObject {
     public function check_required_roles() {
         global $SESSION;
 
-        $requiredroles = array('student'=> true);
+        $requiredroles = array('student' => true);
 
         if (!empty($SESSION->shoppingcart->order)) {
             foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {

@@ -74,7 +74,7 @@ $PAGE->set_pagelayout('popup');
 $renderer = shop_get_renderer();
 $renderer->load_context($theshop, $thecatalog, $theblock);
 
-$realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL);
+$realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
 
 if (!in_array($afullbill->status, $realized)) {
     $headerstring = get_string('ordersheet', 'local_shop');
@@ -131,7 +131,7 @@ echo '</div>';
 
 echo '<center>';
 echo '<a href="#" onclick="window.print();return false;">';
-echo '<input type="button" value="'.get_string('printorderlink', 'local_shop').'" />';
+echo '<input type="button" value="'.get_string('printlink', 'local_shop').'" />';
 echo '</a>';
 echo '</center>';
 echo $OUTPUT->footer();
