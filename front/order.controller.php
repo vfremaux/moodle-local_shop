@@ -104,6 +104,7 @@ class order_controller extends front_controller_base {
                 if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
                     $systemcontext = \context_system::instance();
                     $seller = new \StdClass;
+                    $seller->username = 'moodleseller';
                     $seller->firstname = '';
                     $seller->lastname = $config->sellername;
                     $seller->email = $config->sellermail;
