@@ -108,7 +108,7 @@ function shop_validate_customer($theshop) {
 
     $shoppingcart = $SESSION->shoppingcart;
 
-    if (!isset($shoppingcart->errors)) {
+    if (!isset($shoppingcart->errors) || !is_object($shoppingcart->errors)) {
         $shoppingcart->errors = new StdClass;
     }
     $shoppingcart->errors->customerinfo = array();
@@ -123,7 +123,7 @@ function shop_validate_customer($theshop) {
         $a = new StdClass();
         $a->wwwroot = $CFG->wwwroot;
         $shoppingcart->errors->customerinfo['customerinfo::mail'] = get_string('existingmailpleaselogin', 'local_shop', $a);
-    } else if (isloggedin() && ($USER->email == $shoppingcart->customerinfo['email'])) {
+    } else if ((isloggedin() && !isguestuser()) && ($USER->email == $shoppingcart->customerinfo['email'])) {
         /*
          * unmark that mail if mail matches (that is the logged user IS the customer user basd on mail)
          * @see revalidate command in customer.controller.php
@@ -167,12 +167,12 @@ function shop_has_potential_account() {
 
     $shoppingcart = $SESSION->shoppingcart;
 
-    $potentialcustomer = $DB->get_record('local_shop_customer', array('email' => $shoppingcart->customerinfo['email']));
-    if (!empty($potentialcustomer->hasaccount)) {
+    if ($DB->record_exists('user', array('email' => $shoppingcart->customerinfo['email'], 'deleted' => 0))) {
         return true;
     }
 
-    if ($DB->record_exists('user', array('email' => $shoppingcart->customerinfo['email']))) {
+    $potentialcustomer = $DB->get_record('local_shop_customer', array('email' => $shoppingcart->customerinfo['email']));
+    if (!empty($potentialcustomer->hasaccount)) {
         return true;
     }
 

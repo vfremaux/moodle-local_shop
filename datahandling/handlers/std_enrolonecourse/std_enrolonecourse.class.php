@@ -87,6 +87,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         global $DB, $USER;
 
         $productionfeedback = new StdClass();
+        $productionfeedback->public = '';
+        $productionfeedback->private = '';
+        $productionfeedback->salesadmin = '';
 
         // Get customersupportcourse designated by handler internal params.
         if (!isset($data->actionparams['customersupport'])) {
@@ -105,7 +108,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         // If Customer already has account in incoming data we have nothing to do.
         $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-        if (isloggedin()) {
+        if (isloggedin() && !isguestuser()) {
             if ($customer->hasaccount != $USER->id) {
                 /*
                  * do it quick in this case. Actual user could authentify, so it is the legitimate account.
@@ -160,6 +163,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $config = get_config('local_shop');
 
         $productionfeedback = new StdClass();
+        $productionfeedback->public = '';
+        $productionfeedback->private = '';
+        $productionfeedback->salesadmin = '';
 
         // Check for params validity (internals).
 
@@ -214,12 +220,15 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
 
         try {
-            $enrolplugin->enrol_user($enrol, $USER->id, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
+            $userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $data->get_customerid()));
+            $enrolplugin->enrol_user($enrol, $userid, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
+            $message = "User {$userid} Enrolled in course {$course->shortname} ";
+            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : ".$message);
         } catch (Exception $exc) {
             $e = new StdClass;
             $e->code = $data->code;
             $e->errorcode = 'Code : ROLE ASSIGN ISSUE';
-            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed...");
+            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed enrol...");
             $fb = get_string('productiondata_failure_public', 'shophandlers_std_enrolonecourse', $e);
             $productionfeedback->public = $fb;
             $fb = get_string('productiondata_failure_private', 'shophandlers_std_enrolonecourse', $course->id);
