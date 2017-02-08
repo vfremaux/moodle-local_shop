@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * This is part of the dual release distribution system.
- * Tells wether a feature is supported or not. Gives back the 
+ * Tells wether a feature is supported or not. Gives back the
  * implementation path where to fetch resources.
  * @param string $feature a feature key to be tested.
  */
@@ -97,8 +97,10 @@ function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $
 
     $itemid = (int)array_shift($args);
 
-    if (!$record = $DB->get_record($areas[$filearea], array('id' => $itemid))) {
-        return false;
+    if ($filearea != 'shoplogo') {
+        if (!$record = $DB->get_record($areas[$filearea], array('id' => $itemid))) {
+            return false;
+        }
     }
 
     $fs = get_file_storage();
@@ -147,7 +149,7 @@ function local_shop_get_file_areas() {
         'catalogitemimage' => 'local_shop_catalogitem',
         'catalogitemunit' => 'local_shop_catalogitem',
         'catalogitemleaflet' => 'local_shop_catalogitem',
-
+        'shoplogo' => 'shoplogo',
         'categorydescription' => 'local_shop_catalogcategory',
     );
 }
