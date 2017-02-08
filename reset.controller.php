@@ -75,32 +75,40 @@ class reset_controller {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
-        $out = '';
+        $out = '<code>';
 
         if (!empty($this->data->bills) || !empty($this->data->customers) || !empty($this->data->catalogs)) {
+            $out .= "Deleting bill records...\n";
+
             $params = array();
             if (!empty($this->data->shopid)) {
                 $params = array('shopid' => $this->data->shopid);
 
                 $deletedbills = $DB->get_records('local_shop_bill', $params, 'id', 'id,id');
+                $out .= "Deleting bill records...\n";
                 $DB->delete_records('local_shop_bill', $params);
 
                 $deletedbillitems = $DB->get_records_list('local_shop_billitem', 'billid', array_keys($deletedbills));
 
+                // We have billitems, delete them.
                 if ($deletedbills) {
-                    foreach ($deletedbills as $bid) {
-                        $DB->delete_records_select('local_shop_billitem', array('billid' => $bid));
+                    $out .= "Deleting bill item records...\n";
+                    foreach (array_keys($deletedbills) as $bid) {
+                        $DB->delete_records('local_shop_billitem', array('billid' => $bid));
                     }
                 }
 
                 // Delete products.
-                if ($deletebillitems) {
-                    foreach (array_keys($deletebillitems) as $biid) {
-                        $deletedproducts = $DB->get_records_select('local_shop_product', 'currentbillitemid = ? or initialbillid = ?', array($biid, $biid), 'id', 'id,id');
-                        $DB->delete_records_select('local_shop_product', 'currentbillitemid = ? or initialbillid = ?', array($biid, $biid));
+                if ($deletedbillitems) {
+                    $out = "Deleting product records...\n";
+                    foreach (array_keys($deletedbillitems) as $biid) {
+                        $select = 'currentbillitemid = ? OR initialbillitemid = ?';
+                        $deletedproducts = $DB->get_records_select('local_shop_product', $select, array($biid, $biid), 'id', 'id,id');
+                        $DB->delete_records_select('local_shop_product', $select, array($biid, $biid));
 
                         if ($deletedproducts) {
-                            foreach ($deletedproducts as $pid) {
+                            $out = "Deleting product event records...\n";
+                            foreach (array_keys($deletedproducts) as $pid) {
                                 $DB->delete_records('local_shop_productevent', array('productid' => $pid));
                             }
                         }
@@ -116,10 +124,14 @@ class reset_controller {
             }
             $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
         }
+
+        $out .= "</code>";
+
         if (!empty($this->data->customers)) {
             $DB->delete_records('local_shop_customer', null);
             $out .= $OUTPUT->notification(get_string('customersdeleted', 'local_shop'));
         }
+
         if (!empty($this->data->catalogs)) {
             if (!empty($this->data->shopid)) {
                 $theshop = new Shop($this->data->shopid);

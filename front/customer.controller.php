@@ -80,7 +80,7 @@ class customer_controller extends front_controller_base {
         if ($cmd == 'revalidate') {
 
             // This comes after a customer login with a owned moodle account.
-            $errors = shop_validate_customer($this->theblock);
+            $errors = shop_validate_customer($this->theshop);
 
         } else if ($cmd == 'navigate') {
 
@@ -111,7 +111,7 @@ class customer_controller extends front_controller_base {
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
 
-                $errors = shop_validate_customer($this->theblock);
+                $errors = shop_validate_customer($this->theshop);
 
                 if ($shoppingcart->usedistinctinvoiceinfo) {
                     $errors = $errors + shop_validate_invoicing();
@@ -132,6 +132,9 @@ class customer_controller extends front_controller_base {
                         // This is for a new customer coming from inside out registered members. Bind it immediately.
                         if (isloggedin() && !isguestuser()) {
                             $customer->hasaccount = $USER->id;
+                        } else {
+                            // Keep it unassigned
+                            $customer->hasaccount = 0;
                         }
 
                         if (!empty($shoppingcart->usedistinctinvoiceinfo)) {

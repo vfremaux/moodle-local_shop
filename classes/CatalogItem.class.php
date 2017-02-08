@@ -149,7 +149,7 @@ class CatalogItem extends ShopObject {
     }
 
     public function get_serialized_handlerparams() {
-        return $this->record->handlerparams;
+        return @$this->record->handlerparams;
     }
 
     public function get_tax($q) {

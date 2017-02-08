@@ -55,6 +55,9 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         global $CFG, $DB, $USER;
 
         $productionfeedback = new StdClass();
+        $productionfeedback->public = '';
+        $productionfeedback->private = '';
+        $productionfeedback->salesadmin = '';
 
         // Get customersupportcourse designated by handler internal params.
 
@@ -73,7 +76,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         }
 
         $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-        if (isloggedin()) {
+        if (isloggedin() && !isguestuser()) {
             if ($customer->hasaccount != $USER->id) {
                 /*
                  * do it quick in this case. Actual user could authentify, so it is the legitimate account.
@@ -123,6 +126,9 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         global $DB, $USER, $SITE;
 
         $productionfeedback = new StdClass();
+        $productionfeedback->public = '';
+        $productionfeedback->private = '';
+        $productionfeedback->salesadmin = '';
 
         // Check for params validity (internals).
 
