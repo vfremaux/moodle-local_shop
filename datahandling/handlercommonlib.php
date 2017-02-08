@@ -110,8 +110,9 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     // This will force cron to generate a password and send it to user's email.
     set_user_preference('create_password', 1, $data->user->id);
 
+    // Do not force password changing. No one knows the password but the recipient.
     if (!empty($CFG->{'auth_'.$newuser->auth.'_forcechangepassword'})) {
-        set_user_preference('auth_forcepasswordchange', 1, $data->user->id);
+        set_user_preference('auth_forcepasswordchange', 0, $data->user->id);
     }
     update_internal_user_password($data->user, $customer->password);
 
@@ -175,7 +176,7 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
         $pref = new StdClass();
         $pref->userid = $participant->id;
         $pref->name = 'auth_forcepasswordchange';
-        $pref->value = 1;
+        $pref->value = 0;
         $DB->insert_record('user_preferences', $pref);
     }
 

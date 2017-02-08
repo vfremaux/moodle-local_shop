@@ -89,9 +89,9 @@ if (!isloggedin() || isguestuser()) {
 echo '<form name="driverform" action="'.$shopurl.'" method="post">';
 
 echo '<fieldset>';
-if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
+if (!empty($SESSION->shoppingcart->errors)) {
     echo $OUTPUT->box_start('shop-error-notice');
-    echo implode('<br/>', array_values($SESSION->shoppingcart->errors->customerinfo));
+    echo implode('<br/>', array_values($SESSION->shoppingcart->errors));
     echo $OUTPUT->box_end();
 }
 echo '</fieldset>';

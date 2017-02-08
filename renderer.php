@@ -347,23 +347,24 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function transaction_chooser() {
+    public function transaction_chooser($transid) {
         global $DB;
 
         $transids = $DB->get_records('local_shop_bill', null, 'id', 'transactionid, amount');
         $scanstr = get_string('scantrace', 'local_shop');
 
+        $transidsmenu = array();
+        if ($transids) {
+            foreach ($transids as $trans) {
+                $transidsmenu[$trans->transactionid] = $trans->transactionid.' ('.$trans->amount.')';
+            }
+        }
+
         $str = '';
 
         $str .= '<form name="transidform" method="POST" >';
         print_string('picktransactionid', 'local_shop');
-        $str .= '<select name="transid" />';
-
-        foreach ($transids as $trans) {
-            $str .= '<option value="'.$trans->transactionid.'" >'.$trans->transactionid.' ('.$trans->amount.')</option>';
-        }
-
-        $str .= '</select>';
+        $str .= html_writer::select($transidsmenu, 'transid', $transid);
         $str .= '<input type="submit" name="g_btn" value="'.$scanstr.'" />';
         $str .= '</form>';
 

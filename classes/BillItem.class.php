@@ -122,7 +122,7 @@ class BillItem extends ShopObject {
                 } else {
                     $this->record->catalogitem = '';
                 }
-                $this->record->unitcost = $idorrec->unitcost;
+                $this->record->unitcost = 0 + $idorrec->unitcost;
                 if ($this->catalogitem) {
                     $this->record->taxcode = $this->catalogitem->taxcode;
                 } else {
@@ -138,7 +138,7 @@ class BillItem extends ShopObject {
                 $this->catalogitem = $bill->thecatalogue->get_product_by_shortname($idorrec->itemcode);
                 $this->record->billid = $bill->id;
                 $this->record->itemcode = $this->catalogitem->code;
-                $this->record->unitcost = $this->catalogitem->get_price($idorrec->quantity);
+                $this->record->unitcost = 0 + $this->catalogitem->get_price($idorrec->quantity);
                 $this->record->taxcode = $this->catalogitem->taxcode;
                 $this->record->totalprice = $idorrec->quantity * $this->record->unitcost;
                 $this->record->quantity = $idorrec->quantity;
@@ -261,6 +261,9 @@ class BillItem extends ShopObject {
     }
 
     public function save() {
+        // to be really sure !!
+        $this->record->unitcost = 0 + $this->record->unitcost;
+        $this->record->quantity = 0 + $this->record->quantity;
         parent::save();
     }
 

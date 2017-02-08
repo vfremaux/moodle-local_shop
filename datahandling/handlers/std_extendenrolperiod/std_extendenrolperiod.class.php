@@ -38,7 +38,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
 
     public function produce_prepay(&$data) {
 
-        if (!isloggedin()) {
+        if (!isloggedin() && !isguestuser()) {
             $productionfeedback->public = get_string('needsenrol', 'local_shop');
             $productionfeedback->private = get_string('needsenrol', 'local_shop');
             $productionfeedback->salesadmin = get_string('needsenrol', 'local_shop');
@@ -56,6 +56,9 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         global $USER, $DB;
 
         $productionfeedback = new StdClass();
+        $productionfeedback->public = '';
+        $productionfeedback->private = '';
+        $productionfeedback->salesadmin = '';
 
         if (empty($data->actionparams['coursename']) && empty($data->actionparams['courseid'])) {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
