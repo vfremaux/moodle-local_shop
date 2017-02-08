@@ -103,8 +103,9 @@ class production_controller extends front_controller_base {
          * - this is a free order (paymode has been detected as freeorder)
          * - the user is logged in and has special payment override capability
          */
-        $paycheckoverride = (isloggedin() && has_capability('local/shop:paycheckoverride', $systemcontext)) ||
-                ($afullbill->paymode == 'freeorder');
+        $paycheckoverride = (isloggedin() &&
+                has_capability('local/shop:paycheckoverride', $systemcontext)) ||
+                        ($afullbill->paymode == 'freeorder');
         $overriding = false;
 
         if ($cmd == 'confirm') {
@@ -182,7 +183,11 @@ class production_controller extends front_controller_base {
                              * this marks the purchase is not paied, but has been allowed to
                              * produce because the customer is trusted.
                              */
-                            $afullbill->status = SHOP_BILL_PREPROD;
+                            if ($afullbill->paymode == 'freeorder') {
+                                $afullbill->status = SHOP_BILL_SOLDOUT;
+                            } else {
+                                $afullbill->status = SHOP_BILL_PREPROD;
+                            }
                         } else {
                             // Purchase has been fully completed and paied.
                             $afullbill->status = SHOP_BILL_COMPLETE;
@@ -202,7 +207,7 @@ class production_controller extends front_controller_base {
                 shop_aggregate_production($afullbill, $productionfeedback, $this->interactive);
             } else {
                 $productionfeedback = new \StdClass;
-                $productionfeedback->public = "Completed";
+                $productionfeedback->public = 'Completed';
                 shop_aggregate_production($afullbill, $productionfeedback, $this->interactive);
             }
         }
@@ -255,7 +260,7 @@ class production_controller extends front_controller_base {
             }
         }
 
-        $title = $SITE->shortname . ' : ' . get_string('yourorder', 'local_shop');
+        $title = $SITE->shortname.' : '.get_string('yourorder', 'local_shop');
 
         if (!empty($productionfeedback->private)) {
             $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productionfeedback->private, $notification);
