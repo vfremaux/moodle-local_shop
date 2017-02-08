@@ -47,8 +47,8 @@ if ($billid) {
 
 echo $out;
 
-$realized = array('SOLDOUT', 'COMPLETE', 'PARTIAL');
-if (in_array($bill->status, $realized)) {
+$realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
+if (!in_array($bill->status, $realized)) {
     $billtitlestr = get_string('ordersheet', 'local_shop');
     print_string('ordertempstatusadvice', 'local_shop');
 } else {

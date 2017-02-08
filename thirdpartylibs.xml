@@ -14,4 +14,11 @@
     <version>1.0</version>
     <licenseversion>1.0</licenseversion>
   </library>
+  <library>
+    <location>tests</location>
+    <name>Testing additional software</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion></licenseversion>
+  </library>
 </libraries>
