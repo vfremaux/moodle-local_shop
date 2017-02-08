@@ -22,7 +22,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot.'/local/shop/paymodes/paymode.class.php';
+require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
 class shop_paymode_paybox extends shop_paymode {
 
