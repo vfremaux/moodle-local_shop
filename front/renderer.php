@@ -224,7 +224,8 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str = '';
         $options['id'] = $theshop->id;
-        $str .= $this->output->single_button('/local/shop/front/view.php', get_string('backtoshop', 'local_shop'), 'post',  $options);
+        $label = get_string('backtoshop', 'local_shop');
+        $str .= $this->output->single_button('/local/shop/front/view.php', $label, 'post',  $options);
 
         return $str;
     }
@@ -375,7 +376,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     /**
      * prints a full catalog on screen
      * @param objectref $theblock the shop block instance
-     * @param array $catgories the full product line extracted from Catalog. 
+     * @param array $catgories the full product line extracted from Catalog.
      * Only visible categories are provided.
      */
     public function catalog(&$categories) {
@@ -417,7 +418,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $levelcategories = Category::get_instances($params, 'sortorder');
                     $iscurrent = $cat->id == $categoryid;
                     $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true);
-    
+
                     // Print childs.
                     $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
                     if ($subs = Category::get_instances($attrs, 'sortorder')) {
@@ -849,7 +850,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
         $str .= $this->output->heading($heading);
 
-        if (isloggedin()) {
+        if (isloggedin() && !isguestuser()) {
             $lastname = $USER->lastname;
             $firstname = $USER->firstname;
 
@@ -1997,14 +1998,15 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</tr>';
         if (!empty($shoppingcart->taxes)) {
             foreach ($shoppingcart->taxes as $taxcode => $taxsum) {
-                $tax = $DB->get_record('local_shop_tax', array('id' => $taxcode));
-                $str .= '<tr>';
-                $str .= '<td class="shop-tax-line">';
-                $str .= get_string('taxes', 'local_shop').': '.$tax->title;
-                $str .= '</td><td class="shop-tax-line">';
-                $str .= sprintf('%.2f', $taxsum).' '.$this->theshop->get_currency('symbol');
-                $str .= '</td>';
-                $str .= '</tr>';
+                if ($tax = $DB->get_record('local_shop_tax', array('id' => $taxcode))) {
+                    $str .= '<tr>';
+                    $str .= '<td class="shop-tax-line">';
+                    $str .= get_string('taxes', 'local_shop').': '.$tax->title;
+                    $str .= '</td><td class="shop-tax-line">';
+                    $str .= sprintf('%.2f', $taxsum).' '.$this->theshop->get_currency('symbol');
+                    $str .= '</td>';
+                    $str .= '</tr>';
+                }
             }
         }
 
@@ -2389,11 +2391,12 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL);
+        $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
 
+        $subheaderstring = '';
         if (!in_array($afullbill->status, $realized)) {
             $headerstring = get_string('ordersheet', 'local_shop');
-            $headerstring .= get_string('ordertempstatusadvice', 'local_shop');
+            $subheaderstring = get_string('ordertempstatusadvice', 'local_shop');
         } else {
             if (empty($afullbill->idnumber)) {
                 $headerstring = get_string('proformabill', 'local_shop');
@@ -2428,56 +2431,38 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<tr valign="top">';
         $str .= '<td colspan="2" align="center">';
         $str .= $this->output->heading($headerstring, 1);
+        if (!empty($subheaderstring)) {
+            $str .= '<div>'.$subheaderstring.'</div>';
+        }
         $str .= '</td>';
         $str .= '</tr>';
 
         $str .= '<tr valign="top">';
-        $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b><br />';
-        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code><br />';
-        $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span>';
-        $str .= '</td>';
-        $str .= '<td width="40%" align="right" rowspan="5" class="order-preview-seller-address">';
-        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($afullbill->emissiondate).'<br />';
-        $str .= '<br />';
+        $str .= '<td width="70%">';
+
         $str .= '<b>'.$config->sellername.'</b><br />';
         $str .= '<b>'.$config->selleraddress.'</b><br />';
         $str .= '<b>'.$config->sellerzip.' '.$config->sellercity.'</b><br />';
         $str .= $config->sellercountry;
-        $str .= '</td>';
-        $str .= '</tr>';
+        $str .= '<br />';
+        $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b><br />';
+        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code><br />';
+        $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span><br/>';
+        $str .= '<b>'.get_string('on', 'local_shop').':&ensp;</b> '.userdate($afullbill->emissiondate).'<br />';
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="60%">';
+        $str .= '</td>';
+        $str .= '<td width="30%" align="right" class="order-preview-seller-address">';
+        $str .= '<div class="customer-data" style="text-align:left">';
+
+        if (!empty($afullbill->customer->organisation)) {
+            $str .= $afullbill->customer->organisation.'<br/>';
+        }
         $custname = $afullbill->customer->lastname.' '.$afullbill->customer->firstname;
-        $str .= '<b>'.get_string('customer', 'local_shop').': </b> '.$custname;
-        $str .= '</td>';
-        $str .= '</tr>';
+        $str .= $custname.'<br/>';
+        $str .= $afullbill->customer->zip.' '.$afullbill->customer->city.'<br/>';
+        $str .= strtoupper($afullbill->customer->country).'<br/>';
 
-        $str .= '<tr>';
-        $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('city').': </b>';
-        $str .= $afullbill->customer->zip.' '.$afullbill->customer->city;
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('country').': </b> '.strtoupper($afullbill->customer->country);
-        $str .= '</td>';
-        $str .= '<td>';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="60%">';
-        $str .= '<b>'.get_string('email').': </b>'.$afullbill->customer->email;
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr>';
-        $str .= '<td colspan="2">';
-        $str .= '&nbsp;<br />';
+        $str .= '</div>';
         $str .= '</td>';
         $str .= '</tr>';
 
