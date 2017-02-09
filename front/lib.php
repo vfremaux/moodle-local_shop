@@ -153,8 +153,6 @@ function shop_validate_customer($theshop) {
             $shoppingcart->errors->customerinfo['customerinfo::zip'] = get_string('emptyfieldzip', 'local_shop');
         }
     }
-
-    return $shoppingcart->errors->customerinfo;
 }
 
 /**
@@ -219,8 +217,6 @@ function shop_validate_invoicing() {
     if ($shoppingcart->invoiceinfo['city'] == '') {
         $shoppingcart->errors->invoiceinfo['invoiceinfo::city'] = '';
     }
-
-    return $shoppingcart->errors->invoiceinfo;
 }
 
 /**
