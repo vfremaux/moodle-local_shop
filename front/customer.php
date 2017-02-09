@@ -89,14 +89,6 @@ if (!isloggedin() || isguestuser()) {
 echo '<form name="driverform" action="'.$shopurl.'" method="post">';
 
 echo '<fieldset>';
-if (!empty($SESSION->shoppingcart->errors)) {
-    echo $OUTPUT->box_start('shop-error-notice');
-    echo implode('<br/>', array_values($SESSION->shoppingcart->errors));
-    echo $OUTPUT->box_end();
-}
-echo '</fieldset>';
-
-echo '<fieldset>';
 if (isloggedin() && !isguestuser()) {
     echo '<legend>'.get_string('customerinfo', 'local_shop').'</legend>';
 } else {
@@ -104,12 +96,22 @@ if (isloggedin() && !isguestuser()) {
 }
 echo '<table width="100%" class="generaltable"><tr valign="top">';
 echo '<td>';
+if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
+    echo $OUTPUT->box_start('shop-error-notice');
+    echo implode('<br/>', array_values($SESSION->shoppingcart->errors->customerinfo));
+    echo $OUTPUT->box_end();
+}
 echo $renderer->customer_info_form();
 echo '</td>';
 echo '</tr>';
 echo '<tr>';
 $invoiceinfostyle = (empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) ? 'display:none' : '';
 echo '<td style="'.$invoiceinfostyle.'" id="shop-invoiceinfo-wrapper" >';
+if (!empty($SESSION->shoppingcart->errors->invoiceinfo)) {
+    echo $OUTPUT->box_start('shop-error-notice');
+    echo implode('<br/>', array_values($SESSION->shoppingcart->errors->invoiceinfo));
+    echo $OUTPUT->box_end();
+}
 echo $renderer->invoicing_info_form();
 echo '</td>';
 echo '</tr></table>';
