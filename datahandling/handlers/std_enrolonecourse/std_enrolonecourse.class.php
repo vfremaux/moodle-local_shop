@@ -191,7 +191,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
 
         // Get the user enrolment record as instance for product record.
-        $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $USER->id));
+        $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $userid));
 
         // Create product instance in product table.
 
