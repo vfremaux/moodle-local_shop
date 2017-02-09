@@ -942,13 +942,13 @@ class shop_bills_renderer extends local_shop_base_renderer {
             `tostate` = ?
             GROUP BY element,`fromstate`
         ";
-        $froms = $DB->get_records_select('flowcontrol', $select, array($status));
+        $froms = $DB->get_records_select('local_flowcontrol', $select, array($status));
         $select = "
             element = 'bill' AND
             `fromstate` = ?
             GROUP BY element,`tostate`
         ";
-        $tos = $DB->get_records_select('flowcontrol', $select, array($status));
+        $tos = $DB->get_records_select('local_flowcontrol', $select, array($status));
 
         $str .= '<table class="flowcontrolHead" cellspacing="0" width="100%">';
         $str .= '<tr class="billListTitle">';
