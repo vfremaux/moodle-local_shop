@@ -96,11 +96,11 @@ class category_controller {
 
         } else if ($cmd == 'show') {
             // Show a category ******************************.
-            $DB->set_field('local_shop_catalogcategory', 'visible', 1, array('id' => $cid));
+            $DB->set_field('local_shop_catalogcategory', 'visible', 1, array('id' => $this->data->cid));
 
         } else if ($cmd == 'hide') {
             // Hide a category ******************************.
-            $DB->set_field('local_shop_catalogcategory', 'visible', 0, array('id' => $cid));
+            $DB->set_field('local_shop_catalogcategory', 'visible', 0, array('id' => $this->data->cid));
 
         } else if ($cmd == 'edit') {
             $category = $this->data;

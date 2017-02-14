@@ -74,6 +74,7 @@ function shop_register_customer($data) {
         }
 
         $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
+        $a = new StdClass;
         $a->username = $newuser->username;
         $a->password = $customer->password;
         $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $a);
