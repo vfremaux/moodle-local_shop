@@ -111,10 +111,10 @@ class customer_controller extends front_controller_base {
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
 
-                $errors = shop_validate_customer($this->theshop);
+                shop_validate_customer($this->theshop);
 
                 if ($shoppingcart->usedistinctinvoiceinfo) {
-                    $errors = $errors + shop_validate_invoicing();
+                    shop_validate_invoicing();
                 }
 
                 if (empty($errors)) {
@@ -152,9 +152,6 @@ class customer_controller extends front_controller_base {
                     $next = $this->theshop->get_next_step('customer');
                     $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
                     return new \moodle_url('/local/shop/front/view.php', $params);
-                } else {
-                    // Pass errors in session for renderers.
-                    $shoppingcart->errors = $errors;
                 }
             }
         }
