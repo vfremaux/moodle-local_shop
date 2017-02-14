@@ -37,6 +37,7 @@ $string['PREPROD'] = 'Produced by anticipation';
 $string['PREVIEW'] = 'Preview';
 $string['PROVIDING'] = 'Providing';
 $string['RECOVERING'] = 'Recovering';
+$string['REFUSED'] = 'Refused';
 $string['SOLDOUT'] = 'Payed out';
 $string['SUSPENDED'] = 'Suspended';
 $string['TTC'] = 'TTC';

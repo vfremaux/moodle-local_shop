@@ -52,12 +52,6 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
     // Pre pay information always comme from shopping session.
     public function produce_prepay(&$data) {
-        global $CFG, $DB, $USER;
-
-        $productionfeedback = new StdClass();
-        $productionfeedback->public = '';
-        $productionfeedback->private = '';
-        $productionfeedback->salesadmin = '';
 
         // Get customersupportcourse designated by handler internal params.
 
@@ -75,48 +69,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             }
         }
 
-        $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-        if (isloggedin() && !isguestuser()) {
-            if ($customer->hasaccount != $USER->id) {
-                /*
-                 * do it quick in this case. Actual user could authentify, so it is the legitimate account.
-                 * We guess if different non null id that the customer is using a new account. This should not really be possible
-                 */
-                $customer->hasaccount = $USER->id;
-                $DB->update_record('local_shop_customer', $customer);
-            } else {
-                $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
-                $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);
-                $productionfeedback->salesadmin = get_string('knownaccount', 'local_shop', $USER->username);
-                $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay :";
-                $message .= " Known account {$USER->username} at process entry.";
-                shop_trace($message);
-                return $productionfeedback;
-            }
-        } else {
-            /*
-             * In this case we can have a early Customer that never confirmed a product or a brand new Customer comming in.
-             * The Customer might match with an existing user...
-             * TODO : If a collision is to be detected, a question should be asked to the customer.
-             */
-            // Create Moodle User but no assignation (this will register in customer support if exists).
-            if (!shop_create_customer_user($data, $customer, $newuser)) {
-                $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Error :";
-                $message .= " User could not be created {$newuser->username}.";
-                shop_trace($message);
-                $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
-                $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
-                $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
-                return $productionfeedback;
-            }
-
-            $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
-            $a->username = $newuser->username;
-            $a->password = $customer->password;
-            $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $a);
-            $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
-            $productionfeedback->salesadmin = $fb;
-        }
+        $productionfeedback = shop_register_customer($data);
 
         return $productionfeedback;
     }
