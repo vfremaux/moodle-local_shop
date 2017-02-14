@@ -35,6 +35,7 @@ $string['bill_PENDINGs'] = 'Pending bill';
 $string['bill_RECOVERINGs'] = 'Bill recovering';
 $string['bill_SOLDOUTs'] = 'Bill soldout';
 $string['bill_PREPRODs'] = 'Bill in advanced prod';
+$string['bill_REFUSEDs'] = 'Bill payment refused';
 $string['bill_WORKINGs'] = 'Bill working';
 $string['bill_assignation'] = 'bill assignation';
 $string['billstates'] = 'Bill states';

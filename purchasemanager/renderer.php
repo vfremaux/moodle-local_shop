@@ -44,7 +44,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
     public function productinstance_admin_line(&$productinstance, $viewparams = array()) {
         global $OUTPUT, $CFG;
 
-        $this->_check_context();
+        $this->check_context();
 
         $str = '';
 
