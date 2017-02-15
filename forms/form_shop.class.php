@@ -182,23 +182,11 @@ class Shop_Form extends moodleform {
     public function set_data($defaults) {
         $context = context_system::instance();
 
-        $draftideditor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor',
-                                               $defaults->id, $this->editoroptions, $defaults->description);
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'description', $defaults->id);
-        $defaults->description_editor = array('text' => $currenttext,
-                                              'format' => $defaults->descriptionformat,
-                                              'itemid' => $draftideditor);
+                                                 'description', $defaults->shopid);
 
-        $draftideditor = file_get_submitted_draft_itemid('eula_editor');
-        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'eula_editor', $defaults->id,
-                                               $this->editoroptions, $defaults->eula);
         $defaults = file_prepare_standard_editor($defaults, 'eula', $this->editoroptions, $context, 'local_shop',
-                                                 'eula', $defaults->id);
-        $defaults->eula_editor = array('text' => $currenttext,
-                                       'format' => $defaults->eulaformat,
-                                       'itemid' => $draftideditor);
+                                                 'eula', $defaults->shopid);
 
         parent::set_data($defaults);
     }

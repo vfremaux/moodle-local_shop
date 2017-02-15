@@ -43,6 +43,8 @@ class catalog_controller {
 
     public function receive($cmd, $data = array(), $mform = null) {
 
+        $this->mform = $mform;
+
         if (!empty($data)) {
             $this->data = (object)$data;
             $this->received = true;
@@ -56,7 +58,6 @@ class catalog_controller {
                 $this->data->catalogid = required_param('catalogid', PARAM_INT);
                 break;
             case 'edit':
-                $this->mform = $mform;
                 // Get all data from $data attribute.
                 break;
         }
@@ -153,14 +154,15 @@ class catalog_controller {
                 $catalog->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogdescription',
                                                                 $catalog->id, array('subdirs' => true), $catalog->description);
                 $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'requirementdescription', $catalog->id);
+                                                        'catalogdescription', $catalog->id);
 
                 $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
                 $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
                                                                        'catalogsalesconditions', $catalog->id, array('subdirs' => true),
                                                                        $catalog->salesconditions);
-                $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'requirementsalesconditions', $catalog->id);
+                $catalog = file_postupdate_standard_editor($catalog, 'salesconditions', $this->mform->editoroptions, $context, 'local_shop',
+                                                        'catalogsalesconditions', $catalog->id);
+                $DB->update_record('local_shop_catalog', $catalog);
             }
 
             return new Catalog($catalog);

@@ -109,6 +109,8 @@ class shop_controller {
                                                             $shoprec->id, array('subdirs' => true), $shoprec->eula);
                 $shoprec = file_postupdate_standard_editor($shoprec, 'eula', $this->mform->editoroptions, $context,
                                                            'local_shop', 'eula', $shoprec->id);
+
+                $DB->update_record('local_shop', $shoprec);
             }
             return new Shop($shoprec);
         }
