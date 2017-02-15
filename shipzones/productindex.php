@@ -37,30 +37,30 @@ use local_shop\CatalogShipping;
 $catalogid = required_param('id', PARAM_INT);
 $catalogitemid = required_param('catalogitemid', PARAM_INT);
 
-// Security
+// Security.
 
 $context = context_system::instance();
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
 try {
-    $theCatalog = new Catalog($catalogid);
-    if ($theCatalog->isslave) {
-        $theCatalog = new Catalog($theCatalog->groupid);
-        $catalogid = $theCatalog->groupid;
+    $thecatalog = new Catalog($catalogid);
+    if ($thecatalog->isslave) {
+        $thecatalog = new Catalog($thecatalog->groupid);
+        $catalogid = $thecatalog->groupid;
     }
-} catch(Exception $e) {
+} catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->message);
 }
 
-try{
+try {
     $catalogitem = new CatalogItem($catalogitemid);
-} catch(Exception $e) {
+} catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->message);
 }
 
 $renderer = shop_get_renderer('shipzones');
-$renderer->load_context($theCatalog);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 if ($allitemswithshipping = CatalogShipping::get_products_with_shipping($catalogid)) {
     foreach ($allitemswithshipping as $ci) {

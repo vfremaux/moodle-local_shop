@@ -15,17 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *
  * @package    local_shop
  * @category   local
  * @author     Valery Fremaux <valery@valeisti.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
- * This file is a library for postproduction handling. Post production 
+ * This file is a library for postproduction handling. Post production
  * occurs when a customer wants to perform some action upon a registered
  * product.
- * 
+ *
  * Postproduction has two parts :
  *
  * 1. Displaying a parameter selection form for getting data required to perform action
@@ -36,7 +35,7 @@
  * Controller will check for handler name and calls the handler postprod methods as
  * required. Any method that is provided to user to launch will need to be implemented as
  * a postprod_xxxxxx() method in the handler class.
- * calls (urls) to a postprod command should be of the form : 
+ * calls (urls) to a postprod command should be of the form :
  * <moodleroot>/local/shop/datahandling/postproduction.php?method=<methodname>&pid=<productid>&<otherparams>
  *
  * Securtity concerns : all handler method MUST check the $pid belongs to connected user. This can be centralized here
@@ -45,8 +44,15 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
+require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
-$id = required_param('id', PARAM_INT); // The course id
+use \local_shop\Product;
+use \local_shop\CatalogItem;
+use \local_shop\Customer;
+
+$id = required_param('id', PARAM_INT); // The course ID.
 $productid = required_param('pid', PARAM_INT);
 $method = required_param('method', PARAM_TEXT);
 
@@ -56,8 +62,10 @@ try {
     print_error('objecterror', 'local_shop', $e->get_message());
 }
 
+$customer = new Customer($product->customerid);
+
 try {
-    $catalogitem = new Catalogitem($product->catalogitemid);
+    $catalogitem = new CatalogItem($product->catalogitemid);
 } catch (Exception $e) {
     print_error('objecterror', 'local_shop', $e->get_message());
 }
@@ -66,7 +74,8 @@ if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('coursemisconf');
 }
 
-$url = new moodle_url('/local/shop/datahandling/postproduction.php', array('pid' => $productid, 'method' => $method));
+$params = array('id' => $id, 'pid' => $productid, 'method' => $method);
+$url = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
 $PAGE->set_url($url);
 
 // Security.
@@ -75,23 +84,30 @@ $context = context_course::instance($id);
 $PAGE->set_context($context);
 require_course_login($course);
 
+if ($customer->hasaccount != $USER->id && !has_capability('local/shop:salesadmin', $context)) {
+    print_error(get_string('notowner', 'local_shop'));
+}
+
+// Page setup.
+
 $PAGE->set_title(get_string('shop', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('postproduction', 'local_shop'));
 $PAGE->set_pagelayout('admin');
 
-$productinfo = shop_extract_production_data($product->productiondata);
-
-if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php')) {
-    print_error('errorbadhandler', 'local_shop');
-}
-
-require_once $CFG->dirroot.'/local/shop/datahandling/handlers/'.$productinfo->handler.'/'.$productinfo->handler.'.class.php';
-
-$classname = 'shop_handler_'.$productinfo->handler;
-$handler = new $classname('');
-$methodname = 'postprod_'.$method;
+$productinfo = $product->extract_production_data();
+list($handler, $methodname) = $product->get_handler_info($method);
 
 $productinfo->url = $url;
 
-$handler->{$methodname}($product, $productinfo);
+$courseurl = new moodle_url('/course/view.php', array('id' => $id));
+
+if ($confirm = optional_param('confirm', false, PARAM_TEXT)) {
+    $handler->{$methodname}($product, $productinfo);
+    redirect($courseurl);
+}
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('productoperation', 'local_shop'));
+echo $OUTPUT->confirm(get_string('confirmoperation', 'local_shop'), $url.'&confirm=1', $courseurl);
+echo $OUTPUT->footer();

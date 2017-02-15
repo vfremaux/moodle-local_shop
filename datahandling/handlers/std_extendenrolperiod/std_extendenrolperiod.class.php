@@ -1,4 +1,4 @@
-<?php 
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,61 +14,73 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package     local_shop
+ * @category    local
+ * @subpackage  producthandlers
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * @package   local_shop
- * @category  local
- * @subpackage product_handler
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+require_once($CFG->dirroot.'/lib/enrollib.php');
+require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
 
-include_once $CFG->dirroot.'/lib/enrollib.php';
+use local_shop\ProductEvent;
 
-class shop_handler_std_extendenrolperiod extends shop_handler{
+class shop_handler_std_extendenrolperiod extends shop_handler {
 
-    function __construct($label) {
-        $this->name = 'std_extendenrolperiod'; // for unit test reporting
+    public function __construct($label) {
+        $this->name = 'std_extendenrolperiod'; // For unit test reporting.
         parent::__construct($label);
     }
 
-    function produce_prepay(&$data) {
-        global $CFG, $USER;
+    public function produce_prepay(&$data) {
 
-        if (!isloggedin()) {
+        if (!isloggedin() && !isguestuser()) {
             $productionfeedback->public = get_string('needsenrol', 'local_shop');
             $productionfeedback->private = get_string('needsenrol', 'local_shop');
             $productionfeedback->salesadmin = get_string('needsenrol', 'local_shop');
             return $productionfeedback;
         }
 
-        // void action. Nothing to do prepay
+        // Void action. Nothing to do prepay.
         $productionfeedback->public = '';
         $productionfeedback->private = '';
         $productionfeedback->salesadmin = '';
         return $productionfeedback;
     }
 
-    function produce_postpay(&$data) {
-        global $CFG, $USER;
-        
-        $productionfeedback = new StdClass();
+    public function produce_postpay(&$data) {
+        global $USER, $DB;
 
-        if (!isset($data->actionparams['coursename'])) {
+        $productionfeedback = new StdClass();
+        $productionfeedback->public = '';
+        $productionfeedback->private = '';
+        $productionfeedback->salesadmin = '';
+
+        if (empty($data->actionparams['coursename']) && empty($data->actionparams['courseid'])) {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
 
-        // Assign Student role in course for the period
-        if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-            print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+        if (!empty($data->actionparams['coursename'])) {
+            if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+                shop_trace("[{$data->transactionid}] STD_EXTEND_ENROL_PERIOD PostPay : failed... Bad course shortname");
+                print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+            }
+        } else {
+            if (!$course = $DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
+                shop_trace("[{$data->transactionid}] STD_EXTEND_ENROL_PERIOD PostPay : failed... Bad course id");
+                print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+            }
         }
 
         if (!isset($data->actionparams['enroltype'])) {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
-        
-        if (!$enrolplugin = enrol_get_plugin($data->actionparams['enroltype'])) {
+
+        if (!enrol_get_plugin($data->actionparams['enroltype'])) {
             print_error('genericerror', 'local_shop', get_string('errorenrolnotinstalled', 'shophandlers_std_extendenrolperiod'));
         }
 
@@ -80,14 +92,13 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             print_error('errormissingactiondata', 'local_shop', get_string('extension', 'shophandlers_std_extendenrolperiod'));
         }
 
-        // quantity addresses number of elementary extension period
+        // Quantity addresses number of elementary extension period.
         $rangeextension = $data->actionparams['extension'] * DAYSECS * $data->quantity;
 
-        $enrol = $DB->get_record('enrol', array('courseid' => $courseid, 'enrol' => $data->actionparams['enroltype']));
+        $enrol = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol' => $data->actionparams['enroltype']));
 
         $context = context_course::instance($course->id);
-        $userid = (empty($data->foruser)) ? $USER->id : $data->foruser ;
-        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $userid = (empty($data->foruser)) ? $USER->id : $data->foruser;
 
         if (!$enroldata = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $userid))) {
             $productiondata->public = get_string('processerror', 'local_shop');
@@ -97,10 +108,12 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             return $productiondata;
         }
 
-        // If we have time left in course, extend the period over that time. If we are already out of time, just open
-        // a new rangextension period from now.
+        /*
+         * If we have time left in course, extend the period over that time.
+         * If we are already out of time, just open a new rangextension period from now.
+         */
         $now = time();
-        $enroldata->timeend = ($now > $enroldata->timeend) ? $now +  $rangeextension : $enroldata->timeend + $rangeextension;
+        $enroldata->timeend = ($now > $enroldata->timeend) ? $now + $rangeextension : $enroldata->timeend + $rangeextension;
 
         if (!$DB->update_record('user_enrolments', $enroldata)) {
             $productionfeedback->public = get_string('processerror', 'local_shop');
@@ -110,22 +123,21 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             return $productionfeedback;
         }
 
-        // Find existing product and add an event
-        // Register product        
+        // Find existing product and add an event.
+        // Register product.
         $product = $DB->get_record('local_shop_product', array('reference' => $data->required['productcode']));
-        $product->enddate = $endtime;
+        $product->enddate = $enroldata->timeend;
         $DB->update_record('local_shop_product', $product);
 
-        // record an event        
-        $productevent = new StdClass();
+        // Record an event.
+        $productevent = new ProductEvent(null);
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
         $productevent->datecreated = $now = time();
-        $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
-
+        $productevent->save();
 
         $maildata->courseid = $course->id;
-        $maildata->extension = $rangeextension / DAYSECS; // given in days
+        $maildata->extension = $rangeextension / DAYSECS; // Given in days.
         $maildata->username = fullname($data->bill->user);
 
         $productionfeedback->public = get_string('productiondata_public', 'shophandlers_STD_EXTEND_ENROL_PRERIOD', $maildata);
@@ -136,7 +148,7 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
         return $productionfeedback;
     }
 
-    function unit_test($data, &$errors, &$warnings, &$messages) {
+    public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
@@ -146,8 +158,10 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
         if (!isset($data->actionparams['coursename'])) {
             $errors[$data->code][] = get_string('errornocourse', 'shophandlers_std_extendenrolperiod');
         } else {
-            if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-                $errors[$data->code][] = get_string('errorextcoursenotexists', 'shophandlers_std_extendenrolperiod', $data->actionparams['coursename']);
+            if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+                $cn = $data->actionparams['coursename'];
+                $err = get_string('errorextcoursenotexists', 'shophandlers_std_extendenrolperiod', $cn);
+                $errors[$data->code][] = $err;
             }
         }
 
@@ -156,12 +170,15 @@ class shop_handler_std_extendenrolperiod extends shop_handler{
             $data->actionparams['enroltype'] = 'manual';
         }
 
-        if (!$enrolplugin = enrol_get_plugin($data->actionparams['enroltype'])) {
-            $errors[$data->code][] = get_string('errorenrolpluginnotavailable', 'shophandlers_std_extendenrolperiod', $data->actionparams['enroltype']);
+        $enroltype = $data->actionparams['enroltype'];
+        if (!enrol_get_plugin($enroltype)) {
+            $err = get_string('errorenrolpluginnotavailable', 'shophandlers_std_extendenrolperiod', $enroltype);
+            $errors[$data->code][] = $err;
         }
 
         if (!enrol_is_enabled($data->actionparams['enroltype'])) {
-            $errors[$data->code][] = get_string('errorenroldisabled', 'shophandlers_std_extendenrolperiod', $data->actionparams['enroltype']);
+            $err = get_string('errorenroldisabled', 'shophandlers_std_extendenrolperiod', $data->actionparams['enroltype']);
+            $errors[$data->code][] = $err;
         }
 
         if (!isset($data->actionparams['extension'])) {

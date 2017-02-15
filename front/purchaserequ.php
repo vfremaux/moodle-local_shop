@@ -14,32 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
-$categories = $theCatalog->get_categories();
+$categories = $thecatalog->get_categories();
 
-// in case session is lost, go to the public entrance of the shop
+// In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->order)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => $theBlock->id, 'view' => 'shop')));
+    $params = array('id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop');
+    redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
-// now we browse categories for making the catalog
+// Now we browse categories for making the catalog.
 
-$shopproducts = $theCatalog->get_all_products($categories);
+$shopproducts = $thecatalog->get_all_products($categories);
 
-// pre feed SESSION shoppingcart if required
+// Pre feed SESSION shoppingcart if required.
 $action = optional_param('what', '', PARAM_TEXT);
 
-    // Either we are navigating here from elsewhere.
+// Either we are navigating here from elsewhere.
 
 if (!empty($SESSION->shoppingcart->order)) {
     $productkeys = array_keys($SESSION->shoppingcart->order);
@@ -50,7 +50,7 @@ if (!empty($SESSION->shoppingcart->order)) {
 $datarequired = false;
 
 foreach ($productkeys as $shortname) {
-    $catalogentry = $theCatalog->get_product_by_shortname($shortname);
+    $catalogentry = $thecatalog->get_product_by_shortname($shortname);
     $requireddata = $catalogentry->requireddata;
     if (!empty($requireddata)) {
         $datarequired = true;
@@ -65,13 +65,17 @@ if (!$datarequired) {
 $errors = array();
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/purchaserequ.controller.php');
-    $controller = new \local_shop\front\purchasereq_controller($theShop, $theCatalog, $theBlock);
-    $controller->process($action);
+    $controller = new \local_shop\front\purchaserequ_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
 echo $out;
 
-echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $renderer->progress('CONFIGURE');
 
@@ -79,7 +83,7 @@ echo $renderer->admin_options();
 
 echo $renderer->customer_requirements($errors);
 
-// Order item counting block 
+// Order item counting block.
 
 $options['nextstyle'] = 'shop-next-button';
 $options['overtext'] = get_string('saverequirements', 'local_shop');

@@ -14,38 +14,41 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
-
-Use \local_shop\Bill;
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-$transid = optional_param('transid', null, PARAM_TEXT); // protects agains SQL injection
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+
+Use \local_shop\Bill;
+
+$transid = optional_param('transid', null, PARAM_TEXT);
 $billid = optional_param('billid', null, PARAM_INT);
 
 if ($transid) {
     if (!$bill = Bill::get_by_transaction($transid)) {
-        print_error('invalidtransid', 'local_shop', new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $id, 'blockid' => $blockid)));
+        $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
+        $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+        print_error('invalidtransid', 'local_shop', $viewurl);
     }
 }
 
 if ($billid) {
-    if (!$bill = new Bill($billid, $theShop, $theCatalog)) {
-        print_error('invalidbillid', 'local_shop', new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $id, 'blockid' => $blockid)));
+    if (!$bill = new Bill($billid, $theshop, $thecatalog)) {
+        $params = array('view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->id);
+        $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+        print_error('invalidbillid', 'local_shop', $viewurl);
     }
 }
 
 echo $out;
 
-$realized = array('SOLDOUT', 'COMPLETE', 'PARTIAL');
-if (in_array($bill->status, $realized)) {
+$realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
+if (!in_array($bill->status, $realized)) {
     $billtitlestr = get_string('ordersheet', 'local_shop');
     print_string('ordertempstatusadvice', 'local_shop');
 } else {
@@ -57,7 +60,9 @@ if (in_array($bill->status, $realized)) {
 }
 echo $OUTPUT->heading($billtitlestr, 1);
 
-$linkurl = new moodle_url('/local/shop/front/bill.popup.php', array('billid' => $billid, 'transid' => $transid, 'id' => $theShop->id, 'blockid' => $theBlock->id));
+$params = array('billid' => $billid, 'transid' => $transid, 'id' => $theshop->id, 'blockid' => (0 + @$theblock->id));
+$linkurl = new moodle_url('/local/shop/front/bill.popup.php', $params);
+
 echo '<p><a href="'.$linkurl.'" target="_blank">'.get_string('printbill', 'local_shop').'</a>';
 
 $renderer->customer_info($bill);
@@ -81,7 +86,8 @@ echo $renderer->full_order_totals($bill);
 
 echo $renderer->full_order_taxes($bill);
 
-$backurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop' , 'id' => $theShop->id, 'blockid' => $theBlock->id));
+$params = array('view' => 'shop' , 'id' => $theshop->id, 'blockid' => 0 + @$theblock->id);
+$backurl = new moodle_url('/local/shop/front/view.php', $params);
 echo '<center>';
 echo $OUTPUT->single_button($backurl, get_string('backtoshop', 'local_shop'));
 echo '</center>';

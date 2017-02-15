@@ -24,7 +24,7 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
-require_once($CFG->dirroot.'/local/shop/forms/form_shippingzone.class.php'); // imports of Form shipping
+require_once($CFG->dirroot.'/local/shop/forms/form_shippingzone.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogShipZone.class.php');
 
@@ -32,9 +32,7 @@ use local_shop\Catalog;
 use local_shop\CatalogShipZone;
 
 // Get the block reference and key context.
-
-// get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $action = optional_param('what', '', PARAM_TEXT);
 $zoneid = optional_param('item', 0, PARAM_INT);
@@ -53,8 +51,8 @@ $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
-if ($theCatalog) {
-    $PAGE->navbar->add(format_string($theCatalog->name));
+if ($thecatalog) {
+    $PAGE->navbar->add(format_string($thecatalog->name));
 }
 $PAGE->navbar->add(get_string('shipzones', 'local_shop'));
 $PAGE->set_pagelayout('admin');
@@ -78,8 +76,8 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
     $data->id = $data->zoneid;
     unset($data->zoneid);
-    if ($theCatalog) {
-        $data->catalogid = $theCatalog->id;
+    if ($thecatalog) {
+        $data->catalogid = $thecatalog->id;
     } else {
         $data->catalogid = 0; // In first times, shoul not be used.
     }

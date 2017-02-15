@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A product has a lifecycle in which some events can occur.
  *
  * @package     local_shop
  * @category    local
@@ -28,34 +24,37 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
 class ProductEvent extends ShopObject {
 
-    static $table = 'local_shop_productevent';
+    protected static $table = 'local_shop_productevent';
 
     // Build a full bill plus billitems.
-    function __construct($idorrecord) {
-        global $DB;
+    public function __construct($idorrecord, $light = false) {
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
-            if ($light) return; // this builds a lightweight proxy of the Bill, without items
+            if ($light) {
+                // This builds a lightweight proxy of the Bill, without items.
+                return;
+            }
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
             $this->record->productid = 0;
             $this->record->billitemid = 0;
+            $this->record->eventtype = 'billed';
             $this->record->datecreated = time();
         }
     }
 
-    function delete() {
-        parent::delete();
-    }
-
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 }

@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * A catalog holds product definitions.
  *
  * @package     local_shop
  * @category    local
@@ -27,37 +23,60 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
 /**
  * User object is provided for direct Object Mapping of the _user database model
  */
 class Catalog extends ShopObject {
 
-    static $table = 'local_shop_catalog';
+    protected static $table = 'local_shop_catalog';
 
-    var $categories;
+    public $categories;
 
-    function __construct($idorrecord, $light = false) {
-        global $DB;
+    public $ismaster;
+
+    public $isslave;
+
+    public function __construct($idorrecord, $light = false) {
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
 
-            if ($light) return; // this builds a lightweight proxy of the Shop, without catalogue
+            if ($light) {
+                return; // This builds a lightweight proxy of the catalogue.
+            }
 
+            if (!empty($this->record->groupid)) {
+                if ($this->record->id == $this->record->groupid) {
+                    $this->ismaster = 1;
+                } else {
+                    $this->isslave = 1;
+                }
+            } else {
+                $this->ismaster = 0;
+                $this->isslave = 0;
+            }
             $this->categories = $this->get_categories();
+
+            // These are fake fields to drive the editors in form.
+            $this->record->descriptionformat = FORMAT_HTML;
+            $this->record->salesconditionsformat = FORMAT_HTML;
 
         } else {
             $this->record->name = get_string('newcatalog', 'local_shop');
             $this->record->description = '';
-            $this->record->descriptionformat = FORMAT_MOODLE;
+            $this->record->descriptionformat = FORMAT_HTML;
             $this->record->isslave = 0;
-            $this->record->ismaster = 1;
+            $this->record->ismaster = 0;
             $this->record->salesconditions = '';
-            $this->record->salesconditionsformat = FORMAT_MOODLE;
+            $this->record->salesconditionsformat = FORMAT_HTML;
             $this->record->groupid = 0;
             $this->record->countryrestrictions = '';
         }
@@ -68,7 +87,7 @@ class Catalog extends ShopObject {
      * @param int $catalogid
      * @return an array of ids that are linked to this catalog
      */
-    function getGroupMembers() {
+    public function get_group_members() {
         global $DB;
 
         $members = array();
@@ -79,20 +98,22 @@ class Catalog extends ShopObject {
             FROM
                 {".self::$table."}
             WHERE
-                groupid IS NOT NULL AND 
+                groupid IS NOT NULL AND
                 groupid = ?
             ORDER BY
                 ismaster DESC
         ";
-        $members = $DB->get_records_sql($sql, array($this->id));
-        if (count($members) == 0) $members[] = $this->id;
+        $members = array_keys($DB->get_records_sql($sql, array($this->id)));
+        if (count($members) == 0) {
+            $members[] = $this->id;
+        }
         return $members;
     }
 
     /**
-     * Get catalogs known categories
+     * Get catalog known categories
      */
-    function get_categories($local = false, $visible = 1) {
+    public function get_categories($local = false, $visible = 1) {
         global $DB;
 
         // Get true fetch if local are required.
@@ -101,34 +122,61 @@ class Catalog extends ShopObject {
         }
 
         // Get local categories.
-        if (!$localcategories = $DB->get_records_select('local_shop_catalogcategory', " catalogid = ? AND visible = ? ", array($this->id, $visible), 'sortorder', '*,0 as masterrecord')) {
-            $localcategories = array();
+        $select = " catalogid = ? AND visible = ? ";
+        $params = array($this->id, $visible);
+        $fields = '*,0 as masterrecord';
+        if (!$localcats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'sortorder', $fields)) {
+            $localcats = array();
         }
         if ($local) {
-            return $localcategories;
+            return $localcats;
         }
 
         // Get all master categories.
-        $mastercategories = array();
+        $mastercats = array();
         if ($this->isslave) {
-            if (!$mastercategories = $DB->get_records_select('local_shop_catalogcategory', " catalogid = ? AND visible = ? ", array($this->groupid, $visible), 'sortorder', '*,1 as masterrecord')) {
-                $mastercategories = array();
+            $select = " catalogid = ? AND visible = ? ";
+            $params = array($this->groupid, $visible);
+            $fields = '*,1 as masterrecord';
+            if (!$mastercats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'sortorder', $fields)) {
+                $mastercats = array();
             }
         }
 
-        $this->categories = $mastercategories + $localcategories;
+        $this->categories = $mastercats + $localcats;
 
         return $this->categories;
     }
 
     /**
-     * get the full productline from cetegories
-     *
+     * Get eventual slaves catalogs attached to this catalogue
      */
-    function get_all_products(&$shopproducts) {
-        global $CFG, $SESSION, $DB, $OUTPUT;
+    public function get_slaves() {
+        global $DB;
 
-        $context = \context_system::instance();
+        if (!$this->ismaster) {
+            return array();
+        }
+
+        $select = ' id != groupid AND groupid = ? ';
+        $slaverecs = $DB->get_records_select('local_shop_catalog', $select, array($this->groupid), 'id,id');
+
+        $slaves = array();
+        if (!empty($slaverecs)) {
+            foreach ($slaverecs as $s) {
+                $slaves[$s->id] = new Catalog($s->id);
+            }
+        }
+
+        return $slaves;
+    }
+
+    /**
+     * get the full productline from categories
+     * @param arrayref &$shopproducts an array to be filled
+     */
+    public function get_all_products(&$shopproducts) {
+        global $SESSION, $DB, $USER;
 
         $categories = $this->get_categories();
 
@@ -137,68 +185,102 @@ class Catalog extends ShopObject {
         }
 
         $isloggedinclause = '';
+        $modes = array();
         if (empty($SESSION->shopseeall)) {
-            $isloggedinclause = (isloggedin() && !isguestuser()) ? ' AND onlyforloggedin > -1  ' : ' AND onlyforloggedin < 1';
+            if (isloggedin() && !isguestuser()) {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDIN_ONLY;
+                if ($DB->record_exists('local_shop_customer', array('hasaccount' => $USER->id))) {
+                    $modes[] = PROVIDING_CUSTOMER_ONLY;
+                }
+            } else {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDOUT_ONLY;
+            }
+            $isloggedinclause = ' AND ci.onlyforloggedin IN ('.implode(',', $modes).') ';
         }
 
         $shopproducts = array();
-        foreach ($categories as $key => $aCategory) {
-            // get master catalog items
-            /**
+        foreach ($categories as $key => $cat) {
+            /*
              * product might be standalone product or set or bundle
              */
             if ($this->isslave) {
+                // First get master definitions.
                 $sql = "
                    SELECT
                       ci.*
                    FROM
                       {local_shop_catalogitem} as ci
                    WHERE
-                      ci.catalogid = '{$this->groupid}' AND
-                      ci.categoryid = '{$aCategory->id}' AND
+                      ci.catalogid = ? AND
+                      ci.categoryid = ? AND
                       ci.status IN ('AVAILABLE','PROVIDING') AND
-                      ci.setid = 0 AND
+                      ci.setid = 0
                       $isloggedinclause
                    ORDER BY
                       ci.shortname
                 ";
-                $catalogitems = $DB->get_records_sql($sql);
+                $params = array($this->groupid, $cat->id);
+                $catalogitems = $DB->get_records_sql($sql, $params);
+
+                // Build the master catalog structure.
                 foreach ($catalogitems as $cirec) {
                     $ci = new CatalogItem($cirec);
                     $ci->thumb = $ci->get_thumb_url();
                     $ci->image = $ci->get_image_url();
+                    $ci->masterrecord = 1;
                     $shopproducts[$ci->code] = $ci;
                     $categories[$key]->products[$ci->code] = $ci;
                 }
+                $categoryclause = '';
+            } else {
+                $categoryclause = " ci.categoryid = ? AND ";
+
             }
-            // override with slave versions
+
+            // Override with slave versions.
             $sql = "
                SELECT
                   ci.*
                FROM
                   {local_shop_catalogitem} as ci
                WHERE
-                  catalogid = '{$this->id}' AND
-                  categoryid = '{$aCategory->id}' AND
+                  catalogid = ? AND
+                  $categoryclause
                   ci.status IN ('AVAILABLE','PROVIDING') AND
                   setid = 0
                   $isloggedinclause
                ORDER BY
                   ci.shortname
             ";
-            if ($catalogitems = $DB->get_records_sql($sql)) {
+            $params = array($this->id);
+            if (!$this->isslave) {
+                $params[] = $cat->id;
+            }
+            if ($catalogitems = $DB->get_records_sql($sql, $params)) {
                 foreach ($catalogitems as $cirec) {
                     $ci = new CatalogItem($cirec);
                     $ci->thumb = $ci->get_thumb_url();
                     $ci->image = $ci->get_image_url();
-                    $shopproducts[$ci->code] = $ci;
-                    $categories[$key]->products[$ci->code] = $ci;
+                    $ci->masterrecord = 0;
+                    if ($this->isslave) {
+                        $original = $shopproducts[$ci->code];
+                        $shopproducts[$ci->code] = $ci;
+                        $categories[$original->categoryid]->products[$ci->code] = $ci;
+                    } else {
+                        $categories[$key]->products[$ci->code] = $ci;
+                    }
                 }
             }
+        }
+
+        // Complementary processing for sets : fetch set elements and eventual overrides.
+        if (!empty($shopproducts)) {
             foreach (array_values($shopproducts) as $ci) {
                 if ($ci->isset) {
-                    $set = array();
-                    // get set elements in master catalog (same set code)
+
+                    // Get set elements in master catalog (same set code).
                     if ($this->isslave) {
                         $sql = "
                           SELECT
@@ -220,10 +302,12 @@ class Catalog extends ShopObject {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
-                            $ci->setElement($ci1);
+                            $ci1->masterrecord = 1;
+                            $ci->set_element($ci1);
                         }
                     }
-                    // override with local versions
+
+                    // Override with local versions.
                     $sql = "
                       SELECT
                         ci.*
@@ -237,13 +321,150 @@ class Catalog extends ShopObject {
                          ORDER BY
                         ci.shortname
                     ";
-                    $set = array();
+
                     if ($catalogitems = $DB->get_records_sql($sql)) {
                         foreach ($catalogitems as $cirec) {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
                             $ci1->image = $ci1->get_image_url();
-                            $ci->setElement($ci1);
+                            $ci1->masterrecord = 0;
+                            $ci->set_element($ci1);
+                        }
+                    }
+                    $shopproducts[$ci->code]->set = $ci;
+                }
+            }
+        }
+
+        return $categories;
+    }
+
+    /**
+     * get the full productline from categories
+     */
+    public function get_all_products_for_admin(&$shopproducts) {
+        global $SESSION, $DB;
+
+        $categories = $this->get_categories();
+
+        if (empty($categories)) {
+            return array();
+        }
+
+        // Restrict to explicit category.
+        if (!empty($SESSION->shop->categoryid)) {
+            $categories = array($SESSION->shop->categoryid => $categories[$SESSION->shop->categoryid]);
+        }
+
+        $shopproducts = array();
+        foreach ($categories as $key => $cat) {
+            // Get master catalog items.
+            /*
+             * product might be standalone product or set or bundle
+             */
+            if ($this->isslave) {
+                $sql = "
+                   SELECT
+                      ci.*
+                   FROM
+                      {local_shop_catalogitem} as ci
+                   WHERE
+                      ci.catalogid = ? AND
+                      ci.categoryid = ? AND
+                      ci.setid = 0
+                   ORDER BY
+                      ci.shortname
+                ";
+                $catalogitems = $DB->get_records_sql($sql, array($this->groupid, $cat->id));
+                foreach ($catalogitems as $cirec) {
+                    $ci = new CatalogItem($cirec);
+                    $ci->thumb = $ci->get_thumb_url();
+                    $ci->image = $ci->get_image_url();
+                    $ci->masterrecord = 1;
+                    $shopproducts[$ci->code] = $ci;
+                    $categories[$key]->products[$ci->code] = $ci;
+                }
+            }
+            // Override with slave versions.
+            $sql = "
+               SELECT
+                  ci.*
+               FROM
+                  {local_shop_catalogitem} as ci
+               WHERE
+                  catalogid = ? AND
+                  categoryid = ? AND
+                  setid = 0
+               ORDER BY
+                  ci.shortname
+            ";
+            if ($catalogitems = $DB->get_records_sql($sql, array($this->id, $cat->id))) {
+                foreach ($catalogitems as $cirec) {
+                    $ci = new CatalogItem($cirec);
+                    $ci->thumb = $ci->get_thumb_url();
+                    $ci->image = $ci->get_image_url();
+                    $ci->masterrecord = 0;
+                    $shopproducts[$ci->code] = $ci;
+                    $categories[$key]->products[$ci->code] = $ci;
+                }
+            }
+        }
+
+        // Complementary processing for sets : fetch set elements and eventual overrides.
+        if (!empty($shopproducts)) {
+            $elementcodes = array();
+            foreach (array_values($shopproducts) as $ci) {
+                if ($ci->isset) {
+
+                    // Get set elements in master catalog (same set code).
+                    if ($this->isslave) {
+                        $sql = "
+                          SELECT
+                            ci.*
+                          FROM
+                            {local_shop_catalogitem} as ci,
+                            {local_shop_catalogitem} as cis
+                          WHERE
+                            ci.setid = cis.id AND
+                            cis.code = ? AND
+                            ci.catalogid = ?
+                          ORDER BY
+                            ci.shortname
+                        ";
+                        $catalogitems = $DB->get_records_sql($sql, array($ci->code, $this->groupid));
+                        foreach ($catalogitems as $cirec) {
+                            $ci1 = new CatalogItem($cirec);
+                            $ci1->thumb = $ci1->get_thumb_url();
+                            $ci1->image = $ci1->get_image_url();
+                            $ci1->masterrecord = 1;
+                            $ci->set_element($ci1);
+                            $elementcodes[$cirec->code] = $cirec->id;
+                        }
+                    }
+                    // Override with local versions.
+                    $sql = "
+                      SELECT
+                        ci.*
+                      FROM
+                        {local_shop_catalogitem} as ci
+                      WHERE
+                        ci.setid = ? AND
+                        ci.catalogid = ?
+                      ORDER BY
+                        ci.shortname
+                    ";
+
+                    if ($catalogitems = $DB->get_records_sql($sql, array($ci->id, $this->id))) {
+                        foreach ($catalogitems as $cirec) {
+                            $ci1 = new CatalogItem($cirec);
+                            $ci1->thumb = $ci1->get_thumb_url();
+                            $ci1->image = $ci1->get_image_url();
+                            $ci1->masterrecord = 0;
+                            $ci->set_element($ci1);
+                            // Remove master version of this product.
+                            if ($this->isslave) {
+                                $ci->delete_element($elementcodes[$cirec->code]);
+                            }
                         }
                     }
                     $shopproducts[$ci->code]->set = $ci;
@@ -256,24 +477,26 @@ class Catalog extends ShopObject {
 
     /**
      * Get a single catalogitem using short code as key
-     * àparam string $code the priduct shortcode
+     * @param string $code the product shortcode
      * @return a CatalogItem object
      */
-    function get_product_by_code($code) {
+    public function get_product_by_code($code) {
         global $DB;
 
-        return new CatalogItem($DB->get_record('local_shop_catalogitem', array('catalogid' => $this->id, 'code' => $code)));
+        $params = array('catalogid' => $this->id, 'code' => $code);
+        return new CatalogItem($DB->get_record('local_shop_catalogitem', $params));
     }
 
     /**
      * Queries a catalog to find a complete catalog item instance
-     * @param string $shortname the shortname of the product 
+     * @param string $shortname the shortname of the product
      * @return a CatalogItem object
      */
-    function get_product_by_shortname($shortname) {
+    public function get_product_by_shortname($shortname) {
         global $DB;
 
-        return new CatalogItem($DB->get_record('local_shop_catalogitem', array('catalogid' => $this->id, 'shortname' => $shortname)));
+        $params = array('catalogid' => $this->id, 'shortname' => $shortname);
+        return new CatalogItem($DB->get_record('local_shop_catalogitem', $params));
     }
 
     /**
@@ -282,15 +505,24 @@ class Catalog extends ShopObject {
      * for a set or a bundle.
      * @return an array of products/items keyed by item shortcode.
      */
-    function get_products($order = 'code', $dir = 'ASC', $categoryid = '') {
+    public function get_products($order = 'code', $dir = 'ASC', $categoryid = '') {
         global $DB;
 
         $products = array();
 
         if ($categoryid) {
-            $items = $DB->get_records_select('local_shop_catalogitem', ' catalogid = :catalogid AND categoryid = :categoryid AND setid = 0 or (setid = id) ', array('catalogid' => $this->id, 'categoryid' => $categoryid), " $order $dir");
+            $select = '
+                catalogid = :catalogid AND
+                categoryid = :categoryid AND
+                setid = 0 OR
+                (setid = id)
+            ';
+            $params = array('catalogid' => $this->id, 'categoryid' => $categoryid);
+            $items = $DB->get_records_select('local_shop_catalogitem', $select, $params, " $order $dir");
         } else {
-            $items = $DB->get_records_select('local_shop_catalogitem', ' catalogid = :catalogid AND setid = 0 or (setid = id) ', array('catalogid' => $this->id), " $order $dir");
+            $select = ' catalogid = :catalogid AND setid = 0 or (setid = id) ';
+            $params = array('catalogid' => $this->id);
+            $items = $DB->get_records_select('local_shop_catalogitem', $select, $params, " $order $dir");
         }
 
         if ($items) {
@@ -309,15 +541,21 @@ class Catalog extends ShopObject {
      * @return an object providing entries for a billitem setup as shipping additional
      * pseudo product
      */
-    function calculate_shipping($shoppingcart = null) {
-        global $DB, $SESSION;
+    public function calculate_shipping($shoppingcart = null) {
+        global $DB, $SESSION, $CFG;
 
-        if (!$shoppingcart) $shoppingcart = $SESSION->shoppingcart;
+        if (!$shoppingcart) {
+            $shoppingcart = $SESSION->shoppingcart;
+        }
 
-        shop_trace("[{$shoppingcart->transid}] shop Shipping Calculation for [$shoppingcart->customerinfo->country][$shoppingcart->customerinfo->zipcode]");
+        $c = $shoppingcart->customerinfo->country;
+
+        $message = "[{$shoppingcart->transid}] shop Shipping Calculation for ";
+        $message .= "[{$c}][$shoppingcart->customerinfo->zipcode]";
+        shop_trace($message);
+
         if (!$shipzones = $DB->get_records('local_shop_catalogshipzone', array('catalogid' => $this->id))) {
             shop_trace('No shipzones');
-            // echo "noshipzones ";
             $return = new StdClass;
             $return->value = 0;
             return $return;
@@ -331,23 +569,22 @@ class Catalog extends ShopObject {
             return $v || $w;
         }
         $applicable = null;
+        $zip = $shoppingcart->customerinfo->zipcode;
         foreach ($shipzones as $z) {
             if ($z->zonecode == '00') {
                 $defaultzone = $z;
-                continue; // optional '00' special default zone is considered 'in fine'
+                continue; // Optional '00' special default zone is considered 'in fine'.
             }
-            $ands = preg_split('/&\|/', $z->applicability); // detokenize &
-            for ($i = 0 ; $i < count($ands) ; $i++) {
-                // echo "examinating and rule ".$ands[$i];
+            $ands = preg_split('/&\|/', $z->applicability); // Detokenize &.
+            for ($i = 0; $i < count($ands); $i++) {
                 if (strstr('|', $ands[$i])) {
-                    $ors = preg_split('/\|/', $ands[$i]); // detokenize |
-                    for ($j = 0 ; $j < count($ors) ; $j++) {
-                        $ors[$j] = shop_resolve_zone_rule($shoppingcart->customerinfo->country, $shoppingcart->customerinfo->zipcode, $ors[$j]);
+                    $ors = preg_split('/\|/', $ands[$i]); // Detokenize |.
+                    for ($j = 0; $j < count($ors); $j++) {
+                        $ors[$j] = shop_resolve_zone_rule($c, $zip, $ors[$j]);
                     }
                     $ands[$i] = array_reduce($ors, 'reduce_or', false);
                 } else {
-                    // echo "processing unique and rule ".$ands[$i];
-                    $ands[$i] = shop_resolve_zone_rule($shopppingcart->customerinfo->country, $shopppingcart->customerinfo->zipcode, $ands[$i]);
+                    $ands[$i] = shop_resolve_zone_rule($c, $zip, $ands[$i]);
                 }
             }
             if (array_reduce($ands, 'reduce_and', true)) {
@@ -358,46 +595,46 @@ class Catalog extends ShopObject {
                     $applicable = $defaultzone;
                     break;
                 }
-                // in spite of shipzones found in the way, none applicable
-                shop_trace("[{$transactionid}] No shipzone applicable for [$country][$zipcode]");
-                // echo "no shipzone applicable ";
+                // In spite of shipzones found in the way, none applicable.
+                shop_trace("[{$transactionid}] No shipzone applicable for [$c][$zip]");
                 $return->value = 0;
                 return $return;
             }
         }
         shop_trace("[{$transactionid}] shop Shipping : Found applicable zone $applicable->zonecode ");
-        // checking bill scope shipping for zone 
+        // Checking bill scope shipping for zone.
         if ($applicable->billscopeamount != 0) {
             shop_trace("[{$transactionid}] shop Shipping : Using bill scope amount ");
             $return->value = $applicable->billscopeamount;
             $return->code = 'SHIP_';
             $return->taxcode = $applicable->taxid;
-            // calculate tax amounts
-               $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
-               return $return;
+            // Calculate tax amounts.
+            $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
+            return $return;
         }
         shop_trace("[{$transactionid}] shop Shipping : Examinating shippings");
-        // examinating products
+        // Examinating products.
         if ($shippings = $DB->get_records('local_shop_catalogshipping', array('zoneid' => $applicable->id))) {
             $return->code = 'SHIP_';
             $return->taxcode = $applicable->taxid;
             $return->value = 0;
+            require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
             foreach ($shippings as $sh) {
                 $shippedproduct = $DB->get_record('local_shop_catalogitem', array('code' => $sh->productcode));
-                // must be a valid product in order AND have some items required
+                // Must be a valid product in order AND have some items required.
                 if (array_key_exists($shippedproduct->shortname, $order) && $order[$shippedproduct->shortname] > 0) {
                     if ($sh->value > 0) {
                         $return->value += $sh->value;
                     } else {
                         if (!empty($sh->formula)) {
-                            $A = $sh->a;
-                            $B = $sh->b;
-                            $C = $sh->c;
-                            $HT = $shippedproduct->price1;
-                            $TTC = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
-                            $Q = $order[$shippedproduct->shortname];
-                            eval($sh->formula.';');
-                            $return->value += 0 + @$SHP;
+                            $in['a'] = $sh->a;
+                            $in['b'] = $sh->b;
+                            $in['c'] = $sh->c;
+                            $in['ht'] = $shippedproduct->price1;
+                            $in['ttc'] = shop_calculate_taxed($shippedproduct->price1, $shippedproduct->taxcode);
+                            $in['q'] = $order[$shippedproduct->shortname];
+                            $result = evaluate(\core_text::strtolower($sh->formula).';', $in, 'shp');
+                            $return->value += 0 + @$result['shp'];
                         } else {
                             $return->value += 0;
                         }
@@ -405,23 +642,22 @@ class Catalog extends ShopObject {
                 }
             }
             if ($return->value > 0) {
-                   $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
-               } else {
-                   $return->taxedvalue = 0;
-               }
-               return $return;
+                $return->taxedvalue = shop_calculate_taxed($return->value, $applicable->taxid);
+            } else {
+                $return->taxedvalue = 0;
+            }
+            return $return;
         }
-        // void return if no shipping solution
+        // Void return if no shipping solution.
         shop_trace("[{$transactionid}] shop Shipping : No shipping solution");
-        // echo "no shipping solution";
         $return->value = 0;
         return $return;
     }
 
-    function is_not_used() {
+    public function is_not_used() {
         global $DB;
 
-        return 0 == $DB->count_records('local_shop', array('catalogid' => $this->id));
+        return 0 == $DB->count_records('local_shop', array('catalogid' => 0 + $this->id));
     }
 
     /**
@@ -432,12 +668,13 @@ class Catalog extends ShopObject {
      * @param bool $nosets if set, ignore product sets
      * @param int $userid the product owner. 0 means site owned products, null will display all products.
      */
-    function get_products_by_code($order = 'code', $dir = 'ASC', $masterrecords = 0, $nosets = false, $userid = null) {
+    public function get_products_by_code($order = 'code', $dir = 'ASC', $masterrecords = 0,
+                                         $nosets = false, $userid = null) {
         global $DB;
-    
-        $nosetsql = ($nosets) ? " NOT (setid != 0 AND isset = 0) AND " : '' ;
+
+        $nosetsql = ($nosets) ? " NOT (setid != 0 AND isset = 0) AND " : '';
         $useridsql = (is_null($userid)) ? '' : ' AND ci.userid = ? ';
-    
+
         $sql = "
             SELECT
                ci.code as code,
@@ -459,9 +696,10 @@ class Catalog extends ShopObject {
         ";
 
         $params = array($this->id);
-        if (!empty($userid)) $params[] = $userid;
+        if (!empty($userid)) {
+            $params[] = $userid;
+        }
 
-        // echo $sql;
         $allproducts = array();
         if ($catalogitems = $DB->get_records_sql($sql, $params)) {
             foreach ($catalogitems as $cirec) {
@@ -473,12 +711,34 @@ class Catalog extends ShopObject {
     }
 
     /**
-    * checks in purchased products the role equipement requirement
-    * @TODO : scan shoping cart and get role req info from products
-    */
-    function check_required_roles() {
-    
-        return array('student', '_supervisor');
+     * checks in purchased products the role equipement requirement
+     * @TODO : scan shoping cart and get role req info from products
+     */
+    public function check_required_roles() {
+        global $SESSION;
+
+        $requiredroles = array('student' => true);
+
+        if (!empty($SESSION->shoppingcart->order)) {
+            foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
+                $product = $this->get_product_by_shortname($shortname);
+                $handlerparams = $product->get_serialized_handlerparams();
+                $params = json_decode($handlerparams);
+                if (!empty($params->requiredroles)) {
+                    $roles = explode(',', $params->requiredroles);
+                    foreach ($roles as $r) {
+                        // Make it unique.
+                        if ($r == 'supervisor') {
+                            // Special case.
+                            $r = '_supervisor';
+                        }
+                        $requiredroles[$r] = true;
+                    }
+                }
+            }
+        }
+
+        return array_keys($requiredroles);
     }
 
     /**
@@ -486,36 +746,39 @@ class Catalog extends ShopObject {
      * We need check in catalog definition id product is seat driven or not. If seat driven
      * the quantity adds to seat couts. If not, 1 seat is added to the seat count.
      */
-    function check_required_seats() {
+    public function check_required_seats() {
         global $SESSION;
 
         $seats = 0;
 
-        if (empty($SESSION->shoppingcart->order)) return 0;
+        if (empty($SESSION->shoppingcart->order)) {
+            return 0;
+        }
 
         foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
             $product = $this->get_product_by_shortname($shortname);
             if ($product->quantaddressesusers == SHOP_QUANT_AS_SEATS) {
                 $seats += $quantity;
-            } elseif ($product->quantaddressesusers == SHOP_QUANT_ONE_SEAT) {
+            } else if ($product->quantaddressesusers == SHOP_QUANT_ONE_SEAT) {
                 $seats += 1;
             }
         }
-    
+
         $SESSION->shoppingcart->seats = $seats;
-        
+
         return $seats;
     }
 
     /**
      * Restricts list of available countries per catalog.
      */
-    function process_country_restrictions(&$choices) {
+    public function process_country_restrictions(&$choices) {
         $restricted = array();
-        if (!empty($catalog->countryrestrictions)) {
-            $restrictedcountries = explode(',', $catalog->countryrestrictions);
+
+        if ($this->countryrestrictions != '') {
+            $restrictedcountries = explode(',', $this->countryrestrictions);
             foreach ($restrictedcountries as $rc) {
-                // blind ignore unkown codes...
+                // Blind ignore unkown codes...
                 $cc = strtoupper($rc);
                 if (array_key_exists($cc, $choices)) {
                     $restricted[$rc] = $choices[$cc];
@@ -525,10 +788,70 @@ class Catalog extends ShopObject {
         }
     }
 
+    public function delete() {
+        global $DB;
+
+        // Deletes all our direct dependencies.
+        $DB->delete_records('local_shop_catalogitem', array('catalogid' => $this->id));
+        $DB->delete_records('local_shop_catalogcategory', array('catalogid' => $this->id));
+
+        // Clear all fileareas linked with products.
+        $fs = get_file_storage();
+
+        $contextid = \context_system::instance()->id;
+
+        $fs->delete_area_files($contextid, 'local_shop', 'catalogdescription', $this->id);
+
+        parent::delete();
+    }
+
+    public function export($level = 0) {
+
+        $level++;
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+
+        $yml .= "catalog:\n";
+
+        $yml .= parent::export($level);
+
+        $yml = "\n";
+
+        if (!empty($this->categories)) {
+            $yml .= $indent.'categories:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($this->categories as $acategory) {
+                $yml .= $indent.'- '.$acategory->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+        $this->get_all_products_for_admin($shopproducts);
+        if (!empty($shoppproducts)) {
+            $yml .= $indent.'items:'."\n";
+            $level++;
+            $indent = str_repeat('    ', $level);
+            foreach ($shopproducts as $ci) {
+                $yml .= $indent.$ci->export($level);
+            }
+            $yml .= "\n";
+            $level--;
+            $indent = str_repeat('    ', $level);
+        }
+
+        $level--;
+
+        return $yml;
+    }
+
     /**
      * Restricts list of available countries per catalog.
      */
-    static function process_merged_country_restrictions(&$choices) {
+    public static function process_merged_country_restrictions(&$choices) {
         global $DB;
 
         if ($DB->count_records_select('local_shop_catalog', " countryrestrictions = '' ")) {
@@ -544,9 +867,9 @@ class Catalog extends ShopObject {
         }
 
         $restricted = array();
-        if (!empty($restrictedcpountries)) {
+        if (!empty($restrictedcountries)) {
             foreach ($restrictedcountries as $rc) {
-                // blind ignore unkown codes...
+                // Blind ignore unkown codes...
                 $cc = strtoupper($rc);
                 if (array_key_exists($cc, $choices)) {
                     $restricted[$rc] = $choices[$cc];
@@ -556,17 +879,16 @@ class Catalog extends ShopObject {
         }
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = array(), $order = '', $fields = '*',
+                                         $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    static function get_instances_for_admin() {
-        global $DB;
+    public static function get_instances_for_admin() {
 
-        if ($instances = self::get_instances()) {
+        if ($instances = self::get_instances(array(), 'groupid,id')) {
             foreach ($instances as $c) {
-                $instances[$c->id]->ismaster = $c->id == $c->groupid;
-                $instances[$c->id]->isslave = !empty($c->groupid) && $c->id != $c->groupid;
+                $instances[$c->id]->categories = Category::count(array('catalogid' => $c->id));
                 $instances[$c->id]->items = CatalogItem::count(array('catalogid' => $c->id));
             }
         }

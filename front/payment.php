@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Payment phase of the purchase process
  *
@@ -25,30 +23,36 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => $theBlock->id, 'view' => 'shop')));
+    $params = array('id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop');
+    redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
-$paymentplugin = shop_get_payment_plugin($theShop); // finds in session the paymode.
+$paymentplugin = shop_get_payment_plugin($theshop); // Finds in session the paymode.
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/payment.controller.php');
-    $controller = new \local_shop\front\payment_controller($theShop, $theCatalog, $theBlock);
-    $result = $controller->process($action);
+    $controller = new \local_shop\front\payment_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
+    $resulturl = $controller->process($action);
+    if (!empty($resulturl)) {
+        redirect($resulturl);
+    }
 }
 
 echo $out;
 
-// Start ptinting page 
+// Start ptinting page.
 
 echo $OUTPUT->box_start('', 'shop-payment');
 
-echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $renderer->progress('PAYMENT');
 
@@ -60,8 +64,9 @@ $renderer->field_start(get_string('ordersummary', 'local_shop'), 'shop-informati
 $renderer->order_short();
 $renderer->field_end();
 
-if ($config->test && !has_capability('local/shop:salesadmin', context_system::instance())) {
-    echo $OUTPUT->notification(get_string('testmodeactive', 'localshop'));
+if (!empty($config->test) && empty($config->testoverride) &&
+            !has_capability('local/shop:salesadmin', context_system::instance())) {
+    echo $OUTPUT->notification(get_string('testmodeactive', 'local_shop'));
 } else {
     $renderer->field_start(get_string('procedure', 'local_shop'), 'shop-information-area');
     echo $paymentplugin->print_payment_portlet($SESSION->shoppingcart);

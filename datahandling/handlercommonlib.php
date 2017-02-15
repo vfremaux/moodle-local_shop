@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,10 +21,69 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 define('NO_HANDLER', 0);
 define('EMPTY_HANDLER', '');
 define('SPECIFIC_HANDLER', 1);
+
+/**
+ *
+ */
+function shop_register_customer($data) {
+    global $DB, $USER;
+
+    $productionfeedback = new StdClass();
+    $productionfeedback->public = '';
+    $productionfeedback->private = '';
+    $productionfeedback->salesadmin = '';
+
+    $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+    if (isloggedin() && !isguestuser()) {
+        if ($customer->hasaccount != $USER->id) {
+            /*
+             * do it quick in this case. Actual user could authentify, so it is the legitimate account.
+             * We guess if different non null id that the customer is using a new account. This should not really be possible
+             */
+            $customer->hasaccount = $USER->id;
+            $DB->update_record('local_shop_customer', $customer);
+        } else {
+            $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
+            $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);
+            $productionfeedback->salesadmin = get_string('knownaccount', 'local_shop', $USER->username);
+            $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay :";
+            $message .= " Known account {$USER->username} at process entry.";
+            shop_trace($message);
+            return $productionfeedback;
+        }
+    } else {
+        /*
+         * In this case we can have a early Customer that never confirmed a product or a brand new Customer comming in.
+         * The Customer might match with an existing user...
+         * TODO : If a collision is to be detected, a question should be asked to the customer.
+         */
+        // Create Moodle User but no assignation (this will register in customer support if exists).
+        if (!shop_create_customer_user($data, $customer, $newuser)) {
+            $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Error :";
+            $message .= " User could not be created {$newuser->username}.";
+            shop_trace($message);
+            $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
+            $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
+            $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
+            return $productionfeedback;
+        }
+
+        $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
+        $a = new StdClass;
+        $a->username = $newuser->username;
+        $a->password = $customer->password;
+        $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $a);
+        $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
+        $productionfeedback->salesadmin = $fb;
+    }
+
+    return $productionfeedback;
+}
 
 /**
  * This enrols a customer user account into the designated customer support course as a student.
@@ -47,9 +104,10 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
         return false;
     }
 
-    if ($enrols = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+    $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+    if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
         $enrol = reset($enrols);
-        $enrolplugin = enrol_get_plugin('manual'); // the enrol object instance
+        $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
     } else {
         shop_trace("[{$transactionid}] Production Process Error : Customer support enrol failed // no enrol plugin.");
         return false;
@@ -76,13 +134,13 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
 function shop_create_customer_user(&$data, &$customer, &$newuser) {
     global $CFG, $DB;
 
-    // Create Moodle User but no assignation
+    // Create Moodle User but no assignation.
     $newuser = new StdClass();
     $newuser->username = shop_generate_username($data->customer);
     $customer->password = generate_password(8);
     $newuser->city = $data->customer->city;
-    $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country ;
-    $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang ;
+    $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country;
+    $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang;
     $newuser->firstname = $data->customer->firstname;
     $newuser->lastname = $data->customer->lastname;
     $newuser->email = $data->customer->email;
@@ -93,26 +151,30 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $newuser->timemodified = time();
     $newuser->mnethostid = $CFG->mnet_localhost_id;
 
-    if (!$olduser = $DB->get_record('user', array('firstname' => $newuser->firstname, 'lastname' => $newuser->lastname, 'email' => $newuser->email))) {
+    $params = array('lastname' => $newuser->lastname, 'email' => $newuser->email);
+    if (!$olduser = $DB->get_record('user', $params)) {
         $newuser->id = $DB->insert_record('user', $newuser);
     } else {
         $newuser->id = $olduser->id;
         $DB->update_record('user', $newuser);
     }
 
-    if (!$newuser->id) return false;
+    if (!$newuser->id) {
+        return false;
+    }
 
     $data->user = get_complete_user_data('username', $newuser->username);
 
-    // this will force cron to generate a password and send it to user's email 
+    // This will force cron to generate a password and send it to user's email.
     set_user_preference('create_password', 1, $data->user->id);
 
+    // Do not force password changing. No one knows the password but the recipient.
     if (!empty($CFG->{'auth_'.$newuser->auth.'_forcechangepassword'})) {
-        set_user_preference('auth_forcepasswordchange', 1, $data->user->id);
+        set_user_preference('auth_forcepasswordchange', 0, $data->user->id);
     }
     update_internal_user_password($data->user, $customer->password);
 
-    // bind customer record to Moodle userid
+    // Bind customer record to Moodle userid.
     $customer->hasaccount = $newuser->id;
     $DB->update_record('local_shop_customer', $customer);
 
@@ -124,4 +186,71 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     }
 
     return $newuser->id;
+}
+
+/**
+ * @param $participant a minimal object with essential user information
+ * @param $billitem a billitem
+ */
+function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
+    global $CFG, $DB;
+
+    if (!$customer = $DB->get_record('local_shop_customer', array('id' => $billitem->get_customerid()))) {
+        return false;
+    }
+    if (!$DB->get_record('user', array('id' => $customer->hasaccount))) {
+        return false;
+    }
+
+    $customercontext = context_user::instance($customer->hasaccount);
+    $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+
+    $participant->username = shop_generate_username($participant); // Makes it unique.
+
+    /*
+     * Let cron generate passwords.
+     * @see hash_internal_user_password
+     */
+
+    $participant->lang = $CFG->lang;
+    $participant->deleted = 0;
+    $participant->confirmed = 1;
+    $participant->timecreated = time();
+    $participant->timemodified = time();
+    $participant->mnethostid = $CFG->mnet_localhost_id;
+    if (!isset($participant->country)) {
+        $participant->country = $CFG->country;
+    }
+
+    if ($participant->id = $DB->insert_record('user', $participant)) {
+
+        // Passwords will be created and sent out on cron.
+        $pref = new StdClass();
+        $pref->userid = $participant->id;
+        $pref->name = 'create_password';
+        $pref->value = 1;
+        $DB->insert_record('user_preferences', $pref);
+
+        $pref = new StdClass();
+        $pref->userid = $participant->id;
+        $pref->name = 'auth_forcepasswordchange';
+        $pref->value = 0;
+        $DB->insert_record('user_preferences', $pref);
+    }
+
+    /*
+     * Assign role to customer for behalf on those users.
+     * Note that supervisor role SHOULD HAVE the block/user_delegation::isbehalfedof allowed to
+     * sync the user delegation handling.
+     */
+    $usercontext = context_user::instance($participant->id);
+    $now = time();
+    role_assign($supervisorrole->id, $customer->hasaccount, $usercontext->id, '', 0, $now);
+
+    if ($participant->id) {
+        // Assign mirror role for behalf on those users.
+        role_assign($studentrole->id, $participant->id, $customercontext->id, '', 0, $now);
+    }
+
+    return $participant;
 }

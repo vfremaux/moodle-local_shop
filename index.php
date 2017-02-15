@@ -32,8 +32,8 @@ use \local_shop\Shop;
 use \local_shop\Catalog;
 use \local_shop\catalogs\catalog_controller;
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -56,8 +56,12 @@ $PAGE->set_pagelayout('admin');
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
-    $controller = new catalog_controller();
-    $controller->process($action);
+    $controller = new \local_shop\backoffice\catalog_controller();
+    $controller->receive($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
 echo $OUTPUT->header();
@@ -83,6 +87,6 @@ echo '</div>';
 echo '<br/>';
 echo '<br/>';
 
-echo $shoprenderer->main_menu($theShop);
+echo $shoprenderer->main_menu($theshop);
 
 echo $OUTPUT->footer();

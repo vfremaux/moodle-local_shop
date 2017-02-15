@@ -34,8 +34,8 @@ use local_shop\Catalog;
 
 $PAGE->requires->js('/local/shop/js/bills.js');
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $config = get_config('local_shop');
 
@@ -54,77 +54,29 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($billid) {
-    $bill = new Bill($billid, $theShop, $theCatalog, $theBlock);
     $mform = new Bill_Form('', array('what' => 'edit'));
-    $mform->set_data($bill);
 } else {
-    $bill = new Bill(null, $theShop, $theCatalog, $theBlock);
     $mform = new Bill_Form('', array('what' => 'add'));
-    $bill->autobill = 0;
-    $mform->set_data($bill);
 }
 
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills')));
 }
-if ($bill = $mform->get_data()) {
 
-    $now = time();
+if ($billrec = $mform->get_data()) {
 
-    if (!empty($bill->billid)) {
-        $bill->id = $bill->billid;
-    } else {
-        $bill->id = 0;
-        $bill->generate_unique_transaction();
-        $bill->emissiondate = $now;
+    include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
+    $controller = new \local_shop\backoffice\bill_controller($theshop, $thecatalog, $theblock);
+    $controller->receive('edit', $billrec, $mform);
+    $bill = $controller->process('edit');
+
+    $params = array('shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id);
+    redirect(new moodle_url('/local/shop/bills/view.php', $params));
+} else {
+    if ($billid) {
+        $bill = new Bill($billid);
+        $mform->set_data($bill->record);
     }
-    unset($bill->billid);
-
-    $bill->lastactiondate = $now;
-
-    if (empty($bill->currency)) {
-        $bill->currency = $theShop->defaultcurrency;
-    }
-
-    $shipping = new StdClass;
-    if (!empty($config->useshipping)) {
-        $shipping = shop_calculate_shipping($catalogid, $country, $order);
-    } else {
-        $shipping->value = 0;
-    }
-
-    // Creating a customer account for a user.
-    if ($bill->useraccountid != 0) {
-        $user = $DB->get_record('user', array('id' => $bill->useraccountid));
-        $customer->firstname = $user->firstname;
-        $customer->lastname = $user->lastname;
-        $customer->email = $user->email;
-        $customer->address = $user->address;
-        $customer->city = $user->city;
-        $customer->zip = '';
-        $customer->country = $user->country;
-        $customer->hasaccount = $user->id;
-        if (!$newcustomerid = $DB->insert_record('local_shop_customer', $customer)) {
-            print_error('erroraddnewcustomer', 'local_shop');
-        }
-        $bill->customerid = $newcustomerid;
-    } else {
-        $bill->customerid = $bill->userid;
-    }
-    unset($bill->userid);
-    unset($bill->useraccountid);
-
-    if (empty($bill->id)) {
-
-        $lastordering = Bill::last_ordering();
-        $bill->lastordering = $lastordering + 1;
-
-        $bill->id = $DB->insert_record('local_shop_bill', $bill);
-    } else {
-        $DB->update_record('local_shop_bill', $bill);
-    }
-
-    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $bill->id)));
 }
 
 echo $OUTPUT->header();

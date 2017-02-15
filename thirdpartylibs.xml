@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>js/fancybox</location>
+    <name>Fancy Box</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>extlib</location>
+    <name>Moodle code derrogations</name>
+    <license>GPL</license>
+    <version>1.0</version>
+    <licenseversion>1.0</licenseversion>
+  </library>
+  <library>
+    <location>tests</location>
+    <name>Testing additional software</name>
+    <license>GPL</license>
+    <version>3.0</version>
+    <licenseversion></licenseversion>
+  </library>
+</libraries>

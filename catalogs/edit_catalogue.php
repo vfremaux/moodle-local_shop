@@ -29,8 +29,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 use local_shop\Catalog;
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -47,7 +47,7 @@ if ($action != '') {
 
 $catalogid = optional_param('catalogid', 0, PARAM_INT);
 
-// make page header and navigation
+// Make page header and navigation.
 
 $url = new moodle_url('/local/shop/catalogs/edit_catalog.php', array('catalogid' => $catalogid));
 $PAGE->set_url($url);
@@ -58,18 +58,16 @@ $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/lo
 $PAGE->navbar->add(get_string('catalogs', 'local_shop'));
 
 if ($catalogid) {
-    $catalog = $DB->get_record('local_shop_catalog', array('id' => $catalogid));
+    $catalog = new Catalog($catalogid);
+    $formdata = $catalog->record;
+    $formdata->catalogid = $catalog->id;
+    $formdata->id = $theshop->id;
+    $formdata->blockid = 0 + @$theblock->instance->id;
     $mform = new Catalog_Form('', array('what' => 'edit'));
+    $mform->set_data($formdata);
 } else {
     $mform = new Catalog_Form('', array('what' => 'add'));
 }
-
-$catalog = new Catalog($catalogid);
-$formdata = $catalog->record;
-$formdata->catalogid = $catalog->id;
-$formdata->id = $theShop->id;
-$formdata->blockid = $theBlock->instance->id;
-$mform->set_data($formdata);
 
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/local/shop/index.php'));
@@ -77,59 +75,10 @@ if ($mform->is_cancelled()) {
 
 if ($data = $mform->get_data()) {
 
-    unset($data->id); // shop reference cannot be record id
-
-    if (empty($data->linked)) $data->linked = 'free';
-
-    if ($data->linked != 'free') {
-        if ($data->linked == 'master') {
-            $data->groupid = 0;
-        }
-    } else {
-        $data->groupid = 0;
-    }
-
-    $data->descriptionformat = $data->description_editor['format'];
-    $data->description = $data->description_editor['text'];
-    $data->salesconditionsformat = $data->salesconditions_editor['format'];
-    $data->salesconditions = $data->salesconditions_editor['text'];
-
-    if (empty($data->catalogid)) {
-        $data->id = $DB->insert_record('local_shop_catalog', $data);
-        if ($data->linked == 'master') {
-            $DB->set_field('local_shop_catalog', 'groupid', $data->id, array('id' => $data->id));
-        }
-    } else {
-        $data->id = $data->catalogid;
-        // we need to release all old slaves if this catalog changes from master to standalone
-        if ($oldcatalog = $DB->get_record('local_shop_catalog', array('id' => $data->id))) {
-            if (($oldcatalog->id == $oldcatalog->groupid) && $data->linked == 'free') {
-                // get all slaves but not me
-                // TODO : may have further side effects, but we'll see later.
-                if ($oldslaves = $DB->get_records_select('local_shop_catalog', " groupid = ? AND groupid != id ", array($oldcatalog->id))) {
-                    foreach ($oldslaves as $oldslave) {
-                        $oldslave->groupid = 0;
-                        $DB->update_record('local_shop_catalog', $oldslave);
-                    }
-                }
-            }
-        }
-        $updateid = $DB->update_record('local_shop_catalog', $data);
-
-        if ($data->linked == 'master') {
-            $DB->set_field('local_shop_catalog', 'groupid', $newid, array('id' => $newid));
-        }
-
-    }
-
-    // process text fields from editors
-    $draftid_editor = file_get_submitted_draft_itemid('description_editor');
-    $data->description = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogdescription', $data->id, array('subdirs' => true), $data->description);
-    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop', 'requirementdescription', $data->id);
-
-    $draftid_editor = file_get_submitted_draft_itemid('salesconditions_editor');
-    $data->salesconditions = file_save_draft_area_files($draftid_editor, $context->id, 'local_shop', 'catalogsalesconditions', $data->id, array('subdirs' => true), $data->salesconditions);
-    $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop', 'requirementsalesconditions', $data->id);
+    include_once($CFG->dirroot.'/local/shop/catalogs/catalogs.controller.php');
+    $controller = new \local_shop\backoffice\catalog_controller();
+    $controller->receive('edit', $data, $mform);
+    $controller->process('edit');
 
     redirect(new moodle_url('/local/shop/index.php'));
 }

@@ -14,35 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * @package   local_shop
- * @category  local
- * @subpackage product_handlers
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
+ * @package     local_shop
+ * @category    local
+ * @subpackage  producthandlers
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  * STD_ENROL_ONE_COURSE is a standard shop product action handler that enrols in one course setup in
  * actiondata.
- * actiondata is defined as an action customized information for a specific product in the 
- * product definition, where one standard handler is choosen. 
- *
+ * actiondata is defined as an action customized information for a specific product in the
+ * product definition, where one standard handler is choosen.
  */
-include_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
-include_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
-require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
-require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+defined('MOODLE_INTERNAL') || die();
 
-Use local_shop\Product;
-Use local_shop\Shop;
+require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
+require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
+require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
+
+use local_shop\Product;
+use local_shop\ProductEvent;
+use local_shop\Shop;
 
 class shop_handler_std_enrolonecourse extends shop_handler {
 
-    function __construct($label) {
-        $this->name = 'std_enrolonecourse'; // for unit test reporting
+    public function __construct($label) {
+        $this->name = 'std_enrolonecourse'; // For unit test reporting.
         parent::__construct($label);
     }
 
@@ -51,17 +51,22 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * already certified, i.e. has a delivered certificate for the associated certificate.
      * this might be better checked by testing a shop product existance
      */
-    function is_available(&$catalogitem) {
+    public function is_available(&$catalogitem) {
         global $USER, $DB;
 
         if (!empty($catalogitem->handlerparams['coursename'])) {
-            $course = $DB->get_record('course', array('shortname' => $catalogitem->handlerparams['coursename']));
+            $params = array('shortname' => $catalogitem->handlerparams['coursename']);
+            $course = $DB->get_record('course', $params);
+        } else if (!empty($catalogitem->handlerparams['courseidnumber'])) {
+            $params = array('idnumber' => $catalogitem->handlerparams['courseidnumber']);
+            $course = $DB->get_record('course', $params);
         } else if (!empty($catalogitem->handlerparams['courseid'])) {
-            $course = $DB->get_record('course', array('shortname' => $catalogitem->handlerparams['courseid']));
+            $params = array('id' => $catalogitem->handlerparams['courseid']);
+            $course = $DB->get_record('course', $params);
         }
 
         if (!$course || !$course->visible) {
-            // Hide product if course has disappeared or is not visible
+            // Hide product if course has disappeared or is not visible.
             return false;
         }
 
@@ -75,151 +80,154 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         return !is_enrolled($context, $USER);
     }
 
-    // Pre pay information always comme from shopping session.
-    function produce_prepay(&$data) {
-        global $CFG, $DB, $USER;
-
-        $productionfeedback = new StdClass();
+    /**
+     * Pre pay information always comme from shopping session.
+     */
+    public function produce_prepay(&$data) {
 
         // Get customersupportcourse designated by handler internal params.
         if (!isset($data->actionparams['customersupport'])) {
-            $theShop = new Shop($data->shopid);
-            $data->actionparams['customersupport'] = 0 + @$theShop->defaultcustomersupportcourse;
+            $theshop = new Shop($data->shopid);
+            $data->actionparams['customersupport'] = 0 + @$theshop->defaultcustomersupportcourse;
             if ($data->actionparams['customersupport']) {
-                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Prepay Warning : Customer support defaults to shop settings.");
+                $message = "[{$data->transactionid}] STD_ENROL_ONE_COURSE Prepay Warning :";
+                $message .= " Customer support defaults to shop settings.";
+                shop_trace($message);
             } else {
-                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Prepay Warning : No customer support area defined.");
+                $message = "[{$data->transactionid}] STD_ENROL_ONE_COURSE Prepay Warning :";
+                $message .= " No customer support area defined.";
+                shop_trace($message);
             }
         }
 
-        // If Customer already has account in incoming data we have nothing to do.
-        $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-        if (isloggedin()) {
-            if ($customer->hasaccount != $USER->id) {
-                // do it quick in this case. Actual user could authentify, so it is the legitimate account.
-                // We guess if different non null id that the customer is using a new account. This should not really be possible
-                $customer->hasaccount = $USER->id;
-                $DB->update_record('local_shop_customer', $customer);
-            } else {
-                $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
-                $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);
-                $productionfeedback->salesadmin = get_string('knownaccount', 'local_shop', $USER->username);
-                shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay : Known account {$USER->username} at process entry.");
-                return $productionfeedback;
-            }
-        } else {
-        // In this case we can have a early Customer that never confirmed a product or a brand new Customer comming in.
-        // The Customer might match with an existing user... 
-        // TODO : If a collision is to be detected, a question should be asked to the customer.
-
-            if (!shop_create_customer_user($data, $customer, $newuser)) {
-                shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Prepay Error : User could not be created {$newuser->username}.");
-                $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
-                $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
-                $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
-                return $productionfeedback;
-            }
-
-            $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_enrolonecourse');
-            $a->username = $newuser->username;
-            $a->password = $customer->password;
-            $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_enrolonecourse', $a);
-            $productionfeedback->salesadmin = get_string('productiondata_sales', 'shophandlers_std_enrolonecourse', $newuser->username);
-        }
+        $productionfeedback = shop_register_customer($data);
 
         return $productionfeedback;
     }
 
-    // post pay information can come from session or from production data stored in delayed bills.
-    function produce_postpay(&$data) {
-        global $CFG, $DB, $USER;
+    /**
+     * Post pay information can come from session or from production data stored in delayed bills.
+     * @param objectref &$data a full filled billitem object.
+     */
+    public function produce_postpay(&$data) {
+        global $DB, $USER;
+
+        $config = get_config('local_shop');
 
         $productionfeedback = new StdClass();
+        $productionfeedback->public = '';
+        $productionfeedback->private = '';
+        $productionfeedback->salesadmin = '';
 
-        // check for params validity (internals)
+        // Check for params validity (internals).
 
-        if (!isset($data->actionparams['coursename'])) {
+        if (empty($data->actionparams['coursename']) && empty($data->actionparams['courseid'])) {
             print_error('errormissingactiondata', 'local_shop', $this->get_name());
         }
 
-        $coursename = $data->actionparams['coursename'];
         $rolename = @$data->actionparams['role'];
         if (empty($rolename)) {
             $rolename = 'student';
         }
 
-        $startdate = @$data->actionparams['startdate'];
-        if (empty($startdate)) $startdate = time();
+        // Perform operations.
 
-        // computes infinite, relative of fixed enddate
-        $enddate = @$data->actionparams['enddate'];
-        if (preg_match('/^\+(\d+)$/', $enddate, $matches)) {
-            $enddate = $startdate + $matches[1];
-        } elseif (empty($enddate)) {
-            $enddate = 0;
+        // Assign Student role in course for the period.
+        if (!empty($data->actionparams['coursename'])) {
+            $coursename = $data->actionparams['coursename'];
+            if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
+                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course name");
+                print_error("Bad target course shortname for product");
+            }
+        } else if (!empty($data->actionparams['courseidnumber'])) {
+            $idnumber = $data->actionparams['courseidnumber'];
+            if (!$course = $DB->get_record('course', array('idnumber' => $idnumber))) {
+                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course idnumber");
+                print_error("Bad target course id for product");
+            }
+        } else {
+            $courseid = $data->actionparams['courseid'];
+            if (!$course = $DB->get_record('course', array('shortname' => $courseid))) {
+                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course id");
+                print_error("Bad target course id for product");
+            }
         }
+
+        // Compute start and end time.
+        $starttime = shop_compute_enrol_time($data, 'starttime', $course);
+        $endtime = shop_compute_enrol_time($data, 'endtime', $course);
 
         $enrolname = @$data->actionparams['enrol'];
         if (empty($enrolname)) {
             $enrolname = 'manual';
         }
 
-        // perform operations
-
-        // Assign Student role in course for the period
-        if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
-            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course id");
-            print_error("Bad target course for product");
-        }
-
         $role = $DB->get_record('role', array('shortname' => $rolename));
         $now = time();
 
-        if ($enrols = $DB->get_records('enrol', array('enrol' => $enrolname, 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+        $params = array('enrol' => $enrolname, 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+        if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
-            $enrolplugin = enrol_get_plugin($enrolname); // the enrol object instance
+            $enrolplugin = enrol_get_plugin($enrolname); // The enrol object instance.
         }
 
         try {
-            $enrolplugin->enrol_user($enrol, $USER->id, $role->id, $startdate, $enddate, ENROL_USER_ACTIVE);
+            $userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $data->get_customerid()));
+            $enrolplugin->enrol_user($enrol, $userid, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
+            $message = "User {$userid} Enrolled in course {$course->shortname} ";
+            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : ".$message);
         } catch (Exception $exc) {
-            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed...");
-            $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_enrolonecourse', 'Code : ROLE ASSIGN');
-            $productionfeedback->private = get_string('productiondata_failure_private', 'shophandlers_std_enrolonecourse', $course->id);
-            $productionfeedback->salesadmin = get_string('productiondata_failure_sales', 'shophandlers_std_enrolonecourse', $course->id);
+            $e = new StdClass;
+            $e->code = $data->code;
+            $e->errorcode = 'Code : ROLE ASSIGN ISSUE';
+            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed enrol...");
+            $fb = get_string('productiondata_failure_public', 'shophandlers_std_enrolonecourse', $e);
+            $productionfeedback->public = $fb;
+            $fb = get_string('productiondata_failure_private', 'shophandlers_std_enrolonecourse', $course->id);
+            $productionfeedback->private = $fb;
+            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_enrolonecourse', $course->id);
+            $productionfeedback->salesadmin = $fb;
             return $productionfeedback;
         }
 
-        // Create product instance in product table
+        // Get the user enrolment record as instance for product record.
+        $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $userid));
+
+        // Create product instance in product table.
 
         $product = new StdClass();
         $product->catalogitemid = $data->catalogitem->id;
-        $product->initialbillitemid = $data->id; // Data is a billitem
-        $product->currentbillitemid = $data->id; // Data is a billitem
+        $product->initialbillitemid = $data->id; // Data is a billitem.
+        $product->currentbillitemid = $data->id; // Data is a billitem.
         $product->customerid = $data->bill->customerid;
-        $product->contexttype = 'enrol';
-        $product->instanceid = $enrol->id;
-        $product->startdate = $startdate;
-        $product->enddate = $enddate;
+        $product->contexttype = 'userenrol';
+        $product->instanceid = $ue->id;
+        $product->startdate = $starttime;
+        $product->enddate = $endtime;
         $product->reference = shop_generate_product_ref($data);
-        $product->productiondata = Product::compile_production_data($data->actionparams);
+        $extra = array('handler' => 'std_enrolonecourse');
+        $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
+        $product->test = $config->test;
         $product->id = $DB->insert_record('local_shop_product', $product);
 
         // Record a productevent.
-        $productevent = new StdClass();
+        $productevent = new ProductEvent(null);
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
         $productevent->datecreated = $now = time();
-        $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
+        $productevent->save();
 
-        $productionfeedback->public = get_string('productiondata_assign_public', 'shophandlers_std_enrolonecourse');
-        $productionfeedback->private = get_string('productiondata_assign_private', 'shophandlers_std_enrolonecourse', $course->id);
-        $productionfeedback->salesadmin = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course->id);
+        $fb = get_string('productiondata_assign_public', 'shophandlers_std_enrolonecourse');
+        $productionfeedback->public = $fb;
+        $fb = get_string('productiondata_assign_private', 'shophandlers_std_enrolonecourse', $course->id);
+        $productionfeedback->private = $fb;
+        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course->id);
+        $productionfeedback->salesadmin = $fb;
 
         /*
          * Make a group if needed for the customer
          * the customer is buying for its own so it will get an "own group" to eventually
-         * get separated from other learner teams. 
+         * get separated from other learner teams.
          */
 
         $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
@@ -240,7 +248,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $group->id = $DB->insert_record('groups', $group);
         }
 
-        // Add all created users to group 
+        // Add all created users to group.
 
         if (!$groupmember = $DB->get_record('groups_members', array('groupid' => $group->id, 'userid' => $USER->id))) {
             $groupmember = new StdClass();
@@ -250,41 +258,108 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $DB->insert_record('groups_members', $groupmember);
         }
 
-        // Add user to customer support
+        // Add user to customer support.
+
         if (!empty($data->actionparams['customersupport'])) {
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay : Registering Customer Support");
             shop_register_customer_support($data->actionparams['customersupport'], $USER, $data->transactionid);
         }
 
-        shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Completed in $coursename...");
+        shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Completed for $coursename...");
         return $productionfeedback;
-    } 
+    }
 
     /**
-    * unit tests check input conditions from product setup without doing anything, collects input errors and warnings
-    *
-    */
-    function unit_test($data, &$errors, &$warnings, &$messages) {
+     * Dismounts all effects of the handler production when a product is deleted.
+     * The contexttype will denote the type of Moodle object that was created. some
+     * hanlders may deal with several contexttypes if they have a complex production
+     * operation. the instanceid is moslty a moodle table id that points the concerned instance
+     * within the context type scope.
+     *
+     * In enrolonecourse plugin, unenrols the target user from course using the user enrolment record
+     * assigned to the product. Other enrol sources remain unchanged.
+     *
+     * @param string $contexttype type of context to dismount
+     * @param integer/string $instanceid identifier of the instance
+     */
+    public function delete(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $enrol = $DB->get_record('enrol', array('id' => $ue->enrolid));
+                $enrolplugin = enrol_get_plugin($enrol->enrol);
+                shop_trace('[] Deleting user enrolment on {$ue->enrolid} for user {$ue->userid}');
+                $enrolplugin->unenrol_user($enrol, $ue->userid);
+            }
+        }
+    }
+
+    public function soft_delete(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $ue->status = 1;
+                $DB->update_record('user_enrolments', $ue);
+            }
+        }
+    }
+
+    public function soft_restore(&$product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $ue->status = 0;
+                $DB->update_record('user_enrolments', $ue);
+            }
+        }
+    }
+
+    /**
+     * unit tests check input conditions from product setup without doing anything,
+     * collects input errors and warnings
+     *
+     */
+    public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
 
         parent::unit_test($data, $errors, $warnings, $messages);
 
-        if (!isset($data->actionparams['coursename'])) {
+        if (!isset($data->actionparams['coursename']) &&
+                !isset($data->actionparams['courseid']) &&
+                        !isset($data->actionparams['courseidnumber'])) {
             $warnings[$data->code][] = get_string('errornocourse', 'shophandlers_std_enrolonecourse');
         } else {
-            if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
-                $errors[$data->code][] = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['coursename']);
+            if (!empty($data->actionparams['coursename'])) {
+                if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+                    $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['coursename']);
+                    $errors[$data->code][] = $fb;
+                }
+            }
+            if (!empty($data->actionparams['courseid'])) {
+                if (!$DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
+                    $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['courseid']);
+                    $errors[$data->code][] = $fb;
+                }
+            }
+            if (!empty($data->actionparams['courseidnumber'])) {
+                if (!$DB->get_record('course', array('idnumber' => $data->actionparams['courseidnumber']))) {
+                    $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['courseidnumber']);
+                    $errors[$data->code][] = $fb;
+                }
             }
         }
-        
+
         if (!isset($data->actionparams['role'])) {
             $warnings[$data->code][] = get_string('warningroledefaultstoteacher', 'shophandlers_std_enrolonecourse');
             $data->actionparams['role'] = 'student';
         }
 
-        if (!$role = $DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
+        if (!$DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
             $errors[$data->code][] = get_string('errorrole', 'shophandlers_std_enrolonecourse', $data->actionparams['role']);
         }
 

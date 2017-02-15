@@ -14,87 +14,259 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 class shop_controller extends front_controller_base {
 
-    function process($cmd) {
+    /**
+     * In this case, all the data resides already in session.
+     * there is nothing to get from a query.
+     */
+    public function receive($cmd, $data = array()) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            $this->received = true;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'import':
+                foreach (array_keys($_GET) as $inputkey) {
+                    if ($inputkey == 'shipping') {
+                        continue;
+                    }
+                    $this->data->$inputkey = optional_param($inputkey, 0, PARAM_INT);
+                }
+                break;
+            case 'clearall':
+                break;
+
+            case 'addunit':
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                break;
+
+            case 'setunits':
+                $this->data->quant = required_param('quant', PARAM_INT);
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                break;
+
+            case 'deleteunit':
+                $this->data->clearall = optional_param('clearall', false, PARAM_BOOL);
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                break;
+
+            case 'checkpasscode':
+                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                $this->data->passcode = required_param('passcode', PARAM_TEXT);
+                break;
+
+            case 'navigate':
+                break;
+        }
+        $this->received = true;
+    }
+
+    public function process($cmd) {
         global $SESSION;
 
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
+
+        $output = '';
+
         if ($cmd == 'import') {
+
             unset($SESSION->shoppingcart);
-            $SESSION->shoppingcart = new StdClass;
+            $SESSION->shoppingcart = new \StdClass;
             $SESSION->shoppingcart->order = array();
-            foreach (array_keys($_GET) as $inputkey) {
+            foreach (array_keys((array)$this->data) as $inputkey) {
                 if ($inputkey == 'shipping') {
                     continue;
                 }
-                $SESSION->shoppingcart->order[$inputkey] = optional_param($inputkey, 0, PARAM_INT);
+                $SESSION->shoppingcart->order[$inputkey] = $this->data->$inputkey;
             }
-        } elseif ($cmd == 'clearall') {
+
+        } else if ($cmd == 'clearall') {
+
             unset($SESSION->shoppingcart);
-            redirect(new \moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
-        } elseif ($cmd == 'navigate') {
+            $params = array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            return new \moodle_url('/local/shop/front/view.php', $params);
 
-            // precalculates some sums
-            $SESSION->shoppingcart->untaxedtotal = 0;
-            $SESSION->shoppingcart->taxedtotal = 0;
-            $SESSION->shoppingcart->taxestotal = 0;
+        } else if ($cmd == 'addunit') {
 
-            // reset all existing taxes counters
-            if (!empty($SESSION->shoppingcart->taxes)) {
-                foreach($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
-                    $SESSION->shoppingcart->taxes[$tcode] = 0;
+            @$SESSION->shoppingcart->order[$this->data->shortname]++;
+            $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
+            $output = new \StdClass();
+            $output->html = $this->renderer->units($product);
+            $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
+            $output = json_encode($output);
+
+        } else if ($cmd == 'setunits') {
+            $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
+
+            if ($product->maxdeliveryquant) {
+                if ($this->data->quant > $product->maxdeliveryquant) {
+                    $this->data->quant = $product->maxdeliveryquant;
+                }
+            }
+            @$SESSION->shoppingcart->order[$this->data->shortname] = $this->data->quant;
+
+            $output = new \StdClass();
+            $output->html = $this->renderer->units($product);
+            $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
+            $output = json_encode($output);
+
+        } else if ($cmd == 'deleteunit') {
+
+            if ($this->data->clearall) {
+                unset($SESSION->shoppingcart->order[$this->data->shortname]);
+            } else {
+                @$SESSION->shoppingcart->order[$this->data->shortname]--;
+            }
+            if (@$SESSION->shoppingcart->order[$this->data->shortname] == 0) {
+                unset($SESSION->shoppingcart->order[$this->data->shortname]);
+            }
+
+            $catalogitem = $this->thecatalog->get_product_by_shortname($this->data->shortname);
+
+            $requiredroles = $this->thecatalog->check_required_roles();
+
+            if ($catalogitem->quantaddressesusers) {
+                // If seat based, remove last assign per unit removed.
+                foreach ($requiredroles as $role) {
+                    if (isset($SESSION->shoppingcart->{$role})) {
+                        array_pop($SESSION->shoppingcart->{$role});
+                    }
+                    if (empty($SESSION->shoppingcart->{$role})) {
+                        unset($SESSION->shoppingcart->{$role});
+                    }
+                }
+                if (!empty($SESSION->shoppingcart->assigns) &&
+                        array_key_exists($this->data->shortname, $SESSION->shoppingcart->assigns)) {
+                    $SESSION->shoppingcart->assigns[$this->data->shortname]--;
+                    if ($SESSION->shoppingcart->assigns[$this->data->shortname] == 0) {
+                        unset($SESSION->shoppingcart->assigns[$this->data->shortname]);
+                    }
+                }
+            } else {
+                // If non seat based, remove assign only when last unit is removed.
+                foreach ($requiredroles as $role) {
+                    if (isset($SESSION->shoppingcart->{$role})) {
+                        unset($SESSION->shoppingcart->{$role});
+                    }
+                }
+                if (!isset($SESSION->shoppingcart->order[$this->data->shortname])) {
+                    unset($SESSION->shoppingcart->assigns[$this->data->shortname]);
                 }
             }
 
-            foreach ($SESSION->shoppingcart->order as $shortname => $q) {
+            $outputobj = new \StdClass();
+            $outputobj->html = $this->renderer->units($catalogitem);
+            $outputobj->quant = 0 + @$SESSION->shoppingcart->order[$this->data->shortname];
+            $output = json_encode($outputobj);
+
+        } else if ($cmd == 'orderdetails') {
+
+            $categories = $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
+            $output = new \StdClass;
+            $output->html = $this->renderer->order_detail($categories);
+            $output = json_encode($output);
+
+        } else if ($cmd == 'ordertotals') {
+
+            $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
+            $output = new \StdClass;
+            $output->html = $this->renderer->order_totals($this->thecatalog);
+            $output = json_encode($output);
+
+        } else if ($cmd == 'checkpasscode') {
+
+            $output = new \StdClass;
+            if ($product = $this->thecatalog->get_product_by_shortname($this->data->shortname)) {
+                if ($this->data->passcode == $product->password) {
+                    $output->status = 'passed';
+                } else {
+                    $output->status = 'failed';
+                }
+            } else {
+                $output->status = 'product error';
+            }
+            $output = json_encode($output);
+
+        } else if ($cmd == 'navigate') {
+
+            $shoppingcart = $SESSION->shoppingcart;
+
+            // Precalculates some sums.
+            $shoppingcart->untaxedtotal = 0;
+            $shoppingcart->taxedtotal = 0;
+            $shoppingcart->taxestotal = 0;
+
+            // Reset all existing taxes counters.
+            if (!empty($shoppingcart->taxes)) {
+                foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
+                    $shoppingcart->taxes[$tcode] = 0;
+                }
+            }
+
+            foreach ($shoppingcart->order as $shortname => $q) {
                 $ci = $this->thecatalog->get_product_by_shortname($shortname);
                 $ht = $q * $ci->get_price($q);
                 $ttc = $q * $ci->get_taxed_price($q);
-                $SESSION->shoppingcart->untaxedtotal += $ht;
-                $SESSION->shoppingcart->taxedtotal += $ttc;
-                $SESSION->shoppingcart->taxestotal += $ttc - $ht;
-                if (!isset($SESSION->shoppingcart->taxes[$ci->taxcode])) {
-                    $SESSION->shoppingcart->taxes[$ci->taxcode] = 0;
+                $shoppingcart->untaxedtotal += $ht;
+                $shoppingcart->taxedtotal += $ttc;
+                $shoppingcart->taxestotal += $ttc - $ht;
+                if (!isset($shoppingcart->taxes[$ci->taxcode])) {
+                    $shoppingcart->taxes[$ci->taxcode] = 0;
                 }
-                $SESSION->shoppingcart->taxes[$ci->taxcode] += $ttc - $ht;
+                $shoppingcart->taxes[$ci->taxcode] += $ttc - $ht;
             }
 
-            $SESSION->shoppingcart->discount = 0;
-            $SESSION->shoppingcart->finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal;
-            $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal;
-            $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal;
+            $reason = '';
 
-            $discountrate = shop_calculate_discountrate_for_user($SESSION->shoppingcart->untaxedtotal, $this->context, $reason);
+            $discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->untaxedtotal, $this->context,
+                                                                            $reason);
             if ($discountrate) {
                 $discountmultiplier = $discountrate / 100;
-                $SESSION->shoppingcart->untaxeddiscount = $discountmultiplier * $SESSION->shoppingcart->untaxedtotal;
-                $SESSION->shoppingcart->finaluntaxedtotal = $SESSION->shoppingcart->untaxedtotal * (1 - $discountmultiplier);
-                $SESSION->shoppingcart->finaltaxedtotal = $SESSION->shoppingcart->taxedtotal * (1 - $discountmultiplier);
-                $SESSION->shoppingcart->finaltaxestotal = $SESSION->shoppingcart->taxestotal * (1 - $discountmultiplier);
-                $SESSION->shoppingcart->discount = $SESSION->shoppingcart->finaltaxedtotal * $discountmultiplier;
+                $shoppingcart->discount = $shoppingcart->taxedtotal * $discountmultiplier;
+                $shoppingcart->untaxeddiscount = $shoppingcart->untaxedtotal * $discountmultiplier;
+                $shoppingcart->finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - $discountmultiplier);
+                $shoppingcart->finaltaxedtotal = $shoppingcart->taxedtotal * (1 - $discountmultiplier);
+                $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal * (1 - $discountmultiplier);
 
-                // try one : apply discount to all tax lines
-                if (!empty($SESSION->shoppingcart->taxes)) {
-                    foreach($SESSION->shoppingcart->taxes as $tcode => $amountfoo) {
-                        $SESSION->shoppingcart->taxes[$tcode] *= 1 - $discountmultiplier;
+                // Try one : apply discount to all tax lines.
+                if (!empty($shoppingcart->taxes)) {
+                    foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
+                        $shoppingcart->taxes[$tcode] *= 1 - $discountmultiplier;
                     }
                 }
+            } else {
+                $shoppingcart->discount = 0;
+                $shoppingcart->finaluntaxedtotal = $shoppingcart->untaxedtotal;
+                $shoppingcart->finaltaxedtotal = $shoppingcart->taxedtotal;
+                $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal;
             }
 
-            redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('shop'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+            $next = $this->theshop->get_next_step('shop');
+            $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            return new \moodle_url('/local/shop/front/view.php', $params);
         }
+
+        // Other controller output cases.
+        return $output;
     }
 }

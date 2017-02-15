@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\bills;
-
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Form for editing HTML block instances.
  *
@@ -28,15 +24,19 @@ defined('MOODLE_INTERNAL') || die;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shop\bills;
+
+defined('MOODLE_INTERNAL') || die;
+
 class search_controller {
 
-    var $theshop;
+    protected $theshop;
 
-    function __construct($theShop) {
-        $this->theshop = $theShop;
+    public function __construct($theshop) {
+        $this->theshop = $theshop;
     }
 
-    function process($cmd) {
+    public function process($cmd) {
         global $DB;
 
         if ($cmd == 'search') {
@@ -46,23 +46,22 @@ class search_controller {
             $billkey = optional_param('billkey', '', PARAM_TEXT);
             $customername = optional_param('customername', '', PARAM_TEXT);
             $datefrom = optional_param('datefrom', '', PARAM_INT);
-            $during = optional_param('during', '', PARAM_TEXT);
-        
+
             switch ($by) {
                 case 'id':
-                   $whereclause = " id = '{$billid}' ";
-                   break;
+                    $whereclause = " id = '{$billid}' ";
+                    break;
                 case "name":
-                   $whereclause = " UPPER(lastname) LIKE '{$customername}%' ";
-                   break;
+                    $whereclause = " UPPER(lastname) LIKE '{$customername}%' ";
+                    break;
                 case "key":
-                   $whereclause = " UPPER(transactionid) LIKE '{$billkey}%' ";
-                   break;
+                    $whereclause = " UPPER(transactionid) LIKE '{$billkey}%' ";
+                    break;
                 case "date":
-                   $whereclause = " emissiondate > '{$datefrom}' ";
-                   break;
+                    $whereclause = " emissiondate > '{$datefrom}' ";
+                    break;
                 default:
-                   $error = true;
+                    $error = true;
             }
             if (!$error) {
                 $sql = "
@@ -78,12 +77,13 @@ class search_controller {
                 if ($bills = $DB->get_records->sql($sql)) {
 
                     if (count($bills) == 1) {
-                        $billRecord = array_pop($bills);
-                        $billid = $billRecord->id;
-                        // one only result. Switch directly to intranet/bills/viewBill with adequate Id.
-                        redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'id' => $this->theShop->id, 'billid' => $billid)));
+                        $billrecord = array_pop($bills);
+                        $billid = $billrecord->id;
+                        // One only result. Switch directly to intranet/bills/viewBill with adequate Id.
+                        $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $billid);
+                        redirect(new moodle_url('/local/shop/bills/view.php', $params));
                     }
-                    return $bill;
+                    return $bills;
                 }
             }
         }

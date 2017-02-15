@@ -14,32 +14,82 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop\front;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\front;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
-class purchasereq_controller extends front_controller_base {
+class purchaserequ_controller extends front_controller_base {
 
-    function process($cmd) {
+    protected $data;
+
+    protected $received;
+
+    public function receive($cmd, $data = array()) {
         global $SESSION;
+
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            $this->received = true;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        $shoppingcart = $SESSION->shoppingcart;
+
+        switch ($cmd) {
+            case 'collect':
+                foreach ($shoppingcart->order as $itemname => $itemcount) {
+                    $catalogitem = $this->thecatalog->get_product_by_shortname($itemname);
+
+                    $handler = $catalogitem->get_handler();
+
+                    $requireddata = $catalogitem->requireddata; // Take care, result of magic _get() is not directly testable.
+                    $requirements = json_decode($requireddata);
+                    if (!empty($requirements)) {
+                        foreach ($requirements as $reqobj) {
+                            for ($i = 0; $i < $itemcount; $i++) {
+                                $param = required_param($itemname.'/'.$reqobj->field.$i, PARAM_TEXT);
+                                $this->data->customerdata[$itemname][$reqobj->field][$i] = $param;
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'navigate':
+                $this->data->back = optional_param('back', false, PARAM_BOOL);
+                break;
+        }
+
+        $this->received = true;
+    }
+
+    public function process($cmd) {
+        global $SESSION;
+
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         if ($cmd == 'collect') {
 
             $errors = array();
 
-            $SESSION->shoppingcart->customerdata['completed'] = true;
-            foreach ($SESSION->shoppingcart->order as $itemname => $itemcount) {
+            $shoppingcart->customerdata['completed'] = true;
+            foreach ($shoppingcart->order as $itemname => $itemcount) {
                 $catalogitem = $this->thecatalog->get_product_by_shortname($itemname);
 
                 $handler = $catalogitem->get_handler();
@@ -48,26 +98,35 @@ class purchasereq_controller extends front_controller_base {
                 $requirements = json_decode($requireddata);
                 if (!empty($requirements)) {
                     foreach ($requirements as $reqobj) {
-                        for ($i = 0 ; $i < $itemcount ; $i++) {
-                            $param = required_param($itemname.'/'.$reqobj->field.$i, PARAM_TEXT);
+                        for ($i = 0; $i < $itemcount; $i++) {
+                            $param = $this->data->customerdata[$itemname][$reqobj->field][$i];
                             if (!is_null($handler) && !($handler === false)) {
                                 if (!$handler->validate_required_data($itemname, $reqobj->field, $i, $param, $errors)) {
-                                    $SESSION->shoppingcart->customerdata['completed'] = false;
+                                    $shoppingcart->customerdata['completed'] = false;
                                     continue;
                                 }
                             }
-                            $SESSION->shoppingcart->customerdata[$itemname][$reqobj->field][$i] = $param;
+                            $shoppingcart->customerdata[$itemname][$reqobj->field][$i] = $param;
                         }
                     }
                 }
             }
-        } elseif ($cmd == 'navigate') {
-            // Comming from further form.
-            if ($back = optional_param('back', false, PARAM_BOOL)) {
-                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_prev_step('purchaserequ'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+        } else if ($cmd == 'navigate') {
+            // Coming from further form.
+            if (!empty($this->data->back)) {
+                $prev = $this->theshop->get_prev_step('purchaserequ');
+                $params = array('view' => $prev,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id,
+                                'back' => 1);
+                return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
                 // Going further silently.
-                redirect(new \moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_next_step('purchaserequ'), 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id)));
+                $next = $this->theshop->get_next_step('purchaserequ');
+                $params = array('view' => $next,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => 0 + @$this->theblock->id);
+                return new \moodle_url('/local/shop/front/view.php', $params);
             }
         }
     }

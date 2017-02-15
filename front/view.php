@@ -28,6 +28,7 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Shop;
@@ -36,15 +37,16 @@ use local_shop\Catalog;
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/form_protection.js.php');
 $PAGE->requires->js('/local/shop/front/js/order.js');
+$PAGE->requires->css('/local/shop/stylesdyn.php');
 
 $config = get_config('local_shop');
 
-// get block information
+// Get block information.
 
-// get the block reference and key context.
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get the block reference and key context.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
-$view = optional_param('view', $theShop->get_starting_step(), PARAM_ALPHA);
+$view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);
 
 $context = context_system::instance();
 
@@ -53,7 +55,7 @@ if ($view == 'shop') {
     $PAGE->requires->css('/local/shop/js/fancybox/source/jquery.fancybox.css?v=2.1.5');
 }
 
-// make page header
+// Make page header.
 $url = new moodle_url('/local/shop/front/view.php', array('view' => $view));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
@@ -63,16 +65,7 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('shop', 'local_shop'));
 $PAGE->set_cacheable(false);
 
-// Add a forced shop_total block at right if necessary
-/*
-if (!empty($theBlock->instance->id)) {
-    if (!$DB->record_exists('block_instances', array('blockname' => 'shop_total', 'parentcontextid' => $theBlock->instance->parentcontextid))) {
-        $PAGE->blocks->add_blocks(array(BLOCK_POS_RIGHT => array('shop_total')), 'local-shop-front-*', null, null, 2);
-    } else {
-        echo "block total already there";
-    }
-}
-*/
+// Add a forced shop_total block at right if necessary.
 
 if (!isloggedin()) {
     $USER = $DB->get_record('user', array('username' => 'guest'));
@@ -85,9 +78,9 @@ if (empty($config->sellername)) {
 $out = $OUTPUT->header();
 
 $renderer = shop_get_renderer('front');
-$renderer->load_context($theShop, $theBlock);
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
-// Fetch view
+// Fetch view.
 if (is_readable($CFG->dirroot."/local/shop/front/{$view}.php")) {
     include($CFG->dirroot."/local/shop/front/{$view}.php");
 } else {

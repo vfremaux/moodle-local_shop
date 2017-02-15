@@ -14,40 +14,43 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
-// in case session is lost, go to the public entrance of the shop
+// In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('shopid' => $theShop->id, 'blockid' => 0 + @$theBlock->id, 'view' => 'shop')));
+    $params = array('shopid' => $theshop->id, 'blockid' => 0 + @$theblock->id, 'view' => 'shop');
+    redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/order.controller.php');
-    $controller = new \local_shop\front\order_controller($theShop, $theCatalog, $theBlock);
-    $controller->process($action);
+    $controller = new \local_shop\front\order_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
-// as we sould know enough about customer here, we can calculate shipping and eventuel discount
+// As we sould know enough about customer here, we can calculate shipping and eventuel discount.
 
-if (empty($SESSION->shoppingcart->transid)) { // locks a transition ID for new incomers.
+if (empty($SESSION->shoppingcart->transid)) {
+    // Locks a transition ID for new incomers.
     $SESSION->shoppingcart->transid = shop_get_transid();
 }
 
 echo $out;
 
-// print_object($SESSION->shoppingcart);
+// Start ptinting page.
 
-// Start ptinting page 
-
-echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $OUTPUT->box_start('', 'orderpanel');
 
@@ -61,7 +64,7 @@ echo $renderer->customer_info($bill);
 $eulas = $renderer->check_and_print_eula_conditions();
 $initialview = (empty($eulas)) ? '' : ' style="display:none" ';
 
-// Print main ordering table
+// Print main ordering table.
 
 echo '<form name="navigate" action="'.$CFG->wwwroot.'/local/shop/front/view.php" method="post">';
 
@@ -91,7 +94,6 @@ if (!empty($config->sellermail)) {
 
 echo $OUTPUT->box_end();
 
-
 echo '</div>';
 
 $options = array();
@@ -100,15 +102,6 @@ $options['nextstring'] = 'launch';
 
 echo $renderer->action_form('order', $options);
 
-/*
-echo '<p align="center">';
-echo '<input type="hidden" name="view" value="order" />';
-echo '<input type="hidden" name="id" value="'.$theShop->id.'" />';
-echo '<input type="hidden" name="what" value="navigate" />';
-echo '<input type="submit" name="back" value="'.get_string('previous', 'local_shop').'" />';
-echo '&nbsp;<input type="submit" name="go" class="shop-final-step-button" value="'.get_string('launch', 'local_shop').'" />';
-echo '</p>';
-*/
 echo '</form>';
 
 // Hide all region-pre to avoid side blocks to mess.

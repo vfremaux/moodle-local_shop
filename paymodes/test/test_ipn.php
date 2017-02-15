@@ -15,13 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    shoppaymodes_test
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     shoppaymodes_test
+ * @category    local
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// get all input parms
+// Get all input parms.
+
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/test/test.class.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
@@ -29,23 +30,25 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 $config = get_config('local_shop');
 
-// Setup trace
+// Setup trace.
 
 echo '<pre>';
 mtrace('Test Autoresponse (IPN) : This simulates an asynchronous response of a payment terminal');
 shop_trace('Test Autoresponse (IPN) : This simulates an asynchronous ');
 
-// Keep out casual intruders 
+// Keep out casual intruders.
 
 if (empty($config->test)) {
     die('Test payment plugin cannot be used when shop is in production state');
 }
 
-// we cannot know yet which shop instance plays as information is in the mercanet
-// cryptic answer. Process_ipn() decodes cryptic answer and get this context information to 
-// go further.
+/*
+ * we cannot know yet which shop instance plays as information is in the mercanet
+ * cryptic answer. Process_ipn() decodes cryptic answer and get this context information to
+ * go further.
+ */
 
-// systematic answer (tells we are listening test actually)
+// Systematic answer (tells we are listening test actually).
 
 $shopinstance = null;
 $payhandler = new shop_paymode_test($shopinstance);

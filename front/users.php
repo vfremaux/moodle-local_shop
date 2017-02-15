@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
@@ -23,8 +21,10 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * This shop step will collect all needed users information, that is, 
+defined('MOODLE_INTERNAL') || die();
+
+/*
+ * This shop step will collect all needed users information, that is,
  * - information about customer identity
  * - information about billing identify if different from customer
  * - information about learners if some products operate in seat mode or are courses
@@ -35,33 +35,38 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 $action = optional_param('what', '', PARAM_TEXT);
-$PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theShop->id);
+$PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->order)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theShop->id, 'blockid' => $theBlock->id, 'view' => 'shop')));
+    $params = array('id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop');
+    redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
 // If we have no seats to assign and collect, then jump directly to customer view.
-if (!$required = $theCatalog->check_required_seats()) {
+if (!$required = $thecatalog->check_required_seats()) {
     $action = 'navigate';
 }
 
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/users.controller.php');
-    $controller = new \local_shop\front\users_controller($theShop, $theCatalog, $theBlock);
-    $controller->process($action);
+    $controller = new \local_shop\front\users_controller($theshop, $thecatalog, $theblock);
+    $controller->receive($action);
+    $returnurl = $controller->process($action);
+    if (!empty($returnurl)) {
+        redirect($returnurl);
+    }
 }
 
-// calculates and updates the seat count and add to session cart
-$requiredroles = $theCatalog->check_required_roles();
+// Calculates and updates the seat count and add to session cart.
+$requiredroles = $thecatalog->check_required_roles();
 $assigned = shop_check_assigned_seats($requiredroles);
 
 echo $out;
 
 echo '<center>';
 
-echo $OUTPUT->heading(format_string($theShop->name), 2, 'shop-caption');
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $renderer->progress('USERS');
 
@@ -71,7 +76,8 @@ echo '<fieldset>';
 echo '<legend>'.get_string('participants', 'local_shop').'</legend>';
 
 echo '<div id="addparticipant" style="text-align:left"><p>';
-print_string((@$SESSION->shoppingcart->seats <= 1) ? 'participanthelper1' : 'participanthelper1plural' , 'local_shop', $SESSION->shoppingcart->seats);
+$stringkey = (@$SESSION->shoppingcart->seats <= 1) ? 'participanthelper1' : 'participanthelper1plural';
+print_string($stringkey, 'local_shop', $SESSION->shoppingcart->seats);
 print_string('participanthelper2', 'local_shop', $SESSION->shoppingcart->seats);
 echo '</p></div>';
 
@@ -89,13 +95,13 @@ if (!empty($SESSION->shoppingcart->participants)) {
         $i++;
     }
 }
-for ( ; $i < $SESSION->shoppingcart->seats ; $i++) {
+for (; $i < $SESSION->shoppingcart->seats; $i++) {
     echo $renderer->participant_blankrow();
 }
 echo '</table>';
 
 foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
-    $catalogentry = $theCatalog->get_product_by_shortname($shortname);
+    $catalogentry = $thecatalog->get_product_by_shortname($shortname);
 
     switch ($catalogentry->quantaddressesusers) {
         case SHOP_QUANT_AS_SEATS:
@@ -110,9 +116,9 @@ foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
     echo $renderer->seat_roles_assignation_form($catalogentry, $requiredroles, $shortname, $q);
 }
 
-$options['nextstyle'] = ($assigned < $required) ? 'opacity:0.5' : '' ; 
-$options['nextdisabled'] = ($assigned < $required) ? 'disabled="disabled"' : '' ; 
-$options['overtext'] = ($assigned < $required) ? get_string('notallassigned', 'local_shop') : get_string('continue', 'local_shop') ; 
+$options['nextstyle'] = ($assigned < $required) ? 'opacity:0.5' : '';
+$options['nextdisabled'] = ($assigned < $required) ? 'disabled="disabled"' : '';
+$options['overtext'] = ($assigned < $required) ? get_string('notallassigned', 'local_shop') : get_string('continue', 'local_shop');
 $options['nextstring'] = 'next';
 
 echo $renderer->action_form('users', $options);

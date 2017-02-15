@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Defines form to add a new billitem
  *
@@ -25,94 +23,112 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 class BillItem_Form extends moodleform {
 
-    private $mode;
+    protected $editoroptions;
+    protected $attributesshort;
+    protected $attributesshortjs;
+    protected $attributesdescription;
 
-    private $bill;
+    public function __construct($action, $data) {
+        global $COURSE;
 
-    function __construct($mode, $bill, $action) {
-        $this->mode = $mode;
-        $this->bill = $bill;
-        parent::__construct($action);
+        $context = context_system::instance();
+
+        $maxfiles = 99;                // TODO: add some setting.
+        $maxbytes = $COURSE->maxbytes; // TODO: add some setting.
+        $this->editoroptions = array('trusttext' => true,
+                                     'subdirs' => false,
+                                     'maxfiles' => $maxfiles,
+                                     'maxbytes' => $maxbytes,
+                                     'context' => $context);
+
+        $this->attributesshort = 'size="24" maxlength="24"';
+        $this->attributesshortjs = array('size' => 24,
+                                         'maxlength' => 24,
+                                         'onchange' => 'calculate_price()');
+        $this->attributesdescription = 'cols="50" rows="8"';
+
+        parent::__construct($action, $data);
     }
 
-    function definition() {
-        global $CFG, $OUTPUT, $DB;
+    public function definition() {
+        global $OUTPUT, $DB;
 
         $config = get_config('local_shop');
+        $bill = $this->_customdata['bill'];
 
         // Setting variables.
         $mform =& $this->_form;
 
-        // Adding title and description.
-        $mform->addElement('html', $OUTPUT->heading(get_string($this->mode.'billitem', 'local_shop')));
+        $mform->addelement('hidden', 'billid');
+        $mform->setType('billid', PARAM_INT);
 
-        // $error_float = print_string('error_costNotAFloat', 'local_shop');
-        // print_string("error_quantityNotAFloat");
+        // Adding title and description.
+        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'billitem', 'local_shop')));
+
         $js = "
             <script type=\"text/javascript\">
-            function calculatePrice() {
-                var cost = parseFloat(document.billItem.unitCost.value);
-                var quantity = parseFloat(document.billItem.quantity.value);
+            function calculate_price() {
+                var cost = parseFloat($('#id_unitcost').val());
+                var quantity = parseFloat($('#id_quantity').val());
                 if (isNaN(cost)) {
-                    alert(\"error\");
-                    document.billItem.unitCost.value = \"0.00\";
-                    exit();
+                    $('#id_unitcost').val('0.00');
                 };
                 if (isNaN(quantity)) {
-                    alert(\"error2\");
-                    document.billItem.quantity.value = \"1\";
-                    exit();
+                    $('#id_quantity').val(1);
                 };
-                var priceDisplay = document.getElementById('totalPrice'); 
                 var price = new Number(cost * quantity);
-                priceDisplay.innerHTML = price.toFixed(\"2\");
+                $('#billitem-totalprice').html(price.toFixed(\"2\"));
             }
             </script>
         ";
 
-        $ordering = ($this->mode == 'add') ? $this->bill->maxordering + 1 : 0 ;
         $mform->addElement('html', $js);
 
         // Adding fieldset.
-        $attributes = 'size="50" maxlength="200"';
-        $attributesshort = 'size="24" maxlength="24"';
-        $attributes_description = 'cols="50" rows="8"';
-        $mform->addElement('static', 'billtitle', get_string('order', 'local_shop'), 'ORD-'.date('Ymd', $this->bill->emissiondate).'-'.$this->bill->id);
+        $label = get_string('order', 'local_shop');
+        $billcode = 'ORD-'.date('Ymd', $bill->emissiondate).'-'.$bill->id;
+        $mform->addElement('static', 'billtitle', $label, $billcode);
 
         $lastordering = $DB->get_field_sql('SELECT max(ordering) from {local_shop_bill}');
         $lastordering = $lastordering + 1;
         $mform->addElement('hidden', 'ordering', $lastordering);
         $mform->setType('ordering', PARAM_INT);
 
-        $mform->addElement('text', 'itemcode', get_string('code', 'local_shop'), $attributesshort);
+        $mform->addElement('text', 'itemcode', get_string('code', 'local_shop'), $this->attributesshort);
         $mform->setType('itemcode', PARAM_INT);
+        $mform->addRule('itemcode', get_string('missingcode', 'local_shop'), 'required', '', 'client');
 
-        $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop'), $attributesshort);
+        $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop'), $this->editoroptions);
         $mform->setType('abstract', PARAM_CLEANHTML);
 
-        $mform->addElement('editor', 'description', get_string('description'));
+        $mform->addElement('editor', 'description', get_string('description'), $this->editoroptions);
         $mform->setType('description', PARAM_CLEANHTML);
 
         $mform->addElement('date_selector', 'delay', get_string('timetodo', 'local_shop'));
 
-        $mform->addElement('text', 'unitcost', get_string('unittex', 'local_shop'), $attributesshort);
+        $mform->addElement('text', 'unitcost', get_string('unittex', 'local_shop'), $this->attributesshortjs);
         $mform->setType('unitcost', PARAM_NUMBER);
+        $mform->setDefault('unitcost', 0);
 
-        $mform->addElement('text', 'quantity', get_string('quantity', 'local_shop').':', $attributesshort);
+        $mform->addElement('text', 'quantity', get_string('biquantity', 'local_shop').':', $this->attributesshortjs);
         $mform->setType('quantity', PARAM_NUMBER);
+        $mform->setDefault('quantity', 1);
 
-        $mform->addElement('static', 'totalprice', get_string('total'), "<span id=\"totalPrice\">0.00</span> ". $config->defaultcurrency);
-        $bill = $DB->get_record('local_shop_bill', array('id' => $this->bill->id));
+        $content = '<span id="billitem-totalprice">0.00</span> '. $config->defaultcurrency;
+        $mform->addElement('static', 'totalprice', get_string('total'), $content);
+        $bill = $DB->get_record('local_shop_bill', array('id' => $bill->id));
 
         if ($bill->ignoretax == 0) {
             $taxcodeopts = $DB->get_records_menu('local_shop_tax', null, 'title', 'id, title');
-            $mform->addElement('select', 'taxcode', get_string('taxcode', 'local_shop'), $taxcodeopts);
+            $jsoptions = array('onchange' => 'calculate_price()');
+            $mform->addElement('select', 'taxcode', get_string('taxcode', 'local_shop'), $taxcodeopts, $jsoptions);
             $mform->setType('taxcode', PARAM_INT);
         }
 

@@ -37,6 +37,7 @@ $string['PREPROD'] = 'Produced by anticipation';
 $string['PREVIEW'] = 'Preview';
 $string['PROVIDING'] = 'Providing';
 $string['RECOVERING'] = 'Recovering';
+$string['REFUSED'] = 'Refused';
 $string['SOLDOUT'] = 'Payed out';
 $string['SUSPENDED'] = 'Suspended';
 $string['TTC'] = 'TTC';
@@ -54,8 +55,10 @@ $string['allproducts'] = 'All products';
 $string['alltaxes'] = 'Taxes (cumulated)';
 $string['allowtax'] = 'Apply taxes';
 $string['allowtax_help'] = 'If enabled, will apply all local taxes on product calculations';
+$string['apparence'] = 'Apparence';
 $string['amonth'] = 'one month';
 $string['amount'] = 'Amount';
+$string['apparence'] = 'Apparence';
 $string['attach'] = 'Attach a file';
 $string['attachements'] = 'Attachments';
 $string['availableproducts'] = 'Available products';
@@ -113,6 +116,18 @@ $string['configdiscounttheshold'] = 'A threshold that triggers the effectivity o
 $string['configdiscountrate2'] = 'A discount rate applied when customer has the local/shop:seconddiscountagreed capability on';
 $string['configdiscountrate3'] = 'A discount rate applied when customer has the local/shop:thirddiscountagreed capability on';
 $string['configiban'] = 'The IBAN number of the merchant';
+$string['configproductimagewidth'] = 'Product thumb width (px)';
+$string['configproductimageheight'] = 'Product thumb height (px)';
+$string['configproductimagermargin'] = 'Product thumb right margin (px)';
+$string['productimagewidth'] = 'Thumb width';
+$string['productimageheight'] = 'Thumb height';
+$string['productimagermargin'] = 'Thumb right margin';
+$string['configelementimagewidth'] = 'Product subelement thumb width (px)';
+$string['configelementimageheight'] = 'Product subelement thumb height (px)';
+$string['configelementimagermargin'] = 'Product subelement thumb right margin (px)';
+$string['elementimagewidth'] = 'Element thumb width';
+$string['elementimageheight'] = 'Element thumb height';
+$string['elementimagermargin'] = 'Element thumb right margin';
 $string['configsellerID'] = 'The official company registrar ID of the seller';
 $string['configselleraddress'] = 'The address (postal) of the merchant';
 $string['configsellerbillingaddress'] = 'The accountance location of the merchant';
@@ -121,12 +136,14 @@ $string['configsellerbillingcountry'] = 'Country of accountant service';
 $string['configsellerbillingzip'] = 'Zip code of the accountant service';
 $string['configsellercity'] = 'City of the merchant';
 $string['configsellercountry'] = 'Country of the merchant';
+$string['configsellerlogo'] = 'the logo that will be printed on invoices and orders';
 $string['configsellermail'] = 'Mail address of the merchant';
 $string['configsellermailsupport'] = 'Mail address of the sales customer support team';
 $string['configsellername'] = 'The official name of the vendor';
 $string['configsellerphonesupport'] = 'Phone number of the sales customer support team';
 $string['configsellerzip'] = 'Zip code for the seller identity';
 $string['configtestmode'] = 'Enables the mode test for the payments';
+$string['configtestoverride'] = 'Overrides test lock on purchase to test simulated external users';
 $string['configcatalog'] = 'Catalog to bind';
 $string['configcurrency'] = 'Currency';
 $string['configcustomerorganisationrequired'] = 'Organisation required (customer)';
@@ -139,8 +156,11 @@ $string['configshopcaption'] = 'Shop caption';
 $string['configshopdescription'] = 'Shop description';
 $string['configtvaeurope'] = 'European VAT number';
 $string['configuseshipping'] = 'Enables the shipping costs engine';
+$string['configuseslavecatalogs'] = 'Uses master/slave catalogs';
+$string['configuserenewableproducts'] = 'Uses renewable products';
 $string['configusedelegation'] = 'If enabled, some users may get ownership of products and sales in the shop.';
 $string['configdefaultcustomersupportcourse'] = 'Default course for customer support';
+$string['confirmoperation'] = 'Confirm operation';
 $string['controls'] = 'Controls';
 $string['courseowner'] = 'Course Owner';
 $string['countrycodelist'] = 'Country codes list';
@@ -163,10 +183,8 @@ $string['defaultbilltitle'] = '{$a} Online Purchase';
 $string['deletealllinkedproducts'] = 'Delete all linked products';
 $string['deletebillitems'] = 'Delete bill items';
 $string['deletebills'] = 'Delete bills';
-$string['deletebundle'] = 'Delete bundle';
 $string['deletelocalversion'] = 'Delete local version';
 $string['deleteproduct'] = 'Delete product';
-$string['deleteset'] = 'Delete set';
 $string['description'] = 'Description:';
 $string['disabled'] = 'Disabled';
 $string['discounts'] = 'Discount settings';
@@ -177,7 +195,7 @@ $string['discountthreshold'] = 'Discount Threshold';
 $string['dispo'] = 'Avail.';
 $string['dosearch'] = 'Search';
 $string['edit_categories'] = 'Edit categories';
-$string['editshop']= 'Edit a shop instance';
+$string['editshop'] = 'Edit a shop instance';
 $string['editbundle'] = 'Bundle editing';
 $string['editcategories'] = 'Edit categories';
 $string['editcategory'] = 'Edit category';
@@ -186,11 +204,14 @@ $string['editset'] = 'Set editing';
 $string['enablehandler'] = 'Enable product handler';
 $string['enablepaymodes'] = 'Enable paymodes';
 $string['error'] = 'Error: ';
+$string['errorbadhandler'] = 'The handler class ({$a}) file does not exist. This is a coding error that should be reported to Moodle Shop developers.';
+$string['errorunimplementedhandlermethod'] = 'This postprod method ({$a}) is not implemented in this handler. This is a coding error that should be reportedto the Moodle Shop developers.';
 $string['eulaheading'] = 'End User Licence Agreement';
 $string['eulaagree'] = 'Confirm agreement to EULA';
 $string['eula_help'] = 'Please read and validate the following End User Licence Agreement before any purchase on {$a}. Confirming the form will provide acceptance of the herein conditions.';
-$string['warning'] = 'Warning: ';
-$string['message'] = 'Message: ';
+$string['experimental'] = 'Experimental features';
+$string['warning'] = 'Warning:';
+$string['message'] = 'Message:';
 $string['usinghandler'] = 'Using handler {$a}';
 $string['editcatalog'] = 'Update catalog definition';
 $string['erroraddbill'] = 'Could not add bill record';
@@ -274,7 +295,7 @@ $string['leafletlink'] = 'Download the leaflet';
 $string['leafleturl'] = 'Leaflet URL:';
 $string['link'] = 'Link ';
 $string['login'] = 'You have a customer account ';
-$string['manybillsasresult'] = 'Several bills are matching your actual criterias. Choose in ';
+$string['manybillsasresult'] = 'Several bills are matching your actual criterias. Choose in&nbsp;';
 $string['manageshipping'] = 'Manage shipping';
 $string['managetaxes'] = 'Manage taxes';
 $string['manageshippingdesc'] = 'Manages shipping definitions';
@@ -283,8 +304,12 @@ $string['master'] = 'Master catalog';
 $string['maxdeliveryquant'] = 'Max quantity per transaction:';
 $string['maxitemsperpage'] = 'Max items';
 $string['miscellaneous'] = 'Miscellaneous';
+$string['missingcode'] = 'Code must be given';
 $string['mytotal'] = 'See your cart total';
 $string['name'] = 'Name:';
+$string['plugindist'] = 'Plugin distribution';
+$string['emulatecommunity'] = 'Emulate community version';
+$string['emulatecommunity_desc'] = 'If enabled, the plugin will behave as the public community version. This might loose features !';
 $string['newbill'] = 'New bill';
 $string['newbillitem'] = 'New bill item';
 $string['newcatalog'] = 'New catalog';
@@ -295,6 +320,7 @@ $string['nosamecurrency'] = 'All bills have not the same curency. Sum is not con
 $string['notes'] = 'Notes:';
 $string['notrace'] = 'No trace for this transaction';
 $string['nonmutable'] = 'Non mutable product';
+$string['notowner'] = 'You are not owning this item';
 $string['num'] = 'N°';
 $string['objectexception'] = 'Object exception : {$a}';
 $string['oneday'] = 'a day';
@@ -309,10 +335,13 @@ $string['orderType_SERVICE'] = 'Service';
 $string['orders'] = 'Orders';
 $string['outofcategory'] = 'Out of category (root)';
 $string['outofset'] = 'Out of set';
+$string['paymentmethods'] = 'Pay modes';
 $string['pastetransactionid'] = 'Paste a transaction ID ';
 $string['picktransactionid'] = 'Pick a transaction ID ';
 $string['postproduction'] = 'Product action';
-$string['productcount'] = 'Products ';
+$string['productcount'] = 'Products';
+$string['productionresults'] = 'Production results';
+$string['productioncomplete'] = 'Your order has been processed.';
 $string['providedbymoodleshop'] = 'Group built by Moodle Shop';
 $string['pluginname'] = 'shop';
 $string['price'] = 'Price';
@@ -320,13 +349,14 @@ $string['price2'] = 'Price 2';
 $string['price3'] = 'Price 3';
 $string['printbill'] = 'See printable versions';
 $string['printbilllink'] = 'Print this invoice now !';
-$string['printorderlink'] = 'Print this order now !';
+$string['printlink'] = 'Print';
 $string['produclabel'] = 'Product label';
 $string['product'] = 'Product:';
 $string['productcode'] = 'Product code:';
 $string['productid'] = 'Product ID';
 $string['productline'] = 'Poduct line';
 $string['productname'] = 'Product name';
+$string['productoperation'] = 'Operation on your product';
 $string['productpostprocess'] = 'Post production product actions';
 $string['products'] = 'Products:';
 $string['profroma'] = 'Invoice';
@@ -379,6 +409,7 @@ $string['sellermail'] = 'Seller Email';
 $string['sellermailsupport'] = 'Mail support address';
 $string['sellerID'] = 'Seller Registrar ID';
 $string['sellername'] = 'Seller name';
+$string['sellerlogo'] = 'Seller logo';
 $string['sellerphonesupport'] = 'Phone support number';
 $string['sellertestitemname'] = 'Seller Item Name (Sandbox)';
 $string['sellerzip'] = 'Seller Zip Code';
@@ -398,27 +429,33 @@ $string['shopproductcreated'] = 'Created by shop product postproduction';
 $string['shortname'] = 'Shortname';
 $string['showdescriptioninset'] = ' Show description in set';
 $string['shownameinset'] = ' Show product name in set';
+$string['symb'] = ' (Currency needs to be set)';
 $string['signin'] = 'Sign in';
 $string['slave'] = 'Linked catalog';
 $string['slavegroupcannotbeedited'] = 'A slave product group cannot be edited.';
 $string['slaveto'] = 'Linked to ';
+$string['softdelete'] = 'Inhibit product';
+$string['softrestore'] = 'Restore product';
 $string['sold'] = 'Sold:';
 $string['standalone'] = 'Standalone catalog';
 $string['status'] = 'Status';
 $string['stock'] = 'Stock:';
+$string['task_cron'] = 'Automated shop actions';
 $string['taxcode'] = 'Tax code:';
 $string['taxhelp'] = 'Taxes';
 $string['taxhelp_help'] = 'Taxes Help';
 $string['tax'] = 'Tax';
 $string['taxes'] = 'Taxes';
 $string['tendays'] = 'ten days';
-$string['testmodeactive'] = 'Moodle Shop is in test mode. We do not allow payments at the moment.';
+$string['testmodeactive'] = 'Moodle Shop is in test mode. We do not allow payments at the moment unless admin users for testing purpose.';
+$string['testoverride'] = 'Test lock override';
 $string['threemonths'] = 'three months';
 $string['thumbnail'] = 'Thumbnail:';
 $string['title'] = 'Title';
 $string['total'] = 'Total';
 $string['totalprice'] = 'Total amount';
 $string['totaltaxed'] = 'Total TI';
+$string['totaltaxes'] = 'Taxes (total)';
 $string['totaluntaxed'] = 'Total WT';
 $string['tracescan'] = 'Scann';
 $string['tracescandesc'] = 'Grep in trace for a single transaction';
@@ -434,19 +471,23 @@ $string['unitprice4'] = 'Unit price (Range 4):';
 $string['unitprice5'] = 'Unit price (Range 5):';
 $string['unit'] = 'Unit Picture';
 $string['unitpix'] = 'Sales unit pix:';
+$string['tenunitspix'] = 'Sales pix for ten units pack:';
 $string['unity'] = 'Unity';
 $string['unitycost'] = 'Unit cost';
 $string['until'] = 'till to';
 $string['useshipping'] = 'Uses shipping';
+$string['useslavecatalogs'] = 'Uses master/slave catalogs';
+$string['userenewableproducts'] = 'Uses renewable products';
 $string['usedelegation'] = 'Use sales delegation';
 $string['userdiscountagreed'] = 'User discount lvl 1';
 $string['userdiscountagreed2'] = 'User discount lvl 2';
 $string['userdiscountagreed3'] = 'User discount lvl 3';
+$string['userenrol'] = 'User enrol';
 $string['vendorinfo'] = 'Information about vendor\'s identity';
 
 $string['noproducts'] = "
 <h3>Empty catalog</h3>
-<p>The product line is empty. 
+<p>The product line is empty.
 ";
 
 $string['countryrestrictions_help'] = '
@@ -488,7 +529,7 @@ $string['no_bill_attachements_tpl'] = '
 
 $string['no_bills_in_account_tpl'] = '
 <h3>No bills</h3>
-<pThere is no bills in this account.</p> 
+<pThere is no bills in this account.</p>
 ';
 
 $string['no_categories_tpl'] = '
@@ -497,7 +538,7 @@ $string['no_categories_tpl'] = '
 
 $string['no_orders_in_account_tpl'] = '
 <h3>No orders</h3>
-<p>You may manually add an order using the "Add order" link beneath.</p> 
+<p>You may manually add an order using the "Add order" link beneath.</p>
 ';
 
 $string['no_products_in_set_tpl'] = '
@@ -530,31 +571,6 @@ $string['out_zone_euro_advice_tpl'] = '
 
 $string['post_billing_message_tpl'] = '
 thanks you for your purchase. The order is actually pending for your payement... <br/><br/>
-';
-
-$string['sales_feedback_tpl'] = '
-<h3><%%SELLER%%></h3>
-<h4>Customer order</h4>
-
-<p>You just ordered on the website : <%%SERVER%%>. </p>
-
-<p><u>Customer identification :</u> </p>
-<hr />
-<b>Firstname :</b> <%%FIRSTNAME%%><br />
-<b>Lastname :</b> <%%LASTNAME%%><br />
-<b>Mail :</b> <%%MAIL%%><br />
-<b>City :</b> <%%CITY%%><br />
-<b>Country :</b> <%%COUNTRY%%><br />
-<hr />
-<p><u>Order summary :</u> </p>
-<hr />
-<b>Total untaxed amount :</b> <%%AMOUNT%%><br />
-<b>Pat mode :</b> <%%PAYMODE%%><br />
-<b>Items :</b> <%%ITEMS%%> 
-<hr />
-<%%PRODUCTION_DATA%%>
-<hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
-. 
 ';
 
 $string['search_bill_failed_tpl'] = '
@@ -601,23 +617,39 @@ $string['upload_success_tpl'] = '
 ';
 
 $string['bill_complete_text_tpl'] = '
-This order is now saved.<br/>
+This order has been saved.<br/>
+';
+
+$string['discountrate_help'] = '
+A discount rate applied on the overall amount. May be applied inconditionally if customer has the local/shop:discountagreed capability on
+';
+
+$string['discountthreshold_help'] = '
+A threshold that triggers the effectivity of the discount
+';
+
+$string['discountrate2_help'] = '
+A discount rate applied when customer has the local/shop:seconddiscountagreed capability on
+';
+
+$string['discountrate3_help'] = '
+A discount rate applied when customer has the local/shop:thirddiscountagreed capability on
 ';
 
 global $CFG;
-include($CFG->dirroot.'/local/shop/lang/en/front.php');
-include($CFG->dirroot.'/local/shop/lang/en/catalogs.php');
-include($CFG->dirroot.'/local/shop/lang/en/shops.php');
-include($CFG->dirroot.'/local/shop/lang/en/bills.php');
-include($CFG->dirroot.'/local/shop/lang/en/products.php');
-include($CFG->dirroot.'/local/shop/lang/en/purchasemanager.php');
-include($CFG->dirroot.'/local/shop/lang/en/customers.php');
-include($CFG->dirroot.'/local/shop/lang/en/tax.php');
-include($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
+require($CFG->dirroot.'/local/shop/lang/en/front.php');
+require($CFG->dirroot.'/local/shop/lang/en/catalogs.php');
+require($CFG->dirroot.'/local/shop/lang/en/shops.php');
+require($CFG->dirroot.'/local/shop/lang/en/bills.php');
+require($CFG->dirroot.'/local/shop/lang/en/products.php');
+require($CFG->dirroot.'/local/shop/lang/en/purchasemanager.php');
+require($CFG->dirroot.'/local/shop/lang/en/customers.php');
+require($CFG->dirroot.'/local/shop/lang/en/tax.php');
+require($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
 
-// currencies
+// Currencies.
 
-$string['currency'] = 'Currency ';
+$string['currency'] = 'Currency';
 $string['EUR'] = 'Euro';
 $string['CHF'] = 'Swiss franc';
 $string['USD'] = 'US dollar';
@@ -635,7 +667,7 @@ $string['MAD'] = 'Dinar (Marocco, internal market)';
 
 $string['EURsymb'] = '&euro;';
 $string['CHFsymb'] = 'CHF';
-$string['USDsymb'] = '$ (US) ';
+$string['USDsymb'] = '$ (US)';
 $string['CADsymb'] = '$ (CA)';
 $string['AUDsymb'] = '$ (AU)';
 $string['GPBsymb'] = '£';
@@ -647,3 +679,10 @@ $string['KRWsymb'] = 'Won (corea)';
 $string['JPYsymb'] = 'Yen (japan)';
 $string['TNDsymb'] = 'Dn (TU)';
 $string['MADsymb'] = 'Dn (MA)';
+
+$string['plugindist_desc'] = '<p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
+core application. A "pro" version of this plugin exists and is distributed under conditions to feed the life cycle, upgrade, documentation
+and improvement effort.</p>
+<p>Please contact one of our distributors to get "Pro" version support.</p>
+<ul><li><a href="http://service.activeprolearn.com/local/shop/front/view.php?id=1">ActiveProLearn SAS</a></li>
+<li><a href="http://www.edunao.com">Edunao SAS</a></li></ul>';

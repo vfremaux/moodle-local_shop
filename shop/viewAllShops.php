@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -25,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 use local_shop\Shop;
@@ -39,11 +38,13 @@ $cur = optional_param('cur', '', PARAM_TEXT);
 
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/shop/shops.controller.php');
-    $controller = new shops_controller();
+    $controller = new local_shop\backoffice\shop_controller();
+    $controller->receive($action);
     $controller->process($action);
 }
 
-$url = new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops', 'id' => $id, 'dir' => $dir, 'order' => $sortorder));
+$params = array('view' => 'viewAllShops', 'id' => $id, 'dir' => $dir, 'order' => $sortorder);
+$url = new moodle_url('/local/shop/shop/view.php', $params);
 $mainrenderer->currency_choice($cur, $url);
 
 echo $OUTPUT->heading_with_help(get_string('shops', 'local_shop'), 'shops', 'local_shop');
@@ -58,7 +59,7 @@ if (!$shops = Shop::get_instances($filter, "$sortorder $dir")) {
     echo $OUTPUT->notification(get_string('noshops', 'local_shop'));
 }
 
-// print shops
+// Print shops.
 echo $renderer->shops($shops);
 
 $newshopurl = new moodle_url('/local/shop/shop/edit_shop.php');

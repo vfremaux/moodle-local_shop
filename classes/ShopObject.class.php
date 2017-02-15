@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * the common base class for all shop objects.
  *
  * @package     local_shop
  * @category    local
@@ -27,43 +23,49 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * A shop object is a generic object that has record in DB
  */
-class ShopObject{
+class ShopObject {
 
-    static $table;
+    protected static $table;
 
     protected $record;
 
-    function __construct($recordorid, $recordtable) {
-        global $CFG, $DB;
+    public function __construct($recordorid, $recordtable) {
+        global $DB;
 
         self::$table = $recordtable;
 
         if (empty($recordorid)) {
             $this->record = new \StdClass;
             $this->record->id = 0;
-        } elseif (is_numeric($recordorid))  {
+        } else if (is_numeric($recordorid)) {
             $this->record = $DB->get_record(self::$table, array('id' => $recordorid));
             if (!$this->record) {
-                throw new \Exception('Missing record exception in table '.self::$table.' for ID $recordorid ');
+                throw new \Exception('Missing record exception in table '.self::$table." for ID $recordorid ");
             }
         } else {
             $this->record = $recordorid;
         }
     }
 
-    // magic getter
-    function __get($field) {
+    /**
+     * magic getter
+     * @param string $field
+     */
+    public function __get($field) {
 
-        // Return raw record
+        // Return raw record.
         if ($field == 'record') {
             return $this->record;
         }
 
-        // object field value will always prepend on deeper representation
+        // Object field value will always prepend on deeper representation.
         if (isset($this->$field)) {
             return $this->$field;
         }
@@ -73,9 +75,13 @@ class ShopObject{
         }
     }
 
-    // magic setter. This allows not polluting DB records with ton
-    // of irrelevant members
-    function __set($field, $value) {
+    /**
+     * magic setter. This allows not polluting DB records with ton
+     * of irrelevant members
+     * @param string $field
+     * @param mixed $value
+     */
+    public function __set($field, $value) {
 
         if (empty($this->record)) {
             throw new \Exception("empty object");
@@ -95,10 +101,9 @@ class ShopObject{
     }
 
     /**
-    * generic saving
-    *
-    */
-    function save() {
+     * generic saving
+     */
+    public function save() {
         global $DB;
 
         $class = get_called_class();
@@ -111,11 +116,13 @@ class ShopObject{
         return $this->record->id;
     }
 
-    function delete() {
+    public function delete() {
         global $DB;
 
-        // finally delete record
-        $DB->delete_records(self::$table, array('id' => $this->id));
+        $class = get_called_class();
+
+        // Finally delete record.
+        $DB->delete_records($class::$table, array('id' => $this->id));
     }
 
     static protected function _count($table, $filter = array()) {
@@ -125,19 +132,20 @@ class ShopObject{
     }
 
     /**
-     * Get instances of the object. If some filtering is needed, override 
+     * Get instances of the object. If some filtering is needed, override
      * this method providing a filter as input.
      * @param array $filter an array of specialized field filters
      * @return array of object instances keyed by primary id.
      */
-    static protected function _get_instances($table, $filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    static protected function _get_instances($table, $filter = array(), $order = '',
+                                             $fields = '*', $limitfrom = 0, $limitnum = '') {
         global $DB;
 
         $records = $DB->get_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
         $instances = array();
         if ($records) {
+            $class = get_called_class();
             foreach ($records as $rec) {
-                $class = get_called_class();
                 $instances[$rec->id] = new $class($rec);
             }
         }
@@ -146,12 +154,13 @@ class ShopObject{
     }
 
     /**
-     * Get instances of the object. If some filtering is needed, override 
+     * Get instances of the object. If some filtering is needed, override
      * this method providing a filter as input.
      * @param array $filter an array of specialized field filters
      * @return array of object instances keyed by primary id.
      */
-    static protected function _count_instances($table, $filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    static protected function _count_instances($table, $filter = array(), $order = '', $fields = '*',
+                                               $limitfrom = 0, $limitnum = '') {
         global $DB;
 
         $recordscount = $DB->count_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
@@ -160,9 +169,11 @@ class ShopObject{
     }
 
     /**
-     *
+     * @param array $filter
+     * @param string $field
+     * @param boolean $choosenone
      */
-    static function get_instances_menu($filter = array(), $field = 'name', $choosenone = false) {
+    public static function get_instances_menu($filter = array(), $field = 'name', $choosenone = false) {
 
         $class = get_called_class();
         $instances = $class::get_instances($filter, $field, 'id, '.$field);
@@ -178,5 +189,19 @@ class ShopObject{
             }
         }
         return $instancemenu;
+    }
+
+    protected function export($level = 0) {
+
+        $indent = str_repeat('    ', $level);
+
+        $yml = '';
+        if (!empty($this->record)) {
+            foreach ($this->record as $key => $value) {
+                $yml .= $indent.$key.': '.$value."\n";
+            }
+        }
+
+        return $yml;
     }
 }

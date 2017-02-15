@@ -26,8 +26,6 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/products/lib.php');
 
-$PAGE->requires->js('/local/shop/js/arrayselector.js', true);
-
 // Get the block reference and key context.
 
 $view = optional_param('view', '', PARAM_TEXT);
@@ -57,7 +55,7 @@ $renderer = shop_get_renderer('instances');
 $mainrenderer = $PAGE->get_renderer('local_shop');
 
 // Make page content.
-include $CFG->dirroot."/local/shop/instances/{$view}.php";
+require($CFG->dirroot."/local/shop/instances/{$view}.php");
 
 // Make footer.
 echo $OUTPUT->footer();

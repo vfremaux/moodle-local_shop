@@ -38,8 +38,8 @@ use local_shop\Tax;
 
 // Get the block reference and key context.
 
-// get all the shop session context objects
-list($theShop, $theCatalog, $theBlock) = shop_build_context();
+// Get all the shop session context objects.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // Security.
 
@@ -68,14 +68,13 @@ try {
 if ($billitemid) {
     $billitem = new BillItem($billitemid);
     $billitemrec = $billitem->record;
-    $mform = new BillItem_Form('', array('what' => 'edit', 'catalog' => $theCatalog));
+    $mform = new BillItem_Form('', array('what' => 'edit', 'bill' => $bill, 'catalog' => $thecatalog));
     $mform->set_data($billitemrec);
 } else {
-    $billitem = new BillItem(null);
-    $billitemrec = $billitem->record;
-    $mform = new BillItem_Form('', array($cmd => 'add', 'catalog' => $theCatalog));
-    $billitemrec->billid = $bill->id;
-    $mform->set_data($billitemrec);
+    $mform = new BillItem_Form('', array('what' => 'add', 'bill' => $bill, 'catalog' => $thecatalog));
+    $formdata = new StdClass;
+    $formdata->billid = $bill->id;
+    $mform->set_data($formdata);
 }
 
 if ($mform->is_cancelled()) {
@@ -83,31 +82,15 @@ if ($mform->is_cancelled()) {
 }
 
 if ($billitem = $mform->get_data()) {
-    $billitem->totalprice = $billitem->quantity * $billitem->unitcost;
-    $bill->totalprice += ($billitem->unitcost * $billitem->quantity);
-    $bill->untaxedamount += $bill->totalprice;
-    $billitem->id = $billitem->billitemid;
-    unset($billitem->billitemid);
 
-    if ($bill->ignoretax == 0) {
-        $tax = new Tax($billitem->taxcode);
-        $bill->taxes += (($bill->totalprice * $tax->ratio) / 100);
-    }
+    include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
+    $controller = new \local_shop\backoffice\bill_controller($theshop, $thecatalog, $theblock);
+    $controller->receive('edititem', $billitem);
+    $controller->process('edititem');
 
-    $bill->amount = $bill->amount + ($bill->untaxedamount + $bill->taxes);
-    $billitem->billid = $billid;
-
-    if (empty($billitem->id)) {
-        $billitem->id = $DB->insert_record('local_shop_billitem', $billitem);
-    } else {
-        $DB->update_record('local_shop_billitem', $billitem);
-    }
-
-    $DB->update_record('local_shop_bill', $bill);
-
-    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $billid)));
+    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $billitem->billid)));
 }
 
 echo $OUTPUT->header();
 $mform->display();
-echo $OUTPUT->fooer();
+echo $OUTPUT->footer();

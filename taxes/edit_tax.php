@@ -23,14 +23,13 @@
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
-require_once($CFG->dirroot.'/local/shop/forms/form_tax.class.php'); //imports of Form tax
+require_once($CFG->dirroot.'/local/shop/forms/form_tax.class.php'); // Imports of Form tax.
 
 // Get the block reference and key context.
 
 $taxid = optional_param('taxid', 0, PARAM_INT);
 
 // Security.
-
 
 $context = context_system::instance();
 require_login();
@@ -60,13 +59,12 @@ if ($mform->is_cancelled()) {
      redirect(new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes')));
 }
 if ($data = $mform->get_data()) {
-    if (empty($data->taxid)) {
-        $data->id = $DB->insert_record('local_shop_tax', $data);
-    } else {
-        $data->id = $data->taxid;
-        unset($data->taxid);
-        $DB->update_record('local_shop_tax', $data);
-    }
+
+    include_once($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
+    $controller = new \local_shop\backoffice\tax_controller();
+    $controller->receive('edit', $data);
+    $controller->process('edit');
+
     redirect(new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes')));
 }
 

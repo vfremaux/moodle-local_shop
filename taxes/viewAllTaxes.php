@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
@@ -31,9 +30,9 @@ use local_shop\CatalogItem;
 
 $action = optional_param('what', '', PARAM_TEXT);
 if (!empty($action)) {
-   include($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
-   $controller = new taxes_controller();
-   $controller->process($action);
+    include($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
+    $controller = new taxes_controller();
+    $controller->process($action);
 }
 
 $order = optional_param('order', 'country', PARAM_TEXT);
@@ -42,7 +41,7 @@ $offset = optional_param('offset', 0, PARAM_INT);
 
 $url = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes', 'order' => $order, 'dir' => $dir));
 
-$taxesCount = $DB->count_records_select('local_shop_tax', " UPPER(title) NOT LIKE 'test%' "); // eliminate tests
+$taxescount = $DB->count_records_select('local_shop_tax', " UPPER(title) NOT LIKE 'test%' "); // Eliminate tests.
 
 $taxes = Tax::get_instances();
 
@@ -58,7 +57,12 @@ if (empty($taxes)) {
     $countproductsstr = get_string('countproducts', 'local_shop');
 
     $table = new html_table();
-    $table->head = array("<b>$namestr</b>", "<b>$countrystr</b>", "<b>$ratiostr</b>", "<b>$formulastr</b>", "<b>$countproductsstr</b>", '');
+    $table->head = array("<b>$namestr</b>",
+                         "<b>$countrystr</b>",
+                         "<b>$ratiostr</b>",
+                         "<b>$formulastr</b>",
+                         "<b>$countproductsstr</b>",
+                         '');
     $table->width = '100%';
     $table->align = array('left', 'left', 'center', 'left', 'center', 'right');
     foreach ($taxes as $t) {
@@ -71,15 +75,20 @@ if (empty($taxes)) {
         $pcount = 0 + CatalogItem::count(array('taxcode' => $t->id));
         $row[] = $pcount;
 
-        $editurl = new moodle_url('/local/shop/taxes/edit_tax.php', array('taxid' => $t->id, 'what' => 'updatetax'));
+        $params = array('taxid' => $t->id, 'what' => 'updatetax');
+        $editurl = new moodle_url('/local/shop/taxes/edit_tax.php', $params);
         $commands = '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
 
         if ($pcount == 0) {
-            $params = array('view' => 'viewAllTaxes', 'order' => $order, 'dir' => $dir, 'taxid' => $t->id, 'what' => 'delete');
+            $params = array('view' => 'viewAllTaxes',
+                            'order' => $order,
+                            'dir' => $dir,
+                            'taxid' => $t->id,
+                            'what' => 'delete');
             $deleteurl = new moodle_url('/local/shop/taxes/view.php', $params);
             $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
         }
-        $row[] = $commands;
+        $row[] = '<div class="shop-line-commands">'.$commands.'</div>';
 
         $table->data[] = $row;
     }

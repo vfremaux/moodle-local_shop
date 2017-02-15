@@ -14,10 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -25,23 +21,31 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 class Shop extends ShopObject {
 
+    /**
+     * An ref to the catalogue
+     */
     public $thecatalogue;
 
-    /*
+    /**
      * An array of navigation paths
      */
     private $navorder;
 
-    static $table = 'local_shop';
+    protected static $table = 'local_shop';
 
-    // build a full shop instance
-    function __construct($idorrecord, $light = false) {
+    /**
+     * Build a full shop instance.
+     */
+    public function __construct($idorrecord, $light = false) {
         global $DB;
 
         $config = get_config('local_shop');
@@ -52,7 +56,10 @@ class Shop extends ShopObject {
 
         if ($idorrecord) {
 
-            if ($light) return; // this builds a lightweight proxy of the Shop, without catalogue
+            if ($light) {
+                // This builds a lightweight proxy of the Shop, without catalogue.
+                return;
+            }
 
             if (!empty($this->catalogid)) {
                 $this->thecatalogue = new Catalog($this->catalogid);
@@ -67,12 +74,12 @@ class Shop extends ShopObject {
             $lastordering = $DB->get_field(self::$table, 'MAX(sortorder)', array());
             $lastordering++;
 
-            // initiate empty fields
+            // Initiate empty fields.
             $this->record->id = 0;
             $this->record->sortorder = $lastordering;
             $this->record->name = get_string('newshopinstance', 'local_shop');
             $this->record->description = '';
-            $this->record->descriptionformat = FORMAT_MOODLE;
+            $this->record->descriptionformat = FORMAT_HTML;
             $this->record->currency = $config->defaultcurrency;
             $this->record->catalogid = 0;
             $this->record->customerorganisationrequired = 0;
@@ -82,52 +89,56 @@ class Shop extends ShopObject {
             $this->record->defaultcustomersupportcourse = 1;
             $this->record->forcedownloadleaflet = 1;
             $this->record->allowtax = 1;
+            $this->record->discountthreshold = $config->discountthreshold;
+            $this->record->discountrate = $config->discountrate;
+            $this->record->discountrate2 = $config->discountrate2;
+            $this->record->discountrate3 = $config->discountrate3;
             $this->record->eula = '';
+            $this->record->eulaformat = FORMAT_HTML;
             $this->record->navsteps = $config->defaultnavsteps;
             $this->_build_nav_order();
         }
     }
 
-    function get_starting_step() {
+    public function get_starting_step() {
         return array_keys($this->navorder['nextstep'])[0];
     }
 
-    function get_next_step($step) {
+    public function get_next_step($step) {
         return $this->navorder['nextstep'][$step];
     }
 
-    function get_prev_step($step) {
+    public function get_prev_step($step) {
         return $this->navorder['prevstep'][$step];
     }
 
     /**
      *
      */
-     function get_catalogue() {
+    public function get_catalogue() {
         return $this->thecatalogue;
     }
 
     /**
      * Get the current currency of the shop instance
      */
-    function get_currency($long = false) {
-        global $CFG;
+    public function get_currency($long = false) {
 
         if ($long !== false) {
             if ($long == 'symbol') {
                 return get_string($this->currency.'symb', 'local_shop');
             }
-            // any other real value
+            // Any other real value.
             return get_string($this->currency, 'local_shop');
         }
         return $this->currency;
     }
 
     /**
-     * Receives a form reponse and compactall paymodes setup into one single 
+     * Receives a form reponse and compactall paymodes setup into one single
      * field.
      */
-    static function compact_paymodes(&$shoprec) {
+    public static function compact_paymodes(&$shoprec) {
 
         $shoparr = (array)$shoprec;
         $keys = array_keys($shoparr);
@@ -146,23 +157,25 @@ class Shop extends ShopObject {
 
     /**
      * Expands back compacted params for paymodes into separate fields
+     * @param objectref &$shoprec expansion is performed directly in input object.
+     * @return void
      */
-    static function expand_paymodes(&$shoprec) {
+    public static function expand_paymodes(&$shoprec) {
+
         if (!empty($shoprec->paymodes)) {
             $expanded = unserialize(base64_decode($shoprec->paymodes));;
             $paymodeenable = array_shift($expanded);
         } else {
             $paymodeenable = array();
-            $defaultpaymode = '';
         }
 
-        foreach($paymodeenable as $k => $v) {
+        foreach ($paymodeenable as $k => $v) {
             $key = 'enable'.$k;
             $shoprec->$key = $v;
         }
     }
 
-    function get_blocks() {
+    public function get_blocks() {
         global $DB;
 
         $bis = $DB->get_records('block_instances', array('blockname' => 'shop_access'));
@@ -178,11 +191,11 @@ class Shop extends ShopObject {
         return $count;
     }
 
-    function get_bills() {
+    public function get_bills() {
         return Bill::get_instances(array('shopid' => $this->id));
     }
 
-    function delete() {
+    public function delete() {
         global $DB;
 
         if ($bills = $this->get_bills()) {
@@ -191,20 +204,72 @@ class Shop extends ShopObject {
             }
         }
 
-        // Finally delete master record
+        // Finally delete master record.
         $DB->delete_records(self::$table, array('id' => $this->id));
     }
 
-    function url() {
+    public function url() {
         $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->id));
         return $shopurl;
     }
 
-    static function count($filter) {
-        parent::_count(self::$table, $filter);
+    public function calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
+        global $USER;
+
+        if (is_null($user)) {
+            $user = $USER;
+        }
+
+        $discountrate = 0; // No discount as default.
+
+        if ($this->record->discountthreshold &&
+                $this->record->discountrate &&
+                        ($amount > $this->record->discountthreshold)) {
+            $discountrate = $this->record->discountrate;
+            $reason = get_string('ismorethan', 'local_shop');
+            $reason .= '<b>'.$this->record->discountthreshold.'&nbsp;</b><b>'.$this->get_currency('symbol').'</b>';
+        }
+
+        if (isloggedin()) {
+            if (has_capability('local/shop:discountagreed', $context, $USER->id)) {
+                $discountrate = $this->record->discountrate;
+                $reason = get_string('userdiscountagreed', 'local_shop');
+            }
+            if (has_capability('local/shop:seconddiscountagreed', $context, $USER->id)) {
+                $discountrate = $this->record->discountrate2;
+                $reason = get_string('userdiscountagreed2', 'local_shop');
+            }
+            if (has_capability('local/shop:thirddiscountagreed', $context, $USER->id)) {
+                $discountrate = $this->record->discountrate3;
+                $reason = get_string('userdiscountagreed3', 'local_shop');
+            }
+        }
+
+        return $discountrate;
     }
 
-    static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * Exports the shop into a YML string.
+     */
+    public function export($level = 0) {
+        $yml = '';
+
+        $yml .= "shop:\n";
+
+        $yml .= parent::export(1);
+
+        $yml = "\n";
+
+        if (!empty($this->thecatalogue)) {
+            $yml .= $this->thecatalogue->export();
+        }
+    }
+
+    public static function count($filter) {
+        return parent::_count(self::$table, $filter);
+    }
+
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 

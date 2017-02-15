@@ -14,8 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package     local_shop
+ * @category    local
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/renderer.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
@@ -26,47 +34,26 @@ use local_shop\Product;
 use local_shop\BillItem;
 use local_shop\CatalogItem;
 
-/**
- * @package     local_shop
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
-class shop_purchasemanager_renderer {
-
-    protected $theshop;
-
-    protected $thecatalog;
-
-    protected $theblock;
-
-    function load_context(&$theShop, &$theCatalog, &$theBlock = null) {
-        $this->theshop = $theShop;
-        $this->thecatalog = $theCatalog;
-        $this->theblock = $theBlock;
-    }
-
-    private function _check_context() {
-        if (empty($this->thecatalog)) {
-            throw new coding_exception('context not ready in products_renderer. Missing Catlaog instance');
-        }
-    }
-
-    function productinstance_admin_line(&$productinstance) {
+    /**
+     * Displays a single product instance admin line.
+     * @param Productref &$productinstance a full Product instance.
+     * @param array $viewparams contextual query params from the view.
+     */
+    public function productinstance_admin_line(&$productinstance, $viewparams = array()) {
         global $OUTPUT, $CFG;
 
-        $this->_check_context();
+        $this->check_context();
 
         $str = '';
 
         if (is_null($productinstance)) {
 
             $str .= '<tr class="shop-products-caption" valign="top">';
-            $str .= '<!--<th class="header c0">';
+            $str .= '<th class="header c0">';
             $str .= get_string('sel', 'local_shop');
-            $str .= '</th>-->';
+            $str .= '</th>';
             $str .= '<th class="header c1">';
             $str .= get_string('image', 'local_shop');
             $str .= '</th>';
@@ -98,37 +85,48 @@ class shop_purchasemanager_renderer {
             $str .= '</th>';
             $str .= '</tr>';
         } else {
-            $billitem = new BillItem($productinstance->initialbillitemid);
+            $billitem = new BillItem($productinstance->initialbillitemid, $this->theshop);
             $product = new CatalogItem($productinstance->catalogitemid);
 
             $expiredcount = 0;
             $expiringocunt = 0;
+            $pendingcount = 0;
             $runningcount = 0;
             $statusclass = '';
-            $pend = ($product->enddate) ? date('Y/m/d h:i', $product->enddate) : 'N.C.';
-            $pstart = date('Y/m/d h:i', $product->startdate);
+            $pend = ($productinstance->enddate) ? date('Y/m/d H:i', $productinstance->enddate) : 'N.C.';
+            $pstart = date('Y/m/d H:i', $productinstance->startdate);
+            $now = time();
             if ($product->renewable) {
-                if (time() > $product->enddate) {
-                    // expired
+                if ($now > $productinstance->enddate) {
+                    // Expired.
                     $statusclass = 'cs-product-expired';
                     $expiredcount++;
-                } elseif (time() > $product->enddate - DAYSECS * 3) {
-                    // expiring
+                } else if ($now > $productinstance->enddate - DAYSECS * 3) {
+                    // Expiring.
                     $statusclass = 'cs-product-expiring';
+                } else if ($now < $productinstance->startdate) {
+                    // Pending.
+                    $statusclass = 'cs-product-pending';
+                    $pendingcount++;
                 } else {
-                    // running
+                    // Running.
                     $statusclass = 'cs-product-running';
                     $runningcount++;
                 }
             }
 
-            $str .= '<tr class="shop-productinstance-row '.$statusclass.'" valign="top">';
-            $str.= '<td class="cell" align="center">';
+            $str .= '<tr class="shop-productinstance-row" valign="top">';
+            $str .= '<td class="cell '.$statusclass.'" align="center">';
+            if (has_capability('local/shop:salesadmin', context_system::instance())) {
+                $str .= '<input type="checkbox" id="" name="productids" value="'.$productinstance->id.'" />';
+            }
+            $str .= '</td>';
+            $str .= '<td class="cell" align="center">';
             $str .= '<img src="'.$product->get_thumb_url().'" vspace="10" border="0" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell" align="left">';
             $str .= $product->code;
-            $str . '</td>';
+            $str .= '</td>';
             $str .= '<td class="name cell" align="left">';
             $str .= $product->name;
             $str .= '</td>';
@@ -150,8 +148,32 @@ class shop_purchasemanager_renderer {
             $str .= '<td class="amount cell" align="right">';
             $str .= $billitem->unicost.' '.$this->theshop->get_currency();
             $str .= '</td>';
-            $str .= '<td align="right" class="lastcol">';
+            $str .= '<td align="right" class="lastcol '.$statusclass.'">';
 
+            if (has_capability('local/shop:salesadmin', context_system::instance())) {
+                $pix = '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+                $params = array('what' => 'delete',
+                                'productids[]' => $productinstance->id,
+                                'sesskey' => sesskey());
+                                $params = array_merge($params, $viewparams);
+                $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+                $commands = '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
+
+                if ($productinstance->deleted) {
+                    $pix = '<img src="'.$OUTPUT->pix_url('t/stop').'" />';
+                    $title = get_string('softrestore', 'local_shop');
+                } else {
+                    $pix = '<img src="'.$OUTPUT->pix_url('t/go').'" />';
+                    $title = get_string('softdelete', 'local_shop');
+                }
+                $params = array('what' => 'softdelete',
+                                'productids[]' => $productinstance->id,
+                                'sesskey' => sesskey());
+                                $params = array_merge($params, $viewparams);
+                $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+                $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$title.'">'.$pix.'</a>';
+            }
+            $str .= '<div class="shop-line-commands">'.$commands.'</div>';
             $str .= '</td>';
             $str .= '</tr>';
         }

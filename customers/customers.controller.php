@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Form for editing HTML block instances.
+ * Controller for the customer screen responses.
  *
  * @package     local_shop
  * @categroy    local
@@ -28,47 +26,95 @@ defined('MOODLE_INTERNAL') || die();
  * @usecase deletecustomer
  * @usecase addcustomer
  */
+namespace local_shop\backoffice;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+
+use \local_shop\Customer;
+use \local_shop\Bill;
 
 class customers_controller {
 
-    function process($cmd) {
+    protected $data;
 
-        // ********** Delete customers ****************************** //
+    protected $received;
+
+    public function receive($cmd, $data) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            $this->received = true;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'deletecustomer':
+                $this->data->customerids = required_param_array('customerid', PARAM_INT);
+                break;
+
+            case 'edit':
+                // Let data come from $data attribute.
+                break;
+
+            case 'sellout':
+            case 'unmark':
+                $this->data->billid = required_param('billid', PARAM_INT);
+        }
+
+        $this->received = true;
+    }
+
+    public function process($cmd) {
+        global $DB;
+
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
 
         if ($cmd == 'deletecustomer') {
-            $customerids = required_param_array('customerid', PARAM_INT);
-            if ($customerids) {
-                foreach($customerids as $id) {
-                    $customer = new Customer();
+            if ($this->data->customerids) {
+                foreach ($customerids as $id) {
+                    $customer = new Customer($id);
                     $customer->delete();
                 }
             }
         }
 
-        // ********** adding manually a customer record *********** //
+        if ($cmd == 'edit') {
 
-        if ($cmd == 'addcustomer') {
-            $customer = new StdClass();
-            $customer->firstname = required_param('firstname', PARAM_TEXT);
-            $customer->lastname = required_param('lastname', PARAM_TEXT);
-            $customer->address = required_param('address', PARAM_TEXT);
-            $customer->email = required_param('email', PARAM_TEXT);
-            $customer->zip = required_param('zip', PARAM_TEXT);
-            $customer->city = required_param('city', PARAM_TEXT);
-            $customer->country = optional_param('country', 'FR', PARAM_ALPHA);
-            $newid = $DB->insert_record('local_shop_customer', $customer);
+            if ($DB->record_exists('user', array('email' => $this->data->email))) {
+                $account = $DB->get_record('user', array('email' => $this->data->email));
+                $this->data->hasaccount = $account->id;
+            } else {
+                $this->data->hasaccount = 0;
+            }
+            $this->data->timecreated = time();
+            if (empty($this->data->id)) {
+                $this->data->id = $DB->insert_record('local_shop_customer', $this->data);
+            } else {
+                $this->data->id = $DB->update_record('local_shop_customer', $this->data);
+            }
+
+            return new Customer($this->data);
         }
 
-        // ???
-        if ($cmd == "sellout") {
-            $billid = required_param('billid', PARAM_INT);
-            $DB->set_field('local_shop_bill', 'status', 'SOLDOUT', array('id' => $billid));
+        // Customer account view : Process a pending order to pass it complete *****************.
+
+        if ($cmd == 'sellout') {
+            $bill = new Bill($this->data->billid);
+            if ($bill) {
+                $bill->work(SHOP_BILL_SOLDOUT);
+            }
         }
-    
-        // ****************** unmark a product ***************** //
-    
+
+        // Unmark a product *****************.
+
         if ($cmd == "unmark") {
-            $billid = required_param('billid', PARAM_INT);
             $DB->set_field('local_shop_bill', 'status', 'PENDING', array('id' => $billid));
         }
     }

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package     local_shop
  * @category    local
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
@@ -33,19 +32,21 @@ use local_shop\Shop;
 /**
  * A general renderer for global parts of the moodle shop
  * It will provide generic functions that may be used in several services inside
- the shop front and backoffice implementation.
+ * the shop front and backoffice implementation.
  */
-class local_shop_renderer extends plugin_renderer_base {
+class local_shop_renderer extends local_shop_base_renderer {
 
     /**
      * prints an owner menu and changes currently viewed owner if required
      */
-    function print_owner_menu($urlroot) {
+    public function print_owner_menu($urlroot) {
         global $OUTPUT, $DB;
 
         $config = get_config('local_shop');
 
-        if (empty($config->usedelegation)) return;
+        if (empty($config->usedelegation)) {
+            return;
+        }
 
         $activeowner = optional_param('shopowner', null, PARAM_INT);
 
@@ -53,7 +54,7 @@ class local_shop_renderer extends plugin_renderer_base {
 
         $ownersmenu = array();
         if ($owners) {
-            foreach($owners as $accountid => $owner) {
+            foreach ($owners as $accountid => $owner) {
                 $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
             }
         }
@@ -77,7 +78,7 @@ class local_shop_renderer extends plugin_renderer_base {
     /**
      * prints a customer menu and changes currently viewed owner if required
      */
-    function print_customer_menu($urlroot, $shopownerid = 0) {
+    public function print_customer_menu($urlroot, $shopownerid = 0) {
         global $OUTPUT, $DB;
 
         $activecustomer = optional_param('customer', null, PARAM_INT);
@@ -97,7 +98,7 @@ class local_shop_renderer extends plugin_renderer_base {
         }
 
         $sql = "
-            SELECT 
+            SELECT
                 c.id,
                 c.firstname,
                 c.lastname,
@@ -118,7 +119,7 @@ class local_shop_renderer extends plugin_renderer_base {
 
         $customersmenu = array();
         if ($customers) {
-            foreach($customers as $cid => $cu) {
+            foreach ($customers as $cid => $cu) {
                 $customersmenu[$cid] = $cu->lastname.' '.$cu->firstname.' ('.$cu->city.') ['.$cu->country.']';
             }
         }
@@ -127,9 +128,11 @@ class local_shop_renderer extends plugin_renderer_base {
 
         if (count($customers) == 1) {
             $customername = reset($customers);
-            $output = $customerlabel.': '.$customername->lastname.' '.$customername->firstname. ' ('.$customername->city.') ['.$customername->country.']';
+            $output = $customerlabel.': '.$customername->lastname.' '.$customername->firstname;
+            $output .= ' ('.$customername->city.') ['.$customername->country.']';
         } else {
-            $select = new single_select(new moodle_url($urlroot), 'customer', $customersmenu, $activecustomer, null, 'selectcustomer');
+            $u = new moodle_url($urlroot);
+            $select = new single_select($u, 'customer', $customersmenu, $activecustomer, null, 'selectcustomer');
             $select->label = $customerlabel;
             $output = $OUTPUT->render($select);
         }
@@ -139,7 +142,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    function paging_results($portlet) {
+    public function paging_results($portlet) {
         if (empty($portlet->pagesize)) {
             $portlet->pagesize = 20;
         }
@@ -150,7 +153,7 @@ class local_shop_renderer extends plugin_renderer_base {
                 $str .= '<a href="'.$portlet->url.'&offset='.$pageoffset.'">&lt;</a> - ';
             }
             $str .= '<span class="paging">';
-            for ($i = 1 ; $i <= $pages ; $i++) {
+            for ($i = 1; $i <= $pages; $i++) {
                 if ($i == ($offset / $portlet->pagesize) + 1) {
                     echo " $i - ";
                 } else {
@@ -167,13 +170,13 @@ class local_shop_renderer extends plugin_renderer_base {
         }
     }
 
-    function catalog_choice($url) {
+    public function catalog_choice($url) {
         global $SESSION, $OUTPUT;
 
         $str = '';
         $catalogs = Catalog::get_instances();
         $catalogmenu = array();
-        foreach($catalogs as $c) {
+        foreach ($catalogs as $c) {
             $catalogmenu[$c->id] = format_string($c->name);
         }
         $str .= $OUTPUT->single_select($url, 'catalogid', $catalogmenu, $SESSION->shop->catalogid);
@@ -181,7 +184,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function shop_choice($url, $chooseall = false) {
+    public function shop_choice($url, $chooseall = false) {
         global $SESSION, $OUTPUT;
 
         $str = '';
@@ -192,7 +195,7 @@ class local_shop_renderer extends plugin_renderer_base {
             $shopmenu[0] = get_string('chooseall', 'local_shop');
         }
 
-        foreach($shops as $s) {
+        foreach ($shops as $s) {
             $shopmenu[$s->id] = format_string($s->name);
         }
         $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid);
@@ -200,7 +203,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function currency_choice($current, $url) {
+    public function currency_choice($current, $url) {
         global $OUTPUT;
 
         $currencies = shop_get_supported_currencies();
@@ -212,7 +215,7 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function customer_choice($current, $url) {
+    public function customer_choice($current, $url) {
         global $OUTPUT;
 
         $customers = Customer::get_instances_menu(array(), 'CONCAT(lastname, \' \', firstname)', 'lastname, firstname');
@@ -224,8 +227,12 @@ class local_shop_renderer extends plugin_renderer_base {
         return $str;
     }
 
-    function main_menu($theShop) {
+    public function main_menu($theshop) {
+
+        $config = get_config('local_shop');
+
         $str = '<table class="shop-main-menu">';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops'));
@@ -235,6 +242,7 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= get_string('allshopsdesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
@@ -243,6 +251,8 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= '<td width="75%">';
         $str .= get_string('searchinbills', 'local_shop');
         $str .= '</td>';
+        $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances'));
@@ -252,7 +262,7 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= get_string('searchinproductinstances', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
-        $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers'));
@@ -262,6 +272,7 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= get_string('searchincustomers', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
         $linkurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes'));
@@ -271,24 +282,29 @@ class local_shop_renderer extends plugin_renderer_base {
         $str .= get_string('managetaxesdesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
+        if (!empty($config->useshipping)) {
+            $str .= '<tr valign="top">';
+            $str .= '<td width="25%">';
+            $linkurl = new moodle_url('/local/shop/shipzones/index.php');
+            $str .= '<a href="'.$linkurl.'">'.get_string('manageshipping', 'local_shop').'</a>';
+            $str .= '</td>';
+            $str .= '<td width="75%">';
+            $str .= get_string('manageshippingdesc', 'local_shop');
+            $str .= '</td>';
+            $str .= '</tr>';
+        }
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/shipzones/index.php');
-        $str .= '<a href="'.$linkurl.'">'.get_string('manageshipping', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('manageshippingdesc', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theShop->id));
+        $linkurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));
         $str .= '<a href="'.$linkurl.'">'.get_string('scantrace', 'local_shop').'</a>';
         $str .= '</td>';
         $str .= '<td width="75%">';
         $str .= get_string('tracescandesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         if (has_capability('moodle/site:config', context_system::instance())) {
             $str .= '<tr valign="top">';
             $str .= '<td width="25%">';
@@ -300,17 +316,109 @@ class local_shop_renderer extends plugin_renderer_base {
             $str .= '</td>';
             $str .= '</tr>';
         }
+
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
-        $reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theShop->id));
+        $reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
         $str .= '<a href="'.$reseturl.'">'.get_string('reset', 'local_shop').'</a>';
         $str .= '</td>';
         $str .= '<td>';
         $str .= get_string('resetdesc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         $str .= '</table>';
 
         return $str;
+    }
+
+    public function back_buttons() {
+        global $OUTPUT;
+
+        $str = '';
+
+        $options['id'] = $this->theshop->id;
+        $label = get_string('backtoshopadmin', 'local_shop');
+        $str .= $OUTPUT->single_button(new moodle_url('/local/shop/index.php', $options), $label, 'get');
+        $options['view'] = 'shop';
+        $label = get_string('backtoshop', 'local_shop');
+        $str .= $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
+
+        return $str;
+    }
+
+    public function transaction_chooser($transid) {
+        global $DB;
+
+        $transids = $DB->get_records('local_shop_bill', null, 'id', 'transactionid, amount');
+        $scanstr = get_string('scantrace', 'local_shop');
+
+        $transidsmenu = array();
+        if ($transids) {
+            foreach ($transids as $trans) {
+                $transidsmenu[$trans->transactionid] = $trans->transactionid.' ('.$trans->amount.')';
+            }
+        }
+
+        $str = '';
+
+        $str .= '<form name="transidform" method="POST" >';
+        print_string('picktransactionid', 'local_shop');
+        $str .= html_writer::select($transidsmenu, 'transid', $transid);
+        $str .= '<input type="submit" name="g_btn" value="'.$scanstr.'" />';
+        $str .= '</form>';
+
+        return $str;
+    }
+}
+
+/**
+ * A base class to centralize all common things
+ */
+class local_shop_base_renderer {
+
+    // Context references.
+    protected $theblock;
+
+    protected $theshop;
+
+    protected $thecatalog;
+
+    protected $output;
+
+    /**
+     * this is to cope with subrenderers standards
+     * @TODO : reshape renderers into core fashion subrenderers.
+     */
+    public function __construct() {
+        global $OUTPUT;
+
+        $this->output = $OUTPUT;
+    }
+
+    /**
+     * Loads the renderer with contextual objects. Most of the renderer function need
+     * at least a shop instance.
+     */
+    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
+
+        $this->theshop = $theshop;
+        $this->thecatalog = $thecatalog;
+        $this->theblock = $theblock;
+
+        if (!empty($this->theblock->instance->id)) {
+            $this->context = context_block::instance($this->theblock->instance->id);
+            $this->theblock->id = $this->theblock->instance->id;
+        } else {
+            $this->context = context_system::instance();
+            $this->theblock = new Stdclass();
+            $this->theblock->id = 0;
+        }
+    }
+
+    public function check_context() {
+        if (empty($this->theshop) || empty($this->thecatalog)) {
+            throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');
+        }
     }
 }

@@ -14,14 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   local_shop
  * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop\backoffice;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
@@ -29,14 +30,68 @@ use local_shop\Tax;
 
 class taxes_controller {
 
-    function process($cmd) {
+    protected $data;
+
+    protected $received;
+
+    public function receive($cmd, $data = null) {
+        if (!empty($data)) {
+            // Data is fed from outside.
+            $this->data = (object)$data;
+            $this->received = true;
+            return;
+        } else {
+            $this->data = new \StdClass;
+        }
+
+        switch ($cmd) {
+            case 'delete':
+                $this->data->taxid = required_param('taxid', PARAM_INT);
+                break;
+
+            case 'edit':
+                // Let data come from $data attribute.
+                break;
+        }
+
+        $this->received = true;
+    }
+
+    public function process($cmd) {
         global $DB;
 
-        // Delete a tax
+        if (!$this->received) {
+            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+        }
+
+        // Delete a tax.
         if ($cmd == 'delete') {
-            $taxid = required_param('taxid', PARAM_INT);
-            $tax = new Tax($taxid);
+            $tax = new Tax($this->data->taxid);
             $tax->delete();
         }
+
+        if ($cmd == 'edit') {
+            $tax = $this->data;
+            if (empty($tax->taxid)) {
+                $tax->id = $DB->insert_record('local_shop_tax', $tax);
+            } else {
+                $tax->id = $tax->taxid;
+                unset($tax->taxid);
+                $DB->update_record('local_shop_tax', $tax);
+            }
+            return new Tax($tax->id);
+        }
+    }
+
+    public function info() {
+        return array(
+            'delete' => array('taxid' => 'Numeric ID'),
+            'edit' => array(
+                'title' => 'String',
+                'ratio' => 'Number',
+                'country' => '2 digits uppercase coutry code',
+                'formula' => 'String (expression)',
+            ),
+        );
     }
 }
