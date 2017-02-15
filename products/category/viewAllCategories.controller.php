@@ -44,6 +44,9 @@ class category_controller {
     }
 
     public function receive($cmd, $data = null, $mform = null) {
+
+        $this->mform = $mform;
+
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -67,7 +70,6 @@ class category_controller {
 
             case 'edit':
                 // Get data from $data atrribute.
-                $this->mform = $mform;
                 break;
         }
 
@@ -154,6 +156,8 @@ class category_controller {
                                                                 $category->id, array('subdirs' => true), $category->description);
                 $category = file_postupdate_standard_editor($category, 'description', $this->mform->editoroptions, $context,
                                                             'local_shop', 'categorydescription', $category->id);
+
+                $DB->update_record('local_shop_catalogcategory', $category);
             }
 
             return new Category($category->id);
