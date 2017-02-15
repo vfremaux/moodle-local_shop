@@ -317,57 +317,43 @@ abstract class CatalogItem_Form extends moodleform {
     }
 
     protected function set_name_data(&$defaults, $context) {
-        $draftideditor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor', @$defaults->id,
-                                                array('subdirs' => true), $defaults->description);
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogdescription', @$defaults->id);
-        $defaults->description_editor = array('text' => $currenttext,
-                                              'format' => $defaults->descriptionformat,
-                                              'itemid' => $draftideditor);
+                                                 'catalogdescription', @$defaults->itemid);
     }
 
     protected function set_document_asset_data(&$defaults, $context) {
         global $COURSE;
 
         $draftitemid = file_get_submitted_draft_itemid('leaflet');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->id,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grleaflet = array('leaflet' => $draftitemid);
 
         $draftitemid = file_get_submitted_draft_itemid('image');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->id,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grimage = array('image' => $draftitemid);
 
         $draftitemid = file_get_submitted_draft_itemid('thumb');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->id,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grthumb = array('thumb' => $draftitemid);
 
         $draftitemid = file_get_submitted_draft_itemid('unit');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->id,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grunit = array('unit' => $draftitemid);
 
         $draftitemid = file_get_submitted_draft_itemid('tenunits');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', @$defaults->id,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grtenunits = array('tenunits' => $draftitemid);
 
-        $draftideditor = file_get_submitted_draft_itemid('eula_editor');
-        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'eula_editor', @$defaults->id,
-                                               array('subdirs' => true), $defaults->eula);
-        $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemeula', @$defaults->id);
-        $defaults->eula_editor = array('text' => $currenttext, 'format' => $defaults->eulaformat, 'itemid' => $draftideditor);
+        $defaults = file_prepare_standard_editor($defaults, 'eula', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogitemeula', @$defaults->itemid);
 
-        $draftideditor = file_get_submitted_draft_itemid('notes_editor');
-        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'notes_editor', @$defaults->id,
-                                               array('subdirs' => true), $defaults->notes);
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemnotes', @$defaults->id);
-        $defaults->notes_editor = array('text' => $currenttext, 'format' => $defaults->notesformat, 'itemid' => $draftideditor);
+                                                 'catalogitemnotes', @$defaults->itemid);
     }
 
     public function set_data($defaults) {
