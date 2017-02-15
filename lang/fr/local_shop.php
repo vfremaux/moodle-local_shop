@@ -38,6 +38,7 @@ $string['PREPROD'] = 'Réalisée par anticipation';
 $string['PREVIEW'] = 'Prévision';
 $string['PROVIDING'] = 'Réappro';
 $string['RECOVERING'] = 'Contentieux';
+$string['REFUSED'] = 'Refusé';
 $string['SHIP_'] = 'Port dû&nbsp;';
 $string['SOLDOUT'] = 'Payée';
 $string['SUSPENDED'] = 'Suspendu';

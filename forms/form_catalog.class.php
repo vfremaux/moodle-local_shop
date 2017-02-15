@@ -125,24 +125,11 @@ class Catalog_Form extends moodleform {
 
         $context = context_system::instance();
 
-        $draftideditor = file_get_submitted_draft_itemid('description_editor');
-        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'description_editor', $defaults->id,
-                                               array('subdirs' => true), $defaults->description);
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogdescription', $defaults->id);
-        $defaults->description_editor = array('text' => $currenttext,
-                                              'format' => $defaults->descriptionformat,
-                                              'itemid' => $draftideditor);
+                                                 'catalogdescription', $defaults->catalogid);
 
-        $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
-        $currenttext = file_prepare_draft_area($draftideditor, $context->id, 'local_shop', 'salesconditions_editor', $defaults->id,
-                                               array('subdirs' => true), $defaults->salesconditions);
         $defaults = file_prepare_standard_editor($defaults, 'salesconditions', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogsalesconditions', $defaults->id);
-        $defaults->salesconditions_editor = array('text' => $currenttext,
-                                                  'format' => $defaults->salesconditionsformat,
-                                                  'itemid' => $draftideditor);
-
+                                                 'catalogsalesconditions', $defaults->catalogid);
         parent::set_data($defaults);
     }
 }
