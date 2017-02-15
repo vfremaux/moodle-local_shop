@@ -141,6 +141,8 @@ function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $
  */
 function local_shop_get_file_areas() {
     return array(
+        'description' => 'local_shop',
+        'eula' => 'local_shop',
         'catalogdescription' => 'local_shop_catalog',
         'catalogsalesconditions' => 'local_shop_catalog',
         'catalogitemdescription' => 'local_shop_catalogitem',
@@ -148,6 +150,7 @@ function local_shop_get_file_areas() {
         'catalogitemthumb' => 'local_shop_catalogitem',
         'catalogitemimage' => 'local_shop_catalogitem',
         'catalogitemunit' => 'local_shop_catalogitem',
+        'catalogitemeula' => 'local_shop_catalogitem',
         'catalogitemleaflet' => 'local_shop_catalogitem',
         'shoplogo' => 'shoplogo',
         'categorydescription' => 'local_shop_catalogcategory',

@@ -186,6 +186,9 @@ class product_controller {
 
                 $usercontext = \context_user::instance($USER->id);
                 shop_products_process_files($this->data, $context, $usercontext);
+
+                // Post update record in DB.
+                $DB->update_record('local_shop_catalogitem', $this->data);
             }
 
             return new CatalogItem($this->data->id);
