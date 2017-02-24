@@ -514,6 +514,8 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $str .= '<h2>'.format_string($product->name).'</h2>';
             if ($product->description) {
+                $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
+                                                   'catalogitemdescription', $product->id);
                 $str .= '<div class="shop-front-description">'.format_text($product->description).'</div>';
             }
             if (!$product->available) {
@@ -920,7 +922,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                         onchange="capitalizewords(this)" value="'.$firstname.'" />';
         $str .= '</td>';
         $str .= '</tr>';
-        if (!empty($this->theshop->customerorganisationrequired)) {
+        if ($this->theshop->customerorganisationrequired == 1) {
             $str .= '<tr valign="top">';
             $str .= '<td align="right">';
             $str .= get_string('organisation', 'local_shop');
