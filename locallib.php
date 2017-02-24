@@ -676,3 +676,52 @@ function shop_get_transid() {
     }
     return $transid;
 }
+
+/**
+ * Pursuant a table has a sortorder field, pulls down an item in a specific select context.
+ * @param array $context
+ */
+function shop_list_up($selectcontext, $itemid, $table) {
+    global $DB;
+
+    $item = $DB->get_record($table, array('id' => $itemid));
+    $selectcontext['sortorder'] = $item->sortorder + 1;
+    if (!$nextitem = $DB->get_record($table, $selectcontext)) {
+        // Cannot go up. Last one.
+        return;
+    }
+    $nextitem->sortorder--;
+    $item->sortorder++;
+    $DB->update_record($table, $item);
+    $DB->update_record($table, $nextitem);
+}
+
+function shop_list_down($selectcontext, $itemid, $table) {
+    global $DB;
+
+    $item = $DB->get_record($table, array('id' => $itemid));
+    if ($item->sortorder <= 1) {
+        // Cannot go down. First one.
+        return;
+    }
+    $selectcontext['sortorder'] = $item->sortorder - 1;
+    $previtem = $DB->get_record($table, $selectcontext);
+    $previtem->sortorder++;
+    $item->sortorder--;
+    $DB->update_record($table, $item);
+    $DB->update_record($table, $previtem);
+}
+
+function shop_list_reorder($selectcontext, $table) {
+    global $DB;
+
+    $allrecs = $DB->get_records($table, $selectcontext, 'sortorder', 'id, sortorder');
+    if ($allrecs) {
+        $ix = 1;
+        foreach($allrecs as $rec) {
+            $rec->sortorder = $ix;
+            $DB->update_record($rec);
+            $ix++;
+        }
+    }
+}
