@@ -665,7 +665,7 @@ class shop_products_renderer extends local_shop_base_renderer {
     }
 
     public function categories($categories) {
-        $order = optional_param('order', 'name', PARAM_ALPHA);
+        $order = optional_param('order', 'sortorder', PARAM_ALPHA);
         $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
 
         $namestr = get_string('catname', 'local_shop');
@@ -739,12 +739,12 @@ class shop_products_renderer extends local_shop_base_renderer {
         }
 
         if ($category->sortorder > 1) {
-            $icon = '<img src="'.$OUTPUT->pix_url('/t/down').'" />';
-            $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=up\">".$icon.'</a>';
+            $icon = '<img src="'.$OUTPUT->pix_url('/t/up').'" />';
+            $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=down\">".$icon.'</a>';
         }
         if ($category->sortorder < $maxorder) {
-            $icon = '<img src="'.$OUTPUT->pix_url('t/up').'" />';
-            $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=down\">".$icon.'</a>';
+            $icon = '<img src="'.$OUTPUT->pix_url('t/down').'" />';
+            $commands .= "&nbsp;<a href=\"{$url}&amp;categoryid={$category->id}&amp;what=up\">".$icon.'</a>';
         }
         $row[] = $commands;
 
