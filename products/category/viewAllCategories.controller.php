@@ -85,12 +85,12 @@ class category_controller {
 
         // Delete a category.
         if ($cmd == 'delete') {
-            foreach ($this->data->categoryids as $cid);
-            $deleted = $DB->get_record('local_shop_catalogcategory', array('id' => $cid));
-            $DB->delete_records('local_shop_catalogcategory', array('id' => $cid));
-            $selectcontext = array('catalogid' => $deleted->catalogid, 'parentid' => $deleted->parentid);
-            shop_list_reorder($selectcontext, 'local_shop_catalogcategory');
-
+            foreach ($this->data->categoryids as $cid) {
+                $deleted = $DB->get_record('local_shop_catalogcategory', array('id' => $cid));
+                $DB->delete_records('local_shop_catalogcategory', array('id' => $cid));
+                $selectcontext = array('catalogid' => $deleted->catalogid, 'parentid' => $deleted->parentid);
+                shop_list_reorder($selectcontext, 'local_shop_catalogcategory');
+            }
         } else if ($cmd == 'up') {
             // Raises a question in the list ***************.
             $parentid = $DB->get_field('local_shop_catalogcategory', 'parentid', array('id' => $this->data->cid));
