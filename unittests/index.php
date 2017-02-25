@@ -92,7 +92,7 @@ if ($productline = $thecatalog->get_products()) {
 
     foreach ($productline as $productcode => $catalogitem) {
         $presel = (in_array($productcode, $selected)) ? ' checked="checked" ' : '';
-        $selbox = '<input type="checkbox" name="sel[]" value="'.$productcode.'" '.$presel.' >';
+        $selbox = '<input type="checkbox" name="sel[]" class="testselectors" value="'.$productcode.'" '.$presel.' >';
         $producturl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $catalogitem->id));
         $productlink = '<a href="'.$producturl.'">'.format_string($catalogitem->name).'</a>';
         $testtable->data[] = array($selbox,
@@ -108,7 +108,7 @@ if ($productline = $thecatalog->get_products()) {
     echo '<input type="hidden" name="what" value="test"/>';
 
     // We need write the table by ourselves...
-    echo '<table width="'.$testtable->width.'" class="generaltable">';
+    echo '<table width="'.$testtable->width.'" class="shop-test-results">';
     $i = 0;
     echo '<tr valign="top" class="row">';
     foreach ($testtable->head as $col) {
@@ -130,40 +130,38 @@ if ($productline = $thecatalog->get_products()) {
         echo '</tr>';
 
         if ($action == 'test') {
+            if (!empty($messages) || !empty($warnings) || !empty($errors)) {
+                echo '<tr valign="top" class="row r'.$j.'">';
+                echo '<td colspan="6">';
+                echo '<ul class="shop-test-result">';
+            }
             if (!empty($messages)) {
                 if (array_key_exists($itemcode, $messages)) {
-                    echo '<tr valign="top" class="row r'.$j.'">';
-                    echo '<td colspan="6">';
                     foreach ($messages[$itemcode] as $message) {
                         echo '<li class="shop-message-result">'.$messagestr.$message.'</li>';
                     }
-                    echo '</td>';
-                    echo '</tr>';
                 }
             }
 
             if (!empty($errors)) {
                 if (array_key_exists($itemcode, $errors)) {
-                    echo '<tr valign="top" class="row r'.$j.'">';
-                    echo '<td colspan="6">';
                     foreach ($errors[$itemcode] as $error) {
                         echo '<li class="shop-error-result">'.$errorstr.$error.'</li>';
                     }
-                    echo '</td>';
-                    echo '</tr>';
                 }
             }
 
             if (!empty($warnings)) {
                 if (array_key_exists($itemcode, $warnings)) {
-                    echo '<tr valign="top" class="row r'.$j.'">';
-                    echo '<td colspan="6">';
                     foreach ($warnings[$itemcode] as $warning) {
                         echo '<li class="shop-warning-result">'.$warningstr.$warning.'</li>';
                     }
-                    echo '</td>';
-                    echo '</tr>';
                 }
+            }
+            if (!empty($messages) || !empty($warnings) || !empty($errors)) {
+                echo '</ul>';
+                echo '</td>';
+                echo '</tr>';
             }
         }
 
@@ -172,7 +170,11 @@ if ($productline = $thecatalog->get_products()) {
 
     echo '</table>';
     echo '<br/>';
-    echo '<input type="submit" name="go_test" value="'.get_string('gotest', 'local_shop').'" />';
+    $selectallstr = get_string('selectall', 'local_shop');
+    $unselectallstr = get_string('unselectall', 'local_shop');
+    echo '<input type="button" onclick="Javascript:$(\'.testselectors\').attr(\'checked\', true);" value="'.$selectallstr.'" />';
+    echo '&nbsp;&nbsp;<input type="button" onclick="$(\'.testselectors\').attr(\'checked\', false);" value="'.$unselectallstr.'" />';
+    echo '&nbsp;&nbsp;<input type="submit" name="go_test" value="'.get_string('gotest', 'local_shop').'" />';
     echo '</form >';
     echo '<br/>';
     echo $OUTPUT->box_end();
