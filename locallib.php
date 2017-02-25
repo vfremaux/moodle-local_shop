@@ -718,7 +718,7 @@ function shop_list_reorder($selectcontext, $table) {
     $allrecs = $DB->get_records($table, $selectcontext, 'sortorder', 'id, sortorder');
     if ($allrecs) {
         $ix = 1;
-        foreach($allrecs as $rec) {
+        foreach ($allrecs as $rec) {
             $rec->sortorder = $ix;
             $DB->update_record($rec);
             $ix++;
