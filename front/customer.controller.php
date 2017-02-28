@@ -117,7 +117,7 @@ class customer_controller extends front_controller_base {
                     shop_validate_invoicing();
                 }
 
-                if (empty($errors)) {
+                if (empty($shoppingcart->errors)) {
                     /*
                      * register customer in customer table now
                      * this allows us to catch customer list, even if not going through the whole purchase
