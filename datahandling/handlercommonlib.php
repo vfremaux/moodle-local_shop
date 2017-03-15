@@ -38,14 +38,14 @@ function shop_register_customer($data) {
     $productionfeedback->private = '';
     $productionfeedback->salesadmin = '';
 
-    $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+    $data->customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
     if (isloggedin() && !isguestuser()) {
-        if ($customer->hasaccount != $USER->id) {
+        if ($data->customer->hasaccount != $USER->id) {
             /*
              * do it quick in this case. Actual user could authentify, so it is the legitimate account.
              * We guess if different non null id that the customer is using a new account. This should not really be possible
              */
-            $customer->hasaccount = $USER->id;
+            $data->customer->hasaccount = $USER->id;
             $DB->update_record('local_shop_customer', $customer);
         } else {
             $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
@@ -63,7 +63,7 @@ function shop_register_customer($data) {
          * TODO : If a collision is to be detected, a question should be asked to the customer.
          */
         // Create Moodle User but no assignation (this will register in customer support if exists).
-        if (!shop_create_customer_user($data, $customer, $newuser)) {
+        if (!shop_create_customer_user($data, $data->customer, $newuser)) {
             $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Error :";
             $message .= " User could not be created {$newuser->username}.";
             shop_trace($message);

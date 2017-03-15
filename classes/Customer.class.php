@@ -108,8 +108,8 @@ class Customer extends ShopObject {
         $sql = "
             SELECT
                c.*,
-               COUNT(b.id) as billCount,
-               SUM(b.amount) as totalAccount
+               COUNT(b.id) as billcount,
+               SUM(b.amount) as totalaccount
             FROM
                {local_shop_customer} as c
             LEFT JOIN
