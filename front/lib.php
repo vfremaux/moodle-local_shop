@@ -125,7 +125,7 @@ function shop_validate_customer($theshop) {
         $shoppingcart->errors->customerinfo['customerinfo::mail'] = get_string('existingmailpleaselogin', 'local_shop', $a);
     } else if ((isloggedin() && !isguestuser()) && ($USER->email == $shoppingcart->customerinfo['email'])) {
         /*
-         * unmark that mail if mail matches (that is the logged user IS the customer user basd on mail)
+         * unmark that mail if mail matches (that is the logged user IS the customer user based on mail)
          * @see revalidate command in customer.controller.php
          */
         unset($shoppingcart->errors->customerinfo['customerinfo::mail']);
