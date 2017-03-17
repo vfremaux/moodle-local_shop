@@ -85,16 +85,23 @@ class category_controller {
 
         // Delete a category.
         if ($cmd == 'delete') {
-            $categoryidlist = implode("','", $this->data->categoryids);
-            $DB->delete_records_select('local_shop_catalogcategory', " id IN ('$categoryidlist') ");
-
+            foreach ($this->data->categoryids as $cid) {
+                $deleted = $DB->get_record('local_shop_catalogcategory', array('id' => $cid));
+                $DB->delete_records('local_shop_catalogcategory', array('id' => $cid));
+                $selectcontext = array('catalogid' => $deleted->catalogid, 'parentid' => $deleted->parentid);
+                shop_list_reorder($selectcontext, 'local_shop_catalogcategory');
+            }
         } else if ($cmd == 'up') {
             // Raises a question in the list ***************.
-            shop_list_up($shop, $this->data->cid, 'local_shop_catalogcategory');
+            $parentid = $DB->get_field('local_shop_catalogcategory', 'parentid', array('id' => $this->data->cid));
+            $selectcontext = array('catalogid' => $this->thecatalog->id, 'parentid' => $parentid);
+            shop_list_up($selectcontext, $this->data->cid, 'local_shop_catalogcategory');
 
         } else if ($cmd == 'down') {
             // Lowers a question in the list ****************.
-            shop_list_down($shop, $this->data->cid, 'local_shop_catalogcategory');
+            $parentid = $DB->get_field('local_shop_catalogcategory', 'parentid', array('id' => $this->data->cid));
+            $selectcontext = array('catalogid' => $this->thecatalog->id, 'parentid' => $parentid);
+            shop_list_down($selectcontext, $this->data->cid, 'local_shop_catalogcategory');
 
         } else if ($cmd == 'show') {
             // Show a category ******************************.
@@ -117,7 +124,7 @@ class category_controller {
             $category->descriptionformat = 0 + $category->description_editor['format'];
 
             if (empty($category->categoryid)) {
-                $params = array('catalogid' => $this->thecatalog->id);
+                $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid);
                 $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
                 $category->sortorder = $maxorder + 1;
                 if (!$category->id = $DB->insert_record('local_shop_catalogcategory', $category)) {

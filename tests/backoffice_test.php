@@ -258,11 +258,9 @@ class local_shop_backoffice_testcase extends advanced_testcase {
         $this->assertTrue($DB->count_records('local_shop_catalog') == 3);
 
         $cats = $DB->get_records('local_shop_catalog');
-        print_object($cats);
 
         $members = $catalog->get_group_members();
-        print_object($members);
-        $this->assertTrue(count($members) == 2);
+        $this->assertTrue(count($members) == 3);
         $this->assertTrue(in_array($catalog1->id, $members));
         $this->assertTrue(in_array($catalog2->id, $members));
     }
