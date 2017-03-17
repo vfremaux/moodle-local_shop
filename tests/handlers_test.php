@@ -83,7 +83,7 @@ class local_shop_handlers_testcase extends advanced_testcase {
 
         // Connect with a fake customer user.
 
-        $this->assertTrue($DB->record_exists('local_shop_catalogitem', array('id' => $product->id)));
+        $this->assertTrue($DB->record_exists('local_shop_catalogcategory', array('id' => $category->id)));
 
         // Fetch handlers.
         $pluginman = core_plugin_manager::instance();
