@@ -32,16 +32,18 @@ $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
 $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
 $customerid = optional_param('customer', 0, PARAM_INT);
+$shopownerid = optional_param('shopowner', 0, PARAM_INT);
 
-$viewparams = array('view' => $view, 'customer' => $customerid, 'order' => $order, 'dir' => $dir);
+$viewparams = array('view' => $view, 'customer' => $customerid, 'order' => $order, 'dir' => $dir, 'shopowner' => $shopownerid);
 
 $ownermenu = '';
+
 if (!has_capability('local/shop:accessallowners', $context)) {
-    $shopowner = $USER->id;
+    $shopowner = 0;
 } else {
     $shopowner = null;
     $shoprenderer = $PAGE->get_renderer('local_shop');
-    $ownermenu = $shoprenderer->print_owner_menu($url);
+    $ownermenu = $shoprenderer->print_owner_menu($url, $shopownerid);
 }
 
 // Execute controller.
@@ -54,9 +56,48 @@ if ($action != '') {
     redirect(new moodle_url('/local/shop/purchasemanager/view.php', $viewparams));
 }
 
-$customermenu = $shoprenderer->print_customer_menu($url);
+$select = " hasaccount > 0 ";
+$join = '';
+$params = array();
+if ($shopownerid) {
+    $select .= " AND co.userid = ? ";
+    $params[] = $shopownerid;
+    $join = "
+        LEFT JOIN
+            {local_shop_customer_owner} co
+        ON
+            co.customerid = c.id
+    ";
+}
 
-$productinstances = Product::get_instances_on_context(array('ci.userid' => 0 + $shopowner, 'p.customerid' => $customerid));
+$sql = "
+    SELECT
+        c.id,
+        c.firstname,
+        c.lastname,
+        c.city,
+        c.country,
+        c.hasaccount
+    FROM
+        {local_shop_customer} c
+    $join
+    WHERE
+        $select
+    ORDER BY
+        c.lastname,
+        c.firstname
+";
+$customers = $DB->get_records_sql($sql, $params);
+
+if (!$customerid) {
+    // Take the first one as default.
+    $ckeys = array_keys($customers);
+    $customerid = array_pop($ckeys);
+}
+
+$customermenu = $shoprenderer->print_customer_menu($url, $customers, $customerid);
+
+$productinstances = Product::get_instances_on_context(array('ci.userid' => $shopownerid, 'p.customerid' => $customerid));
 
 echo $out;
 
