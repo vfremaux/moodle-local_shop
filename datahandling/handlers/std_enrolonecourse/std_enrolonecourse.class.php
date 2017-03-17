@@ -72,7 +72,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         $context = context_course::instance($course->id);
 
-        if (!isloggedin()) {
+        if (!isloggedin() || isguestuser()) {
             // We cannot check the product is purchased or not for unlogged people.
             return true;
         }

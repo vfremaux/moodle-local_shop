@@ -196,7 +196,7 @@ class Product extends ShopObject {
         $params = array();
         if (!empty($filter)) {
             foreach ($filter as $k => $v) {
-                $filterstrs[] = "$k = ?";
+                $filterstrs[] = " $k = ? ";
                 $params[] = $v;
             }
             $filterclause = ' AND '.implode(' AND ', $filterstrs);
