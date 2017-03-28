@@ -50,7 +50,10 @@ class ResetForm extends moodleform {
 
         $mform->addElement('checkbox', 'customers', get_string('resetcustomers', 'local_shop'));
 
-        $mform->addElement('checkbox', 'catalogs', get_string('resetcatalogs', 'local_shop'));
+        $group[] = $mform->createElement('checkbox', 'catalogsunlock', '', get_string('removesecurity', 'local_shop'));
+        $group[] = $mform->createElement('checkbox', 'catalogs', get_string('resetcatalogs', 'local_shop'));
+        $mform->addGroup($group, 'catalogsgroup', get_string('resetcatalogs', 'local_shop'), array(' '), false);
+        $mform->disabledIf('catalogs', 'catalogsunlock', 'notchecked');
 
         $mform->disabledIf('bills', 'customers', 'checked');
         $mform->disabledIf('bills', 'catalogs', 'checked');
