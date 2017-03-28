@@ -316,6 +316,7 @@ $string['newcatalog'] = 'New catalog';
 $string['nocats'] = 'No categories';
 $string['nocolumns'] = 'No colums';
 $string['none'] = 'None';
+$string['nopaymodesavailable'] = 'No paymodes available. This may be because of a misconfiguration of this shop, or particular test conditions.';
 $string['nosamecurrency'] = 'All bills have not the same curency. Sum is not consistant';
 $string['notes'] = 'Notes:';
 $string['notrace'] = 'No trace for this transaction';
