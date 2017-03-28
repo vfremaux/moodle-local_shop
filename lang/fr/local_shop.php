@@ -274,6 +274,7 @@ $string['nocats'] = 'Pas de catégories';
 $string['nocustomers'] = 'Pas de clients enregistrés';
 $string['none'] = 'Aucun';
 $string['nonmutable'] = 'Poduit non modifiable';
+$string['nopaymodesavailable'] = 'Aucun moyen de payement disponible. Cela peut être dû à la configuration de la boutique ou à des conditions particulières de test.';
 $string['nosamecurrency'] = 'Toutes les factures n\'ont pas la même unité. La somme n\'est pas consistante.';
 $string['noshops'] = 'Aucune boutique définie';
 $string['notaxes'] = 'Pas de taxes enregistrées';
