@@ -31,6 +31,10 @@ class shop_paymode_paybox extends shop_paymode {
         parent::__construct('paybox', $shop, false, true);
     }
 
+    public function is_instant_payment() {
+        return true;
+    }
+
     /**
      * prints a payment porlet in an order form
      */
