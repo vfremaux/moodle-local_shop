@@ -41,9 +41,11 @@ validate your purchase on payment confirmation.</p>
 
 $string['productiondata_private'] = '
 <p>Your user account has been setup on this site.</p>
-<p>Your  credentials are:<br/>
-Login: {$a->username}<br/>
-Password: {$a->password}<br/></p>
+<p>Your login will be:<br/>
+<pre>
+Login:      {$a}<br/>
+</pre>
+<p>You will receive your password in a next to come mail.</p>
 <p><b>Please note this information in a safe place before you continue...</b></p>
 <p>If you made an online payment, your purchased products will be processed on automatic return of your payment order.
 You will be able to connect at once and get to your training volumes. On the other hand will our commercial service
