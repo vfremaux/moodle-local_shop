@@ -39,7 +39,7 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 } else {
     $shopowner = null;
     $shoprenderer = $PAGE->get_renderer('local_shop');
-    $shoprenderer->print_owner_menu($url);
+    $shoprenderer->print_owner_menu($url, 0);
 }
 
 // Execute controller.
