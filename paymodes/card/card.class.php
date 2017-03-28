@@ -63,4 +63,8 @@ class shop_paymode_card extends shop_paymode {
     public function settings(&$settings) {
         return;
     }
+
+    public function is_instant_payment() {
+        return true;
+    }
 }
