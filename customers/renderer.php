@@ -36,13 +36,14 @@ class shop_customers_renderer extends local_shop_base_renderer {
         $lastnamestr = get_string('lastname');
         $firstnamestr = get_string('firstname');
         $purchasesstr = get_string('purchases', 'local_shop');
+        $emailstr = get_string('email');
         $totalamountstr = get_string('totalamount', 'local_shop');
 
         $table = new html_table();
         $table->width = '100%';
         $table->head = array('',
-                             "<b>$lastnamestr</b>",
-                             "<b>$firstnamestr</b>",
+                             "<b>$lastnamestr $firstnamestr</b>",
+                             "<b>$emailstr</b>",
                              "<b>$purchasesstr</b>",
                              "<b>$totalamountstr</b>",
                              '');
@@ -57,8 +58,9 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $params = array('view' => 'viewCustomer', 'customer' => $c->id);
             $customerurl = new moodle_url('/local/shop/customers/view.php', $params);
             $row[] = '<a href="'.$customerurl.'">'.$c->id.'</a>';
-            $row[] = $c->lastname;
-            $row[] = $c->firstname;
+            $row[] = $c->lastname.' '.$c->firstname;
+            $row[] = $c->email;
+            $row[] = $c->billcount;
             $row[] = sprintf("%.2f", round($c->totalaccount, 2)).' '.$this->theshop->defaultcurrency;
             $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));
             $cmd = '<a href="'.$editurl.'"><img src="'.$this->output->pix_url('t/edit').'"/></a>';

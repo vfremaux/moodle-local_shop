@@ -28,7 +28,7 @@ define('EMPTY_HANDLER', '');
 define('SPECIFIC_HANDLER', 1);
 
 /**
- *
+ * @param objectref $data a full billitem object
  */
 function shop_register_customer($data) {
     global $DB, $USER;
@@ -38,14 +38,16 @@ function shop_register_customer($data) {
     $productionfeedback->private = '';
     $productionfeedback->salesadmin = '';
 
-    $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+    if (empty($data->bill->customer)) {
+        $data->bill->customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+    }
     if (isloggedin() && !isguestuser()) {
-        if ($customer->hasaccount != $USER->id) {
+        if ($data->bill->customer->hasaccount != $USER->id) {
             /*
              * do it quick in this case. Actual user could authentify, so it is the legitimate account.
              * We guess if different non null id that the customer is using a new account. This should not really be possible
              */
-            $customer->hasaccount = $USER->id;
+            $data->bill->customer->hasaccount = $USER->id;
             $DB->update_record('local_shop_customer', $customer);
         } else {
             $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
@@ -63,7 +65,7 @@ function shop_register_customer($data) {
          * TODO : If a collision is to be detected, a question should be asked to the customer.
          */
         // Create Moodle User but no assignation (this will register in customer support if exists).
-        if (!shop_create_customer_user($data, $customer, $newuser)) {
+        if (!shop_create_customer_user($data, $data->bill->customer, $newuser)) {
             $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Error :";
             $message .= " User could not be created {$newuser->username}.";
             shop_trace($message);
@@ -74,10 +76,7 @@ function shop_register_customer($data) {
         }
 
         $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
-        $a = new StdClass;
-        $a->username = $newuser->username;
-        $a->password = $customer->password;
-        $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $a);
+        $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $newuser->username);
         $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
         $productionfeedback->salesadmin = $fb;
     }
@@ -137,7 +136,6 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     // Create Moodle User but no assignation.
     $newuser = new StdClass();
     $newuser->username = shop_generate_username($data->customer);
-    $customer->password = generate_password(8);
     $newuser->city = $data->customer->city;
     $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country;
     $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang;
@@ -163,16 +161,34 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
         return false;
     }
 
-    $data->user = get_complete_user_data('username', $newuser->username);
+    /*
+     * We have a real new customer here. We setup in bill's construct for next steps.
+     * @see /front/produce.controller.php
+     */
+    $data->bill->customeruser = get_complete_user_data('username', $newuser->username);
 
-    // This will force cron to generate a password and send it to user's email.
-    set_user_preference('create_password', 1, $data->user->id);
-
-    // Do not force password changing. No one knows the password but the recipient.
-    if (!empty($CFG->{'auth_'.$newuser->auth.'_forcechangepassword'})) {
-        set_user_preference('auth_forcepasswordchange', 0, $data->user->id);
+    // Passwords will be created and sent out on cron.
+    if (!$oldrec = $DB->get_record('user_preferences', array('userid' => $newuser->id, 'name' => 'create_password'))) {
+        $pref = new StdClass();
+        $pref->userid = $newuser->id;
+        $pref->name = 'create_password';
+        $pref->value = 1;
+        $DB->insert_record('user_preferences', $pref);
+    } else {
+        $oldrec->value = 1;
+        $DB->update_record('user_preferences', $oldrec);
     }
-    update_internal_user_password($data->user, $customer->password);
+
+    if (!$oldrec = $DB->get_record('user_preferences', array('userid' => $newuser->id, 'name' => 'auth_forcepasswordchange'))) {
+        $pref = new StdClass();
+        $pref->userid = $newuser->id;
+        $pref->name = 'auth_forcepasswordchange';
+        $pref->value = 0;
+        $DB->insert_record('user_preferences', $pref);
+    } else {
+        $oldrec->value = 0;
+        $DB->update_record('user_preferences', $oldrec);
+    }
 
     // Bind customer record to Moodle userid.
     $customer->hasaccount = $newuser->id;
@@ -190,12 +206,13 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
 /**
  * @param $participant a minimal object with essential user information
- * @param $billitem a billitem
+ * @param object $data a full set of data from the order/bill
+ * @param object $participant
  */
-function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
+function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     global $CFG, $DB;
 
-    if (!$customer = $DB->get_record('local_shop_customer', array('id' => $billitem->get_customerid()))) {
+    if (!$customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()))) {
         return false;
     }
     if (!$DB->get_record('user', array('id' => $customer->hasaccount))) {
@@ -251,6 +268,8 @@ function shop_create_moodle_user($participant, $billitem, $supervisorrole) {
         // Assign mirror role for behalf on those users.
         role_assign($studentrole->id, $participant->id, $customercontext->id, '', 0, $now);
     }
+
+    shop_trace("[{$data->transactionid}] GENERIC : New user created {$participant->username} with ID {$participant->id}.");
 
     return $participant;
 }

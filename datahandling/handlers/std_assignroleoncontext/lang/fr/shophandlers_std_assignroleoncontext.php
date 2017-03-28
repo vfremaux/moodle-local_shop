@@ -43,8 +43,10 @@ seront validés dès réception de votre paiement.</p>
 $string['productiondata_private'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme.</p>
 <p>Vos coordonnées sont:<br/>
-Identifiant : {$a->username}<br/>
-Mot de passe : {$a->password}<br/></p>
+<pre>
+Identifiant     {$a}<br/>
+</pre>
+<p>vous recevrez votre mot de passe dans un courriel à suivre dans les minutes qui viennent.</p>
 <p><b>Veuillez les noter quelque part où vous pouvez les retrouver avant de continuer...</b></p>
 <p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront été initialisés dès la confirmation automatique
 de votre règlement. Vous pourrez vous connecter
