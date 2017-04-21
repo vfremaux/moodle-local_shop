@@ -103,7 +103,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= get_string('price', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c2" colspan="2">';
-            $str .= get_string('TTC', 'local_shop');
+            $str .= get_string('ttc', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c3" colspan="1" align="center">';
             $str .= get_string('status', 'local_shop');
