@@ -1592,7 +1592,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= get_string('quantity', 'local_shop');
             $str .= '</th>';
             $str .= '<th width="8%" align="right" style="text-align:right" class="header lastcol">';
-            $str .= get_string('totalpriceTTC', 'local_shop');
+            $str .= get_string('totalpricettc', 'local_shop');
             $str .= '</th>';
             $str .= '</tr>';
         } else {
