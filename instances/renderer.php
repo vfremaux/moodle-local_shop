@@ -48,7 +48,7 @@ class shop_instances_renderer {
             $str .= get_string('price', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c5">';
-            $str .= get_string('TTC', 'local_shop');
+            $str .= get_string('ttc', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c8">';
             $str .= get_string('status', 'local_shop');

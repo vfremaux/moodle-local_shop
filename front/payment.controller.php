@@ -170,7 +170,7 @@ class payment_controller extends front_controller_base {
             // Confirm transaction ID. This should not be necessary.
             $DB->set_field('local_shop_bill', 'transactionid', $bill->transactionid, array('id' => $billid));
 
-            shop_trace("[{$bill->transactionid}] ".'Order placed : '.$bill->amount.' for '.$totalitems.' objects');
+            shop_trace("[{$bill->transactionid}] ".'Order placed : '.$totalitems.' objects');
         }
 
         // This is for interactive payment methods.
