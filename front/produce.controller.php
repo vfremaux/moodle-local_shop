@@ -31,8 +31,19 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 class production_controller extends front_controller_base {
 
+    /**
+     * this boolean value is true if the call comes from an IPN asynchronous paiement return.
+     */
     protected $ipncall;
+
+    /**
+     * this boolean value is true if the paiment is interactive, using online payment methods.
+     */
     public $interactive;
+
+    /**
+     * The complete bill to produce.
+     */
     protected $abill;
 
     public function __construct(&$theshop, &$thecatalog, &$theblock, &$afullbill, $ipncall = false, $interactive = false) {
@@ -95,6 +106,7 @@ class production_controller extends front_controller_base {
 
         // Trap any non defined command here (increase security).
         if (($cmd != 'produce') && ($cmd != 'confirm')) {
+            shop_trace("[{$afullbill->transactionid}] Error : Illegal production command $cmd.");
             return;
         }
 
@@ -120,19 +132,19 @@ class production_controller extends front_controller_base {
                  * A more direct resolution when paiement is not performed online
                  * we can perform pre_pay operations
                  */
-                shop_trace("[{$afullbill->transactionid}] ".'Order confirm (offline payments, bill is expected to be PENDING)');
-                shop_trace("[{$afullbill->transactionid}] ".'Production starting ...');
-                shop_trace("[{$afullbill->transactionid}] ".'Production Controller : Pre Pay process');
 
-                if ($this->interactive && $this->ipncall) {
-                    mtrace("[{$afullbill->transactionid}] ".'Order confirm (offline payments, bill is expected to be PENDING)');
-                    mtrace("[{$afullbill->transactionid}] ".'Production starting ...');
-                    mtrace("[{$afullbill->transactionid}] ".'Production Controller : Pre Pay process');
+                if ($this->interactive) {
+                    if ($this->ipncall) {
+                        mtrace("[{$afullbill->transactionid}] ".'Order confirm (online asynchronous payment return, bill is expected to be PENDING)');
+                    } else {
+                        mtrace("[{$afullbill->transactionid}] ".'Order confirm (online interactive payment, bill is expected to be PENDING)');
+                    }
+                } else {
+                    shop_trace("[{$afullbill->transactionid}] ".'Order confirm (offline payments, bill is expected to be PENDING)');
                 }
 
-                if ($this->interactive && $this->ipncall) {
-                    mtrace("[{$afullbill->transactionid}] ".'Production Controller : Pre Pay process');
-                }
+                mtrace("[{$afullbill->transactionid}] ".'Production starting ...');
+                mtrace("[{$afullbill->transactionid}] ".'Production Controller : Pre Pay process');
                 $productionfeedback = produce_prepay($afullbill);
                 /*
                  * log new production data into bill record
