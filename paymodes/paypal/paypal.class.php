@@ -300,7 +300,7 @@ class shop_paymode_paypal extends shop_paymode {
                     // Perform final production.
                     $action = 'produce';
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
-                    $controller = new \local_shop\front\production_controller($afullbill);
+                    $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, null, $afullbill, true, false);
                     $controller->process($action);
                     shop_trace("[{$transid}] Paypal IPN End Production");
                 }
