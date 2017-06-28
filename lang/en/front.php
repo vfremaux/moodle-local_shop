@@ -128,10 +128,10 @@ $string['objects'] = 'objects';
 $string['on'] = 'On ';
 $string['oneseat'] = 'One seat per order';
 $string['onlinepayment'] = 'Payment <br/>(online or offline)';
-$string['onlyfor'] = 'Only for users:';
+$string['onlyfor'] = 'Only for users:&ensp;';
 $string['onlynumerics'] = 'Numeric value only';
 $string['order'] = 'Order';
-$string['orderID'] = 'Order ID : ';
+$string['orderID'] = 'Order ID:&ensp;';
 $string['orderconfirm'] = 'Order placed';
 $string['orderingtotal'] = 'Order total :';
 $string['orderinput'] = 'Order input';
@@ -147,7 +147,7 @@ $string['participants'] = 'Participants';
 $string['passwordconfirmerror'] = 'Passwords do not match!';
 $string['payment'] = 'Payment ';
 $string['paymentmethod'] = 'Pay mode';
-$string['paymentmode'] = 'Pay mode ';
+$string['choosepaymentmode'] = 'Choose your pay mode';
 $string['paymodedonotpatchtoresponse'] = 'The detected paymode of the respone is different to the registered paymode in order. Error.';
 $string['payto'] = 'Thanks pay to {$a}.<br/>Print the order form and send it to ';
 $string['plantcode'] = 'Plant code';
@@ -193,7 +193,7 @@ $string['taxratio'] = 'Ratio';
 $string['teacher'] = 'Trainers';
 $string['testmode'] = 'Test mode';
 $string['totaldiscounted'] = 'Discounted total ';
-$string['totalpriceTTC'] = 'Total TI price ';
+$string['totalpricettc'] = 'Total TI price ';
 $string['totals'] = 'Totals';
 $string['totaprice'] = 'Total price';
 $string['transactionbounce'] = 'this transaction is not complete. You may confirm or cancel to finish the ordering process.';
@@ -241,22 +241,22 @@ $string['sales_feedback_tpl'] = '
 <h3><%%SELLER%%></h3>
 <h4>Customer order</h4>
 
-<p>You just ordered on the website : <%%SERVER%%>. </p>
+<p>You just ordered on the website : <%%SERVER%%>.</p>
 
-<p><u>Customer identification :</u> </p>
+<p><u>Customer identification :</u> </p>
 <hr />
 <b>Firstname :</b> <%%FIRSTNAME%%><br />
-<b>Lastname :</b> <%%LASTNAME%%><br />
+<b>Lastname :</b> <%%LASTNAME%%><br />
 <b>Mail :</b> <%%MAIL%%><br />
 <b>City :</b> <%%CITY%%><br />
 <b>Country :</b> <%%COUNTRY%%><br />
 <hr />
-<p><u>Order summary :</u> </p>
+<p><u>Order summary :</u></p>
 <hr />
 <b>Total untaxed amount :</b> <%%AMOUNT%%><br />
-<b>Pat mode :</b> <%%PAYMODE%%><br />
-<b>Items :</b> <%%ITEMS%%>
+<b>Pay mode :</b> <%%PAYMODE%%><br />
+<b>Items :</b> <%%ITEMS%%>
 <hr />
 <%%PRODUCTION_DATA%%>
-<hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
+<hr />Access to the online bill <a href=\"<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>\">here</a>
 ';

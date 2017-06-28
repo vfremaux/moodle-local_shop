@@ -39,7 +39,7 @@ class local_shop_renderer extends local_shop_base_renderer {
     /**
      * prints an owner menu and changes currently viewed owner if required
      */
-    public function print_owner_menu($urlroot) {
+    public function print_owner_menu($urlroot, $activeowner) {
         global $OUTPUT, $DB;
 
         $config = get_config('local_shop');
@@ -47,8 +47,6 @@ class local_shop_renderer extends local_shop_base_renderer {
         if (empty($config->usedelegation)) {
             return;
         }
-
-        $activeowner = optional_param('shopowner', null, PARAM_INT);
 
         $owners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), 'hasaccount,firstname,lastname');
 
@@ -78,44 +76,8 @@ class local_shop_renderer extends local_shop_base_renderer {
     /**
      * prints a customer menu and changes currently viewed owner if required
      */
-    public function print_customer_menu($urlroot, $shopownerid = 0) {
+    public function print_customer_menu($urlroot, &$customers, $activecustomerid) {
         global $OUTPUT, $DB;
-
-        $activecustomer = optional_param('customer', null, PARAM_INT);
-
-        $select = " hasaccount > 0 ";
-        $join = '';
-        $params = array();
-        if ($shopownerid) {
-            $select .= " AND co.userid = ? ";
-            $params[] = $shopownerid;
-            $join = "
-                LEFT JOIN
-                    {local_shop_customer_owner} co
-                ON
-                    co.customerid = c.id
-            ";
-        }
-
-        $sql = "
-            SELECT
-                c.id,
-                c.firstname,
-                c.lastname,
-                c.city,
-                c.country,
-                c.hasaccount
-            FROM
-                {local_shop_customer} c
-            $join
-            WHERE
-                $select
-            ORDER BY
-                c.lastname,
-                c.firstname
-        ";
-
-        $customers = $DB->get_records_sql($sql, $params);
 
         $customersmenu = array();
         if ($customers) {
@@ -127,12 +89,12 @@ class local_shop_renderer extends local_shop_base_renderer {
         $customerlabel = get_string('currentcustomer', 'local_shop');
 
         if (count($customers) == 1) {
-            $customername = reset($customers);
-            $output = $customerlabel.': '.$customername->lastname.' '.$customername->firstname;
-            $output .= ' ('.$customername->city.') ['.$customername->country.']';
+            $defaultcustomer = array_pop($customers);
+            $output = $customerlabel.': '.$defaultcustomer->lastname.' '.$defaultcustomer->firstname;
+            $output .= ' ('.$defaultcustomer->city.') ['.$defaultcustomer->country.']';
         } else {
             $u = new moodle_url($urlroot);
-            $select = new single_select($u, 'customer', $customersmenu, $activecustomer, null, 'selectcustomer');
+            $select = new single_select($u, 'customer', $customersmenu, $activecustomerid, array('' => 'choosedots'), 'selectcustomer');
             $select->label = $customerlabel;
             $output = $OUTPUT->render($select);
         }

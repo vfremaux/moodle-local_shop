@@ -1592,7 +1592,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= get_string('quantity', 'local_shop');
             $str .= '</th>';
             $str .= '<th width="8%" align="right" style="text-align:right" class="header lastcol">';
-            $str .= get_string('totalpriceTTC', 'local_shop');
+            $str .= get_string('totalpricettc', 'local_shop');
             $str .= '</th>';
             $str .= '</tr>';
         } else {
@@ -1901,11 +1901,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<table width="100%" id="shop-paymodes">';
         $str .= '<tr>';
         $str .= '<td valign="top" colspan="1">';
-        $str .= get_string('paymentmode', 'local_shop');
+        $str .= get_string('choosepaymentmode', 'local_shop');
         $str .= '<sup>*</sup>:';
         $str .= '</td></tr>';
         $str .= '<tr><td valign="top" align="left">';
-
+        $str .= '<div class="shop-paymodes-choice">';
         // Checking  paymodes availability and creating radios.
         if ($SESSION->shoppingcart->finalshippedtaxedtotal == 0) {
             $str .= '<input type="hidden" name="paymode" value="freeorder" />';
@@ -1915,12 +1915,17 @@ class shop_front_renderer extends local_shop_base_renderer {
 
             \local_shop\Shop::expand_paymodes($this->theshop);
 
+            $payinputs = '';
+
             foreach ($paymodes as $var) {
                 $isenabledvar = "enable$var";
 
                 $paymodeplugin = shop_paymode::get_instance($this->theshop, $var);
 
                 // User must be allowed to use non immediate payment methods.
+
+                $instant = $paymodeplugin->is_instant_payment();
+
                 if (!$paymodeplugin->is_instant_payment()) {
                     if (!has_capability('local/shop:paycheckoverride', $this->context) &&
                         !has_capability('local/shop:usenoninstantpayments', $this->context)) {
@@ -1930,7 +1935,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
                 // If test payment, check if we are logged in and admin, or logged in from an admin behalf.
 
-                if (($var == 'test') && (!$config->test)) {
+                if (($var == 'test') || ($config->test)) {
                     if (!isloggedin()) {
                         continue;
                     }
@@ -1957,12 +1962,19 @@ class shop_front_renderer extends local_shop_base_renderer {
                         $paymode = $SESSION->shoppingcart->paymode;
                     }
                     $checked = ($paymode == $var) ? 'checked="checked" ' : '';
-                    $str .= '<input type="radio" name="paymode" value="'.$var.'" '.$checked.' /> <em>';
-                    $str .= get_string($isenabledvar.'2', 'shoppaymodes_'.$var);
-                    $str .= '</em><br/>';
+                    $payinputs .= '<input type="radio" name="paymode" value="'.$var.'" '.$checked.' /> <em>';
+                    $payinputs .= get_string($isenabledvar.'2', 'shoppaymodes_'.$var);
+                    $payinputs .= '</em><br/>';
                 }
             }
+            if (empty($payinputs)) {
+                $str .= $this->output->notification(get_string('nopaymodesavailable', 'local_shop'));
+            } else {
+                $str .= $payinputs;
+            }
         }
+
+        $str .= '</div>';
         $str .= '</td></tr></table>';
 
         return $str;
@@ -2327,12 +2339,15 @@ class shop_front_renderer extends local_shop_base_renderer {
         $eulastr = '';
 
         $eula = ''.$this->theshop->eula;
+        $context = context_system::instance();
 
         foreach (array_keys($SESSION->shoppingcart->order) as $shortname) {
             $ci = $this->thecatalog->get_product_by_shortname($shortname);
             if (!($ci->eula === '')) {
                 $eula .= '<h3>'.$ci->name.'</h3>';
-                $eula .= '<p>'.$ci->eula.'</p>';
+                $cieula = file_rewrite_pluginfile_urls($ci->eula, 'pluginfile.php', $context->id, 'local_shop',
+                                                       'catalogitemeula', $ci->id);
+                $eula .= '<p>'.$cieula.'</p>';
             }
         }
 
@@ -2357,6 +2372,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $eulastr .= '</div>';
             $eulastr .= '</div>';
         }
+
         return $eulastr;
     }
 
