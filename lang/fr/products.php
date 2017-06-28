@@ -61,7 +61,6 @@ $string['removeset'] = 'Supprimer l\'assemblage';
 $string['requiredataadvice'] = 'Votre commande nécessite des informations que vous DEVEZ FOURNIR AVANT de pouvoir soumettre.';
 $string['requireddata'] = 'Données à fournir par le client';
 $string['requireddatacaption'] = 'Certains des produits commandés nécessitent certaines données pour leur configuration. Entrez et validez les informations ci-dessous avant de continuer votre achat.';
-$string['ttc'] = 'TTC';
 $string['unlinkproduct'] = 'Délier le produit';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Le cours support client utilise la définition par défaut';
 $string['warningnocustomersupportcourse'] = 'aucun cours support client défini';
