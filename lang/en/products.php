@@ -53,7 +53,6 @@ $string['noproducts'] = 'No products';
 $string['nocatsslave'] = 'This is a slave catalog. No categories can be edited.';
 $string['parentcategory'] = 'Parent category';
 $string['rootcategory'] = '-- Root category --';
-$string['ttc'] = 'TTC';
 $string['producteulas'] = 'Product Terms of Use';
 $string['productpassword'] = 'Product password';
 $string['removealllinkedproducts'] = 'Remove all linked products';
