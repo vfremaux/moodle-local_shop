@@ -52,6 +52,7 @@ $string['code'] = 'Code';
 $string['configdefaultnavsteps'] = 'Some office owners may reorder the steps in the front process. Keep in mind some orders might NOT work correctly, f.e. trying to get payment before fhoc cart and customer are defined.';
 $string['configforcedownloadleaflet'] = 'Force download of leaflet';
 $string['confighideproductswhennotavailable'] = 'If enabled, non available products (for availability check reasons, but yet published for sale) will not be shown at all on front. If disabled, they still appear but shadowed and without the ordering button.';
+$string['configpresalenotification'] = 'Enable or disable the order input notification';
 $string['confirm'] = 'Confirm';
 $string['confirmorder'] = 'Confirm order';
 $string['continue'] = 'Continue';
@@ -124,6 +125,7 @@ $string['noassignation'] = 'No participant assigned.';
 $string['noproductincategory'] = 'No product in category';
 $string['notallassigned'] = 'All your seats are not assigned. You may have order more units than really used. Please fix this before pursuing.';
 $string['notavailable'] = 'This product is not available for you at the moment (e.g. you may already own an active instance of it).';
+$string['notifications'] = 'Notifications';
 $string['objects'] = 'objects';
 $string['on'] = 'On ';
 $string['oneseat'] = 'One seat per order';
@@ -151,6 +153,7 @@ $string['choosepaymentmode'] = 'Choose your pay mode';
 $string['paymodedonotpatchtoresponse'] = 'The detected paymode of the respone is different to the registered paymode in order. Error.';
 $string['payto'] = 'Thanks pay to {$a}.<br/>Print the order form and send it to ';
 $string['plantcode'] = 'Plant code';
+$string['presalenotification'] = 'Pre sales notifications';
 $string['previous'] = 'Previous step';
 $string['procedure'] = 'Procedure';
 $string['productionbounceadvice'] = 'Order has already been processed once. It cannot be processed again. This is probably due to reloading this page. If you experience issues in getting your products, please contact our support.';
@@ -241,19 +244,19 @@ $string['sales_feedback_tpl'] = '
 <h3><%%SELLER%%></h3>
 <h4>Customer order</h4>
 
-<p>You just ordered on the website : <%%SERVER%%>.</p>
+<p>You just ordered on the website: <%%SERVER%%>.</p>
 
 <p><u>Customer identification:</u> </p>
 <hr />
 <b>Firstname :</b> <%%FIRSTNAME%%><br />
 <b>Lastname:</b> <%%LASTNAME%%><br />
-<b>Mail :</b> <%%MAIL%%><br />
-<b>City :</b> <%%CITY%%><br />
-<b>Country :</b> <%%COUNTRY%%><br />
+<b>Mail:</b> <%%MAIL%%><br />
+<b>City:</b> <%%CITY%%><br />
+<b>Country:</b> <%%COUNTRY%%><br />
 <hr />
 <p><u>Order summary:</u></p>
 <hr />
-<b>Total untaxed amount :</b> <%%AMOUNT%%><br />
+<b>Total untaxed amount:</b> <%%AMOUNT%%><br />
 <b>Pay mode:</b> <%%PAYMODE%%><br />
 <b>Items:</b> <%%ITEMS%%>
 <hr />
