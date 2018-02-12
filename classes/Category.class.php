@@ -133,14 +133,19 @@ class Category extends ShopObject {
     public static function filter_parentable(&$categories, $currentcatid = 0) {
         global $DB;
 
+        debug_trace("Filering in ");
+
         if (empty($categories)) {
             return;
         }
+
         if (!$currentcatid) {
             return;
         }
 
         foreach ($categories as $c) {
+
+            debug_trace("checking category $c->id ");
 
             $cid = $c->id;
 

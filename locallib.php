@@ -539,6 +539,7 @@ function shop_build_context() {
     if ($SESSION->shop->shopid) {
         try {
             $theshop = new Shop($SESSION->shop->shopid);
+            $SESSION->shop->catalogid = $theshop->catalogid;
         } catch (Exception $e) {
             print_error('objecterror', 'local_shop', $e->getMessage());
         }
@@ -547,6 +548,7 @@ function shop_build_context() {
         $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
         if ($shop = array_pop($shops)) {
             $theshop = new Shop($shop->id);
+            $SESSION->shop->catalogid = $theshop->catalogid;
         }
     }
 

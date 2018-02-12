@@ -68,6 +68,9 @@ function xmldb_local_shop_install() {
         array('element' => 'bill',
               'fromstate' => 'PLACED',
               'tostate' => 'SOLDOUT'),
+        array('element' => 'bill',
+              'fromstate' => 'PLACED',
+              'tostate' => 'CANCELLED'),
 
         array('element' => 'bill',
               'fromstate' => 'PAYBACK',

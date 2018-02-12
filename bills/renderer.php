@@ -105,32 +105,63 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $str .= '<div id="shop-customerinfo">';
         $str .= '<table cellspacing="4" width="100%">';
-        $str .= '<tr><td width="60%" valign="top">';
+
+        $str .= '<tr>';
+        $str .= '<td width="60%" valign="top">';
         $str .= '<b>'.get_string('orderID', 'local_shop').'</b>'. $bill->transactionid;
-        $str .= '</td><td width="40%" valign="top" align="right">';
+        $str .= '</td>';
+
+        $str .= '<td width="40%" valign="top" align="right">';
         $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($bill->emissiondate);
-        $str .= '</td></tr>';
-        $str .= '<tr><td width="60%" valign="top">';
+        $str .= '</td>';
+
+        $str .= '</tr>';
+
+        $str .= '<tr>';
+
+        $str .= '<td width="60%" valign="top">';
         $str .= '<b>'.get_string('organisation', 'local_shop').':</b> '.$ci->organisation;
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        $str .= '</td>';
+
+        $str .= '<td width="40%" valign="top">';
+        $str .= '</td>';
+
+        $str .= '</tr>';
 
         if ($useinvoiceinfo) {
-            $str .= '<tr><td width="60%" valign="top">';
+            $str .= '<tr>';
+
+            $str .= '<td width="60%" valign="top">';
             $str .= '<b>'.get_string('department').':</b> '.$ci->department;
-            $str .= '</td><td width="40%" valign="top">';
-            $str .= '</td></tr>';
+            $str .= '</td>';
+
+            $str .= '<td width="40%" valign="top">';
+            $str .= '</td>';
+
+            $str .= '</tr>';
         }
 
-        $str .= '<tr><td width="60%" valign="top">';
-        $str .= '<b>'.get_string('customer', 'local_shop').' :</b> '.$ci->lastname.' '.$ci->firstname;
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        $str .= '<tr>';
 
-        $str .= '<tr><td width="60%" valign="top">';
+        $str .= '<td width="60%" valign="top">';
+        $str .= '<b>'.get_string('customer', 'local_shop').' :</b> '.$ci->lastname.' '.$ci->firstname;
+        $str .= '</td>';
+
+        $str .= '<td width="40%" valign="top">';
+        $str .= '</td>';
+
+        $str .= '</tr>';
+
+        $str .= '<tr>';
+
+        $str .= '<td width="60%" valign="top">';
         $str .= '<b>'.get_string('address').' : </b> '.$ci->address;
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        $str .= '</td>';
+
+        $str . '<td width="40%" valign="top">';
+        $str .= '</td>';
+
+        $str .= '</tr>';
 
         $str .= '<tr><td width="60%" valign="top">';
         $str .= '<b>'.get_string('city').' : </b> '.$ci->zip.' '.$ci->city;
@@ -762,7 +793,11 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
-        $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+        if ($bill->status == SHOP_BILL_COMPLETE || $bill->status == SHOP_BILL_SOLDOUT) {
+            $str .= '<b>'.get_string('paiedfinaltotalprice', 'local_shop').'</b>:';
+        } else {
+            $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+        }
         $str .= '</td>';
         $str .= '<td width="40%" class="cell c1">';
         $str .= '&nbsp;';
@@ -792,7 +827,11 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
             $str .= '<tr valign="top">';
             $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
-            $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+            if ($bill->status == SHOP_BILL_COMPLETE || $bill->status == SHOP_BILL_SOLDOUT) {
+                $str .= '<b>'.get_string('paiedfinaltotalprice', 'local_shop').'</b>:';
+            } else {
+                $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+            }
             $str .= '</td>';
             $str .= '<td width="40%" class="cell c1">';
             $str .= '&nbsp;';
@@ -867,26 +906,54 @@ class shop_bills_renderer extends local_shop_base_renderer {
         return '</fieldset>';
     }
 
+    public function bill_footer($bill) {
+        $str = '';
+
+        // Weird effect of empty on a magic attribute.
+        $billfooter = $bill->thecatalogue->billfooter;
+        if (!empty($billfooter)) {
+            $str .= '<div class="shop-bill-footer">';
+            $str .= $billfooter;
+            $str .= '</div>';
+        }
+
+        return $str;
+    }
+
     public function bill_merchant_line($portlet) {
 
         $str = '';
 
         if (is_null($portlet)) {
             $str .= '<tr>';
+
             $str .= '<th class="header c0">';
             $str .= '</th>';
+
             $str .= '<th class="header c1">';
             $str .= get_string('num', 'local_shop');
             $str .= '</th>';
+
             $str .= '<th class="header c2">';
-            $str .= get_string('label', 'local_shop');
+            $str .= get_string('customer', 'local_shop');
             $str .= '</th>';
+
             $str .= '<th class="header c3">';
             $str .= get_string('transaction', 'local_shop');
             $str .= '</th>';
+
+            $str .= '<th class="header c3">';
+            $str .= get_string('date', 'local_shop');
+            $str .= '</th>';
+
+            $str .= '<th class="header c3">';
+            $str .= get_string('lettering', 'local_shop');
+            $str .= '</th>';
+
             $str .= '<th class="header lastcol">';
             $str .= get_string('amount', 'local_shop');
             $str .= '</th>';
+
             $str .= '</tr>';
 
             return $str;
@@ -896,37 +963,58 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $str .= '<td width="30" class="cell c0">';
         $str .= '&nbsp;';
         $str .= '</td>';
+
         $str .= '<td width="120" class="cell c1">';
         $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $portlet->id);
         $billurl = new moodle_url('/local/shop/bills/view.php', $params);
-        $str .= ' <a class="activeLink" href="'.$billurl.'">B-'.date('Y-m', $portlet->emissiondate).'-'.$portlet->id.'</a>';
+        $str .= ' <a class="activeLink" href="'.$billurl.'">B-'.date('Ymd', $portlet->emissiondate).'-'.$portlet->id.'</a>';
         $str .= '</td>';
+
         $str .= '<td width="*" class="cell c2">';
-        $str .= $portlet->title;
+        $str .= $portlet->customer->firstname.' '.$portlet->customer->lastname;
         $str .= '</td>';
+
         $str .= '<td width="120" class="cell c3">';
         $params = array('transid' => $portlet->transactionid, 'shopid' => $this->theshop->id);
         $scanurl = new moodle_url('/local/shop/front/scantrace.php', $params);
         $title = get_string('scantrace', 'local_shop');
         $str .= '<code><a href="'.$scanurl.'" title="'.$title.'">'.$portlet->transactionid.'</a></code>';
         $str .= '</td>';
+
+        $str .= '<td width="120" class="cell c2">';
+        $str .= strftime('%c', $portlet->timecreated);
+        $str .= '</td>';
+
+        $str .= '<td width="120" class="cell c2">';
+        $str .= $portlet->idnumber;
+        $str .= '</td>';
+
         $str .= '<td width="100" align="right" class="cell lastcol">';
         $str .= sprintf("%.2f", round($portlet->amount, 2)).' '.get_string($portlet->currency.'symb', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
+
         $str .= '<tr valign="top">';
+
         $str .= '<td width="30" class="cell c1">';
         $str .= '&nbsp;';
         $str .= '</td>';
+
+        $str .= '<td width="30" class="cell c1">';
+        $str .= '&nbsp;';
+        $str .= '</td>';
+
         $str .= '<td width="100" class="cell c2">';
         $str .= '&nbsp;';
         $str .= '</td>';
+
         $str .= '<td width="*" class="cell c3" colspan="3">';
         $params = array('id' => $this->theshop->id, 'view' => 'viewCustomer', 'userid' => $portlet->userid);
         $customerurl = new moodle_url('/local/shop/customers/view.php', $params);
         $str .= '<a class="activeLink" href="'.$customerurl.'">'.$portlet->firstname.' '.$portlet->lastname.'</a>';
         $str .= ' (<a href="mailto:'.$portlet->email.'">'.$portlet->email.'</a>)';
         $str .= '</td>';
+
         $str .= '</tr>';
 
         return $str;
@@ -1172,27 +1260,157 @@ class shop_bills_renderer extends local_shop_base_renderer {
     }
 
     public function short_bill_line($portlet) {
+        static $odd = 0;
 
         $str = '';
 
-        $str .= '<tr>';
+        $lineclass = ($odd) ? 'r0' : 'r1';
+        $odd = ($odd + 1) % 2;
+
+        $str .= '<tr class="'.$lineclass.'">';
+
         $str .= '<td>';
-        $billurl = new moodle_url('/local/shop/bills/view.php', array('billid' => $portlet->id));
-        $str .= '<a href="'.$billurl.'">'.$portlet->id.'</a>';
+        $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $portlet->id);
+        $billurl = new moodle_url('/local/shop/bills/view.php', $params);
+        $str .= ' <a class="activeLink" href="'.$billurl.'">B-'.date('Ymd', $portlet->emissiondate).'-'.$portlet->id.'</a>';
         $str .= '</td>';
+
         $str .= '<td>';
-        $str .= $portlet->title;
+        $str .= $portlet->lastname.' '.$portlet->firstname;
         $str .= '</td>';
+
         $str .= '<td>';
         $str .= $portlet->userid;
         $str .= '</td>';
+
         $str .= '<td>';
-        $str .= $portlet->emissiondate;
+        $str .= strftime('%c', $portlet->emissiondate);
         $str .= '</td>';
+
         $str .= '<td>';
         $str .= $portlet->transactionid;
         $str .= '</td>';
+
+        $str .= '<td>';
+        $str .= $portlet->status;
+        $str .= '</td>';
+
         $str .= '</tr>';
+
+        return $str;
+    }
+
+    public function search_form($blockinstance, $billcount) {
+        global $OUTPUT;
+
+        $str = '';
+
+        $str .= '<form name="search" action="#" method="get">';
+        $str .= '<input type="hidden" name="id" value="'.@$blockinstance->id.'">';
+        $str .= '<input type="hidden" name="by" value="">';
+        $str .= '<input type="hidden" name="view" value="search">';
+        $str .= '<input type="hidden" name="sesskey" value="'.sesskey().'">';
+        $str .= '<input type="hidden" name="what" value="search">';
+
+        $str .= '<table width="100%">';
+
+        if ($billcount == 0) {
+            $str .= '<tr>';
+            $str .= '<td colspan="4" class="billRow">';
+            echo get_string('nobills', 'local_shop');
+            $str .= '</td>';
+            $str .= '</tr>';
+        } else {
+            $str .= '<tr>';
+            $str .= '<td valign="top">';
+            $str .= '<h2>'.get_string('searchby', 'local_shop').'</h2>';
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="center">';
+            $str .= $OUTPUT->heading(get_string('transactioncode', 'local_shop'), 3);
+            $str .= '<input type="text" name="billkey" style="font-family : \'Courier New\', monospace ; width : 30em"><br/>';
+            $str .= '<p class="smalltext">'.get_string('searchforakeyinstructions', 'local_shop');
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="right">';
+            $str .= '<a href="Javascript:searchby(\'key\');">'.get_string('search').'</a>';
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="center">';
+            $str .= $OUTPUT->heading(get_string('customername', 'local_shop'), 3);
+            $str .= '<input type="text" name="customername" width="50" maxlength="60"><br>';
+            $str .= '<p class="smalltext">'.get_string('customersnameonbill', 'local_shop');
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="right">';
+            $str .= '<a href="Javascript:searchby(\'name\');">'.get_string('search').'</a>';
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="center">';
+            $str .= $OUTPUT->heading(get_string('billid', 'local_shop'), 3);
+            $str .= '<input type="text" name="billid" width="5" maxlength="10"><br>';
+            $str .= '<p class="smalltext">'.get_string('billorderingnumber', 'local_shop');
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="right">';
+            $str .= '<a href="Javascript:searchby(\'id\');">'.get_string('search').'</a>';
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="center">';
+            $str .= $OUTPUT->heading(get_string('emissiondate', 'local_shop'), 3);
+            $str .= get_string('fromdate', 'local_shop');
+            $str .= ' <input type="text" name="datefrom" width="10" maxlength="10"> ';
+            $str .= get_string('hour', 'local_shop');
+            $str .= ' <input type="text" name="timefrom" width="10" maxlength="10"> ';
+            $str .= get_string('until', 'local_shop');
+
+            $str .= '<select name="during">';
+            $str .= '<option value="1">'.get_string('onehour', 'local_shop').'</option>';
+            $str .= '<option value="24">'.get_string('oneday', 'local_shop').'</option>';
+            $str .= '<option value="240" SELECTED >'.get_string('tendays', 'local_shop').'</option>';
+            $str .= '<option value="'.(24 * 30).'">'.get_string('onemonth', 'local_shop').'</option>';
+            $str .= '<option value="'.(24 * 90).'">'.get_string('threemonths', 'local_shop').'</option>';
+            $str .= '</select> '.get_string('after', 'local_shop').'.<br/>';
+
+            $str .= '<p class="smalltext">'.get_string('searchtimerange', 'local_shop').'.';
+            $str .= '</td>';
+            $str .= '</tr>';
+
+            $str .= '<tr>';
+            $str .= '<td align="right">';
+            $str .= '<a href="Javascript:searchby(\'date\');">'.get_string('search').'</a>';
+            $str .= '</td>';
+            $str .= '</tr>';
+        }
+
+        $str .= '</table>';
+        $str .= '</form>';
+
+        return $str;
+    }
+
+    public function search_results($results) {
+
+        $str = '<table width="100%" class="generaltable">';
+        foreach ($results as $portlet) {
+            $str .= $this->short_bill_line($portlet);
+        }
+
+        $str .= '</table>';
 
         return $str;
     }
