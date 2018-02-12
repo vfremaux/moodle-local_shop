@@ -161,7 +161,7 @@ class shop_paymode_paypal extends shop_paymode {
 
     // Processes a payment asynchronous confirmation.
     public function process_ipn() {
-        global $CFG;
+        global $CFG, $DB;
 
         // Get all input parms.
         $transid = required_param('invoice', PARAM_TEXT);
@@ -204,7 +204,7 @@ class shop_paymode_paypal extends shop_paymode {
 
         $validationquery .= $querystring;
         // Control for replicated notifications (normal operations).
-        if (empty($this->_config->test) && $DB->record_exists('shop_paypal_ipn', array('txnid' => $txnid))) {
+        if (empty($this->_config->test) && $DB->record_exists('local_shop_paypal_ipn', array('txnid' => $txnid))) {
             shop_trace("[$transid] Paypal IPN : paypal event collision on $txnid");
             shop_email_paypal_error_to_admin("Paypal IPN : Transaction $txnid is being repeated.", $data);
             die;
@@ -217,7 +217,7 @@ class shop_paymode_paypal extends shop_paymode {
             $paypalipn->timecreated = time();
             shop_trace("[$transid] Paypal IPN : Recording paypal event");
             try {
-                $DB->insert_record('shop_paypal_ipn', $paypalipn);
+                $DB->insert_record('local_shop_paypal_ipn', $paypalipn);
             } catch (Exception $e) {
                 shop_trace("[$transid] Paypal IPN : Recording paypal event error");
             }
@@ -321,7 +321,8 @@ class shop_paymode_paypal extends shop_paymode {
     public function settings(&$settings) {
 
         $label = get_string($this->name.'paymodeparams', 'shoppaymodes_paypal', $this->name);
-        $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, ''));
+        $info = get_string('paypaltest_desc', 'shoppaymodes_paypal');
+        $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, $info));
 
         $label = get_string('paypalsellertestname', 'shoppaymodes_paypal');
         $settings->add(new admin_setting_configtext('local_shop/paypalsellertestname', $label,
