@@ -29,6 +29,9 @@ Use \local_shop\Bill;
 $transid = optional_param('transid', null, PARAM_TEXT);
 $billid = optional_param('billid', null, PARAM_INT);
 
+$billrenderer = shop_get_renderer('bills');
+$billrenderer->load_context($theshop, $thecatalog, $theblock);
+
 if ($transid) {
     if (!$bill = Bill::get_by_transaction($transid)) {
         $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
@@ -83,14 +86,20 @@ foreach ($bill->items as $biid => $bi) {
 }
 echo '</table>';
 
-echo $renderer->full_order_totals($bill);
+if (!in_array($afullbill->status, $realized)) {
+    echo $renderer->full_order_totals($afullbill);
+} else {
+    echo $billrenderer->full_bill_totals($afullbill);
+}
 
 echo $renderer->full_order_taxes($bill);
+
+echo $billrenderer->bill_footer($bill);
+
+echo $renderer->sales_contact();
 
 $params = array('view' => 'shop' , 'id' => $theshop->id, 'blockid' => 0 + @$theblock->id);
 $backurl = new moodle_url('/local/shop/front/view.php', $params);
 echo '<center>';
 echo $OUTPUT->single_button($backurl, get_string('backtoshop', 'local_shop'));
 echo '</center>';
-echo '<p>'.get_string('sellercontact', 'local_shop');
-echo '<a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';

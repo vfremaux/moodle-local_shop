@@ -177,6 +177,35 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    public function year_choice($current, $url) {
+        global $OUTPUT, $DB, $SESSION;
+
+        if ($current) {
+            // Register in user's session.
+            $SESSION->shop->billyear = $current;
+        }
+
+        $firstyear = $DB->get_field('local_shop_bill', 'MIN(emissiondate)', array());
+        $lastyear = $DB->get_field('local_shop_bill', 'MAX(emissiondate)', array());
+
+        if (!$firstyear && !$lastyear) {
+            return '';
+        }
+
+        $firstyear = date('Y', $firstyear);
+        $lastyear = date('Y', $lastyear);
+        $laststep = $lastyear - $firstyear;
+        for ($i = 0; $i <= $laststep; $i++) {
+            $years[$firstyear + $i] = $firstyear + $i;
+        }
+
+        $str = '';
+
+        $str .= $OUTPUT->single_select($url, 'y', $years, $current);
+
+        return $str;
+    }
+
     public function customer_choice($current, $url) {
         global $OUTPUT;
 

@@ -82,6 +82,9 @@ class Catalog_Form extends moodleform {
         $mform->addHelpButton('countryrestrictions', 'countryrestrictions', 'local_shop');
         $mform->setType('countryrestrictions', PARAM_TEXT);
 
+        $label = get_string('billfooter', 'local_shop');
+        $mform->addElement('editor', 'billfooter_editor', $label, '', $this->editoroptions);
+
         // Add catalog mode settings.
 
         if ($config->useslavecatalogs) {
@@ -130,6 +133,10 @@ class Catalog_Form extends moodleform {
 
         $defaults = file_prepare_standard_editor($defaults, 'salesconditions', $this->editoroptions, $context, 'local_shop',
                                                  'catalogsalesconditions', $defaults->catalogid);
+
+        $defaults = file_prepare_standard_editor($defaults, 'billfooter', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogbillfooter', $defaults->catalogid);
+
         parent::set_data($defaults);
     }
 }

@@ -57,6 +57,7 @@ $PAGE->navbar->add(format_string($thecatalog->name), $viewurl);
 $PAGE->navbar->add(get_string('addcategory', 'local_shop'));
 
 $allcats = Category::get_instances(array('catalogid' => $thecatalog->id));
+
 Category::filter_parentable($allcats, $categoryid);
 
 $allcatsmenu = array();
@@ -82,10 +83,12 @@ if ($categoryid) {
     $formdata->descriptionformat = FORMAT_MOODLE;
     $mform->set_data($formdata);
 }
+
 if ($mform->is_cancelled()) {
     $params = array('id' => $theshop->id, 'view' => 'viewAllProducts');
     redirect(new moodle_url('/local/shop/products/view.php', $params));
 }
+
 if ($data = $mform->get_data()) {
 
     $data->catalog = $thecatalog;

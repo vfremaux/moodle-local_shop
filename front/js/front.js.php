@@ -50,6 +50,7 @@ $required = $thecatalog->check_required_seats();
 $assigned = shop_check_assigned_seats($requiredroles);
 $notassignedstr = str_replace("'", '\\\'', get_string('notallassigned', 'local_shop'));
 $myorderstr = str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'));
+$invalidemailstr = get_string('invalidemail', 'local_shop');
 ?>
 
 function openPopup(target) {
@@ -542,4 +543,14 @@ function check_pass_code(productname, textinput, event) {
             }
         }
     );
+}
+
+
+function checkemail(textselect) {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(textselect.value)) {
+        return (true);
+    }
+    alert("<?php echo $invalidemailstr ?>");
+    textselect.value = '';
+    return (false);
 }

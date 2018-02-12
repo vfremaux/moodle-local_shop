@@ -124,7 +124,7 @@ class category_controller {
             $category->descriptionformat = 0 + $category->description_editor['format'];
 
             if (empty($category->categoryid)) {
-                $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid);
+                $params = array('catalogid' => $this->thecatalog->id, 'parentid' => @$category->parentid);
                 $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
                 $category->sortorder = $maxorder + 1;
                 if (!$category->id = $DB->insert_record('local_shop_catalogcategory', $category)) {

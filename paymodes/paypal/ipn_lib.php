@@ -41,7 +41,7 @@ function paypal_print_test_ipn_link($transid, $shopid) {
 
     $testipnstr = get_string('ipnfortest', 'shoppaymodes_paypal');
 
-    echo '<form action="'.$url.'" name="ipnsimulate" method="POST" >';
+    echo '<form action="'.$url.'" name="ipnsimulate" method="POST" class="shop-inline" >';
     echo '<input type="hidden" name="invoice" value="'.$transid.'" />';
     echo '<input type="hidden" name="custom" value="'.$custom.'" />';
     echo '<input type="hidden" name="txn_id" value="'.$txnid.'" />';
