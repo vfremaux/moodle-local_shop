@@ -67,6 +67,7 @@ class Catalog extends ShopObject {
 
             // These are fake fields to drive the editors in form.
             $this->record->descriptionformat = FORMAT_HTML;
+            $this->record->billfooterformat = FORMAT_HTML;
             $this->record->salesconditionsformat = FORMAT_HTML;
 
         } else {
@@ -77,6 +78,8 @@ class Catalog extends ShopObject {
             $this->record->ismaster = 0;
             $this->record->salesconditions = '';
             $this->record->salesconditionsformat = FORMAT_HTML;
+            $this->record->billfooter = '';
+            $this->record->billfooterformat = FORMAT_HTML;
             $this->record->groupid = 0;
             $this->record->countryrestrictions = '';
         }
