@@ -653,11 +653,11 @@ class shop_products_renderer extends local_shop_base_renderer {
 
     protected function feed_chooser(&$catoptions, $categories, $prefix = '') {
         foreach ($categories as $cat) {
-            $catoptions[$cat->id] = $prefix.$cat->name;
+            $catoptions[$cat->id] = $prefix.format_string($cat->name);
             $subs = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id), 'sortorder');
             if ($subs) {
                 $prefixtmp = $prefix;
-                $prefix .= $cat->name.'/';
+                $prefix .= format_string($cat->name).'/';
                 $this->feed_chooser($catoptions, $subs, $prefix);
                 $prefix = $prefixtmp;
             }
@@ -704,7 +704,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $row = array();
 
         $class = ($category->visible) ? 'shop-shadow' : '';
-        $row[] = $indent.'<span class="'.$class.'">'.$category->name.'</span>';
+        $row[] = $indent.'<span class="'.$class.'">'.format_string($category->name).'</span>';
 
         $row[] = $category->get_parent_name();
 
