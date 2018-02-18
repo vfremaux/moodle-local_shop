@@ -46,7 +46,7 @@ $url = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $id));
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-$shopid = optional_param('id', '', PARAM_INT);
+$shopid = $DB->get_field('local_shop', 'MIN(id)', array());
 
 // Make page header and navigation.
 
@@ -67,7 +67,7 @@ if ($shop = new Shop($shopid)) {
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
+    redirect(new moodle_url('/local/shop/index.php'));
 }
 if ($data = $mform->get_data()) {
 
@@ -76,7 +76,7 @@ if ($data = $mform->get_data()) {
     $controller->receive('edit', $data, $mform);
     $controller->process('edit');
 
-    redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
+    redirect(new moodle_url('/local/shop/index.php'));
 }
 
 echo $OUTPUT->header();

@@ -177,6 +177,35 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    public function year_choice($current, $url) {
+        global $OUTPUT, $DB, $SESSION;
+
+        if ($current) {
+            // Register in user's session.
+            $SESSION->shop->billyear = $current;
+        }
+
+        $firstyear = $DB->get_field('local_shop_bill', 'MIN(emissiondate)', array());
+        $lastyear = $DB->get_field('local_shop_bill', 'MAX(emissiondate)', array());
+
+        if (!$firstyear && !$lastyear) {
+            return '';
+        }
+
+        $firstyear = date('Y', $firstyear);
+        $lastyear = date('Y', $lastyear);
+        $laststep = $lastyear - $firstyear;
+        for ($i = 0; $i <= $laststep; $i++) {
+            $years[$firstyear + $i] = $firstyear + $i;
+        }
+
+        $str = '';
+
+        $str .= $OUTPUT->single_select($url, 'y', $years, $current);
+
+        return $str;
+    }
+
     public function customer_choice($current, $url) {
         global $OUTPUT;
 
@@ -197,11 +226,11 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str .= '<tr valign="top">';
         $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops'));
-        $str .= '<a href="'.$linkurl.'">'.get_string('allshops', 'local_shop').'</a>';
+        $linkurl = new moodle_url('/local/shop/shop/edit_shop.php');
+        $str .= '<a href="'.$linkurl.'">'.get_string('editshopsettings', 'local_shop').'</a>';
         $str .= '</td>';
         $str .= '<td width="75%">';
-        $str .= get_string('allshopsdesc', 'local_shop');
+        $str .= get_string('editshopsettings_desc', 'local_shop');
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -382,5 +411,17 @@ class local_shop_base_renderer {
         if (empty($this->theshop) || empty($this->thecatalog)) {
             throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');
         }
+    }
+
+    public function reference_time() {
+        $str = '';
+
+        $str .= '<br/>';
+        $str .= '<div class="reference-time">';
+        $str .= '<b>UTC :</b> '.gmdate('Y/m/d H:i:s'). ' <b>Local :</b> '.date('Y/m/d H:i:s');
+        $str .= '</div>';
+        $str .= '<br/>';
+
+        return $str;
     }
 }

@@ -48,9 +48,9 @@ $string['admin'] = 'Administration';
 $string['after'] = 'after';
 $string['allbills'] = 'All bills';
 $string['allshops'] = 'Manage all shop instances';
-$string['allshopsdesc'] = 'All shops';
+$string['allshops_desc'] = 'All shops';
 $string['allcustomers'] = 'All customers';
-$string['allproductinstances'] = 'All purchases';
+$string['allproductinstances'] = 'All product instances';
 $string['allproducts'] = 'All products';
 $string['alltaxes'] = 'Taxes (cumulated)';
 $string['allowtax'] = 'Apply taxes';
@@ -88,7 +88,7 @@ $string['bundle'] = 'Bundle';
 $string['carefullchoice'] = 'Check the default paymode you choose is enabled !!.';
 $string['catalog'] = 'Catalog ';
 $string['nocatalogs'] = 'No catalog available';
-$string['catalogadmin'] = 'Catalog Administration';
+$string['catalogadmin'] = 'Catalog management';
 $string['catalogsdeleted'] = 'Catalogs data deleted';
 $string['catalogue'] = 'Product line';
 $string['catalogues'] = 'Product lines';
@@ -98,7 +98,6 @@ $string['category'] = 'Categories';
 $string['categorydescription'] = 'Description';
 $string['categoryname'] = 'Name';
 $string['categoryowner'] = 'Category Owner';
-$string['categoryownerdesc'] = 'The Category Owner owns a category as course creator and can manage the category and courses within it. He can nominate teachers or course creators and is legally responsible.';
 $string['catname'] = 'Name';
 $string['catnum'] = 'Number';
 $string['chooseall'] = 'All';
@@ -196,6 +195,7 @@ $string['dispo'] = 'Avail.';
 $string['dosearch'] = 'Search';
 $string['edit_categories'] = 'Edit categories';
 $string['editshop'] = 'Edit a shop instance';
+$string['editshopsettings'] = 'Edit shop settings';
 $string['editbundle'] = 'Bundle editing';
 $string['editcategories'] = 'Edit categories';
 $string['editcategory'] = 'Edit category';
@@ -208,7 +208,6 @@ $string['errorbadhandler'] = 'The handler class ({$a}) file does not exist. This
 $string['errorunimplementedhandlermethod'] = 'This postprod method ({$a}) is not implemented in this handler. This is a coding error that should be reportedto the Moodle Shop developers.';
 $string['eulaheading'] = 'End User Licence Agreement';
 $string['eulaagree'] = 'Confirm agreement to EULA';
-$string['eula_help'] = 'Please read and validate the following End User Licence Agreement before any purchase on {$a}. Confirming the form will provide acceptance of the herein conditions.';
 $string['experimental'] = 'Experimental features';
 $string['warning'] = 'Warning:';
 $string['message'] = 'Message:';
@@ -309,7 +308,6 @@ $string['mytotal'] = 'See your cart total';
 $string['name'] = 'Name:';
 $string['plugindist'] = 'Plugin distribution';
 $string['emulatecommunity'] = 'Emulate community version';
-$string['emulatecommunity_desc'] = 'If enabled, the plugin will behave as the public community version. This might loose features !';
 $string['newbill'] = 'New bill';
 $string['newbillitem'] = 'New bill item';
 $string['newcatalog'] = 'New catalog';
@@ -365,7 +363,6 @@ $string['provisionalnumber'] = 'Provisional numbering';
 $string['quant'] = 'Quant';
 $string['quantity'] = 'Quantity';
 $string['quantaddressesusers'] = 'Quantity addresses user seats';
-$string['quantaddressesusers_help'] = 'Products that use this option will affect the user input stack at the second step of the shopping process';
 $string['rate'] = 'Rate';
 $string['recalculate'] = 'Recalculate';
 $string['resetitems'] = 'Items to reset';
@@ -376,7 +373,6 @@ $string['resetbills'] = 'Clear all bills and purchase information';
 $string['resetcatalogs'] = 'Clear all catalogs';
 $string['resetcustomers'] = 'Clear customer base';
 $string['resetdesc'] = 'Reset the shop';
-$string['resetguide'] = 'This service allows resetting all or part of data within the shop. Some values are linked: f.e.<br/><ul><li>When deleting the custome base, you will also erase all bills</li><li>When deleting all catalogues, you may keep the customer base, but all billing information will be removed.</li></ul>';
 $string['results'] = 'Results';
 $string['required'] = 'Required field';
 $string['requiredparams'] = 'Required field definition';
@@ -394,7 +390,7 @@ $string['searchby'] = 'Search by';
 $string['searchinbills'] = 'Search in running bills.';
 $string['searchincustomers'] = 'Search within customer accounts.';
 $string['searchinproducts'] = 'Search in products.';
-$string['searchinproductinstances'] = 'Search and manage purchases';
+$string['searchinproductinstances'] = 'Search and manage instances of products.';
 $string['section'] = 'Category:';
 $string['seebigger'] = 'See bigger';
 $string['sel'] = 'Sel';
@@ -423,6 +419,7 @@ $string['shop'] = 'Shop';
 $string['noshops'] = 'No shops defined';
 $string['newshop'] = 'New shop instance';
 $string['newshopinstance'] = 'New shop';
+$string['salesmanagement'] = 'Sales management';
 $string['shops'] = 'Shops';
 $string['shops_help'] = 'Shops are instances of sales service that plays a catalog with some sales settings';
 $string['shopinstance'] = 'Shop instance';
@@ -640,6 +637,25 @@ A discount rate applied when customer has the local/shop:seconddiscountagreed ca
 $string['discountrate3_help'] = '
 A discount rate applied when customer has the local/shop:thirddiscountagreed capability on
 ';
+
+$string['resetguide'] = 'This service allows resetting all or part of data within the shop. Some values
+are linked: f.e.<br/><ul><li>When deleting the custome base, you will also erase all bills</li><li>When
+deleting all catalogues, you may keep the customer base, but all billing information will be removed.</li></ul>';
+
+$string['quantaddressesusers_help'] = 'Products that use this option will affect the user input stack
+at the second step of the shopping process';
+
+$string['editshopsettings_desc'] = 'This version provides a single shop instance. You can edit the settings
+of the shop here.';
+
+$string['eula_help'] = 'Please read and validate the following End User Licence Agreement before any purchase
+on {$a}. Confirming the form will provide acceptance of the herein conditions.';
+
+$string['categoryowner_desc'] = 'The Category Owner owns a category as course creator and can manage the
+category and courses within it. He can nominate teachers or course creators and is legally responsible.';
+
+$string['emulatecommunity_desc'] = 'If enabled, the plugin will behave as the public community version.
+This will increas compatibility with other implementations but will loose features !';
 
 global $CFG;
 require($CFG->dirroot.'/local/shop/lang/en/front.php');
