@@ -32,6 +32,7 @@ use \local_shop\Bill;
 
 $action = optional_param('what', '', PARAM_TEXT);
 $transid = optional_param('transid', @$SESSION->shoppingcart->transid, PARAM_TEXT);
+
 try {
     $afullbill = Bill::get_by_transaction($transid);
 } catch (Exception $e) {
@@ -93,7 +94,7 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo $OUTPUT->box_start('shop-notification-message');
     echo $config->sellername.' ';
     echo shop_compile_mail_template('post_billing_message', array(), '');
-    echo '<img id="prod-waiter" src="'.$OUTPUT->pix_url('waitingforprod', 'local_shop').'" />';
+    echo '<img id="prod-waiter" src="'.$OUTPUT->image_url('waitingforprod', 'local_shop').'" />';
     echo $OUTPUT->box_start('shop-message-hidden', 'shop-notification-message-followup');
     echo shop_compile_mail_template('success_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$afullbill->paymode);
     echo $OUTPUT->box_end();
@@ -135,14 +136,15 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
 
     echo $OUTPUT->box_end();
 
-    echo '<div id="shop-buttons">';
+    echo '<div id="shop-buttons"><center>';
     echo $renderer->printable_bill_link($afullbill);
     echo $renderer->shop_return_button($theshop);
-    echo '</div>';
-}
 
-// If testing the shop, provide a manual link to generate the paypal_ipn call.
-if ($config->test && $afullbill->paymode == 'paypal') {
-    require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
-    paypal_print_test_ipn_link($SESSION->shoppingcart->transid, $theshop->id);
+    // If testing the shop, provide a manual link to generate the paypal_ipn call.
+    if ($config->test && $afullbill->paymode == 'paypal') {
+        require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
+        paypal_print_test_ipn_link($SESSION->shoppingcart->transid, $theshop->id);
+    }
+
+    echo '</center></div>';
 }

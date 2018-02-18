@@ -59,12 +59,12 @@ class shop_shop_renderer {
             $blockcount = $sh->get_blocks();
 
             $editurl = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $sh->id, 'sesskey' => sesskey()));
-            $commands = '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'"></a>';
+            $commands = '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit', 'core')).'</a>';
 
             if ($blockcount == 0) {
                 $params = array('view' => 'viewAllShops', 'what' => 'delete', 'id' => $sh->id, 'sesskey' => sesskey());
                 $deleteurl = new moodle_url('/local/shop/shop/view.php', $params);
-                $commands .= ' <a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'"></a>';
+                $commands .= ' <a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete'), 'core').'</a>';
             }
 
             $shopurl = new moodle_url('/local/shop/front/view.php', array('shopid' => $sh->id));

@@ -69,23 +69,21 @@ echo $OUTPUT->header();
 $catalogs = Catalog::get_instances_for_admin();
 
 $renderer = shop_get_renderer('catalogs');
-$shoprenderer = $PAGE->get_renderer('local_shop');
+$shoprenderer = shop_get_renderer('base');
 
 echo $OUTPUT->heading(get_string('salesservice', 'local_shop'), 1);
 
-echo $OUTPUT->heading(get_string('cataloguemanagement', 'local_shop'), 2);
-
-echo '<p><center>';
+echo $OUTPUT->heading(get_string('catalogadmin', 'local_shop'), 2);
 
 echo $renderer->catalogs($catalogs);
 
-echo '<div id="shop-new-catalog" class="pull-right">';
-$editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php');
-echo '<a href="'.$editurl.'">'.get_string('newcatalog', 'local_shop').'</a>';
-echo '</div>';
+if (local_shop_supports_feature('catalog/instances')) {
+    echo $shoprenderer->new_catalogue_form();
+}
 
-echo '<br/>';
-echo '<br/>';
+echo $shoprenderer->reference_time();
+
+echo $OUTPUT->heading(get_string('salesmanagement', 'local_shop'), 2);
 
 echo $shoprenderer->main_menu($theshop);
 
