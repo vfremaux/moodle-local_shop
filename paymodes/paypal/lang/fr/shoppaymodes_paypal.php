@@ -26,7 +26,6 @@ $string['enablepaypal'] = 'Réglement par Paypal';
 $string['enablepaypal2'] = 'Réglement par Paypal';
 $string['enablepaypal3'] = 'Vous avez choisi de régler via Paypal...';
 $string['paypal'] = 'Paypal';
-$string['paypalaccepted'] = 'Paiement par Paypal';
 $string['paypalmsg'] = 'Merci d\'utiliser Paypal pour vos transactions en ligne';
 $string['paypalpaymodeparams'] = 'Paramètres de configuration Paypal';
 $string['paypalsellertestname'] = 'Compte Paypal vendeur test (sandbox)';
@@ -60,9 +59,3 @@ $string['success_followup_text_tpl'] = '
 <p>Si vous éprouvez des difficultés d\'accès, n\'hésitez
 pas à contacter notre service commercial <%%SUPPORT%%>.</p>
 ';
-
-global $CFG;
-$string['paypaltest_desc'] = '
-Lorsque vous utilisez le mode test, toutes vos transations Paypal sont redirigées vers la Sandbox Paypal. Cet environnement de test ne produit pas de retour IPN automatiquement et
-vous devrez le simuler en utilisant la bo^te à outil de développement de Paypal (Paypal IPN Simulator). Le point d\'entrée du handler de traitement IPN, pour ce site,
- est à l\'adresse suivante : '.$CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php.';

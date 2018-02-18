@@ -206,14 +206,6 @@ div.shop-bill_error{
     font-style:italic;
 }
 
-.shop-bills-options {
-    float:left;
-}
-
-.shop-bills-search {
-    float:right;
-}
-
 table.shop-article{
     margin-bottom:10px;
     margin-right:10px;
@@ -318,14 +310,13 @@ select.shop-error{
     color:black !important;
 }
 
-.shop-bills-flowcontrol{
-    background-color:#fff0f0;
-    border:4px #ff0000 solid;
-    border-radius: 8px;
+.flowcontrol{
+    background-color:#fafafa;
+    border:1px #A0A0A0 dashed;
     margin-left:5px;
     margin-right:5px;
     margin-top:20px;
-    padding:15px;
+    padding:5px;
 }
 
 #billpanel,
@@ -721,9 +712,4 @@ ul.shop-test-result {
     border-radius:6px;
     margin: 5px 0;
     padding: 10px;
-}
-
-.shop-inline,
-.shop-inline * {
-    display:inline;
 }

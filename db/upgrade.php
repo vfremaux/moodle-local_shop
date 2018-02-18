@@ -203,53 +203,5 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2016101500, 'local', 'shop');
     }
 
-    if ($oldversion < 2017111100) {
-        // New version in version.php.
-
-        // Add field to local_shop_catalog.
-        $table = new xmldb_table('local_shop_catalog');
-
-        $field = new xmldb_field('billfooter');
-        $field->set_attributes(XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'countryrestrictions');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        $field = new xmldb_field('billfooterformat');
-        $field->set_attributes(XMLDB_TYPE_INTEGER, 4, null, null, null, 0, 'billfooter');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        upgrade_plugin_savepoint(true, 2017111100, 'local', 'shop');
-    }
-
-    if ($oldversion < 2018011500) {
-        // New version in version.php.
-
-        // Define table local_shop to be created.
-        $table = new xmldb_table('local_shop_paypal_ipn');
-
-        // Adding fields to table local_shop.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('tnxid', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('transid', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('paypalinfo', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('result', XMLDB_TYPE_CHAR, '16', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
-
-        // Adding keys to table local_shop.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('tnxid_unique_name', XMLDB_KEY_UNIQUE, array('tnxid'));
-        $table->add_key('transid_unique_name', XMLDB_KEY_UNIQUE, array('transid'));
-
-        // Conditionally launch create table for local_shop.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        upgrade_plugin_savepoint(true, 2018011500, 'local', 'shop');
-    }
-
     return $result;
 }

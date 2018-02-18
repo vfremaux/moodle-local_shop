@@ -36,7 +36,6 @@ $action = optional_param('what', '', PARAM_TEXT);
 $status = optional_param('status', 'ALL', PARAM_TEXT);
 $customerid = optional_param('customerid', 'ALL', PARAM_TEXT);
 $cur = optional_param('cur', 'EUR', PARAM_TEXT);
-$y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
 
 $shopid = optional_param('shopid', 0, PARAM_INT);
 
@@ -60,50 +59,21 @@ if ($action != '') {
 
 echo $out;
 
-$filterclause = '';
-
-echo '<div class="shop-bills-tools">';
-echo '<div class="shop-bills-options">';
-$params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
+$params = array('view' => 'viewAllbills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
 echo $mainrenderer->currency_choice($cur, new moodle_url('/local/shop/bills/view.php', $params));
-$filterclause = " AND currency = '{$cur}' ";
+$curclause = " AND currency = '{$cur}' ";
 
-$params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
+$params = array('view' => 'viewAllbills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
 echo $mainrenderer->shop_choice(new moodle_url('/local/shop/bills/view.php', $params), true);
-if ($shopid) {
-    $filterclause .= " AND shopid = '{$shopid}' ";
-}
-
-$params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
-echo $mainrenderer->year_choice($y, new moodle_url('/local/shop/bills/view.php', $params), true);
-if ($y) {
-    $filterclause .= " AND YEAR(FROM_UNIXTIME(emissiondate)) = '{$y}' ";
-}
-echo '</div>';
-
-echo '<div class="shop-bills-searchlink">';
-$params = array('view' => 'search');
-$searchurl = new moodle_url('/local/shop/bills/view.php', $params);
-echo '<a href="'.$searchurl.'"><input type="button" value="'.get_string('searchinbills', 'local_shop').'" /></a>';
-echo '</div>';
-
-echo '</div>';
 
 $samecurrency = true;
 if ($bills = Bill::get_instances($filter)) {
     reset($bills);
     $firstbill = current($bills);
     $billcurrency = $firstbill->currency;
-    foreach ($bills as $billid => $bill) {
+    foreach ($bills as $bill) {
         if ($billcurrency != $bill->currency) {
             $samecurrency = false;
-        }
-        // TODO : Make more efficent filter directly in SQL.
-        // Redraw ShopObject to accept filter on caculated columns.
-        if ($y) {
-            if (date('Y', $bill->emissiondate) != $y) {
-                unset($bills[$billid]);
-            }
         }
         $billsbystate[$bill->status][$bill->id] = $bill;
     }
@@ -115,15 +85,15 @@ echo $OUTPUT->heading_with_help(get_string('billing', 'local_shop'), 'billstates
 
 // Print tabs.
 $total = new StdClass;
-$total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $filterclause");
-$total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $filterclause");
-$total->PENDING = $DB->count_records_select('local_shop_bill', " status = 'PENDING' $filterclause");
-$total->SOLDOUT = $DB->count_records_select('local_shop_bill', "status = 'SOLDOUT' $filterclause");
-$total->COMPLETE = $DB->count_records_select('local_shop_bill', "status = 'COMPLETE' $filterclause");
-$total->CANCELLED = $DB->count_records_select('local_shop_bill', " status = 'CANCELLED' $filterclause");
-$total->FAILED = $DB->count_records_select('local_shop_bill', "status = 'FAILED' $filterclause");
-$total->PAYBACK = $DB->count_records_select('local_shop_bill', "status = 'PAYBACK' $filterclause");
-$total->ALL = $DB->count_records_select('local_shop_bill', " 1 $filterclause ");
+$total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $curclause");
+$total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $curclause");
+$total->PENDING = $DB->count_records_select('local_shop_bill', " status = 'PENDING' $curclause");
+$total->SOLDOUT = $DB->count_records_select('local_shop_bill', "status = 'SOLDOUT' $curclause");
+$total->COMPLETE = $DB->count_records_select('local_shop_bill', "status = 'COMPLETE' $curclause");
+$total->CANCELLED = $DB->count_records_select('local_shop_bill', " status = 'CANCELLED' $curclause");
+$total->FAILED = $DB->count_records_select('local_shop_bill', "status = 'FAILED' $curclause");
+$total->PAYBACK = $DB->count_records_select('local_shop_bill', "status = 'PAYBACK' $curclause");
+$total->ALL = $DB->count_records_select('local_shop_bill', " 1 $curclause ");
 $label = get_string('bill_WORKINGs', 'local_shop');
 $rows[0][] = new tabobject('WORKING', "$url&status=WORKING&cur=$cur", $label.' ('.$total->WORKING.')');
 $label = get_string('bill_PLACEDs', 'local_shop');

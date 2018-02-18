@@ -100,8 +100,6 @@ class catalog_controller {
             $catalog->description = $catalog->description_editor['text'];
             $catalog->salesconditionsformat = $catalog->salesconditions_editor['format'];
             $catalog->salesconditions = $catalog->salesconditions_editor['text'];
-            $catalog->billfooterformat = $catalog->billfooter_editor['format'];
-            $catalog->billfooter = $catalog->billfooter_editor['text'];
 
             if (empty($catalog->catalogid)) {
                 // Creating new.
@@ -164,14 +162,6 @@ class catalog_controller {
                                                                        $catalog->salesconditions);
                 $catalog = file_postupdate_standard_editor($catalog, 'salesconditions', $this->mform->editoroptions, $context, 'local_shop',
                                                         'catalogsalesconditions', $catalog->id);
-
-                $draftideditor = file_get_submitted_draft_itemid('billfooter_editor');
-                $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
-                                                                       'catalogbillfooter', $catalog->id, array('subdirs' => true),
-                                                                       $catalog->salesconditions);
-                $catalog = file_postupdate_standard_editor($catalog, 'billfooter', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'catalogbillfooter', $catalog->id);
-
                 $DB->update_record('local_shop_catalog', $catalog);
             }
 
@@ -186,7 +176,6 @@ class catalog_controller {
                         'name' => 'String',
                         'description_editor' => 'Array of text,format,itemid',
                         'salesconditions_editor' => 'Array of text,format,itemid',
-                        'billfooter_editor' => 'Array of text,format,itemid',
                         'countryrestrictions' => 'Comma separated list of lowercase country codes',
                         'linked' => 'One of \'master|slave|free\'',
                         'groupid' => 'Integer ID of another catalog',

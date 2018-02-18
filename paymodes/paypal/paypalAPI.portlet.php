@@ -31,7 +31,7 @@ $ulang = strtoupper($lang);
 <div align="center">
 
 <p><?php print_string("paymentrequired") ?></p>
-<p><b><?php echo $portlet->shopname; ?></b></p>
+<p><b><?php echo $instancename; ?></b></p>
 <p><img alt="<?php print_string('paypalaccepted', 'shoppaymodes_paypal') ?>" src="<?php echo $portlet->paypallogo_url ?>" /></p>
 <p><?php print_string("paymentinstant") ?></p>
 <?php

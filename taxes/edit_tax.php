@@ -61,7 +61,7 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
 
     include_once($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
-    $controller = new \local_shop\backoffice\taxes_controller();
+    $controller = new \local_shop\backoffice\tax_controller();
     $controller->receive('edit', $data);
     $controller->process('edit');
 

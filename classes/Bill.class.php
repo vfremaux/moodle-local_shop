@@ -150,8 +150,7 @@ class Bill extends ShopObject {
             }
 
             if (empty($this->thecatalogue)) {
-                $this->thecatalogue = new Catalog($this->theshop->catalogid);
-                $this->theshop->thecatalogue = $this->thecatalogue;
+                $this->thecatalogue = new Catalog($this->theshop->catalogueid);
             }
 
             if (empty($this->theblock)) {
@@ -196,7 +195,7 @@ class Bill extends ShopObject {
             $this->record->customerid = 0;
             $this->record->title = '';
             $this->record->worktype = 'PROD';
-            $this->record->status = SHOP_BILL_WORKING;
+            $this->record->status = 'WORKING';
             $this->record->remotestatus = '';
             $this->record->emissiondate = time();
             $this->record->lastactiondate = time();

@@ -33,31 +33,24 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
      * @param object $catalog
      */
     public function catalog_admin_line($catalog) {
-        global $DB;
 
         if (is_null($catalog)) {
             $str = '<tr>';
-
             $str .= '<th align="left" class="header c0">';
             $str .= get_string('name', 'local_shop');
             $str .= '</th>';
-
             $str .= '<th align="left" class="header c1">';
             $str .= get_string('description', 'local_shop');
             $str .= '</th>';
-
             $str .= '<th align="left" class="header c2">';
             $str .= get_string('categories', 'local_shop');
             $str .= '</th>';
-
             $str .= '<th align="left" class="header c2">';
             $str .= get_string('items', 'local_shop');
             $str .= '</th>';
-
             $str .= '<th align="left" class="header lastcol">';
             $str .= get_string('controls', 'local_shop');
             $str .= '</th>';
-
             $str .= '</tr>';
 
             return $str;
@@ -70,9 +63,7 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
         $str .= '<td>';
 
         if ($catalog->isslave) {
-            $mastercatalogname = $DB->get_field('local_shop_catalog', 'name', array('id' => $catalog->groupid));
-            $pixurl = $this->output->pix_url('link', 'local_shop');
-            $str .= '<img alt="'.$mastercatalogname.'" title="'.$mastercatalogname.'" src="'.$pixurl.'" />';
+            $str .= '<img src="'.$this->output->pix_url('link', 'local_shop').'" />';
         }
         $params = array('view' => 'viewAllProducts', 'catalogid' => $catalog->id);
         $catalogurl = new moodle_url('/local/shop/products/view.php', $params);
@@ -111,22 +102,26 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
      */
     public function catalogs($catalogs) {
 
-        $config = get_config('local_shop');
-
         $str = '';
-        $str .= '<table width="100%" cellspacing="10" class="generaltable">';
+        $str .= '<table width="100%" cellspacing="10">';
+        $str .= '<tr valign="top">';
+        $str .= '<td valign="top" width="25%">';
+        $str .= '<b>'.get_string('allproducts', 'local_shop').'</b>';
+        $str .= '</td>';
+        $str .= '<td valign="top">';
+        $str .= get_string('searchinproducts', 'local_shop');
+        $str .= '<br>';
+        $str .= '<table width="100%" class="generaltable">';
 
         $str .= $this->catalog_admin_line(null);
         if ($catalogs) {
             foreach ($catalogs as $c) {
-                if (empty($config->useslavecatalogs)) {
-                    if ($c->ismaster || $c->isslave) {
-                        continue;
-                    }
-                }
                 $str .= $this->catalog_admin_line($c);
             }
         }
+        $str .= '</table>';
+        $str .= '</td>';
+        $str .= '</tr>';
         $str .= '</table>';
 
         return $str;

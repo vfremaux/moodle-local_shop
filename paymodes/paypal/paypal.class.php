@@ -46,11 +46,7 @@ class shop_paymode_paypal extends shop_paymode {
      * @param object $portlet a data stub that contains required information for the portlet raster
      */
     public function print_payment_portlet(&$shoppingcart) {
-        global $CFG, $OUTPUT;
-
-        $config = get_config('local_shop');
-
-        $template = new StdClass;
+        global $CFG;
 
         if ($shoppingcart->usedistinctinvoiceinfo) {
             $paymentinfo = $shoppingcart->invoicinginfo;
@@ -58,59 +54,49 @@ class shop_paymode_paypal extends shop_paymode {
             $paymentinfo = $shoppingcart->customerinfo;
         }
 
-        if (empty($config->test)) {
-            $paypalsupportedlangs = array ('AU', 'AT', 'BE', 'BR', 'CA', 'CH', 'CN', 'DE', 'ES', 'GB',
-                                           'FR', 'IT', 'NL', 'PL', 'PT', 'RU', 'US');
-        } else {
-            $paypalsupportedlangs = array ('US');
+        $paypalsupportedlangs = array ('AU', 'AT', 'BE', 'BR', 'CA', 'CH', 'CN', 'DE', 'ES', 'GB',
+                                       'FR', 'IT', 'NL', 'PL', 'PT', 'RU', 'US');
+
+        echo '<div id="shop-panel-caption">';
+        echo shop_compile_mail_template('door_transfer_text', array(), 'shoppaymodes_paypal');
+        echo '</div>';
+
+        echo '<div id="shop-panel">';
+
+        $portlet = new StdClass();
+        $portlet->amount = $shoppingcart->finalshippedtaxedtotal;
+        $portlet->firstname = $paymentinfo['firstname'];
+        $portlet->lastname = $paymentinfo['lastname'];
+        $portlet->address = $paymentinfo['address'];
+        $portlet->city = $paymentinfo['city'];
+        $portlet->country = $paymentinfo['country'];
+        $portlet->zip = $paymentinfo['zip'];
+        $portlet->email = $shoppingcart->customerinfo['email']; // Invoicing info has no mail.
+        $portlet->transid = $shoppingcart->transid; // No need special format for online transaction id here.
+        $portlet->shipping = @$shoppingcart->shipping;
+        $portlet->currency = $this->theshop->get_currency();
+        $params = array('shopid' => $this->theshop->id, 'transid' => $portlet->transid);
+        $portlet->return_url = new moodle_url('/local/shop/paymodes/paypal/process.php', $params);
+        $portlet->notify_url = new moodle_url('/local/shop/paymodes/paypal/paypal_ipn.php');
+        $portlet->cancel_url = new moodle_url('/local/shop/paymodes/paypal/cancel.php', $params);
+        $portlet->paypallogo_url = $CFG->wwwroot.'/local/shop/paymodes/paypal/pix/logo_paypal_106x29.png';
+        $portlet->lang = strtoupper(current_language());
+        if (!in_array($paypalsupportedlangs, $portlet->lang)) {
+            $portlet->lang = 'US';
         }
 
-        $template->istesting = $config->test;
-        if ($template->istesting) {
-            $template->sellername = $config->paypalsellertestname;
-            $template->selleritemname = $config->paypalsellertestitemname;
-        } else {
-            $template->sellername = $config->paypalsellername;
-            $template->selleritemname = $config->paypalselleritemname;
-        }
-        $template->paypalacceptedstr = print_string('paypalaccepted', 'shoppaymodes_paypal');
-        $template->shopname = $this->theshop->name;
-        $template->shopid = $this->theshop->id;
-        $template->testmodestr = get_string('testmode', 'local_shop');
-        $template->amount = sprintf('%.2F', $shoppingcart->finalshippedtaxedtotal);
-        $template->firstname = $paymentinfo['firstname'];
-        $template->lastname = $paymentinfo['lastname'];
-        $template->userstr = get_string('user');
-        $template->customername = $paymentinfo['lastname'].' '.$paymentinfo['firstname'];
-        $template->address = $paymentinfo['address'];
-        $template->city = $paymentinfo['city'];
-        $template->country = (!empty($paymentinfo['country'])) ? $paymentinfo['country'] : $CFG->country;
-        $template->zip = $paymentinfo['zip'];
-        $template->email = $shoppingcart->customerinfo['email']; // Invoicing info has no mail.
-        $template->transid = $shoppingcart->transid; // No need special format for online transaction id here.
-        $template->shipping = @$shoppingcart->shipping;
-        if ($template->istesting) {
-            $template->currency = 'USD';
-        } else {
-            $template->currency = $this->theshop->get_currency();
-        }
-        $params = array('shopid' => $this->theshop->id, 'transid' => $shoppingcart->transid);
-        $template->returnurl = new moodle_url('/local/shop/paymodes/paypal/process.php', $params);
-        $template->notifyurl = new moodle_url('/local/shop/paymodes/paypal/paypal_ipn.php');
-        $template->cancelurl = new moodle_url('/local/shop/paymodes/paypal/cancel.php', $params);
-        $template->paypallogourl = new moodle_url('/local/shop/paymodes/paypal/pix/logo_paypal_106x29.png');
-        $template->lang = strtoupper(current_language());
-        if (!in_array($template->lang, $paypalsupportedlangs)) {
-            $template->lang = 'US';
-        }
-        $template->paypalmsg = get_string('paypalmsg', 'shoppaymodes_paypal');
+        include($CFG->dirroot.'/local/shop/paymodes/paypal/paypalAPI.portlet.php');
 
-        $template->cancelstr = get_string('cancel');
+        echo '</div>';
+        echo '<div id="shop-panel-nav">';
+
+        echo '<p><span class="shop-procedure-cancel">X</span>';
+        $cancelstr = get_string('cancel');
         $params = array('step' => 'shop', 'id' => $this->theshop->id);
-        $template->cancelurl = new moodle_url('/local/shop/front/view.php', $params);
+        $cancelurl = new moodle_url('/local/shop/front/view.php', $params);
+        echo '<a href="'.$cancelurl.'" class="smalltext">'.$cancelstr.'</a>';
 
-        echo $OUTPUT->render_from_template('shoppaymodes_paypal/paypalbutton', $template);
-
+        echo '</div>';
     }
 
     /**
@@ -175,7 +161,7 @@ class shop_paymode_paypal extends shop_paymode {
 
     // Processes a payment asynchronous confirmation.
     public function process_ipn() {
-        global $CFG, $DB;
+        global $CFG;
 
         // Get all input parms.
         $transid = required_param('invoice', PARAM_TEXT);
@@ -218,7 +204,7 @@ class shop_paymode_paypal extends shop_paymode {
 
         $validationquery .= $querystring;
         // Control for replicated notifications (normal operations).
-        if (empty($this->_config->test) && $DB->record_exists('local_shop_paypal_ipn', array('txnid' => $txnid))) {
+        if (empty($this->_config->test) && $DB->record_exists('shop_paypal_ipn', array('txnid' => $txnid))) {
             shop_trace("[$transid] Paypal IPN : paypal event collision on $txnid");
             shop_email_paypal_error_to_admin("Paypal IPN : Transaction $txnid is being repeated.", $data);
             die;
@@ -231,7 +217,7 @@ class shop_paymode_paypal extends shop_paymode {
             $paypalipn->timecreated = time();
             shop_trace("[$transid] Paypal IPN : Recording paypal event");
             try {
-                $DB->insert_record('local_shop_paypal_ipn', $paypalipn);
+                $DB->insert_record('shop_paypal_ipn', $paypalipn);
             } catch (Exception $e) {
                 shop_trace("[$transid] Paypal IPN : Recording paypal event error");
             }
@@ -314,7 +300,7 @@ class shop_paymode_paypal extends shop_paymode {
                     // Perform final production.
                     $action = 'produce';
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
-                    $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, null, $afullbill, true, false);
+                    $controller = new \local_shop\front\production_controller($afullbill);
                     $controller->process($action);
                     shop_trace("[{$transid}] Paypal IPN End Production");
                 }
@@ -335,8 +321,7 @@ class shop_paymode_paypal extends shop_paymode {
     public function settings(&$settings) {
 
         $label = get_string($this->name.'paymodeparams', 'shoppaymodes_paypal', $this->name);
-        $info = get_string('paypaltest_desc', 'shoppaymodes_paypal');
-        $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, $info));
+        $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, ''));
 
         $label = get_string('paypalsellertestname', 'shoppaymodes_paypal');
         $settings->add(new admin_setting_configtext('local_shop/paypalsellertestname', $label,

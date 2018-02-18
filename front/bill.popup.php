@@ -69,11 +69,10 @@ $PAGE->set_url($url);
 $PAGE->set_context($usercontext);
 $PAGE->set_pagelayout('popup');
 
+// Get active catalog from block.
+
 $renderer = shop_get_renderer();
 $renderer->load_context($theshop, $thecatalog, $theblock);
-
-$billrenderer = shop_get_renderer('bills');
-$billrenderer->load_context($theshop, $thecatalog, $theblock);
 
 $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
 
@@ -109,14 +108,10 @@ foreach ($afullbill->items as $biid => $bi) {
 }
 echo '</table>';
 
-if (!in_array($afullbill->status, $realized)) {
-    echo $renderer->full_order_totals($afullbill);
-} else {
-    echo $billrenderer->full_bill_totals($afullbill);
-}
+echo $renderer->full_order_totals($afullbill);
 echo $renderer->full_order_taxes($afullbill);
 
-echo $OUTPUT->heading(get_string('paymode', 'local_shop'), 2);
+echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
 
 require_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
 
@@ -127,8 +122,11 @@ $pm = new $classname($theshop);
 $pm->print_name();
 echo '</div>';
 
-echo $renderer->sales_contact();
-
+echo '<div id="order-mailto">';
+echo $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2);
+echo '<p>'.get_string('forquestionssendmailto', 'local_shop').' :';
+echo ' <a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';
+echo '</div>';
 echo '</div>';
 
 echo '<center>';
@@ -136,7 +134,4 @@ echo '<a href="#" onclick="window.print();return false;">';
 echo '<input type="button" value="'.get_string('printlink', 'local_shop').'" />';
 echo '</a>';
 echo '</center>';
-
-echo $billrenderer->bill_footer($afullbill);
-
 echo $OUTPUT->footer();

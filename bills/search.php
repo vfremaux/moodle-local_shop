@@ -33,26 +33,121 @@ if ($action != '') {
     $bills = $controller->process($action);
 }
 
-$PAGE->requires->js('/local/shop/js/search.js');
+$billcount = $DB->count_records('local_shop_bill');
 
 echo $out;
 
+?>
+<script type="text/javascript">
+function searchBy(criteria) {
+    document.search.by.value = criteria;
+    document.search.submit();
+}
+</script>
+
+<?php
+
 echo $OUTPUT->heading(get_string('billsearch', 'local_shop'), 3);
 
-if (!empty($controller) && !empty($controller->criteria)) {
-    $class = (empty($bills)) ? 'error' : 'success';
-    echo $OUTPUT->notification($controller->criteria, $class);
-}
-
 if (empty($bills)) {
-    print_string('nobills', 'local_shop');
+    print_string('errorsearchbillfailed', 'local_shop');
 } else {
     echo $OUTPUT->heading(get_string('results', 'local_shop'), 2);
-
-    echo $OUTPUT->box(print_string('manybillsasresult', 'local_shop'));
-
-    echo $renderer->search_results($bills);
+    echo '<p>';
+    print_string('manybillsasresult', 'local_shop');
+    echo ':</p>';
+    echo '<table width="100%">';
+    foreach ($bills as $portlet) {
+        include($CFG->dirroot.'/local/shop/lib/shortBillLine.php');
+    }
+    echo '</table>';
 }
+?>
 
-$billcount = $DB->count_records('local_shop_bill');
-echo $renderer->search_form($theblock, $billcount);
+<form name="search" action="#" method="get">
+<input type="hidden" name="id" value="<?php p($blockinstance->id) ?>">
+<input type="hidden" name="by" value="">
+<input type="hidden" name="what" value="search">
+<table>
+<?php
+if ($billcount == 0) {
+?>
+<tr>
+    <td colspan="4" class="billRow">
+    <?php print_string('nobills', 'local_shop') ?>
+    </td>
+</tr>
+<?php
+} else {
+?>
+    <tr>
+        <td valign="top">
+           <h2><?php print_string('searchby', 'local_shop') ?></h2>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <?php echo $OUTPUT->heading(get_string('uniquetransactionkey', 'local_shop'), 3) ?>
+            <input type="text" name="billkey" style="font-family : 'Courier New', monospace ; width : 30em"><br/>
+            <p class="smalltext"><?php print_string('searchforakeyinstructions', 'local_shop') ?>.
+        </td>
+    </tr>
+    <tr>
+         <td align="right">
+             <a href="Javascript:searchBy('key');"><?php print_string('search') ?></a>
+         </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <?php echo $OUTPUT->heading(get_string('orclientname', 'local_shop'), 3) ?>
+            <input type="text" name="customerName" width="50" maxlength="60"><br>
+            <p class="smalltext"><?php print_string('customersnameonbill', 'local_shop') ?>.
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('name');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <?php echo $OUTPUT->heading(get_string('orbillid', 'local_shop'), 3) ?>
+            <input type="text" name="billid" width="5" maxlength="10"><br>
+            <p class="smalltext"><?php print_string('billorderingnumber', 'local_shop') ?>.
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('id');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <?php echo $OUTPUT->heading(get_string('oremissiondate', 'local_shop'), 3) ?>
+            <?php print_string('from (date)', 'local_shop') ?>
+            <input type="text" name="dateFrom" width="10" maxlength="10">
+            <?php print_string('hour', 'local_shop') ?>
+            <input type="text" name="timeFrom" width="10" maxlength="10">
+            <?php print_string('until', 'local_shop') ?>
+            <select name="during">
+                <option value="h"><?php print_string('onehour', 'local_shop') ?></option>
+                <option value="d"><?php print_string('oneday', 'local_shop') ?></option>
+                <option value="10d" SELECTED ><?php print_string('tendays', 'local_shop') ?></option>
+                <option value="m"><?php print_string('onemonth', 'local_shop') ?></option>
+                <option value="3m"><?php print_string('threemonths', 'local_shop') ?></option>
+            </select> <?php print_string('after', 'local_shop') ?>.<br>
+            <p class="smalltext"><?php print_string('searchtimerange', 'local_shop') ?>.
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+            <a href="Javascript:searchBy('date');"><?php print_string('search') ?></a>
+        </td>
+    </tr>
+<?php
+}
+?>
+</table>
+</form>
+<table>
+</table>

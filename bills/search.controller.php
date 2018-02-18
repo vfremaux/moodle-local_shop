@@ -28,13 +28,9 @@ namespace local_shop\bills;
 
 defined('MOODLE_INTERNAL') || die;
 
-use \moodle_url;
-
 class search_controller {
 
     protected $theshop;
-
-    public $criteria;
 
     public function __construct($theshop) {
         $this->theshop = $theshop;
@@ -49,37 +45,20 @@ class search_controller {
             $billid = optional_param('billid', '', PARAM_INT);
             $billkey = optional_param('billkey', '', PARAM_TEXT);
             $customername = optional_param('customername', '', PARAM_TEXT);
-            $datefromparam = optional_param('datefrom', '', PARAM_TEXT);
-            $datefrom = strtotime($datefromparam);
-            $during = optional_param('during', '', PARAM_INT);
+            $datefrom = optional_param('datefrom', '', PARAM_INT);
 
             switch ($by) {
                 case 'id':
-                    $whereclause = " id = ? ";
-                    $this->criteria = "Bill ID = $billid ";
-                    $params[] = $billid;
+                    $whereclause = " id = '{$billid}' ";
                     break;
                 case "name":
-                    $whereclause = " UPPER(lastname) LIKE UPPER(?) ";
-                    $this->criteria = "Customer last name starts with $customername ";
-                    $params[] = $customername.'%';
+                    $whereclause = " UPPER(lastname) LIKE '{$customername}%' ";
                     break;
                 case "key":
-                    $whereclause = " UPPER(transactionid) LIKE UPPER(?) ";
-                    $this->criteria = "Transaction id name starts with $billkey ";
-                    $params[] = $billkey.'%';
+                    $whereclause = " UPPER(transactionid) LIKE '{$billkey}%' ";
                     break;
                 case "date":
-                    $whereclause = " emissiondate > ? ";
-                    $this->criteria = "emission date > $datefrom";
-                    $params[] = $datefrom;
-
-                    if (!empty($during)) {
-                        $dateto = $datefrom + HOURSECS * $during;
-                        $whereclause .= " AND emissiondate < ? ";
-                        $this->criteria = "emission date > $datefrom and emission date < $dateto";
-                        $params[] = $dateto;
-                    }
+                    $whereclause = " emissiondate > '{$datefrom}' ";
                     break;
                 default:
                     $error = true;
@@ -87,18 +66,15 @@ class search_controller {
             if (!$error) {
                 $sql = "
                    SELECT
-                      b.*,
-                      c.firstname,
-                      c.lastname
+                      b.*
                    FROM
                       {local_shop_bill} as b,
                       {local_shop_customer} as c
                    WHERE
-                      b.customerid = c.id AND
+                      b.userid = c.id AND
                       $whereclause
                 ";
-
-                if ($bills = $DB->get_records_sql($sql, $params)) {
+                if ($bills = $DB->get_records->sql($sql)) {
 
                     if (count($bills) == 1) {
                         $billrecord = array_pop($bills);

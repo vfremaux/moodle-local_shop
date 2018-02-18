@@ -35,10 +35,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     protected $view;
 
-    const STATE_DONE = 0;
-    const STATE_TODO = 1;
-    const STATE_FREEZE = 2;
-
     /**
      * prints a purchase procedure progression bar
      * @param string $progress the progress state
@@ -48,7 +44,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        // This converts configuration steps to internal effective steps.
         $radicals = array(
             'CHOOSE' => 'shop',
             'CONFIGURE' => 'purchaserequ',
@@ -56,25 +51,11 @@ class shop_front_renderer extends local_shop_base_renderer {
             'CUSTOMER' => 'customer',
             'CONFIRM' => 'order',
             'PAYMENT' => 'payment',
-            'PENDING' => 'payment', // Payment blockd for some reason.
+            'PENDING' => 'pending',
             'PRODUCE' => 'produce',
             'BILL' => 'invoice',
             'INVOICE' => 'invoice',
         );
-
-        // This converts API inputs to internal effective steps.
-        $inputmapping = array(
-            'shop' => 'shop',
-            'purchaserequ' => 'purchaserequ',
-            'users' => 'users',
-            'customer' => 'customer',
-            'order' => 'order',
-            'payment' => 'payment',
-            'pending' => 'payment', // Payment blockd for some reason.
-            'produce' => 'produce',
-            'invoice' => 'invoice',
-        );
-
         $stepicons = array_flip($radicals);
 
         $str .= '<div id="progress">';
@@ -82,20 +63,19 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $steps = explode(',', $this->theshop->navsteps);
 
-        $state = self::STATE_DONE;
+        $state = 0;
         $iconstate = '_on';
         foreach ($steps as $step) {
-            if (($state == self::STATE_DONE)) {
+            if (($state == 0)) {
                 $iconstate = '_on';
-                if ($inputmapping[$step] == $radicals[$progress]) {
-                    $state = self::STATE_TODO;
+                if ($step == $radicals[$progress]) {
+                    $state = 1;
                 }
-            } else if ($state == self::STATE_TODO) {
+            } else if ($state == 1) {
                 $iconstate = '_off';
-                $state = self::STATE_FREEZE;
+                $state = 2;
             }
 
-            // Disable step on configuration or environment conditions.
             $icon = $stepicons[trim($step)];
             if (!empty($SESSION->shoppingcart->norequs) && ($icon == 'CONFIGURE') && ($iconstate == '_on')) {
                 $iconstate = '_dis';
@@ -207,12 +187,15 @@ class shop_front_renderer extends local_shop_base_renderer {
         $popup = (in_array($bill->status, $states)) ? 'bill' : 'order';
 
         $popupurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php');
-        $str .= '<form name="bill" action="'.$popupurl.'" target="_blank" class="shop-inline" />';
+        $str .= '<form name="bill" action="'.$popupurl.'" target="_blank" />';
         $str .= '<input type="hidden" name="transid" value="'.$bill->transactionid.'" />';
         $str .= '<input type="hidden" name="billid" value="'.$bill->id.'">';
         $str .= '<input type="hidden" name="shopid" value="'.$this->theshop->id.'\">';
         $str .= '<input type="hidden" name="blockid" value="'.(0 + @$this->theblock->id).'\">';
-        $str .= '<div id="shop-printable-link">';
+        $str .= '<div id="shop-printable-link">'; // Table.
+        $str .= '<div class="shop-row">'; // Row.
+        $str .= '<div class="shop-cell">'; // Cell.
+        $str .= '<br /><br /><br /><br />';
 
         $params = array('shopid' => $this->theshop->id,
                         'blockid' => (0 + @$this->theblock->id),
@@ -229,7 +212,9 @@ class shop_front_renderer extends local_shop_base_renderer {
             $str .= $this->output->single_button('/login/index.php', get_string('printbill', 'local_shop'), 'post',  $options);
         }
 
-        $str .= '</div>';
+        $str .= '</div>'; // Cell.
+        $str .= '</div>'; // Row.
+        $str .= '</div>'; // Table.
         $str .= '</form>';
 
         return $str;
@@ -239,7 +224,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str = '';
         $options['id'] = $theshop->id;
-        $options['class'] = 'singlebutton shop-inline';
         $label = get_string('backtoshop', 'local_shop');
         $str .= $this->output->single_button('/local/shop/front/view.php', $label, 'post',  $options);
 
@@ -1694,7 +1678,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $reason = '';
 
         if (!is_null($bill)) {
-            $bill->recalculate();
             $taxedtotal = $bill->ordertaxed;
             $finaltaxedtotal = $bill->finaltaxedtotal;
             $finaluntaxedtotal = $bill->finaluntaxedtotal;
@@ -2479,15 +2462,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<b>'.$config->selleraddress.'</b><br />';
         $str .= '<b>'.$config->sellerzip.' '.$config->sellercity.'</b><br />';
         $str .= $config->sellercountry;
-
-        $str .= '<br/>';
-        $str .= '<b>'.get_string('num', 'local_shop').': </b>';
-        $str .= 'B-'.date('Ymd', $afullbill->emissiondate).'-'.$afullbill->id;
-        $str .= '<br/>';
-
-        $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b> ';
-        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code>';
         $str .= '<br />';
+        $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b><br />';
+        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code><br />';
         $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span><br/>';
         $str .= '<b>'.get_string('on', 'local_shop').':&ensp;</b> '.userdate($afullbill->emissiondate).'<br />';
 
@@ -2514,22 +2491,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '</tr>';
 
         $str .= '</table>';
-
-        return $str;
-    }
-
-    public function sales_contact() {
-        global $OUTPUT;
-
-        $config = get_config('local_shop');
-
-        $str .= '';
-
-        $str .= '<div id="order-mailto">';
-        $str .= $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2);
-        $str .= '<p>'.get_string('forquestionssendmailto', 'local_shop').' :';
-        $str .= ' <a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';
-        $str .= '</div>';
 
         return $str;
     }

@@ -120,27 +120,21 @@ class order_controller extends front_controller_base {
                         }
                     }
 
-                    if (!empty($config->presalenotification)) {
-                        $title = $SITE->shortname.' Backoffice : '.get_string('orderinput', 'local_shop');
-                        $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $salesnotification,
-                                                  $salesnotification, '');
-                        if ($sent) {
-                            $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller:";
-                            $message .= " Shop Transaction Confirm Notification to sales";
-                            shop_trace($message);
-                        } else {
-                            $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller Warning:";
-                            $message .= " Failed emitting to at least one manager.";
-                            shop_trace($message);
-                        }
+                    $title = $SITE->shortname.' Backoffice : '.get_string('orderinput', 'local_shop');
+                    $sent = ticket_notifyrole($salesrole->id, $systemcontext, $seller, $title, $salesnotification,
+                                              $salesnotification, '');
+                    if ($sent) {
+                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller:";
+                        $message .= " Shop Transaction Confirm Notification to sales";
+                        shop_trace($message);
                     } else {
-                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller :";
-                        $message .= " Order input with no notification to sales (disabled).";
+                        $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller Warning:";
+                        $message .= " Failed emitting to at least one manager.";
                         shop_trace($message);
                     }
                 } else {
                     $message = "[{$SESSION->shoppingcart->transid}] Ordering Controller Warning :";
-                    $message .= " Seems sales role not installed";
+                    $message .= " Seems no sales manager are assigned";
                     shop_trace($message);
                 }
 

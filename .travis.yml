@@ -8,12 +8,11 @@ cache:
 
 php:
  - 5.6
- - 7.0
 
 env:
  matrix:
-  - DB=mysqli MOODLE_BRANCH=MOODLE_33_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_33_STABLE
+  - DB=mysqli MOODLE_BRANCH=MOODLE_27_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_27_STABLE
 
 
 before_install:
@@ -37,5 +36,5 @@ script:
 #  - moodle-plugin-ci shifter
   - moodle-plugin-ci jshint
   - moodle-plugin-ci validate
-#  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci phpunit
 #  - moodle-plugin-ci behat

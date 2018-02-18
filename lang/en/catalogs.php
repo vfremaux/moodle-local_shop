@@ -19,4 +19,3 @@ $string['editcatalog'] = 'Edit catalogue';
 $string['catalogs'] = 'Catalogues';
 $string['defaultcatalogname'] = 'Sales catalogue';
 $string['defaultcatalogdescription'] = 'Product line catalog for selling Moodle assets';
-$string['billfooter'] = 'Bill footer';
