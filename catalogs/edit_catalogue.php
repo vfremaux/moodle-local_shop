@@ -59,10 +59,19 @@ $PAGE->navbar->add(get_string('catalogs', 'local_shop'));
 
 if ($catalogid) {
     $catalog = new Catalog($catalogid);
+    $formdata = new StdClass;
     $formdata = $catalog->record;
     $formdata->catalogid = $catalog->id;
     $formdata->id = $theshop->id;
+    if ($catalog->ismaster) {
+        $formdata->linked = 'master';
+    } else if ($catalog->isslave) {
+        $formdata->linked = 'slave';
+    } else {
+        $formdata->linked = 'free';
+    }
     $formdata->blockid = 0 + @$theblock->instance->id;
+
     $mform = new Catalog_Form('', array('what' => 'edit'));
     $mform->set_data($formdata);
 } else {

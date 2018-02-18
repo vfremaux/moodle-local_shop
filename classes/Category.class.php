@@ -136,6 +136,7 @@ class Category extends ShopObject {
         if (empty($categories)) {
             return;
         }
+
         if (!$currentcatid) {
             return;
         }

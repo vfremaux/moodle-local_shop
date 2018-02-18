@@ -26,6 +26,7 @@ $string['enablepaypal'] = 'Paypal payment';
 $string['enablepaypal2'] = 'Paypal payment';
 $string['enablepaypal3'] = 'You choosed to pay using Paypal...';
 $string['paypal'] = 'Paypal';
+$string['paypalaccepted'] = 'Payment by Paypal';
 $string['paypalmsg'] = 'Thanks using Paypal for payment';
 $string['pluginname'] = 'Paypal Pay Mode';
 $string['paypalpaymodeparams'] = 'Paypal configuration options';
@@ -60,4 +61,10 @@ on reception of the validation notification from your account holder. You will n
 when done. Thank you again for your purchase.</p>
 
 <p>In case the activation has not occured in the next 48 hours, contact our sales service <%%SUPPORT%%>.</p>
+';
+
+global $CFG;
+$string['paypaltest_desc'] = '
+When using test mode, you will send all purchases to the Paypal sandbox. Paypal sandbox do NOT automate the IPN process (asynchronous return to merchant site) and
+you will have to simulate it using the Paypal IPN Simulator. The IPN end point of this site is : '.$CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php.
 ';

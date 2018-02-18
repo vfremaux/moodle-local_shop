@@ -143,6 +143,7 @@ echo '</table>';
 
 echo $renderer->full_bill_totals($afullbill);
 echo $renderer->full_bill_taxes($afullbill);
+echo $renderer->bill_footer($afullbill);
 
 echo '<div class="shop-bills-flowcontrol">';
 echo $renderer->flow_controller($afullbill->status, $url);

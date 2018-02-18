@@ -73,11 +73,12 @@ $shoprenderer = $PAGE->get_renderer('local_shop');
 
 echo $OUTPUT->heading(get_string('salesservice', 'local_shop'), 1);
 
-echo $OUTPUT->heading(get_string('cataloguemanagement', 'local_shop'), 2);
+echo $OUTPUT->heading(get_string('catalogadmin', 'local_shop'), 2);
 
-echo '<p><center>';
+echo '<center>';
 
 echo $renderer->catalogs($catalogs);
+echo '</center>';
 
 echo '<div id="shop-new-catalog" class="pull-right">';
 $editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php');
@@ -85,7 +86,12 @@ echo '<a href="'.$editurl.'">'.get_string('newcatalog', 'local_shop').'</a>';
 echo '</div>';
 
 echo '<br/>';
+echo '<div class="reference-time">';
+echo '<b>UTC :</b> '.gmdate('Y/m/d H:i:s'). ' <b>Local :</b> '.date('Y/m/d H:i:s');
+echo '</div>';
 echo '<br/>';
+
+echo $OUTPUT->heading(get_string('salesmanagement', 'local_shop'), 2);
 
 echo $shoprenderer->main_menu($theshop);
 

@@ -175,6 +175,14 @@ if ($hassiteconfig) {
 
     shop_paymode::shop_add_paymode_settings($settings);
 
+    $key = 'local_shop/notifications';
+    $settings->add(new admin_setting_heading($key, get_string('notifications', 'local_shop'), ''));
+
+    $key = 'local_shop/presalenotification';
+    $label = get_string('presalenotification', 'local_shop');
+    $desc = get_string('configpresalenotification', 'local_shop');
+    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 1));
+
     $key = 'local_shop/bankinginfo';
     $settings->add(new admin_setting_heading($key, get_string('bankinginfo', 'local_shop'), ''));
 
