@@ -147,7 +147,7 @@ function xmldb_local_shop_install() {
     // Create the categoryowner role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'categoryowner'))) {
         $rolestr = get_string('categoryowner', 'local_shop');
-        $roledesc = get_string('categoryownerdesc', 'local_shop');
+        $roledesc = get_string('categoryowner_desc', 'local_shop');
         $categoryownerid = create_role($rolestr, 'categoryowner', str_replace("'", "\\'", $roledesc), 'coursecreator');
         set_role_contextlevels($categoryownerid, array(CONTEXT_COURSECAT));
         $coursecreator   = $DB->get_record('role', array('shortname' => 'coursecreator'));
