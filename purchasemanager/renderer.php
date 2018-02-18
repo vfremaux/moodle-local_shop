@@ -151,7 +151,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $str .= '<td align="right" class="lastcol '.$statusclass.'">';
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
-                $pix = '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+                $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core');
                 $params = array('what' => 'delete',
                                 'productids[]' => $productinstance->id,
                                 'sesskey' => sesskey());
@@ -160,10 +160,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                 $commands = '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
 
                 if ($productinstance->deleted) {
-                    $pix = '<img src="'.$OUTPUT->pix_url('t/stop').'" />';
+                    $pix = $OUTPUT->pix_icon('t/stop', '', 'core');
                     $title = get_string('softrestore', 'local_shop');
                 } else {
-                    $pix = '<img src="'.$OUTPUT->pix_url('t/go').'" />';
+                    $pix = $OUTPUT->pix_icon('t/go', '', 'core');
                     $title = get_string('softdelete', 'local_shop');
                 }
                 $params = array('what' => 'softdelete',
