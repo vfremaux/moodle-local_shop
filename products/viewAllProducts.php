@@ -87,11 +87,9 @@ if (count(array_keys($products)) == 0) {
 
         if (file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$portlet->code.'.class.php')) {
             if ($portlet->enablehandler) {
-                $pixurl = $OUTPUT->pix_url('hashandler', 'local_shop');
-                $portlet->code .= ' <img title="'.$hashandlersstr.'" src="'.$pixurl.'" />';
+                $portlet->code .= $OUTPUT->pix_icon('hashandler', $hashandlersstr, 'local_shop');
             } else {
-                $pixurl = $OUTPUT->pix_url('hashandlerdisabled', 'local_shop');
-                $portlet->code .= ' <img title="'.$hashandlersstr.'" src="'.$pixurl.'" />';
+                $portlet->code .= $OUTPUT->pix_icon('hashandlerdisabled', $hashandlersstr, 'local_shop');
             }
         }
 
@@ -104,7 +102,7 @@ if (count(array_keys($products)) == 0) {
 
             if ($portlet->isset == PRODUCT_SET) {
                 // Is a product set.
-                $portlet->thumb = $OUTPUT->pix_url('productset', 'local_shop');
+                $portlet->thumb = $OUTPUT->image_url('productset', 'local_shop');
                 echo $renderer->set_admin_line($portlet, true);
             } else {
                 // Is a product bundle.
