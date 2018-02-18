@@ -26,11 +26,13 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/renderer.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Shop;
 use local_shop\Tax;
 use local_shop\Category;
+use local_shop\CatalogItem;
 
 class shop_products_renderer extends local_shop_base_renderer {
 
@@ -594,12 +596,18 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '<a href="'.$catlinkurl.'">'.get_string('edit_categories', 'local_shop').'</a> - ';
         if (Category::count(array('catalogid' => $thecatalog->id))) {
             $params = array('id' => $this->theshop->id, 'categoryid' => $categoryid);
-            $producturl = new moodle_url('/local/shop/products/edit_product.php', $params);
-            $str .= '<a href="'.$producturl.'">'.get_string('newproduct', 'local_shop').'</a> - ';
-            $seturl = new moodle_url('/local/shop/products/edit_set.php', $params);
-            $str .= '&nbsp;<a href="'.$seturl.'">'.get_string('newset', 'local_shop').'</a> - ';
-            $bundleurl = new moodle_url('/local/shop/products/edit_bundle.php', $params);
-            $str .= '<a href="'.$bundleurl.'">'.get_string('newbundle', 'local_shop').'</a> - ';
+
+            if (local_shop_supports_feature() == 'pro' || CatalogItem::count(array()) < 10) {
+                $producturl = new moodle_url('/local/shop/products/edit_product.php', $params);
+                $str .= '<a href="'.$producturl.'">'.get_string('newproduct', 'local_shop').'</a> - ';
+
+                $seturl = new moodle_url('/local/shop/products/edit_set.php', $params);
+                $str .= '&nbsp;<a href="'.$seturl.'">'.get_string('newset', 'local_shop').'</a> - ';
+
+                $bundleurl = new moodle_url('/local/shop/products/edit_bundle.php', $params);
+                $str .= '<a href="'.$bundleurl.'">'.get_string('newbundle', 'local_shop').'</a> - ';
+            }
+
             $testurl = new moodle_url('/local/shop/unittests/index.php', array('id' => $this->theshop->id));
             $str .= '&nbsp;<a href="'.$testurl.'">'.get_string('unittests', 'local_shop').'</a>';
         }
