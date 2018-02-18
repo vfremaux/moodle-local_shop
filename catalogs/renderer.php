@@ -113,21 +113,22 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str = '';
+        $str = '<center>';
         $str .= '<table width="100%" cellspacing="10" class="generaltable">';
 
         $str .= $this->catalog_admin_line(null);
         if ($catalogs) {
-            foreach ($catalogs as $c) {
-                if (empty($config->useslavecatalogs)) {
-                    if ($c->ismaster || $c->isslave) {
-                        continue;
-                    }
+            // Take the first and unique one.
+            $c = array_shift($catalogs);
+            if (empty($config->useslavecatalogs)) {
+                if ($c->ismaster || $c->isslave) {
+                    continue;
                 }
-                $str .= $this->catalog_admin_line($c);
             }
+            $str .= $this->catalog_admin_line($c);
         }
         $str .= '</table>';
+        $str .= '</center>';
 
         return $str;
     }

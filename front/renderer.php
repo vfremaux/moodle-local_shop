@@ -1008,7 +1008,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<input type="text"
                        name="customerinfo::email"
                        size="30"
-                       onchange="testmail(this)" value="'.$email.'" />';
+                       onchange="checkemail(this)" value="'.$email.'" />';
         $str .= '</td>';
         $str .= '</tr>';
         $str .= '</table>';
@@ -1117,7 +1117,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<input type="text"
                         name="invoiceinfo::email"
                         size="50"
-                        onchange=""
+                        onchange="checkemail(this)"
                         value="'. $email .'" />';
         $str .= '</td>';
         $str .= '</tr>';

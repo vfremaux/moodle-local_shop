@@ -267,26 +267,28 @@ if ($hassiteconfig) {
     $desc = get_string('configuseshipping', 'local_shop');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
-    $key = 'local_shop/usedelegation';
-    $label = get_string('usedelegation', 'local_shop');
-    $desc = get_string('configusedelegation', 'local_shop');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
+    if (local_shop_supports_feature('catalog/instances')) {
+        $key = 'local_shop/usedelegation';
+        $label = get_string('usedelegation', 'local_shop');
+        $desc = get_string('configusedelegation', 'local_shop');
+        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
-    $key = 'local_shop/useslavecatalogs';
-    $label = get_string('useslavecatalogs', 'local_shop');
-    $desc = get_string('configuseslavecatalogs', 'local_shop');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
+        $key = 'local_shop/useslavecatalogs';
+        $label = get_string('useslavecatalogs', 'local_shop');
+        $desc = get_string('configuseslavecatalogs', 'local_shop');
+        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
-    $key = 'local_shop/userenewableproducts';
-    $label = get_string('userenewableproducts', 'local_shop');
-    $desc = get_string('configuserenewableproducts', 'local_shop');
-    $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
+        $key = 'local_shop/userenewableproducts';
+        $label = get_string('userenewableproducts', 'local_shop');
+        $desc = get_string('configuserenewableproducts', 'local_shop');
+        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
+    }
 
     if (local_shop_supports_feature('emulate/community')) {
         // This will accept any
         $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'local_shop'), ''));
 
-        $key = 'report_trainingsessions/emulatecommunity';
+        $key = 'local_shop/emulatecommunity';
         $label = get_string('emulatecommunity', 'local_shop');
         $desc = get_string('emulatecommunity_desc', 'local_shop');
         $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));

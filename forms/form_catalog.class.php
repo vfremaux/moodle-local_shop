@@ -87,7 +87,7 @@ class Catalog_Form extends moodleform {
 
         // Add catalog mode settings.
 
-        if ($config->useslavecatalogs) {
+        if ($config->useslavecatalogs && local_shop_supports_feature('catalog/instances')) {
             $linkedarray = array();
             $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('standalone', 'local_shop'), 'free');
 
