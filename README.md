@@ -5,15 +5,23 @@ Full features moodle integrated shop.
 Versions : 
 
 Community version :
-   - full featured front office sequencer
+   - Full featured front office sequencer
    - Complete backoffice for usual operations
    - Basic payment methods (paypal, offline wire transfer or check)
    - Basic purchase automation handlers
+   - One single shop
+   - One single catalogue
+   - Ten products limit
 
 Pro version :
    - Full community features
    - Extended banking interfaces (ogone, mercanet, systempay)
    - Extended purchase automation handlers
+   - Multiple shop instances
+   - Multiple catalogs
+   - Master/slave catalogs
+   - No product count limit
+
 Pro in preview :
    - Complementary backoffice reports
    - Full WS support

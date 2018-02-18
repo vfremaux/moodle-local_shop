@@ -58,7 +58,7 @@ $string['allowtax_help'] = 'Active la prise en compte de la taxe dans les calcul
 $string['allproductinstances'] = 'Toutes les unités de ventes';
 $string['allproducts'] = 'Tous les produits';
 $string['allshops'] = 'Toutes les boutiques';
-$string['allshopsdesc'] = 'Gérer les instances d\'offres commerciales';
+$string['allshops_desc'] = 'Gérer les instances d\'offres commerciales';
 $string['amonth'] = 'un mois';
 $string['amount'] = 'Montant';
 $string['apparence'] = 'Apparence';
@@ -104,8 +104,6 @@ $string['category'] = 'Catégories';
 $string['categorydescription'] = 'Description&nbsp;';
 $string['categoryname'] = 'Nom de la catégorie&nbsp;';
 $string['categoryowner'] = 'Propriétaire de catégorie';
-$string['categoryownerdesc'] = 'Le propriétaire d\'une catégorie peut gérer le contenu de sa catégorie et
-inviter des enseignants et d\'autres créateurs de cours. Il en reste respondable.';
 $string['catname'] = 'Nom';
 $string['catnum'] = 'Numéro';
 $string['chooseall'] = 'Tout';
@@ -204,9 +202,10 @@ $string['editset'] = 'Edition de l\'assemblage';
 $string['editshipping'] = 'Edition d\'une règle de port';
 $string['editshippingzone'] = 'Edition de zone de port dû';
 $string['editshop'] = 'Modifier une boutique';
+$string['editshopsettings'] = 'Modifier les paramètres de la boutique';
+$string['editshopsettings_desc'] = 'Cette version propose une instance unique de boutique Moodle. Vous pouvez modifier les paramètres ici.';
 $string['edittaxe'] = 'Edition d\'une taxe';
 $string['emulatecommunity'] = 'Emuler la version communautaire';
-$string['emulatecommunity_desc'] = 'Si elle est activée, cette option force le composant à fonctionner en version communautaire. Certaines fonctionnalités ne seront plus disponibles.';
 $string['enablehandler'] = 'Activer le traitement d\'achat';
 $string['enablepaymodes'] = 'Modes de paiement&nbsp;';
 $string['error'] = 'Erreur&nbsp;:&ensp;';
@@ -215,7 +214,6 @@ $string['errorunimplementedhandlermethod'] = 'Cette methode de postproduction ({
 $string['errornotownedbill'] = 'Cette facture ne vous appartient pas.';
 $string['errorrequirementfieldtype'] = 'Type de champ inconnu {$a} dans les définitions de données requises';
 $string['eula'] = 'Texte des conditions de vente et d\'utilisation';
-$string['eula_help'] = 'Vous devez prendre connaissance et accepter les conditions de vente suivantes avant de procéder à un achat sur {$a}. La validation de ce formulaire vaut pour acceptation de ces conditions.';
 $string['eulaagree'] = 'J\'accepte les conditions de ventes';
 $string['eulaheading'] = 'Conditions générales de ventes';
 $string['expectedpaiement'] = 'Délai de paiement&nbsp;';
@@ -342,7 +340,6 @@ $string['resetbills'] = 'Effacer les commandes/factures';
 $string['resetcatalogs'] = 'Effacer les catalogues';
 $string['resetcustomers'] = 'Effacer la base client';
 $string['resetdesc'] = 'Réinitialise la boutique';
-$string['resetguide'] = 'Cette commande permet d\'effacer tout ou partie des données de la boutique. Certaines valeurs sont liées : par exemple<br/><ul><li>Si vous effacez la base client, vous effacez nécessairement les factures</li><li>Si vous effacez les catalogues, vous pouvez garder la base client, mais toutes les commandes/factures seront effacées.</li></ul>';
 $string['resetitems'] = 'Eléments à effacer';
 $string['results'] = 'Résultats';
 $string['runningbills'] = 'Factures&nbsp;: En cours';
@@ -394,7 +391,6 @@ $string['shopdescription'] = 'Description de la boutique ';
 $string['shopinstance'] = 'Instance de boutique';
 $string['shopproductcreated'] = 'Créé par une postproduction de la Boutique Moodle';
 $string['shops'] = 'Boutiques';
-$string['shops_help'] = 'Des boutiques sont des instances de vente appuyées sur un catalogue et opérant selon certaines modalités.';
 $string['shortname'] = 'Nom court';
 $string['showdescriptioninset'] = 'Affichage de la description ';
 $string['shownameinset'] = 'Affichage du nom ';
@@ -457,6 +453,8 @@ $string['userdiscountagreed2'] = 'Remise 2';
 $string['userdiscountagreed3'] = 'Remise 3';
 $string['useshipping'] = 'Frais de port';
 $string['usinghandler'] = 'Gestionnaire utilisé&nbsp;: {$a}';
+$string['userenewableproducts'] = 'Activer les produits renouvellables';
+$string['useslavecatalogs'] = 'Activer les catalogues maîtres/esclaves';
 $string['value'] = 'Valeur fixe';
 $string['vendorinfo'] = 'Identité du vendeur';
 $string['warning'] = 'Alerte&nbsp;:&ensp;';
@@ -653,6 +651,24 @@ $string['discountthreshold_help'] = '
 Le seuil du chiffre d\'affaire pour activer la première remise.
 ';
 
+$string['emulatecommunity_desc'] = 'Si elle est activée, cette option force le composant à fonctionner en
+version communautaire. Le fonctionnement sera plus compatible avec d\'autres installations, mais certaines
+fonctionnalités ne seront plus disponibles.';
+
+$string['eula_help'] = 'Vous devez prendre connaissance et accepter les conditions de vente suivantes avant
+de procéder à un achat sur {$a}. La validation de ce formulaire vaut pour acceptation de ces conditions.';
+
+$string['resetguide'] = 'Cette commande permet d\'effacer tout ou partie des données de la boutique.
+Certaines valeurs sont liées : par exemple<br/><ul><li>Si vous effacez la base client, vous effacez
+nécessairement les factures</li><li>Si vous effacez les catalogues, vous pouvez garder la base client,
+mais toutes les commandes/factures seront effacées.</li></ul>';
+
+$string['shops_help'] = 'Des boutiques sont des instances de vente appuyées sur un catalogue et opérant
+selon certaines modalités.';
+
+$string['categoryowner_desc'] = 'Le propriétaire d\'une catégorie peut gérer le contenu de sa catégorie et
+inviter des enseignants et d\'autres créateurs de cours. Il en reste respondable.';
+
 global $CFG;
 require($CFG->dirroot.'/local/shop/lang/fr/front.php');
 require($CFG->dirroot.'/local/shop/lang/fr/catalogs.php');
@@ -696,6 +712,13 @@ $string['KRWsymb'] = 'Won (corea)';
 $string['JPYsymb'] = 'Yen (japan)';
 $string['TNDsymb'] = 'Dn (TU)';
 $string['MADsymb'] = 'Dn (MA)';
+
+$string['userenewableproducts_desc'] = 'Les produits renouvellables ont un cycle de vie plus complexes et peuvent notifier les
+propriétaires quand une échéance de durée de vie arrive à son terme. Une transaction spéciale permet d\'augmenter la durée de vie
+du produit.';
+
+$string['useslavecatalogs'] = 'Les catalogues maîtres esclaves permettent de créer des variantes locales de catalogues pour
+altérer la langue de présentation des produits ou les gammes de prix proposés.';
 
 $string['plugindist_desc'] = '<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
 correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugn existe et est distribuée
