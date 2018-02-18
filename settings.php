@@ -278,7 +278,7 @@ if ($hassiteconfig) {
         // This will accept any
         $settings->add(new admin_setting_heading('plugindisthdr', get_string('plugindist', 'local_shop'), ''));
 
-        $key = 'report_trainingsessions/emulatecommunity';
+        $key = 'local_shop/emulatecommunity';
         $label = get_string('emulatecommunity', 'local_shop');
         $desc = get_string('emulatecommunity_desc', 'local_shop');
         $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 0));
