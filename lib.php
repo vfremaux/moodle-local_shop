@@ -29,15 +29,19 @@ defined('MOODLE_INTERNAL') || die();
  * implementation path where to fetch resources.
  * @param string $feature a feature key to be tested.
  */
-function local_shop_supports_feature($feature) {
+function local_shop_supports_feature($feature = null) {
     global $CFG;
     static $supports;
+
+    $config = get_config('local_shop');
 
     if (!isset($supports)) {
         $supports = array(
             'pro' => array(
                 'handlers' => array('fullstack'),
                 'paymodes' => array('fullstack'),
+                'catalog' => array('instances'),
+                'shop' => array('instances'),
             ),
             'community' => array(
                 'handlers' => array('basic'),
@@ -58,6 +62,11 @@ function local_shop_supports_feature($feature) {
         }
     } else {
         $versionkey = 'community';
+    }
+
+    if (empty($feature)) {
+        // Just return version.
+        return $versionkey;
     }
 
     list($feat, $subfeat) = explode('/', $feature);
@@ -162,13 +171,31 @@ function local_shop_get_file_areas() {
  * @param string $module
  */
 function shop_get_renderer($module = 'front') {
-    global $CFG;
+    global $CFG, $PAGE, $OUTPUT;
+
+    if ($module == 'base') {
+        if (!local_shop_supports_feature('catalog/instances')) {
+            return $PAGE->get_renderer('local_shop');
+        } else {
+            include_once($CFG->dirroot.'/local/shop/pro/renderer.php');
+            $renderer = new local_shop_renderer_extended($PAGE, '');
+            $renderer->set_output($OUTPUT); // This is to comply general renderer model.
+            return $renderer;
+        }
+    }
 
     $slashedmodule = '/'.$module;
 
+    if (file_exists($CFG->dirroot."/local/shop/pro{$slashedmodule}/renderer.php") &&
+            local_shop_supports_feature() == 'pro') {
+        // Do we know something about "pro" version ?
+        include_once($CFG->dirroot."/local/shop/pro{$slashedmodule}/renderer.php");
+        $class = "shop_{$module}_renderer_extended";
+        echo "get $class ";
+        return new $class();
+    }
+
     include_once($CFG->dirroot."/local/shop{$slashedmodule}/renderer.php");
-
     $class = "shop_{$module}_renderer";
-
     return new $class();
 }

@@ -82,6 +82,7 @@ $string['emptyfieldcity'] = 'Votre ville est vide. Nous en avons besoin pour ét
 $string['emptyfieldlastname'] = 'Votre nom n\est pas mentionné.';
 $string['emptyfieldfirstname'] = 'Votre prénom n\'est pas mentionné.';
 $string['enableallmode'] = 'Activer la "vue complete" (suppression du contrôle de connexion) ';
+$string['errornoselleridentity'] = 'La boutique moodle semble ne pas avoir de configuration. L\'identité du vendeur n\'a pas été définie.';
 $string['existingmailpleaselogin'] = 'Cette adresse mél est déjà utilisée par un compte sur cette plate-forme. Si vous êtes propriétaire de ce compte, <a href="{$a->wwwroot}/login/index.php">connectez-vous avec votre compte</a>. Vous serez automatiquement redirigé vers cette page et pourrez continuer en mode connecté.';
 $string['finaltotal'] = 'Total à payer (TTC)';
 $string['finaltotalprice'] = 'Total à régler (TTC)';
@@ -106,6 +107,7 @@ $string['invoiceinformation'] = 'Informations de facturation';
 $string['ismorethan'] = 'Si le montant de votre commande est supérieur à&ensp;';
 $string['isnotuser'] = 'N\'est pas un utilisateur de {$a}';
 $string['isuser'] = 'Est un utilisateur de {$a}';
+$string['invalidemail'] = 'L\'adresse email entrée est invalide. Veuillez resaisir votre adresse de courriel.';
 $string['key'] = 'Clé';
 $string['knownaccount'] = 'Compte utilisateur identifié';
 $string['launch'] = 'Lancer la commande';

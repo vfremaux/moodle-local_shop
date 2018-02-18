@@ -14,86 +14,83 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['addbill'] = 'Add bill';
+$string['addbill'] = 'Add a bill';
 $string['addbillitem'] = 'Add a bill item';
 $string['abstract'] = 'Abstract';
-$string['actualstate'] = 'Current state';
-$string['allowingtax'] = 'allowing tax';
+$string['actualstate'] = 'Current status';
+$string['allowingtax'] = 'Enable tax';
 $string['allowtax'] = 'Allow tax';
 $string['assignedto'] = 'Assigned to';
 $string['backto'] = 'Back to:';
 $string['bill'] = 'Bill:';
-$string['proformabill'] = 'Online Bill:';
+$string['proformabill'] = 'Online bill:';
 $string['bill_ALLs'] = 'All';
 $string['bill_CANCELLEDs'] = 'Bill cancelled';
-$string['bill_COMPLETEs'] = 'Bill finished';
+$string['bill_COMPLETEs'] = 'Bill completed';
 $string['bill_PLACEDs'] = 'Bill placed';
 $string['bill_FAILEDs'] = 'Bill payment failed';
 $string['bill_PARTIALs'] = 'Partial bill';
 $string['bill_PAYBACKs'] = 'Bill payback';
-$string['bill_PENDINGs'] = 'Pending bill';
-$string['bill_RECOVERINGs'] = 'Bill recovering';
-$string['bill_SOLDOUTs'] = 'Bill soldout';
+$string['bill_PENDINGs'] = 'Bill pending';
+$string['bill_RECOVERINGs'] = 'Bill in recovery';
+$string['bill_SOLDOUTs'] = 'Bill paid';
 $string['bill_PREPRODs'] = 'Bill in advanced prod';
 $string['bill_REFUSEDs'] = 'Bill payment refused';
-$string['bill_WORKINGs'] = 'Bill working';
-$string['bill_assignation'] = 'bill assignation';
-$string['billstates'] = 'Bill states';
-$string['billtaxes'] = 'Total taxes:';
-$string['billtitle'] = 'Title:&ensp;';
+$string['bill_WORKINGs'] = 'Bill in progress';
+$string['bill_assignation'] = 'Bill assigned';
+$string['billstates'] = 'Bill statuses';
+$string['billtaxes'] = 'Total tax:';
+$string['billtitle'] = 'Title:';
 $string['choosecustomer'] = 'Choose a customer';
-$string['chooseuser'] = 'Choose an user';
-$string['customer_account'] = 'the bill assignation to a customer account';
-$string['customername'] = 'Customer name';
+$string['chooseuser'] = 'Choose a user';
+$string['customer_account'] = 'Bill assigned to a customer account';
 $string['deadline'] = 'Deadline';
 $string['editbillitem'] = 'Edit bill item';
-$string['expectedpaiement'] = 'Expected date for payment';
+$string['expectedpaiement'] = 'Expected payment date';
 $string['exportasxls'] = 'Export as XLS';
-$string['fromdate'] = 'From ';
 $string['generateacode'] = 'Generate a code';
 $string['goto'] = 'Go to:';
-$string['lettering'] = 'Lettering';
-$string['letteringupdated'] = 'Lettering updated';
+$string['lettering'] = 'Cross-reference coding';
+$string['letteringupdated'] = 'Cross-reference code updated';
 $string['nobillattachements'] = 'No document attached.';
 $string['nobills'] = 'No bills';
 $string['nocodegenerated'] = 'No transaction code has been generated (manual bills).';
-$string['noletteringaspending'] = 'This is a pending order. <br/>Only a bill can be lettered.';
-$string['paiedamount'] = 'Paied amount';
+$string['noletteringaspending'] = 'This is a pending order. <br/>Only a bill can be cross referenced.';
+$string['paiedamount'] = 'Amount paid';
 $string['paimentcode'] = 'Bill code:';
-$string['paymodes'] = 'Paymode';
-$string['biquantity'] = 'Quantity:&ensp;';
-$string['searchtimerange'] = 'Probable period for the transaction';
-$string['searchinbills'] = 'Search invoices';
+$string['paymodes'] = 'Method of payment';
+$string['biquantity'] = 'Quantity:';
+$string['searchtimerange'] = 'Estimated transaction period';
 $string['seethecustomerdetail'] = 'See customer details';
 $string['status'] = 'Status';
-$string['timetodo'] = 'Date to complete:&ensp;';
-$string['totalttc'] = 'Total tax included:&ensp;';
-$string['totaltex'] = 'Total wt taxes:&ensp;';
+$string['timetodo'] = 'Completion date:';
+$string['totalttc'] = 'Total, tax included:';
+$string['totaltex'] = 'Total tax, not included:';
 $string['totalti'] = 'Total:';
 $string['transaction'] = 'Transaction';
-$string['uniqueletteringfailure'] = '<a href="{$a}">Another bill</a> uses already this lettering code.';
-$string['unittex'] = 'Unit wt taxes:';
+$string['uniqueletteringfailure'] = '<a href="{$a}">Another bill</a> already has this cross reference.';
+$string['unittex'] = 'Unit, tax not included:';
 $string['updatelettering'] = 'Update';
-$string['pickuser'] = 'Choose a customer account or an user account:&ensp;';
+$string['pickuser'] = 'Choose a customer or a user account:';
 $string['worktype'] = 'Worktype';
 
 $string['formula_creation_help'] = '
-# Tax formula edition
+# Calculating tax using the tax formula 
 
-User have to enter the tax formula, which calculate taxed price of an article
+The user must enter the formula used to calculate the “tax included” price of an article
 
-This formula must integrate variables of the taxed price ($TTC), the non-taxed price ($HT), the ratio of the tax ($TR)
+This formula must integrate variables of the “tax included” price ($TTC), the “tax not included” price ($HT), and the “tax ratio” ($TR)
 
-Exemple : $TTC = $HT + ($HT*$TR/100)';
+Example: $TTC = $HT + ($HT*$TR/100)';
 
 $string['description_help'] = '
-# Help on writing text Writing text in Moodle works pretty much the way you would expect, but you also have the ability to include "smilies", "URL addresses" and some HTML tags in your text.
+# Help on writing text Writing text in Moodle works pretty much the way you would expect, but you also have the ability to include "smilies", "URL addresses", and a few HTML tags in your text.
 
 ## Smilies (emoticons)
 
 <div class="indent">
   <p>
-    To embed these small icons in your text, just type the associated code. These codes themselves are like little pictures if you turn your head to the left when looking at them.
+    To embed these small icons in your text, just type the associated code. These codes are like little pictures if you turn your head to the left when looking at them.
   </p>
 
   <table border="1">
@@ -393,7 +390,7 @@ $string['description_help'] = '
 
 <div class="indent">
   <p>
-    Any "word" starting with <b>www.</b> or <b>http://</b> will automatically be turned into a clickable link.
+    Any "word" starting with <b>www.</b> or <b>http://</b> will automatically become a clickable link.
   </p>
 
   <p>
@@ -475,91 +472,91 @@ $string['description_help'] = '
                   </tr></table> </div>';
 
 $string['help_userid_help'] = '
-# Associate client id with a bill
+# Associating a customer ID with a bill
 
-A bill must be associated with a client account
+A bill must be associated with a customer account
 
-Customer must have an account, identified by an id
+A customer must have an account identified by an ID
 
-Fill the client Id field with an existing customer\'s account Id
+Fill the client ID field with an existing customer account ID
 
-If you want to consult, create or manage a client\'s account, please go on the administration of the shop';
+If you want to view, create or manage a client account, please go to shop administration';
 
 $string['shopform_help'] = '
-# Account informations
+# Account information
 
-Order on this website require an account
+Ordering from this website requires an account
 
-It is important to fill **all** the fields to create a customer account if you don\'t have one
+It is important to fill out **all** fields to create a customer account if you don\'t already have one
 
-User must give his firstname, lastname, city, country and his mail
+User must provide their first name, last name, city, country and email
 
-The mail given must be in a good format (exemple : customer@provider.com';
+The email provided must be properly formatted (example: customer@provider.com';
 
 $string['taxhelp_help'] = '
-# Associate a tax code to a product code
+# Associating a tax code with a product code
 
-A product must be associated to a product code
+A product must be associated with a product code
 
-Select a tax code among tax code proposed
+Select a tax code from the list
 
-If you want to create a tax, please go on the tax manager in the administration of this block';
+If you want to create a tax, please go to the tax manager in administration';
 
-$string['customer_account_help'] = '# Help on customer account assignation for bills
+$string['customer_account_help'] = '# Help on assigning a bill to a customer account
 
-Bill must be assigned to a customer account.
+A bill must be assigned to a customer account.
 
-Select between an existing customer account, or an user account on the plateform.
+Select either an existing customer or user account on the platform.
 
-If an user account is selected, a customer account is automaticly created and the bill will be assigned to this new customer account.';
+If a user account is selected, a customer account is automatically created and the bill will be assigned to this new customer account.';
 
 $string['billstates_help'] = '
-# States for orders and bills
+# Order and bill statuses
 
-Orders and bills have a lifecycle driven by a state and transition engine.
+Orders and bills have a life cycle determined by a status and transition engine.
 
-following states are used:
+Possible statuses include:
 
-Working (WORKING)
-:   When a backoffice operator creates manually an order, it takes the Working state.
+In progress (IN PROGRESS)
+:   When a back office operator manually creates an order, it takes the “In progress” status.
 
 Placed (PLACED)
-:   Orders sent by online customers so placed for payment but not confirmed.
+:   Orders transmitted by online customers are placed for payment but not confirmed.
 
 Pending orders (PENDING)
-:   Orders have been confirmed by customer, but payement used is offline or is delayed to an asynchronous response. Offline payement reception must be handled manually by a back-office operator.
+:   Orders have been confirmed by the customer but payment used is offline or is delayed for an asynchronous response. Offline payments must be handled manually by a back office operator.
 
-Soldout bills (SOLDOUT)
-:   Bill have been sold out integrally because of using an online immediate payment method, or because having been so marked by a back-office operator after physical payement reception.
+Paid bills (PAID)
+:   Bill has been paid in full because an online immediate method of payment was used or because it was marked as such by a back office operator after physical payment was received.
 
-Completed bills (COMPLETE)
-:   Order has been payed and realized (in any way, automatically by playing handlers, or manually shipped and sent to customer in case of physical goods.
+Completed bills (COMPLETED)
+:   Order has been paid and completed (by any method, whether automatically by enabling handlers or manually shipped and sent to customer in case of physical goods.
 
 Cancelled orders (CANCELLED)
-:   Back-office operators an cancel orders that have not been entered into real accountance path.
+:   Back office operators can cancel orders that have not yet been officially entered into accounting.
 
-Failed payement bills (FAILED)</dd>
-:   This bills mark online payement failed process.
+Failed payment bills (FAILED)</dd>
+:   These bills mark a failed online payment process.
 
 Payback orders (PAYBACK)</dd>
-:   Orders abusively invoiced or in case of possibility of the customer to revert his purchase might be marked as payback orders at benefit of the customer.</dl>';
+:   Orders abusively billed or orders for which a customer can return their purchase, might be marked as payback orders to the benefit of the customer.</dl>';
 
-$string['bill_assignation_help'] = '# Help on the bill assignation
+$string['bill_assignation_help'] = '# Help on assigning a bill
 
-A bill traitment must be assignate to an user with bill traitment right
+A bill must be assigned to a user with bill processing rights
 
-Select the user you want to assign bill traitment to';
+Select the user you want to assign bill processing to';
 
-$string['allowtax_help'] = '# Help on allowing tax
+$string['allowtax_help'] = '# Help on enabling tax
 
-You can desactivate tax for bills
+You can disable tax for bills
 
-If you desactivate tax, tax will not be included in the amount of the bill';
+If you disable tax, tax will not be included in the bill amount';
 
 $sring['lettering_help'] = '
-#Lettering
+#Cross reference coding
 
-Lettering help you to match your official accountance registers. On line bills in some regulations cannot be
-registered as official invoices, because of invoice numbering and identification. Using the letterig field,
-you will be able to match and document the online bills with their matching IDNumber in your accountance
+Cross reference coding helps you match official accounting registers. According to some regulations, online bills cannot be
+registered as official bills because of bill numbering and identification. Using the cross referencing field,
+you will be able to match and document online bills with their matching IDNumber in your accounting
 software.';
