@@ -39,7 +39,7 @@ class Product_Form extends CatalogItem_Form {
     public function definition() {
         global $OUTPUT, $DB;
 
-        if (!$this->_customdata['catalog']->isslave) {
+        if (!$this->is_slave()) {
 
             $select = "
                 catalogid = ? AND
@@ -60,7 +60,12 @@ class Product_Form extends CatalogItem_Form {
         $attributeshandlerparams = 'cols="50" rows="8" style="width:80%" ';
 
         // Adding title and description.
-        $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'product', 'local_shop')));
+        $variant = '';
+        if ($this->is_slave()) {
+            $variant = 'variant';
+        }
+        $formcaption = get_string($this->_customdata['what'].'product'.$variant, 'local_shop');
+        $mform->addElement('html', $OUTPUT->heading($formcaption));
 
         $mform->addElement('header', 'h0', get_string('general'));
 
@@ -77,7 +82,7 @@ class Product_Form extends CatalogItem_Form {
         $this->add_target_market();
         $this->add_category();
 
-        if (!$this->_customdata['catalog']->isslave) {
+        if (!$this->is_slave()) {
             $setopts[0] = get_string('outofset', 'local_shop');
             if (!empty($sets)) {
                 foreach ($sets as $set) {
@@ -88,10 +93,10 @@ class Product_Form extends CatalogItem_Form {
         }
         $group = array();
         $label = get_string('shownameinset', 'local_shop');
-        $group[] = &$mform->createElement('checkbox', 'showsnameinset', '', $label);
+        $group[] = &$mform->createElement('advcheckbox', 'showsnameinset', '', $label);
         $mform->setDefault('showsnameinset', 1);
         $label = get_string('showdescriptioninset', 'local_shop');
-        $group[] = &$mform->createElement('checkbox', 'showsdescriptioninset', '', $label);
+        $group[] = &$mform->createElement('advcheckbox', 'showsdescriptioninset', '', $label);
         $mform->setDefault('showsdescriptioninset', 1);
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
 
@@ -102,20 +107,28 @@ class Product_Form extends CatalogItem_Form {
         $mform->addElement('header', 'h4', get_string('automation', 'local_shop'));
 
         // This may need to be translated for localised catalogs.
-        $label = get_string('requireddata', 'local_shop');
+        $label = get_string('requireddata', 'local_shop').':';
         $mform->addElement('textarea', 'requireddata', $label, $attributesspecificdata);
         $mform->setType('requireddata', PARAM_TEXT);
         $mform->addHelpButton('requireddata', 'requireddata', 'local_shop');
 
-        if (!$this->_customdata['catalog']->isslave) {
+        // This may need to be translated for localised catalogs.
+        $label = get_string('productiondata', 'local_shop').':';
+        $mform->addElement('textarea', 'productiondata', $label, $attributesspecificdata);
+        $mform->setType('productiondata', PARAM_TEXT);
+        $mform->addHelpButton('productiondata', 'productiondata', 'local_shop');
+        $mform->setAdvanced('productiondata');
+
+        if (!$this->is_slave()) {
             $handleropts['0'] = get_string('disabled', 'local_shop');
             $handleropts['1'] = get_string('dedicated', 'local_shop');
             $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
 
-            $mform->addElement('select', 'enablehandler', get_string('enablehandler', 'local_shop'), $handleropts);
+            $label = get_string('enablehandler', 'local_shop').':';
+            $mform->addElement('select', 'enablehandler', $label, $handleropts);
             $mform->setType('enablehandler', PARAM_TEXT);
 
-            $label = get_string('handlerparams', 'local_shop');
+            $label = get_string('handlerparams', 'local_shop').':';
             $mform->addElement('textarea', 'handlerparams', $label, $attributeshandlerparams);
             $mform->setType('handlerparams', PARAM_TEXT);
             $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
@@ -123,21 +136,28 @@ class Product_Form extends CatalogItem_Form {
             $seatmodeoptions[SHOP_QUANT_NO_SEATS] = get_string('no');
             $seatmodeoptions[SHOP_QUANT_ONE_SEAT] = get_string('oneseat', 'local_shop');
             $seatmodeoptions[SHOP_QUANT_AS_SEATS] = get_string('yes');
-            $label = get_string('quantaddressesusers', 'local_shop');
+            $label = get_string('quantaddressesusers', 'local_shop').':';
             $mform->addElement('select', 'quantaddressesusers', $label, $seatmodeoptions);
             $mform->setType('quantaddressesusers', PARAM_INT);
             $mform->addHelpButton('quantaddressesusers', 'quantaddressesusers', 'local_shop');
 
-            $mform->addElement('checkbox', 'renewable', get_string('renewable', 'local_shop'));
+            $mform->addElement('advcheckbox', 'renewable', get_string('renewable', 'local_shop').':');
             $mform->addHelpButton('renewable', 'renewable', 'local_shop');
             $mform->disabledIf('renewable', 'enablehandler', 'eq', 0);
         } else {
+            $mform->addelement('static', 'enablehandlershadow', get_string('enablehandler', 'local_shop').':');
             $mform->addelement('hidden', 'enablehandler');
             $mform->setType('enablehandler', PARAM_TEXT);
+
+            $mform->addelement('static', 'handlerparamsshadow', get_string('handlerparams', 'local_shop').':');
             $mform->addelement('hidden', 'handlerparams');
             $mform->setType('handlerparams', PARAM_TEXT);
+
+            $mform->addelement('static', 'quantaddressesusersshadow', get_string('quantaddressesusers', 'local_shop').':');
             $mform->addelement('hidden', 'quantaddressesusers');
             $mform->setType('quantaddressesusers', PARAM_INT);
+
+            $mform->addelement('static', 'renewableshadow', get_string('renewable', 'local_shop').':');
             $mform->addelement('hidden', 'renewable');
             $mform->setType('renewable', PARAM_BOOL);
         }

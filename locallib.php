@@ -27,6 +27,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/backup/util/includes/restore_includes.php');
+require_once($CFG->libdir.'/filestorage/tgz_packer.php');
 
 use local_shop\Catalog;
 use local_shop\Shop;
@@ -154,60 +156,111 @@ function shop_decode_params($catalogitemcode) {
  * @return full path of the backyp file on disk.
  */
 function shop_delivery_check_available_backup($courseid) {
-    global $CFG, $DB;
 
-    $realpath = false;
-    // Calculate the archive pattern.
-    $course = $DB->get_record('course', array('id' => $courseid));
-    // Calculate the backup word.
-    $backupword = backup_get_backup_string($course);
-    // Calculate the date recognition/capture patterns.
-    $backupdatepattern = '([0-9]{8}-[0-9]{4})';
-    // Calculate the shortname.
-    $backupshortname = clean_filename($course->shortname);
-    if (empty($backupshortname) or $backupshortname == '_' ) {
-        $backupshortname = $course->id;
+    $fs = get_file_storage();
+    $templatecontext = context_course::instance($courseid);
+
+    // Alternatively and as last try standard backup.
+    $backupfiles = $fs->get_area_files($templatecontext->id, 'backup', 'course', 0, 'timecreated', false);
+
+    if (!empty($backupfiles)) {
+        return array_pop($backupfiles);
     } else {
-        // Get rid of all version information for searching archive.
-        $backupshortname = preg_replace('/(_(\d+))+$/' , '', $backupshortname);
+        // Try making a new one if missing.
+        return shop_backup_for_template($courseid);
     }
-    // Calculate the final backup filename.
-    // The backup word.
-    $backuppattern = $backupword."-";
-    // The shortname.
-    $backuppattern .= preg_quote(moodle_strtolower($backupshortname)).".*-";
-    // The date format.
-    $backuppattern .= $backupdatepattern;
-    // The extension.
-    $backuppattern .= "\\.zip";
-    /*
-     * Get the last backup in the proper location
-     * backup must have moodle backup filename format
-     */
-    $realdir = $CFG->dataroot.'/'.$courseid.'/backupdata';
-    if (!file_exists($realdir)) {
-        return false;
-    }
-    if ($dir = opendir($realdir)) {
-        $archives = array();
-        while ($entry = readdir($dir)) {
-            if (preg_match("/^$backuppattern\$/", $entry, $matches)) {
-                $archives[$matches[1]] = "{$realdir}/{$entry}";
-            }
-        }
-        if (!empty($archives)) {
-            // Sorts reverse the archives so we can get the latest.
-            krsort($archives);
-            $archnames = array_values($archives);
-            $realpath->path = $archnames[0];
-            $realpath->dir = $realdir;
-        }
-    }
-    return $realpath;
 }
 
 /**
- * generates a usrname from given identity
+ * Make a course backup without user data and stores it in the course
+ * backup area.
+ */
+function shop_backup_for_template($courseid, $options = array(), &$log = '') {
+    global $CFG, $USER;
+
+    $user = get_admin();
+
+    include_once($CFG->dirroot.'/backup/util/includes/backup_includes.php');
+
+    $bc = new backup_controller(backup::TYPE_1COURSE, $courseid, backup::FORMAT_MOODLE,
+                                backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user->id);
+
+    try {
+
+        $coursecontext = context_course::instance($courseid);
+
+        // Build default settings for quick backup.
+        // Quick backup is intended for publishflow purpose.
+
+        // Get default filename info from controller.
+        $format = $bc->get_format();
+        $type = $bc->get_type();
+        $id = $bc->get_id();
+        $users = $bc->get_plan()->get_setting('users')->get_value();
+        $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
+
+        $settings = array(
+            'users' => 0,
+            'role_assignments' => 0,
+            'user_files' => 0,
+            'activities' => 1,
+            'blocks' => 1,
+            'filters' => 1,
+            'comments' => 0,
+            'completion_information' => 0,
+            'logs' => 0,
+            'histories' => 0,
+            'filename' => backup_plan_dbops::get_default_backup_filename($format, $type, $id, $users, $anonymised)
+        );
+
+        foreach ($settings as $setting => $configsetting) {
+            if ($bc->get_plan()->setting_exists($setting)) {
+                $bc->get_plan()->get_setting($setting)->set_value($configsetting);
+            }
+        }
+
+        $bc->set_status(backup::STATUS_AWAITING);
+
+        $bc->execute_plan();
+        $results = $bc->get_results();
+        // Convert user file in course file.
+        $file = $results['backup_destination'];
+
+        $fs = get_file_storage();
+
+        $filerec = new StdClass();
+        $filerec->contextid = $coursecontext->id;
+        $filerec->component = 'backup';
+        $filerec->filearea = 'course';
+        $filerec->itemid = 0;
+        $filerec->filepath = $file->get_filepath();
+        $filerec->filename = $file->get_filename();
+
+        if (!empty($options['clean'])) {
+            if (!empty($options['verbose'])) {
+                $log .= "Cleaning course backup area\n";
+            }
+            $fs->delete_area_files($coursecontext->id, 'backup', 'course');
+        }
+
+        if (!empty($options['verbose'])) {
+            $log .= "Moving backup to course backup area\n";
+        }
+        $archivefile = $fs->create_file_from_storedfile($filerec, $file);
+
+        // Remove user scope original file.
+        $file->delete();
+
+        return $archivefile;
+
+    } catch (backup_exception $e) {
+        return null;
+    }
+}
+
+
+/**
+ * generates a username from given identity
  * @param object $user a user record
  * @return a username
  */
@@ -257,7 +310,7 @@ function shop_generate_shortname($user) {
         FROM
             {course}
         WHERE
-            shortname REGEXP '^{$basename}_[[:digit:]]+$'
+            shortname REGEXP '^{$basename}_[[0-9]]+$'
         ORDER BY
             shortname
     ";
@@ -272,53 +325,69 @@ function shop_generate_shortname($user) {
 }
 
 /**
- * create a course from a template
+ * Make a silent restore of the template into the target category and enrol user as teacher inside
+ * if reqested.
+ * @param object $archivefile a moodle file containing the mbz.
+ * @param object $data a course record where the fullname, shortname, description and idnumber can be overriden from
  */
-function shop_create_course_from_template($templatepath, $courserec) {
-    if (empty($courserec->password)) {
-        $courserec->password = '';
-    }
-    if (empty($courserec->fullname)) {
-        $courserec->fullname = '';
-    }
-    if (empty($courserec->shortname)) {
-        print_error('errorprograming'); // Should NEVER happen... shortname needs to be resolved before creating.
-    }
-    if (empty($courserec->idnumber)) {
-        $courserec->idnumber = '';
-    }
-    if (empty($courserec->lang)) {
-        $courserec->lang = '';
-    }
-    if (empty($courserec->lang)) {
-        $courserec->lang = '';
-    }
-    if (empty($courserec->theme)) {
-        $courserec->theme = '';
-    }
-    if (empty($courserec->cost)) {
-        $courserec->cost = '';
+function shop_restore_template($archivefile, $data) {
+    global $USER, $CFG, $DB;
+
+    // Let the site admin performing the restore.
+    $user = get_admin();
+
+    $contextid = context_system::instance()->id;
+    $component = 'local_coursetemplates';
+    $filearea = 'temp';
+    $itemid = $uniq = 9999999 + rand(0, 100000);
+    $tempdir = $CFG->tempdir."/backup/$uniq";
+
+    if (!is_dir($tempdir)) {
+        mkdir($tempdir, 0777, true);
     }
 
-    // First creation of record before restoring.
-    if (!$courserec->id = $DB->insert_record('course', $courserec)) {
-        return;
+    if (!$archivefile->extract_to_pathname(new tgz_packer(), $tempdir)) {
+        echo $OUTPUT->header();
+        echo $OUTPUT->box_start('error');
+        echo $OUTPUT->notification(get_string('restoreerror', 'local_coursetemplates'));
+        echo $OUTPUT->box_end();
+        echo $OUTPUT->continue_button($url);
+        echo $OUTPUT->footer();
+        die;
     }
-    create_context(CONTEXT_COURSE, $courserec->id);
-    import_backup_file_silently($templatepath, $courserec->id, true, false, array('restore_course_files' => 1));
 
-    /*
-     * this part forces some course attributes to override the given attributes in template
-     * temptate attributes might come from the backup instant and are not any more consistant.
-     * As importing a course needs a real course to exist before importing, it is not possible
-     * to preset those attributes and expect backup will not overwrite them.
-     * conversely, precreating the coure with some attributes setup might give useful default valies that
-     * are not present in the backup.
-     * override necessary attributes from original courserec.
-     */
-    $DB->update_record('course', $courserec);
-    return $courserec->id;
+    // Transaction.
+    $transaction = $DB->start_delegated_transaction();
+
+    // Create new course.
+    $categoryid = $data->category; // A categoryid.
+    $userdoingtherestore = $user->id; // E.g. 2 == admin.
+    $newcourseid = restore_dbops::create_new_course('', '', $categoryid);
+
+    // Restore backup into course.
+    $controller = new restore_controller($uniq, $newcourseid,
+        backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingtherestore,
+        backup::TARGET_NEW_COURSE );
+    $controller->execute_precheck();
+    $controller->execute_plan();
+
+    // Commit.
+    $transaction->allow_commit();
+
+    // Update names.
+    if ($newcourse = $DB->get_record('course', array('id' => $newcourseid))) {
+        $newcourse->fullname = $data->fullname;
+        $newcourse->shortname = $data->shortname;
+        $newcourse->idnumber = $data->idnumber;
+        if (!empty($data->summary)) {
+            $newcourse->summary = $data->summary;
+        }
+        $DB->update_record('course', $newcourse);
+    }
+
+    return $newcourseid;
 }
+
 
 /**
  * Create category with the given name and parentID returning a category ID

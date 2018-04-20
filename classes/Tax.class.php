@@ -70,4 +70,8 @@ class Tax extends ShopObject {
         }
         return json_encode($taxarr);
     }
+
+    public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
+        return parent::_get_instances_menu(self::$table, $filter, $order, 'title', $chooseopt);
+    }
 }

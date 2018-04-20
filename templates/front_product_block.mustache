@@ -1,0 +1,78 @@
+
+
+<!-- productblock -->
+<a name="{{code}}"></a>
+<div class="shop-article {{subelementclass}}">
+
+    <div class="shop-front-productpix">{{{image}}}</div>
+
+    <div class="shop-front-productdef">
+        {{#isbundlepart}}
+            <h3 class="shop-front-partof">{{name}}</h3>
+            <div class="shop-front-description">{{{description}}}</div>
+        {{/isbundlepart}}
+        {{^isbundlepart}}
+            {{#showname}}
+            {{^issetpart}}
+            <h2>{{name}}</h2>
+            {{/issetpart}}
+            {{#issetpart}}
+            <h4>{{name}}</h4>
+            {{/issetpart}}
+            {{/showname}}
+            {{#showdescription}}
+            <div class="shop-front-description">{{{description}}}</div>
+            {{/showdescription}}
+            {{#notavailable}}
+            <div class="shop-not-available">{{notavailable}}</div>
+            {{/notavailable}}
+
+            {{#hasleaflet}}
+            <div class="shop-front-leaflet">
+                <a href="{{{leafleturl}}}" target="_blank">{{leafletlinkstr}}</a>
+            </div>
+            {{/hasleaflet}}
+
+            {{#canorder}}
+            <div class="shop-front-refblock">
+                <div class="shop-front-ref">{{refstr}} : {{{code}}}</div>
+
+                {{^pricelist}}
+                <div class="shop-front-label">{{puttcstr}}</div>
+                <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                {{/pricelist}}
+                {{#pricelist}}
+
+                <div class="shop-front-pricelist">
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                    {{#prices}}
+                    <div class="shop-front-pricerange">{{range}} : </div>
+                    <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                    {{/prices}}
+                </div>
+                {{/pricelist}}
+
+                {{#available}}
+                <div class="shop-front-order">
+                    {{#password}}
+                    <input type="text" id="ci-pass-{{shortname}}" value="" maxlength="8" size="8"
+                                       onkeypress="check_pass_code(\'{{shortname}}\', this, event)"
+                                       title="{{needspasscodetobuystr}}" />
+                    <div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
+
+                    {{/password}}
+                    <input type="button"
+                                    id="ci-{{shortname}}"
+                                    value="{{buystr}}"
+                                    onclick="{{{jshandleraddunit}}}" {{{disabled}}} />
+                    <div class="shop-order-item" id="bag_{{shortname}}"></div>
+                    {{{units}}}
+                </div>
+                {{/available}}
+            </div>
+            {{/canorder}}
+        </div>
+        {{/isbundlepart}}
+    </div>
+</div>
+<!-- /productblock -->

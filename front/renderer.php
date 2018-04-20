@@ -104,8 +104,8 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $iconstate = '_dis';
             }
 
-            $str .= $this->output->pix_icon(current_language().'/'.$icon.$iconstate, '', 'local_shop');
-            $str .= '&nbsp;';
+            $stepicon = $this->output->pix_url(current_language().'/'.$icon.$iconstate, 'local_shop');
+            $str .= '<img src="'.$stepicon.'" />&nbsp;';
         }
         $str .= '</center>';
         $str .= '</div>';
@@ -357,7 +357,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     /**
      * prints tabs for js activation of the category panel
      */
-    public function category_tabs(&$categories, $selected, $parent, $isactive, $isvisiblebranch) {
+    public function category_tabs(&$categories, $selected, $parent, $isactive, $isvisiblebranch, $catlevel) {
 
         $str = '';
 
@@ -377,7 +377,11 @@ class shop_front_renderer extends local_shop_base_renderer {
             $visibleclass = 'shop-category-hidden';
         }
 
-        $str .= '<div class="'.$visibleclass.'" id="shop-cat-children-of-'.$parent.'">';
+        if ($catlevel > 0) {
+            $catlevel .= ' subcats';
+        }
+
+        $str .= '<div class="'.$visibleclass.' level-'.$catlevel.'" id="shop-cat-children-of-'.$parent.'">';
 
         if ($isactive) {
             $str .= print_tabs($rows, $selected, '', '', true);
@@ -427,20 +431,23 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
 
             // Render all upper branch choices, with preselected items in the active branch.
+            $catlevel = 0;
             while ($catid = array_shift($branch)) {
                 $cat = new Category($catid);
                 if ($cat->visible) {
                     $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid, 'visible' => 1);
                     $levelcategories = Category::get_instances($params, 'sortorder');
                     $iscurrent = $cat->id == $categoryid;
-                    $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true);
+                    $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true, $catlevel);
 
                     // Print childs.
+                    $catlevel++;
                     $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
                     if ($subs = Category::get_instances($attrs, 'sortorder')) {
-                        $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid);
+                        $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid, $catlevel);
                     }
                 }
+                $catlevel++;
             }
         }
 
@@ -508,13 +515,13 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $str = '';
+        $template = new StdClass;
 
         $subelementclass = (!empty($product->ispart)) ? 'element' : 'product';
         $subelementclass .= ($product->available) ? '' : ' shadowed';
 
-        $str .= '<a name="'.$product->code.'"></a>';
-        $str .= '<div class="shop-article '.$subelementclass.'">';
+        $template->code = $product->code;
+        $template->subelementclass = $subelementclass;
 
         $image = $product->get_image_url();
         if ($image) {
@@ -522,196 +529,168 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $imagestr = '<img src="'.$product->get_thumb_url().'">';
         }
-        $str .= '<div class="shop-front-productpix">'.$imagestr.'</div>';
+        $template->image = $imagestr;
 
-        $str .= '<div class="shop-front-productdef">';
-        if (!empty($product->ispart)) {
-            $str .= '<h3 class="shop-front-partof">'.format_string($product->name).'</h3>';
-        } else {
-            $str .= '<h2>'.format_string($product->name).'</h2>';
-            if ($product->description) {
-                $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
-                                                   'catalogitemdescription', $product->id);
-                $str .= '<div class="shop-front-description">'.format_text($product->description).'</div>';
-            }
-            if (!$product->available) {
-                $str .= '<div class="shop-not-available">'.get_string('notavailable', 'local_shop').'</div>';
-            }
+        $template->name = format_string($product->name);
+        $template->code = $product->code;
+        $template->shortname = $product->shortname;
+        $template->puttcstr = get_string('puttc', 'local_shop');
+
+        if (!empty($product->isbundlepart)) {
+            $template->isbundlepart = true;
+        }
+
+        $template->showdescription = true;
+        $template->showname = true;
+        if (!empty($product->issetpart)) {
+            $template->issetpart = true;
+            $template->showdescription = $product->showsdescriptioninset;
+            $template->showname = $product->showsnameinset;
+        }
+
+        if ($product->description) {
+            $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
+                                               'catalogitemdescription', $product->id);
+            $template->description = format_text($product->description);
+        }
+        if (!$product->available) {
+            $template->notavailablestr = get_string('notavailable', 'local_shop');
         }
 
         if ($product->has_leaflet()) {
-            $leafleturl = $product->get_leaflet_url();
-            $str .= '<div class="shop-front-leaflet">';
-            $str .= '<a href="'.$leafleturl.'" target="_blank">'.get_string('leafletlink', 'local_shop').'</a>';
-            $str .= '</div>';
+            $template->hasleaflet = true;
+            $template->leafleturl = $product->get_leaflet_url();
+            $template->leafletlinkstr = get_string('leafletlink', 'local_shop');
         }
 
         if (empty($product->noorder)) {
-            $str .= '<div class="shop-front-refblock">';
-            $str .= '<div class="shop-front-ref">'.get_string('ref', 'local_shop').' : '.$product->code.'</div>';
+            $template->canorder = true;
+            $template->refstr = get_string('ref', 'local_shop');
 
+            $template->currencystr = $product->currency;
             $prices = $product->get_printable_prices(true);
             if (count($prices) <= 1) {
-                $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
+                $template->pricelist = false;
                 $price = array_shift($prices);
-                $str .= '<div class="shop-front-price">'.$price.' '.$product->currency.'</div>';
+                $template->price = $price;
             } else {
-                $str .= '<div class="shop-front-pricelist">';
-                $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
+                $template->pricelist = true;
                 foreach ($prices as $range => $price) {
-                    $str .= '<div class="shop-front-pricerange">'.$range.' : </div>';
-                    $str .= '<div class="shop-front-price">'.$price.' '.$product->currency.'</div>';
+                    $pricetpl = new StdClass;
+                    $pricetpl->range = $range;
+                    $pricetpl->price = $price;
+                    $template->prices[] = $pricetpl;
                 }
-                $str .= '</div>'; // Shop-front-pricelist.
             }
 
             if ($product->available) {
-                $str .= '<div class="shop-front-order">';
-                $buystr = get_string('buy', 'local_shop');
+                $template->available = true;
+                $template->buystr = get_string('buy', 'local_shop');
                 $isdisabled = $product->maxdeliveryquant && ($product->maxdeliveryquant == $product->preset);
                 $disabled = ($isdisabled) ? 'disabled="disabled"' : '';
                 if ($product->password) {
-                    $str .= '<input type="text"
-                                   id="ci-pass-'.$product->shortname.'"
-                                   value=""
-                                   maxlength="8"
-                                   size="8"
-                                   onkeypress="check_pass_code(\''.$product->shortname.'\', this, event)"
-                                   title="'.get_string('needspasscodetobuy', 'local_shop').'" />';
-                    $str .= '<div id="ci-pass-status-'.$product->shortname.'" class="shop-pass-state"></div>';
-                    $disabled = 'disabled="disabled"';
+                    $template->password = true;
+                    $template->needspasscodetobuystr = get_string('needspasscodetobuy', 'local_shop');
+                    $template->disabled = 'disabled="disabled"';
                 }
-                $jshandler = 'ajax_add_unit('.$this->theshop->id;
-                $jshandler .= ', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')';
-                $str .= '<input type="button"
-                                id="ci-'.$product->shortname.'"
-                                value="'.$buystr.'"
-                                onclick="'.$jshandler.'" '.$disabled.' />';
-                $str .= '<div class="shop-order-item" id="bag_'.$product->shortname.'">';
-                $str .= $this->units($product);
-                $str .= '</div>';
-                $str .= '</div>'; // Shop-front-order.
+                $template->jshandleraddunit = 'ajax_add_unit('.$this->theshop->id;
+                $template->jshandleraddunit .= ', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')';
+                $template->units = $this->units($product);
             }
-            $str .= '</div>'; // Shop-front-refblock.
         }
 
-        $str .= '</div>'; // Shop-front-productdef.
-        $str .= '</div>'; // Front-article.
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_product_block', $template);
     }
 
     public function product_set(&$set) {
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<div class="shop-article set">';
-        $str .= '<div class="shop-front-setcaption">';
-        $str .= '<h2>'.$set->name.'</h2>';
-        $str .= '<div class="shop-front-description">'.$set->description.'</div>';
-        $str .= '</div>'; // Shop-front-setcaption.
+        $template->name = format_string($set->name);
+        $template->description = format_text($set->description);
 
-        $str .= '<div class="shop-front-elements">';
         foreach ($set->elements as $element) {
+            $elementtpl = new StdClass;
             $element->check_availability();
             $element->noorder = false; // Bundle can only be purchased as a group.
-            $element->ispart = true; // Reduced title.
-            $str .= $this->product_block($element);
+            $element->issetpart = true; // Reduced title.
+            $elementtpl->element = $this->product_block($element);
+            $template->elements[] = $elementtpl;
         }
-        $str .= '</div>'; // Shop-front-elements.
-        $str .= '</div>'; // Shop-article.
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_product_set', $template);
     }
 
     public function product_bundle(&$bundle) {
         global $CFG;
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<div class="shop-article bundle">';
+        $template->code = $bundle->code;
+        $template->shortname = $bundle->shortname;
 
         $image = $bundle->get_image_url();
         if ($image) {
-            $imagestr = '<a class="fancybox" rel="group" href="'.$image.'"><img src="'.$bundle->get_thumb_url().'"></a>';
+            $template->image = '<a class="fancybox" rel="group" href="'.$image.'"><img src="'.$bundle->get_thumb_url().'"></a>';
         } else {
-            $imagestr = '<img src="'.$bundle->get_thumb_url().'">';
+            $template->image = '<img src="'.$bundle->get_thumb_url().'">';
         }
-        $str .= '<div class="shop-front-productpix">'.$imagestr.'</div>';
 
-        $str .= '<div class="shop-front-productdef">';
         if (!empty($bundle->ispart)) {
-            $str .= '<div class="shop-front-partof">'.$bundle->name.'</div>';
+            $template->name = format_string($bundle->name);
         } else {
-            $str .= '<h2>'.$bundle->name.'</h2>';
+            $template->name = format_string($bundle->name);
             if ($bundle->description) {
-                $str .= '<div class="shop-front-description">'.$bundle->description.'</div>';
+                $template->hasdescription = true;
+                $template->description = format_text($bundle->description);
             }
         }
 
         if ($bundle->has_leaflet()) {
-            $leafleturl = $bundle->get_leaflet_url();
-            $linklabel = get_string('leafletlink', 'local_shop');
-            $str .= '<div class="shop-front-leaflet"><a href="'.$leafleturl.'" target="_blank">'.$linklabel.'</a></div>';
+            $template->leafleturl = $bundle->get_leaflet_url();
+            $template->linklabel = get_string('leafletlink', 'local_shop');
         }
 
-        $str .= '<div class="shop-front-refblock">';
-        $str .= '<div class="shop-front-ref">'.get_string('ref', 'local_shop').' : '.$bundle->code.'</div>';
+        $template->refstr = get_string('ref', 'local_shop');
+        $template->puttcstr = get_string('puttc', 'local_shop');
+        $template->currency = $bundle->currency;
 
         foreach ($bundle->elements as $element) {
+            $elementtpl = new StdClass;
             $element->check_availability();
             $element->noorder = true; // Bundle can only be purchased as a group.
-            $element->ispart = true; // Reduced title.
-            $str .= $this->product_block($element);
+            $element->isbundlepart = true; // Reduced title.
+            $elementtpl->element = $this->product_block($element);
+            $template->elements[] = $elementtpl;
         }
 
         // We will use price of the bundle element.
         $prices = $bundle->get_printable_prices(true);
         if (count($prices) <= 1) {
-            $str .= get_string('puttc', 'local_shop');
-            $price = array_shift($prices);
-            $str .= '<div class="shop-front-price">'.$price.' '.$bundle->currency.'</div>';
+            $template->price = array_shift($prices);
         } else {
-            $str .= '<div class="shop-front-pricelist">';
-            $str .= '<div class="shop-front-label">'.get_string('puttc', 'local_shop').'</div>';
+            $template->pricelist = true;
             foreach ($prices as $range => $price) {
-                $str .= '<div class="shop-front-pricerange">'.$range.' : </div>';
-                $str .= '<div class="shop-front-price">'.$price.' '.$bundle->currency.'</div>';
+                $pricetpl = new StdClass;
+                $pricetpl->range = $range;
+                $pricetpl->price = $price;
+                $template->prices[] = $price;
             }
-            $str .= '</div>'; // Shop-front-pricelist.
         }
 
-        $str .= '<div class="shop-front-order">';
-        $buystr = get_string('buy', 'local_shop');
+        $template->buystr = get_string('buy', 'local_shop');
         $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '';
         if ($bundle->password) {
-            $jshandler = 'check_pass_code(\''.$bundle->shortname.'\', this, event)';
-            $str .= '<input type="text"
-                           id="ci-pass-'.$bundle->shortname.'"
-                           value=""
-                           maxlength="8"
-                           size="8"
-                           onkeypress="'.$jshandler.'"
-                           title="'.get_string('needspasscodetobuy', 'local_shop').'" />';
-            $str .= '<div id="ci-pass-status-'.$bundle->shortname.'" class="shop-pass-state"></div>';
-            $disabled = 'disabled="disabled"';
+            $template->password = true;
+            $template->jshandler = 'check_pass_code(\''.$bundle->shortname.'\', this, event)';
+            $template->needspasscodetobuystr = get_string('needspasscodetobuy', 'local_shop');
+            $template->disabled = 'disabled="disabled"';
         }
-        $jshandler = 'ajax_add_unit('.$this->theshop->id;
-        $jshandler .= ', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')';
-        $str .= '<input type="button"
-                        id="ci-'.$bundle->shortname.'"
-                        value="'.$buystr.'"
-                        onclick="'.$jshandler.'" '.$disabled.' />';
-        $str .= '<div class="shop-order-item" id="bag_'.$bundle->shortname.'">';
-        $str .= $this->units($bundle);
-        $str .= '</div>';
-        $str .= '</div>'; // Shop-front-order.
-        $str .= '</div>'; // Shop-front-refblock.
+        $template->jshandleraddunit = 'ajax_add_unit('.$this->theshop->id;
+        $template->jshandleraddunit .= ', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')';
+        $template->units = $this->units($bundle);
 
-        $str .= '</div>'; // Shop-front-productdef.
-        $str .= '</div>'; // Shop-article.
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_product_bundle', $template);
     }
 
     public function units(&$product) {
@@ -738,7 +717,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if (($i * 10 + $j) > 0) {
             $jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= $this->output->pix_icon('t/delete', get_string('deleteone', 'local_shop'), 'core');
+            $str .= '<img src="'.$this->output->pix_url('t/delete').'" valign="center" />';
             $str .= '</a>';
         }
 
@@ -749,11 +728,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         global $SESSION;
 
         if (empty($categories)) {
-            return;
+            return $this->output->notification("no categories");
         }
 
         $shoppingcart = @$SESSION->shoppingcart;
-
         $str = '';
 
         $str .= '<table width="100%" id="orderblock">';
@@ -810,7 +788,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $jshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
             $jshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
             $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'core');
+            $str .= '<img src="'.$this->output->pix_url('t/delete').'" />';
             $str .= '</a>';
             $disabled = '';
         }
@@ -1171,7 +1149,8 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td align="left">';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        $attrs = array('class' => $countryclass);
+        // $attrs = array('class' => $countryclass); // ?
+        $attrs = array();
         $str .= html_writer::select($choices, 'invoiceinfo::country', $country, array('' => 'choosedots'), $attrs);
         $str .= '</td>';
         $str .= '</tr>';
@@ -1236,16 +1215,17 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
             $str .= '<td align="left">';
             if (@$participant->moodleid) {
-                $str .= $this->output->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'), 'core');
+                $pixurl = $this->output->pix_url('i/moodle_host');
+                $str .= '<img src="'.$pixurl.'" title="'.get_string('isuser', 'local_shop').'" />';
             } else {
-                $str .= $this->output->pix_icon('new', get_string('isnotuser', 'local_shop'), 'local_shop');
+                $pixurl = $this->output->pix_url('new', 'local_shop');
+                $str .= '<img src="'.$pixurl.'" title="'.get_string('isnotuser', 'local_shop').'" />';
             }
             $str .= '</td>';
             $str .= '<td align="right">';
             $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'"
                         href="Javascript:ajax_delete_user(\''.$participant->email.'\')">';
-            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'core');
-            $str .= '</a>';
+            $str .= '<img src="'.$this->output->pix_url('t/delete').'" /></a>';
             $str .= '</td>';
             $str .= '</tr>';
         } else {
@@ -1435,7 +1415,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td align="right">';
         $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
         $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'">'.$this->output->pix_icon('t/delete', get_string('delete'), 'core').'</a>';
+        $str .= '<a href="'.$jshandler.'"><img src="'.$this->output->pix_url('t/delete').'" /></a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1942,7 +1922,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
                 $instant = $paymodeplugin->is_instant_payment();
 
-                if (!$paymodeplugin->is_instant_payment()) {
+                if (!$instant) {
                     if (!has_capability('local/shop:paycheckoverride', $this->context) &&
                         !has_capability('local/shop:usenoninstantpayments', $this->context)) {
                         continue;
@@ -1951,18 +1931,23 @@ class shop_front_renderer extends local_shop_base_renderer {
 
                 // If test payment, check if we are logged in and admin, or logged in from an admin behalf.
 
-                if (($var == 'test') || ($config->test)) {
-                    if (!isloggedin()) {
-                        continue;
-                    }
+                if (!empty($USER->realuser)) {
+                    $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->realuser);
+                } else {
+                    $isrealadmin = false;
+                }
 
-                    if (!empty($USER->realuser)) {
-                        $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->realuser);
-                    } else {
-                        $isrealadmin = false;
-                    }
-                    if (!is_siteadmin() && !$isrealadmin) {
+                if ($var == 'test') {
+                    if (!$isrealadmin) {
                         continue;
+                    }
+                } else {
+                    if ($config->test && $instant) {
+                        if (empty($config->testoverride)) {
+                            if (!isloggedin()) {
+                                continue;
+                            }
+                        }
                     }
                 }
 
@@ -2439,10 +2424,10 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<table>';
         if (!empty($afullbill->withlogo)) {
+            $template->withlogo = true;
 
             if (!empty($config->sellerlogo)) {
                 $syscontext = context_system::instance();
@@ -2451,70 +2436,58 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $itemid = 0;
                 $filepath = $config->sellerlogo;
                 $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
-                $pixurl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
+                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
             } else {
-                $pixurl = $this->output->image_url('logo', 'theme');
+                $template->logourl = $this->output->pix_url('logo', 'theme');
             }
-
-            $str .= '<tr>';
-            $str .= '<td><img src="'.$pixurl.'"></td>';
-            $str .= '<td align="right"></td>';
-            $str .= '</tr>';
         }
 
-        $str .= '<tr valign="top">';
-        $str .= '<td colspan="2" align="center">';
-        $str .= $this->output->heading($headerstring, 1);
+        $template->headingstr = $this->output->heading($headerstring, 1);
         if (!empty($subheaderstring)) {
-            $str .= '<div>'.$subheaderstring.'</div>';
+            $template->subheadingstr = $subheaderstring;
         }
-        $str .= '</td>';
-        $str .= '</tr>';
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="70%">';
+        $template->sellername = $config->sellername;
+        $template->selleraddress = $config->selleraddress;
+        $template->sellerzip = $config->sellerzip;
+        $template->sellercity = $config->sellercity;
+        $template->sellercountry = $config->sellercountry;
 
-        $str .= '<b>'.$config->sellername.'</b><br />';
-        $str .= '<b>'.$config->selleraddress.'</b><br />';
-        $str .= '<b>'.$config->sellerzip.' '.$config->sellercity.'</b><br />';
-        $str .= $config->sellercountry;
+        $template->numstr = get_string('num', 'local_shop');
+        $template->emissiondatestamp = date('Ymd', $afullbill->emissiondate);
+        $template->emissiondatesstr = date(get_string('billdatefmt', 'local_shop'), $afullbill->emissiondate);
+        $template->billid = $afullbill->id;
+        $template->customerstr = get_string('customer', 'local_shop');
 
-        $str .= '<br/>';
-        $str .= '<b>'.get_string('num', 'local_shop').': </b>';
-        $str .= 'B-'.date('Ymd', $afullbill->emissiondate).'-'.$afullbill->id;
-        $str .= '<br/>';
+        $template->transactioncodestr = get_string('transactioncode', 'local_shop');
+        $template->transactionid = $afullbill->transactionid;
+        $template->providetransactioncodestr = get_string('providetransactioncode', 'local_shop');
 
-        $str .= '<b>'.get_string('transactioncode', 'local_shop').':</b> ';
-        $str .= '<code style="background-color : #E0E0E0">'.$afullbill->transactionid.'</code>';
-        $str .= '<br />';
-        $str .= '<span class="smaltext">'.get_string('providetransactioncode', 'local_shop').'</span><br/>';
-        $str .= '<b>'.get_string('on', 'local_shop').':&ensp;</b> '.userdate($afullbill->emissiondate).'<br />';
-
-        $str .= '</td>';
-        $str .= '<td width="30%" align="right" class="order-preview-seller-address">';
-        $str .= '<div class="customer-data" style="text-align:left">';
-
-        if (!empty($afullbill->customer->organisation)) {
-            $str .= $afullbill->customer->organisation.'<br/>';
+        // Be carefull of empty on a magic __get return;
+        $invoiceinfo = $afullbill->invoiceinfo;
+        if (empty($invoiceinfo)) {
+            if (!empty($afullbill->customer->organisation)) {
+                $template->organisation = $afullbill->customer->organisation;
+            }
+            $template->invoicename = $afullbill->customer->lastname.' '.$afullbill->customer->firstname;
+            $template->invoicezip = $afullbill->customer->zip;
+            $template->invoicecity = $afullbill->customer->city;
+            $template->invoicecountry = strtoupper($afullbill->customer->country);
+        } else {
+            // Invoice identity comes from invoice info.
+            $customer = json_decode($afullbill->invoiceinfo);
+            if (!empty($customer->organisation)) {
+                $template->organisation = $customer->organisation;
+            }
+            $template->invoicename = $customer->lastname.' '.$customer->firstname;
+            $template->invoicezip = $customer->zip;
+            $template->invoicecity = $customer->city;
+            $template->invoicecountry = strtoupper($customer->country);
         }
-        $custname = $afullbill->customer->lastname.' '.$afullbill->customer->firstname;
-        $str .= $custname.'<br/>';
-        $str .= $afullbill->customer->zip.' '.$afullbill->customer->city.'<br/>';
-        $str .= strtoupper($afullbill->customer->country).'<br/>';
 
-        $str .= '</div>';
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->orderstr = get_string('order', 'local_shop');
 
-        $str .= '<tr valign="top">';
-        $str .= '<td colspan="2" class="sectionHeader">';
-        $str .= $this->output->heading(get_string('order', 'local_shop'), 2);
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '</table>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
     }
 
     public function sales_contact() {
@@ -2522,7 +2495,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str .= '';
+        $str = '';
 
         $str .= '<div id="order-mailto">';
         $str .= $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2);
