@@ -13,7 +13,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
         check_product_key: function() {
 
-            that = $(this);
+            var that = $(this);
 
             var productkey = that.val().replace(/-/g, '');
             var payload = productkey.substr(0, 14);
@@ -26,8 +26,8 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             var invalidicon = ' <img src="' + cfg.wwwroot + '/pix/i/invalid.png' + '">';
             var waiticon = ' <img src="' + cfg.wwwroot + '/pix/i/ajaxloader.gif' + '">';
 
-            if (crc == calculated) {
-                url = cfg.wwwroot + '/local/shop/pro/ajax/services.php?';
+            if (crc === calculated) {
+                var url = cfg.wwwroot + '/local/shop/pro/ajax/services.php?';
                 url += 'what=license';
                 url += '&service=check';
                 url += '&customerkey=' + that.val();
@@ -57,12 +57,12 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
         checksum: function(keypayload) {
 
             var crcrange = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            var crcrangearr =  crcrange.split('');
+            var crcrangearr = crcrange.split('');
             var crccount = crcrangearr.length;
             var chars = keypayload.split('');
             var crc = 0;
 
-            for (ch in chars) {
+            for (var ch in chars) {
                 var ord = chars[ch].charCodeAt(0);
                 crc += ord;
             }
@@ -74,4 +74,4 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
     };
 
     return shoppro;
-})
+});
