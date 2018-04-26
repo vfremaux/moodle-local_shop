@@ -103,7 +103,7 @@ class product_controller {
      * @param string $cmd
      */
     public function process($cmd) {
-        global $DB, $USER;
+        global $DB, $USER, $CFG;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
@@ -125,6 +125,22 @@ class product_controller {
 
             if (empty($this->data->renewable)) {
                 $this->data->renewable = 0;
+            }
+
+            // Check product handler related  constraints
+            if (!empty($this->data->enablehandler)) {
+                $thehandler = $this->data->enablehandler;
+                if (!empty($thehandler) &&
+                        file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$thehandler.'/'.$thehandler.'.class.php')) {
+                    include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$thehandler.'/'.$thehandler.'.class.php');
+                    $classtype = "shop_handler_{$thehandler}";
+                    $handler = new $classtype(null);
+
+                    if ($max = $handler->get_max_quantity()) {
+                        // force max quantity on the product, due to associated handler.
+                        $this->data->maxdeliveryquant = $max;
+                    }
+                }
             }
 
             if (empty($this->data->itemid)) {
@@ -151,11 +167,8 @@ class product_controller {
             } else {
                 unset($this->data->itemid);
 
-                // If product code as changed, we'd better recompute a new shortname.
-                if (empty($this->data->shortname) ||
-                        ($this->data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $this->data->id)))) {
-                    $this->data->shortname = CatalogItem::compute_item_shortname($this->data);
-                }
+                // Recompute an updated shortname.
+                $this->data->shortname = CatalogItem::compute_item_shortname($this->data);
 
                 $DB->update_record('local_shop_catalogitem', $this->data);
             }

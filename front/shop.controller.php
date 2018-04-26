@@ -22,6 +22,9 @@
  */
 namespace local_shop\front;
 
+use \moodle_url;
+use \core_text;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
@@ -31,6 +34,9 @@ class shop_controller extends front_controller_base {
     /**
      * In this case, all the data resides already in session.
      * there is nothing to get from a query.
+     *
+     * Note : always ensure the productname is passed to lowercase to comply the 
+     * JS product shortname.
      */
     public function receive($cmd, $data = array()) {
         if (!empty($data)) {
@@ -41,6 +47,8 @@ class shop_controller extends front_controller_base {
         } else {
             $this->data = new \StdClass;
         }
+
+        $this->data->redirect = optional_param('redirect', false, PARAM_BOOL);
 
         switch ($cmd) {
             case 'import':
@@ -55,21 +63,21 @@ class shop_controller extends front_controller_base {
                 break;
 
             case 'addunit':
-                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                $this->data->shortname = core_text::strtolower(required_param('productname', PARAM_TEXT));
                 break;
 
             case 'setunits':
                 $this->data->quant = required_param('quant', PARAM_INT);
-                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                $this->data->shortname = core_text::strtolower(required_param('productname', PARAM_TEXT));
                 break;
 
             case 'deleteunit':
                 $this->data->clearall = optional_param('clearall', false, PARAM_BOOL);
-                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                $this->data->shortname = core_text::strtolower(required_param('productname', PARAM_TEXT));
                 break;
 
             case 'checkpasscode':
-                $this->data->shortname = required_param('productname', PARAM_TEXT);
+                $this->data->shortname = core_text::strtolower(required_param('productname', PARAM_TEXT));
                 $this->data->passcode = required_param('passcode', PARAM_TEXT);
                 break;
 
@@ -111,9 +119,15 @@ class shop_controller extends front_controller_base {
             @$SESSION->shoppingcart->order[$this->data->shortname]++;
             $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
             $output = new \StdClass();
-            $output->html = $this->renderer->units($product);
-            $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
-            $output = json_encode($output);
+            if (empty($this->data->redirect)) {
+                $output->html = $this->renderer->units($product);
+                $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
+                $output = json_encode($output);
+            } else {
+                $category = optional_param('category', '', PARAM_INT);
+                $shopid = required_param('shopid', PARAM_INT);
+                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+            }
 
         } else if ($cmd == 'setunits') {
             $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
@@ -124,11 +138,16 @@ class shop_controller extends front_controller_base {
                 }
             }
             @$SESSION->shoppingcart->order[$this->data->shortname] = $this->data->quant;
-
-            $output = new \StdClass();
-            $output->html = $this->renderer->units($product);
-            $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
-            $output = json_encode($output);
+            if (empty($this->data->redirect)) {
+                $output = new \StdClass();
+                $output->html = $this->renderer->units($product);
+                $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
+                $output = json_encode($output);
+            } else {
+                $category = optional_param('category', '', PARAM_INT);
+                $shop = required_param('shopid', PARAM_INT);
+                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+            }
 
         } else if ($cmd == 'deleteunit') {
 
@@ -174,10 +193,16 @@ class shop_controller extends front_controller_base {
                 }
             }
 
-            $outputobj = new \StdClass();
-            $outputobj->html = $this->renderer->units($catalogitem);
-            $outputobj->quant = 0 + @$SESSION->shoppingcart->order[$this->data->shortname];
-            $output = json_encode($outputobj);
+            if (empty($this->data->redirect)) {
+                $outputobj = new \StdClass();
+                $outputobj->html = $this->renderer->units($catalogitem);
+                $outputobj->quant = 0 + @$SESSION->shoppingcart->order[$this->data->shortname];
+                $output = json_encode($outputobj);
+            } else {
+                $category = optional_param('category', '', PARAM_INT);
+                $shop = required_param('shopid', PARAM_INT);
+                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+            }
 
         } else if ($cmd == 'orderdetails') {
 

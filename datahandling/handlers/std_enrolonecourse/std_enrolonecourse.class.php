@@ -80,6 +80,10 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         return !is_enrolled($context, $USER);
     }
 
+    public function get_max_quantity() {
+        return 1;
+    }
+
     /**
      * Pre pay information always comme from shopping session.
      */

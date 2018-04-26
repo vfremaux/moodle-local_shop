@@ -27,4 +27,4 @@ $plugin = new stdclass;
 $plugin->version = 2016071400;
 $plugin->requires = 2014050800;
 $plugin->component = 'shophandlers_std_enrolonecourse';
-$plugin->dependancies = array('local_shop' => 2016022500);
+$plugin->dependencies = array('local_shop' => 2016022500);

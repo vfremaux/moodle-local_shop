@@ -74,7 +74,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function product_admin_line($product, $return = false) {
+    public function product_admin_line($product) {
         global $OUTPUT;
 
         $this->check_context();
@@ -109,6 +109,9 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '</th>';
             $str .= '<th class="header c3" colspan="1" align="center">';
             $str .= get_string('status', 'local_shop');
+            $str .= '</th>';
+            $str .= '<th class="header c4" align="center">';
+            $str .= get_string('maxquant', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c4" align="center">';
             $str .= get_string('sales', 'local_shop');
@@ -150,7 +153,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= $product->code;
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.'" align="left" colspan="8">';
-            $str .= $product->name;
+            $str .= format_string($product->name);
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.' shop-controls" align="left">';
             if ($product->enablehandler) {
@@ -172,6 +175,9 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '</td>';
             $str .= '<td class="status cell '.$slaveclass.'" align="right">';
             $str .= get_string($product->status, 'local_shop');
+            $str .= '</td>';
+            $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
+            $str .= $product->maxdeliveryquant;
             $str .= '</td>';
             $str .= '<td class="amount cell '.$slaveclass.'" align="center">';
             $str .= $product->sold;
@@ -220,12 +226,18 @@ class shop_products_renderer extends local_shop_base_renderer {
 
             if ($this->thecatalog->isslave) {
                 if ($product->masterrecord == 1) {
-                    $params = array('view' => 'viewAllProducts', 'what' => 'makecopy', 'itemid' => $product->id);
+                    $params = array('view' => 'viewAllProducts',
+                                    'what' => 'makecopy',
+                                    'itemid' => $product->id,
+                                    'catalogid' => $this->thecatalog->id);
                     $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $pixurl = $OUTPUT->pix_url('copy', 'local_shop');
                     $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$createlocalstr.'"></a>';
                 } else {
-                    $params = array('view' => 'viewAllProducts', 'what' => 'freecopy', 'itemid' => $product->id);
+                    $params = array('view' => 'viewAllProducts',
+                                    'what' => 'freecopy',
+                                    'itemid' => $product->id,
+                                    'catalogid' => $this->thecatalog->id);
                     $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $pixurl = $OUTPUT->pix_url('uncopy', 'local_shop');
                     $str .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixurl.'" title="'.$deletelocalversionstr.'"></a>';
@@ -235,10 +247,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '</tr>';
         }
 
-        if ($return) {
-            return $str;
-        }
-        echo $str;
+        return $str;
     }
 
     /**

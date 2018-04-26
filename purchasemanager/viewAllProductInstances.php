@@ -106,31 +106,16 @@ $viewurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
 echo $OUTPUT->heading(get_string('productinstances', 'local_shop'));
 
-echo '<div class="form-filter-menus">';
-echo '<div class="form-filter-owner">';
-echo $ownermenu;
-echo '</div>';
-echo '<div class="form-filter-customer">';
-echo $customermenu;
-echo '</div>';
-echo '</div>';
+echo $renderer->filters($ownermenu, $customermenu);
 
 if (count(array_keys($productinstances)) == 0) {
     echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
 } else {
-    $formurl = new moodle_url('/local/shop/purchasemanager/view.php');
-    echo '<form name="selection" action="'.$formurl.'" method="get">';
-    echo '<input type="hidden" name="view" value="viewAllProductInstances" />';
-    echo '<input type="hidden" name="what" value="" />';
-    echo '<input type="hidden" name="customerid" value="'.$customerid.'" />';
-    echo '<input type="hidden" name="shopowner" value="'.$shopowner.'" />';
-    echo '<table width="100%">';
-    $portlet = null;
-    echo $renderer->productinstance_admin_line($portlet);
-
-    foreach (array_values($productinstances) as $instance) {
-        echo $renderer->productinstance_admin_line($instance, $viewparams);
-    }
+    echo $renderer->productinstance_admin_form($productinstances, $viewparams, $customerid, $shopowner);
 }
-echo '</table>';
-echo '</form>';
+
+echo '<br/>';
+
+if (local_shop_supports_feature('products/editable') && has_capability('local/shop:salesadmin', $context)) {
+    echo $renderer->add_instance_button($shopowner);
+}
