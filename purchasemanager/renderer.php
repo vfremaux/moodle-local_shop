@@ -41,114 +41,86 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
      * @param Productref &$productinstance a full Product instance.
      * @param array $viewparams contextual query params from the view.
      */
-    public function productinstance_admin_line(&$productinstance, $viewparams = array()) {
+    public function productinstance_admin_form(&$productinstances, $viewparams = array(), $customerid, $shopowner) {
         global $OUTPUT, $CFG;
 
         $this->check_context();
 
-        $str = '';
+        $template = new StdClass;
 
-        if (is_null($productinstance)) {
+        $template->selstr = get_string('sel', 'local_shop');
+        $template->imagestr = get_string('image', 'local_shop');
+        $template->billstr = get_string('bill', 'local_shop');
+        $template->codestr = get_string('code', 'local_shop');
+        $template->designationstr = get_string('designation', 'local_shop');
+        $template->renewablestr = get_string('renewable', 'local_shop');
+        $template->contexttypestr = get_string('contexttype', 'local_shop');
+        $template->instancestr = get_string('instance', 'local_shop');
+        $template->purchasedpricestr = get_string('purchasedprice', 'local_shop');
+        $template->referencestr = get_string('reference', 'local_shop');
+        $template->startdatestr = get_string('startdate', 'local_shop');
+        $template->enddatestr = get_string('enddate', 'local_shop');
 
-            $str .= '<tr class="shop-products-caption" valign="top">';
-            $str .= '<th class="header c0">';
-            $str .= get_string('sel', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c1">';
-            $str .= get_string('image', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c1">';
-            $str .= get_string('code', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c3">';
-            $str .= get_string('designation', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c11">';
-            $str .= get_string('renewable', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c11">';
-            $str .= get_string('contexttype', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c11">';
-            $str .= get_string('instance', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c11">';
-            $str .= get_string('startdate', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c11">';
-            $str .= get_string('enddate', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header c11" align="right">';
-            $str .= get_string('purchasedprice', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th class="header lastcol" width="30">';
-            $str .= '</th>';
-            $str .= '</tr>';
-        } else {
-            $billitem = new BillItem($productinstance->initialbillitemid, $this->theshop);
+        $template->customerid = $customerid;
+        $template->shopowner = $shopowner;
+
+        $template->formurl = new moodle_url('/local/shop/purchasemanager/view.php');
+
+        foreach (array_values($productinstances) as $productinstance) {
+            $producttpl = new StdClass;
+            $billitem = null;
+            if ($productinstance->initialbillitemid) {
+                $billitem = new BillItem($productinstance->initialbillitemid, false, $this->theshop);
+            }
+            if ($productinstance->currentbillitemid) {
+                $currentbillitem = new BillItem($productinstance->currentbillitemid, false, $this->theshop);
+                $pix = '<img src="'.$OUTPUT->pix_url('bill', 'local_shop').'" style="height:50px;">';
+                $params = array('view' => 'viewBill', 'billid' => $currentbillitem->billid);
+                $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
+                $attrs = array('target' => 'blank');
+                $producttpl->currentbilllink = html_writer::link($linkurl, $pix, $attrs);
+            }
             $product = new CatalogItem($productinstance->catalogitemid);
 
             $expiredcount = 0;
-            $expiringocunt = 0;
+            $expiringcount = 0;
             $pendingcount = 0;
             $runningcount = 0;
-            $statusclass = '';
-            $pend = ($productinstance->enddate) ? date('Y/m/d H:i', $productinstance->enddate) : 'N.C.';
-            $pstart = date('Y/m/d H:i', $productinstance->startdate);
+            $producttpl->statusclass = '';
+            $producttpl->code = $product->code;
+            $producttpl->designation = format_string($product->name);
+            $producttpl->reference = $productinstance->reference;
+            $producttpl->renewable = ($product->renewable) ? get_string('yes') : '';
+            $producttpl->pend = ($productinstance->enddate) ? date('Y/m/d H:i', $productinstance->enddate) : 'N.C.';
+            $producttpl->pstart = date('Y/m/d H:i', $productinstance->startdate);
             $now = time();
             if ($product->renewable) {
-                if ($now > $productinstance->enddate) {
+                if ($productinstance->enddate && ($now > $productinstance->enddate)) {
                     // Expired.
-                    $statusclass = 'cs-product-expired';
+                    $producttpl->statusclass = 'cs-product-expired';
                     $expiredcount++;
-                } else if ($now > $productinstance->enddate - DAYSECS * 3) {
+                } else if ($productinstance->enddate && $now > $productinstance->enddate - DAYSECS * 3) {
                     // Expiring.
-                    $statusclass = 'cs-product-expiring';
+                    $producttpl->statusclass = 'cs-product-expiring';
                 } else if ($now < $productinstance->startdate) {
                     // Pending.
-                    $statusclass = 'cs-product-pending';
+                    $producttpl->statusclass = 'cs-product-pending';
                     $pendingcount++;
                 } else {
                     // Running.
-                    $statusclass = 'cs-product-running';
+                    $producttpl->statusclass = 'cs-product-running';
                     $runningcount++;
                 }
             }
 
-            $str .= '<tr class="shop-productinstance-row" valign="top">';
-            $str .= '<td class="cell '.$statusclass.'" align="center">';
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
-                $str .= '<input type="checkbox" id="" name="productids" value="'.$productinstance->id.'" />';
+                $producttpl->selcheckbox = '<input type="checkbox" id="" name="productids" value="'.$productinstance->id.'" />';
             }
-            $str .= '</td>';
-            $str .= '<td class="cell" align="center">';
-            $str .= '<img src="'.$product->get_thumb_url().'" vspace="10" border="0" height="50">';
-            $str .= '</td>';
-            $str .= '<td class="name cell" align="left">';
-            $str .= $product->code;
-            $str .= '</td>';
-            $str .= '<td class="name cell" align="left">';
-            $str .= $product->name;
-            $str .= '</td>';
-            $str .= '<td class="cell">';
-            $str .= ($product->renewable) ? get_string('yes') : '';
-            $str .= '</td>';
-            $str .= '<td class="cell">';
-            $str .= get_string($productinstance->contexttype, 'local_shop');
-            $str .= '</td>';
-            $str .= '<td class="cell">';
-            $str .= $productinstance->get_instance_link();
-            $str .= '</td>';
-            $str .= '<td class="cell">';
-            $str .= $pstart;
-            $str .= '</td>';
-            $str .= '<td class="cell">';
-            $str .= $pend;
-            $str .= '</td>';
-            $str .= '<td class="amount cell" align="right">';
-            $str .= $billitem->unicost.' '.$this->theshop->get_currency();
-            $str .= '</td>';
-            $str .= '<td align="right" class="lastcol '.$statusclass.'">';
+            $producttpl->thumburl = $product->get_thumb_url();
+            $producttpl->contexttype = get_string($productinstance->contexttype, 'local_shop');
+            $producttpl->instancelink = $productinstance->get_instance_link();
+            $producttpl->unitcost = ($billitem) ? $billitem->unitcost : 'N.C.';
+            $producttpl->currency = $this->theshop->get_currency();
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
                 $pix = '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
@@ -157,7 +129,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                                 'sesskey' => sesskey());
                                 $params = array_merge($params, $viewparams);
                 $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-                $commands = '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
+                $producttpl->commands = '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
 
                 if ($productinstance->deleted) {
                     $pix = '<img src="'.$OUTPUT->pix_url('t/stop').'" />';
@@ -171,12 +143,47 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                                 'sesskey' => sesskey());
                                 $params = array_merge($params, $viewparams);
                 $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-                $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$title.'">'.$pix.'</a>';
+                $producttpl->commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$title.'">'.$pix.'</a>';
+
+                if (local_shop_supports_feature('products/editable')) {
+                    $pix = '<img src="'.$OUTPUT->pix_url('t/edit').'" />';
+                    $params = array('instanceid' => $productinstance->id,
+                                    'sesskey' => sesskey());
+                    $linkurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
+                    $producttpl->commands .= '&nbsp;<a href="'.$linkurl.'" title="'.get_string('edit').'">'.$pix.'</a>';
+                }
             }
-            $str .= '<div class="shop-line-commands">'.$commands.'</div>';
-            $str .= '</td>';
-            $str .= '</tr>';
+
+            $template->products[] = $producttpl;
         }
+
+        return $this->output->render_from_template('local_shop/purchaselist', $template);
+    }
+
+    public function filters($ownermenu, $customermenu) {
+        $str = '';
+
+        $str .= '<div class="form-filter-menus">';
+        $str .= '<div class="form-filter-owner">';
+        $str .= $ownermenu;
+        $str .= '</div>';
+        $str .= '<div class="form-filter-customer">';
+        $str .= $customermenu;
+        $str .= '</div>';
+        $str .= '</div>';
+
+        return $str;
+    }
+
+    public function add_instance_button() {
+        global $OUTPUT;
+
+        $customerid = optional_param('customer', 0, PARAM_INT);
+        $params = array('customer' => $customerid);
+        $buttonurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
+        $str = $OUTPUT->box_start('shop-add-instance');
+        $str .= $OUTPUT->single_button($buttonurl, get_string('addproductinstance', 'local_shop'));
+        $str .= $OUTPUT->box_end();
 
         return $str;
     }

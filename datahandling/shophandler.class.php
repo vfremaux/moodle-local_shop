@@ -67,6 +67,16 @@ abstract class shop_handler{
         return true;
     }
 
+    /**
+     * Check wether the product has a max quantity per transaction if this handler is used.
+     * Some product handlers may not be able to proceed a multiple quantity purchase. this
+     * will override any product definition.
+     * @return integer. 0 if no limit.
+     */
+    public function get_max_quantity() {
+        return 0;
+    }
+
     /*
      * When implemented, the cron task for this handler will be run on shop cron
      * cron can be used to notify users for end of product life, user role unassigns etc.

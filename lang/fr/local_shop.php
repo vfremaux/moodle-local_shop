@@ -154,6 +154,7 @@ $string['configsellermailsupport'] = 'Adresse mail du support client';
 $string['configsellername'] = 'Doit être le nom officiel du commerçant apparaissant sur les documents commerciaux.';
 $string['configsellerphonesupport'] = 'Ligne téléphonique de support client';
 $string['configsellerzip'] = 'Le code postal du commerçant';
+$string['configserviceproxykey'] = 'Un proxy de service peut relayer à la boutique des demandes de services de produits que vous distribuez.';
 $string['configshopcaption'] = 'Nom de boutique';
 $string['configshopdescription'] = 'Description du service commercial';
 $string['configtestmode'] = 'Permet d\'effectuer des opérations en mode test';
@@ -206,14 +207,13 @@ $string['editshopsettings'] = 'Modifier les paramètres de la boutique';
 $string['editshopsettings_desc'] = 'Cette version propose une instance unique de boutique Moodle. Vous pouvez modifier les paramètres ici.';
 $string['edittaxe'] = 'Edition d\'une taxe';
 $string['emulatecommunity'] = 'Emuler la version communautaire';
-$string['enablehandler'] = 'Activer le traitement d\'achat';
+$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['enablepaymodes'] = 'Modes de paiement&nbsp;';
 $string['error'] = 'Erreur&nbsp;:&ensp;';
 $string['errorbadhandler'] = 'Le fichier de ce gestionnaire ({$a}) n\'existe pas. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
 $string['errorunimplementedhandlermethod'] = 'Cette methode de postproduction ({$a}) n\'est pas écrite dans ce gestionnaire. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
 $string['errornotownedbill'] = 'Cette facture ne vous appartient pas.';
 $string['errorrequirementfieldtype'] = 'Type de champ inconnu {$a} dans les définitions de données requises';
-$string['eula'] = 'Texte des conditions de vente et d\'utilisation';
 $string['eulaagree'] = 'J\'accepte les conditions de ventes';
 $string['eulaheading'] = 'Conditions générales de ventes';
 $string['expectedpaiement'] = 'Délai de paiement&nbsp;';
@@ -228,7 +228,6 @@ $string['globalsettings'] = 'Réglages généraux';
 $string['gotest'] = 'Lancer le test';
 $string['gotobackoffice'] = 'Aller au backoffice';
 $string['gotofrontoffice'] = 'Aller au front office';
-$string['handlerparams'] = 'Paramètres du gestionnaire';
 $string['hashandlers'] = 'Ce produit a un gestionnaire d\'actions';
 $string['helpdescription'] = 'la description';
 $string['helpnote'] = 'les notes';
@@ -247,6 +246,10 @@ $string['leaflet'] = 'Brochure&nbsp;:&ensp;';
 $string['leafletlink'] = 'Télécharger la brochure';
 $string['leafleturl'] = 'Url de Brochure&nbsp;:&ensp;';
 $string['link'] = 'Liaison ';
+$string['licenseprovider'] = 'Fournisseur version Pro';
+$string['licenseprovider_desc'] = 'Entrez la clef de votre distributeur.';
+$string['licensekey'] = 'Clef de license pro';
+$string['licensekey_desc'] = 'Entrez ici la clef de produit que vous avez reçu de votre distributeur.';
 $string['login'] = 'J\'ai déjà un compte';
 $string['manageshipping'] = 'Gérer les frais de port';
 $string['manageshippingdesc'] = 'Gère les zones de port et les frais par produits';
@@ -275,7 +278,7 @@ $string['nopaymodesavailable'] = 'Aucun moyen de payement disponible. Cela peut 
 $string['nosamecurrency'] = 'Toutes les factures n\'ont pas la même unité. La somme n\'est pas consistante.';
 $string['noshops'] = 'Aucune boutique définie';
 $string['notaxes'] = 'Pas de taxes enregistrées';
-$string['notes'] = 'Notes&nbsp;:&ensp;';
+$string['notes'] = 'Notes&nbsp;';
 $string['notowner'] = 'Cet item ne vous appartient pas';
 $string['notrace'] = 'Aucune trace pour cette transaction';
 $string['num'] = 'N°&nbsp;';
@@ -325,13 +328,10 @@ $string['proforma'] = 'Facture Proforma';
 $string['providedbymoodleshop'] = 'Groupe créé par la boutique moodle';
 $string['provisionalnumber'] = 'Numérotation provisoire';
 $string['quant'] = 'Quant';
-$string['quantaddressesusers'] = 'La quantité adresse des sièges';
-$string['quantaddressesusers_help'] = 'Les produits utilisant cette option affectent l\'étape de saisie des utilisateurs.';
 $string['quantity'] = 'Quantité&nbsp;';
 $string['rate'] = 'Taux';
 $string['ratiotaxe'] = 'Ratio';
 $string['recalculate'] = 'Recalculer';
-$string['renewable'] = 'Renouvelable';
 $string['required'] = 'Champ obligatoire';
 $string['requiredformaterror'] = 'Il semble que la description des paramètres clients ne soit pas une chaine JSON correcte.';
 $string['requiredparams'] = 'Paramètres client';
@@ -377,6 +377,7 @@ $string['sellermailsupport'] = 'Support par courriel';
 $string['sellername'] = 'Nom du commerçant';
 $string['sellerphonesupport'] = 'Support téléphonique';
 $string['sellerzip'] = 'Code postal du commerçant';
+$string['serviceproxykey'] = 'Clef du proxy de services';
 $string['set'] = 'Assemblage&nbsp;:&ensp;';
 $string['setid'] = 'Code assemblage ';
 $string['settings'] = 'Réglages généraux';
@@ -720,9 +721,9 @@ du produit.';
 $string['useslavecatalogs'] = 'Les catalogues maîtres esclaves permettent de créer des variantes locales de catalogues pour
 altérer la langue de présentation des produits ou les gammes de prix proposés.';
 
-$string['plugindist_desc'] = '<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
-correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugn existe et est distribuée
+$string['plugindist_desc'] = '
+<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
+correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugin existe et est distribuée
 sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
 <p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
-<ul><li><a href="http://service.activeprolearn.com/local/shop/front/view.php?id=1">ActiveProLearn SAS</a></li>
-<li><a href="http://www.edunao.com">Edunao SAS</a></li></ul>';
+<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';

@@ -47,7 +47,7 @@ $config = get_config('local_shop');
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);
-
+debug_trace("Shop session : $view");
 $context = context_system::instance();
 
 if ($view == 'shop') {
@@ -88,7 +88,7 @@ if (is_readable($CFG->dirroot."/local/shop/front/{$view}.php")) {
 }
 
 if ($view == 'shop') {
-    echo  '
+    echo '
         <script type="text/javascript">
             $(document).ready(function() {
                 $(".fancybox").fancybox();

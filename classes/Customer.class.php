@@ -65,6 +65,19 @@ class Customer extends ShopObject {
         }
     }
 
+    /**
+     * Builds a customer object for the given moodle account.
+     */
+    public static function instance_by_user($userid) {
+        global $DB;
+
+        $params = array('hasaccount' => $userid);
+        if ($customerrec = $DB->get_record('local_shop_customer', $params)) {
+            return new Customer($customerrec);
+        }
+        return null;
+    }
+
     public function fullname() {
         return $this->lastname.' '.$this->firstname;
     }
@@ -74,7 +87,7 @@ class Customer extends ShopObject {
      * manually created customers might be deleted.
      */
     public function delete() {
-        $instances = Bill::get_intances(array('userid' => $this->id));
+        $instances = Bill::get_instances(array('userid' => $this->id));
         if (empty($instances)) {
             parent::delete();
         }
@@ -140,7 +153,11 @@ class Customer extends ShopObject {
         return $customersarr;
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
-        return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '', $light = false) {
+        return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light);
+    }
+
+    public static function get_instances_menu($filter = array(), $order = 'lastname, firstname') {
+        return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(firstname, ' ', lastname)");
     }
 }

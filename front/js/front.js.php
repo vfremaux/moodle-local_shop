@@ -350,6 +350,7 @@ function ajax_add_unit(id, productname, maxquant) {
             action: 'addunit',
             productname: productname
         },
+
         function(data, status) {
             dataobj = JSON.parse(data);
             $('#bag_' + productname).html(dataobj.html);

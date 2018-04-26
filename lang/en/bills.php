@@ -38,6 +38,7 @@ $string['bill_PREPRODs'] = 'Bill in advanced prod';
 $string['bill_REFUSEDs'] = 'Bill payment refused';
 $string['bill_WORKINGs'] = 'Bill in progress';
 $string['bill_assignation'] = 'Bill assigned';
+$string['billdatefmt'] = 'Y-m-d';
 $string['billstates'] = 'Bill statuses';
 $string['billtaxes'] = 'Total tax:';
 $string['billtitle'] = 'Title:';

@@ -971,7 +971,9 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $str .= '</td>';
 
         $str .= '<td width="*" class="cell c2">';
-        $str .= $portlet->customer->firstname.' '.$portlet->customer->lastname;
+        if (!empty($portlet->customer)) {
+            $str .= $portlet->customer->firstname.' '.$portlet->customer->lastname;
+        }
         $str .= '</td>';
 
         $str .= '<td width="120" class="cell c3">';
@@ -982,7 +984,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $str .= '</td>';
 
         $str .= '<td width="120" class="cell c2">';
-        $str .= strftime('%c', $portlet->timecreated);
+        $str .= strftime('%c', $portlet->emissiondate);
         $str .= '</td>';
 
         $str .= '<td width="120" class="cell c2">';

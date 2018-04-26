@@ -340,7 +340,7 @@ class bill_controller {
                 $bill = new Bill($billrec->billid);
                 $bill->lastactiondate = $now;
             } else {
-                $bill = new Bill(null, $this->theshop, $this->thecatalog, $this->theblock);
+                $bill = new Bill(null, false, $this->theshop, $this->thecatalog, $this->theblock);
             }
 
             if (empty($billrec->currency)) {
@@ -401,7 +401,7 @@ class bill_controller {
             $billitemrec->type = 'MANUAL';
 
             if (empty($billitemrec->billitemid)) {
-                $bill = new Bill($billitemrec->billid, $this->theshop);
+                $bill = new Bill($billitemrec->billid, false, $this->theshop);
                 $bill->add_item_data($billitemrec, -1);
             } else {
                 $billitem = new BillItem($billitemrec->billitemid);
