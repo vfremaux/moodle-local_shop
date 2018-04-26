@@ -1,0 +1,56 @@
+
+
+<!-- frontinvoiceheading -->
+<table width="100%">
+    {{#withlogo}}
+    <tr>
+        <td><img src="{{{logourl}}}"></td>
+        <td align="right"></td>
+    </tr>
+    {{/withlogo}}
+
+    <tr valign="top">
+        <td colspan="2" align="center">
+            {{{headingstr}}}
+            {{#subheading}}
+            <div>{{{subheaderstr}}}</div>
+        {{/subheading}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="70%">
+            <b>{{sellername}}</b><br />
+            <b>{{selleraddress}}</b><br />
+            <b>{{sellerzip}} {{sellercity}}</b><br />
+            {{sellercountry}}<br/><br/>
+
+            <b>{{{numstr}}}: </b> B-{{emissiondatestr}}-{{billid}}<br/>
+            <b>{{{transactioncodestr}}}:</b> <code style="background-color : #E0E0E0">{{transactionid}}</code><br />
+            <span class="smaltext">{{providetransactioncode}}</span><br/>
+            <b>{{{onstr}}}</b> {{emissiondatestr}}<br />
+
+        </td>
+
+        <td width="30%" align="right" class="order-preview-seller-address">
+            <div class="customer-data" style="text-align:left">
+                <h3>{{{customerstr}}}</h3>
+                {{#organisation}}
+                    {{organisation}}<br/>
+                {{/organisation}}
+
+                {{invoicename}}<br/>
+                {{invoicezip}} {{custcity}}<br/>
+                {{invoicecountry}}<br/>
+            </div>
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td colspan="2" class="sectionHeader">
+            <h2>{{{orderstr}}}</h2>
+        </td>
+    </tr>
+
+</table>
+<!-- /frontinvoiceheading -->

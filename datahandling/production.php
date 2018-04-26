@@ -195,10 +195,13 @@ function produce_unittests(&$theshop, &$products, $selected, &$errors, &$warning
                 $handler->unit_test($catalogitem, $errors, $warnings, $messages);
             }
 
-            if (!empty($catalogitem->required)) {
-                $decoded = json_decode($catalogitem->required);
+            $requireddata = $catalogitem->requireddata;
+            if (!empty($requireddata)) {
+                $decoded = json_decode($requireddata);
                 if (!$decoded) {
-                    $errors[] = get_string('requiredformaterror', 'local_shop');
+                    $errors[$catalogitem->code][] = get_string('requiredformaterror', 'local_shop');
+                } else {
+                    $messages[$catalogitem->code][] = get_string('requiredformatsuccess', 'local_shop');
                 }
             }
         } else {

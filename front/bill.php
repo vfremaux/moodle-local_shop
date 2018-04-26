@@ -41,7 +41,7 @@ if ($transid) {
 } else {
     require_login();
     if ($billid) {
-        if (!$bill = new Bill($billid, $theshop, $thecatalog)) {
+        if (!$bill = new Bill($billid, false, $theshop, $thecatalog)) {
             $params = array('view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->id);
             $viewurl = new moodle_url('/local/shop/front/view.php', $params);
             print_error('invalidbillid', 'local_shop', $viewurl);
@@ -86,10 +86,10 @@ foreach ($bill->items as $biid => $bi) {
 }
 echo '</table>';
 
-if (!in_array($afullbill->status, $realized)) {
-    echo $renderer->full_order_totals($afullbill);
+if (!in_array($bill->status, $realized)) {
+    echo $renderer->full_order_totals($bill);
 } else {
-    echo $billrenderer->full_bill_totals($afullbill);
+    echo $billrenderer->full_bill_totals($bill);
 }
 
 echo $renderer->full_order_taxes($bill);

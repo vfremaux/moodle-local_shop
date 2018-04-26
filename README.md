@@ -35,3 +35,8 @@ Public documentations :
 
    - French : http://docs.edunao.com/doku.php?id=:local:shop
    - English : http://docs.activeprolearn/en/doku.php?id=:local:shop
+
+2018031100
+##################################################
+
+Adds support for remote product licensing servicing.

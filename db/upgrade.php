@@ -251,5 +251,31 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2018011500, 'local', 'shop');
     }
 
+    if ($oldversion < 2018031100) {
+        // Add field to local_shop_productevent.
+        $table = new xmldb_table('local_shop_productevent');
+
+        $field = new xmldb_field('eventdata');
+        $field->set_attributes(XMLDB_TYPE_TEXT, 'small', null, null, null, null, 'eventtype');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2018031100, 'local', 'shop');
+    }
+
+    if ($oldversion < 2018033000) {
+        // Add extradata local_shop_product.
+        $table = new xmldb_table('local_shop_product');
+
+        $field = new xmldb_field('extradata');
+        $field->set_attributes(XMLDB_TYPE_TEXT, 'small', null, null, null, null, 'productiondata');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2018033000, 'local', 'shop');
+    }
+
     return $result;
 }

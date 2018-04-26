@@ -36,6 +36,7 @@ $string['bill_PREPRODs'] = 'Factures en réalisation anticipée';
 $string['bill_FAILEDs'] = 'Factures en échec paiement';
 $string['bill_REFUSEDs'] = 'Factures en refus paiement';
 $string['bill_assignation'] = 'l\'assignation du traitement d\'une facture';
+$string['billdatefmt'] = 'd/m/Y';
 $string['billing'] = 'Facturation';
 $string['billstates'] = 'Etats de facture';
 $string['chooseuser'] = 'Choisir un utilisateur';
