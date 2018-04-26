@@ -14,13 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['currentcustomer'] = 'Current customer';
-$string['noinstances'] = 'No instance in this context';
-$string['productinstances'] = 'Purchases';
+$string['addproductinstance'] = 'Add product instance';
+$string['catalogitem'] = 'Catalog entry';
 $string['contexttype'] = 'Type';
-$string['instance'] = 'Instance';
-$string['purchasedprice'] = 'Price';
-$string['startdate'] = 'From';
+$string['currentbill'] = 'Order';
+$string['currentbillitem'] = 'Order item';
+$string['currentcustomer'] = 'Current customer';
+$string['editproductinstance'] = 'Edit product instance';
 $string['enddate'] = 'to';
 $string['enrol'] = 'Enrolment';
+$string['extradata'] = 'Production data';
+$string['generatereference'] = 'Generate a reference';
+$string['hasnoproductinstance'] = 'Has NO registered product instance';
+$string['hasproductinstance'] = 'Has a registered product instance';
+$string['instance'] = 'Instance';
+$string['isnotvalid'] = 'Is NOT a valid license key';
+$string['isvalid'] = 'Is a valid license key';
 $string['ltiprovider'] = 'LTI remote access';
+$string['nc'] = 'Undefined context';
+$string['noinstances'] = 'No instance in this context';
+$string['productinstances'] = 'Purchases';
+$string['productiondata'] = 'Production data';
+$string['productkey'] = 'Product Licence Key';
+$string['purchasedprice'] = 'Price';
+$string['startdate'] = 'From';
+$string['testkey'] = 'Test the licence key';
+$string['testproduct'] = 'Test product';
+$string['unassigned'] = '--- Unassigned ---';

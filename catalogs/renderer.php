@@ -122,7 +122,7 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
             $c = array_shift($catalogs);
             if (empty($config->useslavecatalogs)) {
                 if ($c->ismaster || $c->isslave) {
-                    continue;
+                    return;
                 }
             }
             $str .= $this->catalog_admin_line($c);

@@ -64,10 +64,21 @@ class Product extends ShopObject {
             $this->record->enddate = 0;
             $this->record->reference = '';
             $this->record->productiondata = '';
+            $this->record->extradata = '';
             $this->record->test = $config->test;
 
             $this->save();
         }
+    }
+
+    public static function instance_by_reference($reference, $light = false) {
+        global $DB;
+
+        if ($productrec = $DB->get_record('local_shop_product', array('reference' => $reference))) {
+            return new Product($productrec, $light);
+        }
+
+        return null;
     }
 
     /**
@@ -140,14 +151,40 @@ class Product extends ShopObject {
 
         $info = new \StdClass();
 
-        if ($pairs = explode('&', $this->productiondata)) {
-            foreach ($pairs as $pair) {
-                list($key, $value) = explode('=', $pair);
-                $info->$key = $value;
+        if (!empty($this->productiondata)) {
+            if ($pairs = explode('&', $this->productiondata)) {
+                foreach ($pairs as $pair) {
+                    list($key, $value) = explode('=', $pair);
+                    $info->$key = $value;
+                }
             }
         }
 
         return $info;
+    }
+
+    /**
+     * get info out of extra data (in product)
+     * @return an object
+     */
+    public function get_extra_data() {
+
+        $info = null;
+
+        if (!empty($this->extradata)) {
+            $info = json_decode($this->extradata);
+        }
+
+        return $info;
+    }
+
+    /**
+     * get info out of extra data (in product)
+     * @return an object
+     */
+    public function set_extra_data($data) {
+        $this->extradata = json_encode($data);
+        $this->save();
     }
 
     /**
@@ -212,15 +249,17 @@ class Product extends ShopObject {
                 p.*
             FROM
                 {local_shop_catalogitem} ci,
-                {local_shop_billitem} ibi,
                 {local_shop_product} p
+            LEFT JOIN
+                {local_shop_billitem} ibi
+            ON
+                p.initialbillitemid = ibi.id
             LEFT JOIN
                 {local_shop_billitem} cbi
             ON
                 p.currentbillitemid = cbi.id
             WHERE
-                p.catalogitemid = ci.id AND
-                p.initialbillitemid = ibi.id
+                p.catalogitemid = ci.id
                 '.$filterclause.'
             '.$orderclause.'
         ';

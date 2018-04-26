@@ -55,6 +55,10 @@ class Category extends ShopObject {
         }
     }
 
+    public function get_name() {
+        return format_string($this->record->name);
+    }
+
     public function get_parent_name() {
         global $DB;
 
@@ -95,6 +99,39 @@ class Category extends ShopObject {
     }
 
     /**
+     * Is this category empty ?
+     * @return boolean
+     */
+    public function is_empty() {
+        global $DB;
+
+        return !$DB->count_records('local_shop_catalogitem', array('categoryid' => $this->id));
+    }
+
+    public function get_first_non_empty_child() {
+        global $DB;
+
+        $sql = "
+            SELECT
+                cc.id,
+                cc.name
+            FROM
+                {local_shop_catalogcategory} cc,
+                {local_shop_catalogitem} ci
+            WHERE
+                cc.id = ci.categoryid AND
+                cc.parentid = ?
+        ";
+
+        if ($firstcat = $DB->get_records_sql($sql, array($this->id), 0, 1)) {
+            $firstcatobj = array_shift($firstcat);
+            return $firstcatobj->id;
+        }
+
+        return 0;
+    }
+
+    /**
      * Recurse down to fetch first deeper branch. Stops when no more childs are found.
      * @param int $catalogid
      * @param int $categoryid the current iteration parent
@@ -118,6 +155,10 @@ class Category extends ShopObject {
 
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
+    }
+
+    public static function get_instances_menu($filter = array(), $order = '') {
+        return parent::_get_instances_menu(self::$table, $filter, $order, "name");
     }
 
     public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

@@ -57,17 +57,9 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($bundleid) {
-    $bundle = $DB->get_record('local_shop_catalogitem', array('id' => $bundleid));
-    $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $thecatalog));
-    $bundle->bundleid = $bundleid;
-    unset($bundle->id);
-    $mform->set_data($bundle);
+    $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $itemcatalog));
 } else {
-    $item = new CatalogItem(null);
     $mform = new Bundle_Form('', array('what' => 'add', 'catalog' => $thecatalog));
-    $bundlerec = $item->record;
-    $bundlerec->categoryid = optional_param('categoryid', 0, PARAM_INT);
-    $mform->set_data($bundlerec);
 }
 
 if ($mform->is_cancelled()) {
@@ -77,7 +69,7 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
     global $USER;
 
-    $data->catalogid = $thecatalog->id;
+    $data->catalogid = $itemcatalog->id;
     $data->isset = PRODUCT_BUNDLE;
 
     $data->description = $data->description_editor['text'];
@@ -106,8 +98,8 @@ if ($data = $mform->get_data()) {
             }
         }
         // If slave catalogue must insert a master copy.
-        if ($thecatalog->isslave) {
-            $data->catalogid = $thecatalog->groupid;
+        if ($itemcatalog->isslave) {
+            $data->catalogid = $itemcatalog->groupid;
             $DB->insert_record('local_shop_catalogitem', $data);
         }
     } else {
@@ -135,6 +127,24 @@ if ($data = $mform->get_data()) {
     shop_products_process_files($data, $context, $usercontext);
 
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+}
+
+if ($bundleid) {
+    $bundle = new CatalogItem($bundleid);
+    $itemcatalog = $bundle->get_catalog();
+    $itemrec = $item->record;
+    $itemrec->bundleid = $bundleid;
+    unset($itemrec->id);
+    $mform->set_data($itemrec);
+
+    $itemrec->itemid = $itemid;
+    $mform->set_data($itemrec);
+} else {
+    $item = new CatalogItem(null);
+    $itemcatalog = $thecatalog;
+    $bundlerec = $item->record;
+    $bundlerec->categoryid = optional_param('categoryid', 0, PARAM_INT);
+    $mform->set_data($bundlerec);
 }
 
 echo $OUTPUT->header();

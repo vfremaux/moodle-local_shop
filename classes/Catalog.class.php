@@ -49,10 +49,6 @@ class Catalog extends ShopObject {
 
         if ($idorrecord) {
 
-            if ($light) {
-                return; // This builds a lightweight proxy of the catalogue.
-            }
-
             if (!empty($this->record->groupid)) {
                 if ($this->record->id == $this->record->groupid) {
                     $this->ismaster = 1;
@@ -63,6 +59,11 @@ class Catalog extends ShopObject {
                 $this->ismaster = 0;
                 $this->isslave = 0;
             }
+
+            if ($light) {
+                return; // This builds a lightweight proxy of the catalogue.
+            }
+
             $this->categories = $this->get_categories();
 
             // These are fake fields to drive the editors in form.
@@ -897,5 +898,9 @@ class Catalog extends ShopObject {
         }
 
         return $instances;
+    }
+
+    public static function get_instances_menu($filter = array(), $order = '') {
+        return parent::_get_instances_menu(self::$table, $filter, $order);
     }
 }

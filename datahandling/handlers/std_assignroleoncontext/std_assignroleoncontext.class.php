@@ -151,7 +151,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
                 }
             }
             $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-            $customeruser = $DB->get_record('user', array('id', $customer->hasaccount));
+            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
         } else {
             if ($USER->id) {
                 $customeruser = $USER;

@@ -566,82 +566,81 @@ table.shop-role-assignations > tr > td{
 .shop-article.product,
 .shop-article.set,
 .shop-article.bundle {
-    border:1px solid #fdfdfd;
-    border-radius:8px;
-    margin:10px 2px;
-    padding:15px;
+    border: 1px solid #fdfdfd;
+    border-radius: 8px;
+    margin: 10px 2px;
+    padding: 15px;
 }
 
 .shop-article * {
-    margin-top:10px;
-    vertical-align:top;
+    margin-top: 10px;
+    vertical-align: top;
 }
 
 .shop-article h1, 
 .shop-article h2 {
-    margin-top:0;
+    margin-top: 0;
 } 
 
 
 .shop-front-elements {
-    display:table;
+    display: table;
 }
 
 .shop-front-element {
-    display:table-row;
+    display: table-row;
 }
 
 .shop-front-productpix {
-    display:table-cell;
+    display: table-cell;
 }
 
 .shop-front-productdef {
-    display:table-cell;
+    display: table-cell;
 }
 
 .shop-front-pricerange, .shop-front-price, .shop-front-label {
-    display:inline-block;
+    display: inline-block;
 }
 
 .shop-front-label {
-    margin-right:15px;
+    margin-right: 15px;
 }
 .shop-front-label:after{
-    content:":";
+    content: ":";
 }
 
 .shop-front-price {
-    font-weight:bold;
-    margin-left:1em;
-    margin-right:3em;
+    font-weight: bold;
+    margin-left: 1em;
+    margin-right: 3em;
 }
 
 shop-order-paymode {
-    background-color:#E0E0E0;
-    border:1px solid #d0d0d0;
-    border-radius:8px;
-    padding:15px;
+    background-color: #e0e0e0;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    padding: 15px;
 }
 
 .shop-shadow {
-    -moz-opacity:60%;
-    opacity:60%;
+    -moz-opacity: 60%;
+    opacity: 60%;
 }
 
 .shop-main-menu td {
-    padding:8px;
+    padding: 8px;
 }
 
 .shop-category-chooser {
-    margin-top:15px;
+    margin-top: 15px;
 }
 
 .shop-category-description {
-    border:1px solid #f0f0f0;
-    border-radius:10px;
-    font-size:1.2em;
-    margin:10px;
-    padding:30px;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 30px;
 }
 
 .shop-front-order * {
@@ -726,4 +725,17 @@ ul.shop-test-result {
 .shop-inline,
 .shop-inline * {
     display:inline;
+}
+
+.caddie .subcats a {
+    font-size: 0.9em;
+}
+
+.caddie .subcats .nav-tabs > li > a {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#shop-order-paymode {
+    margin-bottom: 15px;
 }
