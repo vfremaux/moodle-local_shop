@@ -98,12 +98,12 @@ class payment_controller extends front_controller_base {
 
             // Invoice info.
             if ($oldbillrec = $DB->get_record('local_shop_bill', array('transactionid' => $SESSION->shoppingcart->transid))) {
-                $bill = new Bill($oldbillrec, $this->theshop, $this->thecatalog, $this->theblock, true);
+                $bill = new Bill($oldbillrec, true, $this->theshop, $this->thecatalog, $this->theblock);
                 // Clear all items as they might have changed.
                 $bill->delete_items();
                 $bill->reset_taxlines();
             } else {
-                $bill = new Bill(null, $this->theshop, $this->thecatalog, $this->theblock, true);
+                $bill = new Bill(null, true, $this->theshop, $this->thecatalog, $this->theblock);
             }
 
             $bill->transactionid = $SESSION->shoppingcart->transid;
@@ -129,6 +129,7 @@ class payment_controller extends front_controller_base {
             $bill->expectedpaiement = 0;
             $bill->ignoretax = 0;
             $bill->paymentfee = 0;
+            $bill->invoiceinfo = json_encode($SESSION->shoppingcart->invoiceinfo);
 
             // First save of the bill in order bill items can be added. We need a first id. We save "light".
             // The bill will be full save back later.

@@ -75,7 +75,7 @@ echo '</table>';
 echo $renderer->full_order_totals($afullbill);
 echo $renderer->full_order_taxes($afullbill);
 
-echo $OUTPUT->heading(get_string('paymentmode', 'local_shop'), 2);
+echo $OUTPUT->heading(get_string('paymode', 'local_shop'), 2);
 
 require_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
 

@@ -118,6 +118,7 @@ $string['configiban'] = 'The IBAN number of the merchant';
 $string['configproductimagewidth'] = 'Product thumb width (px)';
 $string['configproductimageheight'] = 'Product thumb height (px)';
 $string['configproductimagermargin'] = 'Product thumb right margin (px)';
+$string['configserviceproxykey'] = 'A service proxy may be relaying some service requests from your ditributed products into the purchase management servcice.';
 $string['productimagewidth'] = 'Thumb width';
 $string['productimageheight'] = 'Thumb height';
 $string['productimagermargin'] = 'Thumb right margin';
@@ -213,6 +214,8 @@ $string['warning'] = 'Warning:';
 $string['message'] = 'Message:';
 $string['usinghandler'] = 'Using handler {$a}';
 $string['editcatalog'] = 'Update catalog definition';
+$string['emulatecommunity'] = 'Emulate the community version.';
+$string['emulatecommunity_desc'] = 'Switches the code to the community version. The result will be more compatible, but some features will not be available anymore.';
 $string['erroraddbill'] = 'Could not add bill record';
 $string['erroraddbillitem'] = 'could not add bill item';
 $string['erroraddbundle'] = 'Could not add bundle';
@@ -293,6 +296,10 @@ $string['leaflet'] = 'Leaflet:';
 $string['leafletlink'] = 'Download the leaflet';
 $string['leafleturl'] = 'Leaflet URL:';
 $string['link'] = 'Link ';
+$string['licenseprovider'] = 'Pro License provider';
+$string['licenseprovider_desc'] = 'Input here your provider key';
+$string['licensekey'] = 'Pro license key';
+$string['licensekey_desc'] = 'Input here the product license key you got from your provider';
 $string['login'] = 'You have a customer account ';
 $string['manybillsasresult'] = 'Several bills are matching your actual criterias. Choose in&nbsp;';
 $string['manageshipping'] = 'Manage shipping';
@@ -316,7 +323,7 @@ $string['nocolumns'] = 'No colums';
 $string['none'] = 'None';
 $string['nopaymodesavailable'] = 'No paymodes available. This may be because of a misconfiguration of this shop, or particular test conditions.';
 $string['nosamecurrency'] = 'All bills have not the same curency. Sum is not consistant';
-$string['notes'] = 'Notes:';
+$string['notes'] = 'Notes';
 $string['notrace'] = 'No trace for this transaction';
 $string['nonmutable'] = 'Non mutable product';
 $string['notowner'] = 'You are not owning this item';
@@ -342,6 +349,7 @@ $string['productcount'] = 'Products';
 $string['productionresults'] = 'Production results';
 $string['productioncomplete'] = 'Your order has been processed.';
 $string['providedbymoodleshop'] = 'Group built by Moodle Shop';
+$string['plugindist'] = 'Plugin distribution';
 $string['pluginname'] = 'shop';
 $string['price'] = 'Price';
 $string['price2'] = 'Price 2';
@@ -412,6 +420,7 @@ $string['sellerlogo'] = 'Seller logo';
 $string['sellerphonesupport'] = 'Phone support number';
 $string['sellertestitemname'] = 'Seller Item Name (Sandbox)';
 $string['sellerzip'] = 'Seller Zip Code';
+$string['serviceproxykey'] = 'Service proxy key';
 $string['set'] = 'Set:';
 $string['setid'] = 'Set ID';
 $string['settings'] = 'Settings';
@@ -701,9 +710,9 @@ $string['JPYsymb'] = 'Yen (japan)';
 $string['TNDsymb'] = 'Dn (TU)';
 $string['MADsymb'] = 'Dn (MA)';
 
-$string['plugindist_desc'] = '<p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
+$string['plugindist_desc'] = '
+<p>This plugin is the community version and is published for anyone to use as is and check the plugin\'s
 core application. A "pro" version of this plugin exists and is distributed under conditions to feed the life cycle, upgrade, documentation
 and improvement effort.</p>
 <p>Please contact one of our distributors to get "Pro" version support.</p>
-<ul><li><a href="http://service.activeprolearn.com/local/shop/front/view.php?id=1">ActiveProLearn SAS</a></li>
-<li><a href="http://www.edunao.com">Edunao SAS</a></li></ul>';
+<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=en_utf8">MyLF Distributors</a></p>';

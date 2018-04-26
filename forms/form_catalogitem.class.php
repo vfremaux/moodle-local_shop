@@ -69,12 +69,18 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
-        $mform->addElement('text', 'code', get_string('code', 'local_shop'), $this->attributesshort);
-        $mform->setType('code', PARAM_ALPHANUMEXT);
-        $mform->addRule('code', null, 'required');
+        if (!$this->is_slave()) {
+            $mform->addElement('text', 'code', get_string('code', 'local_shop'), $this->attributesshort);
+            $mform->setType('code', PARAM_ALPHANUMEXT);
+            $mform->addRule('code', null, 'required');
+        } else {
+            $mform->addElement('static', 'codeshadow', get_string('code', 'local_shop'));
+            $mform->addElement('hidden', 'code');
+            $mform->setType('code', PARAM_ALPHANUMEXT);
+        }
 
         $mform->addElement('text', 'name', get_string('name', 'local_shop'), $this->attributeslong);
-        $mform->setType('name', PARAM_TEXT);
+        $mform->setType('name', PARAM_CLEANHTML);
         $mform->addRule('name', null, 'required');
 
         $mform->addElement('editor', 'description_editor', get_string('description'), null, $this->editoroptions);
@@ -212,7 +218,7 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
-        if (!$this->_customdata['catalog']->isslave) {
+        if (!$this->is_slave()) {
             $mform->addElement('text', 'stock', get_string('stock', 'local_shop'), $this->attributesshort);
             $mform->setType('stock', PARAM_NUMBER);
 
@@ -253,7 +259,7 @@ abstract class CatalogItem_Form extends moodleform {
         $mform->addGroup($radiogroup, 'loggedingroup', get_string('onlyfor', 'local_shop'), array(' '), false);
         $mform->setDefault('onlyforloggedin', 0);
 
-        $label = get_string('productpassword', 'local_shop');
+        $label = get_string('productpassword', 'local_shop').':';
         $mform->addelement('text', 'password', $label, '', array('size' => 8, 'maxlength' => 8));
         $mform->setType('password', PARAM_TEXT);
     }
@@ -306,12 +312,13 @@ abstract class CatalogItem_Form extends moodleform {
         $label = get_string('tenunitspix', 'local_shop');
         $mform->addGroup($group, 'grtenunits', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
 
-        $label = get_string('eula', 'local_shop');
+        $label = get_string('eula', 'local_shop').':';
         $mform->addElement('editor', 'eula_editor', $label, null, $this->editoroptions);
         $mform->setType('eula', PARAM_URL);
         $mform->addHelpButton('eula_editor', 'producteulas', 'local_shop');
 
-        $mform->addElement('editor', 'notes_editor', get_string('notes', 'local_shop'), null, $this->editoroptions);
+        $label = get_string('notes', 'local_shop').':';
+        $mform->addElement('editor', 'notes_editor', $label, null, $this->editoroptions);
         $mform->setType('notes_editor', PARAM_CLEANHTML);
         $mform->addHelpButton('notes_editor', 'description', 'local_shop');
     }
@@ -368,15 +375,25 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
-        if ($cats = $this->_customdata['catalog']->get_categories()) {
-            foreach ($cats as $cat) {
-                $sectionopts[$cat->id] = $cat->name;
+        if (!$this->is_slave()) {
+            if ($cats = $this->_customdata['catalog']->get_categories()) {
+                foreach ($cats as $cat) {
+                    $sectionopts[$cat->id] = format_string($cat->name);
+                }
+                $mform->addElement('select', 'categoryid', get_string('section', 'local_shop'), $sectionopts);
+                $mform->setType('categoryid', PARAM_INT);
+                $mform->addRule('categoryid', null, 'required');
+            } else {
+                $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
             }
-            $mform->addElement('select', 'categoryid', get_string('section', 'local_shop'), $sectionopts);
-            $mform->setType('categoryid', PARAM_INT);
-            $mform->addRule('categoryid', null, 'required');
         } else {
-            $mform->addElement('static', 'nocats', get_string('nocats', 'local_shop'));
+            $mform->addElement('static', 'categoryidshadow', get_string('section', 'local_shop'));
+            $mform->addElement('hidden', 'categoryid');
+            $mform->setType('categoryid', PARAM_INT);
         }
+    }
+
+    protected function is_slave() {
+        return $this->_customdata['catalog']->isslave;
     }
 }

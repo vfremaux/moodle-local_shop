@@ -50,6 +50,8 @@ class productinstances_controller {
 
         switch ($cmd) {
             case 'delete':
+            case 'softdelete':
+            case 'softrestore':
                 $this->data->productids = required_param_array('productids', PARAM_INT);
                 break;
         }
@@ -74,6 +76,38 @@ class productinstances_controller {
                     try {
                         $product = new Product($pid);
                         $product->delete();
+                    } catch (\Exception $e) {
+                        print_error('objecterror', 'local_shop', $e->getMessage());
+                    }
+                }
+            }
+        }
+
+        // Disables a product  ****************************** **.
+        if ($cmd == 'softdelete') {
+            require_sesskey();
+
+            if (!empty($this->data->productids)) {
+                foreach ($this->data->productids as $pid) {
+                    try {
+                        $product = new Product($pid);
+                        $product->soft_delete();
+                    } catch (\Exception $e) {
+                        print_error('objecterror', 'local_shop', $e->getMessage());
+                    }
+                }
+            }
+        }
+
+        // Disables a product  ****************************** **.
+        if ($cmd == 'softrestore') {
+            require_sesskey();
+
+            if (!empty($this->data->productids)) {
+                foreach ($this->data->productids as $pid) {
+                    try {
+                        $product = new Product($pid);
+                        $product->soft_restore();
                     } catch (\Exception $e) {
                         print_error('objecterror', 'local_shop', $e->getMessage());
                     }
