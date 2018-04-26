@@ -207,6 +207,7 @@ $string['editshopsettings'] = 'Modifier les paramètres de la boutique';
 $string['editshopsettings_desc'] = 'Cette version propose une instance unique de boutique Moodle. Vous pouvez modifier les paramètres ici.';
 $string['edittaxe'] = 'Edition d\'une taxe';
 $string['emulatecommunity'] = 'Emuler la version communautaire';
+$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
 $string['enablepaymodes'] = 'Modes de paiement&nbsp;';
 $string['error'] = 'Erreur&nbsp;:&ensp;';
 $string['errorbadhandler'] = 'Le fichier de ce gestionnaire ({$a}) n\'existe pas. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
@@ -245,6 +246,10 @@ $string['leaflet'] = 'Brochure&nbsp;:&ensp;';
 $string['leafletlink'] = 'Télécharger la brochure';
 $string['leafleturl'] = 'Url de Brochure&nbsp;:&ensp;';
 $string['link'] = 'Liaison ';
+$string['licenseprovider'] = 'Fournisseur version Pro';
+$string['licenseprovider_desc'] = 'Entrez la clef de votre distributeur.';
+$string['licensekey'] = 'Clef de license pro';
+$string['licensekey_desc'] = 'Entrez ici la clef de produit que vous avez reçu de votre distributeur.';
 $string['login'] = 'J\'ai déjà un compte';
 $string['manageshipping'] = 'Gérer les frais de port';
 $string['manageshippingdesc'] = 'Gère les zones de port et les frais par produits';
@@ -716,9 +721,9 @@ du produit.';
 $string['useslavecatalogs'] = 'Les catalogues maîtres esclaves permettent de créer des variantes locales de catalogues pour
 altérer la langue de présentation des produits ou les gammes de prix proposés.';
 
-$string['plugindist_desc'] = '<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
-correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugn existe et est distribuée
+$string['plugindist_desc'] = '
+<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
+correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugin existe et est distribuée
 sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
 <p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
-<ul><li><a href="http://service.activeprolearn.com/local/shop/front/view.php?id=1">ActiveProLearn SAS</a></li>
-<li><a href="http://www.edunao.com">Edunao SAS</a></li></ul>';
+<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
