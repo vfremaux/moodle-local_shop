@@ -94,7 +94,16 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
     global $DB;
 
     $role = $DB->get_record('role', array('shortname' => 'student'));
+
+    if (empty($role)) {
+        throw new moodle_exception('Legacy Role student may have been deleted from this moodle. This should not happen.');
+    }
+
     $role2 = $DB->get_record('role', array('shortname' => 'customer'));
+
+    if (empty($role2)) {
+        throw new moodle_exception('Role customer may have been renamed from this moodle or may not have been installed properly. Try to reinstall the shop again.');
+    }
 
     $now = time();
 

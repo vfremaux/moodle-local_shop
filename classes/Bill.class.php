@@ -113,7 +113,7 @@ class Bill extends ShopObject {
     public $customeruser;
 
     // Build a full bill plus billitems.
-    public function __construct($idorrecord, &$theshop = null, &$thecatalogue = null, &$theblock = null, $light = false) {
+    public function __construct($idorrecord, $light = false, &$theshop = null, &$thecatalogue = null, &$theblock = null) {
         global $DB;
 
         $config = get_config('local_shop');
@@ -137,13 +137,6 @@ class Bill extends ShopObject {
                 return;
             }
 
-            if (is_object($idorrecord)) {
-                $id = $idorrecord->id;
-            } else {
-                $id = $idorrecord;
-                $idorrecord = $DB->get_record('local_shop_bill', array('id' => $idorrecord));
-            }
-
             // Get shop from record if not provided.
             if (empty($this->theshop)) {
                 $this->theshop = new Shop($this->record->shopid);
@@ -162,7 +155,7 @@ class Bill extends ShopObject {
 
             $this->recalculate();
 
-            if ($this->customer = $DB->get_record('local_shop_customer', array('id' => $idorrecord->customerid))) {
+            if ($this->customer = $DB->get_record('local_shop_customer', array('id' => $this->record->customerid))) {
                 $this->customeruser = $DB->get_record('user', array('id' => $this->customer->hasaccount));
             } else {
                 $this->customeruser = null;
@@ -256,7 +249,7 @@ class Bill extends ShopObject {
      * have accurate amount of the original order
      */
     public function add_item_data($birec, $ordering = -1) {
-        $billitem = new BillItem($birec, $this, $ordering);
+        $billitem = new BillItem($birec, false, $this, $ordering);
         $this->items[] = $billitem;
         $this->orderuntaxedamount += $billitem->totalprice;
         $this->ordertaxes += $billitem->get_totaltax();
@@ -321,7 +314,7 @@ class Bill extends ShopObject {
                 $taxamount = - $bi->get_tax_amount() * $discountrate / 100;
                 $birec->productiondata = '';
                 $birec->customerdata = '';
-                $billitem = new BillItem($birec, $this);
+                $billitem = new BillItem($birec, false, $this);
                 $this->items[] = $billitem;
 
                 /*
@@ -394,7 +387,7 @@ class Bill extends ShopObject {
 
         foreach ($itemrecs as $itemrec) {
 
-            $billitem = new BillItem($itemrec, $this);
+            $billitem = new BillItem($itemrec, false, $this);
 
             // Deroute some special types.
             if ($billitem->type == 'SHIPPING') {
@@ -505,11 +498,15 @@ class Bill extends ShopObject {
         $theshop = new Shop($record->shopid);
 
         $thecatalogue = new Catalog($theshop->catalogid);
-        $bill = new Bill($record, $theshop, $thecatalogue);
+        $bill = new Bill($record, false, $theshop, $thecatalogue);
         return $bill;
     }
 
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
+    }
+
+    public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
+        return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(emissiondate, '-', ordering, '-', idnumber)", $chooseopt);
     }
 }

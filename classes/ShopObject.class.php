@@ -138,7 +138,7 @@ class ShopObject {
      * @return array of object instances keyed by primary id.
      */
     static protected function _get_instances($table, $filter = array(), $order = '',
-                                             $fields = '*', $limitfrom = 0, $limitnum = '') {
+                                             $fields = '*', $limitfrom = 0, $limitnum = '', $light = false) {
         global $DB;
 
         $records = $DB->get_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
@@ -146,7 +146,7 @@ class ShopObject {
         if ($records) {
             $class = get_called_class();
             foreach ($records as $rec) {
-                $instances[$rec->id] = new $class($rec);
+                $instances[$rec->id] = new $class($rec, $light);
             }
         }
 
@@ -169,23 +169,27 @@ class ShopObject {
     }
 
     /**
-     * @param array $filter
-     * @param string $field
-     * @param boolean $choosenone
+     * Get instances of the object. If some filtering is needed, override
+     * this method providing a filter as input.
+     * @param array $filter an array of specialized field filters
+     * @return array of object instances keyed by primary id.
      */
-    public static function get_instances_menu($filter = array(), $field = 'name', $choosenone = false) {
+    static protected function _get_instances_menu($table, $filter = array(), $order = '', $namefield = 'name', $chooseopt = 'choosedots') {
+        global $DB;
 
-        $class = get_called_class();
-        $instances = $class::get_instances($filter, $field, 'id, '.$field);
-
-        if ($choosenone) {
+        $menurecords = $DB->get_records_menu($table, $filter, $order, 'id,'.$namefield);
+        if (empty($chooseopt)) {
             $instancemenu = array();
         } else {
-            $instancemenu = array(0 => get_string('choosedots'));
+            if ($chooseopt == 'choosedots') {
+                $instancemenu = array(0 => get_string('choosedots'));
+            } else {
+                $instancemenu = array(0 => get_string($chooseopt, 'local_shop'));
+            }
         }
-        if ($instances) {
-            foreach ($instances as $i) {
-                $instancemenu[$i->id] = format_string($i->$field);
+        if ($menurecords) {
+            foreach ($menurecords as $id => $name) {
+                $instancemenu[$id] = format_string($name);
             }
         }
         return $instancemenu;

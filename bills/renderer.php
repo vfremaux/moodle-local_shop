@@ -979,7 +979,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $str .= '</td>';
 
         $str .= '<td width="120" class="cell c2">';
-        $str .= strftime('%c', $portlet->timecreated);
+        $str .= strftime('%c', $portlet->emissiondate);
         $str .= '</td>';
 
         $str .= '<td width="120" class="cell c2">';
