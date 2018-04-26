@@ -37,10 +37,12 @@ $string['deleteset'] = 'Delete set';
 $string['editbundle'] = 'Update bundle';
 $string['editcategory'] = 'Update a product category';
 $string['editproduct'] = 'Update product';
+$string['editproductvariant'] = 'Update product (slave override)';
 $string['editset'] = 'Update set';
 $string['financials'] = 'Financial aspects';
 $string['handlerparams'] = 'Handler parameters';
 $string['hashandlers'] = 'This product has action handlers';
+$string['maxquant'] = 'Q max';
 $string['newbundle'] = 'New bundle';
 $string['newcategory'] = 'New category';
 $string['newitem'] = 'New item';
@@ -54,6 +56,7 @@ $string['nocatsslave'] = 'This is a slave catalog. No categories can be edited.'
 $string['parentcategory'] = 'Parent category';
 $string['rootcategory'] = '-- Root category --';
 $string['producteulas'] = 'Product Terms of Use';
+$string['productiondata'] = 'Production data';
 $string['productpassword'] = 'Product password';
 $string['removealllinkedproducts'] = 'Remove all linked products';
 $string['removeproductfrombundle'] = 'Remove from bundle';
@@ -62,9 +65,11 @@ $string['removeproductfromset'] = 'Remove from set';
 $string['removeproductinset'] = 'Remove product from set';
 $string['removeset'] = 'Remove all set';
 $string['renewable'] = 'Can renew';
+$string['requiredformatsuccess'] = 'Required data JSON format is ok';
 $string['requireddata'] = 'Specific data to pull from customer';
 $string['requireddatacaption'] = 'Some of your products will need some configuration to be produced correctly. Please enter the required information in each product instance in the following form before continuing purchase sequence.';
 $string['unlinkproduct'] = 'Unlink product';
+$string['user_enrolment'] = 'User enrol';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Customer support course defaults to settings';
 $string['warningnocustomersupportcourse'] = 'No customer support area defined';
 $string['errornocustomersupportcourse'] = 'Customer support course {$a} does not exist';
@@ -211,3 +216,8 @@ the resuting expression is :
 You may use an online service such as http://www.objgen.com/json to help you generating the
 appropriate syntax.
 ';
+
+$string['productiondata_help'] = 'Some additional data that will be used in the production cycle and that the product handlers or processing will need.
+Some data may affect additional optional shop processings such as license key verification (based on a "component" identification. See detailed doc)
+Enter a json encoded array of mapped values.';
+

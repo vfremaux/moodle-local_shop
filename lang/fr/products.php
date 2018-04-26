@@ -37,8 +37,12 @@ $string['deleteset'] = 'Supprimer un assemblage';
 $string['editbundle'] = 'Mettre à jour un lot';
 $string['editcategory'] = 'Modifier une catégorie de produits';
 $string['editproduct'] = 'Modifier un produit';
+$string['editproductvariant'] = 'Modifier un produit (variante locale)';
 $string['editset'] = 'Mettre à jour un assemblage';
+$string['enablehandler'] = 'Activer le traitement d\'achat&nbsp;';
+$string['eula'] = 'Texte des conditions de vente et d\'utilisation&nbsp;';
 $string['financials'] = 'Paramètres financiers';
+$string['handlerparams'] = 'Paramètres du gestionnaire&nbsp;';
 $string['newbundle'] = 'Nouveau lot';
 $string['newcategory'] = 'Nouvelle catégorie';
 $string['newitem'] = 'Nouvel élément';
@@ -50,18 +54,23 @@ $string['noproductinset'] = 'Pas de produit dans l\'assemblage';
 $string['noproducts'] = 'Aucun produits';
 $string['nocatsslave'] = 'Vous ne pouvez pas modifier les catégories (catalogue lié).';
 $string['producteulas'] = 'Termes de licence spécifique';
+$string['productiondata'] = 'Métadonnées de production';
 $string['productcount'] = 'Produits dans la catégorie';
-$string['productpassword'] = 'Mot de passe';
+$string['productpassword'] = 'Mot de passe&nbsp;';
 $string['parentcategory'] = 'Parent';
+$string['quantaddressesusers'] = 'La quantité adresse des sièges&nbsp;';
+$string['renewable'] = 'Renouvelable&nbsp;';
 $string['rootcategory'] = '-- Racine --';
 $string['removeproductfrombundle'] = 'Enlever le produit du lot';
 $string['removeproductfromcatalogue'] = 'Supprimer le produit du catalogue';
 $string['removeproductfromset'] = 'Enlever le produit de l\'assemblage';
 $string['removeset'] = 'Supprimer l\'assemblage';
 $string['requiredataadvice'] = 'Votre commande nécessite des informations que vous DEVEZ FOURNIR AVANT de pouvoir soumettre.';
-$string['requireddata'] = 'Données à fournir par le client';
+$string['requireddata'] = 'Données à fournir par le client&nbsp;';
+$string['requiredformatsuccess'] = 'Le format JSON des données requises est correct.';
 $string['requireddatacaption'] = 'Certains des produits commandés nécessitent certaines données pour leur configuration. Entrez et validez les informations ci-dessous avant de continuer votre achat.';
 $string['unlinkproduct'] = 'Délier le produit';
+$string['user_enrolment'] = 'Inscription individuelle';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Le cours support client utilise la définition par défaut';
 $string['warningnocustomersupportcourse'] = 'aucun cours support client défini';
 $string['errornocustomersupportcourse'] = 'Le cours support client défini {$a} n\'existe pas';
@@ -189,3 +198,10 @@ Vous pouvez utiliser un service en ligne comme http://www.objgen.com/json pour
 vous faciliter le formatage de la structure.
 
 ';
+
+$string['quantaddressesusers_help'] = 'Les produits utilisant cette option affectent l\'étape de saisie des utilisateurs.';
+
+$string['productiondata_help'] = 'Des données supplémentaires attachées au produit et dont certains traitements spécifiques pourraient avoir besoin.
+Ces données ne sont ni liées au gestionnaire, et ne sont pas des options du client, mais des données fournies à des mécanismes de boutique ou des
+customisations additionnelles. A titre d\'exemple, des données d\'identité de composant pour une vérification automatique des numéros de license.
+Entrez les données sous forme d\'une chaine JSON représentant un tableau associatif de données (simples ou complexes selon le mécanisme à alimenter).';

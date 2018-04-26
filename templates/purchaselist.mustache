@@ -1,0 +1,50 @@
+
+
+
+<form name="selection" action="{{{formurl}}}" method="get">
+<input type="hidden" name="view" value="viewAllProductInstances" />
+<input type="hidden" name="what" value="" />
+<input type="hidden" name="customerid" value="{{customerid}}" />
+<input type="hidden" name="shopowner" value="{{shopowner}}" />
+<table width="100%" class="shoptable">
+
+    <tr class="shop-products-caption" valign="top">
+        <th width="2%" class="header c0" rowspan="2">{{{selstr}}}</th>
+        <th class="header c1" rowspan="2">{{{imagestr}}}</th>
+        <th class="header c2">{{{codestr}}}</th>
+        <th class="header c3">{{{referencestr}}}</th>
+        <th class="header c4">{{{billstr}}}</th>
+        <th class="header c5">{{{renewablestr}}}</th>
+        <th class="header c6">{{{contexttypestr}}}</th>
+        <th class="header c7">{{{instance}}}</th>
+        <th class="header c8" align="right">{{{purchasedpricestr}}}</th>
+        <th class="header lastcol" width="30" rowspan="2"></th>
+    </tr>
+
+    <tr>
+        <th class="header c2" colspan="2">{{{designationstr}}}</th>
+        <th class="header c4" colspan="2">{{{startdatestr}}}</th>
+        <th class="header c6" colspan="2">{{{enddatestr}}}</th>
+    </tr>
+
+    {{#products}}
+    <tr class="shop-productinstance-row" valign="top">
+        <td width="2%" class="cell c0 {{statusclass}}" rowspan="2" align="center">{{{selcheckbox}}}</td>
+        <td class="cell c1" align="center" rowspan="2"><img src="{{{thumburl}}}" vspace="10" height="50"></td>
+        <td class="cell c2" align="left">{{code}}</td>
+        <td class="cell c3" align="left">{{reference}}</td>
+        <td class="cell c4">{{{currentbilllink}}}</td>
+        <td class="cell c5">{{renewable}}</td>
+        <td class="cell c6">{{contexttype}}</td>
+        <td class="cell c7">{{{instancelink}}}</td>
+        <td class="amount cell c8" align="right">{{unitcost}} {{currency}}</td>
+        <td align="right" rowspan="2" class="lastcol {{statusclass}}"><div class="shop-line-commands">{{{commands}}}</div></td>
+    </tr>
+    <tr class="shop-productinstance-row" valign="top">
+        <td colspan="4" class="name cell c2" align="left">{{name}}</td>
+        <td class="cell c6">{{pstart}}</td>
+        <td class="cell c7">{{pend}}</td>
+    </tr>
+    {{/products}}
+</table>
+</form>

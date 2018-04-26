@@ -22,6 +22,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+use local_shop\Category;
+
 $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
 
 // Check see all mode in session.
@@ -41,15 +43,27 @@ if ($action) {
     }
 }
 
-// Choose a category.
-$category = optional_param('category', null, PARAM_INT);
-
-echo $out;
-
 $categories = $thecatalog->get_categories();
 // Now we browse categories for making the catalog.
 
+// Choose a category.
+$category = optional_param('category', null, PARAM_INT);
+if (empty($category)) {
+    // Explicit the category.
+    $catids = array_keys($categories);
+    $firstcategory = array_shift($catids);
+    $Category = new Category($firstcategory);
+    if ($Category->is_empty()) {
+        $firstcategory = $Category->get_first_non_empty_child();
+    }
+
+    $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
+    redirect(new moodle_url('/local/shop/front/view.php', $params));
+}
+
 $categories = $thecatalog->get_all_products($shopproducts);
+
+echo $out;
 
 $units = 0;
 if (isset($SESSION->shoppingcart->order)) {

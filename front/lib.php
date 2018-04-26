@@ -327,7 +327,9 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, &$course) {
 }
 
 /**
- * builds a product ref from transation ID and catalogitem code.
+ * builds a product ref from transaction ID and catalogitem code.
+ * Product refs are build with a unique context based 14 letters code, and
+ * a 2 letters checksum completing a WWWW-XXXX-YYYY-ZZCC code.
  * @param object &$anitem a catalog item instance
  */
 function shop_generate_product_ref(&$anitem) {
@@ -337,12 +339,65 @@ function shop_generate_product_ref(&$anitem) {
     $itemcode = $anitem->catalogitem->itemcode;
 
     $crypto = md5($transactionid.$itemcode);
-    $productref = substr(base64_encode($crypto), 0, 8);
+    $productref = core_text::strtoupper(core_text::substr(base64_encode($crypto), 0, 14));
+    $productref .= shop_checksum($productref);
+
+    // Adopt standard WWWW-XXXX-YYYY-ZZZZ form.
+    $tmp = $productref;
+    $productref = core_text::substr($tmp, 0, 4).'-'.core_text::substr($tmp, 4, 4);
+    $productref .= '-'.core_text::substr($tmp, 8, 4).'-'.core_text::substr($tmp, 12, 4);
 
     // Continue hashing till we get a real new one.
     while ($DB->record_exists('local_shop_product', array('reference' => $productref))) {
-        $productref = substr(base64_encode(md5($productref)), 0, 8);
+        $productref = core_text::strtoupper(core_text::substr(base64_encode(md5($productref)), 0, 14));
+        $productref .= shop_checksum($productref);
+
+        // Addopt standard WWWW-XXXX-YYYY-ZZZZ form.
+        $tmp = $productref;
+        $productref = core_text::substr($tmp, 0, 4).'-'.core_text::substr($tmp, 4, 4);
+        $productref .= '-'.core_text::substr($tmp, 8, 4).'-'.core_text::substr($tmp, 12, 4);
     }
 
     return $productref;
+}
+
+/**
+ * builds a product ref from transation ID and catalogitem code.
+ * @param object &$anitem a catalog item instance
+ */
+function shop_check_product_ref($productref) {
+
+    if (empty($productref)) {
+        return false;
+    }
+
+    // Strip out dashes.
+    $productref = str_replace('-', '', $productref);
+
+    // Get the payload.
+    $payload = substr($productref, 0, 14);
+    $crc = substr($productref, 14, 2);
+
+    $checkcrc = shop_checksum($payload);
+
+    return $checkcrc == $crc;
+}
+
+function shop_checksum($productref) {
+
+    static $crcrange = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+
+    $crccount =  count($crcrange);
+
+    // Adding 2 letters checksum.
+    $productrefasarr = str_split($productref);
+    $crc = 0;
+    foreach ($productrefasarr as $letter) {
+        $crc += ord($letter);
+    }
+
+    $crc2 = floor($crc / $crccount) % $crccount;
+    $crc1 = $crc % $crccount;
+    return $crcrange[$crc1].$crcrange[$crc2];
 }

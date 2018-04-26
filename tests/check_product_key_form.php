@@ -17,14 +17,24 @@
 /**
  * @package   local_shop
  * @category  local
- * @subpackage shophandlers
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin = new stdclass;
-$plugin->version = 2016071400;
-$plugin->requires = 2014050800;
-$plugin->component = 'shophandlers_std_enrolonecourse';
-$plugin->dependencies = array('local_shop' => 2016022500);
+require_once($CFG->dirroot.'/lib/formslib.php');
+
+class check_product_key_form extends moodleform {
+
+    public function definition() {
+
+        $mform = $this->_form;
+
+        $mform->addElement('text', 'productkey', get_string('productkey', 'local_shop'));
+        $mform->setType('productkey', PARAM_TEXT);
+
+        $mform->addElement('submit', 'go-btn', get_string('testkey', 'local_shop'));
+
+    }
+
+}

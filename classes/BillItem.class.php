@@ -51,7 +51,7 @@ class BillItem extends ShopObject {
 
     public $actionparams; // Parameters decoded from handler params.
 
-    public function __construct($idorrec, &$bill = null, $ordering = -1) {
+    public function __construct($idorrec, $light = false, &$bill = null, $ordering = -1) {
         global $DB;
 
         $this->bill = $bill;
@@ -191,6 +191,10 @@ class BillItem extends ShopObject {
         $DB->execute($sql, array($z, $this->id));
     }
 
+    public function get_catalog_item() {
+        return $this->catalogitem;
+    }
+
     public function get_price() {
         if (!empty($this->catalogitem)) {
             return $this->catalogitem->get_price($this->record->quantity);
@@ -287,5 +291,9 @@ class BillItem extends ShopObject {
 
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
+    }
+
+    public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
+        return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(billid, '-', ordering, '-', itemcode)", $chooseopt);
     }
 }
