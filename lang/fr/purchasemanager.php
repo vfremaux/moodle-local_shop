@@ -14,7 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+$string['addproductinstance'] = 'Ajouter un produit';
+$string['catalogitem'] = 'Entrée de catalogue';
+$string['contexttype'] = 'Type';
+$string['currentbill'] = 'Commande';
+$string['currentbillitem'] = 'Elément de commande';
 $string['currentcustomer'] = 'Client affiché';
+$string['generatereference'] = 'Générer une référence';
 $string['noinstances'] = 'Aucune instance produit dans ce contexte';
 $string['productinstances'] = 'Achats';
 $string['contexttype'] = 'Type';
@@ -24,3 +30,13 @@ $string['startdate'] = 'Du';
 $string['enddate'] = 'au';
 $string['enrol'] = 'Inscription';
 $string['ltiprovider'] = 'Accès distant LTI';
+$string['nc'] = 'Non défini';
+$string['productkey'] = 'Clef de license produit';
+$string['testkey'] = 'Tester la clef de license';
+$string['isvalid'] = 'Est une clef de license valide';
+$string['isnotvalid'] = 'N\'est PAS une clef de license valide';
+$string['hasproductinstance'] = 'A un produit enregistré';
+$string['hasnoproductinstance'] = 'N\'a PAS de produit enregistré';
+$string['testproduct'] = 'Produit test';
+$string['unassigned'] = '--- Non attribué ---';
+

@@ -42,6 +42,7 @@ function local_shop_supports_feature($feature = null) {
                 'paymodes' => array('fullstack'),
                 'catalog' => array('instances'),
                 'shop' => array('instances'),
+                'products' => array('editable'),
             ),
             'community' => array(
                 'handlers' => array('basic'),
@@ -191,7 +192,6 @@ function shop_get_renderer($module = 'front') {
         // Do we know something about "pro" version ?
         include_once($CFG->dirroot."/local/shop/pro{$slashedmodule}/renderer.php");
         $class = "shop_{$module}_renderer_extended";
-        echo "get $class ";
         return new $class();
     }
 

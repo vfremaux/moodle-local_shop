@@ -37,7 +37,14 @@ class CatalogItem extends ShopObject {
 
     protected static $table = 'local_shop_catalogitem';
 
-    // If a set or bundle, can have elements.
+    /**
+     * The reference catalog for this item.
+     */
+    protected $thecatalog;
+
+    /**
+     * If a set or bundle, can have elements.
+     */
     public $elements;
 
     // Fasten a 'by code' reference.
@@ -69,12 +76,12 @@ class CatalogItem extends ShopObject {
                 return;
             }
 
+            $this->thecatalog = new Catalog($this->catalogid, false);
             if ($this->isset) {
                 $this->elements = self::get_instances(array('catalogid' => $this->catalogid, 'setid' => $this->id), 'code');
-                $catalog = new Catalog($this->catalogid, true);
                 if (!empty($this->elements)) {
                     foreach ($this->elements as $elmid => $elm) {
-                        $this->elements[$elmid]->catalog = $catalog;
+                        $this->elements[$elmid]->catalog = $this->thecatalog;
                         $this->elementsbycode[$elm->code] = $elm;
                     }
                 }
@@ -103,6 +110,13 @@ class CatalogItem extends ShopObject {
             $this->record->eulaformat = FORMAT_HTML;
         }
     }
+
+    /**
+     * Returns the reference catalog for this item.
+     */
+     public function get_catalog() {
+        return $this->thecatalog;
+     }
 
     /**
      * get the accurate price against quantity ranges
@@ -263,7 +277,7 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->image_url(current_language().'/one_unit', 'local_shop');
+            $url = $OUTPUT->pix_url(current_language().'/one_unit', 'local_shop');
         }
         return $url;
     }
@@ -284,7 +298,7 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->image_url(current_language().'/ten_units', 'local_shop');
+            $url = $OUTPUT->pix_url(current_language().'/ten_units', 'local_shop');
         }
         return $url;
     }
@@ -323,7 +337,7 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->image_url('defaultproduct', 'local_shop');
+            $url = $OUTPUT->pix_url('defaultproduct', 'local_shop');
         }
         return $url;
     }
@@ -446,7 +460,7 @@ class CatalogItem extends ShopObject {
                                                     $leafletfile->get_filearea(), $leafletfile->get_itemid(),
                                                     $leafletfile->get_filepath(), $leafletfile->get_filename());
         } else {
-            $url = $OUTPUT->image_url('defaultproduct', 'local_shop');
+            $url = $OUTPUT->pix_url('defaultproduct', 'local_shop');
         }
         return $url;
     }
@@ -590,6 +604,10 @@ class CatalogItem extends ShopObject {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    public static function get_instances_menu($filter = array(), $order = '') {
+        return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(code, ' ', name)");
+    }
+
     public static function search($by, $arg, $searchscope = null) {
         global $DB;
 
@@ -656,14 +674,6 @@ class CatalogItem extends ShopObject {
 
         $shortname = $formdata->code;
         $shortname = strtolower(str_replace(' ', '_', $shortname));
-        $shortnamebase = $shortname;
-
-        $index = 1;
-
-        while ($DB->record_exists('local_shop_catalogitem', array('shortname' => $shortname))) {
-            $shortname = $shortnamebase.$index;
-            $index++;
-        }
 
         return $shortname;
     }

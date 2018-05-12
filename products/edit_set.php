@@ -56,17 +56,9 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($setid) {
-    $set = new CatalogItem($setid);
-    $mform = new Set_Form('', array('what' => 'edit', 'catalog' => $thecatalog));
-    $set->record->setid = $setid;
-    unset($set->record->id);
-    $mform->set_data($set->record);
+    $mform = new Set_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
 } else {
-    $set = new CatalogItem(null);
-    $mform = new Set_Form('', array('what' => 'add', 'catalog' => $thecatalog));
-    $setrec = $set->record;
-    $setrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
-    $mform->set_data($setrec);
+    $mform = new Set_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
 }
 
 if ($mform->is_cancelled()) {
@@ -138,6 +130,18 @@ if ($data = $mform->get_data()) {
     shop_products_process_files($data, $context, $usercontext);
 
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+}
+
+if ($setid) {
+    $set = new CatalogItem($setid);
+    $set->record->setid = $setid;
+    unset($set->record->id);
+    $mform->set_data($set->record);
+} else {
+    $set = new CatalogItem(null);
+    $setrec = $set->record;
+    $setrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
+    $mform->set_data($setrec);
 }
 
 echo $OUTPUT->header();

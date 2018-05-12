@@ -31,6 +31,7 @@ require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 
 use local_shop\Catalog;
 use local_shop\CatalogItem;
+use local_shop\Category;
 
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/extlib/js.js', true);
@@ -39,6 +40,10 @@ $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 
 // Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
+
+/*
+ * Note thecatalog may be NOT the catalog associated to the updated product.
+ */
 
 $itemid = optional_param('itemid', 0, PARAM_INT);
 
@@ -51,7 +56,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_product.php');
+$url = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $itemid));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -59,29 +64,46 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
+    $itemcatalog = $item->get_catalog();
+    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $itemcatalog));
     $itemrec = $item->record;
+
+    // Replicates some attributes for variants.
+
+    $handleropts['0'] = get_string('disabled', 'local_shop');
+    $handleropts['1'] = get_string('dedicated', 'local_shop');
+    $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
+
+    $itemrec->codeshadow = $itemrec->code;
+    $itemrec->enablehandlershadow = $handleropts[$itemrec->enablehandler];
+    $itemrec->handlerparamsshadow = $itemrec->handlerparams;
+    $category = new Category($itemrec->categoryid);
+    $itemrec->categoryidshadow = $category->get_name();
+    $itemrec->quantaddressesusersshadow = ($itemrec->quantaddressesusers) ? get_string('yes') : get_string('no');
+    $itemrec->renewableshadow = ($itemrec->renewable) ? get_string('yes') : get_string('no');
+
     $itemrec->itemid = $itemid;
     $mform->set_data($itemrec);
 } else {
     $item = new CatalogItem(null);
     $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
+    $itemcatalog = $thecatalog;
     $itemrec = $item->record;
     $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($itemrec);
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $itemcatalog->id)));
 }
 
 if ($data = $mform->get_data()) {
 
-    $controller = new \local_shop\backoffice\product_controller($thecatalog);
+    $controller = new \local_shop\backoffice\product_controller($itemcatalog);
     $controller->receive('edit', $data, $mform);
     $controller->process('edit');
 
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $itemcatalog->id)));
 }
 
 echo $OUTPUT->header();

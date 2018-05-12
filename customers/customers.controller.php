@@ -42,7 +42,8 @@ class customers_controller {
 
     protected $received;
 
-    public function receive($cmd, $data) {
+    public function receive($cmd, $data = null) {
+
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -78,7 +79,7 @@ class customers_controller {
 
         if ($cmd == 'deletecustomer') {
             if ($this->data->customerids) {
-                foreach ($customerids as $id) {
+                foreach ($this->data->customerids as $id) {
                     $customer = new Customer($id);
                     $customer->delete();
                 }

@@ -37,7 +37,7 @@ class Set extends ShopObject {
 
     protected static $table = 'local_shop_catalogitem';
 
-    public function __construct($recordorid) {
+    public function __construct($recordorid, $light = false) {
         parent::__construct($recordorid, self::$table);
     }
 
