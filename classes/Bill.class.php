@@ -473,7 +473,7 @@ class Bill extends ShopObject {
         // Lower case because Moodle validation forces all functions to be lowercase.
 
         $transitionhandler = \core_text::strtolower("bill_transition_{$this->record->status}_{$tostatus}");
-
+        shop_trace('['.$this->transactionid.'] Internal transaction: '.$transitionhandler);
         if (function_exists($transitionhandler)) {
             $result = $transitionhandler($this);
         } else {

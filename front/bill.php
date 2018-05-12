@@ -77,11 +77,13 @@ echo '<table cellspacing="5" class="generaltable" width="100%">';
 echo $renderer->order_line(null);
 $hasrequireddata = array();
 
-foreach ($bill->items as $biid => $bi) {
-    if ($bi->type == 'BILLING') {
-        echo $renderer->order_line($bi->catalogitem->shortname, $bi->quantity);
-    } else {
-        echo $renderer->bill_line($bi);
+if (!empty($bill->items)) {
+    foreach ($bill->items as $biid => $bi) {
+        if ($bi->type == 'BILLING') {
+            echo $renderer->order_line($bi->catalogitem->shortname, $bi->quantity);
+        } else {
+            echo $renderer->bill_line($bi);
+        }
     }
 }
 echo '</table>';

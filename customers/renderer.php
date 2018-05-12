@@ -32,6 +32,7 @@ use local_shop\Shop;
 class shop_customers_renderer extends local_shop_base_renderer {
 
     public function customers($customers) {
+        global $OUTPUT;
 
         $lastnamestr = get_string('lastname');
         $firstnamestr = get_string('firstname');
@@ -59,7 +60,11 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $customerurl = new moodle_url('/local/shop/customers/view.php', $params);
             $row[] = '<a href="'.$customerurl.'">'.$c->id.'</a>';
             $row[] = $c->lastname.' '.$c->firstname;
-            $row[] = $c->email;
+            $email = $c->email;
+            if ($c->hasaccount) {
+                $email .= '&nbsp;'.$OUTPUT->pix_icon('i/moodle_host', '', 'moodle');
+            }
+            $row[] = $email;
             $row[] = $c->billcount;
             $row[] = sprintf("%.2f", round($c->totalaccount, 2)).' '.$this->theshop->defaultcurrency;
             $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));

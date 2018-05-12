@@ -234,7 +234,11 @@ class shop_handler_std_enrolonecourse extends shop_handler {
          * get separated from other learner teams.
          */
 
-        $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+        if (!$customerid = $data->customer->id) {
+            $customerid = $data->get_customerid();
+        }
+
+        $customer = $DB->get_record('local_shop_customer', array('id' => $customerid));
         $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
 
         $groupname = 'customer_'.$customeruser->username;
@@ -266,7 +270,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         if (!empty($data->actionparams['customersupport'])) {
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay : Registering Customer Support");
-            shop_register_customer_support($data->actionparams['customersupport'], $USER, $data->transactionid);
+            shop_register_customer_support($data->actionparams['customersupport'], $customeruser, $data->transactionid);
         }
 
         shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Completed for $coursename...");
