@@ -151,7 +151,9 @@ class Product extends ShopObject {
 
         $info = new \StdClass();
 
-        if (!empty($this->productiondata)) {
+        $productiondata = $this->productiondata;
+
+        if (!empty($productiondata)) {
             if ($pairs = explode('&', $this->productiondata)) {
                 foreach ($pairs as $pair) {
                     list($key, $value) = explode('=', $pair);
@@ -341,7 +343,6 @@ class Product extends ShopObject {
         global $CFG;
 
         $productinfo = $this->extract_production_data();
-
         $handler = null;
         $methodname = null;
         if (!empty($productinfo->handler)) {

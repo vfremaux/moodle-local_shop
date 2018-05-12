@@ -60,10 +60,12 @@ echo $renderer->progress('CUSTOMER');
 
 echo $renderer->admin_options();
 
+/*
 echo '<div id="shop-cart-summary" class="shop-summary" style="float:left; margin-right:20px">';
 echo $OUTPUT->heading(get_string('cartsummary', 'local_shop'));
 echo $renderer->cart_summary();
 echo '</div>';
+*/
 
 echo '<div id="shop-customer-info" class="shop-data">';
 
