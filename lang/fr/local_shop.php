@@ -106,6 +106,7 @@ $string['categoryname'] = 'Nom de la catégorie&nbsp;';
 $string['categoryowner'] = 'Propriétaire de catégorie';
 $string['catname'] = 'Nom';
 $string['catnum'] = 'Numéro';
+$string['check'] = 'Vérifier';
 $string['chooseall'] = 'Tout';
 $string['clear'] = 'supprimer le fichier';
 $string['code'] = 'Code';

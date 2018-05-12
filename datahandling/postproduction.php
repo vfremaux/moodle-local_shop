@@ -97,7 +97,6 @@ $PAGE->set_pagelayout('admin');
 
 $productinfo = $product->extract_production_data();
 list($handler, $methodname) = $product->get_handler_info($method);
-
 $productinfo->url = $url;
 
 $courseurl = new moodle_url('/course/view.php', array('id' => $id));
@@ -109,5 +108,6 @@ if ($confirm = optional_param('confirm', false, PARAM_TEXT)) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('productoperation', 'local_shop'));
+$handler->{$methodname}($product, $productinfo);
 echo $OUTPUT->confirm(get_string('confirmoperation', 'local_shop'), $url.'&confirm=1', $courseurl);
 echo $OUTPUT->footer();

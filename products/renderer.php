@@ -208,6 +208,15 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '<td align="right" class="lastcol shop-controls">';
             if (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) {
                 // We cannot edit master records ghosts from the slave catalog.
+                $params = array('view' => 'viewAllProducts', 'what' => 'toset', 'itemid' => $product->id);
+                $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
+                $str .= '<a href="'.$cmdurl.'"><img src="'.$OUTPUT->pix_url('toset', 'local_shop').'" title="'.get_string('toset', 'local_shop').'"/></a> ';
+
+                $params = array('view' => 'viewAllProducts', 'what' => 'tobundle', 'itemid' => $product->id);
+                $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
+                $str .= '<a href="'.$cmdurl.'"><img src="'.$OUTPUT->pix_url('tobundle', 'local_shop').'" title="'.get_string('tobundle', 'local_shop').'"/></a> ';
+
+                // We cannot edit master records ghosts from the slave catalog.
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $product->id));
                 $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a> ';
 
@@ -274,7 +283,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '('.$set->shortname.')';
         $str .= '</td>';
         $str .= '<td class="name '.$slaveclass.'" colspan="8">';
-        $str .= $set->name;
+        $str .= format_string($set->name);
         $str .= '</td>';
         $str .= '<td width="10" class="shop-controls">';
 
