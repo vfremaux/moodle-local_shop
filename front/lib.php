@@ -114,7 +114,7 @@ function shop_validate_customer($theshop) {
     $shoppingcart->errors->customerinfo = array();
 
     if ($shoppingcart->customerinfo['email'] == '') {
-        $shoppingcart->errors->customerinfo['customerinfo::email'] = '';
+        $shoppingcart->errors->customerinfo['custommerinfo::email'] = '';
     }
 
     if ((!isloggedin() || isguestuser()) && shop_has_potential_account($shoppingcart->customerinfo['email'])) {
@@ -160,17 +160,15 @@ function shop_validate_customer($theshop) {
  * @param string $email
  * @return boolean
  */
-function shop_has_potential_account() {
-    global $DB, $SESSION;
+function shop_has_potential_account($email) {
+    global $DB;
 
-    $shoppingcart = $SESSION->shoppingcart;
-
-    if ($DB->record_exists('user', array('email' => $shoppingcart->customerinfo['email'], 'deleted' => 0))) {
+    if ($DB->record_exists('user', array('email' => $email, 'deleted' => 0))) {
         return true;
     }
 
-    $potentialcustomer = $DB->get_record('local_shop_customer', array('email' => $shoppingcart->customerinfo['email']));
-    if (!empty($potentialcustomer->hasaccount)) {
+    $potentialcustomer = $DB->get_record('local_shop_customer', array('email' => $email));
+    if (!empty($potentialcustomer)) {
         return true;
     }
 

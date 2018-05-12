@@ -30,7 +30,7 @@ $plugin->version   = 2018033000; // The current plugin version (Date: YYYYMMDDXX
 $plugin->requires  = 2016120500; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
 $plugin->release = '3.2.0 (Build 2018033000)';
-$plugin->maturity = MATURITY_BETA;
+$plugin->maturity = MATURITY_RC;
 $plugin->dependencies = array('auth_ticket' => '2012060400');
 
 // Non moodle attributes.
