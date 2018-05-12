@@ -89,8 +89,8 @@ function bill_transition_pending_soldout($billorid) {
                           'ITEMS' => count($bill->itemcount),
                           'PAYMODE' => get_string($bill->paymode, 'local_shop'),
                           'AMOUNT' => $bill->amount);
-            $notification  = shop_compile_mail_template('salesFeedback', $vars, 'local_shop');
-            $params = array('shopid' => $billid->shopid,
+            $notification  = shop_compile_mail_template('sales_feedback', $vars, '');
+            $params = array('shopid' => $bill->shopid,
                             'view' => 'bill',
                             'billid' => $bill->id,
                             'transid' => $bill->transactionid);
@@ -162,7 +162,7 @@ function bill_transition_placed_pending($billorid) {
                           'ITEMS' => count($bill->billItems),
                           'PAYMODE' => get_string($bill->paymode, 'local_shop'),
                           'AMOUNT' => $bill->amount);
-            $notification  = shop_compile_mail_template('salesFeedback', $vars, 'local_shop');
+            $notification  = shop_compile_mail_template('sales_feedback', $vars, '');
             $params = array('shopid' => $bill->shopid, 'view' => 'bill', 'billid' => $bill->id, 'transid' => $bill->transactionid);
             $customerbillviewurl = new moodle_url('/local/shop/front/view.php', $params);
             $seller = new StdClass;
@@ -172,7 +172,8 @@ function bill_transition_placed_pending($billorid) {
             $seller->maildisplay = 1;
             $title = $SITE->shortname.' : '.get_string('yourorder', 'local_shop');
             $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->private, $notification);
-            ticket_notify($bill->customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
+            $customeruser = $DB->get_record('user', array('id' => $bill->customer->hasaccount));
+            ticket_notify($customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
         }
 
         $message = "[{$bill->transactionid}] Bill Controller :";
@@ -183,6 +184,15 @@ function bill_transition_placed_pending($billorid) {
     } else {
         shop_trace("[ERROR] Transition error : Bad bill ID $billid");
     }
+}
+
+/*
+ * perform a transition from state to state for a workflowed object
+ * Placed
+ */
+function bill_transition_placed_soldout($billorid) {
+    bill_transition_placed_pending($billorid);
+    bill_transition_pending_soldout($billorid);
 }
 
 function bill_transition_soldout_complete($billorid) {

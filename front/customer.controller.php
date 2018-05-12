@@ -111,6 +111,9 @@ class customer_controller extends front_controller_base {
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
 
+                $shoppingcart->errors = new \StdClass;
+                $shoppingcart->errors->customerinfo = null;
+                $shoppingcart->errors->invoiceinfo = null;
                 shop_validate_customer($this->theshop);
 
                 if ($shoppingcart->usedistinctinvoiceinfo) {
