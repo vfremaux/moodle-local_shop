@@ -23,6 +23,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+
+use \local_shop\Bill;
 
 class shop_paymode_check extends shop_paymode {
 
@@ -32,6 +35,10 @@ class shop_paymode_check extends shop_paymode {
 
     // Prints a payment porlet in an order form.
     public function print_payment_portlet(&$billdata) {
+
+        $afullbill = Bill::get_by_transaction($billdata->transid);
+        $afullbill->status = SHOP_BILL_PENDING;
+        $afullbill->save(true);
 
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_check');

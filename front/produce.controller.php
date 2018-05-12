@@ -136,15 +136,13 @@ class production_controller extends front_controller_base {
                 if ($this->interactive) {
                     if ($this->ipncall) {
                         mtrace("[{$afullbill->transactionid}] ".'Order confirm (online asynchronous payment return, bill is expected to be PENDING)');
-                    } else {
-                        mtrace("[{$afullbill->transactionid}] ".'Order confirm (online interactive payment, bill is expected to be PENDING)');
                     }
                 } else {
                     shop_trace("[{$afullbill->transactionid}] ".'Order confirm (offline payments, bill is expected to be PENDING)');
                 }
 
-                mtrace("[{$afullbill->transactionid}] ".'Production starting ...');
-                mtrace("[{$afullbill->transactionid}] ".'Production Controller : Pre Pay process');
+                // mtrace("[{$afullbill->transactionid}] ".'Production starting ...');
+                // mtrace("[{$afullbill->transactionid}] ".'Production Controller : Pre Pay process');
                 $productionfeedback = produce_prepay($afullbill);
                 /*
                  * log new production data into bill record
