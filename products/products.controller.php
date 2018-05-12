@@ -77,6 +77,8 @@ class product_controller {
             case 'unlink' :
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
+            case 'toset':
+            case 'tobundle':
             case 'clone':
                 // Item id will be given as the remote master id (no local override).
                 $this->data->itemid = required_param('itemid', PARAM_INT);
@@ -233,6 +235,30 @@ class product_controller {
         if ($cmd == 'clone') {
             $original = new CatalogItem($this->data->itemid);
             $original->clone_instance();
+            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+        }
+
+        /* ****** converts a product into a set ***** */
+        if ($cmd == 'toset') {
+            $original = new CatalogItem($this->data->itemid);
+            $original->setid = 0;
+            $original->isset = 1;
+            $original->save();
+            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+        }
+
+        /* ****** converts a product into a set ***** */
+        if ($cmd == 'tobundle') {
+            $original = new CatalogItem($this->data->itemid);
+            $original->setid = $original->id;
+            $original->isset = 0;
+            $original->save();
+            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+        }
+
+        /* ****** converts a product into a set ***** */
+        if ($cmd == 'toproduct') {
+            $original = new CatalogItem($this->data->itemid);
             redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
         }
 

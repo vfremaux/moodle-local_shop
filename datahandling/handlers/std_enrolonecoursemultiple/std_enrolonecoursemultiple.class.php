@@ -147,7 +147,11 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             $enrolplugin = enrol_get_plugin($enrolname); // The enrol object instance.
         }
 
-        $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+        if (!$customerid = $data->customer->id) {
+            $customerid = $data->get_customerid();
+        }
+
+        $customer = $DB->get_record('local_shop_customer', array('id' => $customerid));
         $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
 
         if (!$oldue = $DB->get_record('user_enrolments', array('userid' => $customeruser->id, 'enrolid' => $enrol->id))) {
