@@ -48,7 +48,7 @@ function shop_register_customer($data) {
              * We guess if different non null id that the customer is using a new account. This should not really be possible
              */
             $data->bill->customer->hasaccount = $USER->id;
-            $DB->update_record('local_shop_customer', $customer);
+            $DB->update_record('local_shop_customer', $data->bill->customer);
         } else {
             $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
             $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);

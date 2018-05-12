@@ -1502,12 +1502,12 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $product = $this->thecatalog->get_product_by_shortname($itemname);
                 $str .= '<tr>';
                 $str .= '<td class="short-order-name">';
-                $str .= '<span title="'.$product->name.'" alt="'.$product->name.'">'.$product->code.'</span>';
+                $str .= '<span title="'.format_string($product->name).'" alt="'.format_string($product->name).'">'.$product->code.'</span>';
                 $str .= '</td>';
                 $str .= '<td class="short-order-quantity">'.$SESSION->shoppingcart->order[$itemname].'</td>';
                 $str .= '</tr>';
                 $str .= '<tr>';
-                $desc = shorten_text(strip_tags($product->description), 120);
+                $desc = shorten_text(strip_tags(format_text($product->description)), 120);
                 $str .= '<td colspan="2"  class="short-order-summary">'.$desc.'</td>';
                 $str .= '</tr>';
             }
