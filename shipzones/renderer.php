@@ -123,11 +123,11 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
 
             $params = array('what' => 'edit', 'shippingid' => $shipping->id, 'zoneid' => $zoneid);
             $cmdurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', $params);
-            $commands = '<a href="'.$cmdurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
+            $commands = '<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/edit', get_stirng('edit'), 'moodle').'</a>';
 
             $params = array('what' => 'deleteshipping', 'shipid[]' => $shipping->id);
             $cmdurl = new moodle_url('/local/shop/shipzones/zoneindex.php', $params);
-            $commands .= '&nbsp;<a href="'.$cmdurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+            $commands .= '&nbsp;<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
             $row[] = $commands;
 
             $table->data[] = $row;
@@ -167,7 +167,7 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
             if ($z->entries == 0) {
                 $params = array('what' => 'deletezone', 'zoneid' => $z->id);
                 $indexurl = new moodle_url('/local/shop/shipzones/index.php', $params);
-                $commands = '<a href="'.$indexurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+                $commands = '<a href="'.$indexurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
 
                 $addshippingstr = get_string('newshipping', 'local_shop');
                 $params = array('zoneid' => $z->id);
@@ -182,7 +182,7 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
 
             $params = array('what' => 'update', 'item' => $z->id);
             $editzoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', $params);
-            $commands .= '&nbsp;<a href="'.$editzoneurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
+            $commands .= '&nbsp;<a href="'.$editzoneurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
             $row[] = $commands;
 
             $table->data[] = $row;
@@ -225,7 +225,7 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
             if ($z->entries == 0) {
                 $params = array('what' => 'delete', 'zoneid[]' => $z->id);
                 $indexurl = new moodle_url('/local/shop/shipzones/index.php', $params);
-                $commands = '<a href="'.$indexurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+                $commands = '<a href="'.$indexurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
                 $addzonestr = get_string('newshipping', 'local_shop');
                 $editurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', array('zoneid' => $z->id));
                 $command .= '&nbsp;<a href="'.$editurl.'">'.$addzonestr.'</a>';
@@ -236,7 +236,7 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
             }
             $params = array('what' => 'update', 'item' => $z->id);
             $zoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', $params);
-            $commands .= ' <a href="'.$zoneurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
+            $commands .= ' <a href="'.$zoneurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 
             $row[] = $commands;
         }
