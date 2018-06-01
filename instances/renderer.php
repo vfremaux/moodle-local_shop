@@ -110,13 +110,13 @@ class shop_instances_renderer {
 
             if (@$portlet->masterrecord == 0) {
                 $editurl = new moodle_url('/local/shop/instances/edit_instance.php', array('productid' => $product->id));
-                $str .= '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a> ';
+                $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a> ';
             }
 
             $deletestr = get_string('deleteproduct', 'local_shop');
             $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id);
             $deleteurl = new moodle_url('/local/shop/instances/view.php', $params);
-            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" title="'.$deletestr.'"></a>';
+            $str .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', $deletestr, 'moodle').'</a>';
 
             $str .= '</td>';
             $str .= '</tr>';

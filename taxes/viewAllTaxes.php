@@ -77,7 +77,7 @@ if (empty($taxes)) {
 
         $params = array('taxid' => $t->id, 'what' => 'updatetax');
         $editurl = new moodle_url('/local/shop/taxes/edit_tax.php', $params);
-        $commands = '<a href="'.$editurl.'"><img src="'.$OUTPUT->pix_url('t/edit').'" /></a>';
+        $commands = '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 
         if ($pcount == 0) {
             $params = array('view' => 'viewAllTaxes',
@@ -86,7 +86,7 @@ if (empty($taxes)) {
                             'taxid' => $t->id,
                             'what' => 'delete');
             $deleteurl = new moodle_url('/local/shop/taxes/view.php', $params);
-            $commands .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$OUTPUT->pix_url('t/delete').'" /></a>';
+            $commands .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
         }
         $row[] = '<div class="shop-line-commands">'.$commands.'</div>';
 
