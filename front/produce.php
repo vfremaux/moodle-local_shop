@@ -94,7 +94,7 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo $OUTPUT->box_start('shop-notification-message');
     echo $config->sellername.' ';
     echo shop_compile_mail_template('post_billing_message', array(), '');
-    echo '<img id="prod-waiter" src="'.$OUTPUT->pix_url('waitingforprod', 'local_shop').'" />';
+    echo '<img id="prod-waiter" src="'.$OUTPUT->image_url('waitingforprod', 'local_shop').'" />';
     echo $OUTPUT->box_start('shop-message-hidden', 'shop-notification-message-followup');
     echo shop_compile_mail_template('success_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$afullbill->paymode);
     echo $OUTPUT->box_end();

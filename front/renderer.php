@@ -104,8 +104,8 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $iconstate = '_dis';
             }
 
-            $stepicon = $this->output->pix_url(current_language().'/'.$icon.$iconstate, 'local_shop');
-            $str .= '<img src="'.$stepicon.'" />&nbsp;';
+            $stepicon = $this->output->pix_icon(current_language().'/'.$icon.$iconstate, '', 'local_shop');
+            $str .= $stepicon.'&nbsp;';
         }
         $str .= '</center>';
         $str .= '</div>';
@@ -717,7 +717,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if (($i * 10 + $j) > 0) {
             $jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= '<img src="'.$this->output->pix_url('t/delete').'" valign="center" />';
+            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'moodle');
             $str .= '</a>';
         }
 
@@ -788,7 +788,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $jshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
             $jshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
             $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= '<img src="'.$this->output->pix_url('t/delete').'" />';
+            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'moodle');
             $str .= '</a>';
             $disabled = '';
         }
@@ -1215,17 +1215,15 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
             $str .= '<td align="left">';
             if (@$participant->moodleid) {
-                $pixurl = $this->output->pix_url('i/moodle_host');
-                $str .= '<img src="'.$pixurl.'" title="'.get_string('isuser', 'local_shop').'" />';
+                $str .= $this->output->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'), 'moodle');;
             } else {
-                $pixurl = $this->output->pix_url('new', 'local_shop');
-                $str .= '<img src="'.$pixurl.'" title="'.get_string('isnotuser', 'local_shop').'" />';
+                $str .= $this->output->pix_icon('new', get_string('isnotuser', 'local_shop'), 'local_shop');
             }
             $str .= '</td>';
             $str .= '<td align="right">';
             $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'"
                         href="Javascript:ajax_delete_user(\''.$participant->email.'\')">';
-            $str .= '<img src="'.$this->output->pix_url('t/delete').'" /></a>';
+            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'local').'</a>';
             $str .= '</td>';
             $str .= '</tr>';
         } else {
@@ -1415,7 +1413,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td align="right">';
         $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
         $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'"><img src="'.$this->output->pix_url('t/delete').'" /></a>';
+        $str .= '<a href="'.$jshandler.'">'.$this->output->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -2438,7 +2436,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
                 $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
             } else {
-                $template->logourl = $this->output->pix_url('logo', 'theme');
+                $template->logourl = $this->output->image_url('logo', 'theme');
             }
         }
 
