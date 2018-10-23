@@ -331,27 +331,27 @@ abstract class CatalogItem_Form extends moodleform {
     protected function set_document_asset_data(&$defaults, $context) {
         global $COURSE;
 
-        $draftitemid = file_get_submitted_draft_itemid('leaflet');
+        $draftitemid = file_get_submitted_draft_itemid('grleaflet[leaflet]');
         file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grleaflet = array('leaflet' => $draftitemid);
 
-        $draftitemid = file_get_submitted_draft_itemid('image');
+        $draftitemid = file_get_submitted_draft_itemid('grimage[image]');
         file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grimage = array('image' => $draftitemid);
 
-        $draftitemid = file_get_submitted_draft_itemid('thumb');
+        $draftitemid = file_get_submitted_draft_itemid('grthumb[thumb]');
         file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grthumb = array('thumb' => $draftitemid);
 
-        $draftitemid = file_get_submitted_draft_itemid('unit');
+        $draftitemid = file_get_submitted_draft_itemid('grunit[unit]');
         file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grunit = array('unit' => $draftitemid);
 
-        $draftitemid = file_get_submitted_draft_itemid('tenunits');
+        $draftitemid = file_get_submitted_draft_itemid('grtenunits[tenunits]');
         file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grtenunits = array('tenunits' => $draftitemid);

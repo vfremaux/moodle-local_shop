@@ -259,6 +259,11 @@ if ($hassiteconfig) {
     $desc = get_string('configelementimagermargin', 'local_shop');
     $settings->add(new admin_setting_configtext($key, $label, $desc, 25, PARAM_INT));
 
+    $key = 'local_shop/shortdescriptionthreshold';
+    $label = get_string('shortdescriptionthreshold', 'local_shop');
+    $desc = get_string('configshortdescriptionthreshold', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, 200, PARAM_INT));
+
     $key = 'local_shop/experimental';
     $settings->add(new admin_setting_heading($key, get_string('experimental', 'local_shop'), ''));
 

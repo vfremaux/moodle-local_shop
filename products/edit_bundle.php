@@ -57,8 +57,11 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($bundleid) {
+    $bundle = new CatalogItem($bundleid);
+    $itemcatalog = $bundle->get_catalog();
     $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $itemcatalog));
 } else {
+    $itemcatalog = $thecatalog;
     $mform = new Bundle_Form('', array('what' => 'add', 'catalog' => $thecatalog));
 }
 
@@ -83,9 +86,7 @@ if ($data = $mform->get_data()) {
 
         $data->shortname = CatalogItem::compute_item_shortname($data);
 
-        if (!$data->id = $DB->insert_record('local_shop_catalogitem', $data)) {
-            print_error('erroraddbundle', 'local_shop');
-        }
+        $data->id = $DB->insert_record('local_shop_catalogitem', $data);
 
         // We have items in the set. update relevant products.
         $productsinbundle = optional_param('productsinset', array(), PARAM_INT);
@@ -98,9 +99,11 @@ if ($data = $mform->get_data()) {
             }
         }
         // If slave catalogue must insert a master copy.
-        if ($itemcatalog->isslave) {
-            $data->catalogid = $itemcatalog->groupid;
-            $DB->insert_record('local_shop_catalogitem', $data);
+        if ($thecatalog->isslave) {
+            $masterdata = clone($data);
+            unset($masterdata->id);
+            $masterdata->catalogid = $itemcatalog->groupid;
+            $DB->insert_record('local_shop_catalogitem', $masterdata);
         }
     } else {
         $data->id = $data->bundleid;
@@ -112,9 +115,7 @@ if ($data = $mform->get_data()) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
 
-        if (!$data->id = $DB->update_record('local_shop_catalogitem', $data)) {
-            print_error('errorupdatebundle', 'local_shop');
-        }
+        $DB->update_record('local_shop_catalogitem', $data);
     }
 
     // Process text fields from editors.
@@ -124,6 +125,7 @@ if ($data = $mform->get_data()) {
     $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                             'catalogitemdescription', $data->id);
 
+    $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);
 
     redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
@@ -131,18 +133,14 @@ if ($data = $mform->get_data()) {
 
 if ($bundleid) {
     $bundle = new CatalogItem($bundleid);
-    $itemcatalog = $bundle->get_catalog();
-    $itemrec = $item->record;
+    $itemrec = $bundle->record;
     $itemrec->bundleid = $bundleid;
     unset($itemrec->id);
-    $mform->set_data($itemrec);
-
-    $itemrec->itemid = $itemid;
+    $itemrec->itemid = $itemrec->bundleid; // For file itemid.
     $mform->set_data($itemrec);
 } else {
-    $item = new CatalogItem(null);
-    $itemcatalog = $thecatalog;
-    $bundlerec = $item->record;
+    $bundle = new CatalogItem(null);
+    $bundlerec = $bundle->record;
     $bundlerec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($bundlerec);
 }

@@ -167,8 +167,13 @@ function shop_has_potential_account($email) {
         return true;
     }
 
-    $potentialcustomer = $DB->get_record('local_shop_customer', array('email' => $email));
-    if (!empty($potentialcustomer)) {
+    /*
+     * User account should not be confirmed by a purchase, i.e. associated to and internal
+     * moodle account by a purchase.
+     */
+    $select = " email = ? AND hasaccount > 0 ";
+    $potentialcustomer = $DB->get_record_select('local_shop_customer', $select, array($email));
+    if ($potentialcustomer) {
         return true;
     }
 

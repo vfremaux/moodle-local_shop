@@ -189,4 +189,17 @@ class shop_customers_renderer extends local_shop_base_renderer {
         }
         echo html_writer::table($table);
     }
+
+    public function customer_view_links() {
+
+        $str = '';
+
+        $str .= '<br/>';
+        $str .= '<div class="pull-right">';
+        $newaccounturl = new moodle_url('/local/shop/customers/edit_customer.php');
+        $str .= '<a class="btn button" href="'.$newaccounturl.'">'.get_string('newcustomeraccount', 'local_shop').'</a>';
+        $str .= '</div>';
+
+        return $str;
+    }
 }

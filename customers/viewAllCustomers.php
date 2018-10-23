@@ -68,8 +68,4 @@ $portlet->total = $customerscount;
 $portlet->pagesize = $config->maxitemsperpage;
 echo $mainrenderer->paging_results($portlet);
 
-echo '<br/>';
-echo '<div class="pull-right">';
-$newaccounturl = new moodle_url('/local/shop/customers/edit_customer.php');
-echo '<a href="'.$newaccounturl.'">'.get_string('newcustomeraccount', 'local_shop').'</a>';
-echo '</div>';
+echo $renderer->customer_view_links()

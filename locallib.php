@@ -388,7 +388,6 @@ function shop_restore_template($archivefile, $data) {
     return $newcourseid;
 }
 
-
 /**
  * Create category with the given name and parentID returning a category ID
  */
@@ -791,7 +790,7 @@ function shop_list_reorder($selectcontext, $table) {
         $ix = 1;
         foreach ($allrecs as $rec) {
             $rec->sortorder = $ix;
-            $DB->update_record($rec);
+            $DB->update_record($table, $rec);
             $ix++;
         }
     }
