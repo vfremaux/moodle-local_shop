@@ -45,35 +45,56 @@ function produce_prepay(&$afullbill) {
                 continue;
             }
             $catalogitem = $afullbill->thecatalogue->get_product_by_code($anitem->catalogitem->code);
+
             $anitem->transactionid = $afullbill->transactionid;
             $anitem->customer = $afullbill->customer;
             $anitem->shopid = $afullbill->theshop->id;
 
-            $handler = $catalogitem->get_handler();
-
-            if ($handler === false) {
-                // The handler exists but is disabled.
-                shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
-                continue;
-            }
-
-            if (!is_null($handler)) {
-                if (method_exists($handler, 'produce_prepay')) {
-                    shop_trace("[{$afullbill->transactionid}] Prepay Production : preproducing for $anitem->itemcode");
-                    if ($itemresponse = $handler->produce_prepay($anitem, $afullbill->transactionid)) {
-                        $response->public .= "<br/>\n".$itemresponse->public;
-                        $response->private .= "<br/>\n".$itemresponse->private;
-                        $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;
-                    } else {
-                        shop_trace("[{$afullbill->transactionid}] Prepay Production Warning : Empty response $anitem->itemcode");
-                    }
-                }
-            } else {
-                shop_trace("[{$afullbill->transactionid}] Prepay Production Error : No handler for $anitem->itemcode");
-            }
+            product_prepay_item($anitem, $catalogitem, $afullbill, $response);
         }
     }
     return $response;
+}
+
+/**
+ *
+ *
+ */
+function product_prepay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
+
+    $handler = $catalogitem->get_handler();
+
+    if ($catalogitem->isset == PRODUCT_BUNDLE) {
+        shop_trace("[{$afullbill->transactionid}] Prepay Production : Scanning subelements");
+        foreach ($catalogitem->elements as $element) {
+            $elementcatalogitem = $afullbill->thecatalogue->get_product_by_code($element->code);
+            $element->transactionid = $afullbill->transactionid;
+            $element->customer = $afullbill->customer;
+            $element->shopid = $afullbill->theshop->id;
+            product_prepay_item($element, $elementcatalogitem, $afullbill, $response);
+        }
+    }
+
+    if ($handler === false) {
+        // The handler exists but is disabled.
+        shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
+        return;
+    }
+
+    if (!is_null($handler)) {
+        if (method_exists($handler, 'produce_prepay')) {
+            shop_trace("[{$afullbill->transactionid}] Prepay Production : preproducing for $anitem->itemcode");
+            if ($itemresponse = $handler->produce_prepay($anitem, $afullbill->transactionid)) {
+                $response->public .= "<br/>\n".$itemresponse->public;
+                $response->private .= "<br/>\n".$itemresponse->private;
+                $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;
+            } else {
+                shop_trace("[{$afullbill->transactionid}] Prepay Production Warning : Empty response $anitem->itemcode");
+            }
+        }
+    } else {
+        shop_trace("[{$afullbill->transactionid}] Prepay Production Error : No handler for $anitem->itemcode");
+    }
 }
 
 /**
@@ -103,35 +124,8 @@ function produce_postpay(&$afullbill) {
         $anitem->transactionid = $afullbill->transactionid;
         $anitem->customer = $afullbill->customer;
 
-        $handler = $catalogitem->get_handler();
+        product_postpay_item($anitem, $catalogitem, $afullbill, $response);
 
-        if ($handler === false) {
-            // The handler exists but is disabled.
-            shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
-            continue;
-        }
-
-        if (!is_null($handler)) {
-            if (method_exists($handler, 'produce_postpay')) {
-                if ($itemresponse = $handler->produce_postpay($anitem)) {
-                    $hasworked = true;
-                    $response->public .= "<br/>\n".$itemresponse->public;
-                    $response->private .= "<br/>\n".$itemresponse->private;
-                    $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;
-                } else {
-                    shop_trace("[{$afullbill->transactionid}] Postpay Production Error : empty response for {$anitem->itemcode}");
-                }
-            } else {
-                shop_trace("[{$afullbill->transactionid}] Postpay Production Warning : No handler for $anitem->itemcode");
-            }
-        } else {
-            $e = new Stdclass;
-            $e->abstract = $anitem->abstract;
-            $e->quantity = $anitem->quantity;
-            $response->public .= get_string('defaultpublicmessagepostpay', 'local_shop', $e);
-            $response->private .= get_string('defaultprivatemessagepostpay', 'local_shop', $e);
-            $response->salesadmin .= get_string('defaultsalesadminmessagepostpay', 'local_shop', $e);
-        }
     }
 
     // Set the final COMPLETE status if has worked.
@@ -140,6 +134,51 @@ function produce_postpay(&$afullbill) {
         // Set bill status to COMPLETE ?
     }
     return $response;
+}
+
+function product_postpay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
+
+    $handler = $catalogitem->get_handler();
+
+    if ($handler === false) {
+        // The handler exists but is disabled.
+        shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
+        continue;
+    }
+
+    if (!is_null($handler)) {
+        if (method_exists($handler, 'produce_postpay')) {
+            if ($itemresponse = $handler->produce_postpay($anitem)) {
+                $hasworked = true;
+                $response->public .= "<br/>\n".$itemresponse->public;
+                $response->private .= "<br/>\n".$itemresponse->private;
+                $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;
+            } else {
+                shop_trace("[{$afullbill->transactionid}] Postpay Production Error : empty response for {$anitem->itemcode}");
+            }
+        } else {
+            shop_trace("[{$afullbill->transactionid}] Postpay Production Warning : No handler for $anitem->itemcode");
+        }
+    } else {
+        $e = new Stdclass;
+        $e->abstract = $anitem->abstract;
+        $e->quantity = $anitem->quantity;
+        $response->public .= get_string('defaultpublicmessagepostpay', 'local_shop', $e);
+        $response->private .= get_string('defaultprivatemessagepostpay', 'local_shop', $e);
+        $response->salesadmin .= get_string('defaultsalesadminmessagepostpay', 'local_shop', $e);
+    }
+
+    // Recurse in elements when a bundle.
+    if ($catalogitem->isset == PRODUCT_BUNDLE) {
+        shop_trace("[{$afullbill->transactionid}] Postpay Production : Scanning subelements");
+        foreach ($catalogitem->elements as $element) {
+            $elementcatalogitem = $afullbill->thecatalogue->get_product_by_code($element->code);
+            $element->transactionid = $afullbill->transactionid;
+            $element->customer = $afullbill->customer;
+            $element->shopid = $afullbill->theshop->id;
+            product_postpay_item($element, $elementcatalogitem, $afullbill, $response);
+        }
+    }
 }
 
 /**

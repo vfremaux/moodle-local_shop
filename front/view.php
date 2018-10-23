@@ -37,6 +37,7 @@ use local_shop\Catalog;
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/form_protection.js.php');
 $PAGE->requires->js('/local/shop/front/js/order.js');
+$PAGE->requires->js_call_amd('local_shop/front', 'init');
 $PAGE->requires->css('/local/shop/stylesdyn.php');
 
 $config = get_config('local_shop');
@@ -47,7 +48,7 @@ $config = get_config('local_shop');
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);
-debug_trace("Shop session : $view");
+
 $context = context_system::instance();
 
 if ($view == 'shop') {

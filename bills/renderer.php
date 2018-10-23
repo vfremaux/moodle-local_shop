@@ -93,8 +93,9 @@ class shop_bills_renderer extends local_shop_base_renderer {
     public function customer_info($bill) {
         global $DB;
 
-        if (!empty($bill->invoiceinfo)) {
-            $ci = unserialize($bill->invoiceinfo);
+        $invoiceinfo = $bill->invoiceinfo; // Care of indirect magic __get with empty();
+        if (!empty($invoiceinfo)) {
+            $ci = (object) unserialize($bill->invoiceinfo);
             $useinvoiceinfo = true;
         } else {
             $ci = $DB->get_record('local_shop_customer', array('id' => $bill->customerid));
@@ -105,11 +106,6 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $str .= '<div id="shop-customerinfo">';
         $str .= '<table cellspacing="4" width="100%">';
-
-        $str .= '<tr>';
-        $str .= '<td width="60%" valign="top">';
-        $str .= '<b>'.get_string('orderID', 'local_shop').'</b>'. $bill->transactionid;
-        $str .= '</td>';
 
         $str .= '<td width="40%" valign="top" align="right">';
         $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($bill->emissiondate);
@@ -1413,6 +1409,57 @@ class shop_bills_renderer extends local_shop_base_renderer {
         }
 
         $str .= '</table>';
+
+        return $str;
+    }
+
+    public function bill_status_line($status) {
+
+        $str = '';
+        $str .= '<tr>';
+        $str .= '<td colspan="5" class="grouphead">';
+        $str .= '<b>'.get_string('bill_' . $status . 's', 'local_shop').'</b>';
+        $str .= '</td>';
+        $str .= '</tr>';
+
+        return $str;
+    }
+
+    public function bill_group_subtotal($subtotal, $billcurrency, $samecurrency) {
+        $str = '';
+
+        $str .= '<tr>';
+        $str .= '<td colspan="1" class="groupsubtotal">';
+        $str .= get_string('total', 'local_shop');
+        $str .= '</td>';
+        $str .= '<td colspan="5" class="groupsubtotal">';
+        $str .= '</td>';
+        $str .= '<td align="right" class="groupsubtotal">';
+        if ($samecurrency) {
+            $str .= '<b>'.sprintf('%.2f', round($subtotal, 2));
+            $str .= ' ';
+            $str .= get_string($billcurrency.'symb', 'local_shop');
+        } else {
+            $str .= get_string('nosamecurrency', 'local_shop');
+        }
+        $str .= '</b>';
+        $str .= '</td>';
+        $str .= '</tr>';
+
+        return $str;
+    }
+
+    public function bill_view_links(&$theshop) {
+
+        $excelurl = new moodle_url('/local/shop/export/export.php', array('what' => 'allbills', 'format' => 'excel'));
+        $billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
+
+        $str = '';
+
+        $str .= '<div id="shop-bill-view-links">';
+        $str .= '<a class="btn button" href="'.$excelurl.'" target="_blank">'.get_string('exportasxls', 'local_shop').'</a>';
+        $str .= ' - <a class="btn button" href="'.$billurl.'">'.get_string('newbill', 'local_shop').'</a>';
+        $str .= '</div>';
 
         return $str;
     }

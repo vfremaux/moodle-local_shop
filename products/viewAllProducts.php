@@ -97,16 +97,16 @@ if (count(array_keys($products)) == 0) {
 
         if (!$portlet->isset) {
             // Product is a standalone standard product.
-            $portlet->thumb = $portlet->get_thumb_url();
             echo $renderer->product_admin_line($portlet, true);
         } else {
             // Product is either a set or a bundle.
 
             if ($portlet->isset == PRODUCT_SET) {
                 // Is a product set.
-                $portlet->thumb = $OUTPUT->pix_url('productset', 'local_shop');
                 echo $renderer->set_admin_line($portlet, true);
             } else {
+                // CHANGE : Let bundle have their own pricing.
+                /*
                 // Is a product bundle.
                 // Update bundle price info.
                 $bundleprice = 0;
@@ -129,13 +129,15 @@ if (count(array_keys($products)) == 0) {
                  * update bundle price in database for other applications. Note that only visible product entry
                  * is updated.
                  */
+                /*
                 $record = new StdClass;
                 $record->id = $portlet->id;
                 $record->price1 = $bundleprice;
                 $DB->update_record('local_shop_catalogitem', $record);
+
                 $portlet->price1 = $bundleprice;
                 $portlet->bundleTTCPrice = $bundlettcprice;
-                $portlet->thumb = $portlet->get_thumb_url();
+                */
                 echo $renderer->bundle_admin_line($portlet);
             }
         }

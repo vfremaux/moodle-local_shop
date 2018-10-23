@@ -448,6 +448,7 @@ class Bill extends ShopObject {
         $this->record->untaxedamount = $this->finaluntaxedtotal;
 
         $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
+        $this->dirty = false;
     }
 
     public function delete() {

@@ -363,12 +363,14 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $rows[0] = array();
         foreach ($categories as $cat) {
-            $params = array('view' => 'shop',
-                            'category' => $cat->id,
-                            'shopid' => $this->theshop->id,
-                            'blockid' => $this->theblock->id);
-            $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
-            $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
+            if ($cat->visible) {
+                $params = array('view' => 'shop',
+                                'category' => $cat->id,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => $this->theblock->id);
+                $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
+                $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
+            }
         }
 
         if ($isvisiblebranch) {
@@ -493,7 +495,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                             $str .= $this->product_bundle($product, true);
                             break;
                         default:
-                            $str .= $this->product_block($product, true);
+                            $str .= $this->product_block($product);
                     }
                 }
             } else {
@@ -510,8 +512,15 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function product_block(&$product) {
-        global $CFG;
+    /**
+     * Prints a product block on front shop
+     * @param objectref &$product
+     * @param bool $astemplate if true, just returns the template object rather than the html output.
+     */
+    public function product_block(&$product, $astemplate = false) {
+        global $CFG, $OUTPUT;
+
+        $config = get_config('local_shop');
 
         $this->check_context();
 
@@ -520,16 +529,21 @@ class shop_front_renderer extends local_shop_base_renderer {
         $subelementclass = (!empty($product->ispart)) ? 'element' : 'product';
         $subelementclass .= ($product->available) ? '' : ' shadowed';
 
+        $template->subelementclass = $subelementclass;
+        $template->ispart = $product->ispart;
+        $template->issetpart = $product->issetpart;
+        $template->isbundlepart = $product->isbundlepart;
         $template->code = $product->code;
         $template->subelementclass = $subelementclass;
 
         $image = $product->get_image_url();
         if ($image) {
-            $imagestr = '<a class="fancybox" rel="group" href="'.$image.'"><img src="'.$product->get_thumb_url().'"></a>';
+            $template->hasimage = true;
+            $template->imageurl = $image;
         } else {
-            $imagestr = '<img src="'.$product->get_thumb_url().'">';
+            $template->hasimage = false;
         }
-        $template->image = $imagestr;
+        $template->thumburl = $product->get_thumb_url();
 
         $template->name = format_string($product->name);
         $template->code = $product->code;
@@ -548,10 +562,21 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->showname = $product->showsnameinset;
         }
 
+        $template->shortdescription = false;
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
             $template->description = format_text($product->description);
+
+            $cutoff = $config->shortdescriptionthreshold;
+            if ($product->issetpart) {
+                $cutoff = floor($cutoff / 2);
+            }
+            if (core_text::strlen($product->description) > $cutoff) {
+                $template->rarrowpix = $OUTPUT->pix_url('rarrow', 'local_shop');
+                $template->readmorestr = get_string('readmore', 'local_shop');
+                $template->shortdescription = true;
+            }
         }
         if (!$product->available) {
             $template->notavailablestr = get_string('notavailable', 'local_shop');
@@ -599,30 +624,62 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
+        if ($astemplate) {
+            return $template;
+        }
         return $this->output->render_from_template('local_shop/front_product_block', $template);
     }
 
+    /**
+     * Prints a product set on front shop
+     * @param objectref &$set
+     */
     public function product_set(&$set) {
+        global $OUTPUT;
+
+        $config = get_config('local_shop');
 
         $template = new StdClass;
 
         $template->name = format_string($set->name);
-        $template->description = format_text($set->description);
+        if ($set->description) {
+            $set->description = file_rewrite_pluginfile_urls($set->description, 'pluginfile.php', $this->context->id, 'local_shop',
+                                               'catalogitemdescription', $set->id);
+            $template->description = format_text($set->description);
+            $cutoff = $config->shortdescriptionthreshold;
+            if (core_text::strlen($set->description) > $cutoff) {
+                $template->rarrowpix = $OUTPUT->pix_url('rarrow', 'local_shop');
+                $template->readmorestr = get_string('readmore', 'local_shop');
+                $template->shortdescription = true;
+            }
+        }
+
+        $image = $set->get_image_url();
+        if ($image) {
+            $template->image = '<a class="fancybox" rel="group" href="'.$image.'"><img src="'.$set->get_thumb_url().'"></a>';
+        } else {
+            $template->image = '<img src="'.$set->get_thumb_url().'">';
+        }
 
         foreach ($set->elements as $element) {
-            $elementtpl = new StdClass;
             $element->check_availability();
             $element->noorder = false; // Bundle can only be purchased as a group.
+            $element->ispart = true; // Reduced title.
             $element->issetpart = true; // Reduced title.
-            $elementtpl->element = $this->product_block($element);
-            $template->elements[] = $elementtpl;
+            $template->elements[] = $this->product_block($element, true);
         }
 
         return $this->output->render_from_template('local_shop/front_product_set', $template);
     }
 
+    /**
+     * Prints a product bundle on front shop
+     * @param objectref &$set
+     */
     public function product_bundle(&$bundle) {
-        global $CFG;
+        global $CFG, $OUTPUT;
+
+        $config = get_config('local_shop');
 
         $template = new StdClass;
 
@@ -644,6 +701,13 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $template->hasdescription = true;
                 $template->description = format_text($bundle->description);
             }
+            $cutoff = $config->shortdescriptionthreshold;
+            if (core_text::strlen($bundle->description) > $cutoff) {
+                // $template->rarrowpix = $OUTPUT->pix_url('rarrow', 'local_shop');
+                $template->shorthandlepixurl = $OUTPUT->pix_url('ellipsisopen', 'local_shop');
+                $template->readmorestr = get_string('readmore', 'local_shop');
+                $template->shortdescription = true;
+            }
         }
 
         if ($bundle->has_leaflet()) {
@@ -656,12 +720,12 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->currency = $bundle->currency;
 
         foreach ($bundle->elements as $element) {
-            $elementtpl = new StdClass;
+            // $elementtpl = new StdClass;
             $element->check_availability();
             $element->noorder = true; // Bundle can only be purchased as a group.
             $element->isbundlepart = true; // Reduced title.
-            $elementtpl->element = $this->product_block($element);
-            $template->elements[] = $elementtpl;
+            $element->ispart = true;
+            $template->elements[] = $this->product_block($element, true); // return as template.
         }
 
         // We will use price of the bundle element.
@@ -674,7 +738,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $pricetpl = new StdClass;
                 $pricetpl->range = $range;
                 $pricetpl->price = $price;
-                $template->prices[] = $price;
+                $template->prices[] = $pricetpl;
             }
         }
 

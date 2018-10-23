@@ -141,7 +141,23 @@ class ShopObject {
                                              $fields = '*', $limitfrom = 0, $limitnum = '', $light = false) {
         global $DB;
 
-        $records = $DB->get_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
+        $params = array();
+        $sql = "SELECT ";
+        $sql .= $fields;
+        $sql .= " FROM {{$table}} ";
+        if (!empty($filter)) {
+            $sql .= " WHERE ";
+            foreach ($filter as $cond => $value) {
+                $wheres[] = "$cond = ? ";
+                $params[] = $value;
+            }
+            $sql .= implode(' AND ', $wheres);
+        }
+        if (!empty($order)) {
+            $sql .= " ORDER BY $order ";
+        }
+
+        $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
         $instances = array();
         if ($records) {
             $class = get_called_class();
@@ -163,7 +179,21 @@ class ShopObject {
                                                $limitfrom = 0, $limitnum = '') {
         global $DB;
 
-        $recordscount = $DB->count_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
+        $params = array();
+        $sql = "SELECT COUNT(*) FROM {{$table}} ";
+        if (!empty($filter)) {
+            $sql .= " WHERE ";
+            foreach ($filter as $cond => $value) {
+                $wheres[] = "$cond = ? ";
+                $params[] = $value;
+            }
+            $sql .= implode(' AND ', $wheres);
+        }
+        if (!empty($order)) {
+            $sql .= " ORDER BY $order ";
+        }
+
+        $recordscount = $DB->count_records_sql($sql, $params, $limitfrom, $limitnum);
 
         return $recordscount;
     }

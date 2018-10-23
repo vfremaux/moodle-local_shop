@@ -147,6 +147,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '<tr class="shop-'.$statusclass.'line shop-product-row" valign="top">';
             $slaveclass  = (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) ? '' : 'engraved slaved';
             $str .= '<td class="cell '.$slaveclass.'"align="center" rowspan="2">';
+            $product->thumb = $product->get_thumb_url();
             $str .= '<img src="'.$product->thumb.'" vspace="10" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.'" align="left">';
@@ -276,6 +277,10 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '<input type="checkbox" name="items[]" value="'.$set->id.'" />';
         $str .= '</td -->';
         $str .= '<td class="'.$slaveclass.'" align="center">';
+        $set->thumb = $set->get_thumb_url(true);
+        if (empty($set->thumb)) {
+            $set->thumb = $OUTPUT->pix_url('productset', 'local_shop');
+        }
         $str .= '<img src="'.$set->thumb.'" vspace="10" border="0" height="50">';
         $str .= '</td>';
         $str .= '<td class="name '.$slaveclass.'">';
@@ -289,7 +294,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         if (!$this->thecatalog->isslave || (@$set->masterrecord == 0)) {
             // We cannot edit master records ghosts from the slave catalog.
-            $editseturl = new moodle_url('/local/shop/products/edit_set.php', array('setid' => $set->id));
+            $editseturl = new moodle_url('/local/shop/products/edit_set.php', array('itemid' => $set->id));
             $pixurl = $OUTPUT->pix_url('t/edit');
             $str .= '<a href="'.$editseturl.'"><img src="'.$pixurl.'" title="'.get_string('editset', 'local_shop').'"></a>';
 
@@ -350,7 +355,11 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '<input type="checkbox" name="items[]" value="'.$bundle->id.'" />';
         $str .= '</td -->';
         $str .= '<td class="'.((@$bundle->masterrecord == 0) ? '' : 'engraved').' thumb" rowspan="2" align="center">';
-        $str .= '<img src="'.$OUTPUT->pix_url('productbundle', 'local_shop').'" height="50" />';
+        $bundlethumburl = $bundle->get_thumb_url(true);
+        if (empty($bundlethumburl)) {
+            $bundlethumburl = $OUTPUT->pix_url('productbundle', 'local_shop');
+        }
+        $str .= '<img src="'.$bundlethumburl.'" height="50" />';
         $str .= '</td>';
         $str .= '<td class="code '.$slaveclass.'">';
         $str .= '<b>'.$bundle->code.'</b><br/>';
@@ -371,6 +380,9 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td class="status '.$slaveclass.'" align="center">';
         $str .= get_string($bundle->status, 'local_shop');
+        $str .= '</td>';
+        $str .= '<td class="maxdeliveryquant '.$slaveclass.'" align="center">';
+        $str .= $bundle->maxdeliveryquant;
         $str .= '</td>';
         $str .= '<td class="sold '.$slaveclass.'" align="center">';
         $str .= $bundle->sold;
@@ -394,14 +406,14 @@ class shop_products_renderer extends local_shop_base_renderer {
 
             $params = array('view' => 'viewAllProducts', 'what' => 'unlinkset', 'itemid' => $bundle->id);
             $viewurl = new moodle_url('/local/shop/products/view.php', $params);
-            $linklbl = get_string('deletebundle', 'local_shop');
-            $pixurl = $OUTPUT->pix_url('t/delete');
+            $linklbl = get_string('unlinkcontent', 'local_shop');
+            $pixurl = $OUTPUT->pix_url('unlink', 'local_shop');
             $str .= '&nbsp;<a href="'.$viewurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
 
             $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $bundle->id);
             $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
-            $linklbl = get_string('deletealllinkedproducts', 'local_shop');
-            $pixurl = $OUTPUT->pix_url('unlink', 'local_shop');
+            $linklbl = get_string('deletebundle', 'local_shop');
+            $pixurl = $OUTPUT->pix_url('t/delete');
             $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$pixurl.'" title="'.$linklbl.'" /></a>';
         }
 
@@ -539,8 +551,8 @@ class shop_products_renderer extends local_shop_base_renderer {
             $row[] = '<img class="thumb" src="'.$bundleelm->get_thumb_url().'" height="50">';
             $row[] = $bundleelm->code;
             $row[] = $bundleelm->name;
-            $row[] = sprintf("%.2f", round($bundleelm->price1, 2)).'<br/>('.$bundleelm->taxcode.')';
-            $row[] = sprintf("%.2f", round($bundleelm->TTCprice, 2));
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->price1, 2)).'<br/>('.$bundleelm->taxcode.')</span>';
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->TTCprice, 2)).'</span>';
             $row[] = get_string($bundleelm->status, 'local_shop');
 
             $commands = '';

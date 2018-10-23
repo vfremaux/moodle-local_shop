@@ -22,16 +22,31 @@
 
 }}
 <!-- productblock -->
-<a name="{{code}}"></a>
 <div class="shop-article {{subelementclass}}">
 
-    <div class="shop-front-productpix">{{{image}}}</div>
+    <div class="shop-front-productpix">
+    {{#hasimage}}
+        <a class="fancybox" rel="group" href="{{{imageurl}}}"><img class="{{subelementclass}}" src="{{{thumburl}}}"></a>
+    {{/hasimage}}
+    {{^hasimage}}
+        <img class="{{subelementclass}}" src="{{{thumburl}}}">
+    {{/hasimage}}
+    </div>
 
     <div class="shop-front-productdef">
+        <a name="{{code}}"></a>
         {{#isbundlepart}}
-            <h3 class="shop-front-partof">{{name}}</h3>
-            <div class="shop-front-description">{{{description}}}</div>
+            <h3 class="shop-front-partof">{{{name}}}</h3>
+            <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+                {{{description}}}
+            </div>
+            {{#shortdescription}}
+            <div class="shop-front-description-toggle">
+                <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
+            </div>
+            {{/shortdescription}}
         {{/isbundlepart}}
+
         {{^isbundlepart}}
             {{#showname}}
             {{^issetpart}}
@@ -42,7 +57,14 @@
             {{/issetpart}}
             {{/showname}}
             {{#showdescription}}
-            <div class="shop-front-description">{{{description}}}</div>
+            <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+                {{{description}}}
+            </div>
+            {{#shortdescription}}
+            <div class="shop-front-description-toggle">
+                <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
+            </div>
+            {{/shortdescription}}
             {{/showdescription}}
             {{#notavailable}}
             <div class="shop-not-available">{{notavailable}}</div>
@@ -58,20 +80,20 @@
             <div class="shop-front-refblock">
                 <div class="shop-front-ref">{{refstr}} : {{{code}}}</div>
 
-                {{^pricelist}}
-                <div class="shop-front-label">{{puttcstr}}</div>
-                <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
-                {{/pricelist}}
-                {{#pricelist}}
-
                 <div class="shop-front-pricelist">
+                    {{^pricelist}}
                     <div class="shop-front-label">{{puttcstr}}</div>
-                    {{#prices}}
-                    <div class="shop-front-pricerange">{{range}} : </div>
                     <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
-                    {{/prices}}
+                    {{/pricelist}}
+                    {{#pricelist}}
+
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                        {{#prices}}
+                        <div class="shop-front-pricerange">{{range}} : </div>
+                        <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                        {{/prices}}
+                    {{/pricelist}}
                 </div>
-                {{/pricelist}}
 
                 {{#available}}
                 <div class="shop-front-order">
@@ -92,7 +114,7 @@
                 {{/available}}
             </div>
             {{/canorder}}
-        </div>
+
         {{/isbundlepart}}
     </div>
 </div>

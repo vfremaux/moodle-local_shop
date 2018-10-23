@@ -52,6 +52,7 @@ class Category extends ShopObject {
             $this->record->name = get_string('newcategorylabel', 'local_shop');
             $this->record->description;
             $this->record->descriptionformat = FORMAT_HTML;
+            $this->record->visible = true;
         }
     }
 

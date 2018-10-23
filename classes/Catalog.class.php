@@ -219,7 +219,7 @@ class Catalog extends ShopObject {
                    WHERE
                       ci.catalogid = ? AND
                       ci.categoryid = ? AND
-                      ci.status IN ('AVAILABLE','PROVIDING') AND
+                      (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
                       ci.setid = 0
                       $isloggedinclause
                    ORDER BY
@@ -252,7 +252,7 @@ class Catalog extends ShopObject {
                WHERE
                   catalogid = ? AND
                   $categoryclause
-                  ci.status IN ('AVAILABLE','PROVIDING') AND
+                  (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
                   setid = 0
                   $isloggedinclause
                ORDER BY
@@ -294,14 +294,14 @@ class Catalog extends ShopObject {
                             {local_shop_catalogitem} as cis
                           WHERE
                             ci.setid = cis.id AND
-                            cis.code = '{$ci->code}' AND
-                            ci.status IN ('AVAILABLE','PROVIDING') AND
-                            ci.catalogid = '{$this->groupid}'
+                            cis.code = ? AND
+                            (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
+                            ci.catalogid = ?
                             $isloggedinclause
                           ORDER BY
                             ci.shortname
                         ";
-                        $catalogitems = $DB->get_records_sql($sql);
+                        $catalogitems = $DB->get_records_sql($sql, array($ci->code, $this->groupid));
                         foreach ($catalogitems as $cirec) {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
@@ -318,15 +318,15 @@ class Catalog extends ShopObject {
                       FROM
                         {local_shop_catalogitem} as ci
                       WHERE
-                        ci.setid = '{$ci->id}' AND
-                        ci.status IN ('AVAILABLE','PROVIDING') AND
-                        ci.catalogid = '{$this->id}'
+                        ci.setid = ? AND
+                        (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
+                        ci.catalogid = ?
                         $isloggedinclause
                          ORDER BY
                         ci.shortname
                     ";
 
-                    if ($catalogitems = $DB->get_records_sql($sql)) {
+                    if ($catalogitems = $DB->get_records_sql($sql, array($ci->id, $this->id))) {
                         foreach ($catalogitems as $cirec) {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
@@ -683,7 +683,7 @@ class Catalog extends ShopObject {
             SELECT
                ci.code as code,
                ci.*,
-               IF(t.id IS NULL, 0, t.ratio) as tax,
+               CASE WHEN t.id IS NULL THEN 0 ELSE t.ratio END as tax,
                $masterrecords as masterrecord
             FROM
                {local_shop_catalogitem} as ci

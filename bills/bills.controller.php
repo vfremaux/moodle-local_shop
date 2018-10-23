@@ -114,6 +114,12 @@ class bill_controller {
             case 'edit':
                 // Let data come from $data attributes.
                 break;
+
+            case 'switchfullon':
+                break;
+
+            case 'switchfulloff':
+                break;
         }
 
         $this->received = true;
@@ -160,7 +166,7 @@ class bill_controller {
 
         if ($cmd == 'changestate') {
 
-            $bill = new Bill($this->data->billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill = new Bill($this->data->billid, true, $null, $null, $null); // Get a lightweight version.
             $bill->status = $this->data->status;
             $bill->save();
         }
@@ -173,19 +179,19 @@ class bill_controller {
         }
 
         if ($cmd == 'restoretax') {
-            $bill = new Bill($this->data->billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill = new Bill($this->data->billid, true, $null, $null, $null); // Get a lightweight version.
             $bill->ignoretax = 0;
             $bill->save();
         }
 
         if ($cmd == 'recalculate') {
-            $bill = new Bill($this->data->billid, $null, $null, $null, false); // Get a lightweight version.
+            $bill = new Bill($this->data->billid, false, $null, $null, $null); // Get a lightweight version.
             $bill->recalculate();
         }
 
         // Generate bill code ************************* **.
         if ($cmd == 'generatecode') {
-            $bill = new Bill($this->data->billid, $null, $null, $null, true); // Get a lightweight version.
+            $bill = new Bill($this->data->billid, true, $null, $null, $null); // Get a lightweight version.
             $bill->transactionid = md5(session_id() . time());
             $bill->save(true);
         }
@@ -194,27 +200,21 @@ class bill_controller {
         /* Probably obsolete, calls undefined functions */
         if ($cmd == 'deleteitems') {
             $items = required_param('items', PARAM_INT);
-            $itemlist = str_replace(',', "','", $items);
+            $itemarr = explode(',', $items);
+            list($insql, $inparams) = $DB->get_in_or_equal($itemarr, SQL_PARAMS_QM, 'param', false);
 
-            // Fetches item to reorder (above the smaller deleted ordering).
-            $sql = "
-                SELECT
-                    id, ordering as ordering
-                FROM
-                    {local_shop_billitem}
-                WHERE
-                    billid = '$billid' AND
+            // Fetches items to reorder (above the smaller deleted ordering).
+            $select = "
+                    billid = ? AND
                     ordering >= MIN($items) AND
-                    ordering NOT IN ($items)
-                ORDER BY
-                    ordering ASC
+                    ordering $insql
             ";
-            if ($moveditems = $DB->get_records_sql($sql)) {
+            if ($moveditems = $DB->get_records_select('local_shop_billitem', $select, array_merge(array($billid), $inparams), 'ordering', 'id,ordering')) {
                 $minordering = $moveditems[0]->ordering; // Catch the min.
             }
 
             // Delete other records.
-            $DB->delete_records_select('local_shop_billitem', " id IN ($itemlist) ");
+            $DB->delete_records_select('local_shop_billitem', " id $insql ", $inparams);
 
             // Reorder records.
             $i = $minordering;
@@ -412,6 +412,14 @@ class bill_controller {
                 }
                 $billitem->save();
             }
+        }
+
+        if ($cmd == 'switchfullon') {
+            set_user_preference('local_shop_bills_fullview', 1);
+        }
+
+        if ($cmd == 'switchfulloff') {
+            set_user_preference('local_shop_bills_fullview', null);
         }
     }
 }

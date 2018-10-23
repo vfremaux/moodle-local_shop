@@ -49,6 +49,8 @@ $string['deadline'] = 'Deadline';
 $string['editbillitem'] = 'Edit bill item';
 $string['expectedpaiement'] = 'Expected payment date';
 $string['exportasxls'] = 'Export as XLS';
+$string['fullviewon'] = 'Full view';
+$string['fullviewoff'] = 'Short view';
 $string['generateacode'] = 'Generate a code';
 $string['goto'] = 'Go to:';
 $string['lettering'] = 'Cross-reference coding';
@@ -78,9 +80,9 @@ $string['worktype'] = 'Worktype';
 $string['formula_creation_help'] = '
 # Calculating tax using the tax formula 
 
-The user must enter the formula used to calculate the ìtax includedî price of an article
+The user must enter the formula used to calculate the ‚Äútax included‚Äù price of an article
 
-This formula must integrate variables of the ìtax includedî price ($TTC), the ìtax not includedî price ($HT), and the ìtax ratioî ($TR)
+This formula must integrate variables of the ‚Äútax included‚Äù price ($TTC), the ‚Äútax not included‚Äù price ($HT), and the ‚Äútax ratio‚Äù ($TR)
 
 Example: $TTC = $HT + ($HT*$TR/100)';
 
@@ -519,7 +521,7 @@ Orders and bills have a life cycle determined by a status and transition engine.
 Possible statuses include:
 
 In progress (IN PROGRESS)
-:   When a back office operator manually creates an order, it takes the ìIn progressî status.
+:   When a back office operator manually creates an order, it takes the ‚ÄúIn progress‚Äù status.
 
 Placed (PLACED)
 :   Orders transmitted by online customers are placed for payment but not confirmed.
