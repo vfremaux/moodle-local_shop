@@ -51,7 +51,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
     }
 
     // Pre pay information always comme from shopping session.
-    public function produce_prepay(&$data) {
+    public function produce_prepay(&$data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
 
@@ -69,7 +69,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             }
         }
 
-        $productionfeedback = shop_register_customer($data);
+        $productionfeedback = shop_register_customer($data, $errorstatus);
 
         return $productionfeedback;
     }

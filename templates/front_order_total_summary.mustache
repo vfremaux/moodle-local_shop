@@ -1,0 +1,67 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_order_total_summary
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_order_total_summary -->
+<table width="100%">
+
+    <tr valign="top">
+        <td align="left" class="shop-ordercell">
+            <b>{{#str}}ordertotal, local_shop{{/str}}</b> :
+        </td>
+        <td align="left" class="shop-ordercell">
+            {{{amount}}}&nbsp;{{{currency}}}
+            {{#str}}for, local_shop{{/str}}
+            <span id="object_count_span"> {{totalobjects}}&nbsp;</span>
+            {{#str}}objects, local_shop{{/str}}
+        </td>
+    </tr>
+
+    {{#discountrate}}
+    <tr>
+        <td colspan="2">
+            {{{reason}}} : <b>{{discountrate}} %</b>.<br/>
+        </td>
+    </tr>
+
+    <tr valign="bottom">
+        <td class="shop-finalcount">
+            <b>{{#str}}orderingtotal, local_shop{{/str}}</b>
+        </td>
+        <td align="left" id="shop-discounted-span" class="shop-finalcount">
+            {{{discounted}}}&nbsp;{{{currency}}}
+        </td>
+
+    </tr>
+    {{/discountrate}}
+
+    {{#useshipping}}
+    <tr>
+        <td align="left" colspan="2">
+            <span class="smalltext">(*){{#str}}shippingadded, local_shop{{/str}}</span><br/>
+            <input type="checkbox" name="shipping" value="1" shipchecked /> {{#str}}askforshipping, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/useshipping}}
+
+</table>
+<!-- /local_shop/front_order_total_summary -->

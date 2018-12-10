@@ -15,26 +15,29 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/bills_options
+    @template local_shop/front_cart_summary
 
     Classes required for JS:
     * none
 
 }}
-<!-- local_shop/bills_options -->
-<div class="shop-bills-tools">
-    <div class="shop-bills-options">
-        {{{currencyselect}}}
-        {{{shopselect}}}
-        {{{yearselect}}}
-    </div>
+<!-- local_shop/front_cart_summary -->
+<table width="100%" id="shop-cart-summary">
+    {{#catalogitem}}
+    <tr>
+        <td class="short-order-name">
+            <span title="{{{name}}}" alt="{{{name}}}">{{{code}}}</span>
+        </td>
+        <td class="short-order-quantity">
+            {{q}}
+        </td>
+    </tr>
 
-    <div class="shop-bills-searchlink">
-        <a href="{{{searchurl}}}"><input type="button" value="{{{searchinbillsstr}}}" /></a>
-    </div>
-
-    <div class="shop-bills-switchprefs">
-        <a href="{{{switchfullviewurl}}}"><input type="button" class="btn" value="{{switchviewstr}}" /></a>
-    </div>
-</div>
-<!-- /local_shop/bills_options -->
+    <tr>
+        <td colspan="2" class="short-order-summary">
+            {{{desc}}}
+        </td>
+    </tr>
+}
+</table>
+<!-- /local_shop/front_cart_summary -->

@@ -500,7 +500,10 @@ class Catalog extends ShopObject {
         global $DB;
 
         $params = array('catalogid' => $this->id, 'shortname' => $shortname);
-        return new CatalogItem($DB->get_record('local_shop_catalogitem', $params));
+        $record = $DB->get_record('local_shop_catalogitem', $params);
+        $catalogitem = new CatalogItem($record);
+
+        return $catalogitem;
     }
 
     /**
