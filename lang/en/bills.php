@@ -78,7 +78,7 @@ $string['pickuser'] = 'Choose a customer or a user account:';
 $string['worktype'] = 'Worktype';
 
 $string['formula_creation_help'] = '
-# Calculating tax using the tax formula 
+# Calculating tax using the tax formula
 
 The user must enter the formula used to calculate the “tax included” price of an article
 

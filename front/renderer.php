@@ -1548,7 +1548,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
         $template->currency = $this->theshop->get_currency('symbol');
 
-
         $template->transid = $SESSION->shoppingcart->transid;
         $template->untaxedtotal = sprintf('%0.2f', round($shoppingcart->untaxedtotal, 2));
         if (!empty($shoppingcart->taxes)) {

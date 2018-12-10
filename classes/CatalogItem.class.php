@@ -114,9 +114,9 @@ class CatalogItem extends ShopObject {
     /**
      * Returns the reference catalog for this item.
      */
-     public function get_catalog() {
+    public function get_catalog() {
         return $this->thecatalog;
-     }
+    }
 
     /**
      * get the accurate price against quantity ranges

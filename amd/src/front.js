@@ -1,4 +1,7 @@
-
+/*
+ *
+ */
+// jshint unused:false, undef:false
 
 define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
