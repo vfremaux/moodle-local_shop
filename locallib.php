@@ -794,7 +794,7 @@ function shop_list_reorder($selectcontext, $table) {
         $ix = 1;
         foreach ($allrecs as $rec) {
             $rec->sortorder = $ix;
-            $DB->update_record($table, $rec);
+            $DB->update_record($rec);
             $ix++;
         }
     }

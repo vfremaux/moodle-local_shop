@@ -50,7 +50,7 @@ class BillItem extends ShopObject {
     protected $customerdata;
 
     /**
-     *
+     * 
      */
     protected $nosave;
 

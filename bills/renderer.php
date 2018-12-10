@@ -489,7 +489,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot;
             $jshandler .= '\', \''.$this->theshop->id.'\', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" valign="center" />';
+            $str .= $OUTPUT->pix_icon('t/delete', get_string('deleteone', 'local_shop'));
             $str .= '</a>';
         }
 
@@ -627,14 +627,12 @@ class shop_bills_renderer extends local_shop_base_renderer {
                             'relocated' => $billitem->id,
                             'z' => $billitem->ordering);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-            $pixurl = $OUTPUT->pix_url('t/move');
-            $pix = '<img src="'.$pixurl.'" border="0" alt="'.get_string('move').'">';
+            $pix = $OUTPUT->pix_icon('t/move', get_string('move'));
             $str .= '<a href="'.$linkurl.'" title="'.$movestr.'">'.$pix.'</a>';
 
             $params = array('id' => $this->theshop->id, 'billid' => $billitem->bill->id, 'billitemid' => $billitem->id);
             $linkurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
-            $pixurl = $OUTPUT->pix_url('i/edit');
-            $pix = '<img src="'.$pixurl.'" border="0" alt="'.get_string('edit').'">';
+            $pix = $OUTPUT->pix_icon('i/edit', get_string('edit'));
             $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$editstr.'">'.$pix.'</a>';
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
@@ -643,8 +641,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
                             'z' => $billitem->ordering,
                             'billid' => $billitem->bill->id);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-            $pixurl = $OUTPUT->pix_url('t/delete');
-            $pix = '<img src="'.$pixurl.'" alt="'.get_string('delete').'">';
+            $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$deletestr.'">'.$pix.'</a>';
         }
         $str .= '</div>';
@@ -680,7 +677,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $str .= '<td class="shop-ordercell">';
         $jshandler = 'Javascript:ajax_clear_product(\''.$CFG->wwwroot.'\', \''.$this->theshop->id.'\', \''.$ci->shortname.'\')';
         $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
-        $str .= '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+        $str .= $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core');
         $str .= '</a>';
         $jshandler = 'ajax_update_product(\''.$ci->shortname.'\', this)';
         $str .= '<input type="text"
@@ -952,7 +949,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $str .= '<tr class="billListTitle">';
         $str .= '<td valign="top" style="padding : 2px" align="left">';
         $str .= '<a href="Javascript:flowcontrol_toggle(\''.$CFG->wwwroot.'\')">';
-        $str .= '<img name="flowcontrol_button" src="'.$OUTPUT->pix_url('t/switch_plus').'" /></a>';
+        $str .= '<img name="flowcontrol_button" src="'.$OUTPUT->image_url('t/switch_plus').'" /></a>';
         $str .= '</td>';
         $str .= '<td valign="top" style="padding : 2px" align="left">';
         $str .= get_string('billstates', 'local_shop');
@@ -1037,7 +1034,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $str .= '<tr class="billRow">';
         $str .= '<td>';
-        $pixurl = $OUTPUT->pix_url('relocatebox', 'local_shop');
+        $pixurl = $OUTPUT->image_url('relocatebox', 'local_shop');
         $str .= '<a href="'.$relocateurl.'"><img src="'.$pixurl.'" class="shop-relocate-box" ></a>';
         $str .= '</td>';
         $str .= '</tr>';
@@ -1079,9 +1076,9 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $params = array('type' => 'bill', 'billid' => $bill->id, 'id' => $this->theshop->id);
         $attachurl = new moodle_url('/local/shop/bills/attachto.php', $params);
         $str .= '<div class="shop-attach-a-file">';
-        $pixurl = $OUTPUT->pix_url('attach', 'local_shop');
         $label = get_string('attach', 'local_shop');
-        $str .= '<a href="'.$attachurl.'"><img src="'.$pixurl.'" title="'.$label.'"/></a>';
+        $pixurl = $OUTPUT->pix_icon('attach', $label, 'local_shop');
+        $str .= '<a href="'.$attachurl.'" title="'.$label.'">'.$pix.'</a>';
         $str .= '</div>';
 
         return $str;
@@ -1095,9 +1092,9 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $pathinfo = pathinfo($file->get_filename());
         $type = strtoupper($pathinfo['extension']);
         $filename = $pathinfo['basename'];
-        $fileicon = $OUTPUT->pix_url("/f/$type");
+        $fileicon = $OUTPUT->image_url("/f/$type");
         if (!file_exists($fileicon)) {
-            $fileicon = $OUTPUT->pix_url('/f/unkonwn');
+            $fileicon = $OUTPUT->image_url('/f/unkonwn');
         }
 
         $filename = $file->get_filename();
@@ -1122,8 +1119,8 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $params = array('id' => $bill->id, 'what' => 'unattach', 'type' => $portlet->attachementtype,
                         'file' => $filename);
         $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-        $pixurl = $OUTPUT->pix_url('t/delete');
-        $str .= '<a href="'.$linkurl.'"><img src="'.$pixurl.'" border="0" alt="'.get_string('delete') .'"></a>';
+        $pixurl = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core');
+        $str .= '<a href="'.$linkurl.'">'.$pix.'</a>';
         $str .= '</td>';
 
         $str .= '</tr>';

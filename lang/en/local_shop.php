@@ -499,6 +499,91 @@ $string['userdiscountagreed3'] = 'User discount lvl 3';
 $string['userenrol'] = 'User enrol';
 $string['vendorinfo'] = 'Information about vendor\'s identity';
 
+$string['privacy:metadata:shop_customer:firstname'] = 'The customer\'s first name';
+$string['privacy:metadata:shop_customer:lastname'] = 'The customer\'s last name';
+$string['privacy:metadata:shop_customer:hasaccount'] = 'If this customer identity has a moodle account';
+$string['privacy:metadata:shop_customer:email'] = 'The customer\'s email';
+$string['privacy:metadata:shop_customer:address'] = 'the customer\'s physical address';
+$string['privacy:metadata:shop_customer:zip'] = 'The customer\'s zip code';
+$string['privacy:metadata:shop_customer:city'] = 'The customer\'s city';
+$string['privacy:metadata:shop_customer:country'] = 'the customer\'s country';
+$string['privacy:metadata:shop_customer:organisation'] = 'The customer\'s organisation he is purchasing for';
+$string['privacy:metadata:shop_customer:invoiceinfo'] = 'Several invoicing info such as the billing address';
+$string['privacy:metadata:shop_customer:timecreated'] = 'When this customer record was created';
+$string['privacy:metadata:shop_customer'] = 'Personal information about a customer';
+
+$string['privacy:metadata:customer_ownership:userid'] = 'The owner identifier';
+$string['privacy:metadata:customer_ownership:customerid'] = 'The customer identifier';
+$string['privacy:metadata:customer_ownership'] = 'Information about who the customer is on behalf of';
+
+$string['privacy:metadata:shop_bill:shopid'] = 'The identifier of the shop instance where the purchase was done';
+$string['privacy:metadata:shop_bill:userid'] = 'The moodle user id owning the bill';
+$string['privacy:metadata:shop_bill:idnumber'] = 'The external identification number (accounting system compatible)';
+$string['privacy:metadata:shop_bill:ordering'] = 'The order number of the bill';
+$string['privacy:metadata:shop_bill:customerid'] = 'The identifier of the customer record that has purchased';
+$string['privacy:metadata:shop_bill:invoiceinfo'] = 'The invoicing information givin by the customer at the instant of purchase';
+$string['privacy:metadata:shop_bill:title'] = 'The title of the invoice';
+$string['privacy:metadata:shop_bill:worktype'] = 'The type of production required';
+$string['privacy:metadata:shop_bill:status'] = 'The statefull state of the purchase';
+$string['privacy:metadata:shop_bill:remotestatus'] = 'The remote payement system status, when available';
+$string['privacy:metadata:shop_bill:emissiondate'] = 'The date of purchase';
+$string['privacy:metadata:shop_bill:lastactiondate'] = 'The date of the last operation on the bill';
+$string['privacy:metadata:shop_bill:assignedto'] = 'The id of an internal moodle user the bill is assigned to review or monitor';
+$string['privacy:metadata:shop_bill:timetodo'] = 'An indication of the work time needed to build the products (not used)';
+$string['privacy:metadata:shop_bill:untaxedamount'] = 'The total amount without taxes';
+$string['privacy:metadata:shop_bill:taxes'] = 'The total of dued taxes';
+$string['privacy:metadata:shop_bill:amount'] = 'The total amount tax included';
+$string['privacy:metadata:shop_bill:currency'] = 'The current currency of the invoice';
+$string['privacy:metadata:shop_bill:convertedamount'] = 'The converted amount (seller currency)';
+$string['privacy:metadata:shop_bill:transactionid'] = 'The unique transaction id';
+$string['privacy:metadata:shop_bill:onlinetransactionid'] = 'The remote payment system transaction id if available';
+$string['privacy:metadata:shop_bill:expectedpaiment'] = 'The amount to be paied (not yet used)';
+$string['privacy:metadata:shop_bill:paiedamount'] = 'The amount having been payed (not yet used)';
+$string['privacy:metadata:shop_bill:paymode'] = 'The payment method';
+$string['privacy:metadata:shop_bill:ignoretax'] = 'If the current purchase is free of tax or not';
+$string['privacy:metadata:shop_bill:productiondata'] = 'The data collected to build the products';
+$string['privacy:metadata:shop_bill:paymentfee'] = 'An amount of paied back fee the seller need to pay to the payment system';
+$string['privacy:metadata:shop_bill:productionfeedback'] = 'The feedback received from production process';
+$string['privacy:metadata:shop_bill'] = 'All the information about a purchase';
+
+$string['privacy:metadata:shop_bill_item:billid'] = 'The purchase id the bill item belongs to';
+$string['privacy:metadata:shop_bill_item:ordering'] = 'The order of the item in the bill';
+$string['privacy:metadata:shop_bill_item:type'] = 'The type of the item';
+$string['privacy:metadata:shop_bill_item:itemcode'] = 'The catalog item code';
+$string['privacy:metadata:shop_bill_item:catalogitem'] = 'The catalog item id';
+$string['privacy:metadata:shop_bill_item:abstract'] = 'The short abstract of the product at the instant of purchase';
+$string['privacy:metadata:shop_bill_item:description'] = 'The description of the product at the instant of purchase';
+$string['privacy:metadata:shop_bill_item:delay'] = 'The delay to produce or deliver (not used)';
+$string['privacy:metadata:shop_bill_item:unitcost'] = 'The unit cost of the item at the instant of purchase';
+$string['privacy:metadata:shop_bill_item:quantity'] = 'the ordered quantity';
+$string['privacy:metadata:shop_bill_item:totalprice'] = 'The total calculated price';
+$string['privacy:metadata:shop_bill_item:taxcode'] = 'The id of the applied tax';
+$string['privacy:metadata:shop_bill_item:bundleid'] = 'The bundle the item belongs to';
+$string['privacy:metadata:shop_bill_item:customerdata'] = 'The information that was asked to the customer to tune the product';
+$string['privacy:metadata:shop_bill_item:productiondata'] = 'The information that was collected by the purchase process on build';
+$string['privacy:metadata:shop_bill_item'] = 'Information about individual elements of a purchase';
+
+$string['privacy:metadata:shop_product:customerid'] = 'The identifier of the custommer account';
+$string['privacy:metadata:shop_product:catalogitemid'] = 'The reference to the catalog definition of the product';
+$string['privacy:metadata:shop_product:initialbillitemid'] = 'the last bill item that updated the product';
+$string['privacy:metadata:shop_product:contexttype'] = 'The moodle context level the product is related to';
+$string['privacy:metadata:shop_product:instanceid'] = 'The moodle internal instance id the product is related to';
+$string['privacy:metadata:shop_product:startdate'] = 'The start date of the product';
+$string['privacy:metadata:shop_product:enddate'] = 'The peremption date of the product';
+$string['privacy:metadata:shop_product:reference'] = 'A unique product reference identifier';
+$string['privacy:metadata:shop_product:productiondata'] = 'Some metadata giving an image of how was built the product';
+$string['privacy:metadata:shop_product:extradata'] = 'Some additional information the product has';
+$string['privacy:metadata:shop_product:deleted'] = 'If the product has been deleted';
+$string['privacy:metadata:shop_product'] = 'Information about product instances owned by the customer';
+
+$string['privacy:metadata:shop_product_event:productid'] = 'The product instance the event is related to';
+$string['privacy:metadata:shop_product_event:billitemid'] = 'The bill item the event relates to';
+$string['privacy:metadata:shop_product_event:eventtype'] = 'Type of event';
+$string['privacy:metadata:shop_product_event:eventdata'] = 'Metadata related to the event';
+$string['privacy:metadata:shop_product_event:datecreated'] = 'When the event occured';
+$string['privacy:metadata:shop_product_event'] = 'Life cycle event related to a purchased product instance';
+
+
 $string['noproducts'] = "
 <h3>Empty catalog</h3>
 <p>The product line is empty.

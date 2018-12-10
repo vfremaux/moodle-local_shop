@@ -38,7 +38,6 @@ $customerid = optional_param('customerid', 'ALL', PARAM_TEXT);
 $cur = optional_param('cur', 'EUR', PARAM_TEXT);
 $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
 $shopid = optional_param('shopid', 0, PARAM_INT);
-$offset = optional_param('offset', 0, PARAM_INT);
 
 if ($shopid) {
     $filter['shopid'] = $shopid;

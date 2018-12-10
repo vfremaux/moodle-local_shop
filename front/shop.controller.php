@@ -35,7 +35,7 @@ class shop_controller extends front_controller_base {
      * In this case, all the data resides already in session.
      * there is nothing to get from a query.
      *
-     * Note : always ensure the productname is passed to lowercase to comply the
+     * Note : always ensure the productname is passed to lowercase to comply the 
      * JS product shortname.
      */
     public function receive($cmd, $data = array()) {
