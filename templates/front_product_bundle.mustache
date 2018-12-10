@@ -57,17 +57,17 @@
             </div>
 
             <div class="shop-front-pricelist">
-                <div class="shop-front-ref">{{refstr}} : {{code}}</div>
+                <div class="shop-front-ref">{{refstr}}&nbsp;: {{code}}</div>
                 {{^pricelist}}
                 <div class="shop-front-label">{{puttcstr}}</div>
-                <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
                 {{/pricelist}}
                 {{#pricelist}}
 
                 {{#prices}}
                 <div class="shop-front-label">{{puttcstr}}</div>
-                <div class="shop-front-pricerange">{{range}} : </div>
-                <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
                 {{/prices}}
                 {{/pricelist}}
             </div>
@@ -90,10 +90,12 @@
                     value = "{{buystr}}"
                     onclick = "{{{jshandleraddunit}}}" {{{disabled}}} />
 
+            </div>
+
+            <div class="shop-order-bag">
                 <div class = "shop-order-item" id="bag_{{shortname}}">
                     {{{units}}}
                 </div>
-
             </div>
         </div>
     </div>

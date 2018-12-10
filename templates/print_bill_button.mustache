@@ -15,26 +15,20 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/bills_options
+    @template local_shop/print_bill_button
 
     Classes required for JS:
     * none
 
 }}
-<!-- local_shop/bills_options -->
-<div class="shop-bills-tools">
-    <div class="shop-bills-options">
-        {{{currencyselect}}}
-        {{{shopselect}}}
-        {{{yearselect}}}
+<!-- local_shop/print_bill_button -->
+<form name="bill" action="{{{popupurl }}}" target="_blank" class="shop-inline" />
+    <input type="hidden" name="transid" value="{{transactionid}}" />
+    <input type="hidden" name="billid" value="{{billid}}">
+    <input type="hidden" name="shopid" value="{{shopid}}\">
+    <input type="hidden" name="blockid" value="{{blockid}}\">
+    <div id="shop-printable-link">
+        {{{printbillbutton}}}
     </div>
-
-    <div class="shop-bills-searchlink">
-        <a href="{{{searchurl}}}"><input type="button" value="{{{searchinbillsstr}}}" /></a>
-    </div>
-
-    <div class="shop-bills-switchprefs">
-        <a href="{{{switchfullviewurl}}}"><input type="button" class="btn" value="{{switchviewstr}}" /></a>
-    </div>
-</div>
-<!-- /local_shop/bills_options -->
+</form>
+<!-- /local_shop/print_bill_button -->

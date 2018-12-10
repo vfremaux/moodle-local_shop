@@ -1,0 +1,152 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_order_header
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/bills_bill_totals -->
+<table cellspacing="5" class="generaltable" width="100%">
+
+    <tr valign="top">
+        <th colspan="3" class="cell c0">
+            {{#str}}totals, local_shop{{/str}}
+        </th>
+    </tr>
+
+    {{#hassubtotal}}
+    <tr valign="top">';
+        <td width="40%" class="cell c0">
+            {{#str}}subtotal, local_shop{{/str}}
+        </td>
+
+        <td width="40%" class="cell c1">
+            &nbsp;
+        </td>
+
+        <td width="20%" id="final-taxed-subtotal" class="cell c2 lastcol right-align">
+            {{{finaltaxedtotal}}}&nbsp{{{currency}}}
+        </td>
+    </tr>
+    {{/hassubtotal}}
+
+    {{#discountrate}}
+    <tr valign="top">
+        <td width="40%" class="cell c0">
+            &nbsp;
+        </td>
+
+        <td width="40%" class="shop-totaltitle ratio cell c1">
+            {{#str}}discount, local_shop{{/str}}:
+        </td>
+
+        <td width="20%" id="discount-rate" class="shop-totals ratio cell c2 right-align">
+            <b>-{{discountrate}}%</b>
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="40%" class="cell c0">
+            &nbsp;
+        </td>
+
+        <td width="40%" class="shop-totaltitle cell c1">
+            {{#str}}totaldiscounted, local_shop{{/str}} :
+        </td>
+
+        <td width="20%" id="final-discounted-total" class="shop-totals cell c2 right-align">
+            {{{finaltaxedtotal}}}&nbsp;{{{currency}}}&nbsp;
+        </td>
+    </tr>
+    {{/discountrate}}
+
+    <tr valign="top">
+        <td width="40%" class="cell c0">
+            {{#str}}untaxedsubtotal, local_shop{{/str}}
+        </td>
+
+        <td width="40%" class="cell c1">
+            &nbsp;
+        </td>
+
+        <td width="20%" id="final-untaxed-total" class="cell c2 lastcol right-align">
+            {{{finaluntaxedtotal}}}&nbsp;{{{currency}}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="40%" class="cell c0 shop-taxes">
+            {{#str}}taxes, local_shop{{/str}}
+        </td>
+
+        <td width="40%" class="cell c1">
+            &nbsp;
+        </td>
+
+        <td width="20%" id="final-taxes-total" class="cell c2 lastcol shop-taxes right-align">
+            {{{finaltaxestotal}}}&nbsp;{{{currency}}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="40%" class="cell c0 shop-totaltitle topay">
+            {{{finaltotalpricestr}}}
+        </td>
+
+        <td width="40%" class="cell c1">
+            &nbsp;
+        </td>
+
+        <td width="20%" id="final-total-price" class="cell c2 shop-total topay right-align">
+            {{{finaltaxedtotal}}}&nbsp;{{{currency}}}
+        </td>
+    </tr>
+
+    {{#hasshipping}}
+    <tr valign="top">
+        <td width="40%" class="cell c0">
+            &nbsp;
+        </td>
+
+        <td width="40%" class="cell c1 shop-totaltitle">
+            {{#str}}shipping, local_shop{{/str}} :
+        </td>
+
+        <td width="20%" id="shipping-taxed-value" class="cell c2 shop-totals right-align">
+            {{{shippingtaxedvalue}}}&nbsp;{{{currency}}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="40%" class="cell c0 shop-totaltitle topay">
+            {{{finaltotalpricestr}}}
+        </td>
+
+        <td width="40%" class="cell c1">
+            &nbsp;
+        </td>
+
+        <td width="20%" id="final-shipped-taxed-total" class="cell c2 shop-total topay right-align">
+            <b>{{{finalshippedtaxedtotal}}}&nbsp;{{{currency}}}</b>
+        </td>
+    </tr>
+    {{/hasshipping}}
+
+</table>
+<!-- /local_shop/bills_bill_totals -->

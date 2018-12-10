@@ -265,6 +265,10 @@ function shop_backup_for_template($courseid, $options = array(), &$log = '') {
  * @return a username
  */
 function shop_generate_username($user) {
+    if (empty($user)) {
+        debugging("Empty user");
+        return;
+    }
     $firstname = $user->firstname;
     $lastname = $user->lastname;
 

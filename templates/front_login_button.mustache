@@ -15,26 +15,16 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/bills_options
+    @template local_shop/front_login_button
 
     Classes required for JS:
     * none
 
 }}
-<!-- local_shop/bills_options -->
-<div class="shop-bills-tools">
-    <div class="shop-bills-options">
-        {{{currencyselect}}}
-        {{{shopselect}}}
-        {{{yearselect}}}
-    </div>
-
-    <div class="shop-bills-searchlink">
-        <a href="{{{searchurl}}}"><input type="button" value="{{{searchinbillsstr}}}" /></a>
-    </div>
-
-    <div class="shop-bills-switchprefs">
-        <a href="{{{switchfullviewurl}}}"><input type="button" class="btn" value="{{switchviewstr}}" /></a>
-    </div>
+<!-- local_shop/front_login_button -->
+<div id="shop-loginbox">
+    <a href="{{{loginurl}}}">
+    <input type="button" class="shop-login-button" name="gologin" value="{{#str}}signin, local_shop{{/str}}" />
+    </a>
 </div>
-<!-- /local_shop/bills_options -->
+<!-- /local_shop/front_login_button -->

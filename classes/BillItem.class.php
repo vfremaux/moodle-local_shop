@@ -49,12 +49,18 @@ class BillItem extends ShopObject {
 
     protected $customerdata;
 
+    /**
+     * 
+     */
+    protected $nosave;
+
     public $actionparams; // Parameters decoded from handler params.
 
-    public function __construct($idorrec, $light = false, &$bill = null, $ordering = -1) {
+    public function __construct($idorrec, $light = false, &$bill = null, $ordering = -1, $nosave = false) {
         global $DB;
 
         $this->bill = $bill;
+        $this->nosave = $nosave;
 
         // Here we make some assertions to check the billitem integrity.
         parent::__construct($idorrec, self::$table);
@@ -147,6 +153,9 @@ class BillItem extends ShopObject {
                 // This gets production data from shop front end. Essentially user definitions.
                 $this->productiondata = $idorrec->productiondata;
                 // This adds a freezed copy of original handler params.
+                if (empty($this->productiondata)) {
+                    $this->productiondata = new \StdClass;
+                }
                 $this->productiondata->handlerparams = $this->catalogitem->handlerparams;
                 if (!empty($this->productiondata->handlerparams)) {
                     if (is_array($this->productiondata->handlerparams)) {
@@ -265,6 +274,10 @@ class BillItem extends ShopObject {
     }
 
     public function save() {
+        if (!empty($this->nosave)) {
+            // This can occur when faking bundle parts.
+            return;
+        }
         // to be really sure !!
         $this->record->unitcost = 0 + $this->record->unitcost;
         $this->record->quantity = 0 + $this->record->quantity;

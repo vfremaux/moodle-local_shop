@@ -59,6 +59,7 @@ $string['continue'] = 'Continue';
 $string['creditcards'] = 'Credit cards';
 $string['customer'] = 'M./Mr/Mrs ';
 $string['customerinfo'] = 'Customer information';
+$string['customerisgone'] = 'Customer is gone away. This occur when trying to respawn a production after session has gone.';
 $string['customerinformation'] = 'Your personal information';
 $string['customersupport'] = 'Customer support';
 $string['dateformaterror'] = 'Invalid date format!';

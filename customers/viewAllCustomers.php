@@ -68,4 +68,4 @@ $portlet->total = $customerscount;
 $portlet->pagesize = $config->maxitemsperpage;
 echo $mainrenderer->paging_results($portlet);
 
-echo $renderer->customer_view_links()
+echo $renderer->customer_view_links();

@@ -1,0 +1,65 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_taxes
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_taxes -->
+<table cellspacing="5" class="generaltable" width="100%">
+
+    <tr class="shop-tax" valign="top">
+        <th align="left" class="cell c0">
+            {{#str}}taxname, local_shop{{/str}}
+        </th>
+        <th align="left" class="cell c1">
+            {{#str}}taxratio, local_shop{{/str}}
+        </th>
+        <th align="right" style="text-align:right" class="cell c2 lastcoll" style="text-align:right">
+            {{#str}}taxamount, local_shop{{/str}}
+        </th>
+    </tr>
+
+    {{#taxline}}
+    <tr class="shop-tax" valign="top">
+        <td align="left" class="cell c0">
+            {{taxtitle}}
+        </td>
+        <td align="left" class="cell c1">
+            {{taxratio}}
+        </td>
+        <td align="right" style="text-align:right" class="cell c2 lastcoll">
+            {{taxamount}} {{{currency}}}
+        </td>
+    </tr>
+    {{/taxline}}
+
+    <tr valign="top">
+        <td width="40%" class="cell c0 shop-taxes">
+            <b>{{#str}}totaltaxes, local_shop{{/str}}</b>
+        </td>
+        <td width="40%" class="cell c1">
+            &nbsp;
+        </td>
+        <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol shop-taxes">
+            {{{totaltaxes}}} {{{currency}}}
+        </td>
+    </tr>
+</table>
+<!-- /local_shop/front_taxes -->

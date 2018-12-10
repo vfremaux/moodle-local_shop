@@ -107,6 +107,11 @@ class shop_controller extends front_controller_base {
                 }
                 $SESSION->shoppingcart->order[$inputkey] = $this->data->$inputkey;
             }
+            $category = optional_param('category', '', PARAM_INT);
+            $shopid = required_param('shopid', PARAM_INT);
+            $blockid = required_param('blockid', PARAM_INT);
+            $params = array('view' => 'shop', 'shopid' => $shopid, 'category' => $category, 'blockid' => $blockid);
+            redirect(new moodle_url('/local/shop/front/view.php', $params));
 
         } else if ($cmd == 'clearall') {
 

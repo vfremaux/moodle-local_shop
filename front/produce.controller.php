@@ -218,6 +218,7 @@ class production_controller extends front_controller_base {
             } else {
                 $productionfeedback = new \StdClass;
                 $productionfeedback->public = 'Completed';
+                $productionfeedback->private = 'Completed';
                 shop_aggregate_production($afullbill, $productionfeedback, $this->interactive);
             }
         }
@@ -226,8 +227,13 @@ class production_controller extends front_controller_base {
         shop_trace("[{$afullbill->transactionid}] ".'Production Controller : Transaction Complete Operations');
         if ($this->interactive && $this->ipncall) {
             mtrace("[{$afullbill->transactionid}] ".'Production Controller : Transaction Complete Operations');
+            mtrace('--- Public customer feedback ------------------');
             mtrace($productionfeedback->public);
+            mtrace('--- Private customer feedback ------------------');
             mtrace($productionfeedback->private);
+            mtrace('--- Sales admin feedback ------------------');
+            mtrace($productionfeedback->salesadmin);
+            mtrace('---------------------------------------');
         }
 
         // Notify end user.
@@ -335,7 +341,7 @@ class production_controller extends front_controller_base {
 
             $title = $SITE->shortname.' Backoffice : '.get_string('orderconfirm', 'local_shop');
 
-            if (!empty($productionfeedback->private)) {
+            if (!empty($productionfeedback->salesadmin)) {
                 $sn = str_replace('<%%PRODUCTION_DATA%%>', $productionfeedback->salesadmin, $salesnotification);
             } else {
                 $sn = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);

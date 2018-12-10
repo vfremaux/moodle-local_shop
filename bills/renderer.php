@@ -713,134 +713,46 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str = '';
-
-        $str .= '<table cellspacing="5" class="generaltable" width="100%">';
-
-        $str .= '<tr valign="top">';
-        $str .= '<th colspan="3" class="cell c0">';
-        $str .= get_string('totals', 'local_shop');
-        $str .= '</th>';
-        $str .= '</tr>';
+        $template = new StdClass;
+        $template->currency = $this->theshop->get_currency('symbol');
 
         if (!empty($bill->discount) || !empty($config->hasshipping)) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= get_string('subtotal', 'local_shop');
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="cell c2 lastcol">';
-            $str .= $bill->finaltaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->finaltaxedtotal = $bill->finaltaxedtotal;
         }
 
         if ($bill->discount != 0) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle ratio cell c1">';
-            $str .= get_string('discount', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="shop-totals ratio cell c2">';
-            $str .= '<b>-' . ($config->discountrate).'%</b>';
-            $str .= '</td>';
-            $str .= '</tr>';
-
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle cell c1">';
-            $str .= get_string('totaldiscounted', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="shop-totals cell c2">';
-            $str .= $bill->finaltaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->discountrate = $config->discountrate;
+            $template->finaltaxedtotal = $bill->finaltaxedtotal;
         }
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0">';
-        $str .= get_string('untaxedsubtotal', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" class="cell c2 lastcol">';
-        $str .= $bill->finaluntaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->finaluntaxedtotal = sprintf('%0.2f', round($bill->finaluntaxedtotal, 2));
+        $template->finaltaxestotal = sprintf('%0.2f', round((0 + @$bill->finaltaxestotal), 2));
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0 shop-taxes">';
-        $str .= get_string('taxes', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" class="cell c2 lastcol shop-taxes">';
-        $str .= (0 + @$bill->finaltaxestotal).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
         if ($bill->status == SHOP_BILL_COMPLETE || $bill->status == SHOP_BILL_SOLDOUT) {
-            $str .= '<b>'.get_string('paiedfinaltotalprice', 'local_shop').'</b>:';
+            $template->finaltotalpricestr = get_string('paiedfinaltotalprice', 'local_shop');
         } else {
-            $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+            $template->finaltotalpricestr = get_string('finaltotalprice', 'local_shop');
         }
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" class="cell c2 shop-total topay">';
+
         if (empty($config->hasshipping)) {
-            $str .= '<b>'.$bill->finaltaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
+            $template->finaltaxedtotal = sprintf('%0.2f', round($bill->finaltaxedtotal, 2));
+
         } else {
-            $str .= '<b>'.($bill->finaltaxedtotal + $bill->shipping->taxedvalue).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
-        }
-        $str .= '</td>';
-        $str .= '</tr>';
+            $template->finaltaxedtotal = sprintf('%0.2f', round($bill->finaltaxedtotal + $bill->shipping->taxedvalue, 2));
 
-        if (!empty($config->hasshipping)) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1 shop-totaltitle">';
-            $str .= get_string('shipping', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="cell c2 shop-totals">';
-            $str .= $bill->shipping->taxedvalue.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->hasshipping = true;
+            $template->shippingtaxedvalue = sprintf('%0.2f', round($bill->shipping->taxedvalue, 2));
 
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
             if ($bill->status == SHOP_BILL_COMPLETE || $bill->status == SHOP_BILL_SOLDOUT) {
-                $str .= '<b>'.get_string('paiedfinaltotalprice', 'local_shop').'</b>:';
+                $template->finaltotalpricestr = get_string('paiedfinaltotalprice', 'local_shop');
             } else {
-                $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+                $template->finaltotalpricestr = get_string('finaltotalprice', 'local_shop');
             }
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="cell c2 shop-total topay">';
-            $str .= '<b>'.$bill->finalshippedtaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+
+            $template->finalshippedtaxedtotal = sprintf('%0.2f', round($bill->finalshippedtaxedtotal, 2));
         }
 
-        $str .= '</table>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/bills_bill_totals', $template);
     }
 
     /**

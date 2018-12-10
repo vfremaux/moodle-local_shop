@@ -15,13 +15,13 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/productblock
+    @template local_shop/front_product_block
 
     Classes required for JS:
     * none
 
 }}
-<!-- productblock -->
+<!-- local_shop/front_product_block -->
 <div class="shop-article {{subelementclass}}">
 
     <div class="shop-front-productpix">
@@ -78,19 +78,19 @@
 
             {{#canorder}}
             <div class="shop-front-refblock">
-                <div class="shop-front-ref">{{refstr}} : {{{code}}}</div>
+                <div class="shop-front-ref">{{refstr}}&nbsp;: {{{code}}}</div>
 
                 <div class="shop-front-pricelist">
                     {{^pricelist}}
                     <div class="shop-front-label">{{puttcstr}}</div>
-                    <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                    <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
                     {{/pricelist}}
                     {{#pricelist}}
 
                     <div class="shop-front-label">{{puttcstr}}</div>
                         {{#prices}}
-                        <div class="shop-front-pricerange">{{range}} : </div>
-                        <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                        <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                        <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
                         {{/prices}}
                     {{/pricelist}}
                 </div>
@@ -108,14 +108,17 @@
                                     id="ci-{{shortname}}"
                                     value="{{buystr}}"
                                     onclick="{{{jshandleraddunit}}}" {{{disabled}}} />
-                    <div class="shop-order-item" id="bag_{{shortname}}"></div>
-                    {{{units}}}
+
                 </div>
                 {{/available}}
+
+                <div class="shop-order-bag">
+                    <div class="shop-order-item" id="bag_{{shortname}}">{{{units}}}</div>
+                </div>
             </div>
             {{/canorder}}
 
         {{/isbundlepart}}
     </div>
 </div>
-<!-- /productblock -->
+<!-- /local_shop/front_product_block -->

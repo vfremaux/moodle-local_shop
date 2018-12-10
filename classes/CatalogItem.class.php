@@ -375,6 +375,10 @@ class CatalogItem extends ShopObject {
         return $handler;
     }
 
+    public function get_handler_params() {
+        return $this->handlerparams;
+    }
+
     public function get_shippings() {
         global $DB;
 

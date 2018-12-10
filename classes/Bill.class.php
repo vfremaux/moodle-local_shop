@@ -384,6 +384,7 @@ class Bill extends ShopObject {
         $this->finaltaxestotal = 0;
         $this->finaltaxedtotal = 0;
         $this->itemcount = 0;
+        $this->taxlines = array();
 
         foreach ($itemrecs as $itemrec) {
 
@@ -449,6 +450,7 @@ class Bill extends ShopObject {
 
         $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
         $this->dirty = false;
+
     }
 
     public function delete() {

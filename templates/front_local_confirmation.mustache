@@ -15,26 +15,25 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/bills_options
+    @template local_shop/front_local_confirmation
 
     Classes required for JS:
     * none
 
 }}
-<!-- local_shop/bills_options -->
-<div class="shop-bills-tools">
-    <div class="shop-bills-options">
-        {{{currencyselect}}}
-        {{{shopselect}}}
-        {{{yearselect}}}
-    </div>
-
-    <div class="shop-bills-searchlink">
-        <a href="{{{searchurl}}}"><input type="button" value="{{{searchinbillsstr}}}" /></a>
-    </div>
-
-    <div class="shop-bills-switchprefs">
-        <a href="{{{switchfullviewurl}}}"><input type="button" class="btn" value="{{switchviewstr}}" /></a>
-    </div>
-</div>
-<!-- /local_shop/bills_options -->
+<!-- local_shop/front_local_confirmation -->
+<center>
+<form name="confirmation" method="POST" action="{{{formurl}}}" style="display : inline">
+    <table width="100%">
+        <tr>
+            <td align="center">
+                {{#disabled}}
+                    <br/><span id="disabled-advice-span" class="error">{{#str}}requiredataadvice, local_shop{{/str}}</span><br/>
+                {{/disabled}}
+                <input type="button" name="go_confirm" value="{{#str}}confirm, local_shop{{/str}}" onclick="send_confirm();" {{{disabled}}} />
+            </td>
+        </tr>
+    </table>
+</form>
+</center>
+<!-- /local_shop/front_local_confirmation -->

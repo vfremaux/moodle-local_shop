@@ -129,7 +129,7 @@ if (!empty($theshop->endusermobilephonerequired)) { ?>
         {
             id: '<?php echo $theshop->id ?>',
             service: 'users',
-            action: 'addparticipant',
+            what: 'addparticipant',
             participant: JSON.stringify(pt),
             roles: JSON.stringify(roles)
         },
@@ -164,7 +164,7 @@ if (!empty($theshop->endusermobilephonerequired)) {
                 {
                     id: '<?php echo $theshop->id ?>',
                     service: 'users',
-                    action: 'assignalllistobj',
+                    what: 'assignalllistobj',
                 },
                 function(data, status) {
                     obj = JSON.parse(data);
@@ -205,7 +205,7 @@ if (isset($SESSION->shoppingcart->order)) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'users',
-            action: 'deleteparticipant',
+            what: 'deleteparticipant',
             participantid: ptmail,
             roles: JSON.stringify(roles)
         },
@@ -223,7 +223,7 @@ if (isset($SESSION->shoppingcart->order)) {
                 {
                     id: '<?php echo $theshop->id ?>',
                     service: 'users',
-                    action: 'assignalllistobj',
+                    what: 'assignalllistobj',
                 },
                 function(data, status) {
                     obj = JSON.parse(data);
@@ -258,7 +258,7 @@ function ajax_add_assign(assignrole, product, selectobj) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'users',
-            action: 'addassign',
+            what: 'addassign',
             role:assignrole,
             product: product,
             participantid: selectobj.options[selectobj.selectedIndex].value
@@ -302,7 +302,7 @@ function ajax_delete_assign(assignrole, product, email) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'users',
-            action: 'deleteassign',
+            what: 'deleteassign',
             role: assignrole,
             product: product,
             participantid: email
@@ -347,7 +347,7 @@ function ajax_add_unit(id, productname, maxquant) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'shop',
-            action: 'addunit',
+            what: 'addunit',
             productname: productname
         },
 
@@ -382,7 +382,7 @@ function ajax_delete_unit(id, productname) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'shop',
-            action: 'deleteunit',
+            what: 'deleteunit',
             productname: productname,
             clearall: 0
         },
@@ -415,7 +415,7 @@ function ajax_update_totals(id) {
         {
             id: id,
             service: 'shop',
-            action: 'ordertotals'
+            what: 'ordertotals'
         },
         function(data, status) {
             dataobj = JSON.parse(data);
@@ -433,7 +433,7 @@ function ajax_update_details(id) {
         {
             id: id,
             service: 'shop',
-            action: 'orderdetails'
+            what: 'orderdetails'
         },
         function(data, status) {
             dataobj = JSON.parse(data);
@@ -455,7 +455,7 @@ function ajax_clear_product(id, productname) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'shop',
-            action: 'deleteunit',
+            what: 'deleteunit',
             productname: productname,
             clearall: 1
         },
@@ -485,7 +485,7 @@ function ajax_update_product(id, productname, maxquant) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'shop',
-            action: 'setunits',
+            what: 'setunits',
             productname: productname,
             quant: currentval
         },
@@ -530,7 +530,7 @@ function check_pass_code(productname, textinput, event) {
         {
             id: '<?php echo $theshop->id ?>',
             service: 'shop',
-            action: 'checkpasscode',
+            what: 'checkpasscode',
             productname: productname,
             passcode: input
         },

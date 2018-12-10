@@ -42,16 +42,6 @@
 
 /* Other classes */
 
-.shop-article{
-    font-size: 100%;
-}
-
-.shop-article.shadowed {
-    -moz-opacity: 0.4;
-    filter: alpha(opacity=40);
-    opacity: 0.4;
-}
-
 .shop-not-available {
     background-color: #ffa0a0;
     color: #a00000;
@@ -218,11 +208,6 @@ div.shop-bill_error {
 .shop-bills-searchlink {
     width:150px;
     display:inline-block;
-}
-
-table.shop-article {
-    margin-bottom: 10px;
-    margin-right: 10px;
 }
 
 .shop-availableinternalline {
@@ -583,6 +568,24 @@ table.shop-role-assignations > tr > td {
     padding-left: 30px;
 }
 
+.shop-article{
+    font-size: 100%;
+    vertical-align: top;
+    align-items: center;
+    justify-items: center;
+}
+
+.shop-article.shadowed {
+    -moz-opacity: 0.4;
+    filter: alpha(opacity=40);
+    opacity: 0.4;
+}
+
+table.shop-article {
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
 .shop-article.product,
 .shop-article.set,
 .shop-article.bundle {
@@ -593,7 +596,6 @@ table.shop-role-assignations > tr > td {
 }
 
 .shop-article * {
-    margin-top: 10px;
     vertical-align: top;
 }
 
@@ -604,6 +606,7 @@ table.shop-role-assignations > tr > td {
 
 h3.shop-front-partof {
     font-size: 16px;
+    line-height: 1.2em;
 }
 
 .shop-article.bundle .shop-front-elements {
@@ -621,15 +624,45 @@ h3.shop-front-partof {
     grid-template-columns: 50% 50%;
 }
 
-.shop-article.set .shop-front-element {
-}
-
 .shop-front-productpix {
     display: table-cell;
 }
 
 .shop-front-productdef {
     display: table-cell;
+    width: 100%;
+}
+
+.shop-front-productdef a[name]::before {
+    content:initial !important;
+    margin:0px !important;
+    padding:0px !important;
+}
+
+
+.shop-front-refblock {
+    display: grid;
+    grid-template-columns: 80% 11% 9%;
+    grid-template-rows: 1fr 1fr;
+}
+
+.shop-front-pricelist,
+.shop-front-ref,
+.shop-front-order {
+    grid-row: 1;
+}
+
+.shop-order-bag {
+    grid-row: 2;
+    text-align:right;
+    grid-column: 1 / span 3;
+    padding-top: 10px;
+}
+
+.shop-front-bundle-elements {
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
 
 .shop-front-pricerange, .shop-front-price, .shop-front-label {
@@ -640,12 +673,11 @@ h3.shop-front-partof {
     margin-right: 15px;
 }
 .shop-front-label:after{
-    content: ":";
+/*    content: ":"; */
 }
 
 .shop-front-price {
     font-weight: bold;
-    margin-left: 1em;
     margin-right: 3em;
 }
 
@@ -663,13 +695,20 @@ shop-order-paymode {
 }
 
 .shop-desc-gradient {
+    /*
     background: -moz-linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
     background: -webkit-linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
     background: linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    max-height: 10em;
+    */
+    max-height: 2.6em;
+    margin-bottom: 1.3em;
     overflow: hidden;
+}
+
+.shop-desc-gradient:after {
+    content: "...";
 }
 
 .shop-main-menu td {
@@ -787,9 +826,54 @@ ul.shop-test-result {
 .shop-front-description-toggle {
     text-align:center;
 }
+
 .shop-front-description-toggle img {
     margin-left:auto;
     margin-right:auto;
     margin-bottom:10px;
 }
 
+td.right-align {
+    text-align: right !important;
+}
+
+#shop-invoice {
+     border: 1px solid #444;
+     border-radius: 10px;
+}
+
+#page-local-shop-front-view  .generaltable {
+     width: 95%;
+     margin-left: 20px;
+}
+
+#invoice-seller-address {
+     padding-left: 20px;
+}
+
+#page-local-shop-front-view h1 {
+     color : #000;
+}
+
+#page-local-shop-front-view .customer-data {
+     border: 1px solid #444;
+     margin-right: 20px;
+     padding-left: 10px;
+     padding-bottom: 10px;
+}
+
+.sectionHeader h2, h2#invoice-taxes , h2#invoice-paymode, h2#order-mailto{
+     margin-left: 20px;
+     color:#444;
+     border-bottom: 2px solid #444;
+     width:95%;
+     font-size: 1.5rem;
+}
+
+#shop-order-paymode {
+     margin-left: 20px;
+}
+
+h2.shop-caption {
+     margin-left: 40px;
+}

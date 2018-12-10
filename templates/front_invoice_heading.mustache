@@ -40,22 +40,22 @@
     </tr>
 
     <tr valign="top">
-        <td width="70%">
+        <td width="70%" id="invoice-seller-address">
             <b>{{sellername}}</b><br />
             <b>{{selleraddress}}</b><br />
             <b>{{sellerzip}} {{sellercity}}</b><br />
             {{sellercountry}}<br/><br/>
 
-            <b>{{{numstr}}}: </b> B-{{emissiondatestr}}-{{billid}}<br/>
-            <b>{{{transactioncodestr}}}:</b> <code style="background-color : #E0E0E0">{{transactionid}}</code><br />
+            <b>{{#str}}num, local_shop{{/str}}: </b> B-{{emissiondatestamp}}-{{billid}}<br/>
+            <b>{{#str}}transactioncode, local_shop{{/str}}:</b> <code style="background-color : #E0E0E0">{{transactionid}}</code><br />
             <span class="smaltext">{{providetransactioncode}}</span><br/>
-            <b>{{{onstr}}}</b> {{emissiondatestr}}<br />
+            <b>{{#str}}on, local_shop{{/str}}</b> {{emissiondatestr}}<br />
 
         </td>
 
-        <td width="30%" align="right" class="order-preview-seller-address">
+        <td width="30%" align="right" id="invoice-customer-data" class="order-preview-seller-address">
             <div class="customer-data" style="text-align:left">
-                <h3>{{{customerstr}}}</h3>
+                <h3>{{#str}}customer, local_shop{{/str}}</h3>
                 {{#organisation}}
                     {{{organisation}}}<br/>
                 {{/organisation}}
@@ -68,8 +68,8 @@
     </tr>
 
     <tr valign="top">
-        <td colspan="2" class="sectionHeader">
-            <h2>{{{orderstr}}}</h2>
+        <td colspan="2" class="sectionHeader" id="invoice-order-box">
+            <h2>{{#str}}order, local_shop{{/str}}</h2>
         </td>
     </tr>
 

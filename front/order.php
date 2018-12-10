@@ -61,8 +61,19 @@ echo $renderer->admin_options();
 $bill = null;
 echo $renderer->customer_info($bill);
 
-$eulas = $renderer->check_and_print_eula_conditions();
-$initialview = (empty($eulas)) ? '' : ' style="display:none" ';
+$initialview = '';
+if (empty($SESSION->eulas)) {
+    // If eulas status is not yet determined or has been reset
+    $eulas = $renderer->check_and_print_eula_conditions();
+    if (empty($eulas)) {
+        $SESSION->eulas = 'approved'; // Including if no eula at all.
+    } else {
+        $initialview = ' style="display:none" ';
+        $SESSION->eulas = 'required';
+    }
+    $params = array('eulas' => $SESSION->eulas);
+    $PAGE->requires->js_call_amd('local_shop/front', 'initeulas', array($params));
+}
 
 // Print main ordering table.
 
@@ -104,15 +115,6 @@ echo $renderer->action_form('order', $options);
 
 echo '</form>';
 
-// Hide all region-pre to avoid side blocks to mess.
-if (!empty($eulas)) {
-    echo '<script type="text/javascript">';
-    echo 'function hideblocks() {';
-    echo 'preregion = document.getElementById(\'region-pre\');';
-    echo 'preregion.style.display = \'none\';';
-    echo '}';
-    echo 'window.onload = function() { hideblocks(); }';
-    echo '</script>';
+if (empty($SESSION->eulasapproved) && !empty($eulas)) {
+    echo $eulas;
 }
-
-echo $eulas;
