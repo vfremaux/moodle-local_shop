@@ -153,13 +153,14 @@ class shop_paymode_test extends shop_paymode {
         mtrace("[$transid]  Test IPN : examinating");
 
         try {
-            mtrace("Testing IPN production ");
+            mtrace("[$transid]  Testing IPN production ");
             $afullbill = Bill::get_by_transaction($transid);
 
             $ipncall = true;
             $cmd = 'produce';
             include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
-            $controller = new \local_shop\front\production_controller($afullbill, $ipncall, true);
+            $nullblock = null;
+            $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock, $afullbill, $ipncall, true);
             $controller->process($cmd);
 
             mtrace("[$transid]  Test IPN : Payment Success, transferring to production controller");
@@ -174,7 +175,7 @@ class shop_paymode_test extends shop_paymode {
             die;
         } catch (Exception $e) {
             shop_trace("[$transid]  Test IPN : Transaction ID Error");
-            mtrace($OUTPUT->notification(get_string('ipnerror', 'shoppaymodes_test'), 'error'));
+            mtrace("[$transid]  ".$OUTPUT->notification(get_string('ipnerror', 'shoppaymodes_test'), 'error'));
         }
     }
 

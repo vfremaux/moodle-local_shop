@@ -107,7 +107,10 @@ abstract class shop_paymode {
      * printable name
      * @return paymode name as a string
      */
-    public function print_name() {
+    public function print_name($return = false) {
+        if ($return) {
+            return get_string('pluginname', 'shoppaymodes_'.$this->get_name());
+        }
         echo get_string('pluginname', 'shoppaymodes_'.$this->get_name());
     }
 

@@ -147,6 +147,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '<tr class="shop-'.$statusclass.'line shop-product-row" valign="top">';
             $slaveclass  = (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) ? '' : 'engraved slaved';
             $str .= '<td class="cell '.$slaveclass.'"align="center" rowspan="2">';
+            $product->thumb = $product->get_thumb_url();
             $str .= '<img src="'.$product->thumb.'" vspace="10" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.'" align="left">';
@@ -276,6 +277,10 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '<input type="checkbox" name="items[]" value="'.$set->id.'" />';
         $str .= '</td -->';
         $str .= '<td class="'.$slaveclass.'" align="center">';
+        $set->thumb = $set->get_thumb_url(true);
+        if (empty($set->thumb)) {
+            $set->thumb = $OUTPUT->image_url('productset', 'local_shop');
+        }
         $str .= '<img src="'.$set->thumb.'" vspace="10" border="0" height="50">';
         $str .= '</td>';
         $str .= '<td class="name '.$slaveclass.'">';
@@ -350,7 +355,11 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '<input type="checkbox" name="items[]" value="'.$bundle->id.'" />';
         $str .= '</td -->';
         $str .= '<td class="'.((@$bundle->masterrecord == 0) ? '' : 'engraved').' thumb" rowspan="2" align="center">';
-        $str .= $OUTPUT->pix_icon('productbundle', '', 'local_shop');
+        $bundlethumburl = $bundle->get_thumb_url(true);
+        if (empty($bundlethumburl)) {
+            $bundlethumburl = $OUTPUT->image_url('productbundle', 'local_shop');
+        }
+        $str .= '<img src="'.$bundlethumburl.'" height="50" />';
         $str .= '</td>';
         $str .= '<td class="code '.$slaveclass.'">';
         $str .= '<b>'.$bundle->code.'</b><br/>';
@@ -371,6 +380,9 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td class="status '.$slaveclass.'" align="center">';
         $str .= get_string($bundle->status, 'local_shop');
+        $str .= '</td>';
+        $str .= '<td class="maxdeliveryquant '.$slaveclass.'" align="center">';
+        $str .= $bundle->maxdeliveryquant;
         $str .= '</td>';
         $str .= '<td class="sold '.$slaveclass.'" align="center">';
         $str .= $bundle->sold;
@@ -539,8 +551,8 @@ class shop_products_renderer extends local_shop_base_renderer {
             $row[] = '<img class="thumb" src="'.$bundleelm->get_thumb_url().'" height="50">';
             $row[] = $bundleelm->code;
             $row[] = $bundleelm->name;
-            $row[] = sprintf("%.2f", round($bundleelm->price1, 2)).'<br/>('.$bundleelm->taxcode.')';
-            $row[] = sprintf("%.2f", round($bundleelm->TTCprice, 2));
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->price1, 2)).'<br/>('.$bundleelm->taxcode.')</span>';
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->TTCprice, 2)).'</span>';
             $row[] = get_string($bundleelm->status, 'local_shop');
 
             $commands = '';

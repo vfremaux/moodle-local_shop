@@ -52,9 +52,9 @@ if (empty($category)) {
     // Explicit the category.
     $catids = array_keys($categories);
     $firstcategory = array_shift($catids);
-    $Category = new Category($firstcategory);
-    if ($Category->is_empty()) {
-        $firstcategory = $Category->get_first_non_empty_child();
+    $category = new Category($firstcategory);
+    if ($category->is_empty()) {
+        $firstcategory = $category->get_first_non_empty_child();
     }
 
     $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);

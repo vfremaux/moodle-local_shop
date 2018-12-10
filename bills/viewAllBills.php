@@ -33,11 +33,10 @@ use local_shop\Bill;
 $sortorder = optional_param('order', 'id', PARAM_TEXT);
 $dir = optional_param('dir', 'ASC', PARAM_TEXT);
 $action = optional_param('what', '', PARAM_TEXT);
-$status = optional_param('status', 'ALL', PARAM_TEXT);
+$status = optional_param('status', 'COMPLETE', PARAM_TEXT);
 $customerid = optional_param('customerid', 'ALL', PARAM_TEXT);
 $cur = optional_param('cur', 'EUR', PARAM_TEXT);
 $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
-
 $shopid = optional_param('shopid', 0, PARAM_INT);
 
 if ($shopid) {
@@ -50,44 +49,69 @@ if ($status != 'ALL') {
 if (!empty($cur)) {
     $filter['currency'] = $cur;
 }
+if (!empty($y)) {
+    $filter['YEAR(FROM_UNIXTIME(emissiondate))'] = $y;
+}
 
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
-    $controller = new \local_shop\backoffice\bills_controller($theshop, $thecatalog, $theblock);
+    $controller = new \local_shop\backoffice\bill_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action);
     $controller->process($action);
+}
+
+$fullview = get_user_preferences('local_shop_bills_fullview', false);
+if (!$fullview && !in_array($status, array('SOLDOUT', 'COMPLETE'))) {
+    $params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => 'COMPLETE', 'customerid' => $customerid);
+    redirect(new moodle_url('/local/shop/bills/view.php', $params));
 }
 
 echo $out;
 
 $filterclause = '';
 
-echo '<div class="shop-bills-tools">';
-echo '<div class="shop-bills-options">';
+$template = new StdClass;
 $params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
-echo $mainrenderer->currency_choice($cur, new moodle_url('/local/shop/bills/view.php', $params));
+$template->currencyselect = $mainrenderer->currency_choice($cur, new moodle_url('/local/shop/bills/view.php', $params));
 $filterclause = " AND currency = '{$cur}' ";
 
 $params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
-echo $mainrenderer->shop_choice(new moodle_url('/local/shop/bills/view.php', $params), true);
+$template->shopselect = $mainrenderer->shop_choice(new moodle_url('/local/shop/bills/view.php', $params), true);
 if ($shopid) {
     $filterclause .= " AND shopid = '{$shopid}' ";
 }
 
 $params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => $status, 'customerid' => $customerid);
-echo $mainrenderer->year_choice($y, new moodle_url('/local/shop/bills/view.php', $params), true);
+$template->yearselect = $mainrenderer->year_choice($y, new moodle_url('/local/shop/bills/view.php', $params), true);
 if ($y) {
     $filterclause .= " AND YEAR(FROM_UNIXTIME(emissiondate)) = '{$y}' ";
 }
-echo '</div>';
 
-echo '<div class="shop-bills-searchlink">';
 $params = array('view' => 'search');
-$searchurl = new moodle_url('/local/shop/bills/view.php', $params);
-echo '<a href="'.$searchurl.'"><input type="button" value="'.get_string('searchinbills', 'local_shop').'" /></a>';
-echo '</div>';
+$template->searchurl = new moodle_url('/local/shop/bills/view.php', $params);
+$template->searchinbillsstr = get_string('searchinbills', 'local_shop');
 
-echo '</div>';
+if ($fullview) {
+    $params = array('view' => 'viewAllBills',
+                    'dir' => $dir,
+                    'order' => $sortorder,
+                    'status' => $status,
+                    'customerid' => $customerid,
+                    'what' => 'switchfulloff');
+    $template->switchfullviewurl = new moodle_url('/local/shop/bills/view.php', $params);
+    $template->switchviewstr = get_string('fullviewoff', 'local_shop');
+} else {
+    $params = array('view' => 'viewAllBills',
+                    'dir' => $dir,
+                    'order' => $sortorder,
+                    'status' => $status,
+                    'customerid' => $customerid,
+                    'what' => 'switchfullon');
+    $template->switchfullviewurl = new moodle_url('/local/shop/bills/view.php', $params);
+    $template->switchviewstr = get_string('fullviewon', 'local_shop');
+}
+
+echo $OUTPUT->render_from_template('local_shop/bills_options', $template);
 
 $samecurrency = true;
 if ($bills = Bill::get_instances($filter)) {
@@ -99,7 +123,7 @@ if ($bills = Bill::get_instances($filter)) {
             $samecurrency = false;
         }
         // TODO : Make more efficent filter directly in SQL.
-        // Redraw ShopObject to accept filter on caculated columns.
+        // Redraw ShopObject to accept filter on calculated columns.
         if ($y) {
             if (date('Y', $bill->emissiondate) != $y) {
                 unset($bills[$billid]);
@@ -116,32 +140,50 @@ echo $OUTPUT->heading_with_help(get_string('billing', 'local_shop'), 'billstates
 // Print tabs.
 $total = new StdClass;
 $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $filterclause");
-$total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $filterclause");
-$total->PENDING = $DB->count_records_select('local_shop_bill', " status = 'PENDING' $filterclause");
+if ($total->WORKING) {
+    $label = get_string('bill_WORKINGs', 'local_shop');
+    $rows[0][] = new tabobject('WORKING', "$url&status=WORKING&cur=$cur", $label.' ('.$total->WORKING.')');
+}
+
+if ($fullview) {
+    $total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $filterclause");
+    $label = get_string('bill_PLACEDs', 'local_shop');
+    $rows[0][] = new tabobject('PLACED', "$url&status=PLACED&cur=$cur", $label.' ('.$total->PLACED.')');
+
+    $total->PENDING = $DB->count_records_select('local_shop_bill', " status = 'PENDING' $filterclause");
+    $label = get_string('bill_PENDINGs', 'local_shop');
+    $rows[0][] = new tabobject('PENDING', "$url&status=PENDING&cur=$cur", $label.' ('.$total->PENDING.')');
+}
+
 $total->SOLDOUT = $DB->count_records_select('local_shop_bill', "status = 'SOLDOUT' $filterclause");
-$total->COMPLETE = $DB->count_records_select('local_shop_bill', "status = 'COMPLETE' $filterclause");
-$total->CANCELLED = $DB->count_records_select('local_shop_bill', " status = 'CANCELLED' $filterclause");
-$total->FAILED = $DB->count_records_select('local_shop_bill', "status = 'FAILED' $filterclause");
-$total->PAYBACK = $DB->count_records_select('local_shop_bill', "status = 'PAYBACK' $filterclause");
-$total->ALL = $DB->count_records_select('local_shop_bill', " 1 $filterclause ");
-$label = get_string('bill_WORKINGs', 'local_shop');
-$rows[0][] = new tabobject('WORKING', "$url&status=WORKING&cur=$cur", $label.' ('.$total->WORKING.')');
-$label = get_string('bill_PLACEDs', 'local_shop');
-$rows[0][] = new tabobject('PLACED', "$url&status=PLACED&cur=$cur", $label.' ('.$total->PLACED.')');
-$label = get_string('bill_PENDINGs', 'local_shop');
-$rows[0][] = new tabobject('PENDING', "$url&status=PENDING&cur=$cur", $label.' ('.$total->PENDING.')');
 $label = get_string('bill_SOLDOUTs', 'local_shop');
 $rows[0][] = new tabobject('SOLDOUT', "$url&status=SOLDOUT&cur=$cur", $label.' ('.$total->SOLDOUT.')');
+
+$total->COMPLETE = $DB->count_records_select('local_shop_bill', "status = 'COMPLETE' $filterclause");
 $label = get_string('bill_COMPLETEs', 'local_shop');
 $rows[0][] = new tabobject('COMPLETE', "$url&status=COMPLETE&cur=$cur", $label.' ('.$total->COMPLETE.')');
-$label = get_string('bill_CANCELLEDs', 'local_shop');
-$rows[0][] = new tabobject('CANCELLED', "$url&status=CANCELLED&cur=$cur", $label.' ('.$total->CANCELLED.')');
-$label = get_string('bill_FAILEDs', 'local_shop');
-$rows[0][] = new tabobject('FAILED', "$url&status=FAILED&cur=$cur", $label.' ('.$total->FAILED.')');
-$label = get_string('bill_PAYBACKs', 'local_shop');
-$rows[0][] = new tabobject('PAYBACK', "$url&status=PAYBACK&cur=$cur", $label.' ('.$total->PAYBACK.')');
-$label = get_string('bill_ALLs', 'local_shop');
-$rows[0][] = new tabobject('ALL', "$url&status=ALL&cur=$cur", $label.' ('.$total->ALL.')');
+
+if ($fullview) {
+    $total->CANCELLED = $DB->count_records_select('local_shop_bill', " status = 'CANCELLED' $filterclause");
+    $label = get_string('bill_CANCELLEDs', 'local_shop');
+    $rows[0][] = new tabobject('CANCELLED', "$url&status=CANCELLED&cur=$cur", $label.' ('.$total->CANCELLED.')');
+
+    $total->FAILED = $DB->count_records_select('local_shop_bill', "status = 'FAILED' $filterclause");
+    $label = get_string('bill_FAILEDs', 'local_shop');
+    $rows[0][] = new tabobject('FAILED', "$url&status=FAILED&cur=$cur", $label.' ('.$total->FAILED.')');
+}
+
+$total->PAYBACK = $DB->count_records_select('local_shop_bill', "status = 'PAYBACK' $filterclause");
+if ($total->PAYBACK) {
+    $label = get_string('bill_PAYBACKs', 'local_shop');
+    $rows[0][] = new tabobject('PAYBACK', "$url&status=PAYBACK&cur=$cur", $label.' ('.$total->PAYBACK.')');
+}
+
+if ($fullview) {
+    $total->ALL = $DB->count_records_select('local_shop_bill', " 1 $filterclause ");
+    $label = get_string('bill_ALLs', 'local_shop');
+    $rows[0][] = new tabobject('ALL', "$url&status=ALL&cur=$cur", $label.' ('.$total->ALL.')');
+}
 
 print_tabs($rows, $status);
 
@@ -158,51 +200,19 @@ if (empty($billsbystate)) {
     echo $renderer->bill_merchant_line(null);
     $i = 0;
     foreach (array_keys($billsbystate) as $status) {
-        echo '<tr>';
-        echo '<td colspan="5" class="grouphead">';
-        echo '<b>'.get_string('bill_' . $status . 's', 'local_shop').'</b>';
-        echo '</td>';
-        echo '</tr>';
+        echo $renderer->bill_status_line($status);
 
         $CFG->subtotal = 0;
         foreach ($billsbystate[$status] as $portlet) {
             $subtotal += floor($portlet->amount * 100) / 100;
             echo $renderer->bill_merchant_line($portlet);
         }
-?>
-    <tr>
-        <td colspan="2" class="groupSubtotal">
-        </td>
-        <td colspan="3" align="right" class="groupsubtotal">
-            <?php
-            if ($samecurrency) {
-                echo sprintf('%.2f', round($subtotal, 2));
-                echo ' ';
-                echo get_string($billcurrency.'symb', 'local_shop');
-            } else {
-                print_string('nosamecurrency', 'local_shop');
-            }
-            ?>
-        </td>
-    </tr>
-<?php
+
+        echo $renderer->bill_group_subtotal($subtotal, $billcurrency, $samecurrency);
+
         $i++;
     }
     echo '</table>';
 }
 
-$excelurl = new moodle_url('/local/shop/export/export.php', array('what' => 'allbills', 'format' => 'excel'));
-$billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
-?>
-
-<table width="100%">
-   <tr>
-      <td align="left">
-      </td>
-      <td align="right">
-         <a href="<?php echo ''.$excelurl ?>" target="_blanck"><?php print_string('exportasxls', 'local_shop') ?></a>
-          - <a href="<?php echo ''.$billurl ?>"><?php print_string('newbill', 'local_shop') ?></a>
-      </td>
-   </tr>
-</table>
-<br />
+echo $renderer->bill_view_links($theshop);

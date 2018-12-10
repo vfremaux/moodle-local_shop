@@ -27,7 +27,9 @@ function shop_products_process_files($data, $context, $usercontext) {
 
     $fs = get_file_storage();
 
-    $usercontext = context_user::instance($USER->id);
+    if (empty($usercontext)) {
+        $usercontext = context_user::instance($USER->id);
+    };
 
     $filepickeritemid = $data->grleaflet['leaflet'];
     if (!$fs->is_area_empty($usercontext->id, 'user', 'draft', $filepickeritemid, true)) {

@@ -87,7 +87,11 @@ class shop_handler_std_enrolonecourse extends shop_handler {
     /**
      * Pre pay information always comme from shopping session.
      */
-    public function produce_prepay(&$data) {
+    public function produce_prepay(&$data, &$errorstatus) {
+
+        $message = "[{$data->transactionid}] STD_ENROL_ONE_COURSE Prepay :";
+        $message .= " Start processing.";
+        shop_trace($message);
 
         // Get customersupportcourse designated by handler internal params.
         if (!isset($data->actionparams['customersupport'])) {
@@ -104,7 +108,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             }
         }
 
-        $productionfeedback = shop_register_customer($data);
+        $productionfeedback = shop_register_customer($data, $errorstatus);
 
         return $productionfeedback;
     }
@@ -115,6 +119,10 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      */
     public function produce_postpay(&$data) {
         global $DB, $USER;
+
+        $message = "[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay :";
+        $message .= " Start processing.";
+        shop_trace($message);
 
         $config = get_config('local_shop');
 
@@ -182,9 +190,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : ".$message);
         } catch (Exception $exc) {
             $e = new StdClass;
-            $e->code = $data->code;
+            $e->code = $data->itemcode;
             $e->errorcode = 'Code : ROLE ASSIGN ISSUE';
-            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed enrol...");
+            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed enrol... ".$exc->getMessage());
             $fb = get_string('productiondata_failure_public', 'shophandlers_std_enrolonecourse', $e);
             $productionfeedback->public = $fb;
             $fb = get_string('productiondata_failure_private', 'shophandlers_std_enrolonecourse', $course->id);

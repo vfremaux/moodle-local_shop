@@ -277,7 +277,7 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->image_url(current_language().'/one_unit', 'local_shop');
+            $url = $OUTPUT->pix_url(current_language().'/one_unit', 'local_shop');
         }
         return $url;
     }
@@ -298,7 +298,7 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->image_url(current_language().'/ten_units', 'local_shop');
+            $url = $OUTPUT->pix_url(current_language().'/ten_units', 'local_shop');
         }
         return $url;
     }
@@ -325,7 +325,7 @@ class CatalogItem extends ShopObject {
     /**
      *
      */
-    public function get_thumb_url() {
+    public function get_thumb_url($nodefault = false) {
         global $OUTPUT;
 
         $context = \context_system::instance();
@@ -337,7 +337,11 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->image_url('defaultproduct', 'local_shop');
+            if ($nodefault) {
+                // Use for bundles or sets.
+                return false;
+            }
+            $url = $OUTPUT->pix_url('defaultproduct', 'local_shop');
         }
         return $url;
     }
@@ -369,6 +373,10 @@ class CatalogItem extends ShopObject {
         }
 
         return $handler;
+    }
+
+    public function get_handler_params() {
+        return $this->handlerparams;
     }
 
     public function get_shippings() {
@@ -460,7 +468,7 @@ class CatalogItem extends ShopObject {
                                                     $leafletfile->get_filearea(), $leafletfile->get_itemid(),
                                                     $leafletfile->get_filepath(), $leafletfile->get_filename());
         } else {
-            $url = $OUTPUT->image_url('defaultproduct', 'local_shop');
+            $url = $OUTPUT->pix_url('defaultproduct', 'local_shop');
         }
         return $url;
     }

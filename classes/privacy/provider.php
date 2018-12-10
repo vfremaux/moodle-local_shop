@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forum\privacy;
+namespace local_shop\privacy;
 
 use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\deletion_criteria;
@@ -46,12 +46,6 @@ class provider implements
     // This plugin currently implements the original plugin\provider interface.
     \core_privacy\local\request\plugin\provider,
 
-    // This plugin has some sitewide user preferences to export.
-    \core_privacy\local\request\user_preference_provider
-{
-
-    use subcontext_info;
-
     /**
      * Returns meta data about this system.
      *
@@ -59,81 +53,102 @@ class provider implements
      * @return  collection     A listing of user data stored through this system.
      */
     public static function get_metadata(collection $items) : collection {
-        // The 'forum' table does not store any specific user data.
-        $items->add_database_table('forum_digests', [
-            'forum' => 'privacy:metadata:forum_digests:forum',
-            'userid' => 'privacy:metadata:forum_digests:userid',
-            'maildigest' => 'privacy:metadata:forum_digests:maildigest',
-        ], 'privacy:metadata:forum_digests');
+        // The 'customer' table stores customer info related to some moodle users.
+        $items->add_database_table('local_shop_customer', [
+            'firstname' => 'privacy:metadata:shop_customer:firstname',
+            'lastname' => 'privacy:metadata:shop_customer:lastname',
+            'hasaccount' => 'privacy:metadata:shop_customer:hasaccount',
+            'email' => 'privacy:metadata:shop_customer:email',
+            'address' => 'privacy:metadata:shop_customer:address',
+            'zip' => 'privacy:metadata:shop_customer:zip',
+            'city' => 'privacy:metadata:shop_customer:city',
+            'country' => 'privacy:metadata:shop_customer:country',
+            'organisation' => 'privacy:metadata:shop_customer:organisation',
+            'invoiceinfo' => 'privacy:metadata:shop_customer:invoiceinfo',
+            'timecreated' => 'privacy:metadata:shop_customer:timecreated',
+        ], 'privacy:metadata:shop_customer');
 
-        // The 'forum_discussions' table stores the metadata about each forum discussion.
-        $items->add_database_table('forum_discussions', [
-            'name' => 'privacy:metadata:forum_discussions:name',
-            'userid' => 'privacy:metadata:forum_discussions:userid',
-            'assessed' => 'privacy:metadata:forum_discussions:assessed',
-            'timemodified' => 'privacy:metadata:forum_discussions:timemodified',
-            'usermodified' => 'privacy:metadata:forum_discussions:usermodified',
-        ], 'privacy:metadata:forum_discussions');
+        // The 'local_customer_ownership' table stores the metadata about customers owned by some moodle users.
+        $items->add_database_table('local_shop_customer_owner', [
+            'userid' => 'privacy:metadata:customer_ownership:userid',
+            'customerid' => 'privacy:metadata:customer_ownership:customerid',
+        ], 'privacy:metadata:customer_ownership');
 
-        // The 'forum_discussion_subs' table stores information about which discussions a user is subscribed to.
-        $items->add_database_table('forum_discussion_subs', [
-            'discussionid' => 'privacy:metadata:forum_discussion_subs:discussionid',
-            'preference' => 'privacy:metadata:forum_discussion_subs:preference',
-            'userid' => 'privacy:metadata:forum_discussion_subs:userid',
-        ], 'privacy:metadata:forum_discussion_subs');
+        // The 'local_shop_bills' table stores information about bills the users have.
+        $items->add_database_table('local_shop_bill', [
+            'shopid' => 'privacy:metadata:shop_bill:shopid',
+            'userid' => 'privacy:metadata:shop_bill:userid',
+            'idnumber' => 'privacy:metadata:shop_bill:idnumber',
+            'ordering' => 'privacy:metadata:shop_bill:ordering',
+            'customerid' => 'privacy:metadata:shop_bill:customerid',
+            'invoiceinfo' => 'privacy:metadata:shop_bill:invoiceinfo',
+            'title' => 'privacy:metadata:shop_bill:title',
+            'worktype' => 'privacy:metadata:shop_bill:worktype',
+            'status' => 'privacy:metadata:shop_bill:status',
+            'remotestatus' => 'privacy:metadata:shop_bill:remotestatus',
+            'emissiondate' => 'privacy:metadata:shop_bill:emissiondate',
+            'lastactiondate' => 'privacy:metadata:shop_bill:lastactiondate',
+            'assignedto' => 'privacy:metadata:shop_bill:assignedto',
+            'timetodo' => 'privacy:metadata:shop_bill:timetodo',
+            'untaxedamount' => 'privacy:metadata:shop_bill:untaxedamount',
+            'taxes' => 'privacy:metadata:shop_bill:taxes',
+            'amount' => 'privacy:metadata:shop_bill:amount',
+            'currency' => 'privacy:metadata:shop_bill:currency',
+            'convertedamount' => 'privacy:metadata:shop_bill:convertedamount',
+            'transactionid' => 'privacy:metadata:shop_bill:transactionid',
+            'onlinetransactionid' => 'privacy:metadata:shop_bill:onlinetransactionid',
+            'expectedpaiment' => 'privacy:metadata:shop_bill:expectedpaiment',
+            'paiedamount' => 'privacy:metadata:shop_bill:paiedamount',
+            'paymode' => 'privacy:metadata:shop_bill:paymode',
+            'ignoretax' => 'privacy:metadata:shop_bill:ignoretax',
+            'productiondata' => 'privacy:metadata:shop_bill:productiondata',
+            'paymentfee' => 'privacy:metadata:shop_bill:paymentfee',
+            'productionfeedback' => 'privacy:metadata:shop_bill:productionfeedback',
+        ], 'privacy:metadata:shop_bill');
 
-        // The 'forum_posts' table stores the metadata about each forum discussion.
-        $items->add_database_table('forum_posts', [
-            'discussion' => 'privacy:metadata:forum_posts:discussion',
-            'parent' => 'privacy:metadata:forum_posts:parent',
-            'created' => 'privacy:metadata:forum_posts:created',
-            'modified' => 'privacy:metadata:forum_posts:modified',
-            'subject' => 'privacy:metadata:forum_posts:subject',
-            'message' => 'privacy:metadata:forum_posts:message',
-            'userid' => 'privacy:metadata:forum_posts:userid',
-        ], 'privacy:metadata:forum_posts');
+        // The 'local_shop_bill_item' table stores the metadata about each item purchased in a bill.
+        $items->add_database_table('local_shop_bill_item', [
+            'billid' => 'privacy:metadata:shop_bill_item:billid',
+            'ordering' => 'privacy:metadata:shop_bill_item:ordering',
+            'type' => 'privacy:metadata:shop_bill_item:type',
+            'itemcode' => 'privacy:metadata:shop_bill_item:itemcode',
+            'catalogitem' => 'privacy:metadata:shop_bill_item:catalogitem',
+            'abstract' => 'privacy:metadata:shop_bill_item:abstract',
+            'description' => 'privacy:metadata:shop_bill_item:description',
+            'delay' => 'privacy:metadata:shop_bill_item:delay',
+            'unitcost' => 'privacy:metadata:shop_bill_item:unitcost',
+            'quantity' => 'privacy:metadata:shop_bill_item:quantity',
+            'totalprice' => 'privacy:metadata:shop_bill_item:totalprice',
+            'taxcode' => 'privacy:metadata:shop_bill_item:taxcode',
+            'bundleid' => 'privacy:metadata:shop_bill_item:bundleid',
+            'customerdata' => 'privacy:metadata:shop_bill_item:customerdata',
+            'productiondata' => 'privacy:metadata:shop_bill_item:productiondata',
+        ], 'privacy:metadata:shop_bill_item');
 
-        // The 'forum_queue' table contains user data, but it is only a temporary cache of other data.
-        // We should not need to export it as it does not allow profiling of a user.
+        // The 'local_shop_product' table stores metadata about the product instances owned by users.
+        $items->add_database_table('local_shop_product', [
+            'customerid' => 'privacy:metadata:shop_product:customerid',
+            'catalogitemid' => 'privacy:metadata:shop_product:catalogitemid',
+            'initialbillitemid' => 'privacy:metadata:shop_product:initialbillitemid',
+            'currentbillitemid' => 'privacy:metadata:shop_product:currentbillitemid',
+            'contexttype' => 'privacy:metadata:shop_product:contexttype',
+            'instanceid' => 'privacy:metadata:shop_product:instanceid',
+            'startdate' => 'privacy:metadata:shop_product:startdate',
+            'enddate' => 'privacy:metadata:shop_product:enddate',
+            'reference' => 'privacy:metadata:shop_product:reference',
+            'productiondata' => 'privacy:metadata:shop_product:productiondata',
+            'extradata' => 'privacy:metadata:shop_product:extradata',
+            'deleted' => 'privacy:metadata:shop_product:deleted',
+        ], 'privacy:metadata:shop_product');
 
-        // The 'forum_read' table stores data about which forum posts have been read by each user.
-        $items->add_database_table('forum_read', [
-            'userid' => 'privacy:metadata:forum_read:userid',
-            'discussionid' => 'privacy:metadata:forum_read:discussionid',
-            'postid' => 'privacy:metadata:forum_read:postid',
-            'firstread' => 'privacy:metadata:forum_read:firstread',
-            'lastread' => 'privacy:metadata:forum_read:lastread',
-        ], 'privacy:metadata:forum_read');
-
-        // The 'forum_subscriptions' table stores information about which forums a user is subscribed to.
-        $items->add_database_table('forum_subscriptions', [
-            'userid' => 'privacy:metadata:forum_subscriptions:userid',
-            'forum' => 'privacy:metadata:forum_subscriptions:forum',
-        ], 'privacy:metadata:forum_subscriptions');
-
-        // The 'forum_subscriptions' table stores information about which forums a user is subscribed to.
-        $items->add_database_table('forum_track_prefs', [
-            'userid' => 'privacy:metadata:forum_track_prefs:userid',
-            'forumid' => 'privacy:metadata:forum_track_prefs:forumid',
-        ], 'privacy:metadata:forum_track_prefs');
-
-        // The 'forum_queue' table stores temporary data that is not exported/deleted.
-        $items->add_database_table('forum_queue', [
-            'userid' => 'privacy:metadata:forum_queue:userid',
-            'discussionid' => 'privacy:metadata:forum_queue:discussionid',
-            'postid' => 'privacy:metadata:forum_queue:postid',
-            'timemodified' => 'privacy:metadata:forum_queue:timemodified'
-        ], 'privacy:metadata:forum_queue');
-
-        // Forum posts can be tagged and rated.
-        $items->link_subsystem('core_tag', 'privacy:metadata:core_tag');
-        $items->link_subsystem('core_rating', 'privacy:metadata:core_rating');
-
-        // There are several user preferences.
-        $items->add_user_preference('maildigest', 'privacy:metadata:preference:maildigest');
-        $items->add_user_preference('autosubscribe', 'privacy:metadata:preference:autosubscribe');
-        $items->add_user_preference('trackforums', 'privacy:metadata:preference:trackforums');
-        $items->add_user_preference('markasreadonnotification', 'privacy:metadata:preference:markasreadonnotification');
+        // The 'local_shop_product_event' table stores information about product lifecycle owned by a user.
+        $items->add_database_table('local_shop_product_event', [
+            'productid' => 'privacy:metadata:shop_product_event:productid',
+            'billitemid' => 'privacy:metadata:shop_product_event:billitemid',
+            'eventtype' => 'privacy:metadata:shop_product_event:eventtype',
+            'eventdata' => 'privacy:metadata:shop_product_event:eventdata',
+            'datecreated' => 'privacy:metadata:shop_product_event:datecreated',
+        ], 'privacy:metadata:shop_product_event');
 
         return $items;
     }
@@ -147,6 +162,7 @@ class provider implements
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid) : \core_privacy\local\request\contextlist {
+
         $ratingsql = \core_rating\privacy\provider::get_sql_join('rat', 'mod_forum', 'post', 'p.id', $userid);
         // Fetch all forum discussions, and forum posts.
         $sql = "SELECT c.id
@@ -190,66 +206,6 @@ class provider implements
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
-    }
-
-    /**
-     * Store all user preferences for the plugin.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     */
-    public static function export_user_preferences(int $userid) {
-        $user = \core_user::get_user($userid);
-
-        switch ($user->maildigest) {
-            case 1:
-                $digestdescription = get_string('emaildigestcomplete');
-                break;
-            case 2:
-                $digestdescription = get_string('emaildigestsubjects');
-                break;
-            case 0:
-            default:
-                $digestdescription = get_string('emaildigestoff');
-                break;
-        }
-        writer::export_user_preference('mod_forum', 'maildigest', $user->maildigest, $digestdescription);
-
-        switch ($user->autosubscribe) {
-            case 0:
-                $subscribedescription = get_string('autosubscribeno');
-                break;
-            case 1:
-            default:
-                $subscribedescription = get_string('autosubscribeyes');
-                break;
-        }
-        writer::export_user_preference('mod_forum', 'autosubscribe', $user->autosubscribe, $subscribedescription);
-
-        switch ($user->trackforums) {
-            case 0:
-                $trackforumdescription = get_string('trackforumsno');
-                break;
-            case 1:
-            default:
-                $trackforumdescription = get_string('trackforumsyes');
-                break;
-        }
-        writer::export_user_preference('mod_forum', 'trackforums', $user->trackforums, $trackforumdescription);
-
-        $markasreadonnotification = get_user_preferences('markasreadonnotification', null, $user->id);
-        if (null !== $markasreadonnotification) {
-            switch ($markasreadonnotification) {
-                case 0:
-                    $markasreadonnotificationdescription = get_string('markasreadonnotificationno', 'mod_forum');
-                    break;
-                case 1:
-                default:
-                    $markasreadonnotificationdescription = get_string('markasreadonnotificationyes', 'mod_forum');
-                    break;
-            }
-            writer::export_user_preference('mod_forum', 'markasreadonnotification', $markasreadonnotification,
-                    $markasreadonnotificationdescription);
-        }
     }
 
     /**
@@ -395,497 +351,31 @@ class provider implements
     }
 
     /**
-     * Store all information about all posts that we have detected this user to have access to.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   array       $mappings A list of mappings from forumid => contextid.
-     * @return  array       Which forums had data written for them.
-     */
-    protected static function export_all_posts(int $userid, array $mappings) {
-        global $DB;
-
-        // Find all of the posts, and post subscriptions for this forum.
-        list($foruminsql, $forumparams) = $DB->get_in_or_equal(array_keys($mappings), SQL_PARAMS_NAMED);
-        $ratingsql = \core_rating\privacy\provider::get_sql_join('rat', 'mod_forum', 'post', 'p.id', $userid);
-        $sql = "SELECT
-                    p.discussion AS id,
-                    f.id AS forumid,
-                    d.name,
-                    d.groupid
-                  FROM {forum} f
-                  JOIN {forum_discussions} d ON d.forum = f.id
-                  JOIN {forum_posts} p ON p.discussion = d.id
-             LEFT JOIN {forum_read} fr ON fr.postid = p.id AND fr.userid = :readuserid
-            {$ratingsql->join}
-                 WHERE f.id ${foruminsql} AND
-                (
-                    p.userid = :postuserid OR
-                    fr.id IS NOT NULL OR
-                    {$ratingsql->userwhere}
-                )
-              GROUP BY f.id, p.discussion, d.name, d.groupid
-        ";
-
-        $params = [
-            'postuserid'    => $userid,
-            'readuserid'    => $userid,
-        ];
-        $params += $forumparams;
-        $params += $ratingsql->params;
-
-        $discussions = $DB->get_records_sql($sql, $params);
-        foreach ($discussions as $discussion) {
-            $context = \context::instance_by_id($mappings[$discussion->forumid]);
-            static::export_all_posts_in_discussion($userid, $context, $discussion);
-        }
-    }
-
-    /**
-     * Store all information about all posts that we have detected this user to have access to.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \context    $context The instance of the forum context.
-     * @param   \stdClass   $discussion The discussion whose data is being exported.
-     */
-    protected static function export_all_posts_in_discussion(int $userid, \context $context, \stdClass $discussion) {
-        global $DB, $USER;
-
-        $discussionid = $discussion->id;
-
-        // Find all of the posts, and post subscriptions for this forum.
-        $ratingsql = \core_rating\privacy\provider::get_sql_join('rat', 'mod_forum', 'post', 'p.id', $userid);
-        $sql = "SELECT
-                    p.*,
-                    d.forum AS forumid,
-                    fr.firstread,
-                    fr.lastread,
-                    fr.id AS readflag,
-                    rat.id AS hasratings
-                    FROM {forum_discussions} d
-                    JOIN {forum_posts} p ON p.discussion = d.id
-               LEFT JOIN {forum_read} fr ON fr.postid = p.id AND fr.userid = :readuserid
-            {$ratingsql->join} AND {$ratingsql->userwhere}
-                   WHERE d.id = :discussionid
-        ";
-
-        $params = [
-            'discussionid'  => $discussionid,
-            'readuserid'    => $userid,
-        ];
-        $params += $ratingsql->params;
-
-        // Keep track of the forums which have data.
-        $structure = (object) [
-            'children' => [],
-        ];
-
-        $posts = $DB->get_records_sql($sql, $params);
-        foreach ($posts as $post) {
-            $post->hasdata = (isset($post->hasdata)) ? $post->hasdata : false;
-            $post->hasdata = $post->hasdata || !empty($post->hasratings);
-            $post->hasdata = $post->hasdata || $post->readflag;
-            $post->hasdata = $post->hasdata || ($post->userid == $USER->id);
-
-            if (0 == $post->parent) {
-                $structure->children[$post->id] = $post;
-            } else {
-                if (empty($posts[$post->parent]->children)) {
-                    $posts[$post->parent]->children = [];
-                }
-                $posts[$post->parent]->children[$post->id] = $post;
-            }
-
-            // Set all parents.
-            if ($post->hasdata) {
-                $curpost = $post;
-                while ($curpost->parent != 0) {
-                    $curpost = $posts[$curpost->parent];
-                    $curpost->hasdata = true;
-                }
-            }
-        }
-
-        $discussionarea = static::get_discussion_area($discussion);
-        $discussionarea[] = get_string('posts', 'mod_forum');
-        static::export_posts_in_structure($userid, $context, $discussionarea, $structure);
-    }
-
-    /**
-     * Export all posts in the provided structure.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \context    $context The instance of the forum context.
-     * @param   array       $parentarea The subcontext of the parent.
-     * @param   \stdClass   $structure The post structure and all of its children
-     */
-    protected static function export_posts_in_structure(int $userid, \context $context, $parentarea, \stdClass $structure) {
-        foreach ($structure->children as $post) {
-            if (!$post->hasdata) {
-                // This tree has no content belonging to the user. Skip it and all children.
-                continue;
-            }
-
-            $postarea = array_merge($parentarea, static::get_post_area($post));
-
-            // Store the post content.
-            static::export_post_data($userid, $context, $postarea, $post);
-
-            if (isset($post->children)) {
-                // Now export children of this post.
-                static::export_posts_in_structure($userid, $context, $postarea, $post);
-            }
-        }
-    }
-
-    /**
-     * Export all data in the post.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \context    $context The instance of the forum context.
-     * @param   array       $postarea The subcontext of the parent.
-     * @param   \stdClass   $post The post structure and all of its children
-     */
-    protected static function export_post_data(int $userid, \context $context, $postarea, $post) {
-        // Store related metadata.
-        static::export_read_data($userid, $context, $postarea, $post);
-
-        $postdata = (object) [
-            'subject' => format_string($post->subject, true),
-            'created' => transform::datetime($post->created),
-            'modified' => transform::datetime($post->modified),
-            'author_was_you' => transform::yesno($post->userid == $userid),
-        ];
-
-        $postdata->message = writer::with_context($context)
-            ->rewrite_pluginfile_urls($postarea, 'mod_forum', 'post', $post->id, $post->message);
-
-        $postdata->message = format_text($postdata->message, $post->messageformat, (object) [
-            'para'    => false,
-            'trusted' => $post->messagetrust,
-            'context' => $context,
-        ]);
-
-        writer::with_context($context)
-            // Store the post.
-            ->export_data($postarea, $postdata)
-
-            // Store the associated files.
-            ->export_area_files($postarea, 'mod_forum', 'post', $post->id);
-
-        if ($post->userid == $userid) {
-            // Store all ratings against this post as the post belongs to the user. All ratings on it are ratings of their content.
-            \core_rating\privacy\provider::export_area_ratings($userid, $context, $postarea, 'mod_forum', 'post', $post->id, false);
-
-            // Store all tags against this post as the tag belongs to the user.
-            \core_tag\privacy\provider::export_item_tags($userid, $context, $postarea, 'mod_forum', 'forum_posts', $post->id);
-
-            // Export all user data stored for this post from the plagiarism API.
-            $coursecontext = $context->get_course_context();
-            \core_plagiarism\privacy\provider::export_plagiarism_user_data($userid, $context, $postarea, [
-                    'cmid' => $context->instanceid,
-                    'course' => $coursecontext->instanceid,
-                    'forum' => $post->forumid,
-                    'discussionid' => $post->discussion,
-                    'postid' => $post->id,
-                ]);
-        }
-
-        // Check for any ratings that the user has made on this post.
-        \core_rating\privacy\provider::export_area_ratings($userid,
-                $context,
-                $postarea,
-                'mod_forum',
-                'post',
-                $post->id,
-                $userid,
-                true
-            );
-    }
-
-    /**
-     * Store data about daily digest preferences
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \stdClass   $forum The forum whose data is being exported.
-     * @return  bool        Whether any data was stored.
-     */
-    protected static function export_digest_data(int $userid, \stdClass $forum) {
-        if (null !== $forum->maildigest) {
-            // The user has a specific maildigest preference for this forum.
-            $a = (object) [
-                'forum' => format_string($forum->name, true),
-            ];
-
-            switch ($forum->maildigest) {
-                case 0:
-                    $a->type = get_string('emaildigestoffshort', 'mod_forum');
-                    break;
-                case 1:
-                    $a->type = get_string('emaildigestcompleteshort', 'mod_forum');
-                    break;
-                case 2:
-                    $a->type = get_string('emaildigestsubjectsshort', 'mod_forum');
-                    break;
-            }
-
-            writer::with_context(\context_module::instance($forum->cmid))
-                ->export_metadata([], 'digestpreference', $forum->maildigest,
-                    get_string('privacy:digesttypepreference', 'mod_forum', $a));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Store data about whether the user subscribes to forum.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \stdClass   $forum The forum whose data is being exported.
-     * @return  bool        Whether any data was stored.
-     */
-    protected static function export_subscription_data(int $userid, \stdClass $forum) {
-        if (null !== $forum->subscribed) {
-            // The user is subscribed to this forum.
-            writer::with_context(\context_module::instance($forum->cmid))
-                ->export_metadata([], 'subscriptionpreference', 1, get_string('privacy:subscribedtoforum', 'mod_forum'));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Store data about whether the user subscribes to this particular discussion.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \context_module $context The instance of the forum context.
-     * @param   \stdClass   $discussion The discussion whose data is being exported.
-     * @return  bool        Whether any data was stored.
-     */
-    protected static function export_discussion_subscription_data(int $userid, \context_module $context, \stdClass $discussion) {
-        $area = static::get_discussion_area($discussion);
-        if (null !== $discussion->preference) {
-            // The user has a specific subscription preference for this discussion.
-            $a = (object) [];
-
-            switch ($discussion->preference) {
-                case \mod_forum\subscriptions::FORUM_DISCUSSION_UNSUBSCRIBED:
-                    $a->preference = get_string('unsubscribed', 'mod_forum');
-                    break;
-                default:
-                    $a->preference = get_string('subscribed', 'mod_forum');
-                    break;
-            }
-
-            writer::with_context($context)
-                ->export_metadata(
-                    $area,
-                    'subscriptionpreference',
-                    $discussion->preference,
-                    get_string('privacy:discussionsubscriptionpreference', 'mod_forum', $a)
-                );
-
-            return true;
-        }
-
-        return true;
-    }
-
-    /**
-     * Store forum read-tracking data about a particular forum.
-     *
-     * This is whether a forum has read-tracking enabled or not.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \stdClass   $forum The forum whose data is being exported.
-     * @return  bool        Whether any data was stored.
-     */
-    protected static function export_tracking_data(int $userid, \stdClass $forum) {
-        if (null !== $forum->tracked) {
-            // The user has a main preference to track all forums, but has opted out of this one.
-            writer::with_context(\context_module::instance($forum->cmid))
-                ->export_metadata([], 'trackreadpreference', 0, get_string('privacy:readtrackingdisabled', 'mod_forum'));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Store read-tracking information about a particular forum post.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   \context_module $context The instance of the forum context.
-     * @param   array       $postarea The subcontext for this post.
-     * @param   \stdClass   $post The post whose data is being exported.
-     * @return  bool        Whether any data was stored.
-     */
-    protected static function export_read_data(int $userid, \context_module $context, array $postarea, \stdClass $post) {
-        if (null !== $post->firstread) {
-            $a = (object) [
-                'firstread' => $post->firstread,
-                'lastread'  => $post->lastread,
-            ];
-
-            writer::with_context($context)
-                ->export_metadata(
-                    $postarea,
-                    'postread',
-                    (object) [
-                        'firstread' => $post->firstread,
-                        'lastread' => $post->lastread,
-                    ],
-                    get_string('privacy:postwasread', 'mod_forum', $a)
-                );
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Delete all data for all users in the specified context.
+     *
+     * GRDP statement on shop records : There is a superseeding legal obligation to
+     * keep track of all commercial data : France : Rec.30;Art.7(1)(c), Article L123-22 Code du commerce
+     *
+     * "Les documents comptables et les pièces justificatives sont conservés pendant dix ans."
      *
      * @param   context                 $context   The specific context to delete data for.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
-        // Check that this is a context_module.
-        if (!$context instanceof \context_module) {
-            return;
-        }
-
-        // Get the course module.
-        if (!$cm = get_coursemodule_from_id('forum', $context->instanceid)) {
-            return;
-        }
-
-        $forumid = $cm->instance;
-
-        $DB->delete_records('forum_track_prefs', ['forumid' => $forumid]);
-        $DB->delete_records('forum_subscriptions', ['forum' => $forumid]);
-        $DB->delete_records('forum_read', ['forumid' => $forumid]);
-
-        // Delete all discussion items.
-        $DB->delete_records_select(
-            'forum_queue',
-            "discussionid IN (SELECT id FROM {forum_discussions} WHERE forum = :forum)",
-            [
-                'forum' => $forumid,
-            ]
-        );
-
-        $DB->delete_records_select(
-            'forum_posts',
-            "discussion IN (SELECT id FROM {forum_discussions} WHERE forum = :forum)",
-            [
-                'forum' => $forumid,
-            ]
-        );
-
-        $DB->delete_records('forum_discussion_subs', ['forum' => $forumid]);
-        $DB->delete_records('forum_discussions', ['forum' => $forumid]);
-
-        // Delete all files from the posts.
-        $fs = get_file_storage();
-        $fs->delete_area_files($context->id, 'mod_forum', 'post');
-
-        // Delete all ratings in the context.
-        \core_rating\privacy\provider::delete_ratings($context, 'mod_forum', 'post');
-
-        // Delete all Tags.
-        \core_tag\privacy\provider::delete_item_tags($context, 'mod_forum', 'forum_posts');
     }
 
     /**
      * Delete all user data for the specified user, in the specified contexts.
      *
+     * GRDP statement on shop records : There is a superseeding legal obligation to
+     * keep track of all commercial data : France : Rec.30;Art.7(1)(c), Article L123-22 Code du commerce
+     *
+     * "Les documents comptables et les pièces justificatives sont conservés pendant dix ans."
+     *
      * @param   approved_contextlist    $contextlist    The approved contexts and user information to delete information for.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
-        $user = $contextlist->get_user();
-        $userid = $user->id;
-        foreach ($contextlist as $context) {
-            // Get the course module.
-            $cm = $DB->get_record('course_modules', ['id' => $context->instanceid]);
-            $forum = $DB->get_record('forum', ['id' => $cm->instance]);
-
-            $DB->delete_records('forum_track_prefs', [
-                'forumid' => $forum->id,
-                'userid' => $userid,
-            ]);
-            $DB->delete_records('forum_subscriptions', [
-                'forum' => $forum->id,
-                'userid' => $userid,
-            ]);
-            $DB->delete_records('forum_read', [
-                'forumid' => $forum->id,
-                'userid' => $userid,
-            ]);
-
-            // Delete all discussion items.
-            $DB->delete_records_select(
-                'forum_queue',
-                "userid = :userid AND discussionid IN (SELECT id FROM {forum_discussions} WHERE forum = :forum)",
-                [
-                    'userid' => $userid,
-                    'forum' => $forum->id,
-                ]
-            );
-
-            $DB->delete_records('forum_discussion_subs', [
-                'forum' => $forum->id,
-                'userid' => $userid,
-            ]);
-
-            $uniquediscussions = $DB->get_recordset('forum_discussions', [
-                    'forum' => $forum->id,
-                    'userid' => $userid,
-                ]);
-
-            foreach ($uniquediscussions as $discussion) {
-                // Do not delete discussion or forum posts.
-                // Instead update them to reflect that the content has been deleted.
-                $postsql = "userid = :userid AND discussion IN (SELECT id FROM {forum_discussions} WHERE forum = :forum)";
-                $postidsql = "SELECT fp.id FROM {forum_posts} fp WHERE {$postsql}";
-                $postparams = [
-                    'forum' => $forum->id,
-                    'userid' => $userid,
-                ];
-
-                // Update the subject.
-                $DB->set_field_select('forum_posts', 'subject', '', $postsql, $postparams);
-
-                // Update the subject and its format.
-                $DB->set_field_select('forum_posts', 'message', '', $postsql, $postparams);
-                $DB->set_field_select('forum_posts', 'messageformat', FORMAT_PLAIN, $postsql, $postparams);
-
-                // Mark the post as deleted.
-                $DB->set_field_select('forum_posts', 'deleted', 1, $postsql, $postparams);
-
-                // Note: Do _not_ delete ratings of other users. Only delete ratings on the users own posts.
-                // Ratings are aggregate fields and deleting the rating of this post will have an effect on the rating
-                // of any post.
-                \core_rating\privacy\provider::delete_ratings_select($context, 'mod_forum', 'post',
-                        "IN ($postidsql)", $postparams);
-
-                // Delete all Tags.
-                \core_tag\privacy\provider::delete_item_tags_select($context, 'mod_forum', 'forum_posts',
-                        "IN ($postidsql)", $postparams);
-            }
-
-            $uniquediscussions->close();
-
-            // Delete all files from the posts.
-            $fs = get_file_storage();
-            $fs->delete_area_files($context->id, 'mod_forum', 'post');
-        }
     }
 }

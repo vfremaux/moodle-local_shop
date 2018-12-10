@@ -50,6 +50,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
+$PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
 
 $renderer = $PAGE->get_renderer('local_shop');
 $renderer->load_context($theshop, $thecatalog, $theblock);

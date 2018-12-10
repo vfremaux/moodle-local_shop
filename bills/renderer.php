@@ -93,8 +93,9 @@ class shop_bills_renderer extends local_shop_base_renderer {
     public function customer_info($bill) {
         global $DB;
 
-        if (!empty($bill->invoiceinfo)) {
-            $ci = unserialize($bill->invoiceinfo);
+        $invoiceinfo = $bill->invoiceinfo; // Care of indirect magic __get with empty();
+        if (!empty($invoiceinfo)) {
+            $ci = (object) unserialize($bill->invoiceinfo);
             $useinvoiceinfo = true;
         } else {
             $ci = $DB->get_record('local_shop_customer', array('id' => $bill->customerid));
@@ -105,11 +106,6 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $str .= '<div id="shop-customerinfo">';
         $str .= '<table cellspacing="4" width="100%">';
-
-        $str .= '<tr>';
-        $str .= '<td width="60%" valign="top">';
-        $str .= '<b>'.get_string('orderID', 'local_shop').'</b>'. $bill->transactionid;
-        $str .= '</td>';
 
         $str .= '<td width="40%" valign="top" align="right">';
         $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($bill->emissiondate);
@@ -493,7 +489,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $jshandler = 'Javascript:ajax_delete_unit(\''.$CFG->wwwroot;
             $jshandler .= '\', \''.$this->theshop->id.'\', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core');
+            $str .= $OUTPUT->pix_icon('t/delete', get_string('deleteone', 'local_shop'));
             $str .= '</a>';
         }
 
@@ -631,12 +627,12 @@ class shop_bills_renderer extends local_shop_base_renderer {
                             'relocated' => $billitem->id,
                             'z' => $billitem->ordering);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-            $pix = $OUTPUT->pix_icon('t/move', get_string('move'), 'core');
+            $pix = $OUTPUT->pix_icon('t/move', get_string('move'));
             $str .= '<a href="'.$linkurl.'" title="'.$movestr.'">'.$pix.'</a>';
 
             $params = array('id' => $this->theshop->id, 'billid' => $billitem->bill->id, 'billitemid' => $billitem->id);
             $linkurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
-            $pix = $OUTPUT->pix_icon('i/edit', get_string('edit'), 'core');
+            $pix = $OUTPUT->pix_icon('i/edit', get_string('edit'));
             $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$editstr.'">'.$pix.'</a>';
             $params = array('id' => $this->theshop->id,
                             'view' => 'viewBill',
@@ -645,7 +641,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
                             'z' => $billitem->ordering,
                             'billid' => $billitem->bill->id);
             $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-            $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core');
+            $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $str .= '&nbsp;<a href="'.$linkurl.'" title="'.$deletestr.'">'.$pix.'</a>';
         }
         $str .= '</div>';
@@ -714,134 +710,46 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str = '';
-
-        $str .= '<table cellspacing="5" class="generaltable" width="100%">';
-
-        $str .= '<tr valign="top">';
-        $str .= '<th colspan="3" class="cell c0">';
-        $str .= get_string('totals', 'local_shop');
-        $str .= '</th>';
-        $str .= '</tr>';
+        $template = new StdClass;
+        $template->currency = $this->theshop->get_currency('symbol');
 
         if (!empty($bill->discount) || !empty($config->hasshipping)) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= get_string('subtotal', 'local_shop');
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="cell c2 lastcol">';
-            $str .= $bill->finaltaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->finaltaxedtotal = $bill->finaltaxedtotal;
         }
 
         if ($bill->discount != 0) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle ratio cell c1">';
-            $str .= get_string('discount', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="shop-totals ratio cell c2">';
-            $str .= '<b>-' . ($config->discountrate).'%</b>';
-            $str .= '</td>';
-            $str .= '</tr>';
-
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle cell c1">';
-            $str .= get_string('totaldiscounted', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="shop-totals cell c2">';
-            $str .= $bill->finaltaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->discountrate = $config->discountrate;
+            $template->finaltaxedtotal = $bill->finaltaxedtotal;
         }
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0">';
-        $str .= get_string('untaxedsubtotal', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" class="cell c2 lastcol">';
-        $str .= $bill->finaluntaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->finaluntaxedtotal = sprintf('%0.2f', round($bill->finaluntaxedtotal, 2));
+        $template->finaltaxestotal = sprintf('%0.2f', round((0 + @$bill->finaltaxestotal), 2));
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0 shop-taxes">';
-        $str .= get_string('taxes', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" class="cell c2 lastcol shop-taxes">';
-        $str .= (0 + @$bill->finaltaxestotal).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
         if ($bill->status == SHOP_BILL_COMPLETE || $bill->status == SHOP_BILL_SOLDOUT) {
-            $str .= '<b>'.get_string('paiedfinaltotalprice', 'local_shop').'</b>:';
+            $template->finaltotalpricestr = get_string('paiedfinaltotalprice', 'local_shop');
         } else {
-            $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+            $template->finaltotalpricestr = get_string('finaltotalprice', 'local_shop');
         }
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" class="cell c2 shop-total topay">';
+
         if (empty($config->hasshipping)) {
-            $str .= '<b>'.$bill->finaltaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
+            $template->finaltaxedtotal = sprintf('%0.2f', round($bill->finaltaxedtotal, 2));
+
         } else {
-            $str .= '<b>'.($bill->finaltaxedtotal + $bill->shipping->taxedvalue).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
-        }
-        $str .= '</td>';
-        $str .= '</tr>';
+            $template->finaltaxedtotal = sprintf('%0.2f', round($bill->finaltaxedtotal + $bill->shipping->taxedvalue, 2));
 
-        if (!empty($config->hasshipping)) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1 shop-totaltitle">';
-            $str .= get_string('shipping', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="cell c2 shop-totals">';
-            $str .= $bill->shipping->taxedvalue.'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->hasshipping = true;
+            $template->shippingtaxedvalue = sprintf('%0.2f', round($bill->shipping->taxedvalue, 2));
 
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
             if ($bill->status == SHOP_BILL_COMPLETE || $bill->status == SHOP_BILL_SOLDOUT) {
-                $str .= '<b>'.get_string('paiedfinaltotalprice', 'local_shop').'</b>:';
+                $template->finaltotalpricestr = get_string('paiedfinaltotalprice', 'local_shop');
             } else {
-                $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
+                $template->finaltotalpricestr = get_string('finaltotalprice', 'local_shop');
             }
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="cell c2 shop-total topay">';
-            $str .= '<b>'.$bill->finalshippedtaxedtotal.'&nbsp;'.$this->theshop->get_currency('symbol').'</b>&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
+
+            $template->finalshippedtaxedtotal = sprintf('%0.2f', round($bill->finalshippedtaxedtotal, 2));
         }
 
-        $str .= '</table>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/bills_bill_totals', $template);
     }
 
     /**
@@ -1410,6 +1318,57 @@ class shop_bills_renderer extends local_shop_base_renderer {
         }
 
         $str .= '</table>';
+
+        return $str;
+    }
+
+    public function bill_status_line($status) {
+
+        $str = '';
+        $str .= '<tr>';
+        $str .= '<td colspan="5" class="grouphead">';
+        $str .= '<b>'.get_string('bill_' . $status . 's', 'local_shop').'</b>';
+        $str .= '</td>';
+        $str .= '</tr>';
+
+        return $str;
+    }
+
+    public function bill_group_subtotal($subtotal, $billcurrency, $samecurrency) {
+        $str = '';
+
+        $str .= '<tr>';
+        $str .= '<td colspan="1" class="groupsubtotal">';
+        $str .= get_string('total', 'local_shop');
+        $str .= '</td>';
+        $str .= '<td colspan="5" class="groupsubtotal">';
+        $str .= '</td>';
+        $str .= '<td align="right" class="groupsubtotal">';
+        if ($samecurrency) {
+            $str .= '<b>'.sprintf('%.2f', round($subtotal, 2));
+            $str .= ' ';
+            $str .= get_string($billcurrency.'symb', 'local_shop');
+        } else {
+            $str .= get_string('nosamecurrency', 'local_shop');
+        }
+        $str .= '</b>';
+        $str .= '</td>';
+        $str .= '</tr>';
+
+        return $str;
+    }
+
+    public function bill_view_links(&$theshop) {
+
+        $excelurl = new moodle_url('/local/shop/export/export.php', array('what' => 'allbills', 'format' => 'excel'));
+        $billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
+
+        $str = '';
+
+        $str .= '<div id="shop-bill-view-links">';
+        $str .= '<a class="btn button" href="'.$excelurl.'" target="_blank">'.get_string('exportasxls', 'local_shop').'</a>';
+        $str .= ' - <a class="btn button" href="'.$billurl.'">'.get_string('newbill', 'local_shop').'</a>';
+        $str .= '</div>';
 
         return $str;
     }

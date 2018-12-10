@@ -1,0 +1,39 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_local_confirmation
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_local_confirmation -->
+<center>
+<form name="confirmation" method="POST" action="{{{formurl}}}" style="display : inline">
+    <table width="100%">
+        <tr>
+            <td align="center">
+                {{#disabled}}
+                    <br/><span id="disabled-advice-span" class="error">{{#str}}requiredataadvice, local_shop{{/str}}</span><br/>
+                {{/disabled}}
+                <input type="button" name="go_confirm" value="{{#str}}confirm, local_shop{{/str}}" onclick="send_confirm();" {{{disabled}}} />
+            </td>
+        </tr>
+    </table>
+</form>
+</center>
+<!-- /local_shop/front_local_confirmation -->

@@ -1,0 +1,43 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_cart_summary
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_cart_summary -->
+<table width="100%" id="shop-cart-summary">
+    {{#catalogitem}}
+    <tr>
+        <td class="short-order-name">
+            <span title="{{{name}}}" alt="{{{name}}}">{{{code}}}</span>
+        </td>
+        <td class="short-order-quantity">
+            {{q}}
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="short-order-summary">
+            {{{desc}}}
+        </td>
+    </tr>
+}
+</table>
+<!-- /local_shop/front_cart_summary -->

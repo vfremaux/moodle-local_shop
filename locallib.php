@@ -265,6 +265,10 @@ function shop_backup_for_template($courseid, $options = array(), &$log = '') {
  * @return a username
  */
 function shop_generate_username($user) {
+    if (empty($user)) {
+        debugging("Empty user");
+        return;
+    }
     $firstname = $user->firstname;
     $lastname = $user->lastname;
 
@@ -387,7 +391,6 @@ function shop_restore_template($archivefile, $data) {
 
     return $newcourseid;
 }
-
 
 /**
  * Create category with the given name and parentID returning a category ID
