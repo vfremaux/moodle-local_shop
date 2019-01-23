@@ -43,6 +43,7 @@ function local_shop_supports_feature($feature = null) {
                 'catalog' => array('instances'),
                 'shop' => array('instances'),
                 'products' => array('editable'),
+                'docgen' => array('pdf'),
             ),
             'community' => array(
                 'handlers' => array('basic'),

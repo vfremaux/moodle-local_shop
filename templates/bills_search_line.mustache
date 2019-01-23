@@ -1,0 +1,32 @@
+
+
+
+<!-- local_shop/search_bill_line -->
+    <tr class="{{lineclass}}">
+
+        <td>
+            <a class="activeLink" href="{{{billurl}}}">{{uniqueid}}</a>
+        </td>
+
+        <td>
+            <a href="{{{customerurl}}}">{{customername}}</a>
+        </td>
+
+        <td>
+            {{emissiondate}}
+        </td>
+
+        <td>
+            {{transactionid}}
+            {{#onlinetransactionid}}
+            <br/>
+            ({{onlinetransactionid}})
+            {{/onlinetransactionid}}
+        </td>
+
+        <td>
+            {{status}}
+        </td>
+
+    </tr>
+<!-- /local_shop/search_bill_line -->

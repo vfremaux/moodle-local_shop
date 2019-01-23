@@ -98,6 +98,13 @@ class payment_controller extends front_controller_base {
 
             // Invoice info.
             if ($oldbillrec = $DB->get_record('local_shop_bill', array('transactionid' => $SESSION->shoppingcart->transid))) {
+
+                if ($oldbillrec->status == SHOP_BILL_SOLDOUT || $oldbillrec->status == SHOP_BILL_COMPLETE) {
+                    $params = array('view' => 'invoice', 'transid' => $SESSION->shoppingcart->transid);
+                    $frontbillurl = new \moodle_url('/local/shop/front/view.php', $params);
+                    redirect($frontbillurl);
+                }
+
                 $bill = new Bill($oldbillrec, true, $this->theshop, $this->thecatalog, $this->theblock);
                 // Clear all items as they might have changed.
                 $bill->delete_items();
@@ -129,7 +136,9 @@ class payment_controller extends front_controller_base {
             $bill->expectedpaiement = 0;
             $bill->ignoretax = 0;
             $bill->paymentfee = 0;
-            $bill->invoiceinfo = json_encode($SESSION->shoppingcart->invoiceinfo);
+            if (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) {
+                $bill->invoiceinfo = json_encode($SESSION->shoppingcart->invoiceinfo);
+            }
 
             // First save of the bill in order bill items can be added. We need a first id. We save "light".
             // The bill will be full save back later.

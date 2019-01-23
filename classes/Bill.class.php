@@ -505,6 +505,34 @@ class Bill extends ShopObject {
         return $bill;
     }
 
+    public static function count_by_states($fullview, $filterclause) {
+        global $DB;
+
+        $total = new \StdClass;
+        $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $filterclause");
+
+        if ($fullview) {
+            $total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $filterclause");
+            $total->PENDING = $DB->count_records_select('local_shop_bill', " status = 'PENDING' $filterclause");
+        }
+
+        $total->SOLDOUT = $DB->count_records_select('local_shop_bill', "status = 'SOLDOUT' $filterclause");
+        $total->COMPLETE = $DB->count_records_select('local_shop_bill', "status = 'COMPLETE' $filterclause");
+
+        if ($fullview) {
+            $total->CANCELLED = $DB->count_records_select('local_shop_bill', " status = 'CANCELLED' $filterclause");
+            $total->FAILED = $DB->count_records_select('local_shop_bill', "status = 'FAILED' $filterclause");
+        }
+
+        $total->PAYBACK = $DB->count_records_select('local_shop_bill', "status = 'PAYBACK' $filterclause");
+
+        if ($fullview) {
+            $total->ALL = $DB->count_records_select('local_shop_bill', " 1 $filterclause ");
+        }
+
+        return $total;
+    }
+
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }

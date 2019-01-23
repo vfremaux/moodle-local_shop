@@ -83,6 +83,8 @@ $string['bic'] = 'Code BIC';
 $string['bill'] = 'Facture';
 $string['billdate'] = 'Date d\'émission';
 $string['billid'] = 'Numéro de facture';
+$string['billpaidstamp'] = 'Tampon "payé"';
+$string['billpaidstamp_desc'] = 'A png or jpg image';
 $string['bills'] = 'Factures';
 $string['billscopeamount'] = 'Forfait H.T.';
 $string['billsdeleted'] = 'Factures/commandes effacées';
@@ -194,6 +196,7 @@ $string['discountrate3'] = 'Taux de remise 3';
 $string['discounts'] = 'Réglages des remises';
 $string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour remise';
 $string['dispo'] = 'Dispo';
+$string['downloadpdfbill'] = 'Télécharger en PDF';
 $string['dosearch'] = 'Rechercher';
 $string['edit_categories'] = 'Edition des catégories';
 $string['editbundle'] = 'Edition du lot';
@@ -220,6 +223,7 @@ $string['eulaheading'] = 'Conditions générales de ventes';
 $string['expectedpaiement'] = 'Délai de paiement&nbsp;';
 $string['experimental'] = 'Fonctionnalités expérimentales';
 $string['formula'] = 'Formule';
+$string['fulldatefmt'] = '%d/%m/%Y %H:%M';
 $string['from'] = 'depuis (date)';
 $string['generalsettings'] = 'Accède au formulaire de paramètres globaux dans l\'administration Moodle';
 $string['generateacode'] = 'Générer un code';
@@ -769,6 +773,7 @@ require($CFG->dirroot.'/local/shop/lang/fr/purchasemanager.php');
 require($CFG->dirroot.'/local/shop/lang/fr/customers.php');
 require($CFG->dirroot.'/local/shop/lang/fr/tax.php');
 require($CFG->dirroot.'/local/shop/lang/fr/shipzones.php');
+require($CFG->dirroot.'/local/shop/lang/fr/pdf.php');
 
 // Currencies.
 

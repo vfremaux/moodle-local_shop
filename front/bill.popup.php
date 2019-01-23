@@ -77,17 +77,6 @@ $billrenderer->load_context($theshop, $thecatalog, $theblock);
 
 $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
 
-if (!in_array($afullbill->status, $realized)) {
-    $headerstring = get_string('ordersheet', 'local_shop');
-    print_string('ordertempstatusadvice', 'local_shop');
-} else {
-    if (empty($afullbill->idnumber)) {
-        $headerstring = get_string('proformabill', 'local_shop');
-    } else {
-        $headerstring = get_string('bill', 'local_shop');
-    }
-}
-
 echo $OUTPUT->header();
 echo '<div style="max-width:780px">';
 
@@ -116,17 +105,13 @@ if (!in_array($afullbill->status, $realized)) {
 }
 echo $renderer->full_order_taxes($afullbill);
 
-echo $renderer->paymode($theshop, $afullbill);
+echo $renderer->paymode($afullbill);
 
 echo $renderer->sales_contact();
 
 echo '</div>';
 
-echo '<center>';
-echo '<a href="#" onclick="window.print();return false;">';
-echo '<input type="button" value="'.get_string('printlink', 'local_shop').'" />';
-echo '</a>';
-echo '</center>';
+echo $renderer->print_screen_button();
 
 echo $billrenderer->bill_footer($afullbill);
 

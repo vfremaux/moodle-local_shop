@@ -22,8 +22,18 @@
 
 }}
 <!-- local_shop/print_bill_button -->
+{{#ispdf}}
+    <center>
+    <form name="pdfbill" action="{{{billurl}}}" target="_blank" class="shop-inline" />
+    <input type="button"
+               name="pdf_upload_btn"
+               value="{{#str}}downloadpdfbill, local_shop{{/str}}" />
+    </form>
+    </center>
+{{/ispdf}}
+{{^ispdf}}
 <form name="bill" action="{{{popupurl }}}" target="_blank" class="shop-inline" />
-    <input type="hidden" name="transid" value="{{transactionid}}" />
+    <input type="hidden" name="transid" value="{{transid}}" />
     <input type="hidden" name="billid" value="{{billid}}">
     <input type="hidden" name="shopid" value="{{shopid}}\">
     <input type="hidden" name="blockid" value="{{blockid}}\">
@@ -31,4 +41,5 @@
         {{{printbillbutton}}}
     </div>
 </form>
+{{/ispdf}}
 <!-- /local_shop/print_bill_button -->

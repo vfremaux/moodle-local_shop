@@ -219,7 +219,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
                 // We cannot edit master records ghosts from the slave catalog.
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $product->id));
-                $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit', 'moodle').'</a> ';
+                $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit', 'moodle')).'</a> ';
 
                 $params = array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $product->id);
                 $copyurl = new moodle_url('/local/shop/products/view.php', $params);

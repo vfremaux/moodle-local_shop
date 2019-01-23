@@ -51,8 +51,8 @@ if (empty($bills)) {
 
     echo $OUTPUT->box(print_string('manybillsasresult', 'local_shop'));
 
-    echo $renderer->search_results($bills);
+    echo $renderer->search_results($bills, $theshop);
 }
 
 $billcount = $DB->count_records('local_shop_bill');
-echo $renderer->search_form($theblock, $billcount);
+echo $renderer->search_form($theshop, $billcount);

@@ -22,6 +22,7 @@
 
 }}
 <!-- local_shop/front_payment -->
+{{^freeorderonly}}
 <table width="100%" id="shop-paymodes">
     <tr>
         <td valign="top" colspan="1">
@@ -50,4 +51,9 @@
         </td>
     </tr>
 </table>
+{{/freeorderonly}}
+{{#freeorderonly}}
+<div class="shop-notification">{{#str}}freeordersignal, local_shop{{/str}}</div>
+<input type="hidden" name="paymode" value="freeorder" />
+{{/freeorderonly}}
 <!-- /local_shop/front_payment -->

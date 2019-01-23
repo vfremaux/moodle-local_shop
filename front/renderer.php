@@ -104,7 +104,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $iconstate = '_dis';
             }
 
-            $stepicon = $this->output->pix_url(current_language().'/'.$icon.$iconstate, 'local_shop');
+            $stepicon = $this->output->image_url(current_language().'/'.$icon.$iconstate, 'local_shop');
             $str .= '<img src="'.$stepicon.'" />&nbsp;';
         }
         $str .= '</center>';
@@ -171,30 +171,37 @@ class shop_front_renderer extends local_shop_base_renderer {
     public function printable_bill_link(&$bill) {
         global $DB;
 
+        $config = get_config('local_shop');
         $template = new StdClass;
 
         $states = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
         $popup = (in_array($bill->status, $states)) ? 'bill' : 'order';
 
         $template->popupurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php');
-        $template->transactionid = $bill->transactionid;
+        $template->transid = $bill->transactionid;
         $template->billid = $bill->id;
         $template->shopid = $this->theshop->id;
         $template->blockid = 0 + @$this->theblock->id;
 
-        $params = array('shopid' => $this->theshop->id,
-                        'blockid' => (0 + @$this->theblock->id),
-                        'billid' => $bill->id,
-                        'transid' => $bill->transactionid);
+        if (!empty($config->pdfenabled)) {
+            $template->ispdf = true;
+            $billurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', array('transid' => $template->transid));
+            $template->billurl = $billurl->out();
+        } else {
+            $params = array('shopid' => $this->theshop->id,
+                            'blockid' => (0 + @$this->theblock->id),
+                            'billid' => $bill->id,
+                            'transid' => $bill->transactionid);
 
-        $billurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php', $params);
-        $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $bill->id));
+            $billurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php', $params);
+            $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $bill->id));
 
-        if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
-            $billuser = $DB->get_record('user', array('id' => $userid));
-            $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-            $options = array('ticket' => $ticket);
-            $template->printbillbutton = $this->output->single_button('/login/index.php', get_string('printbill', 'local_shop'), 'post',  $options);
+            if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
+                $billuser = $DB->get_record('user', array('id' => $userid));
+                $ticket = ticket_generate($billuser, 'immediate access', $billurl);
+                $options = array('ticket' => $ticket);
+                $template->printbillbutton = $this->output->single_button('/login/index.php', get_string('printbill', 'local_shop'), 'post',  $options);
+            }
         }
 
         return $this->output->render_from_template('local_shop/print_bill_button', $template);
@@ -497,7 +504,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $cutoff = floor($cutoff / 2);
             }
             if (core_text::strlen($product->description) > $cutoff) {
-                $template->shorthandlepixurl = $OUTPUT->pix_url('ellipsisopen', 'local_shop');
+                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
                 $template->readmorestr = get_string('readmore', 'local_shop');
                 $template->shortdescription = true;
             }
@@ -572,7 +579,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->description = format_text($set->description);
             $cutoff = $config->shortdescriptionthreshold;
             if (core_text::strlen($set->description) > $cutoff) {
-                $template->shorthandlepixurl = $OUTPUT->pix_url('ellipsisopen', 'local_shop');
+                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
                 $template->readmorestr = get_string('readmore', 'local_shop');
                 $template->shortdescription = true;
             }
@@ -627,8 +634,8 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
             $cutoff = $config->shortdescriptionthreshold;
             if (core_text::strlen($bundle->description) > $cutoff) {
-                // $template->rarrowpix = $OUTPUT->pix_url('rarrow', 'local_shop');
-                $template->shorthandlepixurl = $OUTPUT->pix_url('ellipsisopen', 'local_shop');
+                // $template->rarrowpix = $OUTPUT->image_url('rarrow', 'local_shop');
+                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
                 $template->readmorestr = get_string('readmore', 'local_shop');
                 $template->shortdescription = true;
             }
@@ -853,10 +860,10 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
         $template->lastname = $lastname;
-        $template->firstname;
+        $template->firstname = $firstname;
         $template->customerorganisationrequired = $this->theshop->customerorganisationrequired;
         $template->organisation = $organisation;
-        $template->adresse = $address;
+        $template->address = $address;
         $template->city = $city;
         $template->zip = $zip;
         $choices = get_string_manager()->get_list_of_countries();
@@ -919,82 +926,31 @@ class shop_front_renderer extends local_shop_base_renderer {
     public function participant_row($participant = null) {
         global $CFG;
 
-        $str = '';
+        $template = new StdClass;
 
         if ($participant) {
+            $template->participant = true;
 
-            $str .= '<tr>';
-            $str .= '<td align="left">';
-            $str .= @$participant->lastname;
-            $str .= '</td>';
-            $str .= '<td align="left">';
-            $str .= @$participant->firstname;
-            $str .= '</td>';
-            $str .= '<td align="left">';
-            $str .= @$participant->email;
-            $str .= '</td>';
-            $str .= '<td align="left">';
-            $str .= strtoupper(@$participant->city);
-            $str .= '</td>';
-            if (!empty($this->theshop->endusermobilephonerequired)) {
-                $str .= '<td align="left">';
-                $str .= strtoupper(@$participant->phone2);
-                $str .= '</td>';
-            }
-            if (!empty($this->theshop->enduserorganisationrequired)) {
-                $str .= '<td align="left">';
-                $str .= strtoupper(@$participant->institution);
-                $str .= '</td>';
-            }
-            $str .= '<td align="left">';
+            $template->lastname = @$participant->lastname;
+            $template->firstname = @$participant->firstname;
+            $template->email = @$participant->email;
+            $template->city = strtoupper(@$participant->city);
+            $template->endusermobilephonerequired = !empty($this->theshop->endusermobilephonerequired);
+            $template->phone2 = @$participant->phone2;
+            $template->enduserorganisationrequired = !empty($this->theshop->enduserorganisationrequired);
+            $template->institution = strtoupper(@$participant->institution);
+
             if (@$participant->moodleid) {
-                $pixurl = $this->output->pix_url('i/moodle_host');
-                $str .= '<img src="'.$pixurl.'" title="'.get_string('isuser', 'local_shop').'" />';
+                $template->hasaccount = true;
             } else {
-                $pixurl = $this->output->pix_url('new', 'local_shop');
-                $str .= '<img src="'.$pixurl.'" title="'.get_string('isnotuser', 'local_shop').'" />';
+                $template->hasaccount = false;
             }
-            $str .= '</td>';
-            $str .= '<td align="right">';
-            $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'"
-                        href="Javascript:ajax_delete_user(\''.$participant->email.'\')">';
-            $str .= '<img src="'.$this->output->pix_url('t/delete').'" /></a>';
-            $str .= '</td>';
-            $str .= '</tr>';
         } else {
-            // Print a caption row.
-            $str .= '<tr>';
-            $str .= '<th align="left">';
-            $str .= get_string('lastname');
-            $str .= '</th>';
-            $str .= '<th align="left">';
-            $str .= get_string('firstname');
-            $str .= '</th>';
-            $str .= '<th align="left">';
-            $str .= get_string('email');
-            $str .= '</th>';
-            $str .= '<th align="left">';
-            $str .= get_string('city');
-            $str .= '</th>';
-            if (!empty($this->theshop->endusermobilephonerequired)) {
-                $str .= '<th align="left">';
-                $str .= get_string('phone2');
-                $str .= '</th>';
-            }
-            if (!empty($this->theshop->enduserorganisationrequired)) {
-                $str .= '<th align="left">';
-                $str .= get_string('institution');
-                $str .= '</th>';
-            }
-            $str .= '<th align="left">';
-            $str .= get_string('moodleaccount', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th align="right">';
-            $str .= '</th>';
-            $str .= '</tr>';
+            $template->endusermobilephonerequired = !empty($this->theshop->endusermobilephonerequired);
+            $template->enduserorganisationrequired = !empty($this->theshop->enduserorganisationrequired);
         }
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_participant_row', $template);
     }
 
     public function participant_blankrow() {
@@ -1148,7 +1104,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td align="right">';
         $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
         $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'"><img src="'.$this->output->pix_url('t/delete').'" /></a>';
+        $str .= '<a href="'.$jshandler.'"><img src="'.$this->output->image_url('t/delete').'" /></a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1302,22 +1258,16 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $q = (!empty($SESSION->shoppingcart->order)) ? $SESSION->shoppingcart->order[$shortname] : $q;
             $catalogitem = $this->thecatalog->get_product_by_shortname($shortname);
-            $template = new StdClass;
-            $template->currency = $this->theshop->get_currency('symbol');
-            $template->itemname = $catalogitem->name;
-            $template->abstract = '';
-            if (!empty($options['description'])) {
-                $template->abstract .= $catalogitem->description;
-            }
-            if (!empty($options['notes'])) {
-                $template->abstract .= '<br/>'.$catalogitem->notes;
-            }
-            $template->itemcode = $catalogitem->code;
-            $template->taxedprice = sprintf('%.2f', $catalogitem->get_taxed_price($q));
-            $template->q = $q;
-            $template->totaltaxedprice = sprintf('%.2f', $catalogitem->get_taxed_price($q) * $q);
 
-            return $this->output->render_from_template('local_shop/front_order_line', $template);
+            try {
+                $outputclass = 'front_order_line';
+                shop_load_output_class($outputclass);
+                $tpldata = new \local_shop\output\front_order_line($catalogitem, $q, $this->theshop, $options);
+                $template = $tpldata->export_for_template($this->output);
+                return $this->output->render_from_template('local_shop/front_order_line', $template);
+            } catch (Exception $e) {
+                print_error("Missing output class $outputclass");
+            }
         }
     }
 
@@ -1327,88 +1277,41 @@ class shop_front_renderer extends local_shop_base_renderer {
      */
     public function bill_line($billitem, $options = null) {
 
-        $template = new StdClass;
-
-        $template->q = $billitem->quantity;
-        $template->abstract = $billitem->abstract;
-        if (!empty($options['description'])) {
-            $template->description = $billitem->description;
+        try {
+            $outputclass = 'front_bill_line';
+            shop_load_output_class($outputclass);
+            $tpldata = new \local_shop\output\front_bill_line($billitem, $options);
+            $template = $tpldata->export_for_template($this->output);
+            return $this->output->render_from_template('local_shop/front_bill_line', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-        $template->itemcode = $billitem->itemcode;
-        $template->unitcost = sprintf('%0.2f', $billitem->unitcost);
-        $template->totalprice = sprintf('%0.2f', $billitem->totalprice);
 
-        return $this->output->render_from_template('local_shop/front_bill_line', $template);
     }
 
     /**
      * @param object $bill
      */
-    public function full_order_totals($bill = null) {
+    public function full_order_totals($bill = null, $theshop = null) {
         global $SESSION;
 
         $this->check_context();
 
-        $config = get_config('local_shop');
-
-        $shoppingcart = @$SESSION->shoppingcart;
-
-        $reason = '';
-
-        if (!is_null($bill)) {
-            $bill->recalculate();
-            $taxedtotal = $bill->ordertaxed;
-            $finaltaxedtotal = $bill->finaltaxedtotal;
-            $finaluntaxedtotal = $bill->finaluntaxedtotal;
-            $finaltaxestotal = $bill->taxes;
-            $discount = $bill->discount;
-            $shippingtaxedvalue = 0;
-            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-        } else {
-            $taxedtotal = $shoppingcart->taxedtotal;
-            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-            $discount = $shoppingcart->discount;
-
-            if ($discountrate) {
-                $finaltaxedtotal = $taxedtotal * (1 - ($discountrate / 100));
-                $finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
-            } else {
-                $finaltaxedtotal = $shoppingcart->finaltaxedtotal;
-                $finaluntaxedtotal = $shoppingcart->finaluntaxedtotal;
-            }
-
-            $finaltaxestotal = @$shoppingcart->finaltaxestotal;
-            $shippingtaxedvalue = 0 + @$shoppingcart->shipping->taxedvalue;
-            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal;
+        try {
+            $outputclass = 'front_order_totals';
+            shop_load_output_class($outputclass);
+            $tpldata = new \local_shop\output\front_order_totals(array($bill, $theshop, $this->context));
+            $template = $tpldata->export_for_template($this->output);
+            return $this->output->render_from_template('local_shop/front_order_totals', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-
-        $template = new StdClass;
-
-        $template->taxedtotal = sprintf("%0.2f", round($taxedtotal, 2));
-        $template->currency = $this->theshop->get_currency('symbol');
-
-        $template->discountrate = $discountrate;
-        $template->discount = $discount;
-
-        $template->finaluntaxedtotal = sprintf("%0.2f", round($finaluntaxedtotal, 2));
-
-        if (!empty($config->hasshipping)) {
-            $template->finaltaxedtotal = sprintf("%0.2f", round($finaltaxedtotal + $shippingtaxedvalue, 2));
-            $template->hasshipping = $config->hasshipping;
-            $template->shippingtaxedvalue = sprintf("%0.2f", round($shippingtaxedvalue, 2));
-
-            $template->finalshippedtaxedtotal = sprintf("%0.2f", round($finalshippedtaxedtotal, 2));
-        } else {
-            $template->finaltaxedtotal = sprintf("%0.2f", round($finaltaxedtotal, 2));
-        }
-
-        return $this->output->render_from_template('local_shop/front_order_totals', $template);
     }
 
     /**
      * @param object $bill
      */
-    public function full_order_taxes(&$bill = null) {
+    public function full_order_taxes(&$bill = null, $theshop = null) {
         global $SESSION;
 
         $this->check_context();
@@ -1421,29 +1324,15 @@ class shop_front_renderer extends local_shop_base_renderer {
             $finaltaxestotal = $SESSION->shoppingcart->finaltaxestotal;
         }
 
-        $str = '';
-        $template = new StdClass;
-        $template->currency = $this->theshop->get_currency('symbol');
-
-        if (!empty($taxes)) {
-
-            $str .= $this->output->heading(get_string('taxes', 'local_shop'), 2, '', 'invoice-taxes');
-
-            foreach ($taxes as $tcode => $tamount) {
-                $tax = new Tax($tcode);
-                $taxlinetpl = new StdClass;
-                $taxlinetpl->taxtitle = $tax->title;
-                $taxlinetpl->taxratio = $tax->ratio;
-                $taxlinetpl->taxamount = sprintf("%0.2f", round($tamount, 2));
-                $template->taxline[] = $taxlinetpl;
-            }
-
-            $template->totaltaxes = sprintf("%0.2f", round($finaltaxestotal, 2));
+        try {
+            $outputclass = 'front_taxes';
+            shop_load_output_class($outputclass);
+            $tpldata = new \local_shop\output\front_taxes($taxes, $finaltaxestotal, $theshop);
+            $template = $tpldata->export_for_template($this->output);
+            return $this->output->render_from_template('local_shop/front_taxes', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-
-        $str .= $this->output->render_from_template('local_shop/front_taxes', $template);
-
-        return $str;
     }
 
     /**
@@ -1471,7 +1360,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             $payinputs = '';
 
             foreach ($paymodes as $var) {
-                $isenabledvar = "enable$var";
 
                 $paymodeplugin = shop_paymode::get_instance($this->theshop, $var);
 
@@ -1508,6 +1396,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     }
                 }
 
+                $isenabledvar = "enable$var";
                 $check = $this->theshop->{$isenabledvar};
 
                 if ($check) {
@@ -1530,6 +1419,8 @@ class shop_front_renderer extends local_shop_base_renderer {
             if (empty($template->paymode)) {
                 $template->nopaymodesavailable = $this->output->notification(get_string('nopaymodesavailable', 'local_shop'));
             }
+        } else {
+            $template->freeorderonly = true;
         }
 
         return $this->output->render_from_template('local_shop/front_payment', $template);
@@ -1547,7 +1438,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
         $template->currency = $this->theshop->get_currency('symbol');
-
 
         $template->transid = $SESSION->shoppingcart->transid;
         $template->untaxedtotal = sprintf('%0.2f', round($shoppingcart->untaxedtotal, 2));
@@ -1640,15 +1530,15 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
         $template->actionurl = new moodle_url('/local/shop/front/view.php');
-        $template->isinform = $options['inform'];
+        $template->isinform = @$options['inform'];
         $template->view = $view;
         $template->shopid = $this->theshop->id;
         $template->blockid = (0 + @$this->theblock->id);
         $template->wantstransid = !empty($options['transid']);
-        $template->transid = $options['transid'];
+        $template->transid = @$options['transid'];
         $template->sesskey = sesskey();
-        $template->hideback = $options['hideback'];
-        $template->hidenext = $options['hidenext'];
+        $template->hideback = @$options['hideback'];
+        $template->hidenext = @$options['hidenext'];
         $template->overtext = @$options['overtext'];
         $template->nextdisabled = @$options['nextdisabled'];
         $template->nextstyle = @$options['nextstyle'];
@@ -1887,81 +1777,15 @@ class shop_front_renderer extends local_shop_base_renderer {
     public function invoice_header(&$afullbill) {
         global $CFG;
 
-        $config = get_config('local_shop');
-
-        $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
-
-        $subheaderstring = '';
-        if (!in_array($afullbill->status, $realized)) {
-            $headerstring = get_string('ordersheet', 'local_shop');
-            $subheaderstring = get_string('ordertempstatusadvice', 'local_shop');
-        } else {
-            if (empty($afullbill->idnumber)) {
-                $headerstring = get_string('proformabill', 'local_shop');
-            } else {
-                $headerstring = get_string('bill', 'local_shop');
-            }
+        try {
+            $outputclass = 'front_invoice_header';
+            shop_load_output_class($outputclass);
+            $invoiceheader = new \local_shop\output\front_invoice_header($afullbill);
+            $template = $invoiceheader->export_for_template($this->output);
+            return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-
-        $template = new StdClass;
-
-        if (!empty($afullbill->withlogo)) {
-            $template->withlogo = true;
-
-            if (!empty($config->sellerlogo)) {
-                $syscontext = context_system::instance();
-                $component = 'local_shop';
-                $filearea = 'shoplogo';
-                $itemid = 0;
-                $filepath = $config->sellerlogo;
-                $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
-                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
-            } else {
-                $template->logourl = $this->output->pix_url('logo', 'theme');
-            }
-        }
-
-        $template->headingstr = $this->output->heading($headerstring, 1);
-        if (!empty($subheaderstring)) {
-            $template->subheadingstr = $subheaderstring;
-        }
-
-        $template->sellername = $config->sellername;
-        $template->selleraddress = $config->selleraddress;
-        $template->sellerzip = $config->sellerzip;
-        $template->sellercity = $config->sellercity;
-        $template->sellercountry = $config->sellercountry;
-
-        $template->emissiondatestamp = date('Ymd', $afullbill->emissiondate);
-        $template->emissiondatestr = date(get_string('billdatefmt', 'local_shop'), $afullbill->emissiondate);
-        $template->billid = $afullbill->id;
-
-        $template->transactionid = $afullbill->transactionid;
-        $template->providetransactioncodestr = get_string('providetransactioncode', 'local_shop');
-
-        // Be carefull of empty on a magic __get return;
-        $invoiceinfo = $afullbill->invoiceinfo;
-        if (empty($invoiceinfo)) {
-            if (!empty($afullbill->customer->organisation)) {
-                $template->organisation = $afullbill->customer->organisation;
-            }
-            $template->invoicename = $afullbill->customer->lastname.' '.$afullbill->customer->firstname;
-            $template->invoicezip = $afullbill->customer->zip;
-            $template->invoicecity = $afullbill->customer->city;
-            $template->invoicecountry = strtoupper($afullbill->customer->country);
-        } else {
-            // Invoice identity comes from invoice info.
-            $customer = json_decode($afullbill->invoiceinfo);
-            if (!empty($customer->organisation)) {
-                $template->organisation = $customer->organisation;
-            }
-            $template->invoicename = $customer->lastname.' '.$customer->firstname;
-            $template->invoicezip = $customer->zip;
-            $template->invoicecity = $customer->city;
-            $template->invoicecountry = strtoupper($customer->country);
-        }
-
-        return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
     }
 
     public function sales_contact() {
@@ -1977,19 +1801,17 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_sales_contact', $template);
     }
 
-    public function paymode($theshop, $afullbill) {
-        global $OUTPUT, $CFG;
+    public function paymode($afullbill) {
+        global $OUTPUT;
 
-        $str = $OUTPUT->heading(get_string('paymode', 'local_shop'), 2, '', 'shop-paymode');
-        include_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
-
-        $classname = 'shop_paymode_'.$afullbill->paymode;
-
-        $str .= '<div id="shop-order-paymode">';
-        $pm = new $classname($theshop);
-        $str .= $pm->print_name(true);
-        $str .= '</div>';
-
-        return $str;
+        try {
+            $outputclass = 'front_paymode';
+            shop_load_output_class($outputclass);
+            $invoiceheader = new \local_shop\output\front_paymode($afullbill);
+            $template = $invoiceheader->export_for_template($this->output);
+            return $OUTPUT->render_from_template('local_shop/front_paymode', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
+        }
     }
 }

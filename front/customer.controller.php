@@ -32,6 +32,7 @@ class customer_controller extends front_controller_base {
      *
      */
     public function receive($cmd, $data = array()) {
+
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;

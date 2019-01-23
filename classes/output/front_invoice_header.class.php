@@ -1,0 +1,96 @@
+<?php
+
+namespace local_shop\output;
+
+
+class front_invoice_header implements \Templatable {
+
+    protected $bill;
+
+    public function __construct($bill) {
+        $this->bill = $bill;
+    }
+
+    public function export_for_template(\renderer_base $output) {
+        global $OUTPUT;
+
+        $config = get_config('local_shop');
+
+        $afullbill = $this->bill;
+
+        $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
+
+        $template = new \StdClass;
+
+        $subheaderstring = '';
+        if (!in_array($afullbill->status, $realized)) {
+            $headerstring = get_string('ordersheet', 'local_shop');
+            $template->subheadingstr = get_string('ordertempstatusadvice', 'local_shop');
+        } else {
+            if (empty($afullbill->idnumber)) {
+                $headerstring = get_string('proformabill', 'local_shop');
+            } else {
+                $headerstring = get_string('bill', 'local_shop');
+            }
+        }
+
+        if (!empty($afullbill->withlogo)) {
+            $template->withlogo = true;
+
+            if (!empty($config->sellerlogo)) {
+                $syscontext = context_system::instance();
+                $component = 'local_shop';
+                $filearea = 'shoplogo';
+                $itemid = 0;
+                $filepath = $config->sellerlogo;
+                $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
+                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
+            } else {
+                $template->logourl = $OUTPUT->image_url('logo', 'theme');
+            }
+        }
+
+        $template->headingstr = $OUTPUT->heading($headerstring, 1);
+
+        $template->sellername = $config->sellername;
+        $template->selleraddress = $config->selleraddress;
+        $template->sellerzip = $config->sellerzip;
+        $template->sellercity = $config->sellercity;
+        $template->sellercountry = $config->sellercountry;
+
+        $emissiondatestamp = date('Ymd', $afullbill->emissiondate);
+        $template->uniqueid = 'B-'.$emissiondatestamp.'-'.$afullbill->ordering;
+        $template->emissiondatestr = date(get_string('billdatefmt', 'local_shop'), $afullbill->emissiondate);
+        $template->billid = $afullbill->id;
+
+        $template->transactionid = $afullbill->transactionid;
+        $template->providetransactioncodestr = get_string('providetransactioncode', 'local_shop');
+
+        // Be carefull of empty on a magic __get return;
+        $invoiceinfo = $afullbill->invoiceinfo;
+        if (empty($invoiceinfo)) {
+            if (!empty($afullbill->customer->organisation)) {
+                $template->organisation = $afullbill->customer->organisation;
+            }
+            $template->invoicename = $afullbill->customer->lastname.' '.$afullbill->customer->firstname;
+            $template->invoicezip = $afullbill->customer->zip;
+            $template->invoicecity = $afullbill->customer->city;
+            $template->invoicecountry = strtoupper($afullbill->customer->country);
+        } else {
+            // Invoice identity comes from invoice info.
+            $customer = json_decode($afullbill->invoiceinfo);
+            if (!empty($customer->organisation)) {
+                $template->organisation = $customer->organisation;
+            }
+            $template->invoicename = $customer->lastname.' '.$customer->firstname;
+            $template->invoicezip = $customer->zip;
+            $template->invoicecity = $customer->city;
+            if (!empty($customer->country)) {
+                $template->invoicecountry = strtoupper($customer->country);
+            }
+        }
+
+        return $template;
+    }
+
+}
