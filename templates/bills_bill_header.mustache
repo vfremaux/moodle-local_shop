@@ -1,0 +1,87 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/bills_bill_header
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/bills_bill_header -->
+<table class="generaltable" width="100%">
+    <tr>
+        <td valign="top" style="padding : 2px" colspan="5" class="shop-bill-list-title">
+            <h1>{{{heading}}}
+            <span class="shop-title-data">{{billunique}}</span></h1><br/>
+            {{#subheadingstr}}
+            <div class="shop-statusadvice">
+            {{subheadingstr}}
+            </div>
+            {{/subheadingstr}}
+            {{emissiondate}}
+        </td>
+
+        <td colspan="3">
+            <b>{{#str}}transactionid, local_shop{{/str}}: </b><br />
+            <div id="transactionid">
+                <a href="{{{scanurl}}}" target="_blank">{{transid}}</a>
+            </div><br />
+
+            {{#onlinetransactionid}}
+            <b>{{#str}}paimentcode, local_shop{{/str}}</b><br />
+            <div id="transactionid">{{onlinetransactionid}}</div>
+            {{/onlinetransactionid}}
+
+            {{^transid}}
+            {{#str}}nocodegenerated, local_shop{{/str}}<br/>
+            <a href="{{{url}}}&what=generatecode">{{#str}}generateacode, local_shop{{/str}}</a>
+            {{/transid}}
+        </td>
+
+        <td colspan="1" valign="top">
+            <b>{{#str}}lettering, local_shop{{/str}}</b>
+            {{{letteringhelpicon}}}
+            <br/>
+
+            {{^paid}}
+                {{#str}}noletteringaspending, local_shop{{/str}}
+                <br/>
+            {{/paid}}
+            {{#paid}}
+                {{{letteringfeedback}}}
+            {{{letteringform}}}
+            <br/>
+            {{/paid}}
+
+            <b>{{#str}}paymodes, local_shop{{/str}}: </b>
+            {{paymode}}
+        </td>
+
+        <td>
+            {{{printablebilllink}}}
+        </td>
+
+    </tr>
+
+    <tr>
+        <td valign="top" style="padding : 2px" colspan="10" class="shop-bill-title">
+            <h2>{{#str}}title, local_shop{{/str}} : <span class="titleData">{{title}}</span></h2>
+        </td>
+    </tr>
+
+</table>
+<!-- /local_shop/bills_bill_header -->

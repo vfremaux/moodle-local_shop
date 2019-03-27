@@ -105,7 +105,15 @@ class Shop_Form extends moodleform {
             $mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'local_shop').':', array(' '), false);
             $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
+            // Shop Currency.
+            $currencies = shop_get_supported_currencies();
+            $mform->addElement('select', 'currency', get_string('currency', 'local_shop').':', $currencies);
+            $mform->addRule('currency', '', 'required', null, 'client');
+            $mform->setDefault('currency', $config->defaultcurrency);
+
             // Discount application.
+            $mform->addElement('header', 'heading_discounts', get_string('discountpolicies', 'local_shop'));
+
             $mform->addElement('text', 'discountthreshold', get_string('discountthreshold', 'local_shop'), 0);
             $mform->addHelpButton('discountthreshold', 'discountthreshold', 'local_shop');
             $mform->setType('discountthreshold', PARAM_NUMBER);
@@ -121,12 +129,6 @@ class Shop_Form extends moodleform {
             $mform->addElement('text', 'discountrate3', get_string('discountrate3', 'local_shop'), 0);
             $mform->addHelpButton('discountrate3', 'discountrate3', 'local_shop');
             $mform->setType('discountrate3', PARAM_INT);
-
-            // Shop Currency.
-            $currencies = shop_get_supported_currencies();
-            $mform->addElement('select', 'currency', get_string('currency', 'local_shop').':', $currencies);
-            $mform->addRule('currency', '', 'required', null, 'client');
-            $mform->setDefault('currency', $config->defaultcurrency);
 
             // Choosing valid paymodes for this shop instance.
             $mform->addElement('header', 'heading_paymodes', get_string('paymentmethods', 'local_shop'));

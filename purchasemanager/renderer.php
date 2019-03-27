@@ -74,7 +74,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             }
             if ($productinstance->currentbillitemid) {
                 $currentbillitem = new BillItem($productinstance->currentbillitemid, false, $this->theshop);
-                $pix = '<img src="'.$OUTPUT->pix_url('bill', 'local_shop').'" style="height:50px;">';
+                $pix = $OUTPUT->pix_icon('bill', '', 'local_shop');
                 $params = array('view' => 'viewBill', 'billid' => $currentbillitem->billid);
                 $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
                 $attrs = array('target' => 'blank');
@@ -87,7 +87,8 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $pendingcount = 0;
             $runningcount = 0;
             $producttpl->statusclass = '';
-            $producttpl->code = $product->code;
+            $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'ProductDetail', 'itemid' => $product->id));
+            $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
             $producttpl->designation = format_string($product->name);
             $producttpl->reference = $productinstance->reference;
             $producttpl->renewable = ($product->renewable) ? get_string('yes') : '';
@@ -123,7 +124,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->currency = $this->theshop->get_currency();
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
-                $pix = '<img src="'.$OUTPUT->pix_url('t/delete').'" />';
+                $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle');
                 $params = array('what' => 'delete',
                                 'productids[]' => $productinstance->id,
                                 'sesskey' => sesskey());
@@ -132,11 +133,11 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                 $producttpl->commands = '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
 
                 if ($productinstance->deleted) {
-                    $pix = '<img src="'.$OUTPUT->pix_url('t/stop').'" />';
                     $title = get_string('softrestore', 'local_shop');
+                    $pix = $OUTPUT->pix_icon('t/stop', $title, 'moodle');
                 } else {
-                    $pix = '<img src="'.$OUTPUT->pix_url('t/go').'" />';
                     $title = get_string('softdelete', 'local_shop');
+                    $pix = $OUTPUT->pix_icon('t/go', $title, 'moodle');
                 }
                 $params = array('what' => 'softdelete',
                                 'productids[]' => $productinstance->id,
@@ -146,11 +147,11 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                 $producttpl->commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$title.'">'.$pix.'</a>';
 
                 if (local_shop_supports_feature('products/editable')) {
-                    $pix = '<img src="'.$OUTPUT->pix_url('t/edit').'" />';
+                    $pix = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle');
                     $params = array('instanceid' => $productinstance->id,
                                     'sesskey' => sesskey());
                     $linkurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
-                    $producttpl->commands .= '&nbsp;<a href="'.$linkurl.'" title="'.get_string('edit').'">'.$pix.'</a>';
+                    $producttpl->commands .= '&nbsp;<a href="'.$linkurl.'">'.$pix.'</a>';
                 }
             }
 

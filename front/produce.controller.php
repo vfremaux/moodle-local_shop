@@ -256,7 +256,6 @@ class production_controller extends front_controller_base {
         $params = array('id' => $afullbill->shopid,
                         'blockid' => $afullbill->blockid,
                         'view' => 'bill',
-                        'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
         $customerbillviewurl = new \moodle_url('/local/shop/front/view.php', $params);
 
@@ -331,7 +330,6 @@ class production_controller extends front_controller_base {
 
         $params = array('id' => $afullbill->shopid,
                         'view' => 'viewBill',
-                        'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
 
         $administratorviewurl = new \moodle_url('/local/shop/bills/view.php', $params);;

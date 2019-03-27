@@ -34,7 +34,7 @@ $plugin->maturity = MATURITY_RC;
 $plugin->dependencies = array('auth_ticket' => '2012060400');
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.1.0007';
+$plugin->codeincrement = '3.1.0008';
 $plugin->privacy = 'dualrelease';
 $plugin->prolocations = array(
     'datahandling/handlers/std_addtrainingcredits',

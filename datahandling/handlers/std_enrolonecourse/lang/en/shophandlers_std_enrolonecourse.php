@@ -63,8 +63,8 @@ products after proper authentication.</p>
 
 $string['productiondata_assign_sales'] = '
 <p><b>Payement has been received</b></p>
-<p>Customer access have been open on course.</p>
-<p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a}">Access to course</a></p>
+<p>Customer access have been open on course {$a->shortname}.</p>
+<p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a->id}">Access to course</a></p>
 ';
 
 $string['productiondata_failure_public'] = '

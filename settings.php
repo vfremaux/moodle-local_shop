@@ -264,6 +264,18 @@ if ($hassiteconfig) {
     $desc = get_string('configshortdescriptionthreshold', 'local_shop');
     $settings->add(new admin_setting_configtext($key, $label, $desc, 200, PARAM_INT));
 
+    if (local_shop_supports_feature('docgen/pdf')) {
+        include_once($CFG->dirroot.'/local/vflibs/tcpdflib.php');
+        $defaultbill = implode('', file($CFG->dirroot.'/local/shop/templates/bills_default_pdf_template.mustache'));
+        tcpdf_add_standard_plugin_settings($settings, 'local_shop', $defaultbill);
+
+        /* Some more applicative specific purpose settings */
+        $key = 'local_shpo/billpaidstampimage';
+        $label = get_string('billpaidstamp', 'local_shop');
+        $desc = get_string('billpaidstamp_desc', 'local_shop');
+        $settings->add(new admin_setting_configstoredfile($key, $label, $desc, 'billpaidstamp'));
+    }
+
     $key = 'local_shop/experimental';
     $settings->add(new admin_setting_heading($key, get_string('experimental', 'local_shop'), ''));
 

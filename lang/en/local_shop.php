@@ -77,6 +77,8 @@ $string['banktransfers'] = 'Bank tranfer';
 $string['bic'] = 'BIC';
 $string['billdate'] = 'Emission date';
 $string['billid'] = 'Bill num';
+$string['billpaidstamp'] = 'Bill paied stamp';
+$string['billpaidstamp_desc'] = 'Une image PNG ou JPG';
 $string['bills'] = 'Bills';
 $string['billsdeleted'] = 'Bills/ordering deleted';
 $string['billsearch'] = 'Bills : Search';
@@ -194,6 +196,7 @@ $string['discountrate2'] = 'Discount Rate 2';
 $string['discountrate3'] = 'Discount Rate 3';
 $string['discountthreshold'] = 'Discount Threshold';
 $string['dispo'] = 'Avail.';
+$string['downloadpdfbill'] = 'Download Pdf Invoice';
 $string['dosearch'] = 'Search';
 $string['edit_categories'] = 'Edit categories';
 $string['editshop'] = 'Edit a shop instance';
@@ -211,6 +214,9 @@ $string['errorunimplementedhandlermethod'] = 'This postprod method ({$a}) is not
 $string['eulaheading'] = 'End User Licence Agreement';
 $string['eulaagree'] = 'Confirm agreement to EULA';
 $string['experimental'] = 'Experimental features';
+$string['fromdate'] = 'From';
+$string['todate'] = 'To';
+$string['fulldatefmt'] = '%Y-%m-%d %H:%M';
 $string['warning'] = 'Warning:';
 $string['message'] = 'Message:';
 $string['usinghandler'] = 'Using handler {$a}';
@@ -679,6 +685,7 @@ require($CFG->dirroot.'/local/shop/lang/en/purchasemanager.php');
 require($CFG->dirroot.'/local/shop/lang/en/customers.php');
 require($CFG->dirroot.'/local/shop/lang/en/tax.php');
 require($CFG->dirroot.'/local/shop/lang/en/shipzones.php');
+require($CFG->dirroot.'/local/shop/lang/en/pdf.php');
 
 // Currencies.
 

@@ -64,6 +64,6 @@ accéder directement à ce produit après vous être authentifié.</p>
 
 $string['productiondata_assign_sales'] = '
 <p><b>Paiement enregistré</b></p>
-<p>Les accès client ont été ouverts sur le cours de test.</p>
-<p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a}">Accès à la formation</a></p>
+<p>Les accès client ont été ouverts sur le cours {$a->shortname}.</p>
+<p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a->id}">Accès à la formation</a></p>
 ';

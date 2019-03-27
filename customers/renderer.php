@@ -62,17 +62,17 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $row[] = $c->lastname.' '.$c->firstname;
             $email = $c->email;
             if ($c->hasaccount) {
-                $email .= '&nbsp;<img src="'.$OUTPUT->pix_url('i/moodle_host').'" />';
+                $email .= '&nbsp;'.$OUTPUT->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'));
             }
             $row[] = $email;
             $row[] = $c->billcount;
             $row[] = sprintf("%.2f", round($c->totalaccount, 2)).' '.$this->theshop->defaultcurrency;
             $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));
-            $cmd = '<a href="'.$editurl.'"><img src="'.$this->output->pix_url('t/edit').'"/></a>';
+            $cmd = '<a href="'.$editurl.'">'.$this->output->pix_icon('t/edit', get_string('edit')).'</a>';
             if ($c->billcount == 0) {
                 $params = array('view' => 'viewAllCustomers', 'customerid[]' => $c->id, 'what' => 'deletecustomer');
                 $deleteurl = new moodle_url('/local/shop/customers/view.php', $params);
-                $cmd .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$this->output->pix_url('t/delete').'"/></a>';
+                $cmd .= '&nbsp;<a href="'.$deleteurl.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
             }
             $row[] = $cmd;
             $table->data[] = $row;
@@ -176,14 +176,14 @@ class shop_customers_renderer extends local_shop_base_renderer {
                                 'billid' => $portlet->id,
                                 'customer' => $portlet->userid);
                 $url = new moodle_url('/local/shop/view.php', $params);
-                $row[] = '<a href="'.$url.'" alt="'.$markstr.'"><img src="'.$OUTPUT->pix_url('mark', 'local_shop').'"/></a>';
+                $row[] = '<a href="'.$url.'" alt="'.$markstr.'">'.$OUTPUT->pix_icon('mark', get_string('mark', 'local_shop'), 'local_shop').'</a>';
             } else if ($portlet->status == SHOP_BILL_SOLDOUT) {
                 $params = array('view' => 'viewCustomer',
                                 'what' => 'unmark',
                                 'billid' => $portlet->id,
                                 'customer' => $portlet->userid);
                 $url = new moodle_url('/local/shop/view.php', $params);
-                $row[] = '<a href="'.$url.'" alt="'.$unmarkstr.'"><img src="'.$OUTPUT->pix_url('unmark', 'local_shop').'" ></a>';
+                $row[] = '<a href="'.$url.'" alt="'.$unmarkstr.'">'.$OUTPUT->pix_icon('unmark', get_string('unmark', 'local_shop'), 'local_shop').'</a>';
             }
             $table->data[] = $row;
         }

@@ -60,8 +60,9 @@ class search_controller {
                     $params[] = $billid;
                     break;
                 case "name":
-                    $whereclause = " UPPER(lastname) LIKE UPPER(?) ";
-                    $this->criteria = "Customer last name starts with $customername ";
+                    $whereclause = " UPPER(c.lastname) LIKE UPPER(?) OR UPPER(username) LIKE UPPER(?)";
+                    $this->criteria = "Customer last name or associated username starts with $customername ";
+                    $params[] = $customername.'%';
                     $params[] = $customername.'%';
                     break;
                 case "key":
@@ -89,10 +90,15 @@ class search_controller {
                    SELECT
                       b.*,
                       c.firstname,
-                      c.lastname
+                      c.lastname,
+                      u.username
                    FROM
                       {local_shop_bill} as b,
                       {local_shop_customer} as c
+                   LEFT JOIN
+                      {user} as u
+                   ON
+                       u.id = c.hasaccount
                    WHERE
                       b.customerid = c.id AND
                       $whereclause

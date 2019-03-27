@@ -35,9 +35,6 @@ $config = get_config('local_shop');
 
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
-$renderer = shop_get_renderer('front');
-$renderer->load_context($theshop, $thecatalog, $theblock);
-
 // Security.
 
 // Invoke controller.
@@ -59,6 +56,9 @@ $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('popup');
 
+$renderer = shop_get_renderer('front');
+$renderer->load_context($theshop, $thecatalog, $theblock);
+
 echo $OUTPUT->header();
 
 echo '<div style="max-width:780px">';
@@ -72,8 +72,8 @@ foreach ($afullbill->items as $item) {
 }
 echo '</table>';
 
-echo $renderer->full_order_totals($afullbill);
-echo $renderer->full_order_taxes($afullbill);
+echo $renderer->full_order_totals($afullbill, $theshop);
+echo $renderer->full_order_taxes($afullbill, $theshop);
 
 echo $OUTPUT->heading(get_string('paymode', 'local_shop'), 2);
 

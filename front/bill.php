@@ -24,29 +24,17 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-Use \local_shop\Bill;
+use \local_shop\Bill;
 
-$transid = optional_param('transid', null, PARAM_TEXT);
-$billid = optional_param('billid', null, PARAM_INT);
+$transid = required_param('transid', PARAM_TEXT);
 
 $billrenderer = shop_get_renderer('bills');
 $billrenderer->load_context($theshop, $thecatalog, $theblock);
 
-if ($transid) {
-    if (!$bill = Bill::get_by_transaction($transid)) {
-        $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
-        $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-        print_error('invalidtransid', 'local_shop', $viewurl);
-    }
-} else {
-    require_login();
-    if ($billid) {
-        if (!$bill = new Bill($billid, false, $theshop, $thecatalog)) {
-            $params = array('view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->id);
-            $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-            print_error('invalidbillid', 'local_shop', $viewurl);
-        }
-    }
+if (!$bill = Bill::get_by_transaction($transid)) {
+    $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
+    $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+    print_error('invalidtransid', 'local_shop', $viewurl);
 }
 
 echo $out;
@@ -69,7 +57,7 @@ $linkurl = new moodle_url('/local/shop/front/bill.popup.php', $params);
 
 echo '<p><a href="'.$linkurl.'" target="_blank">'.get_string('printbill', 'local_shop').'</a>';
 
-$renderer->customer_info($bill);
+echo $renderer->customer_info($bill);
 
 echo '<div id="order">';
 
@@ -89,12 +77,12 @@ if (!empty($bill->items)) {
 echo '</table>';
 
 if (!in_array($bill->status, $realized)) {
-    echo $renderer->full_order_totals($bill);
+    echo $renderer->full_order_totals($bill, $theshop);
 } else {
-    echo $billrenderer->full_bill_totals($bill);
+    echo $billrenderer->full_bill_totals($bill, $theshop);
 }
 
-echo $renderer->full_order_taxes($bill);
+echo $renderer->full_order_taxes($bill, $theshop);
 
 echo $billrenderer->bill_footer($bill);
 

@@ -1,0 +1,79 @@
+
+
+
+
+<!-- local_shop/bills_merchant_line -->
+
+    {{#head}}
+    <tr>
+
+        <th class="header c0">
+        </th>
+
+        <th class="header c1">
+            {{#str}}num, local_shop{{/str}}
+        </th>
+
+        <th class="header c2">
+            {{#str}}customer, local_shop{{/str}}
+        </th>
+
+        <th class="header c3">
+            {{#str}}transaction, local_shop{{/str}}
+        </th>
+
+        <th class="header c3">
+            {{#str}}date, local_shop{{/str}}
+        </th>
+
+        <th class="header c3">
+            {{#str}}lettering, local_shop{{/str}}
+        </th>
+
+        <th class="header lastcol">
+            {{#str}}amount, local_shop{{/str}}
+        </th>
+
+    </tr>
+
+    {{/head}}
+
+    {{^head}}
+    <tr valign="top">
+        <td width="30" class="cell c0">
+            &nbsp;
+        </td>
+
+        <td width="120" class="cell c1">
+            <a class="activeLink" href="{{{billurl}}}">B-{{emissiondate}}-{{id}}</a>
+        </td>
+
+        <td width="*" class="cell c2">
+            <a class="activeLink" href="{{{customerurl}}}">{{firstname}} {{lastname}}</a>
+            {{#email}}
+            (<a href="mailto:{{{email}}}">{{{email}}}</a>)
+            {{/email}}
+        </td>
+
+        <td width="120" class="cell c3">
+            <code><a href="{{{scanurl}}}" title="{{#str}}scantrace, local_shop{{/str}}">{{transactionid}}</a></code><br>
+            {{#onlinetransactionid}}
+            <code>(@:{{onlinetransactionid}})</code>
+            {{/onlinetransactionid}}
+        </td>
+
+        <td width="120" class="cell c2">
+            {{emissiondatestr}}
+        </td>
+
+        <td width="120" class="cell c2">
+            {{idnumber}}
+        </td>
+
+        <td width="100" align="right" class="cell lastcol">
+            {{amount}} {{{currency}}}
+        </td>
+    </tr>
+
+    {{/head}}
+<!-- /local_shop/bills_merchant_line -->

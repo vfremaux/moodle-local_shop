@@ -782,17 +782,18 @@ class Catalog extends ShopObject {
     public function process_country_restrictions(&$choices) {
         $restricted = array();
 
-        if ($this->countryrestrictions != '') {
-            $restrictedcountries = explode(',', $this->countryrestrictions);
+        if (!empty($this->record->countryrestrictions)) {
+            $restrictedcountries = explode(',', \core_text::strtoupper($this->record->countryrestrictions));
+
             foreach ($restrictedcountries as $rc) {
                 // Blind ignore unkown codes...
-                $cc = strtoupper($rc);
-                if (array_key_exists($cc, $choices)) {
-                    $restricted[$rc] = $choices[$cc];
+                if (array_key_exists($rc, $choices)) {
+                    $restricted[$rc] = $choices[$rc];
                 }
             }
             $choices = $restricted;
         }
+
     }
 
     public function delete() {

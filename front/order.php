@@ -77,7 +77,8 @@ if (empty($SESSION->eulas)) {
 
 // Print main ordering table.
 
-echo '<form name="navigate" action="'.$CFG->wwwroot.'/local/shop/front/view.php" method="post">';
+$actionurl = new moodle_url('/local/shop/front/view.php');
+echo '<form name="navigate" action="'.$actionurl.'" method="post">';
 
 echo '<div id="order" '.$initialview.'>';
 
@@ -92,8 +93,8 @@ foreach ($SESSION->shoppingcart->order as $shortname => $fooq) {
 }
 echo '</table>';
 
-echo $renderer->full_order_totals();
-echo $renderer->full_order_taxes();
+echo $renderer->full_order_totals($bill, $theshop);
+echo $renderer->full_order_taxes($bill, $theshop);
 echo $renderer->payment_block();
 
 if (!empty($config->sellermail)) {
@@ -110,6 +111,9 @@ echo '</div>';
 $options = array();
 $options['inform'] = true;
 $options['nextstring'] = 'launch';
+if (!shop_has_enabled_paymodes($theshop)) {
+    $options['nextdisabled'] = 'disabled="disabled"';
+}
 
 echo $renderer->action_form('order', $options);
 

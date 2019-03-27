@@ -1,0 +1,161 @@
+
+
+<!-- local_shop/products_detail -->
+
+<table width="100%">
+
+    <tr>
+        <td>{{#str}}type, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{#isset}}
+            {{#str}}set, local_shop{{/str}}
+            {{/isset}}
+            {{#isbundle}}
+            {{#str}}bundle, local_shop{{/str}}
+            {{/isbundle}}
+            {{#issingle}}
+            {{#str}}single, local_shop{{/str}}
+            {{/issingle}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}name{{/str}}
+        </td>
+
+        <td>
+            {{name}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}code, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{code}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}description, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{description}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}sales, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{sales}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}status, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{status}}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}renewable, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{renewable}}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}addressseats, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{addressseats}}}
+        </td>
+    </tr>
+
+    {{#isset}}
+    <tr>
+        <td>{{#str}}inset, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{inset}}}
+        </td>
+    </tr>
+    {{/isset}}
+
+    {{#isbundle}}
+    <tr>
+        <td>{{#str}}bundle, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{inbundle}}}
+        </td>
+    </tr>
+    {{/isbundle}}
+
+    <tr>
+        <td colspan="2"><h3>{{#str}}behaviour, local_shop{{/str}}</h3></td>
+    </tr>
+
+    {{#issingle}}
+    {{#inset}}
+    <tr>
+        <td>{{#str}}shownameinset, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{inbundle}}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}showdescriptioninset, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{inbundle}}}
+        </td>
+    </tr>
+    {{/inset}}
+    {{/issingle}}
+
+    <tr>
+        <td colspan="2"><h3>{{#str}}assets, local_shop{{/str}}</h3></td>
+    </tr>
+
+    <tr>
+        <td colspan="2"><h3>{{#str}}automation, local_shop{{/str}}</h3></td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}requireddata, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{requireddata}}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>{{#str}}productiondata, local_shop{{/str}}
+        </td>
+
+        <td>
+            {{{productiondata}}}
+        </td>
+    </tr>
+
+<!-- /local_shop/products_detail -->
