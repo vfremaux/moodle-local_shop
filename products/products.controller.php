@@ -242,16 +242,20 @@ class product_controller {
         if ($cmd == 'toset') {
             $original = new CatalogItem($this->data->itemid);
             $original->setid = 0;
-            $original->isset = 1;
+            $original->enablehandler = 0;
+            $original->handlerparams = '';
+            $original->isset = PRODUCT_SET;
             $original->save();
             redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
         }
 
-        /* ****** converts a product into a set ***** */
+        /* ****** converts a product into a bundle ***** */
         if ($cmd == 'tobundle') {
             $original = new CatalogItem($this->data->itemid);
-            $original->setid = $original->id;
-            $original->isset = 0;
+            $original->setid = 0;
+            $original->enablehandler = 0;
+            $original->handlerparams = '';
+            $original->isset = PRODUCT_BUNDLE;
             $original->save();
             redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
         }

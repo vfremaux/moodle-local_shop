@@ -91,9 +91,12 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= get_string('image', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c1">';
-            $str .= get_string('code', 'local_shop');
+            $str .= get_string('code', 'local_shop').' '.$OUTPUT->help_icon('helpcode', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c2" colspan="6">';
+            $str .= '<th class="header c1">';
+            $str .= get_string('shortname', 'local_shop').' '.$OUTPUT->help_icon('helpshortname', 'local_shop');
+            $str .= '</th>';
+            $str .= '<th class="header c2" colspan="5">';
             $str .= get_string('designation', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c3">';
@@ -153,7 +156,10 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '<td class="name cell '.$slaveclass.'" align="left">';
             $str .= $product->code;
             $str .= '</td>';
-            $str .= '<td class="name cell '.$slaveclass.'" align="left" colspan="8">';
+            $str .= '<td class="name cell '.$slaveclass.'" align="left">';
+            $str .= $product->shortname;
+            $str .= '</td>';
+            $str .= '<td class="name cell '.$slaveclass.'" align="left" colspan="7">';
             $str .= format_string($product->name);
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.' shop-controls" align="left">';
@@ -219,16 +225,16 @@ class shop_products_renderer extends local_shop_base_renderer {
 
                 // We cannot edit master records ghosts from the slave catalog.
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $product->id));
-                $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit', 'moodle').'</a> ';
+                $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit')).'</a> ';
 
                 $params = array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $product->id);
                 $copyurl = new moodle_url('/local/shop/products/view.php', $params);
-                $str .= '<a href="'.$copyurl.'">'.$OUTPUT->pix_icon('t/copy', get_string('copy'), 'moodle').'</a> ';
+                $str .= '<a href="'.$copyurl.'">'.$OUTPUT->pix_icon('t/copy', get_string('copy')).'</a> ';
 
                 $deletestr = get_string('deleteproduct', 'local_shop');
                 $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $product->id);
                 $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
-                $str .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', $deletestr, 'moodle').'</a>';
+                $str .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', $deletestr).'</a>';
             }
 
             $createlocalstr = get_string('addoverride', 'local_shop');
@@ -413,7 +419,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $bundle->id);
             $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
             $linklbl = get_string('deletealllinkedproducts', 'local_shop');
-            $pixicon = $OUTPUT->pix_icon('unlink', 'local_shop', $linklbl, 'moodle');
+            $pixicon = $OUTPUT->pix_icon('unlink', $linklbl, 'local_shop');
             $str .= '&nbsp;<a href="'.$deleteurl.'">'.$pixicon.'</a>';
         }
 

@@ -25,6 +25,8 @@
  */
 namespace local_shop;
 
+use \StdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
@@ -114,9 +116,9 @@ class CatalogItem extends ShopObject {
     /**
      * Returns the reference catalog for this item.
      */
-     public function get_catalog() {
+    public function get_catalog() {
         return $this->thecatalog;
-     }
+    }
 
     /**
      * get the accurate price against quantity ranges
@@ -277,7 +279,7 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->pix_url(current_language().'/one_unit', 'local_shop');
+            $url = $OUTPUT->image_url(current_language().'/one_unit', 'local_shop');
         }
         return $url;
     }
@@ -298,7 +300,7 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
-            $url = $OUTPUT->pix_url(current_language().'/ten_units', 'local_shop');
+            $url = $OUTPUT->image_url(current_language().'/ten_units', 'local_shop');
         }
         return $url;
     }
@@ -341,7 +343,7 @@ class CatalogItem extends ShopObject {
                 // Use for bundles or sets.
                 return false;
             }
-            $url = $OUTPUT->pix_url('defaultproduct', 'local_shop');
+            $url = $OUTPUT->image_url('defaultproduct', 'local_shop');
         }
         return $url;
     }
@@ -434,6 +436,9 @@ class CatalogItem extends ShopObject {
         return !$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
     }
 
+    /**
+     * Checks availability against handler rules.
+     */
     public function check_availability() {
 
         $config = get_config('local_shop');
@@ -453,12 +458,15 @@ class CatalogItem extends ShopObject {
                 }
             }
         }
+        return true;
     }
 
     public function get_leaflet_url() {
         global $OUTPUT;
 
         $context = \context_system::instance();
+
+        $url = null;
 
         $fs = get_file_storage();
         if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id, /* $ignoredirs */ true)) {
@@ -467,8 +475,6 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($leafletfile->get_contextid(), $leafletfile->get_component(),
                                                     $leafletfile->get_filearea(), $leafletfile->get_itemid(),
                                                     $leafletfile->get_filepath(), $leafletfile->get_filename());
-        } else {
-            $url = $OUTPUT->pix_url('defaultproduct', 'local_shop');
         }
         return $url;
     }
@@ -593,7 +599,7 @@ class CatalogItem extends ShopObject {
                 continue; // Discard directories.
             }
             $oldfile = $fs->get_file_instance($f);
-            $newfile = new \StdClass;
+            $newfile = new StdClass;
             $newfile->contextid = $context->id;
             $newfile->component = 'local_shop';
             $newfile->filearea = $f->filearea;
@@ -602,6 +608,47 @@ class CatalogItem extends ShopObject {
             $newfile->filename = $f->filename;
             $fs->create_file_from_storedfile($newfile, $oldfile);
         }
+    }
+
+    public function export_to_ws($q, $withsubs) {
+        $export = new StdClass;
+
+        $export->id = $this->record->id;
+        $export->catalogid = $this->record->catalogid;
+        $export->categoryid = $this->record->categoryid;
+        $export->code = $this->record->code;
+        $export->shortname = $this->record->shortname;
+        $export->name = format_string($this->record->name);
+        $export->description = format_text($this->record->description, $this->record->descriptionformat);
+        $export->eulas = format_text($this->record->eulas, $this->record->eulasformat);
+        $export->notes = format_text($this->record->notes, $this->record->notesformat);
+        switch ($this->record->isset) {
+            case PRODUCT_STANDALONE:
+                $export->type = 'plain';
+                break;
+
+            case PRODUCT_SET:
+                $export->type = 'set';
+                break;
+
+            case PRODUCT_BUNDLE:
+                $export->type = 'bundle';
+                break;
+        }
+
+        $export->status = $this->status;
+        $export->unitcost = $this->get_price($q);
+        $export->tax = $this->get_tax($q);
+        $export->requireddata = $this->record->requireddata;
+        $export->leafleturl = ''.$this->get_leaflet_url();
+        $export->thumburl = ''.$this->get_thumb_url();
+        $export->imageurl =  ''.$this->get_image_url();
+
+        if ($withsubs) {
+            
+        }
+
+        return $export;
     }
 
     public static function count($filter) {

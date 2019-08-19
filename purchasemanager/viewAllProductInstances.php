@@ -56,7 +56,8 @@ if ($action != '') {
     redirect(new moodle_url('/local/shop/purchasemanager/view.php', $viewparams));
 }
 
-$select = " hasaccount > 0 ";
+// $select = " hasaccount > 0 ";
+$select = " 1 = 1 ";
 $join = '';
 $params = array();
 if ($shopownerid) {

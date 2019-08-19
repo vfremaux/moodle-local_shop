@@ -87,7 +87,7 @@ $string['errornoselleridentity'] = 'La boutique moodle semble ne pas avoir de co
 $string['existingmailpleaselogin'] = 'Cette adresse mél est déjà utilisée par un compte sur cette plate-forme. Si vous êtes propriétaire de ce compte, <a href="{$a->wwwroot}/login/index.php">connectez-vous avec votre compte</a>. Vous serez automatiquement redirigé vers cette page et pourrez continuer en mode connecté.';
 $string['finaltotal'] = 'Total à payer (TTC)';
 $string['finaltotalprice'] = 'Total à régler (TTC)';
-$string['paiedfinaltotalprice'] = 'Total aquitté (TTC)';
+$string['paiedfinaltotalprice'] = 'Total acquitté (TTC)';
 $string['finish'] = 'Terminer';
 $string['fixaccount'] = 'Correction de compte client&nbsp;:&ensp;{$a}';
 $string['for'] = 'pour';

@@ -181,6 +181,41 @@ function shop_has_potential_account($email) {
 }
 
 /**
+ * Loads session customer info with user and customer account.
+ * @return boolean true if info came from both user account AND customer record.
+ */
+function shop_load_customerinfo($user) {
+    global $SESSION, $DB;
+
+    if (empty($user)) {
+        return;
+    }
+
+    $customerinfo = array(
+        'firstname' => $user->firstname,
+        'lastname' => $user->lastname,
+        'city' => $user->city,
+        'country' => $user->country,
+        'email' => $user->email,
+        'organisation' => $user->institution,
+    );
+
+    $iscomplete = false;
+    if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $user->id))) {
+        $customerinfo['address'] = $customer->address;
+        $customerinfo['zip'] = $customer->zip;
+        $customerinfo['city'] = $customer->city; // Override moodle account
+        $customerinfo['country'] = $customer->country; // Override moodle account
+        $customerinfo['organisation'] = $customer->organisation;
+        $iscomplete = true;
+    }
+
+    $SESSION->shoppingcart->customerinfo = $customerinfo;
+
+    return $iscomplete;
+}
+
+/**
  * Validates invocing customer information
  */
 function shop_validate_invoicing() {
@@ -391,7 +426,7 @@ function shop_checksum($productref) {
     static $crcrange = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
 
-    $crccount =  count($crcrange);
+    $crccount = count($crcrange);
 
     // Adding 2 letters checksum.
     $productrefasarr = str_split($productref);

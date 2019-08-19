@@ -41,6 +41,8 @@ $string['editproductvariant'] = 'Update product (slave override)';
 $string['editset'] = 'Update set';
 $string['financials'] = 'Financial aspects';
 $string['handlerparams'] = 'Handler parameters';
+$string['helpcode'] = 'Product Code';
+$string['helpshortname'] = 'Product Shortname';
 $string['hashandlers'] = 'This product has action handlers';
 $string['maxquant'] = 'Q max';
 $string['newbundle'] = 'New bundle';
@@ -68,6 +70,7 @@ $string['renewable'] = 'Can renew';
 $string['requiredformatsuccess'] = 'Required data JSON format is ok';
 $string['requireddata'] = 'Specific data to pull from customer';
 $string['requireddatacaption'] = 'Some of your products will need some configuration to be produced correctly. Please enter the required information in each product instance in the following form before continuing purchase sequence.';
+$string['shortname'] = 'Short web name';
 $string['toset'] = 'Convert to set';
 $string['tobundle'] = 'Convert to bundle';
 $string['toproduct'] = 'Convert back to product';
@@ -224,4 +227,7 @@ appropriate syntax.
 $string['productiondata_help'] = 'Some additional data that will be used in the production cycle and that the product handlers or processing will need.
 Some data may affect additional optional shop processings such as license key verification (based on a "component" identification. See detailed doc)
 Enter a json encoded array of mapped values.';
+
+$string['helpcode_help'] = 'Product code usually match the product codification that may exist in other external applications.';
+$string['helpshortname_help'] = 'Product shortname is a shortcode compatible with Web, Urls, Html and Javascript. It is deduced from code after some transforms.';
 

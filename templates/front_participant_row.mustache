@@ -1,0 +1,91 @@
+
+
+
+<!-- local_shop/front_participant_row -->
+
+    {{^participant}}
+    <tr>
+        <th align="left">
+            {{#str}}lastname{{/str}}
+        </th>
+
+        <th align="left">
+            {{#str}}firstname{{/str}}
+        </th>
+
+        <th align="left">
+            {{#str}}email{{/str}}}}
+        </th>
+
+        <th align="left">
+            {{#str}}city{{/str}}
+        </th>
+
+        {{#endusermobilephonerequired}}
+        <th align="left">
+            {{#str}}phone2{{/str}}
+        </th>
+        {{/endusermobilephonerequired}}
+
+        {{#enduserorganisationrequired}}
+        <th align="left">
+            {{#str}}institution{{/str}}
+        </th>
+        {{/enduserorganisationrequired}}
+
+        <th align="left">
+            {{#str}}moodleaccount, local_shop{{/str}}
+        </th>
+
+        <th align="right">
+        </th>
+    </tr>
+    {{/participant}}
+
+    {{#participant}}
+    <tr>
+        <td align="left">
+            {{lastname}}
+        </td>
+
+        <td align="left">
+            {{firstname}}
+        </td>
+
+        <td align="left">
+            {{email}}
+        </td>
+
+        <td align="left">
+            {{city}}
+        </td>
+
+        {{#endusermobilephonerequired}}
+        <td align="left">
+            {{phone2}}
+        </td>
+        {{/endusermobilephonerequired}}
+
+        {{#enduserorganisationrequired}}
+        <td align="left">
+            {{institution}}
+        </td>
+        {{/enduserorganisationrequired}}
+
+        <td align="left">
+        {{#hasaccount}}
+            {{#pix}}i/moodle_host, core, {{#str}}isuser, local_shop{{/str}}{{/pix}}
+        {{/hasaccount}}
+        {{^hasaccount}}
+            {{#pix}}new, local_shop, {{#str}}isnotuser, local_shop{{/str}}{{/pix}}
+        {{/hasaccount}}
+        </td>
+
+        <td align="right">
+            <a title="{{#str}}deleteparticipant, local_shop{{/str}}"
+               href="Javascript:ajax_delete_user(\'{{{email}}}\')">{{#pix}}t/delete{{/pix}}" /></a>
+        </td>
+    </tr>
+    {{/participant}}
+
+<!-- /local_shop/front_participant_row -->

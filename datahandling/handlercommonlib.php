@@ -165,7 +165,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
     // Create Moodle User but no assignation.
     $newuser = new StdClass();
-    $newuser->username = shop_generate_username($customer);
+    $newuser->username = shop_generate_username($customer, true); // Unique username
     $newuser->city = $customer->city;
     $newuser->country = (!empty($customer->country)) ? $customer->country : $CFG->country;
     $newuser->lang = (!empty($customer->lang)) ? $customer->lang : $CFG->lang;
@@ -252,7 +252,7 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     $customercontext = context_user::instance($customer->hasaccount);
     $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
-    $participant->username = shop_generate_username($participant); // Makes it unique.
+    $participant->username = shop_generate_username($participant, true); // Makes it unique.
 
     /*
      * Let cron generate passwords.

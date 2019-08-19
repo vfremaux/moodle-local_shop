@@ -1,0 +1,47 @@
+
+
+
+<!-- local_shop/bills_product_block -->
+<table class="shop-article" width="100%">
+    <tr valign="top">
+        <td width="180" rowspan="2" class="shop-productpix" valign="middle" align="center">';
+            <img src="{{{mageurl}}}" border="0"><br/>
+        </td>
+
+        <td width="*" class="shop-producttitle">
+            {{name}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td class="shop-productcontent">
+            {{{description}}}
+            <p><strong>{{#str}}ref, local_shop{{/str}} : {{code}} - </strong>
+            {{#singleprice}}
+            {{#str}}puttc, local_shop{{/str}}:
+            <b>{{price}}&nbsp;{{currency}}
+            </b><br />
+            {{/singleprice}}
+            {{^singleprice}}
+            <table class="shop-pricelist">
+                <tr>
+                    <td class="shop-princelabel">{{#str}}puttc, local_shop{{/str}}</td>
+                    {{#prices}}
+                    <td class="shop-pricerange">{{range}} : </td>
+                    <td class="shop-priceamount">{{price}}&nbsp;{{currency}}</td>
+                    {{/prices}}
+                </tr>
+            </table>
+            {{/singleprice}}
+
+            <input type="button"
+                    name="go_add"
+                    value="{{#str}}buy, local_shop{{/str}}"
+                    onclick="{{{jshandler}}}" {{{disabled}}} />
+            <span id="bag_{{shortname}}">
+            {{{units}}}
+            </span>
+        </td>
+    </tr>
+</table>
+<!-- local_shop/bills_product_block -->

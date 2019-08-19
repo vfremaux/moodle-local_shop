@@ -44,7 +44,7 @@ class provider implements
     \core_privacy\local\metadata\provider,
 
     // This plugin currently implements the original plugin\provider interface.
-    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\plugin\provider {
 
     /**
      * Returns meta data about this system.

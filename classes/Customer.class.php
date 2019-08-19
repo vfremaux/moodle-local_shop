@@ -160,4 +160,10 @@ class Customer extends ShopObject {
     public static function get_instances_menu($filter = array(), $order = 'lastname, firstname') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(firstname, ' ', lastname)");
     }
+
+    public static function has_account() {
+        global $USER, $DB;
+
+        return $DB->record_exists('local_shop_customer', array('hasaccount' => $USER->id));
+    }
 }

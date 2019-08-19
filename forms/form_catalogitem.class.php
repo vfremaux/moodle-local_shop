@@ -351,7 +351,7 @@ abstract class CatalogItem_Form extends moodleform {
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grunit = array('unit' => $draftitemid);
 
-        $draftitemid = file_get_submitted_draft_itemid('tenunits');
+        $draftitemid = file_get_submitted_draft_itemid('grtenunits[tenunits]');
         file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', @$defaults->itemid,
                                 array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
         $defaults->grtenunits = array('tenunits' => $draftitemid);
