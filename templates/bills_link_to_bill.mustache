@@ -1,0 +1,45 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/bills_link_to_bill
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/bills_link_to_bill -->
+<form name="bill" action="{{{actionurl}}}" target="_blank" />
+    <input type="hidden" name="transid" value="{{transid}}" />
+    <input type="hidden" name="billid" value="{{billid}}">
+
+    <div id="shop-printable-bill" class="shop-link">
+         {{#ispdf}}
+             <input type="image"
+                        name="pdf_upload_btn"
+                        value="submit"
+                        width="64"
+                        height="64"
+                        alt="{{#str}}downloadpdfbill, local_shop{{/str}}"
+                        title="{{#str}}downloadpdfbill, local_shop{{/str}}"
+                        src="{{{iconurl}}}"/>
+         {{/ispdf}}
+         {{#islogin}}
+             {{{loginbutton}}}
+         {{/islogin}}
+    </div>
+</form>
+<!-- /local_shop/bills_link_to_bill -->

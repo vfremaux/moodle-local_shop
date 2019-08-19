@@ -1,7 +1,4 @@
 # moodle-local_shop
-<<<<<<< HEAD
-core plugin for a moodle integrated shop system. this is the community version
-=======
 
 Full features moodle integrated shop.
 
@@ -38,12 +35,8 @@ Public documentations :
 
    - French : http://docs.edunao.com/doku.php?id=:local:shop
    - English : http://docs.activeprolearn/en/doku.php?id=:local:shop
-<<<<<<< HEAD
->>>>>>> MOODLE_32_STABLE
-=======
 
 2018031100
 ##################################################
 
 Adds support for remote product licensing servicing.
->>>>>>> MOODLE_34_STABLE

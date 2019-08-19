@@ -1,0 +1,65 @@
+
+
+<!-- local_shop/bills_search_form -->
+
+{{nobillsnotification}}
+
+{{^nobillsnotification}}
+
+<form name="search" action="#" method="get">
+<input type="hidden" name="id" value="{{blocksid}}">
+<input type="hidden" name="by" value="">
+<input type="hidden" name="view" value="search">
+<input type="hidden" name="sesskey" value="{{sesskey}}">
+<input type="hidden" name="what" value="search">
+
+<h2>{{#str}}searchby, local_shop{{/str}}</h2>
+
+<fieldset>
+<legend>{{#str}}transactioncode, local_shop{{/str}}</legend>
+<div class="pull-right">
+<input type="button" onclick="Javascript:searchby('key');" value="{{#str}}search{{/str}}" />
+</div>
+<div class="">
+<input type="text" name="billkey"><br/>
+<p class="smalltext">{{#str}}searchforakeyinstructions, local_shop{{/str}}</p>
+</div>
+</fieldset>
+
+<fieldset>
+<legend>{{#str}}customername, local_shop{{/str}}</legend>
+<div class="pull-right">
+<input type="button" onclick="Javascript:searchby('name');" value="{{#str}}search{{/str}}" />
+</div>
+<div class="">
+<input type="text" name="customername"><br/>
+<p class="smalltext">{{#str}}customersnameonbill, local_shop{{/str}}</p>
+</div>
+</fieldset>
+
+<fieldset>
+<legend>{{#str}}emissiondate, local_shop{{/str}}</legend>
+<div class="pull-right">
+<input type="button" onclick="Javascript:searchby('date');" value="{{#str}}search{{/str}}" />
+</div>
+<div class="">
+{{#str}}fromdate, local_shop{{/str}} <input type="text" name="datefrom" width="10" maxlength="10">
+{{#str}}todate, local_shop{{/str}} <input type="text" name="dateto" width="10" maxlength="10">
+
+<select name="during">
+<option value="1">{{#str}}onehour, local_shop{{/str}}</option>
+<option value="24">{{#str}}oneday, local_shop{{/str}}</option>
+<option value="240" SELECTED >{{#str}}tendays, local_shop{{/str}}</option>
+<option value="720">{{#str}}onemonth, local_shop{{/str}}</option>
+<option value="2160">{{#str}}threemonths, local_shop{{/str}}</option>
+</select> {{#str}}after, local_shop{{/str}}
+<br/>
+
+<p class="smalltext">{{#str}}searchtimerange, local_shop{{/str}};
+</div>
+</fieldset>
+
+</form>
+
+{{/nobillsnotification}}
+<!-- /local_shop/bills_search_form -->

@@ -41,8 +41,10 @@ function local_shop_supports_feature($feature = null) {
                 'handlers' => array('fullstack'),
                 'paymodes' => array('fullstack'),
                 'catalog' => array('instances'),
-                'shop' => array('instances'),
+                'shop' => array('instances', 'partners'),
                 'products' => array('editable'),
+                'docgen' => array('pdf'),
+                'api' => array('ws'),
             ),
             'community' => array(
                 'handlers' => array('basic'),
@@ -91,7 +93,7 @@ function local_shop_has_leaflet($itemid) {
 
 }
 
-function local_shop_pluginfile($course, $birecord, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $DB;
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {

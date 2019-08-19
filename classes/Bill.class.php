@@ -191,6 +191,7 @@ class Bill extends ShopObject {
             $this->record->worktype = 'PROD';
             $this->record->status = SHOP_BILL_WORKING;
             $this->record->remotestatus = '';
+            $this->record->invoiceinfo = '';
             $this->record->emissiondate = time();
             $this->record->lastactiondate = time();
             $this->record->assignedto = 0;
@@ -209,6 +210,8 @@ class Bill extends ShopObject {
             $this->record->paymentfee = 0;
             $this->record->productionfeedback = '';
             $this->record->test = $config->test;
+            $this->record->partnerid = 0;
+            $this->record->partnertag = '';
 
             $this->items = array();
 
@@ -236,6 +239,7 @@ class Bill extends ShopObject {
      * have accurate amount of the original order
      */
     public function add_item(BillItem $bi) {
+        shop_trace("[{$this->transactionid}] Add item. ".$bi->itemcode.' * '.$bi->quantity);
         $this->items[] = $bi;
         $this->orderuntaxedamount += $bi->totalprice;
         $this->ordertaxes += $bi->get_totaltax();
@@ -249,6 +253,7 @@ class Bill extends ShopObject {
      * have accurate amount of the original order
      */
     public function add_item_data($birec, $ordering = -1) {
+        shop_trace("[{$this->transactionid}] Add item data. ".$birec->itemcode.' * '.$birec->quantity);
         $billitem = new BillItem($birec, false, $this, $ordering);
         $this->items[] = $billitem;
         $this->orderuntaxedamount += $billitem->totalprice;
@@ -285,6 +290,9 @@ class Bill extends ShopObject {
         }
     }
 
+    /**
+     * Checks discount conditions and setup discount as a special bill item.
+     */
     public function check_discount() {
         global $DB;
 
@@ -338,11 +346,16 @@ class Bill extends ShopObject {
     }
 
     public function save($stateonly = false) {
+        static $pass = 0;
 
         if ($this->dirty) {
+            shop_trace("[{$this->transactionid}] Dirty state. Pass ".$pass);
             $this->recalculate();
         }
 
+        $pass++.
+
+        shop_trace("[{$this->transactionid}] Bill Saving state and record. Pass ".$pass);
         $billid = parent::save(); // Parent has recorded id into our record.
 
         // Performance optimisation when no change in Bill construction.
@@ -350,6 +363,7 @@ class Bill extends ShopObject {
             return $billid;
         }
 
+        shop_trace("[{$this->transactionid}] Bill Full Saving");
         if (!empty($this->items)) {
             foreach ($this->items as $bi) {
                 $bi->save();
@@ -384,6 +398,7 @@ class Bill extends ShopObject {
         $this->finaltaxestotal = 0;
         $this->finaltaxedtotal = 0;
         $this->itemcount = 0;
+        $this->taxlines = array();
 
         foreach ($itemrecs as $itemrec) {
 
@@ -448,6 +463,9 @@ class Bill extends ShopObject {
         $this->record->untaxedamount = $this->finaluntaxedtotal;
 
         $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
+        $this->dirty = false;
+        shop_trace("[{$this->transactionid}] Bill recalculated");
+
     }
 
     public function delete() {
@@ -500,6 +518,42 @@ class Bill extends ShopObject {
         $thecatalogue = new Catalog($theshop->catalogid);
         $bill = new Bill($record, false, $theshop, $thecatalogue);
         return $bill;
+    }
+
+    public static function count_by_states($fullview, $filterclause) {
+        global $DB;
+
+        $total = new \StdClass;
+        $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $filterclause");
+
+        if ($fullview) {
+            $total->PLACED = $DB->count_records_select('local_shop_bill', "status = 'PLACED' $filterclause");
+            $total->PENDING = $DB->count_records_select('local_shop_bill', " status = 'PENDING' $filterclause");
+        }
+
+        $total->SOLDOUT = $DB->count_records_select('local_shop_bill', "status = 'SOLDOUT' $filterclause");
+        $total->COMPLETE = $DB->count_records_select('local_shop_bill', "status = 'COMPLETE' $filterclause");
+
+        if ($fullview) {
+            $total->CANCELLED = $DB->count_records_select('local_shop_bill', " status = 'CANCELLED' $filterclause");
+            $total->FAILED = $DB->count_records_select('local_shop_bill', "status = 'FAILED' $filterclause");
+        }
+
+        $total->PAYBACK = $DB->count_records_select('local_shop_bill', "status = 'PAYBACK' $filterclause");
+
+        if ($fullview) {
+            $total->ALL = $DB->count_records_select('local_shop_bill', " 1 $filterclause ");
+        }
+
+        return $total;
+    }
+
+    public static function count(array $filter = array()) {
+        return parent::_count(self::$table, $filter);
+    }
+
+    public static function sum($field, array $filter = array()) {
+        return parent::_sum(self::$table, $field, $filter);
     }
 
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

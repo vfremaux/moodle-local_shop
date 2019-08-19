@@ -30,7 +30,7 @@ define('SPECIFIC_HANDLER', 1);
 /**
  * @param objectref $data a full billitem object
  */
-function shop_register_customer($data) {
+function shop_register_customer($data, &$errorstatus) {
     global $DB, $USER;
 
     $productionfeedback = new StdClass();
@@ -41,6 +41,7 @@ function shop_register_customer($data) {
     if (empty($data->bill->customer)) {
         $data->bill->customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
     }
+
     if (isloggedin() && !isguestuser()) {
         if ($data->bill->customer->hasaccount != $USER->id) {
             /*
@@ -49,11 +50,14 @@ function shop_register_customer($data) {
              */
             $data->bill->customer->hasaccount = $USER->id;
             $DB->update_record('local_shop_customer', $data->bill->customer);
+            $message = "[{$data->transactionid}] Prepay Commons :";
+            $message .= " Logged in customer. Udating customer account.";
+            shop_trace($message);
         } else {
             $productionfeedback->public = get_string('knownaccount', 'local_shop', $USER->username);
             $productionfeedback->private = get_string('knownaccount', 'local_shop', $USER->username);
             $productionfeedback->salesadmin = get_string('knownaccount', 'local_shop', $USER->username);
-            $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay :";
+            $message = "[{$data->transactionid}] Prepay Commons :";
             $message .= " Known account {$USER->username} at process entry.";
             shop_trace($message);
             return $productionfeedback;
@@ -65,15 +69,32 @@ function shop_register_customer($data) {
          * TODO : If a collision is to be detected, a question should be asked to the customer.
          */
         // Create Moodle User but no assignation (this will register in customer support if exists).
+        // TODO : eliminate $data->customer ? Seems no need for.
+        if (empty($data->bill->customer) && empty($data->customer)) {
+            // No way to retrieve user.
+            $message = "[{$data->transactionid}] Prepay Commons Error : ";
+            $message .= " Customer is gone away (no data).";
+            shop_trace($message);
+            $errorstatus = true;
+            $productionfeedback->public = get_string('customerisgone', 'local_shop');
+            $productionfeedback->private = get_string('customerisgone', 'local_shop');
+            $productionfeedback->salesadmin = get_string('customerisgone', 'local_shop');
+            return $productionfeedback;
+        }
+
         if (!shop_create_customer_user($data, $data->bill->customer, $newuser)) {
-            $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT Prepay Error :";
+            $message = "[{$data->transactionid}] Prepay Commons Error :";
             $message .= " User could not be created {$newuser->username}.";
             shop_trace($message);
+            $errorstatus = true;
             $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
             $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
             $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
             return $productionfeedback;
         }
+        $message = "[{$data->transactionid}] Prepay Commons :";
+        $message .= " New user created {$newuser->username}.";
+        shop_trace($message);
 
         $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
         $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $newuser->username);
@@ -144,13 +165,13 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
     // Create Moodle User but no assignation.
     $newuser = new StdClass();
-    $newuser->username = shop_generate_username($data->customer);
-    $newuser->city = $data->customer->city;
-    $newuser->country = (!empty($data->customer->country)) ? $data->customer->country : $CFG->country;
-    $newuser->lang = (!empty($data->customer->lang)) ? $data->customer->lang : $CFG->lang;
-    $newuser->firstname = $data->customer->firstname;
-    $newuser->lastname = $data->customer->lastname;
-    $newuser->email = $data->customer->email;
+    $newuser->username = shop_generate_username($customer, true); // Unique username
+    $newuser->city = $customer->city;
+    $newuser->country = (!empty($customer->country)) ? $customer->country : $CFG->country;
+    $newuser->lang = (!empty($customer->lang)) ? $customer->lang : $CFG->lang;
+    $newuser->firstname = $customer->firstname;
+    $newuser->lastname = $customer->lastname;
+    $newuser->email = $customer->email;
 
     $newuser->auth = 'manual';
     $newuser->confirmed = 1;
@@ -231,7 +252,7 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     $customercontext = context_user::instance($customer->hasaccount);
     $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
-    $participant->username = shop_generate_username($participant); // Makes it unique.
+    $participant->username = shop_generate_username($participant, true); // Makes it unique.
 
     /*
      * Let cron generate passwords.

@@ -38,19 +38,6 @@ function listen_to_required_changes() {
     }
 }
 
-function accept_eulas(buttonobj){
-    if (buttonobj.form.agreeeula.checked){
-        agreediv = document.getElementById('euladiv');
-        agreediv.style.display = 'none';
-        agreediv.style.visibility = 'hidden';
-        orderdiv = document.getElementById('order');
-        orderdiv.style.display = 'block';
-        orderdiv.style.visibility = 'show';
-        blocksdiv = document.getElementById('region-pre');
-        blocksdiv.style.display = 'block';
-        blocksdiv.style.visibility = 'show';
-    }
-}
 
 function delay_follow_up() {
     $('#prod-waiter').css('display', 'none');

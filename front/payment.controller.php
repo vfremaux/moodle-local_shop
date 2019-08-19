@@ -63,7 +63,7 @@ class payment_controller extends front_controller_base {
     }
 
     public function process($cmd) {
-        global $SESSION, $DB, $USER, $OUTPUT;
+        global $SESSION, $DB, $USER, $OUTPUT, $CFG;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
@@ -98,6 +98,13 @@ class payment_controller extends front_controller_base {
 
             // Invoice info.
             if ($oldbillrec = $DB->get_record('local_shop_bill', array('transactionid' => $SESSION->shoppingcart->transid))) {
+
+                if ($oldbillrec->status == SHOP_BILL_SOLDOUT || $oldbillrec->status == SHOP_BILL_COMPLETE) {
+                    $params = array('view' => 'invoice', 'transid' => $SESSION->shoppingcart->transid);
+                    $frontbillurl = new \moodle_url('/local/shop/front/view.php', $params);
+                    redirect($frontbillurl);
+                }
+
                 $bill = new Bill($oldbillrec, true, $this->theshop, $this->thecatalog, $this->theblock);
                 // Clear all items as they might have changed.
                 $bill->delete_items();
@@ -108,7 +115,13 @@ class payment_controller extends front_controller_base {
 
             $bill->transactionid = $SESSION->shoppingcart->transid;
             $bill->blockid = 0 + @$this->theblock->id;
+
             $bill->onlinetransactionid = '';
+            if (!empty($SESSION->shoppingcart->onlinetransactionid)) {
+                // Some plugins (f.e. Stripe) can provide an early onlinetransaction ID before bill creation.
+                $bill->onlinetransactionid = $SESSION->shoppingcart->onlinetransactionid;
+            }
+
             $bill->customerid = $SESSION->shoppingcart->customerinfo['id'];
             $bill->idnumber = '';
             $formatted = format_string($this->theshop->name);
@@ -129,7 +142,17 @@ class payment_controller extends front_controller_base {
             $bill->expectedpaiement = 0;
             $bill->ignoretax = 0;
             $bill->paymentfee = 0;
-            $bill->invoiceinfo = json_encode($SESSION->shoppingcart->invoiceinfo);
+
+            $bill->partnerid = 0;
+            $bill->partnertag = '';
+            if (local_shop_supports_feature('shop/partners')) {
+                include_once($CFG->dirroot.'/local/shop/pro/classes/Partner.class.php');
+                \local_shop\Partner::register_in_bill($bill);
+            }
+
+            if (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) {
+                $bill->invoiceinfo = json_encode($SESSION->shoppingcart->invoiceinfo);
+            }
 
             // First save of the bill in order bill items can be added. We need a first id. We save "light".
             // The bill will be full save back later.

@@ -40,7 +40,7 @@ $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 // Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
-$setid = optional_param('setid', '', PARAM_INT);
+$setid = optional_param('itemid', '', PARAM_INT);
 
 // Security.
 $context = context_system::instance();
@@ -56,9 +56,12 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($setid) {
-    $mform = new Set_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
+    $set = new CatalogItem($setid);
+    $itemcatalog = $set->get_catalog();
+    $mform = new Set_Form($url, array('what' => 'edit', 'catalog' => $itemcatalog));
 } else {
-    $mform = new Set_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
+    $itemcatalog = $thecatalog;
+    $mform = new Set_Form($url, array('what' => 'add', 'catalog' => $itemcatalog));
 }
 
 if ($mform->is_cancelled()) {
@@ -67,7 +70,7 @@ if ($mform->is_cancelled()) {
 
 if ($data = $mform->get_data()) {
 
-    $data->catalogid = $thecatalog->id;
+    $data->catalogid = $itemcatalog->id;
     $data->isset = PRODUCT_SET;
 
     $data->description = $data->description_editor['text'];
@@ -100,13 +103,16 @@ if ($data = $mform->get_data()) {
 
         // If slave catalogue must insert a master copy.
         if ($thecatalog->isslave) {
-            $data->catalogid = $thecatalog->groupid;
-            $DB->insert_record('local_shop_catalogitem', $data);
+            $masterdata = clone($data);
+            unset($masterdata->id);
+            $masterdata->catalogid = $itemcatalog->groupid;
+            $DB->insert_record('local_shop_catalogitem', $masterdata);
         }
     } else {
+        $data->itemid = $data->setid;
         $data->id = $data->setid;
+        unset($data->setid);
         // We must care that setid designates both local form Setid and Catalogitem setid field.
-        $data->setid = 0;
 
         // If set code as changed, we'd better recompute a new shortname.
         if (empty($data->shortname) ||
@@ -114,9 +120,7 @@ if ($data = $mform->get_data()) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
 
-        if (!$data->id = $DB->update_record('local_shop_catalogitem', $data)) {
-            print_error('errorupdateset', 'local_shop');
-        }
+        $DB->update_record('local_shop_catalogitem', $data);
     }
 
     // Process text fields from editors.
@@ -134,14 +138,16 @@ if ($data = $mform->get_data()) {
 
 if ($setid) {
     $set = new CatalogItem($setid);
-    $set->record->setid = $setid;
-    unset($set->record->id);
-    $mform->set_data($set->record);
+    $itemrec = $set->record;
+    $itemrec->setid = $setid;
+    unset($itemrec->id);
+    $itemrec->itemid = $setid;
+    $mform->set_data($itemrec);
 } else {
     $set = new CatalogItem(null);
-    $setrec = $set->record;
-    $setrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
-    $mform->set_data($setrec);
+    $itemrec = $set->record;
+    $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
+    $mform->set_data($itemrec);
 }
 
 echo $OUTPUT->header();

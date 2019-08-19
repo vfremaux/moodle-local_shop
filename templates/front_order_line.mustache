@@ -1,0 +1,51 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_order_line
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_order_line -->
+    <tr valign="top">
+        <td width="60%" align="left" class="c0">
+            <div class="shop-bill-abstract">
+                {{{itemname}}}
+            </div>
+            <div class="shop-bill-abstract">
+                {{{abstract}}}
+            </div>
+        </td>
+
+        <td width="20%" align="left" class="c1">
+            {{itemcode}}
+        </td>
+
+        <td width="8%" align="left" class="c2">
+            {{taxedprice}}&nbsp;{{{currency}}}
+        </td>
+
+        <td width="4%" class="c3">
+            {{q}}
+        </td>
+
+        <td width="8%" align="right" style="text-align:right" class="lastcol">
+            {{totaltaxedprice}}&nbsp;{{{currency}}}
+        </td>
+    </tr>
+<!-- /local_shop/front_order_line -->

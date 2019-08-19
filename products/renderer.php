@@ -91,9 +91,12 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= get_string('image', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c1">';
-            $str .= get_string('code', 'local_shop');
+            $str .= get_string('code', 'local_shop').' '.$OUTPUT->help_icon('helpcode', 'local_shop');
             $str .= '</th>';
-            $str .= '<th class="header c2" colspan="6">';
+            $str .= '<th class="header c1">';
+            $str .= get_string('shortname', 'local_shop').' '.$OUTPUT->help_icon('helpshortname', 'local_shop');
+            $str .= '</th>';
+            $str .= '<th class="header c2" colspan="5">';
             $str .= get_string('designation', 'local_shop');
             $str .= '</th>';
             $str .= '<th class="header c3">';
@@ -147,12 +150,16 @@ class shop_products_renderer extends local_shop_base_renderer {
             $str .= '<tr class="shop-'.$statusclass.'line shop-product-row" valign="top">';
             $slaveclass  = (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) ? '' : 'engraved slaved';
             $str .= '<td class="cell '.$slaveclass.'"align="center" rowspan="2">';
+            $product->thumb = $product->get_thumb_url();
             $str .= '<img src="'.$product->thumb.'" vspace="10" height="50">';
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.'" align="left">';
             $str .= $product->code;
             $str .= '</td>';
-            $str .= '<td class="name cell '.$slaveclass.'" align="left" colspan="8">';
+            $str .= '<td class="name cell '.$slaveclass.'" align="left">';
+            $str .= $product->shortname;
+            $str .= '</td>';
+            $str .= '<td class="name cell '.$slaveclass.'" align="left" colspan="7">';
             $str .= format_string($product->name);
             $str .= '</td>';
             $str .= '<td class="name cell '.$slaveclass.' shop-controls" align="left">';
@@ -218,16 +225,16 @@ class shop_products_renderer extends local_shop_base_renderer {
 
                 // We cannot edit master records ghosts from the slave catalog.
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $product->id));
-                $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit', 'moodle').'</a> ';
+                $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit')).'</a> ';
 
                 $params = array('view' => 'viewAllProducts', 'what' => 'clone', 'itemid' => $product->id);
                 $copyurl = new moodle_url('/local/shop/products/view.php', $params);
-                $str .= '<a href="'.$copyurl.'">'.$OUTPUT->pix_icon('t/copy', get_string('copy'), 'moodle').'</a> ';
+                $str .= '<a href="'.$copyurl.'">'.$OUTPUT->pix_icon('t/copy', get_string('copy')).'</a> ';
 
                 $deletestr = get_string('deleteproduct', 'local_shop');
                 $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $product->id);
                 $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
-                $str .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', $deletestr, 'moodle').'</a>';
+                $str .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', $deletestr).'</a>';
             }
 
             $createlocalstr = get_string('addoverride', 'local_shop');
@@ -276,6 +283,10 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '<input type="checkbox" name="items[]" value="'.$set->id.'" />';
         $str .= '</td -->';
         $str .= '<td class="'.$slaveclass.'" align="center">';
+        $set->thumb = $set->get_thumb_url(true);
+        if (empty($set->thumb)) {
+            $set->thumb = $OUTPUT->image_url('productset', 'local_shop');
+        }
         $str .= '<img src="'.$set->thumb.'" vspace="10" border="0" height="50">';
         $str .= '</td>';
         $str .= '<td class="name '.$slaveclass.'">';
@@ -350,7 +361,11 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '<input type="checkbox" name="items[]" value="'.$bundle->id.'" />';
         $str .= '</td -->';
         $str .= '<td class="'.((@$bundle->masterrecord == 0) ? '' : 'engraved').' thumb" rowspan="2" align="center">';
-        $str .= $OUTPUT->pix_icon('productbundle', '', 'local_shop');
+        $bundlethumburl = $bundle->get_thumb_url(true);
+        if (empty($bundlethumburl)) {
+            $bundlethumburl = $OUTPUT->image_url('productbundle', 'local_shop');
+        }
+        $str .= '<img src="'.$bundlethumburl.'" height="50" />';
         $str .= '</td>';
         $str .= '<td class="code '.$slaveclass.'">';
         $str .= '<b>'.$bundle->code.'</b><br/>';
@@ -371,6 +386,9 @@ class shop_products_renderer extends local_shop_base_renderer {
         $str .= '</td>';
         $str .= '<td class="status '.$slaveclass.'" align="center">';
         $str .= get_string($bundle->status, 'local_shop');
+        $str .= '</td>';
+        $str .= '<td class="maxdeliveryquant '.$slaveclass.'" align="center">';
+        $str .= $bundle->maxdeliveryquant;
         $str .= '</td>';
         $str .= '<td class="sold '.$slaveclass.'" align="center">';
         $str .= $bundle->sold;
@@ -401,7 +419,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $bundle->id);
             $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
             $linklbl = get_string('deletealllinkedproducts', 'local_shop');
-            $pixicon = $OUTPUT->pix_icon('unlink', 'local_shop', $linklbl, 'moodle');
+            $pixicon = $OUTPUT->pix_icon('unlink', $linklbl, 'local_shop');
             $str .= '&nbsp;<a href="'.$deleteurl.'">'.$pixicon.'</a>';
         }
 
@@ -539,8 +557,8 @@ class shop_products_renderer extends local_shop_base_renderer {
             $row[] = '<img class="thumb" src="'.$bundleelm->get_thumb_url().'" height="50">';
             $row[] = $bundleelm->code;
             $row[] = $bundleelm->name;
-            $row[] = sprintf("%.2f", round($bundleelm->price1, 2)).'<br/>('.$bundleelm->taxcode.')';
-            $row[] = sprintf("%.2f", round($bundleelm->TTCprice, 2));
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->price1, 2)).'<br/>('.$bundleelm->taxcode.')</span>';
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->TTCprice, 2)).'</span>';
             $row[] = get_string($bundleelm->status, 'local_shop');
 
             $commands = '';

@@ -30,6 +30,11 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 $config = get_config('local_shop');
 
+$url = new moodle_url('/local/shop/paymodes/test/test_ipn.php');
+$context = context_system::instance();
+$PAGE->set_url($url);
+$PAGE->set_context($context);
+
 // Setup trace.
 
 echo '<pre>';

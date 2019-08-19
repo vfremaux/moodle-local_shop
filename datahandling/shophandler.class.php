@@ -42,10 +42,12 @@ abstract class shop_handler{
 
     /**
      * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    public abstract function produce_prepay(&$data);
+    public abstract function produce_prepay(&$data, &$errorstatus);
 
     /**
      * What is happening after it has been actually paied out, interactively

@@ -116,26 +116,13 @@ if (!in_array($afullbill->status, $realized)) {
 }
 echo $renderer->full_order_taxes($afullbill);
 
-echo $OUTPUT->heading(get_string('paymode', 'local_shop'), 2);
-
-require_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
-
-$classname = 'shop_paymode_'.$afullbill->paymode;
-
-echo '<div id="shop-order-paymode">';
-$pm = new $classname($theshop);
-$pm->print_name();
-echo '</div>';
+echo $renderer->paymode($afullbill);
 
 echo $renderer->sales_contact();
 
 echo '</div>';
 
-echo '<center>';
-echo '<a href="#" onclick="window.print();return false;">';
-echo '<input type="button" value="'.get_string('printlink', 'local_shop').'" />';
-echo '</a>';
-echo '</center>';
+echo $renderer->print_screen_button();
 
 echo $billrenderer->bill_footer($afullbill);
 

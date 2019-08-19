@@ -113,7 +113,7 @@ class customers_controller {
             }
         }
 
-        // Unmark a product *****************.
+        // Unmark a bill, revert back to pending *****************.
 
         if ($cmd == "unmark") {
             $DB->set_field('local_shop_bill', 'status', 'PENDING', array('id' => $billid));

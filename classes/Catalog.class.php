@@ -27,6 +27,8 @@ namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
 
+use \StdClass;
+
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
@@ -188,7 +190,7 @@ class Catalog extends ShopObject {
             return array();
         }
 
-        $isloggedinclause = '';
+        $isloggedinclause = self::get_isloggedin_sql();
         $modes = array();
         if (empty($SESSION->shopseeall)) {
             if (isloggedin() && !isguestuser()) {
@@ -219,7 +221,7 @@ class Catalog extends ShopObject {
                    WHERE
                       ci.catalogid = ? AND
                       ci.categoryid = ? AND
-                      ci.status IN ('AVAILABLE','PROVIDING') AND
+                      (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
                       ci.setid = 0
                       $isloggedinclause
                    ORDER BY
@@ -252,7 +254,7 @@ class Catalog extends ShopObject {
                WHERE
                   catalogid = ? AND
                   $categoryclause
-                  ci.status IN ('AVAILABLE','PROVIDING') AND
+                  (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
                   setid = 0
                   $isloggedinclause
                ORDER BY
@@ -294,14 +296,14 @@ class Catalog extends ShopObject {
                             {local_shop_catalogitem} as cis
                           WHERE
                             ci.setid = cis.id AND
-                            cis.code = '{$ci->code}' AND
-                            ci.status IN ('AVAILABLE','PROVIDING') AND
-                            ci.catalogid = '{$this->groupid}'
+                            cis.code = ? AND
+                            (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
+                            ci.catalogid = ?
                             $isloggedinclause
                           ORDER BY
                             ci.shortname
                         ";
-                        $catalogitems = $DB->get_records_sql($sql);
+                        $catalogitems = $DB->get_records_sql($sql, array($ci->code, $this->groupid));
                         foreach ($catalogitems as $cirec) {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
@@ -318,15 +320,15 @@ class Catalog extends ShopObject {
                       FROM
                         {local_shop_catalogitem} as ci
                       WHERE
-                        ci.setid = '{$ci->id}' AND
-                        ci.status IN ('AVAILABLE','PROVIDING') AND
-                        ci.catalogid = '{$this->id}'
+                        ci.setid = ? AND
+                        (ci.status = 'AVAILABLE' OR ci.status = 'PROVIDING') AND
+                        ci.catalogid = ?
                         $isloggedinclause
                          ORDER BY
                         ci.shortname
                     ";
 
-                    if ($catalogitems = $DB->get_records_sql($sql)) {
+                    if ($catalogitems = $DB->get_records_sql($sql, array($ci->id, $this->id))) {
                         foreach ($catalogitems as $cirec) {
                             $ci1 = new CatalogItem($cirec);
                             $ci1->thumb = $ci1->get_thumb_url();
@@ -500,7 +502,10 @@ class Catalog extends ShopObject {
         global $DB;
 
         $params = array('catalogid' => $this->id, 'shortname' => $shortname);
-        return new CatalogItem($DB->get_record('local_shop_catalogitem', $params));
+        $record = $DB->get_record('local_shop_catalogitem', $params);
+        $catalogitem = new CatalogItem($record);
+
+        return $catalogitem;
     }
 
     /**
@@ -683,7 +688,7 @@ class Catalog extends ShopObject {
             SELECT
                ci.code as code,
                ci.*,
-               IF(t.id IS NULL, 0, t.ratio) as tax,
+               CASE WHEN t.id IS NULL THEN 0 ELSE t.ratio END as tax,
                $masterrecords as masterrecord
             FROM
                {local_shop_catalogitem} as ci
@@ -779,17 +784,18 @@ class Catalog extends ShopObject {
     public function process_country_restrictions(&$choices) {
         $restricted = array();
 
-        if ($this->countryrestrictions != '') {
-            $restrictedcountries = explode(',', $this->countryrestrictions);
+        if (!empty($this->record->countryrestrictions)) {
+            $restrictedcountries = explode(',', \core_text::strtoupper($this->record->countryrestrictions));
+
             foreach ($restrictedcountries as $rc) {
                 // Blind ignore unkown codes...
-                $cc = strtoupper($rc);
-                if (array_key_exists($cc, $choices)) {
-                    $restricted[$rc] = $choices[$cc];
+                if (array_key_exists($rc, $choices)) {
+                    $restricted[$rc] = $choices[$rc];
                 }
             }
             $choices = $restricted;
         }
+
     }
 
     public function delete() {
@@ -883,6 +889,29 @@ class Catalog extends ShopObject {
         }
     }
 
+    public function export_to_ws() {
+        $export = new StdClass;
+
+        $export->id = $this->record->id;
+        $export->name = format_string($this->record->name);
+        $export->description = format_text($this->record->description, $this->record->descriptionformat);
+        $export->salesconditions = $this->record->salesconditions;
+        $export->countryrestrictions = $this->record->countryrestrictions;
+
+        $categories = $this->get_categories();
+        $export->categories = [];
+        if (!empty($categories)) {
+            foreach ($categories as $cat) {
+                $exportcat = new StdClass;
+                $exportcat->id = $cat->id;
+                $exportcat->name = format_string($cat->name);
+                $export->categories[] = $exportcat;
+            }
+        }
+
+        return $export;
+    }
+
     public static function get_instances($filter = array(), $order = '', $fields = '*',
                                          $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
@@ -902,5 +931,31 @@ class Catalog extends ShopObject {
 
     public static function get_instances_menu($filter = array(), $order = '') {
         return parent::_get_instances_menu(self::$table, $filter, $order);
+    }
+
+    public static function get_isloggedin_sql($tableprefix = '') {
+        global $SESSION, $DB, $USER;
+
+        $isloggedinclause = '';
+
+        $modes = array();
+        if (empty($SESSION->shopseeall)) {
+            if (isloggedin() && !isguestuser()) {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDIN_ONLY;
+                if ($DB->record_exists('local_shop_customer', array('hasaccount' => $USER->id))) {
+                    $modes[] = PROVIDING_CUSTOMER_ONLY;
+                }
+            } else {
+                $modes[] = PROVIDING_BOTH;
+                $modes[] = PROVIDING_LOGGEDOUT_ONLY;
+            }
+            if ($tableprefix) {
+                $isloggedinclause = ' AND '.$tableprefix.'.onlyforloggedin IN ('.implode(',', $modes).') ';
+            } else {
+                $isloggedinclause = ' AND onlyforloggedin IN ('.implode(',', $modes).') ';
+            }
+        }
+        return $isloggedinclause;
     }
 }

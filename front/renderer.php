@@ -104,8 +104,8 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $iconstate = '_dis';
             }
 
-            $stepicon = $this->output->pix_icon(current_language().'/'.$icon.$iconstate, '', 'local_shop');
-            $str .= $stepicon.'&nbsp;';
+            $stepicon = $this->output->image_url(current_language().'/'.$icon.$iconstate, 'local_shop');
+            $str .= '<img src="'.$stepicon.'" />&nbsp;';
         }
         $str .= '</center>';
         $str .= '</div>';
@@ -123,8 +123,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str = '';
-
         $totalobjects = 0;
         $amount = 0;
         $untaxed = 0;
@@ -141,98 +139,29 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-        $str .= '<table width="100%">';
+        $template = new StdClass;
+        $template->currency = $this->theshop->get_currency('symbol');
 
-        $str .= '<tr valign="top">';
-        $str .= '<td align="left" class="shop-ordercell">';
-        $str .= '<b>'.get_string('ordertotal', 'local_shop').'</b> :';
-        $str .= '</td>';
-        $str .= '<td align="left" class="shop-ordercell">';
-        $str .= '<span id="total_euros_span"> '.sprintf('%.2f', round($amount, 2)).' </span>';
-        $str .= $this->theshop->get_currency('symbol');
-        $str .= ' '.get_string('for', 'local_shop');
-        $str .= '<span id="object_count_span"> '.$totalobjects.'&nbsp;</span>';
-        $str .= get_string('objects', 'local_shop');
-        $str .= '</td></tr>';
+        $template->amount = sprintf('%0.2f', round($amount, 2));
+        $template->totalobjects = $totalobjects;
 
-        $discountrate = $this->theshop->calculate_discountrate_for_user($amount, $this->context, $reason);
+        $template->discountrate = $this->theshop->calculate_discountrate_for_user($amount, $this->context, $reason);
+        $template->reason = $reason;
 
-        if ($discountrate) {
-            $str .= '<tr>';
-            $str .= '<td colspan="2">';
-            $str .= $reason;
-            $str .= ' : <b>'.$discountrate.' %</b>.<br/>';
-            $str .= '</td>';
-            $str .= '</tr>';
+        if ($template->discountrate) {
             $discounted = $amount - ($amount * $discountrate / 100);
         } else {
             $discounted = $amount;
         }
-        $str .= '<tr valign="bottom">';
-        $str .= '<td class="shop-finalcount">';
-        $str .= '<b>'.get_string('orderingtotal', 'local_shop').'</b>';
-        $str .= '</td>';
-        $str .= '<td align="left" class="shop-finalcount">';
-        $str .= '<span id="shop-discounted-span"> '.sprintf('%.2f', $discounted).' </span>';
-        $str .= $this->theshop->get_currency('symbol');
-        $str .= '</td>';
-        $str .= '</tr>';
+
+        $template->discounted = sprintf('%0.2f', round($discounted, 2));
+
         if (!empty($config->useshipping)) {
-            $shipchecked = (!empty($SESSION->shoppingcart->shipping)) ? 'checked="checked"' : '';
-            $str .= '<tr>';
-            $str .= '<td align="left" colspan="2">';
-            $str .= '<span class="smalltext">(*)'. get_string('shippingadded', 'local_shop') .'<br/></span>';
-            $str .= '<input type="checkbox"
-                            name="shipping"
-                            value="1"
-                            '.sprintf('%.2f', $shipchecked).' /> '.get_string('askforshipping', 'local_shop');
-            $str .= '</td>';
-            $str .= '</tr>';
-        }
-        $str .= '</table>';
-
-        return $str;
-    }
-
-    /**
-     *
-     *
-     */
-    public function printable_bill_link(&$bill) {
-        global $DB;
-
-        $str = '';
-
-        $states = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
-        $popup = (in_array($bill->status, $states)) ? 'bill' : 'order';
-
-        $popupurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php');
-        $str .= '<form name="bill" action="'.$popupurl.'" target="_blank" class="shop-inline" />';
-        $str .= '<input type="hidden" name="transid" value="'.$bill->transactionid.'" />';
-        $str .= '<input type="hidden" name="billid" value="'.$bill->id.'">';
-        $str .= '<input type="hidden" name="shopid" value="'.$this->theshop->id.'\">';
-        $str .= '<input type="hidden" name="blockid" value="'.(0 + @$this->theblock->id).'\">';
-        $str .= '<div id="shop-printable-link">';
-
-        $params = array('shopid' => $this->theshop->id,
-                        'blockid' => (0 + @$this->theblock->id),
-                        'billid' => $bill->id,
-                        'transid' => $bill->transactionid);
-
-        $billurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php', $params);
-        $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $bill->id));
-
-        if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
-            $billuser = $DB->get_record('user', array('id' => $userid));
-            $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-            $options = array('ticket' => $ticket);
-            $str .= $this->output->single_button('/login/index.php', get_string('printbill', 'local_shop'), 'post',  $options);
+            $template->useshipping = true;
+            $template->shipchecked = (!empty($SESSION->shoppingcart->shipping)) ? 'checked="checked"' : '';
         }
 
-        $str .= '</div>';
-        $str .= '</form>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_order_total_summary', $template);
     }
 
     public function shop_return_button($theshop) {
@@ -251,7 +180,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param object $bill
      */
     public function customer_info(&$bill = null) {
-        global $SESSION;
+        global $SESSION, $CFG;
 
         $usedistinctinvoiceinfo = false;
         if (empty($bill)) {
@@ -275,59 +204,39 @@ class shop_front_renderer extends local_shop_base_renderer {
             $emissiondate = $bill->emissiondate;
         }
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<div id="shop-customerinfo">';
-        $str .= '<table cellspacing="4" width="100%">';
-        $str .= '<tr><td width="60%" valign="top">';
-        $str .= '<b>'.get_string('orderID', 'local_shop').'</b>'. $transid;
-        $str .= '</td><td width="40%" valign="top" align="right">';
-        $str .= '<b>'.get_string('on', 'local_shop').':</b> '.userdate($emissiondate);
-        $str .= '</td></tr>';
-
-        $str .= '<tr><td width="60%" valign="top">';
-        $str .= '<b>'.get_string('organisation', 'local_shop').':</b> '.@$ci['organisation'];
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        $template->transid = $transid;
+        $template->emissiondate = userdate($emissiondate);
+        $template->organisation = @$ci['organisation'];
 
         if ($usedistinctinvoiceinfo) {
-            $str .= '<tr><td width="60%" valign="top">';
-            $str .= '<b>'.get_string('department').':</b> '.@$ci['department'];
-            $str .= '</td><td width="40%" valign="top">';
-            $str .= '</td></tr>';
+            $template->usedistinctinvoiceinfo = true;
+            $template->department = @$ci['department'];
         }
 
-        $str .= '<tr><td width="60%" valign="top">';
-        $str .= '<b>'.get_string('customer', 'local_shop').':</b> '.$ci['lastname'].' '.$ci['firstname'];
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        $template->customername = $ci['lastname'].' '.$ci['firstname'];
 
-        $str .= '<tr><td width="60%" valign="top">';
-        $str .= '<b>'.get_string('city').': </b> '.$ci['zip'].' '.$ci['city'];
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        if (local_shop_supports_feature('shop/partners')) {
+            include_once($CFG->dirroot.'/local/shop/pro/classes/Partner.class.php');
+            if (!empty($SESSION->shoppingcart->partner)) {
+                $sessionpartner = $SESSION->shoppingcart->partner;
+                $partner = \local_shop\Partner::get_by_key($SESSION->shoppingcart->partner->partnerkey);
+                $template->partnername = $partner->name;
+                $template->haspartner = true;
+            }
+        }
 
-        $str .= '<tr><td width="60%" valign="top">';
-        $str .= '<b>'.get_string('country').':</b> '.strtoupper($ci['country']);
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        $template->city = $ci['zip'].' '.$ci['city'];
+        $template->country = core_text::strtoupper($ci['country']);
 
-        $str .= '<tr><td width="60%" valign="top">';
-        $str .= '<b>'.get_string('email').':</b> '.@$ci['email'];
-        $str .= '</td><td width="40%" valign="top">';
-        $str .= '</td></tr>';
+        $template->email = @$ci['email'];
 
         if ($usedistinctinvoiceinfo) {
-            $str .= '<tr><td width="60%" valign="top">';
-            $str .= '<b>'.get_string('vatcode', 'local_shop').':</b> '.@$ci['vatcode'];
-            $str .= '</td><td width="40%" valign="top">';
-            $str .= '</td></tr>';
+            $template->vatcode = @$ci['vatcode'];
         }
 
-        $str .= '</table>';
-        $str .= '</div>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_customer_info', $template);
     }
 
     /**
@@ -336,22 +245,11 @@ class shop_front_renderer extends local_shop_base_renderer {
      */
     public function local_confirmation_form($requireddata) {
 
-        $confirmstr = get_string('confirm', 'local_shop');
-        $disabled = (!empty($requireddata)) ? 'disabled="disabled"' : '';
-        $str = '<center>';
-        $formurl = new moodle_url('/local/shop/front/view.php');
-        $str .= '<form name="confirmation" method="POST" action="'.$formurl.'" style="display : inline">';
-        $str .= '<table style="display : block ; visibility : visible" width="100%"><tr><td align="center">';
-        if (!empty($disabled)) {
-            $errstr = get_string('requiredataadvice', 'local_shop');
-            $str .= '<br><span id="disabled-advice-span" class="error">'.$errstr.'</span><br/>';
-        }
-        $str .= '<input type="button" name="go_confirm" value="'.$confirmstr.'" onclick="send_confirm();" '.$disabled.' />';
-        $str .= '</td></tr></table>';
-        $str .= '</form>';
-        $str .= '</center>';
+        $template = new StdClass;
+        $template->disabled = (!empty($requireddata)) ? 'disabled="disabled"' : '';
+        $template->formurl = new moodle_url('/local/shop/front/view.php');
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_local_confirmation', $template);
     }
 
     /**
@@ -363,12 +261,14 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $rows[0] = array();
         foreach ($categories as $cat) {
-            $params = array('view' => 'shop',
-                            'category' => $cat->id,
-                            'shopid' => $this->theshop->id,
-                            'blockid' => $this->theblock->id);
-            $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
-            $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
+            if ($cat->visible) {
+                $params = array('view' => 'shop',
+                                'category' => $cat->id,
+                                'shopid' => $this->theshop->id,
+                                'blockid' => $this->theblock->id);
+                $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
+                $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
+            }
         }
 
         if ($isvisiblebranch) {
@@ -493,7 +393,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                             $str .= $this->product_bundle($product, true);
                             break;
                         default:
-                            $str .= $this->product_block($product, true);
+                            $str .= $this->product_block($product);
                     }
                 }
             } else {
@@ -510,8 +410,15 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function product_block(&$product) {
-        global $CFG;
+    /**
+     * Prints a product block on front shop
+     * @param objectref &$product
+     * @param bool $astemplate if true, just returns the template object rather than the html output.
+     */
+    public function product_block(&$product, $astemplate = false) {
+        global $CFG, $OUTPUT;
+
+        $config = get_config('local_shop');
 
         $this->check_context();
 
@@ -520,16 +427,21 @@ class shop_front_renderer extends local_shop_base_renderer {
         $subelementclass = (!empty($product->ispart)) ? 'element' : 'product';
         $subelementclass .= ($product->available) ? '' : ' shadowed';
 
+        $template->subelementclass = $subelementclass;
+        $template->ispart = $product->ispart;
+        $template->issetpart = $product->issetpart;
+        $template->isbundlepart = $product->isbundlepart;
         $template->code = $product->code;
         $template->subelementclass = $subelementclass;
 
         $image = $product->get_image_url();
         if ($image) {
-            $imagestr = '<a class="fancybox" rel="group" href="'.$image.'"><img src="'.$product->get_thumb_url().'"></a>';
+            $template->hasimage = true;
+            $template->imageurl = $image;
         } else {
-            $imagestr = '<img src="'.$product->get_thumb_url().'">';
+            $template->hasimage = false;
         }
-        $template->image = $imagestr;
+        $template->thumburl = $product->get_thumb_url();
 
         $template->name = format_string($product->name);
         $template->code = $product->code;
@@ -548,10 +460,21 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->showname = $product->showsnameinset;
         }
 
+        $template->shortdescription = false;
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
             $template->description = format_text($product->description);
+
+            $cutoff = $config->shortdescriptionthreshold;
+            if ($product->issetpart) {
+                $cutoff = floor($cutoff / 2);
+            }
+            if (core_text::strlen($product->description) > $cutoff) {
+                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
+                $template->readmorestr = get_string('readmore', 'local_shop');
+                $template->shortdescription = true;
+            }
         }
         if (!$product->available) {
             $template->notavailablestr = get_string('notavailable', 'local_shop');
@@ -599,30 +522,62 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
+        if ($astemplate) {
+            return $template;
+        }
         return $this->output->render_from_template('local_shop/front_product_block', $template);
     }
 
+    /**
+     * Prints a product set on front shop
+     * @param objectref &$set
+     */
     public function product_set(&$set) {
+        global $OUTPUT;
+
+        $config = get_config('local_shop');
 
         $template = new StdClass;
 
         $template->name = format_string($set->name);
-        $template->description = format_text($set->description);
+        if ($set->description) {
+            $set->description = file_rewrite_pluginfile_urls($set->description, 'pluginfile.php', $this->context->id, 'local_shop',
+                                               'catalogitemdescription', $set->id);
+            $template->description = format_text($set->description);
+            $cutoff = $config->shortdescriptionthreshold;
+            if (core_text::strlen($set->description) > $cutoff) {
+                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
+                $template->readmorestr = get_string('readmore', 'local_shop');
+                $template->shortdescription = true;
+            }
+        }
+
+        $image = $set->get_image_url();
+        if ($image) {
+            $template->image = '<a class="fancybox" rel="group" href="'.$image.'"><img src="'.$set->get_thumb_url().'"></a>';
+        } else {
+            $template->image = '<img src="'.$set->get_thumb_url().'">';
+        }
 
         foreach ($set->elements as $element) {
-            $elementtpl = new StdClass;
             $element->check_availability();
             $element->noorder = false; // Bundle can only be purchased as a group.
+            $element->ispart = true; // Reduced title.
             $element->issetpart = true; // Reduced title.
-            $elementtpl->element = $this->product_block($element);
-            $template->elements[] = $elementtpl;
+            $template->elements[] = $this->product_block($element, true);
         }
 
         return $this->output->render_from_template('local_shop/front_product_set', $template);
     }
 
+    /**
+     * Prints a product bundle on front shop
+     * @param objectref &$set
+     */
     public function product_bundle(&$bundle) {
-        global $CFG;
+        global $CFG, $OUTPUT;
+
+        $config = get_config('local_shop');
 
         $template = new StdClass;
 
@@ -644,6 +599,13 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $template->hasdescription = true;
                 $template->description = format_text($bundle->description);
             }
+            $cutoff = $config->shortdescriptionthreshold;
+            if (core_text::strlen($bundle->description) > $cutoff) {
+                // $template->rarrowpix = $OUTPUT->image_url('rarrow', 'local_shop');
+                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
+                $template->readmorestr = get_string('readmore', 'local_shop');
+                $template->shortdescription = true;
+            }
         }
 
         if ($bundle->has_leaflet()) {
@@ -656,12 +618,12 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->currency = $bundle->currency;
 
         foreach ($bundle->elements as $element) {
-            $elementtpl = new StdClass;
+            // $elementtpl = new StdClass;
             $element->check_availability();
             $element->noorder = true; // Bundle can only be purchased as a group.
             $element->isbundlepart = true; // Reduced title.
-            $elementtpl->element = $this->product_block($element);
-            $template->elements[] = $elementtpl;
+            $element->ispart = true;
+            $template->elements[] = $this->product_block($element, true); // return as template.
         }
 
         // We will use price of the bundle element.
@@ -674,7 +636,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $pricetpl = new StdClass;
                 $pricetpl->range = $range;
                 $pricetpl->price = $price;
-                $template->prices[] = $price;
+                $template->prices[] = $pricetpl;
             }
         }
 
@@ -717,7 +679,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if (($i * 10 + $j) > 0) {
             $jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
             $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'moodle');
+            $str .= '<img src="'.$this->output->image_url('t/delete').'" valign="center" />';
             $str .= '</a>';
         }
 
@@ -771,54 +733,34 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $str = '';
+        $template = new StdClass;
+
+        $view = optional_param('view', 'shop', PARAM_ALPHA);
+        $template->isshopview = false;
+        if ($view == 'shop') {
+            $template->isshopview = true;
+            $template->shopurl = new moodle_url('/local/shop/front/view.php');
+        }
 
         $ttcprice = $product->get_taxed_price($product->preset, $product->taxcode);
-        $product->total = $ttcprice * $product->preset;
-
-        $str .= '<tr id="producttotalcaption_'.$product->shortname.'">';
-        $str .= '<td class="shop-ordercaptioncell" colspan="3">';
-        $str .= $product->name;
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr id="producttotal_'.$product->shortname.'">';
-        $str .= '<td class="shop-ordercell">';
-        $disabled = ' disabled="disabled" ';
+        $template->preset = $product->preset;
+        $template->total = sprintf('%0.2f', round($ttcprice * $product->preset, 2));
+        $template->shortname = $product->shortname;
+        $template->code = '<span class="shop-pcode">'.$product->code.'</span>';
+        $template->name = $product->name;
+        $template->currency = $product->currency;
+        $template->disabled = ' disabled="disabled" ';
         if ($this->view == 'shop') {
-            $jshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
-            $jshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
-            $str .= '<a title="'.get_string('clearall', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'moodle');
-            $str .= '</a>';
-            $disabled = '';
+            $template->isshopview = true;
+            $template->clearjshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
+            $template->clearjshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
+            $template->disabled = '';
         }
-        $jshandler = 'ajax_update_product('.$this->theshop->id;
-        $jshandler .= ', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')';
-        $str .= '<input type="text"
-                        class="order-detail"
-                        id="id_'.$product->shortname.'"
-                        name="'.$product->shortname.'"
-                        value="'.$product->preset.'"
-                        size="3"
-                        style="width:40px"
-                        onChange="'.$jshandler.'" '.$disabled.' >';
-        $str .= '</td>';
-        $str .= '<td class="shop-ordercell">';
-        $str .= '<p>x '.sprintf("%.2f", round($ttcprice, 2)).' '.$product->currency.' : ';
-        $str .= '</td>';
-        $str .= '<td class="shop-ordercell">';
-        $str .= '<input type="text"
-                        class="order-detail"
-                        id="id_total_'.$product->shortname.'"
-                        name="'.$product->shortname.'_total"
-                        value="'.sprintf("%.2f", round($product->total, 2)).'"
-                        size="6"
-                        disabled
-                        class="totals" >';
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->jshandler = 'ajax_update_product('.$this->theshop->id;
+        $template->jshandler .= ', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')';
+        $template->ttcprice = 'x '.sprintf("%0.2f", round($ttcprice, 2));
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_product_total_line', $template);
     }
 
     /**
@@ -890,108 +832,21 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $$var = 'shop-error';
             }
         }
-        $str .= '<div id="shop-customerdata">';
-        $str .= '<table cellspacing="3" width="100%">';
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('lastname');
-        $str .= '<sup style="color : red">*</sup>:';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="customerinfo::lastname"
-                        size="20"
-                        onchange="setupper(this)" value="'. $lastname.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('firstname');
-        $str .= '<sup style="color : red">*</sup>:';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="customerinfo::firstname"
-                        size="20"
-                        onchange="capitalizewords(this)" value="'.$firstname.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        if ($this->theshop->customerorganisationrequired == 1) {
-            $str .= '<tr valign="top">';
-            $str .= '<td align="right">';
-            $str .= get_string('organisation', 'local_shop');
-            $str .= ':</td>';
-            $str .= '<td align="left">';
-            $str .= '<input type="text"
-                            name="customerinfo::organisation"
-                            size="26"
-                            maxlength="64"
-                            value="'.$organisation.'" />';
-            $str .= '</td>';
-            $str .= '</tr>';
-        }
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('address');
-        $str .= '<sup style="color : red">*</sup>: ';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="customerinfo::address"
-                        size="26"
-                        onchange="setupper(this)" value="'. $address .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('city');
-        $str .= '<sup style="color : red">*</sup>: ';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="customerinfo::city"
-                        size="26"
-                        onchange="setupper(this)" value="'. $city .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('zip', 'local_shop');
-        $str .= '<sup style="color : red">*</sup>';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="customerinfo::zip"
-                        size="6"
-                        value="'. $zip .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('country');
-        $str .= '<sup style="color : red">*</sup>: <br>';
-        $str .= '</td>';
-        $str .= '<td align="left">';
+
+        $template = new StdClass;
+        $template->lastname = $lastname;
+        $template->firstname = $firstname;
+        $template->customerorganisationrequired = $this->theshop->customerorganisationrequired;
+        $template->organisation = $organisation;
+        $template->address = $address;
+        $template->city = $city;
+        $template->zip = $zip;
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        $str .= html_writer::select($choices, 'customerinfo::country', $country, array('' => 'choosedots'));
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('email', 'local_shop');
-        $str .= '<sup style="color : red">*</sup>';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                       name="customerinfo::email"
-                       size="30"
-                       onchange="checkemail(this)" value="'.$email.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '</table>';
-        $str .= '</div>';
+        $template->countryselect = html_writer::select($choices, 'customerinfo::country', $country, array('' => 'choosedots'));
+        $template->email = $email;
 
+        $str .= $this->output->render_from_template('local_shop/front_customer_form', $template);
         return $str;
     }
 
@@ -1009,17 +864,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $shoppingcart = $SESSION->shoppingcart;
 
-        $institution = @$shoppingcart->invoiceinfo['organisation'];
-        $department = @$shoppingcart->invoiceinfo['department'];
-        $lastname = @$shoppingcart->invoiceinfo['lastname'];
-        $firstname = @$shoppingcart->invoiceinfo['firstname'];
-        $email = @$shoppingcart->invoiceinfo['email'];
-        $address = @$shoppingcart->invoiceinfo['address'];
-        $zip = @$shoppingcart->invoiceinfo['zip'];
-        $city = @$shoppingcart->invoiceinfo['city'];
-        $country = @$shoppingcart->invoiceinfo['country'];
-        $vatcode = @$shoppingcart->invoiceinfo['vatcode'];
-
         if (!empty($shoppingcart->errors->invoiceinfo)) {
             foreach (array_keys($shoppingcart->errors->invoiceinfo) as $f) {
                 $f = str_replace('invoiceinfo::', '', $f);
@@ -1030,155 +874,24 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str .= $this->output->heading(get_string('invoiceinformation', 'local_shop'));
 
-        $str .= '<div id="shop-organisationdata">';
-        $str .= '<table cellspacing="3" width="100%">';
+        $template = new StdClass;
+        $template->institution = @$shoppingcart->invoiceinfo['organisation'];
+        $template->department = @$shoppingcart->invoiceinfo['department'];
+        $template->lastname = @$shoppingcart->invoiceinfo['lastname'];
+        $template->firstname = @$shoppingcart->invoiceinfo['firstname'];
+        $template->email = @$shoppingcart->invoiceinfo['email'];
+        $template->address = @$shoppingcart->invoiceinfo['address'];
+        $template->zip = @$shoppingcart->invoiceinfo['zip'];
+        $template->city = @$shoppingcart->invoiceinfo['city'];
+        $template->country = @$shoppingcart->invoiceinfo['country'];
+        $template->vatcode = @$shoppingcart->invoiceinfo['vatcode'];
 
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('organisation', 'local_shop');
-        $str .= ':</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::organisation"
-                        size="26"
-                        maxlength="64"
-                        value="'.$institution.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('department');
-        $str .= ':</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::department"
-                        size="26"
-                        maxlength="64"
-                        value="'.$department.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('lastname');
-        $str .= '<sup style="color : red">*</sup>:';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::lastname"
-                        size="20"
-                        onchange="setupper(this)"
-                        value="'. $lastname.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('firstname');
-        $str .= '<sup style="color : red">*</sup>:';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                       name="invoiceinfo::firstname"
-                       size="20"
-                       onchange="capitalizewords(this)"
-                       value="'.$firstname.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('email');
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::email"
-                        size="50"
-                        onchange="checkemail(this)"
-                        value="'. $email .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('address');
-        $str .= '<sup style="color : red">*</sup>: ';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::address"
-                        size="26"
-                        onchange="setupper(this)"
-                        value="'. $address .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('city');
-        $str .= '<sup style="color : red">*</sup>: ';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::city"
-                        size="26"
-                        onchange="setupper(this)"
-                        value="'. $city .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('zip', 'local_shop');
-        $str .= '<sup style="color : red">*</sup>';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::zip"
-                        size="6"
-                        value="'. $zip .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('country');
-        $str .= '<sup style="color : red">*</sup>: <br>';
-        $str .= '</td>';
-        $str .= '<td align="left">';
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        // $attrs = array('class' => $countryclass); // ?
         $attrs = array();
-        $str .= html_writer::select($choices, 'invoiceinfo::country', $country, array('' => 'choosedots'), $attrs);
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->countryselect = html_writer::select($choices, 'invoiceinfo::country', $template->country, array('' => 'choosedots'), $attrs);
 
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= get_string('vatcode', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="invoiceinfo::vatcode"
-                        size="15"
-                        value="'. $vatcode .'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td align="right">';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="hidden"
-                        name="invoiceinfo::plantcode"
-                        value="" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '</table>';
-        $str .= '</div>';
+        $str .= $this->output->render_from_template('local_shop/front_invoice_form', $template);
 
         return $str;
     }
@@ -1186,80 +899,31 @@ class shop_front_renderer extends local_shop_base_renderer {
     public function participant_row($participant = null) {
         global $CFG;
 
-        $str = '';
+        $template = new StdClass;
 
         if ($participant) {
+            $template->participant = true;
 
-            $str .= '<tr>';
-            $str .= '<td align="left">';
-            $str .= @$participant->lastname;
-            $str .= '</td>';
-            $str .= '<td align="left">';
-            $str .= @$participant->firstname;
-            $str .= '</td>';
-            $str .= '<td align="left">';
-            $str .= @$participant->email;
-            $str .= '</td>';
-            $str .= '<td align="left">';
-            $str .= strtoupper(@$participant->city);
-            $str .= '</td>';
-            if (!empty($this->theshop->endusermobilephonerequired)) {
-                $str .= '<td align="left">';
-                $str .= strtoupper(@$participant->phone2);
-                $str .= '</td>';
-            }
-            if (!empty($this->theshop->enduserorganisationrequired)) {
-                $str .= '<td align="left">';
-                $str .= strtoupper(@$participant->institution);
-                $str .= '</td>';
-            }
-            $str .= '<td align="left">';
+            $template->lastname = @$participant->lastname;
+            $template->firstname = @$participant->firstname;
+            $template->email = @$participant->email;
+            $template->city = strtoupper(@$participant->city);
+            $template->endusermobilephonerequired = !empty($this->theshop->endusermobilephonerequired);
+            $template->phone2 = @$participant->phone2;
+            $template->enduserorganisationrequired = !empty($this->theshop->enduserorganisationrequired);
+            $template->institution = strtoupper(@$participant->institution);
+
             if (@$participant->moodleid) {
-                $str .= $this->output->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'), 'moodle');;
+                $template->hasaccount = true;
             } else {
-                $str .= $this->output->pix_icon('new', get_string('isnotuser', 'local_shop'), 'local_shop');
+                $template->hasaccount = false;
             }
-            $str .= '</td>';
-            $str .= '<td align="right">';
-            $str .= '<a title="'.get_string('deleteparticipant', 'local_shop').'"
-                        href="Javascript:ajax_delete_user(\''.$participant->email.'\')">';
-            $str .= $this->output->pix_icon('t/delete', get_string('delete'), 'local').'</a>';
-            $str .= '</td>';
-            $str .= '</tr>';
         } else {
-            // Print a caption row.
-            $str .= '<tr>';
-            $str .= '<th align="left">';
-            $str .= get_string('lastname');
-            $str .= '</th>';
-            $str .= '<th align="left">';
-            $str .= get_string('firstname');
-            $str .= '</th>';
-            $str .= '<th align="left">';
-            $str .= get_string('email');
-            $str .= '</th>';
-            $str .= '<th align="left">';
-            $str .= get_string('city');
-            $str .= '</th>';
-            if (!empty($this->theshop->endusermobilephonerequired)) {
-                $str .= '<th align="left">';
-                $str .= get_string('phone2');
-                $str .= '</th>';
-            }
-            if (!empty($this->theshop->enduserorganisationrequired)) {
-                $str .= '<th align="left">';
-                $str .= get_string('institution');
-                $str .= '</th>';
-            }
-            $str .= '<th align="left">';
-            $str .= get_string('moodleaccount', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th align="right">';
-            $str .= '</th>';
-            $str .= '</tr>';
+            $template->endusermobilephonerequired = !empty($this->theshop->endusermobilephonerequired);
+            $template->enduserorganisationrequired = !empty($this->theshop->enduserorganisationrequired);
         }
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_participant_row', $template);
     }
 
     public function participant_blankrow() {
@@ -1413,7 +1077,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td align="right">';
         $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
         $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'">'.$this->output->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
+        $str .= '<a href="'.$jshandler.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1492,27 +1156,21 @@ class shop_front_renderer extends local_shop_base_renderer {
     public function cart_summary() {
         global $SESSION;
 
-        $str = '';
+        $template = new StdClass;
 
         if (!empty($SESSION->shoppingcart->order)) {
-            $str .= '<table width="100%">';
             foreach (array_keys($SESSION->shoppingcart->order) as $itemname) {
                 $product = $this->thecatalog->get_product_by_shortname($itemname);
-                $str .= '<tr>';
-                $str .= '<td class="short-order-name">';
-                $str .= '<span title="'.format_string($product->name).'" alt="'.format_string($product->name).'">'.$product->code.'</span>';
-                $str .= '</td>';
-                $str .= '<td class="short-order-quantity">'.$SESSION->shoppingcart->order[$itemname].'</td>';
-                $str .= '</tr>';
-                $str .= '<tr>';
-                $desc = shorten_text(strip_tags(format_text($product->description)), 120);
-                $str .= '<td colspan="2"  class="short-order-summary">'.$desc.'</td>';
-                $str .= '</tr>';
+                $catalogitemtpl = new StdClass;
+                $catalogitemtpl->name = format_string($product->name);
+                $catalogitemtpl->code = $product->code;
+                $catalogitemtpl->q = $SESSION->shoppingcart->order[$itemname];
+                $catalogitemtpl->desc = shorten_text(strip_tags(format_text($product->description)), 120);
+                $template->catalogitem[] = $catalogitemtpl;
             }
-            $str .= '</table>';
         }
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_cart_summary', $template);
     }
 
     public function admin_options() {
@@ -1568,57 +1226,22 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $str = '';
-
         if (is_null($shortname)) {
-            $str .= '<tr valign="top">';
-            $str .= '<th width="60%" align="left" class="header c0">';
-            $str .= get_string('designation', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th width="20%" align="left" class="header c1">';
-            $str .= get_string('reference', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th width="8%" align="left" class="header c2">';
-            $str .= get_string('unitprice', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th width="4%" class="header c3">';
-            $str .= get_string('quantity', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th width="8%" align="right" style="text-align:right" class="header lastcol">';
-            $str .= get_string('totalpricettc', 'local_shop');
-            $str .= '</th>';
-            $str .= '</tr>';
+            return $this->output->render_from_template('local_shop/front_order_header', new StdClass);
         } else {
             $q = (!empty($SESSION->shoppingcart->order)) ? $SESSION->shoppingcart->order[$shortname] : $q;
             $catalogitem = $this->thecatalog->get_product_by_shortname($shortname);
-            $str .= '<tr valign="top">';
-            $str .= '<td width="60%" align="left" class="c0">';
-            $str .= $catalogitem->name;
-            $str .= '<div class="shop-bill-abstract">';
-            if (!empty($options['description'])) {
-                $str .= $catalogitem->description;
-            }
-            if (!empty($options['notes'])) {
-                $str .= '<br/>'.$catalogitem->notes;
-            }
-            $str .= '</div>';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="left" class="c1">';
-            $str .= $catalogitem->code;
-            $str .= '</td>';
-            $str .= '<td width="8%" align="left" class="c2">';
-            $str .= sprintf('%.2f', $catalogitem->get_taxed_price($q));
-            $str .= '</td>';
-            $str .= '<td width="4%" class="c3">';
-            $str .= $q;
-            $str .= '</td>';
-            $str .= '<td width="8%" align="right" style="text-align:right" class="lastcol">';
-            $str .= sprintf('%.2f', $catalogitem->get_taxed_price($q) * $q);
-            $str .= '</td>';
-            $str .= '</tr>';
-        }
 
-        return $str;
+            try {
+                $outputclass = 'front_order_line';
+                shop_load_output_class($outputclass);
+                $tpldata = new \local_shop\output\front_order_line($catalogitem, $q, $this->theshop, $options);
+                $template = $tpldata->export_for_template($this);
+                return $this->output->render_from_template('local_shop/front_order_line', $template);
+            } catch (Exception $e) {
+                print_error("Missing output class $outputclass");
+            }
+        }
     }
 
     /**
@@ -1627,190 +1250,41 @@ class shop_front_renderer extends local_shop_base_renderer {
      */
     public function bill_line($billitem, $options = null) {
 
-        $str = '';
-
-        $q = $billitem->quantity;
-        $str .= '<tr valign="top">';
-        $str .= '<td width="60%" align="left" class="c0">';
-        $str .= $billitem->abstract;
-        if (!empty($options['description'])) {
-            $str .= '<div class="shop-bill-abstract">';
-            $str .= $billitem->description;
-            $str .= '</div>';
+        try {
+            $outputclass = 'front_bill_line';
+            shop_load_output_class($outputclass);
+            $tpldata = new \local_shop\output\front_bill_line($billitem, $options);
+            $template = $tpldata->export_for_template($this);
+            return $this->output->render_from_template('local_shop/front_bill_line', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-        $str .= '</td>';
-        $str .= '<td width="20%" align="left" class="c1">';
-        $str .= $billitem->itemcode;
-        $str .= '</td>';
-        $str .= '<td width="8%" align="left" class="c2">';
-        $str .= sprintf('%.2f', $billitem->unitcost);
-        $str .= '</td>';
-        $str .= '<td width="4%" class="c3">';
-        $str .= $q;
-        $str .= '</td>';
-        $str .= '<td width="8%" align="right" style="text-align:right" class="lastcol">';
-        $str .= sprintf('%.2f', $billitem->totalprice);
-        $str .= '</td>';
-        $str .= '</tr>';
 
-        return $str;
     }
 
     /**
      * @param object $bill
      */
-    public function full_order_totals($bill = null) {
+    public function full_order_totals($bill = null, $theshop = null) {
         global $SESSION;
 
         $this->check_context();
 
-        $config = get_config('local_shop');
-
-        $shoppingcart = @$SESSION->shoppingcart;
-
-        $reason = '';
-
-        if (!is_null($bill)) {
-            $bill->recalculate();
-            $taxedtotal = $bill->ordertaxed;
-            $finaltaxedtotal = $bill->finaltaxedtotal;
-            $finaluntaxedtotal = $bill->finaluntaxedtotal;
-            $finaltaxestotal = $bill->taxes;
-            $discount = $bill->discount;
-            $shippingtaxedvalue = 0;
-            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-        } else {
-            $taxedtotal = $shoppingcart->taxedtotal;
-            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $this->context, $reason);
-            $discount = $shoppingcart->discount;
-
-            if ($discountrate) {
-                $finaltaxedtotal = $taxedtotal * (1 - ($discountrate / 100));
-                $finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
-            } else {
-                $finaltaxedtotal = $shoppingcart->finaltaxedtotal;
-                $finaluntaxedtotal = $shoppingcart->finaluntaxedtotal;
-            }
-
-            $finaltaxestotal = @$shoppingcart->finaltaxestotal;
-            $shippingtaxedvalue = 0 + @$shoppingcart->shipping->taxedvalue;
-            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal;
+        try {
+            $outputclass = 'front_order_totals';
+            shop_load_output_class($outputclass);
+            $tpldata = new \local_shop\output\front_order_totals(array($bill, $theshop, $this->context));
+            $template = $tpldata->export_for_template($this);
+            return $this->output->render_from_template('local_shop/front_order_totals', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-
-        $str = '';
-        $str .= '<table cellspacing="5" class="generaltable" width="100%">';
-        $str .= '<tr valign="top">';
-        $str .= '<th colspan="3" class="cell c0">';
-        $str .= get_string('totals', 'local_shop');
-        $str .= '</th>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0">';
-        $str .= get_string('subtotal', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">';
-        $str .= sprintf("%0.2f", round($taxedtotal, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        if ($discountrate) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle ratio cell c1">';
-            $str .= get_string('discount', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="shop-totals ratio cell c2">';
-            $str .= '<b>-'.$discountrate.'%</b>';
-            $str .= '</td>';
-            $str .= '</tr>';
-
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="shop-totaltitle ratio cell c1">';
-            $str .= get_string('discountamount', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" class="shop-totals ratio cell c2">';
-            $str .= '<b>'.sprintf("%0.2f", round($discount, 2)).'&nbsp;'.$this->theshop->get_currency('symbol').'&nbsp;</b>';
-            $str .= '</td>';
-            $str .= '</tr>';
-        }
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
-        $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">';
-        if (empty($config->hasshipping)) {
-            $str .= '<b>'.sprintf("%0.2f", round($finaltaxedtotal, 2)).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
-        } else {
-            $str .= '<b>'.sprintf("%0.2f", round($finaltaxedtotal + $shippingtaxedvalue), 2).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
-        }
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="40%" class="cell c0">';
-        $str .= get_string('untaxedsubtotal', 'local_shop');
-        $str .= '</td>';
-        $str .= '<td width="40%" class="cell c1">';
-        $str .= '&nbsp;';
-        $str .= '</td>';
-        $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">';
-        $str .= sprintf("%0.2f", round($finaluntaxedtotal, 2)).'&nbsp;';
-        $str .= $this->theshop->get_currency('symbol').'&nbsp;';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        if (!empty($config->hasshipping)) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1 shop-totaltitle">';
-            $str .= get_string('shipping', 'local_shop').' :';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 shop-totals">';
-            $str .= sprintf("%0.2f", round($shippingtaxedvalue, 2)).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
-
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0 shop-totaltitle topay">';
-            $str .= '<b>'.get_string('finaltotalprice', 'local_shop').'</b>:';
-            $str .= '</td>';
-            $str .= '<td width="40%" class="cell c1">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">';
-            $str .= '<b>'.sprintf("%0.2f", round($finalshippedtaxedtotal, 2)).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol').'</b>&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
-        }
-
-        $str .= '</table>';
-
-        return $str;
     }
 
     /**
      * @param object $bill
      */
-    public function full_order_taxes(&$bill = null) {
+    public function full_order_taxes(&$bill = null, $theshop = null) {
         global $SESSION;
 
         $this->check_context();
@@ -1823,58 +1297,15 @@ class shop_front_renderer extends local_shop_base_renderer {
             $finaltaxestotal = $SESSION->shoppingcart->finaltaxestotal;
         }
 
-        $str = '';
-
-        if ($taxlines = $taxes) {
-
-            $str .= $this->output->heading(get_string('taxes', 'local_shop'), 2, '', true);
-
-            $str .= '<table cellspacing="5" class="generaltable" width="100%">';
-
-            $str .= '<tr class="shop-tax" valign="top">';
-            $str .= '<th align="left" class="cell c0">';
-            $str .= get_string('taxname', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th align="left" class="cell c1">';
-            $str .= get_string('taxratio', 'local_shop');
-            $str .= '</th>';
-            $str .= '<th align="right" style="text-align:right" class="cell c2 lastcoll" style="text-align:right">';
-            $str .= get_string('taxamount', 'local_shop');
-            $str .= '</th>';
-            $str .= '</tr>';
-
-            foreach ($taxlines as $tcode => $tamount) {
-                $tax = new Tax($tcode);
-                $str .= '<tr class="shop-tax" valign="top">';
-                $str .= '<td align="left" class="cell c0">';
-                $str .= $tax->title;
-                $str .= '</td>';
-                $str .= '<td align="left" class="cell c1">';
-                $str .= $tax->ratio;
-                $str .= '</td>';
-                $str .= '<td align="right" style="text-align:right" class="cell c2 lastcoll">';
-                $str .= sprintf("%0.2f", round($tamount, 2)).'&nbsp;'.$this->theshop->get_currency('symbol');
-                $str .= '</td>';
-                $str .= '</tr>';
-            }
-
-            $str .= '<tr valign="top">';
-            $str .= '<td width="40%" class="cell c0 shop-taxes"><b>';
-            $str .= get_string('totaltaxes', 'local_shop');
-            $str .= '</b></td>';
-            $str .= '<td width="40%" class="cell c1">';
-            $str .= '&nbsp;';
-            $str .= '</td>';
-            $str .= '<td width="20%" align="right" style="text-align:right" class="cell c2 lastcol shop-taxes">';
-            $str .= sprintf("%0.2f", round($finaltaxestotal, 2)).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol').'&nbsp;';
-            $str .= '</td>';
-            $str .= '</tr>';
-
-            $str .= '</table>';
+        try {
+            $outputclass = 'front_taxes';
+            shop_load_output_class($outputclass);
+            $tpldata = new \local_shop\output\front_taxes($taxes, $finaltaxestotal, $theshop);
+            $template = $tpldata->export_for_template($this);
+            return $this->output->render_from_template('local_shop/front_taxes', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-
-        return $str;
     }
 
     /**
@@ -1882,7 +1313,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      *
      */
     public function payment_block() {
-        global $SESSION, $CFG;
+        global $SESSION, $CFG, $OUTPUT, $USER;
 
         $config = get_config('local_shop');
         $this->check_context();
@@ -1890,21 +1321,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         include_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
         $systemcontext = context_system::instance();
+        $template = new StdClass;
 
         $str = $this->output->heading(get_string('paymentmethod', 'local_shop'));
-        $str .= '<table width="100%" id="shop-paymodes">';
-        $str .= '<tr>';
-        $str .= '<td valign="top" colspan="1">';
-        $str .= get_string('choosepaymentmode', 'local_shop');
-        $str .= '<sup>*</sup>:';
-        $str .= '</td></tr>';
-        $str .= '<tr><td valign="top" align="left">';
-        $str .= '<div class="shop-paymodes-choice">';
         // Checking  paymodes availability and creating radios.
-        if ($SESSION->shoppingcart->finalshippedtaxedtotal == 0) {
-            $str .= '<input type="hidden" name="paymode" value="freeorder" />';
-            $str .= '<em>'.get_string('freeordersignal', 'local_shop').'</em>';
-        } else {
+        if ($SESSION->shoppingcart->finalshippedtaxedtotal > 0) {
             $paymodes = get_list_of_plugins('/local/shop/paymodes');
 
             \local_shop\Shop::expand_paymodes($this->theshop);
@@ -1912,7 +1333,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             $payinputs = '';
 
             foreach ($paymodes as $var) {
-                $isenabledvar = "enable$var";
 
                 $paymodeplugin = shop_paymode::get_instance($this->theshop, $var);
 
@@ -1932,7 +1352,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 if (!empty($USER->realuser)) {
                     $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->realuser);
                 } else {
-                    $isrealadmin = false;
+                    $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->id);
                 }
 
                 if ($var == 'test') {
@@ -1949,6 +1369,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     }
                 }
 
+                $isenabledvar = "enable$var";
                 $check = $this->theshop->{$isenabledvar};
 
                 if ($check) {
@@ -1961,22 +1382,21 @@ class shop_front_renderer extends local_shop_base_renderer {
                         $paymode = $SESSION->shoppingcart->paymode;
                     }
                     $checked = ($paymode == $var) ? 'checked="checked" ' : '';
-                    $payinputs .= '<input type="radio" name="paymode" value="'.$var.'" '.$checked.' /> <em>';
-                    $payinputs .= get_string($isenabledvar.'2', 'shoppaymodes_'.$var);
-                    $payinputs .= '</em><br/>';
+                    $paymodetpl = new StdClass;
+                    $paymodetpl->var = $var;
+                    $paymodetpl->checked = $checked;
+                    $paymodetpl->paymodename = get_string($isenabledvar.'2', 'shoppaymodes_'.$var);
+                    $template->paymode[] = $paymodetpl;
                 }
             }
-            if (empty($payinputs)) {
-                $str .= $this->output->notification(get_string('nopaymodesavailable', 'local_shop'));
-            } else {
-                $str .= $payinputs;
+            if (empty($template->paymode)) {
+                $template->nopaymodesavailable = $this->output->notification(get_string('nopaymodesavailable', 'local_shop'));
             }
+        } else {
+            $template->freeorderonly = true;
         }
 
-        $str .= '</div>';
-        $str .= '</td></tr></table>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_payment', $template);
     }
 
     /**
@@ -1989,76 +1409,40 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $str = '';
+        $template = new StdClass;
+        $template->currency = $this->theshop->get_currency('symbol');
 
-        $str .= '<div class="shop-order-short">';
-        $str .= '<table width="100%">';
-
-        $str .= '<tr>';
-        $str .= '<td>';
-        $str .= get_string('transactionid', 'local_shop');
-        $str .= '</td><td>';
-        $str .= $SESSION->shoppingcart->transid;
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr>';
-        $str .= '<td>';
-        $str .= get_string('untaxedtotal', 'local_shop');
-        $str .= '</td><td>';
-        $str .= sprintf('%.2f', $shoppingcart->untaxedtotal).' '.$this->theshop->get_currency('symbol');
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->transid = $SESSION->shoppingcart->transid;
+        $template->untaxedtotal = sprintf('%0.2f', round($shoppingcart->untaxedtotal, 2));
         if (!empty($shoppingcart->taxes)) {
             foreach ($shoppingcart->taxes as $taxcode => $taxsum) {
                 if ($tax = $DB->get_record('local_shop_tax', array('id' => $taxcode))) {
-                    $str .= '<tr>';
-                    $str .= '<td class="shop-tax-line">';
-                    $str .= get_string('taxes', 'local_shop').': '.$tax->title;
-                    $str .= '</td><td class="shop-tax-line">';
-                    $str .= sprintf('%.2f', $taxsum).' '.$this->theshop->get_currency('symbol');
-                    $str .= '</td>';
-                    $str .= '</tr>';
+                    $taxtpl = new StdClass;
+                    $taxtpl->taxsum = sprintf('%.2f', $taxsum);
+                    $taxtpl->title = $tax->title;
+                    $template->tax[] = $taxtpl;
                 }
             }
         }
 
         $reason = '';
 
-        $discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->taxedtotal,
+        $template->discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->taxedtotal,
                                                                         $this->context, $reason);
-        if ($discountrate) {
-            $str .= '<tr>';
-            $str .= '<td>';
-            $str .= get_string('discount', 'local_shop');
-            $str .= '</td><td>';
+        $template->reason = $reason;
+        if ($template->discountrate) {
             // Taxed value.
-            $str .= sprintf('%.2f', $shoppingcart->taxedtotal * ($discountrate / 100)).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol');
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->discountedtaxed = sprintf('%0.2f', round($shoppingcart->taxedtotal * ($template->discountrate / 100), 2));
         }
-        if (!empty($shoppingcart->shipping)) {
-            $str .= '<tr>';
-            $str .= '<td>';
-            $str .= get_string('shipping', 'local_shop');
-            $str .= '</td><td>';
-            $str .= sprintf('%.2f', $shoppingcart->shipping->value).'&nbsp;';
-            $str .= $this->theshop->get_currency('symbol');
-            $str .= '</td>';
-            $str .= '</tr>';
-        }
-        $str .= '<tr>';
-        $str .= '<td>';
-        $str .= get_string('finaltotal', 'local_shop');
-        $str .= '</td><td>';
-        $str .= sprintf('%.2f', 0 + $shoppingcart->finalshippedtaxedtotal).'&nbsp;';
-        $str .= $this->theshop->get_currency('symbol');
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '</table>';
 
-        return $str;
+        if (!empty($shoppingcart->shipping)) {
+            $template->hasshipping = $shoppingcart->shipping;
+            $template->shippingvalue = sprintf('%0.2f', round($shoppingcart->shipping->value, 2));
+        }
+
+        $template->finalshippedtaxedtotal = sprintf('%0.2f', round(0 + $shoppingcart->finalshippedtaxedtotal, 2));
+
+        return $this->output->render_from_template('local_shop/front_order_short', $template);
     }
 
     public function field_start($legend, $class) {
@@ -2117,41 +1501,23 @@ class shop_front_renderer extends local_shop_base_renderer {
             $options['nextstring'] = 'next';
         }
 
-        $actionurl = new moodle_url('/local/shop/front/view.php');
+        $template = new StdClass;
+        $template->actionurl = new moodle_url('/local/shop/front/view.php');
+        $template->isinform = @$options['inform'];
+        $template->view = $view;
+        $template->shopid = $this->theshop->id;
+        $template->blockid = (0 + @$this->theblock->id);
+        $template->wantstransid = !empty($options['transid']);
+        $template->transid = @$options['transid'];
+        $template->sesskey = sesskey();
+        $template->hideback = @$options['hideback'];
+        $template->hidenext = @$options['hidenext'];
+        $template->overtext = @$options['overtext'];
+        $template->nextdisabled = @$options['nextdisabled'];
+        $template->nextstyle = @$options['nextstyle'];
+        $template->nextstr = get_string($options['nextstring'], 'local_shop');
 
-        $str = '';
-
-        $str .= '<p align="center">';
-        if (empty($options['inform'])) {
-            $str .= '<form name="driverform" action="'.$actionurl.'">';
-        }
-        $str .= '<input type="hidden" name="view" value="'.$view.'" />';
-        $str .= '<input type="hidden" name="shopid" value="'.$this->theshop->id.'" />';
-        $str .= '<input type="hidden" name="blockid" value="'.(0 + @$this->theblock->id).'" />';
-        if (!empty($options['transid'])) {
-            // In some cases we need explicit transmission of the transaction id.
-            $str .= '<input type="hidden" name="transid" value="'.$options['transid'].'" />';
-        }
-        $str .= '<input type="hidden" name="what" value="navigate" />';
-        $str .= '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
-        if (empty($options['hideback'])) {
-            $str .= '<input type="submit" name="back" value="'.get_string('previous', 'local_shop').'" />';
-        }
-        if (empty($options['hidenext'])) {
-            $str .= '&nbsp;<input title="'.@$options['overtext'].'"
-                                  type="submit"
-                                  id="next-button"
-                                  name="go"
-                                  value="'.get_string($options['nextstring'], 'local_shop').'"
-                                  '.@$options['nextdisabled'].'
-                                  style="'.@$options['nextstyle'].'" />';
-        }
-        if (empty($options['inform'])) {
-            $str .= '</form>';
-        }
-        $str .= '</p>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_action_form', $template);
     }
 
     /**
@@ -2351,25 +1717,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         if (!empty($eula)) {
-            $confirmstr = get_string('confirm', 'local_shop');
-            $eulastr .= '<div id="euladiv">';
-            $eulastr .= '<h2>'.get_string('eulaheading', 'local_shop').'</h3>';
-            $eulastr .= '<p><b>'.get_string('eula_help', 'local_shop', $SITE->fullname).'</b></p>';
-            $eulastr .= '<div id="eulas-panel">';
-            $eulastr .= $eula;
-            $eulastr .= '<center>';
-            $eulastr .= '<form name="eulaform" id="eula-form-validate">';
-            $eulastr .= '<input type="checkbox" name="agreeeula" id="agreeeula" value="1"> ';
-            $eulastr .= get_string('eulaagree', 'local_shop');
-            $eulastr .= '<br/><br/>';
-            $eulastr .= '<input type="button"
-                                name="accept_btn"
-                                value="'.$confirmstr.'"
-                                onclick="accept_eulas(this)">';
-            $eulastr .= '</form>';
-            $eulastr .= '</center>';
-            $eulastr .= '</div>';
-            $eulastr .= '</div>';
+            $template = new StdClass;
+            $template->eula = $eula;
+            $eulastr .= $this->output->render_from_template('local_shop/front_eulasform', $template);
         }
 
         return $eulastr;
@@ -2377,20 +1727,14 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     public function login_form() {
 
-        $str = '<div id="shop-loginbox">';
+        $template = new StdClass;
         $params = array('view' => 'customer',
                         'shopid' => $this->theshop->id,
                         'blockid' => (0 + @$this->theblock->instance->id));
         $thisurl = new moodle_url('/local/shop/front/view.php', $params);
-        $loginurl = new moodle_url('/login/index.php', array('wantsurl' => $thisurl));
-        $str .= '<a href="'.$loginurl.'">';
-        $str .= '<input type="button"
-                        class="shop-login-button"
-                        name="gologin"
-                        value="'.get_string('signin', 'local_shop').'" >';
-        $str .= '</a>';
-        $str .= '</div>';
-        return $str;
+        $template->loginurl = new moodle_url('/login/index.php', array('wantsurl' => $thisurl));
+
+        return $this->output->render_from_template('local_shop/front_login_button', $template);
     }
 
     public function my_total_link() {
@@ -2406,86 +1750,15 @@ class shop_front_renderer extends local_shop_base_renderer {
     public function invoice_header(&$afullbill) {
         global $CFG;
 
-        $config = get_config('local_shop');
-
-        $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
-
-        $subheaderstring = '';
-        if (!in_array($afullbill->status, $realized)) {
-            $headerstring = get_string('ordersheet', 'local_shop');
-            $subheaderstring = get_string('ordertempstatusadvice', 'local_shop');
-        } else {
-            if (empty($afullbill->idnumber)) {
-                $headerstring = get_string('proformabill', 'local_shop');
-            } else {
-                $headerstring = get_string('bill', 'local_shop');
-            }
+        try {
+            $outputclass = 'front_invoice_header';
+            shop_load_output_class($outputclass);
+            $invoiceheader = new \local_shop\output\front_invoice_header($afullbill);
+            $template = $invoiceheader->export_for_template($this);
+            return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
         }
-
-        $template = new StdClass;
-
-        if (!empty($afullbill->withlogo)) {
-            $template->withlogo = true;
-
-            if (!empty($config->sellerlogo)) {
-                $syscontext = context_system::instance();
-                $component = 'local_shop';
-                $filearea = 'shoplogo';
-                $itemid = 0;
-                $filepath = $config->sellerlogo;
-                $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
-                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
-            } else {
-                $template->logourl = $this->output->image_url('logo', 'theme');
-            }
-        }
-
-        $template->headingstr = $this->output->heading($headerstring, 1);
-        if (!empty($subheaderstring)) {
-            $template->subheadingstr = $subheaderstring;
-        }
-
-        $template->sellername = $config->sellername;
-        $template->selleraddress = $config->selleraddress;
-        $template->sellerzip = $config->sellerzip;
-        $template->sellercity = $config->sellercity;
-        $template->sellercountry = $config->sellercountry;
-
-        $template->numstr = get_string('num', 'local_shop');
-        $template->emissiondatestamp = date('Ymd', $afullbill->emissiondate);
-        $template->emissiondatesstr = date(get_string('billdatefmt', 'local_shop'), $afullbill->emissiondate);
-        $template->billid = $afullbill->id;
-        $template->customerstr = get_string('customer', 'local_shop');
-
-        $template->transactioncodestr = get_string('transactioncode', 'local_shop');
-        $template->transactionid = $afullbill->transactionid;
-        $template->providetransactioncodestr = get_string('providetransactioncode', 'local_shop');
-
-        // Be carefull of empty on a magic __get return;
-        $invoiceinfo = $afullbill->invoiceinfo;
-        if (empty($invoiceinfo)) {
-            if (!empty($afullbill->customer->organisation)) {
-                $template->organisation = $afullbill->customer->organisation;
-            }
-            $template->invoicename = $afullbill->customer->lastname.' '.$afullbill->customer->firstname;
-            $template->invoicezip = $afullbill->customer->zip;
-            $template->invoicecity = $afullbill->customer->city;
-            $template->invoicecountry = strtoupper($afullbill->customer->country);
-        } else {
-            // Invoice identity comes from invoice info.
-            $customer = json_decode($afullbill->invoiceinfo);
-            if (!empty($customer->organisation)) {
-                $template->organisation = $customer->organisation;
-            }
-            $template->invoicename = $customer->lastname.' '.$customer->firstname;
-            $template->invoicezip = $customer->zip;
-            $template->invoicecity = $customer->city;
-            $template->invoicecountry = strtoupper($customer->country);
-        }
-
-        $template->orderstr = get_string('order', 'local_shop');
-
-        return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
     }
 
     public function sales_contact() {
@@ -2493,14 +1766,56 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<div id="order-mailto">';
-        $str .= $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2);
-        $str .= '<p>'.get_string('forquestionssendmailto', 'local_shop').' :';
-        $str .= ' <a href="mailto:'.$config->sellermail.'">'.$config->sellermail.'</a>';
-        $str .= '</div>';
+        $template->heading = $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2, '', 'shop-sales-support');
+        $template->sellermail = $config->sellermail;
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_sales_contact', $template);
+    }
+
+    public function paymode($afullbill) {
+        global $OUTPUT;
+
+        try {
+            $outputclass = 'front_paymode';
+            shop_load_output_class($outputclass);
+            $invoiceheader = new \local_shop\output\front_paymode($afullbill);
+            $template = $invoiceheader->export_for_template($this);
+            return $OUTPUT->render_from_template('local_shop/front_paymode', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
+        }
+    }
+
+    /**
+     *
+     *
+     */
+    public function printable_bill_link($billid, $transid) {
+        global $DB;
+
+        $config = get_config('local_shop');
+        $template = new StdClass;
+
+        $template->transid = $transid;
+        $template->billid = $billid;
+        if (!empty($config->pdfenabled)) {
+            $template->ispdf = true;
+            $template->actionurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', array('transid' => $transid));
+            $template->iconurl = $this->output->image_url('f/pdf-64');
+        } else {
+            $template->islogin = true;
+            $template->actionurl = new moodle_url('/local/shop/front/order.popup.php');
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $billid, 'transid' => $transid));
+            $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $billid));
+            if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
+                $billuser = $DB->get_record('user', array('id' => $userid));
+                $ticket = ticket_generate($billuser, 'immediate access', $billurl);
+                $options = array('ticket' => $ticket);
+                $template->loginbutton = $this->output->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
+            }
+        }
+        return $this->output->render_from_template('local_shop/bills_link_to_bill', $template);
     }
 }

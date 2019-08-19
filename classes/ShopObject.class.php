@@ -141,7 +141,26 @@ class ShopObject {
                                              $fields = '*', $limitfrom = 0, $limitnum = '', $light = false) {
         global $DB;
 
-        $records = $DB->get_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
+        $params = array();
+        $sql = "SELECT ";
+        $sql .= $fields;
+        $sql .= " FROM {{$table}} ";
+        if (!empty($filter)) {
+            $sql .= " WHERE ";
+            foreach ($filter as $cond => $value) {
+                if ($value == '*') {
+                    continue;
+                }
+                $wheres[] = "$cond = ? ";
+                $params[] = $value;
+            }
+            $sql .= implode(' AND ', $wheres);
+        }
+        if (!empty($order)) {
+            $sql .= " ORDER BY $order ";
+        }
+
+        $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
         $instances = array();
         if ($records) {
             $class = get_called_class();
@@ -163,9 +182,52 @@ class ShopObject {
                                                $limitfrom = 0, $limitnum = '') {
         global $DB;
 
-        $recordscount = $DB->count_records($table, $filter, $order, $fields, $limitfrom, $limitnum);
+        $params = array();
+        $sql = "SELECT COUNT(*) FROM {{$table}} ";
+        if (!empty($filter)) {
+            $sql .= " WHERE ";
+            foreach ($filter as $cond => $value) {
+                $wheres[] = "$cond = ? ";
+                $params[] = $value;
+            }
+            $sql .= implode(' AND ', $wheres);
+        }
+        if (!empty($order)) {
+            $sql .= " ORDER BY $order ";
+        }
+
+        $recordscount = $DB->count_records_sql($sql, $params, $limitfrom, $limitnum);
 
         return $recordscount;
+    }
+
+    /**
+     * Sum calculable fields of object instances. If some filtering is needed, override
+     * this method providing a filter as input.
+     * @param array $filter an array of specialized field filters
+     * @param string $field what field to sum on.
+     * @return a single scalar summed value.
+     */
+    static protected function _sum($table, $field, $filter = array()) {
+        global $DB;
+
+        $params = array();
+        $sql = "SELECT SUM({$field}) as summed FROM {{$table}} ";
+        if (!empty($filter)) {
+            $sql .= " WHERE ";
+            foreach ($filter as $cond => $value) {
+                if ($value == '*') {
+                    continue;
+                }
+                $wheres[] = "$cond = ? ";
+                $params[] = $value;
+            }
+            $sql .= implode(' AND ', $wheres);
+        }
+
+        $sumresult = $DB->get_record_sql($sql, $params);
+
+        return 0 + $sumresult->summed;
     }
 
     /**

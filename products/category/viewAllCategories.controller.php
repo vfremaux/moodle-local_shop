@@ -69,7 +69,7 @@ class category_controller {
                 break;
 
             case 'edit':
-                // Get data from $data atrribute.
+                // Get data from $data attribute.
                 break;
         }
 
@@ -148,9 +148,8 @@ class category_controller {
                 }
             } else {
                 $category->id = $category->categoryid;
-                if (!$category->id = $DB->update_record('local_shop_catalogcategory', $category)) {
-                    print_error('errorupdatecategory', 'local_shop');
-                }
+                unset($category->categoryid);
+                $DB->update_record('local_shop_catalogcategory', $category);
             }
 
             $context = \context_system::instance();

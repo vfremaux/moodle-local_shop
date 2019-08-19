@@ -104,4 +104,15 @@ $capabilities = array(
         )
     ),
 
+    /*
+     * people having this capability will be presented noninstantpayments methods
+     */
+    'local/shop:export' => array (
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
+
 );

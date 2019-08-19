@@ -44,6 +44,8 @@ $string['choosecustomer'] = 'Choisir un compte client';
 $string['customer_account'] = 'l\'assignation d\'une facture à un compte client';
 $string['editbillitem'] = 'Modifier un élément de facture';
 $string['exportasxls'] = 'Exporter en XLS';
+$string['fullviewon'] = 'Vue complète';
+$string['fullviewoff'] = 'Vue simple';
 $string['fromdate'] = 'Depuis le ';
 $string['generateacode'] = 'Générer un code';
 $string['goto'] = 'Aller à l\'état';
@@ -53,6 +55,7 @@ $string['nobillattachements'] = 'Aucun document attaché à cette facture.';
 $string['nobills'] = 'Aucune facture dans cette catégorie.';
 $string['nocodegenerated'] = 'Le code de transaction n\'a jamais été <br>généré (factures manuelles):';
 $string['noletteringaspending'] = 'Ceci n\'est pas une facture. <br/>Seule une facture peut être lettrée.';
+$string['nopaging'] = 'Toutes les pages';
 $string['or'] = 'ou ';
 $string['paimentcode'] = 'Code réglement&nbsp;:&ensp;';
 $string['paymode'] = 'Mode de paiement';
@@ -72,6 +75,20 @@ $string['uniqueletteringfailure'] = '<a href="{$a}">Une autre facture</a> porte 
 $string['unittex'] = 'Unitaire hors taxes&nbsp;:&ensp;';
 $string['updatelettering'] = 'Mettre à jour';
 $string['pickuser'] = 'Choisissez un compte client ou un compte utilisateur&nbsp;:&ensp;';
+
+// Calendar.
+$string['jan'] = 'Janvier';
+$string['feb'] = 'Février';
+$string['mar'] = 'Mars';
+$string['apr'] = 'Avril';
+$string['may'] = 'Mai';
+$string['jun'] = 'Juin';
+$string['jul'] = 'Juillet';
+$string['aug'] = 'Août';
+$string['sep'] = 'Septembre';
+$string['oct'] = 'Octobre';
+$string['nov'] = 'Novembre';
+$string['dec'] = 'Décembre';
 
 $string['help_userid_help'] = '
 # L\'association d\'un code client Ã une facture
