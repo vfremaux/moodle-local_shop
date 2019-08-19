@@ -1,0 +1,37 @@
+
+
+<!-- local_shop/catalogadminline -->
+<tr class="{{class}}" valign="top">
+    <td>
+
+        {{#isslave}}
+        {{{linkicon}}}
+        {{/isslave}}
+
+        <a href="{{catalogurl}}">{{{name}}}</a>
+    </td>
+    <td>
+        {{{description}}}
+    </td>
+
+    <td>
+        {{^isslave}}
+            {{{categories}}}
+        {{/isslave}}
+    </td>
+
+    <td>
+        {{{items}}}
+    </td>
+
+    <td>
+        <div class="shop-line-commands">
+            <a href="{{{editurl}}}">{{#pix}}t/edit, core{{/pix}}</a>
+            {{#isnotused}}
+            <a href="{{{deleteurl}}}">{{#pix}}t/delete, core{{/pix}}</a>
+            {{/isnotused}}
+
+        </div>
+    </td>
+</tr>
+<!-- /local_shop/catalogadminline -->

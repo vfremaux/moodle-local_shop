@@ -4,6 +4,7 @@
 <!-- local_shop/main_menu -->
 <table class="shop-main-menu">
 
+    {{^supportsinstances}}
     <tr valign="top">
         <td width="25%">
             <a href="{{{shopsettingsurl}}}">{{#str}}editshopsettings, local_shop{{/str}}</a>
@@ -13,6 +14,18 @@
             {{#str}}editshopsettings_desc, local_shop{{/str}}
         </td>
     </tr>
+    {{/supportsinstances}}
+    {{#supportsinstances}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{allshopsurl}}}">{{#str}}allshops, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}allshops_desc, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/supportsinstances}}
 
     <tr valign="top">
         <td width="25%">
@@ -54,6 +67,18 @@
         </td>
     </tr>
 
+    {{#supportspartners}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{partnersurl}}}">{{#str}}managepartners, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}managepartners_desc, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/supportspartners}}
+
     {{#useshipping}}
     <tr valign="top">
         <td width="25%">
@@ -86,7 +111,7 @@
             {{#str}}generalsettings, local_shop{{/str}}
         </td>
     </tr>
-    {{#hassiteadmin}}
+    {{/hassiteadmin}}
 
     <tr valign="top">
         <td width="25%">

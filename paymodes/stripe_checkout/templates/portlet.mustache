@@ -1,0 +1,18 @@
+
+
+<!-- shoppaymodes_stripe_checkout/portlet -->
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<div class="stripe-container">
+    {{#pix}}payment-logo, shoppaymodes_stripe_checkout{{/pix}}<br/>
+    {{#sid}}
+    <div id="stripe-checkout">
+        <button id="stripe-checkout-button">{{#str}}checkout, shoppaymodes_stripe_checkout{{/str}}</button>
+    </div>
+    {{/sid}}
+    {{^sid}}
+    <div id="stripe-error">{{#str}}error, shoppaymodes_stripe_checkout{{/str}}</div>
+    {{/sid}}
+</div>
+<!-- /shoppaymodes_stripe_checkout/portlet -->

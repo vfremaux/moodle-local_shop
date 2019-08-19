@@ -132,6 +132,18 @@ class Category extends ShopObject {
         return 0;
     }
 
+    public function export_to_ws() {
+        $export = new \Stdclass;
+
+        $export->id = $this->record->id;
+        $export->catalogid = $this->record->catalogid;
+        $export->name = format_string($this->record->name);
+        $export->description = format_text($this->record->description, $this->record->descriptionformat);
+        $export->visible = $this->record->visible;
+
+        return $export;
+    }
+
     /**
      * Recurse down to fetch first deeper branch. Stops when no more childs are found.
      * @param int $catalogid

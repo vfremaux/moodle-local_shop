@@ -877,3 +877,21 @@ td.right-align {
 h2.shop-caption {
      margin-left: 40px;
 }
+
+/* settings form */
+#id_s_local_shop_printconfig {
+    font-family: monospace;
+}
+
+#page-local-shop-front-view .form-input input[type="text"] {
+    padding: 3px;
+}
+
+#page-local-shop-front-view .form-label {
+    padding-top: 5px;
+}
+
+#page-local-shop-front-view #shop-customerinfo {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}

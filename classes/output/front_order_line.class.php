@@ -21,7 +21,7 @@ class front_order_line implements \Templatable {
         $this->q = $q;
     }
 
-    public function export_for_template($output) {
+    public function export_for_template(\renderer_base $output) {
 
         $template = new \StdClass;
 

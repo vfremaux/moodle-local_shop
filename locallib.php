@@ -261,10 +261,13 @@ function shop_backup_for_template($courseid, $options = array(), &$log = '') {
 
 /**
  * generates a username from given identity
- * @param object $user a user record
+ * @param object $user a user record. 
+ * @param bool $checkunique if true, generates indexed untill not found in DB.
  * @return a username
  */
-function shop_generate_username($user) {
+function shop_generate_username($user, $checkunique = false) {
+    global $DB;
+
     if (empty($user)) {
         debugging("Empty user");
         return;
@@ -294,6 +297,21 @@ function shop_generate_username($user) {
     $username = str_replace('â', 'a', $username);
     $username = str_replace('ç', 'c', $username);
     $username = str_replace('ñ', 'n', $username);
+
+    if ($checkunique) {
+        $ix = '';
+        $usernamebase = $username;
+
+        while ($DB->record_exists('user', array('username' => $username, 'deleted' => 0))) {
+            if ($ix == '') {
+                $ix = 1;
+            } else {
+                $ix = $ix + 1;
+            }
+            $username = $usernamebase.$ix;
+        }
+    }
+
     return $username;
 }
 
@@ -500,6 +518,9 @@ function shop_close_trace($output) {
  */
 function shop_trace_open($str, $output) {
     global $CFG;
+    static $iter = 0;
+
+    $iter++;
 
     $date = new DateTime();
     $u = microtime(true);
@@ -507,11 +528,11 @@ function shop_trace_open($str, $output) {
 
     if (empty($output)) {
         if (!empty($CFG->merchanttrace)) {
-            fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+            fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-  ".$str."\n");
         }
     } else if ($output == 'mail') {
         if (!empty($CFG->merchantmailtrace)) {
-            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-  ".$str."\n");
         }
     }
 }

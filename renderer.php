@@ -244,7 +244,15 @@ class local_shop_renderer extends local_shop_base_renderer {
         $config = get_config('local_shop');
 
         $template = new StdClass;
-        $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php');
+
+        $template->supportsinstances = false;
+        if (local_shop_supports_feature('shop/instances')) {
+            $template->supportsinstances = true;
+            $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops'));
+        } else {
+            $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php');
+        }
+
         $template->billsurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
         $template->productsurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances'));
         $template->customersurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers'));
@@ -263,6 +271,12 @@ class local_shop_renderer extends local_shop_base_renderer {
         }
 
         $template->reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
+
+        if (local_shop_supports_feature('shop/partners')) {
+            $template->supportspartners = true;
+            $params = array('id' => $theshop->id, 'view' => 'viewAllPartners');
+            $template->partnersurl = new moodle_url('/local/shop/pro/partners/view.php', $params);
+        }
 
         return $this->output->render_from_template('local_shop/main_menu', $template);
     }

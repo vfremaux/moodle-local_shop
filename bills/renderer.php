@@ -93,6 +93,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         if (!empty($config->pdfenabled)) {
             $template->ispdf = true;
             $template->actionurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', array('transid' => $transid));
+            $template->iconurl = $this->output->image_url('f/pdf-64');
         } else {
             $template->islogin = true;
             $template->actionurl = new moodle_url('/local/shop/front/order.popup.php');
@@ -123,7 +124,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $invoiceinfo = $bill->invoiceinfo; // Care of indirect magic __get with empty();
         if (!empty($invoiceinfo)) {
-            $ci = (object) unserialize($bill->invoiceinfo);
+            $ci = (object) json_decode($bill->invoiceinfo);
             $useinvoiceinfo = true;
         } else {
             $ci = $DB->get_record('local_shop_customer', array('id' => $bill->customerid));
@@ -458,6 +459,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $template->billurl = new moodle_url('/local/coursehop/bills/view.php', $params);
         $template->billordering = $billitem->ordering;
         $template->itemcode = $billitem->itemcode;
+        $template->abstract = format_string($billitem->abstract);
         $template->description = format_text($billitem->description);
         $template->delay = $billitem->delay;
         $template->unticost = sprintf("%.2f", round($billitem->unitcost, 2));
@@ -827,7 +829,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $outputclass = 'bills_search_form';
             shop_load_output_class($outputclass);
             $tpldata = new \local_shop\output\bills_search_form($blockinstance, $billcount);
-            $template = $tpldata->export_for_template($this->output);
+            $template = $tpldata->export_for_template($OUTPUT);
             return $this->output->render_from_template('local_shop/bills_search_form', $template);
         } catch (Exception $e) {
             print_error("Missing output class $outputclass");
@@ -875,7 +877,18 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
     public function bill_view_links(&$theshop) {
 
-        $excelurl = new moodle_url('/local/shop/export/export.php', array('what' => 'allbills', 'format' => 'excel'));
+        $shopid = optional_param('shopid', false, PARAM_INT);
+        $y = optional_param('y', false, PARAM_INT);
+        $m = optional_param('m', false, PARAM_INT);
+        $status = optional_param('status', false, PARAM_TEXT);
+
+        $params = array('what' => 'allbills',
+                        'format' => 'excel',
+                        'y' => $y,
+                        'm' => $m,
+                        'shopid' => $shopid,
+                        'status' => $status);
+        $excelurl = new moodle_url('/local/shop/export/export.php', $params);
         $billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
 
         $str = '';

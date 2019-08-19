@@ -38,13 +38,13 @@ class front_invoice_header implements \Templatable {
             $template->withlogo = true;
 
             if (!empty($config->sellerlogo)) {
-                $syscontext = context_system::instance();
+                $syscontext = \context_system::instance();
                 $component = 'local_shop';
                 $filearea = 'shoplogo';
                 $itemid = 0;
                 $filepath = $config->sellerlogo;
                 $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
-                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
+                $template->logourl = \moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
             } else {
                 $template->logourl = $OUTPUT->image_url('logo', 'theme');
             }

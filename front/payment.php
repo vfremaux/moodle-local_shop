@@ -48,7 +48,7 @@ if ($action) {
 
 echo $out;
 
-// Start ptinting page.
+// Start printing page.
 
 echo $OUTPUT->box_start('', 'shop-payment');
 

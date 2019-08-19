@@ -28,9 +28,14 @@
 
     <div id="shop-printable-bill" class="shop-link">
          {{#ispdf}}
-             <input type="submit"
+             <input type="image"
                         name="pdf_upload_btn"
-                        value="{{#str}}downloadpdfbill, local_shop{{/str}}"/>
+                        value="submit"
+                        width="64"
+                        height="64"
+                        alt="{{#str}}downloadpdfbill, local_shop{{/str}}"
+                        title="{{#str}}downloadpdfbill, local_shop{{/str}}"
+                        src="{{{iconurl}}}"/>
          {{/ispdf}}
          {{#islogin}}
              {{{loginbutton}}}

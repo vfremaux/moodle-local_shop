@@ -36,7 +36,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Get other contextual params.
 
-$view = optional_param('view', 'viewAllCustomers', PARAM_TEXT);
+$view = optional_param('view', 'viewAllTaxes', PARAM_TEXT);
 
 // Make page header and navigation.
 

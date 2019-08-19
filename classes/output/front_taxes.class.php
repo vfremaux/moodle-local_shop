@@ -23,6 +23,7 @@ class front_taxes implements \Templatable {
     }
 
     public function export_for_template(\renderer_base $output) {
+        global $OUTPUT;
 
         $template = new \StdClass;
 
@@ -31,7 +32,7 @@ class front_taxes implements \Templatable {
         if (!empty($this->taxes)) {
 
             $template->hastaxlines = true;
-            $template->taxheading = $output->heading(get_string('taxes', 'local_shop'), 2, '', 'invoice-taxes');
+            $template->taxheading = $OUTPUT->heading(get_string('taxes', 'local_shop'), 2, '', 'invoice-taxes');
 
             foreach ($this->taxes as $tcode => $tamount) {
                 if ($tcode == 0) {

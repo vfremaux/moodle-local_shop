@@ -164,49 +164,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_order_total_summary', $template);
     }
 
-    /**
-     *
-     *
-     */
-    public function printable_bill_link(&$bill) {
-        global $DB;
-
-        $config = get_config('local_shop');
-        $template = new StdClass;
-
-        $states = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
-        $popup = (in_array($bill->status, $states)) ? 'bill' : 'order';
-
-        $template->popupurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php');
-        $template->transid = $bill->transactionid;
-        $template->billid = $bill->id;
-        $template->shopid = $this->theshop->id;
-        $template->blockid = 0 + @$this->theblock->id;
-
-        if (!empty($config->pdfenabled)) {
-            $template->ispdf = true;
-            $billurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', array('transid' => $template->transid));
-            $template->billurl = $billurl->out();
-        } else {
-            $params = array('shopid' => $this->theshop->id,
-                            'blockid' => (0 + @$this->theblock->id),
-                            'billid' => $bill->id,
-                            'transid' => $bill->transactionid);
-
-            $billurl = new moodle_url('/local/shop/front/'.$popup.'.popup.php', $params);
-            $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $bill->id));
-
-            if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
-                $billuser = $DB->get_record('user', array('id' => $userid));
-                $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-                $options = array('ticket' => $ticket);
-                $template->printbillbutton = $this->output->single_button('/login/index.php', get_string('printbill', 'local_shop'), 'post',  $options);
-            }
-        }
-
-        return $this->output->render_from_template('local_shop/print_bill_button', $template);
-    }
-
     public function shop_return_button($theshop) {
 
         $str = '';
@@ -223,7 +180,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param object $bill
      */
     public function customer_info(&$bill = null) {
-        global $SESSION;
+        global $SESSION, $CFG;
 
         $usedistinctinvoiceinfo = false;
         if (empty($bill)) {
@@ -259,6 +216,16 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         $template->customername = $ci['lastname'].' '.$ci['firstname'];
+
+        if (local_shop_supports_feature('shop/partners')) {
+            include_once($CFG->dirroot.'/local/shop/pro/classes/Partner.class.php');
+            if (!empty($SESSION->shoppingcart->partner)) {
+                $sessionpartner = $SESSION->shoppingcart->partner;
+                $partner = \local_shop\Partner::get_by_key($SESSION->shoppingcart->partner->partnerkey);
+                $template->partnername = $partner->name;
+                $template->haspartner = true;
+            }
+        }
 
         $template->city = $ci['zip'].' '.$ci['city'];
         $template->country = core_text::strtoupper($ci['country']);
@@ -768,10 +735,18 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
 
+        $view = optional_param('view', 'shop', PARAM_ALPHA);
+        $template->isshopview = false;
+        if ($view == 'shop') {
+            $template->isshopview = true;
+            $template->shopurl = new moodle_url('/local/shop/front/view.php');
+        }
+
         $ttcprice = $product->get_taxed_price($product->preset, $product->taxcode);
         $template->preset = $product->preset;
         $template->total = sprintf('%0.2f', round($ttcprice * $product->preset, 2));
         $template->shortname = $product->shortname;
+        $template->code = '<span class="shop-pcode">'.$product->code.'</span>';
         $template->name = $product->name;
         $template->currency = $product->currency;
         $template->disabled = ' disabled="disabled" ';
@@ -914,9 +889,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
         $attrs = array();
-        $template->countryselect = html_writer::select($choices, 'invoiceinfo::country', $country, array('' => 'choosedots'), $attrs);
-
-        $template->vatcode = $vatcode;
+        $template->countryselect = html_writer::select($choices, 'invoiceinfo::country', $template->country, array('' => 'choosedots'), $attrs);
 
         $str .= $this->output->render_from_template('local_shop/front_invoice_form', $template);
 
@@ -1104,7 +1077,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= '<td align="right">';
         $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
         $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'"><img src="'.$this->output->image_url('t/delete').'" /></a>';
+        $str .= '<a href="'.$jshandler.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1263,7 +1236,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $outputclass = 'front_order_line';
                 shop_load_output_class($outputclass);
                 $tpldata = new \local_shop\output\front_order_line($catalogitem, $q, $this->theshop, $options);
-                $template = $tpldata->export_for_template($this->output);
+                $template = $tpldata->export_for_template($this);
                 return $this->output->render_from_template('local_shop/front_order_line', $template);
             } catch (Exception $e) {
                 print_error("Missing output class $outputclass");
@@ -1281,7 +1254,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $outputclass = 'front_bill_line';
             shop_load_output_class($outputclass);
             $tpldata = new \local_shop\output\front_bill_line($billitem, $options);
-            $template = $tpldata->export_for_template($this->output);
+            $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_bill_line', $template);
         } catch (Exception $e) {
             print_error("Missing output class $outputclass");
@@ -1301,7 +1274,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $outputclass = 'front_order_totals';
             shop_load_output_class($outputclass);
             $tpldata = new \local_shop\output\front_order_totals(array($bill, $theshop, $this->context));
-            $template = $tpldata->export_for_template($this->output);
+            $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_order_totals', $template);
         } catch (Exception $e) {
             print_error("Missing output class $outputclass");
@@ -1328,7 +1301,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $outputclass = 'front_taxes';
             shop_load_output_class($outputclass);
             $tpldata = new \local_shop\output\front_taxes($taxes, $finaltaxestotal, $theshop);
-            $template = $tpldata->export_for_template($this->output);
+            $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_taxes', $template);
         } catch (Exception $e) {
             print_error("Missing output class $outputclass");
@@ -1781,7 +1754,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $outputclass = 'front_invoice_header';
             shop_load_output_class($outputclass);
             $invoiceheader = new \local_shop\output\front_invoice_header($afullbill);
-            $template = $invoiceheader->export_for_template($this->output);
+            $template = $invoiceheader->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
         } catch (Exception $e) {
             print_error("Missing output class $outputclass");
@@ -1808,10 +1781,41 @@ class shop_front_renderer extends local_shop_base_renderer {
             $outputclass = 'front_paymode';
             shop_load_output_class($outputclass);
             $invoiceheader = new \local_shop\output\front_paymode($afullbill);
-            $template = $invoiceheader->export_for_template($this->output);
+            $template = $invoiceheader->export_for_template($this);
             return $OUTPUT->render_from_template('local_shop/front_paymode', $template);
         } catch (Exception $e) {
             print_error("Missing output class $outputclass");
         }
+    }
+
+    /**
+     *
+     *
+     */
+    public function printable_bill_link($billid, $transid) {
+        global $DB;
+
+        $config = get_config('local_shop');
+        $template = new StdClass;
+
+        $template->transid = $transid;
+        $template->billid = $billid;
+        if (!empty($config->pdfenabled)) {
+            $template->ispdf = true;
+            $template->actionurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', array('transid' => $transid));
+            $template->iconurl = $this->output->image_url('f/pdf-64');
+        } else {
+            $template->islogin = true;
+            $template->actionurl = new moodle_url('/local/shop/front/order.popup.php');
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $billid, 'transid' => $transid));
+            $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $billid));
+            if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
+                $billuser = $DB->get_record('user', array('id' => $userid));
+                $ticket = ticket_generate($billuser, 'immediate access', $billurl);
+                $options = array('ticket' => $ticket);
+                $template->loginbutton = $this->output->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
+            }
+        }
+        return $this->output->render_from_template('local_shop/bills_link_to_bill', $template);
     }
 }

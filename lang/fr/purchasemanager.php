@@ -27,6 +27,7 @@ $string['contexttype'] = 'Type';
 $string['instance'] = 'Instance';
 $string['purchasedprice'] = 'Prix';
 $string['startdate'] = 'Du';
+$string['validity'] = 'Validité ';
 $string['enddate'] = 'au';
 $string['enrol'] = 'Inscription';
 $string['ltiprovider'] = 'Accès distant LTI';

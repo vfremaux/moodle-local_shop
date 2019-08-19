@@ -234,6 +234,8 @@
         <FIELD NAME="paymentfee" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00" SEQUENCE="false" DECIMALS="3"/>
         <FIELD NAME="productionfeedback" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="test" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="partnerid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Partner id"/>
+        <FIELD NAME="partnertag" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false" COMMENT="Partner tag"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -352,6 +354,20 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="tnxid_is_unique" TYPE="unique" FIELDS="tnxid"/>
         <KEY NAME="transid_is_unique" TYPE="unique" FIELDS="transid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_shop_partner" COMMENT="Sales partners">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="shopid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="partnerkey" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="referer" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="partner_is_unique" TYPE="unique" FIELDS="partnerkey"/>
       </KEYS>
     </TABLE>
   </TABLES>

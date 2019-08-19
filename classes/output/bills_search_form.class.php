@@ -15,7 +15,7 @@ class bills_search_form implements \Templatable {
         $this->theshop = $theshop;
     }
 
-    public function export_for_template($output) {
+    public function export_for_template(\renderer_base $output) {
 
         $template = new \StdClass();
         $template->shopid = $this->theshop->id;
