@@ -16,6 +16,9 @@
 
 global $CFG;
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat EnroloneCourse ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['handlername'] = 'Inscription à un cours';
 $string['pluginname'] = 'Inscription à un cours';
 

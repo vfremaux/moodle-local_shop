@@ -61,6 +61,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
                 url = cfg.wwwroot + '/local/shop/front/ajax/service.php?what=agreeeulas';
                 url += '&service=order';
+                url += '&id=' + shopfront.shopid;
             } else {
                 url = cfg.wwwroot + '/local/shop/front/ajax/service.php?what=reseteulas';
                 url += '&service=order';

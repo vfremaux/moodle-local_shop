@@ -131,7 +131,7 @@ class Catalog extends ShopObject {
         $select = " catalogid = ? AND visible = ? ";
         $params = array($this->id, $visible);
         $fields = '*,0 as masterrecord';
-        if (!$localcats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'sortorder', $fields)) {
+        if (!$localcats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'parentid,sortorder', $fields)) {
             $localcats = array();
         }
         if ($local) {

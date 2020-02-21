@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat PayBox ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['enablepaybox'] = 'Réglement par Paybox';
 $string['enablepaybox2'] = 'Réglement par Paybox';
 $string['pluginname'] = 'Moyen de paiement Paybox';

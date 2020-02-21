@@ -87,7 +87,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $pendingcount = 0;
             $runningcount = 0;
             $producttpl->statusclass = '';
-            $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'ProductDetail', 'itemid' => $product->id));
+            $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewProductDetail', 'itemid' => $product->id));
             $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
             $producttpl->designation = format_string($product->name);
             $producttpl->reference = $productinstance->reference;

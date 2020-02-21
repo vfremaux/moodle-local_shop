@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes FreeOrder does not directly store any personal data about any user.';
+
 $string['enablefreeorder'] = 'Free order (zero amount)';
 $string['enablefreeorder2'] = 'Free order (zero amount)';
 $string['enablefreeorder3'] = 'This order only contain free products...';

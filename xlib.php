@@ -112,3 +112,7 @@ function local_shop_related_product($courseorid, $shopid = 0) {
 
     return $candidateproduct;
 }
+
+function local_shop_trace($message, $output = '', $dest = null) {
+    shop_trace($message, $output, $dest);
+}

@@ -48,6 +48,7 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
             $template->isslave = true;
             $template->linkicon = $this->output->pix_icon('link', $mastercatalogname, 'local_shop');
         }
+        $params = ['catalogid' => $catalog->id, 'view' => 'viewallProducts'];
         $template->catalogurl = new moodle_url('/local/shop/products/view.php', $params);
         $template->name = format_string($catalog->name);
         $template->description = $catalog->description;

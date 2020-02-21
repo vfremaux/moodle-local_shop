@@ -122,6 +122,8 @@ class Category extends ShopObject {
             WHERE
                 cc.id = ci.categoryid AND
                 cc.parentid = ?
+            ORDER BY
+                cc.sortorder
         ";
 
         if ($firstcat = $DB->get_records_sql($sql, array($this->id), 0, 1)) {

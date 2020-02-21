@@ -400,41 +400,43 @@ class Bill extends ShopObject {
         $this->itemcount = 0;
         $this->taxlines = array();
 
-        foreach ($itemrecs as $itemrec) {
+        if (!empty($itemrecs)) {
+            foreach ($itemrecs as $itemrec) {
 
-            $billitem = new BillItem($itemrec, false, $this);
+                $billitem = new BillItem($itemrec, false, $this);
 
-            // Deroute some special types.
-            if ($billitem->type == 'SHIPPING') {
-                $this->shipping = $itemrec->totalprice; // Taxed.
-                continue;
+                // Deroute some special types.
+                if ($billitem->type == 'SHIPPING') {
+                    $this->shipping = $itemrec->totalprice; // Taxed.
+                    continue;
+                }
+                if ($billitem->type == 'DISCOUNT') {
+                    continue;
+                }
+
+                // If standard BILLING line, aggregate to ordetotals.
+                $this->orderuntaxed += $itemrec->unitcost * $itemrec->quantity;
+                $this->ordertaxed += $billitem->get_taxed_price() * $itemrec->quantity;
+                $taxamount = $billitem->get_tax_amount() * $itemrec->quantity;
+                $this->ordertaxes += $taxamount;
+                $this->itemcount += $itemrec->quantity;
+
+                /*
+                 * echo 'UC '.($itemrec->unitcost * $itemrec->quantity).'<br/>';
+                 * echo 'Ut '.$taxamount.'<br/>';
+                 * echo 'UT '.($billitem->get_taxed_price() * $itemrec->quantity).'<br/><br/>';
+                 */
+
+                // Register tax by taxcode.
+                if (array_key_exists($billitem->taxcode, $this->taxlines)) {
+                    $this->taxlines[$billitem->taxcode] += $taxamount;
+                } else {
+                    $this->taxlines[$billitem->taxcode] = $taxamount;
+                }
+
+                // Add to items stack.
+                $this->items[$itemrec->id] = $billitem;
             }
-            if ($billitem->type == 'DISCOUNT') {
-                continue;
-            }
-
-            // If standard BILLING line, aggregate to ordetotals.
-            $this->orderuntaxed += $itemrec->unitcost * $itemrec->quantity;
-            $this->ordertaxed += $billitem->get_taxed_price() * $itemrec->quantity;
-            $taxamount = $billitem->get_tax_amount() * $itemrec->quantity;
-            $this->ordertaxes += $taxamount;
-            $this->itemcount += $itemrec->quantity;
-
-            /*
-             * echo 'UC '.($itemrec->unitcost * $itemrec->quantity).'<br/>';
-             * echo 'Ut '.$taxamount.'<br/>';
-             * echo 'UT '.($billitem->get_taxed_price() * $itemrec->quantity).'<br/><br/>';
-             */
-
-            // Register tax by taxcode.
-            if (array_key_exists($billitem->taxcode, $this->taxlines)) {
-                $this->taxlines[$billitem->taxcode] += $taxamount;
-            } else {
-                $this->taxlines[$billitem->taxcode] = $taxamount;
-            }
-
-            // Add to items stack.
-            $this->items[$itemrec->id] = $billitem;
         }
 
         $this->check_discount();
@@ -465,7 +467,6 @@ class Bill extends ShopObject {
         $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
         $this->dirty = false;
         shop_trace("[{$this->transactionid}] Bill recalculated");
-
     }
 
     public function delete() {

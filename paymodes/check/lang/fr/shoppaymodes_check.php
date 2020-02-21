@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Check ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Réglement par chèque bancaire';
 $string['check'] = 'Chèque bancaire';
 $string['enablecheck'] = 'Réglement par chèque';

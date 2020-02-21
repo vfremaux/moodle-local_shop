@@ -1,0 +1,136 @@
+
+
+<!-- local_shop/products_product_admin_line -->
+{{#header}}
+<tr class="shop-products-caption" valign="top">
+    <!--<th class="header c0">
+        {{#str}}sel, local_shop{{/str}}
+    </th>-->
+
+    <th class="header c0" rowspan="2">
+        {{#str}}image, local_shop{{/str}}
+    </th>
+
+    <th class="header c1">
+        {{#str}}code, local_shop{{/str}} {{{helpcodeicon}}}
+    </th>
+
+    <th class="header c1">
+        {{#str}}shortname, local_shop{{/str}} {{{helpshortnameicon}}}
+    </th>
+
+    <th class="header c2" colspan="5">
+        {{#str}}designation, local_shop{{/str}}
+    </th>
+
+    <th class="header c3">
+    </th>
+</tr>
+
+<tr class="shop-products-caption" valign="top">
+    <th class="header c1" colspan="2">
+        {{#str}}price, local_shop{{/str}}
+    </th>
+
+    <th class="header c2" colspan="2">
+        {{#str}}ttc, local_shop{{/str}}
+    </th>
+
+    <th class="header c3" colspan="1" align="center">
+        {{#str}}status, local_shop{{/str}}
+    </th>
+
+    <th class="header c4" align="center">
+        {{#str}}maxquant, local_shop{{/str}}
+    </th>
+
+    <th class="header c4" align="center">
+        {{#str}}sales, local_shop{{/str}}
+    </th>
+
+    <th class="header c5" align="center">
+        {{#str}}stock, local_shop{{/str}}
+    </th>
+
+    <th class="header c6" align="center">
+        {{#str}}renewable, local_shop{{/str}}
+    </th>
+
+    <th class="header c7" align="center">
+        {{#str}}seats, local_shop{{/str}}
+    </th>
+
+    <th class="header lastcol" class="shop-controls" width="30">
+    </th>
+</tr>
+{{/header}}
+
+{{^header}}
+<tr class="shop-{{statusclass}}line shop-product-row" valign="top">
+    <td class="cell {{slaveclass}}"align="center" rowspan="2">
+        <img src="{{{thumburl}}}" vspace="10" height="50">
+    </td>
+
+    <td class="name cell {{slaveclass}}" align="left">
+        {{code}}
+    </td>
+    <td class="name cell {{slaveclass}}" align="left">
+        {{shortname}}
+    </td>
+
+    <td class="name cell {{slaveclass}}" align="left" colspan="7">
+        {{name}}
+    </td>
+
+    <td class="name cell {{slaveclass}} shop-controls" align="left">
+        {{#enablehandler}}
+        <i class="fa fa-cog" title="{{enablehandler}}"></i>
+        {{/enablehandler}}
+    </td>
+</tr>
+
+<tr valign="top">
+    <td class="amount cell {{slaveclass}}" align="left" colspan="2">
+        {{#pricelines}}
+        <span class="shop-admin-pricerange">{{pricekey}} : </span><span class="shop-admin-amount">{{price}}</span>
+        {{/pricelines}}
+        <br/>
+        <div title="{{taxtitle}}">{{taxcode}}</div>
+    </td>
+
+    <td class="amount cell {{slaveclass}}" align="left" colspan="2">
+        {{#taxedpricelines}}
+        <span class="shop-admin-pricerange">{{pricekey}} : </span><span class="shop-admin-amount">{{price}}</span>
+        {{/taxedpricelines}}
+        <br/>
+    </td>
+    <td class="status cell {{slaveclass}}" align="right">
+        {{status}}
+    </td>
+
+    <td class="quant cell {{slaveclass}}" align="center">
+        {{maxdeliveryquant}}
+    </td>
+
+    <td class="sold cell {{slaveclass}}" align="center">
+        {{sold}}
+    </td>
+
+    <td class="stock cell {{slaveclass}}" align="center">
+        {{stock}}
+    </td>
+
+    <td class="renewable cell {{slaveclass}}" align="center">
+        {{renewable}}
+    </td>
+
+    <td class="quantaddressesusers cell {{slaveclass}}" align="center">
+        {{quantaddressesusers}}
+    </td>
+
+    <td align="right" class="lastcol shop-controls">
+        {{{controls}}}
+    </td>
+</tr>
+{{/header}}
+<!-- /local_shop/products_product_admin_line -->

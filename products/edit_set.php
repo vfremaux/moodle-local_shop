@@ -129,6 +129,8 @@ if ($data = $mform->get_data()) {
                                                     $data->id, array('subdirs' => true), $data->description);
     $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                             'catalogitemdescription', $data->id);
+    // Post update after processing text.
+    $DB->update_record('local_shop_catalogitem', $data);
 
     $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);

@@ -21,10 +21,13 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['enabletransfer'] = 'Réglement par transfert bancaire';
-$string['enabletransfer2'] = 'Réglement par transfert bancaire';
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Transfer ne détient directement aucune donnée relative aux utilisateurs.';
+
+$string['enabletransfer'] = 'Réglement par virement bancaire';
+$string['enabletransfer2'] = 'Réglement par virement bancaire';
 $string['enabletransfer3'] = 'Vous avez choisi de régler par virement bancaire...';
-$string['transfer'] = 'Transfert bancaire';
+$string['transfer'] = 'Virement bancaire';
 $string['pluginname'] = 'Moyen de paiement Virement Bancaire';
 
 $string['pay_instructions_tpl'] = '

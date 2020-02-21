@@ -22,6 +22,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat StripeCheckout ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['cancelurl'] = 'URL d\'annulation';
 $string['checkout'] = 'Payer maintenant !';
 $string['configcancelurl'] = 'Url appelée après exécution du paiement';

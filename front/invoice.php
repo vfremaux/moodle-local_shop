@@ -113,7 +113,7 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
     echo $OUTPUT->box_end();
 }
 
-echo $renderer->printable_bill_link($afullbill);
+echo $renderer->printable_bill_link($afullbill, $transid);
 
 // If testing the shop, provide a manual link to generate the paypal_ipn call.
 if ($config->test && $afullbill->paymode == 'paypal') {

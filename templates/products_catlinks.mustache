@@ -1,0 +1,39 @@
+
+
+<!-- local_shop/products_catlinks -->
+<div id="local-shop-catlinks">
+
+    <div class="left-links">
+        <a href="{{{catlinkurl}}}">{{#str}}edit_categories, local_shop{{/str}}</a> - 
+
+        {{#hascategories}}
+
+        {{#producturl}}
+        <a href="{{{producturl}}}">{{#str}}newproduct, local_shop{{/str}}</a> - 
+        {{/producturl}}
+
+        {{#seturl}}
+        <a href="{{{seturl}}}">{{#str}}newset, local_shop{{/str}}</a> -
+        {{/seturl}}
+
+        {{#bundleurl}}
+        <a href="{{{bundleurl}}}">{{#str}}newbundle, local_shop{{/str}}</a> - 
+        {{/bundleurl}}
+
+        <a href="{{{testurl}}}">{{#str}}unittests, local_shop{{/str}}</a>
+        {{/hascategories}}
+
+    </div>
+
+    <div class="right-links">
+        {{#hasonelinkedshop}}
+        <a href="{{{fronturl}}}">{{#str}}gotofrontoffice, local_shop{{/str}}</a>
+        {{/hasonelinkedshop}}
+
+        {{#hasseverallinkedshops}}
+        {{#str}}gotofrontoffice, local_shop{{/str}}: {{{shopselect}}}
+        {{/hasseverallinkedshops}}
+    </div>
+
+</div>
+<!-- /local_shop/products_catlinks -->

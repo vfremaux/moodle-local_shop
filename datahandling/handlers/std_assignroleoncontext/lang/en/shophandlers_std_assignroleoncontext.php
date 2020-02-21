@@ -16,6 +16,9 @@
 
 global $CFG;
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shophandler Std AssignRoleOnContext does not directly store any personal data about any user.';
+
 $string['handlername'] = 'Single role assign';
 $string['pluginname'] = 'Single role assign';
 

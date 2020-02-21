@@ -154,6 +154,7 @@ $string['passwordconfirmerror'] = 'Passwords do not match!';
 $string['payment'] = 'Payment ';
 $string['paymentmethod'] = 'Pay mode';
 $string['paymode'] = 'Pay mode';
+$string['paymentservicenotification'] = '';
 $string['choosepaymentmode'] = 'Choose your pay mode';
 $string['paymodedonotpatchtoresponse'] = 'The detected paymode of the respone is different to the registered paymode in order. Error.';
 $string['payto'] = 'Thanks pay to {$a}.<br/>Print the order form and send it to ';

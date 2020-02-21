@@ -153,6 +153,7 @@ $string['passwordconfirmerror'] = 'Les mots de passe ne correspondent pas&nbsp;!
 $string['payment'] = 'Réglement ';
 $string['paymentmethod'] = 'Moyen de paiement';
 $string['paymode'] = 'Moyen de paiement';
+$string['paymentservicenotification'] = '';
 $string['choosepaymentmode'] = 'Sélectionnez votre mode de règlement&ensp;';
 $string['paymodedonotpatchtoresponse'] = 'Le mode de paiement détecté n\'est pas celui de la commance. Erreur.';
 $string['payto'] = 'Merci d\'établir votre règlement à l\'ordre {$a}.<br/>Imprimez ce bon et envoyez-le avec votre règlement à&ensp;';

@@ -101,7 +101,7 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $template->city = $customer->city;
 
-        $template-> = $customer->country;
+        $template->country = $customer->country;
 
         return $this->output->render_from_template('local_shop/customer_detail', $template);
     }
