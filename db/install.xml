@@ -99,7 +99,7 @@
         <FIELD NAME="requireddata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="describes complementary data to ask to user"/>
         <FIELD NAME="enablehandler" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false" COMMENT="enabled pre and post purchase handler"/>
         <FIELD NAME="handlerparams" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="give params to handler"/>
-        <FIELD NAME="password" TYPE="char" SIZE="8" NOTNULL="false" SEQUENCE="false" COMMENT="Access password to the product"/>
+        <FIELD NAME="password" TYPE="char" LENGTH="8" NOTNULL="false" SEQUENCE="false" COMMENT="Access password to the product"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
