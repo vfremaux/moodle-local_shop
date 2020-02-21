@@ -1,0 +1,68 @@
+
+
+<!-- local_shop/products_bundle_admin_line -->
+<tr valign="top" class="shop-{{statusclass}}line shop-bundle-row">
+    <!-- td width="30" class="{{slaveclass}}">
+        <input type="checkbox" name="items[]" value="{{id}}" />
+    </td -->
+
+    <td class="{{engravedclass}} thumb" rowspan="2" align="center">
+        <img src="{{{thumburl}}}" height="50" />
+    </td>
+
+    <td class="code {{slaveclass}}">
+        <b>{{code}}</b><br/>
+        ({{shortname}})
+    </td>
+
+    <td class="name {{slaveclass}}" colspan="9">
+        {{name}}
+    </td>
+</tr>
+
+<tr valign="top">
+    <td class="amount {{slaveclass}}" colspan="2">
+        {{price1}}<br>
+        {{bundle->taxcode}}
+    </td>
+
+    <td class="amount {{slaveclass}}" colspan="2">
+        {{bundleTTCPrice}}
+    </td>
+
+    <td class="status {{slaveclass}}" align="center">
+        {{status}}
+    </td>
+
+    <td class="maxdeliveryquant {{slaveclass}}" align="center">
+        {{maxdeliveryquant}}
+    </td>
+
+    <td class="sold {{slaveclass}}" align="center">
+        {{sold}}
+    </td>
+
+    <td class="stock {{slaveclass}}" align="center">
+        {{stock}}
+    </td>
+
+    <td class="renewable {{slaveclass}}" align="center">
+        {{renewable}}
+    </td>
+
+    <td class="seats {{slaveclass}}">
+    </td>
+
+    <td class="lastcol shop-controls">
+        {{{controls}}}
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2">&nbsp;</td>
+
+    <td class="list" colspan="9">
+        {{{subs}}}
+    </td>
+</tr>
+<!-- /local_shop/products_bundle_admin_line -->

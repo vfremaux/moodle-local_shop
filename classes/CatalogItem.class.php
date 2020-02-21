@@ -425,7 +425,17 @@ class CatalogItem extends ShopObject {
     public function unlink() {
         global $DB;
 
-        $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
+        if (!$this->isset) {
+            // Unlink self from set or bundle.
+            $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
+        } else {
+            // Unlink all linked elements.
+            if (!empty($this->elements)) {
+                foreach ($this->elements as $ci) {
+                    $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $ci->id));
+                }
+            }
+        }
     }
 
     public function has_leaflet() {
@@ -586,6 +596,7 @@ class CatalogItem extends ShopObject {
         $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
         while ($DB->record_exists('local_shop_catalogitem', $params)) {
             $this->record->code .= '1';
+            $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
         }
 
         $this->save();

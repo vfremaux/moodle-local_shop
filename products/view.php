@@ -42,7 +42,7 @@ $PAGE->set_context($context);
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-if (preg_match('/viewAllProducts|search/', $view)) {
+if (!preg_match('/viewAllProducts|search/', $view)) {
     $view = 'viewAllProducts';
 }
 

@@ -325,7 +325,7 @@ abstract class CatalogItem_Form extends moodleform {
 
     protected function set_name_data(&$defaults, $context) {
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogdescription', @$defaults->itemid);
+                                                 'catalogitemdescription', @$defaults->itemid);
     }
 
     protected function set_document_asset_data(&$defaults, $context) {

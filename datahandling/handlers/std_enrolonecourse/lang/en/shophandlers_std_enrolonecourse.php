@@ -16,6 +16,9 @@
 
 global $CFG;
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shophandler Std EnroloneCourse does not directly store any personal data about any user.';
+
 $string['handlername'] = 'One course enrolment';
 $string['pluginname'] = 'One course enrolment';
 

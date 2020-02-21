@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Paypal ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['ipnfortest'] = 'Tester le retour IPN avec cette transaction';
 $string['enablepaypal'] = 'Réglement par Paypal';
 $string['enablepaypal2'] = 'Réglement par Paypal';

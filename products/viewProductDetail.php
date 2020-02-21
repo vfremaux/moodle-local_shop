@@ -26,7 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 
-$productid = required_param('itemid', PARAM_INT);
+use local_shop\CatalogItem;
+
+$itemid = required_param('itemid', PARAM_INT);
 
 if (!has_capability('local/shop:accessallowners', $context)) {
     $shopowner = $USER->id;

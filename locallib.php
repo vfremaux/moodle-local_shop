@@ -282,21 +282,21 @@ function shop_generate_username($user, $checkunique = false) {
     $lastname = str_replace('\'', '', $lastname);
     $lastname = preg_replace('/\s+/', '-', $lastname);
     $username = $firstname.'.'.$lastname;
-    $username = str_replace('é', 'e', $username);
-    $username = str_replace('è', 'e', $username);
-    $username = str_replace('ê', 'e', $username);
-    $username = str_replace('ë', 'e', $username);
-    $username = str_replace('ö', 'o', $username);
-    $username = str_replace('ô', 'o', $username);
-    $username = str_replace('ü', 'u', $username);
-    $username = str_replace('û', 'u', $username);
-    $username = str_replace('ù', 'u', $username);
-    $username = str_replace('î', 'i', $username);
-    $username = str_replace('ï', 'i', $username);
-    $username = str_replace('à', 'a', $username);
-    $username = str_replace('â', 'a', $username);
-    $username = str_replace('ç', 'c', $username);
-    $username = str_replace('ñ', 'n', $username);
+    $username = str_replace('Ã©', 'e', $username);
+    $username = str_replace('Ã¨', 'e', $username);
+    $username = str_replace('Ãª', 'e', $username);
+    $username = str_replace('Ã«', 'e', $username);
+    $username = str_replace('Ã¶', 'o', $username);
+    $username = str_replace('Ã´', 'o', $username);
+    $username = str_replace('Ã¼', 'u', $username);
+    $username = str_replace('Ã»', 'u', $username);
+    $username = str_replace('Ã¹', 'u', $username);
+    $username = str_replace('Ã®', 'i', $username);
+    $username = str_replace('Ã¯', 'i', $username);
+    $username = str_replace('Ã ', 'a', $username);
+    $username = str_replace('Ã¢', 'a', $username);
+    $username = str_replace('Ã§', 'c', $username);
+    $username = str_replace('Ã±', 'n', $username);
 
     if ($checkunique) {
         $ix = '';
@@ -515,8 +515,10 @@ function shop_close_trace($output) {
 /**
  * outputs into an open trace (ligther than debug_trace)
  * @param string $str
+ * @param string $output the destination trace (empty or 'mail')
+ * @param string $dest for mail trace, the destination user of the mail.
  */
-function shop_trace_open($str, $output) {
+function shop_trace_open($str, $output, $dest) {
     global $CFG;
     static $iter = 0;
 
@@ -532,7 +534,12 @@ function shop_trace_open($str, $output) {
         }
     } else if ($output == 'mail') {
         if (!empty($CFG->merchantmailtrace)) {
-            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-  ".$str."\n");
+            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-\n");
+            fputs($CFG->merchantmailtrace, "MailTo: ".$dest->email."\n");
+            fputs($CFG->merchantmailtrace, "MailContent:\n");
+            fputs($CFG->merchantmailtrace, "@@@@@@@@\n");
+            fputs($CFG->merchantmailtrace, $str."\n");
+            fputs($CFG->merchantmailtrace, "@@@@@@@@\n");
         }
     }
 }
@@ -540,7 +547,7 @@ function shop_trace_open($str, $output) {
 /**
  * write to the trace
  */
-function shop_trace($str, $output = '') {
+function shop_trace($str, $output = '', $dest = null) {
     global $CFG;
 
     if (empty($output)) {
@@ -556,7 +563,7 @@ function shop_trace($str, $output = '') {
     }
 
     if (shop_open_trace($output)) {
-        shop_trace_open($str, $output);
+        shop_trace_open($str, $output, $dest);
         shop_close_trace($output);
     }
 }
@@ -629,6 +636,7 @@ function shop_build_context() {
     }
 
     $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
+
     if ($SESSION->shop->shopid) {
         try {
             $theshop = new Shop($SESSION->shop->shopid);
@@ -646,7 +654,7 @@ function shop_build_context() {
     }
 
     if (!$theshop) {
-        // No shops available at all. Redirect o shop management.
+        // No shops available at all. Redirect to shop management.
         redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
     }
 
@@ -683,6 +691,7 @@ function shop_build_context() {
     if (!empty($SESSION->shop->blockid)) {
         $theblock = shop_get_block_instance($SESSION->shop->blockid);
     }
+
     return array($theshop, $thecatalog, $theblock);
 }
 
@@ -845,7 +854,7 @@ function shop_get_enabled_paymodes($theshop) {
 
         if (!$instant) {
             if (!has_capability('local/shop:paycheckoverride', $systemcontext) &&
-                !has_capability('local/shop:usenoninstantpayments', $systemcontext)) {
+                !has_capability('local/shop:usenoninstantpayments', $systemcontext) && !$config->testoverride) {
                 continue;
             }
         }

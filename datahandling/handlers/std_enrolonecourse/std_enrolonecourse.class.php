@@ -234,7 +234,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $productionfeedback->public = $fb;
         $fb = get_string('productiondata_assign_private', 'shophandlers_std_enrolonecourse', $course->id);
         $productionfeedback->private = $fb;
-        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course->id);
+        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course);
         $productionfeedback->salesadmin = $fb;
 
         /*

@@ -105,6 +105,7 @@ class local_shop_renderer extends local_shop_base_renderer {
     }
 
     public function paging_results($portlet) {
+        $str = '';
         if (empty($portlet->pagesize)) {
             $portlet->pagesize = 20;
         }

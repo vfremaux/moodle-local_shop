@@ -304,11 +304,14 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
+        $template = new StdClass;
+
         if (empty($categories)) {
-            return $this->output->notification(get_string('nocats', 'local_shop'));
+            $template->notification = $this->output->notification(get_string('nocats', 'local_shop'));
+            return $this->output->render_from_remplate('local_shop/catalog', $template);
         }
 
-        $str = '';
+        $template->hascategories = true;
 
         // Make a comma list of all category ids.
         $catidsarr = array();
@@ -317,9 +320,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
         $catids = implode(',', $catidsarr);
 
-        $withtabs = (@$this->theshop->printtabbedcategories == 1);
+        $template->withtabs = (@$this->theshop->printtabbedcategories == 1);
+        $template->categorytabs = array();
 
-        if ($withtabs) {
+        if ($template->withtabs) {
             $categoryid = optional_param('category', null, PARAM_INT);
 
             // Get the tree branch up to the category starting from the top.
@@ -338,13 +342,17 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid, 'visible' => 1);
                     $levelcategories = Category::get_instances($params, 'sortorder');
                     $iscurrent = $cat->id == $categoryid;
-                    $str .= $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true, $catlevel);
+                    $categorytabtpl = new StdClass;
+                    $categorytabtpl->category = $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true, $catlevel);
+                    $template->categorytabs[] = $categorytabtpl;
 
                     // Print childs.
                     $catlevel++;
                     $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
                     if ($subs = Category::get_instances($attrs, 'sortorder')) {
-                        $str .= $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid, $catlevel);
+                        $categorytabtpl = new StdClass;
+                        $categorytabtpl->category = $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid, $catlevel);
+                        $template->categorytabs[] = $categorytabtpl;
                     }
                 }
                 $catlevel++;
@@ -353,61 +361,61 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         // Print catalog product line on the active category if tabbed.
         $catids = array_keys($categories);
-        $category = optional_param('category', $catids[0], PARAM_INT);
+        $currentcategory = optional_param('category', $catids[0], PARAM_INT);
 
         $c = 0;
         foreach ($levelcategories as $c) {
             $cat = $categories[$c->id];
-            if ($withtabs && ($category != $cat->id)) {
+            if ($template->withtabs && ($currentcategory != $cat->id)) {
                 continue;
             }
             if (!isset($firstcatid)) {
                 $firstcatid = $cat->id;
             }
 
-            if ($withtabs) {
-                $str .= '<div class="shopcategory" id="category'.$cat->id.'" />';
-            } else {
+            $categorytpl = new StdClass;
+            $categorytpl->id = $cat->id;
+
+            if (empty($withtabs)) {
                 $cat->level = 1;
-                $str .= $this->output->heading($cat->name, $cat->level);
+                $categorytpl->heading = $this->output->heading($cat->name, $cat->level);
             }
 
             if (!empty($cat->description)) {
-                $str .= '<div class="shop-category-description">';
-                $str .= format_text($cat->description);
-                $str .= '</div>';
+                $categorytpl->description = format_text($cat->description, FORMAT_MOODLE, array('para' => false));
             }
 
             if (!empty($cat->products)) {
+                $categorytpl->hasproducts = true;
                 foreach ($cat->products as $product) {
 
+                    $producttpl = new StdClass;
                     $product->check_availability();
                     $product->currency = $this->theshop->get_currency('symbol');
                     $product->salesunit = $product->get_sales_unit_url();
                     $product->preset = 0 + @$SESSION->shoppingcart->order[$product->shortname];
                     switch ($product->isset) {
                         case PRODUCT_SET:
-                            $str .= $this->product_set($product, true);
+                            $producttpl->product = $this->product_set($product, true);
                             break;
                         case PRODUCT_BUNDLE:
-                            $str .= $this->product_bundle($product, true);
+                            $producttpl->product = $this->product_bundle($product, true);
                             break;
                         default:
-                            $str .= $this->product_block($product);
+                            $producttpl->product = $this->product_block($product);
                     }
+                    $categorytpl->products[] = $producttpl;
                 }
             } else {
-                $str .= get_string('noproductincategory', 'local_shop');
+                $categorytpl->hasproducts = false;
+                $categorytpl->noproductincategorynotification = get_string('noproductincategory', 'local_shop');
             }
-
             $c++;
 
-            if ($withtabs) {
-                $str .= '</div>';
-            }
+            $template->categories[] = $categorytpl;
         }
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_catalog', $template);
     }
 
     /**
@@ -464,7 +472,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
-            $template->description = format_text($product->description);
+            $template->description = format_text($product->description, FORMAT_MOODLE, array('para' => false));
 
             $cutoff = $config->shortdescriptionthreshold;
             if ($product->issetpart) {
@@ -475,6 +483,8 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $template->readmorestr = get_string('readmore', 'local_shop');
                 $template->shortdescription = true;
             }
+        } else {
+            $template->description = '';
         }
         if (!$product->available) {
             $template->notavailablestr = get_string('notavailable', 'local_shop');
@@ -543,13 +553,16 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($set->description) {
             $set->description = file_rewrite_pluginfile_urls($set->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $set->id);
-            $template->description = format_text($set->description);
+            $template->sethasdescription = true;
+            $template->description = format_text($set->description, FORMAT_MOODLE, array('para' => false));
             $cutoff = $config->shortdescriptionthreshold;
             if (core_text::strlen($set->description) > $cutoff) {
                 $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
                 $template->readmorestr = get_string('readmore', 'local_shop');
                 $template->shortdescription = true;
             }
+        } else {
+            $template->sethasdescription = false;
         }
 
         $image = $set->get_image_url();
@@ -597,7 +610,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->name = format_string($bundle->name);
             if ($bundle->description) {
                 $template->hasdescription = true;
-                $template->description = format_text($bundle->description);
+                $template->description = format_text($bundle->description, FORMAT_MOODLE, array('para' => false));
             }
             $cutoff = $config->shortdescriptionthreshold;
             if (core_text::strlen($bundle->description) > $cutoff) {
@@ -660,30 +673,29 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $unitimage = $product->get_sales_unit_url();
-        $tenunitsimage = $product->get_sales_ten_units_url();
+        $template = new StdClass;
+
+        $template->unitimageurl = $product->get_sales_unit_url();
+        $template->tenunitsimageurl = $product->get_sales_ten_units_url();
 
         $q = @$SESSION->shoppingcart->order[$product->shortname];
         $packs = floor($q / 10);
         $units = $q % 10;
 
-        $str = '';
         for ($i = 0; $i < 0 + $packs; $i++) {
-            $str .= '&nbsp;<img src="'.$tenunitsimage.'" align="middle" />';
+            $template->packs[] = new StdClass;
         }
 
         for ($j = 0; $j < 0 + $units; $j++) {
-            $str .= '&nbsp;<img src="'.$unitimage.'" align="middle" />';
+            $template->units[] = new StdClass;
         }
 
         if (($i * 10 + $j) > 0) {
-            $jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
-            $str .= '&nbsp;<a title="'.get_string('deleteone', 'local_shop').'" href="'.$jshandler.'">';
-            $str .= '<img src="'.$this->output->image_url('t/delete').'" valign="center" />';
-            $str .= '</a>';
+            $template->hashandler = true;
+            $template->jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
         }
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_units', $template);
     }
 
     public function order_detail(&$categories) {
@@ -1341,8 +1353,8 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $instant = $paymodeplugin->is_instant_payment();
 
                 if (!$instant) {
-                    if (!has_capability('local/shop:paycheckoverride', $this->context) &&
-                        !has_capability('local/shop:usenoninstantpayments', $this->context)) {
+                    if (!has_capability('local/shop:paycheckoverride', $systemcontext) &&
+                        !has_capability('local/shop:usenoninstantpayments', $systemcontext) && !$config->testoverride) {
                         continue;
                     }
                 }
@@ -1356,7 +1368,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 }
 
                 if ($var == 'test') {
-                    if (!$isrealadmin) {
+                    if (!$isrealadmin && !$config->testoverride) {
                         continue;
                     }
                 } else {
@@ -1385,7 +1397,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $paymodetpl = new StdClass;
                     $paymodetpl->var = $var;
                     $paymodetpl->checked = $checked;
-                    $paymodetpl->paymodename = get_string($isenabledvar.'2', 'shoppaymodes_'.$var);
+                    $paymodetpl->paymodename = get_string($isenabledvar.'2', 'shoppaymodes_'.$var, $config);
                     $template->paymode[] = $paymodetpl;
                 }
             }
@@ -1705,6 +1717,8 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $eula = ''.$this->theshop->eula;
         $context = context_system::instance();
+        $eula = file_rewrite_pluginfile_urls($eula, 'pluginfile.php', $context->id, 'local_shop',
+                                               'eula', $this->theshop->id);
 
         foreach (array_keys($SESSION->shoppingcart->order) as $shortname) {
             $ci = $this->thecatalog->get_product_by_shortname($shortname);

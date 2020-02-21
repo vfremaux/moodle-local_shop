@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Paypal does not directly store any personal data about any user.';
+
 $string['ipnfortest'] = 'Test the IPN backcall with this transaction';
 $string['enablepaypal'] = 'Paypal payment';
 $string['enablepaypal2'] = 'Paypal payment';
