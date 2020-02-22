@@ -30,16 +30,42 @@ if (function_exists('core_tables_exist') && core_tables_exist()) {
 $string['enablemonetico'] = 'Monetico (Crédit Mutuel)'; // Config form.
 $string['enablesystempay2'] = 'Cartes de crédit (Monetico), un service du Crédit Mutuel'; // Shop GUI.
 $string['systempay'] = 'Monetico (Crédit Mutuel)';
-$string['moneticomerchantid'] = 'ID marchand';
-$string['moneticoserviceurl'] = 'URL de Service';
-$string['moneticousesecure'] = 'Activer le service 3D Secure';
-$string['moneticouselocaltime'] = 'Utiliser l\'heure locale du serveur';
+$string['configmoneticomerchantid'] = 'ID marchand';
+$string['configmoneticomerchantid_desc'] = 'ID marchand';
+$string['configmoneticoserviceurl'] = 'URL de Service';
+$string['configmoneticoserviceurl_desc'] = 'URL de Service';
+$string['configmoneticousesecure'] = 'Activer le service 3D Secure';
+$string['configmoneticousesecure_desc'] = 'Activer le service 3D Secure';
+$string['configmoneticopaymodeparams'] = 'Paramètres Monetico';
+$string['configmoneticopaymodeparams_desc'] = 'Paramètres Monetico';
+$string['configmoneticoprodcertificate'] = 'Certificat de production';
+$string['configmoneticoprodcertificate_desc'] = 'Certificat de production';
+$string['configmoneticobankbrand'] = 'Logo Banque';
+$string['configmoneticobankbrand_desc'] = 'Logo Banque';
+$string['configmoneticocountry'] = 'Pays';
+$string['configmoneticocountry_desc'] = 'Pays';
+$string['configmoneticocurrencycode'] = 'Devise';
+$string['configmoneticocurrencycode_desc'] = 'Devise';
+
+$string['france'] = 'France';
+$string['england'] = 'Royaume uni';
+$string['germany'] = 'Allemagne';
+$string['spain'] = 'Espagne';
+
+$string['cur978'] = 'Euro';
+$string['cur840'] = 'Dollar US';
+$string['cur826'] = 'Livre Sterling';
+$string['cur756'] = 'Franc suisse';
+$string['cur036'] = 'Dollar AU';
+$string['cur124'] = 'Dollar CA';
+
+$string['cm'] = 'Crédit Mutuel';
 
 $string['moneticopaymentinvoiceinfo'] = 'Monetico (Crédit Mutuel)';
 $string['door_transfer_text_tpl'] = 'Nous allons vous transférer sur l\'interface de paiement <b>sécurisée</b> de notre partenaire financier {$a}. Cliquez sur le type de carte bancaire que vous allez utiliser pour le paiement.';
 $string['pluginname'] = 'Moyen de paiement Monetico';
 $string['systempayinfo'] = 'Monetico est une interface de paiement adoptée par certaines banques
-françaises telles que le Crédit Mutuel. Sa configuration demande la mise en place de certificats
+françaises. Sa configuration demande la mise en place de certificats
 cryptés et de descriptions qui ne peuvent être apportées par l\'interface Web pour des raisons de sécurité. Contactez un intégrateur
 spécialisé de Moodle pour effectuer cette mise en oeuvre et les tests qui vont avec.';
 
