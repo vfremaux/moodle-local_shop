@@ -42,6 +42,8 @@ $PAGE->requires->css('/local/shop/stylesdyn.php');
 
 $config = get_config('local_shop');
 
+$category = optional_param('category', 0, PARAM_ALPHA);
+
 // Get block information.
 
 // Get the block reference and key context.
@@ -60,7 +62,7 @@ if ($view == 'shop') {
 }
 
 // Make page header.
-$url = new moodle_url('/local/shop/front/view.php', array('view' => $view));
+$url = new moodle_url('/local/shop/front/view.php', array('view' => $view, 'category' => $category));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('standard');

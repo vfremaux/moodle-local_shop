@@ -81,8 +81,8 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
     }
     echo '</table>';
 
-    echo $renderer->full_order_totals($afullbill);
-    echo $renderer->full_order_taxes($afullbill);
+    echo $renderer->full_order_totals($afullbill, $theshop);
+    echo $renderer->full_order_taxes($afullbill, $theshop);
 
     echo $OUTPUT->heading(get_string('paymode', 'local_shop'), 2, '', 'invoice-paymode');
 
@@ -113,7 +113,7 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
     echo $OUTPUT->box_end();
 }
 
-echo $renderer->printable_bill_link($afullbill);
+echo $renderer->printable_bill_link($afullbill, $transid);
 
 // If testing the shop, provide a manual link to generate the paypal_ipn call.
 if ($config->test && $afullbill->paymode == 'paypal') {

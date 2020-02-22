@@ -1,0 +1,42 @@
+
+
+<!-- local_shop/bills_full_taxes -->
+
+    {{#hastaxlines}}
+
+    {{{heading}}}
+
+    <table cellspacing="5" class="generaltable" width="100%">
+
+        <tr class="shop-tax" valign="top">
+            <th align="left" class="cell c0">
+                {{#str}}taxname, local_shop{{/str}}
+            </th>
+
+            <th align="left" class="cell c1">
+                {{#str}}taxratio, local_shop{{/str}}
+            </th>
+
+            <th align="left" class="cell c2 lastcoll">
+                {{#str}}taxamount, local_shop{{/str}}
+            </th>
+        </tr>
+
+        {{#taxlines}}
+        <tr class="shop-tax" valign="top">
+            <td align="left" class="cell c0">
+                {{title}}
+            </td>
+
+            <td align="left" class="cell c1">
+                {{ratio}}
+            </td>
+
+            <td align="left" class="cell c2 lastcoll">
+                {{tamount}}
+            </td>
+        </tr>
+        {{/taxlines}}
+    </table>
+    {{/hastaxlines}}
+<!-- /local_shop/bills_full_taxes -->

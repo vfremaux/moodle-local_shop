@@ -34,6 +34,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
+require_once($CFG->dirroot.'/group/lib.php');
 
 use local_shop\Product;
 use local_shop\ProductEvent;
@@ -197,7 +198,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $productionfeedback->public = $fb;
             $fb = get_string('productiondata_failure_private', 'shophandlers_std_enrolonecourse', $course->id);
             $productionfeedback->private = $fb;
-            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_enrolonecourse', $course->id);
+            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_enrolonecourse', $course);
             $productionfeedback->salesadmin = $fb;
             return $productionfeedback;
         }
@@ -233,7 +234,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $productionfeedback->public = $fb;
         $fb = get_string('productiondata_assign_private', 'shophandlers_std_enrolonecourse', $course->id);
         $productionfeedback->private = $fb;
-        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course->id);
+        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course);
         $productionfeedback->salesadmin = $fb;
 
         /*
@@ -266,13 +267,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         // Add all created users to group.
 
-        if (!$groupmember = $DB->get_record('groups_members', array('groupid' => $group->id, 'userid' => $USER->id))) {
-            $groupmember = new StdClass();
-            $groupmember->groupid = $group->id;
-            $groupmember->userid = $USER->id;
-            $groupmember->timeadded = $now;
-            $DB->insert_record('groups_members', $groupmember);
-        }
+        groups_add_member($group->id, $userid);
 
         // Add user to customer support.
 

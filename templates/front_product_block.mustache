@@ -36,10 +36,10 @@
     <div class="shop-front-productdef">
         <a name="{{code}}"></a>
         {{#isbundlepart}}
-            <h3 class="shop-front-partof">{{{name}}}</h3>
-            <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+            <h2 class="shop-front-partof">{{{name}}}</h2>
+            <h3 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
                 {{{description}}}
-            </div>
+            </h3>
             {{#shortdescription}}
             <div class="shop-front-description-toggle">
                 <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
@@ -50,16 +50,16 @@
         {{^isbundlepart}}
             {{#showname}}
             {{^issetpart}}
-            <h2>{{name}}</h2>
+            <h1>{{name}}</h1>
             {{/issetpart}}
             {{#issetpart}}
-            <h4>{{name}}</h4>
+            <h2>{{name}}</h2>
             {{/issetpart}}
             {{/showname}}
             {{#showdescription}}
-            <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+            <h3 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
                 {{{description}}}
-            </div>
+            </h3>
             {{#shortdescription}}
             <div class="shop-front-description-toggle">
                 <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">

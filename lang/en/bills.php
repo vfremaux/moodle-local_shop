@@ -57,6 +57,7 @@ $string['lettering'] = 'Cross-reference coding';
 $string['letteringupdated'] = 'Cross-reference code updated';
 $string['nobillattachements'] = 'No document attached.';
 $string['nobills'] = 'No bills';
+$string['nopaging'] = 'All pages';
 $string['nocodegenerated'] = 'No transaction code has been generated (manual bills).';
 $string['noletteringaspending'] = 'This is a pending order. <br/>Only a bill can be cross referenced.';
 $string['paiedamount'] = 'Amount paid';
@@ -77,12 +78,27 @@ $string['updatelettering'] = 'Update';
 $string['pickuser'] = 'Choose a customer or a user account:';
 $string['worktype'] = 'Worktype';
 
+// Calendar.
+$string['jan'] = 'January';
+$string['feb'] = 'February';
+$string['mar'] = 'March';
+$string['apr'] = 'April';
+$string['may'] = 'May';
+$string['jun'] = 'June';
+$string['jul'] = 'July';
+$string['aug'] = 'August';
+$string['sep'] = 'September';
+$string['oct'] = 'October';
+$string['nov'] = 'November';
+$string['dec'] = 'December';
+
+
 $string['formula_creation_help'] = '
-# Calculating tax using the tax formula 
+// Calculating tax using the tax formula.
 
-The user must enter the formula used to calculate the “tax included” price of an article
+The user must enter the formula used to calculate the "tax included" price of an article
 
-This formula must integrate variables of the “tax included” price ($TTC), the “tax not included” price ($HT), and the “tax ratio” ($TR)
+This formula must integrate variables of the "tax included" price ($TTC), the "tax not included" price ($HT), and the "tax ratio" ($TR)
 
 Example: $TTC = $HT + ($HT*$TR/100)';
 
@@ -521,7 +537,7 @@ Orders and bills have a life cycle determined by a status and transition engine.
 Possible statuses include:
 
 In progress (IN PROGRESS)
-:   When a back office operator manually creates an order, it takes the “In progress” status.
+:   When a back office operator manually creates an order, it takes the "In progress" status.
 
 Placed (PLACED)
 :   Orders transmitted by online customers are placed for payment but not confirmed.

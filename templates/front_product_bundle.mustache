@@ -31,11 +31,11 @@
             <div class="shop-front-partof">{{{name}}}</div>
         {{/ispart}}
         {{^ispart}}
-            <h2>{{{name}}}</h2>
+            <h1>{{{name}}}</h1>
             {{#hasdescription}}
-                <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+                <h2 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
                     {{{description}}}
-                </div>
+                </h2>
                 {{#shortdescription}}
                 <div class="shop-front-description-toggle">
                     <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">

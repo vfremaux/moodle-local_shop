@@ -35,74 +35,35 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
     public function catalog_admin_line($catalog) {
         global $DB;
 
-        if (is_null($catalog)) {
-            $str = '<tr>';
-
-            $str .= '<th align="left" class="header c0">';
-            $str .= get_string('name', 'local_shop');
-            $str .= '</th>';
-
-            $str .= '<th align="left" class="header c1">';
-            $str .= get_string('description', 'local_shop');
-            $str .= '</th>';
-
-            $str .= '<th align="left" class="header c2">';
-            $str .= get_string('categories', 'local_shop');
-            $str .= '</th>';
-
-            $str .= '<th align="left" class="header c2">';
-            $str .= get_string('items', 'local_shop');
-            $str .= '</th>';
-
-            $str .= '<th align="left" class="header lastcol">';
-            $str .= get_string('controls', 'local_shop');
-            $str .= '</th>';
-
-            $str .= '</tr>';
-
-            return $str;
+        if (!is_object($catalog)) {
+            return;
         }
 
-        $str = '';
+        $template = new StdClass;
 
-        $class = ($catalog->items == 0) ? 'empty' : '';
-        $str .= '<tr class="'.$class.'" valign="top">';
-        $str .= '<td>';
+        $template->class = (empty($catalog->items)) ? 'empty' : '';
 
         if ($catalog->isslave) {
             $mastercatalogname = $DB->get_field('local_shop_catalog', 'name', array('id' => $catalog->groupid));
-            $pixurl = $this->output->pix_url('link', 'local_shop');
-            $str .= '<img alt="'.$mastercatalogname.'" title="'.$mastercatalogname.'" src="'.$pixurl.'" />';
+            $template->isslave = true;
+            $template->linkicon = $this->output->pix_icon('link', $mastercatalogname, 'local_shop');
         }
-        $params = array('view' => 'viewAllProducts', 'catalogid' => $catalog->id);
-        $catalogurl = new moodle_url('/local/shop/products/view.php', $params);
-        $str .= '<a href="'.$catalogurl.'">'.format_string($catalog->name).'</a>';
-        $str .= '</td>';
-        $str .= '<td>';
-        $str .= $catalog->description;
-        $str .= '</td>';
-        $str .= '<td>';
+        $params = ['catalogid' => $catalog->id, 'view' => 'viewallProducts'];
+        $template->catalogurl = new moodle_url('/local/shop/products/view.php', $params);
+        $template->name = format_string($catalog->name);
+        $template->description = $catalog->description;
         if (!$catalog->isslave) {
-            $str .= $catalog->categories;
+            $template->categories = $catalog->categories;
         }
-        $str .= '</td>';
-        $str .= '<td>';
-        $str .= $catalog->items;
-        $str .= '</td>';
-        $str .= '<td>';
-        $str .= '<div class="shop-line-commands">';
-        $editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php', array('catalogid' => $catalog->id));
-        $str .= '<a href="'.$editurl.'"><img src="'.$this->output->pix_url('t/edit').'"></a>';
-        if ($catalog->is_not_used()) {
+        $template->items = $catalog->items;
+        $template->editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php', array('catalogid' => $catalog->id));
+        $template->isnotused = $catalog->is_not_used();
+        if ($template->isnotused) {
             $params = array('catalogid' => $catalog->id, 'what' => 'deletecatalog');
-            $deleteurl = new moodle_url('/local/shop/index.php', $params);
-            $str .= '&nbsp;<a href="'.$deleteurl.'"><img src="'.$this->output->pix_url('/t/delete').'"></a>';
+            $template->deleteurl = new moodle_url('/local/shop/index.php', $params);
         }
-        $str .= '</div>';
-        $str .= '</td>';
-        $str .= '</tr>';
 
-        return $str;
+        return $this->output->render_from_template('local_shop/catalog_admin_line', $template);
     }
 
     /**

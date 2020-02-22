@@ -116,17 +116,13 @@ if (!in_array($afullbill->status, $realized)) {
 }
 echo $renderer->full_order_taxes($afullbill);
 
-echo $renderer->paymode($theshop, $afullbill);
+echo $renderer->paymode($afullbill);
 
 echo $renderer->sales_contact();
 
 echo '</div>';
 
-echo '<center>';
-echo '<a href="#" onclick="window.print();return false;">';
-echo '<input type="button" value="'.get_string('printlink', 'local_shop').'" />';
-echo '</a>';
-echo '</center>';
+echo $renderer->print_screen_button();
 
 echo $billrenderer->bill_footer($afullbill);
 

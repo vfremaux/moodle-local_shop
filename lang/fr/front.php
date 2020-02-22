@@ -87,7 +87,7 @@ $string['errornoselleridentity'] = 'La boutique moodle semble ne pas avoir de co
 $string['existingmailpleaselogin'] = 'Cette adresse mél est déjà utilisée par un compte sur cette plate-forme. Si vous êtes propriétaire de ce compte, <a href="{$a->wwwroot}/login/index.php">connectez-vous avec votre compte</a>. Vous serez automatiquement redirigé vers cette page et pourrez continuer en mode connecté.';
 $string['finaltotal'] = 'Total à payer (TTC)';
 $string['finaltotalprice'] = 'Total à régler (TTC)';
-$string['paiedfinaltotalprice'] = 'Total aquitté (TTC)';
+$string['paiedfinaltotalprice'] = 'Total acquitté (TTC)';
 $string['finish'] = 'Terminer';
 $string['fixaccount'] = 'Correction de compte client&nbsp;:&ensp;{$a}';
 $string['for'] = 'pour';
@@ -153,6 +153,7 @@ $string['passwordconfirmerror'] = 'Les mots de passe ne correspondent pas&nbsp;!
 $string['payment'] = 'Réglement ';
 $string['paymentmethod'] = 'Moyen de paiement';
 $string['paymode'] = 'Moyen de paiement';
+$string['paymentservicenotification'] = '';
 $string['choosepaymentmode'] = 'Sélectionnez votre mode de règlement&ensp;';
 $string['paymodedonotpatchtoresponse'] = 'Le mode de paiement détecté n\'est pas celui de la commance. Erreur.';
 $string['payto'] = 'Merci d\'établir votre règlement à l\'ordre {$a}.<br/>Imprimez ce bon et envoyez-le avec votre règlement à&ensp;';

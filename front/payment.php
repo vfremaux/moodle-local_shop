@@ -29,7 +29,7 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) {
-    $params = array('id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop');
+    $params = array('id' => $theshop->id, 'blockid' => @$theblock->id, 'view' => 'shop');
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
@@ -48,7 +48,7 @@ if ($action) {
 
 echo $out;
 
-// Start ptinting page.
+// Start printing page.
 
 echo $OUTPUT->box_start('', 'shop-payment');
 

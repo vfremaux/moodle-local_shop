@@ -105,6 +105,7 @@ class local_shop_renderer extends local_shop_base_renderer {
     }
 
     public function paging_results($portlet) {
+        $str = '';
         if (empty($portlet->pagesize)) {
             $portlet->pagesize = 20;
         }
@@ -206,6 +207,27 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    public function month_choice($current, $url) {
+        global $OUTPUT, $DB, $SESSION;
+
+        if ($current) {
+            // Register in user's session.
+            $SESSION->shop->billmonth = $current;
+        }
+
+        $monthnames = array('jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec');
+
+        for ($i = 1; $i <= 12; $i++) {
+            $months[$i] = get_string($monthnames[$i - 1], 'local_shop');
+        }
+
+        $str = '';
+
+        $str .= $OUTPUT->single_select($url, 'm', $months, $current);
+
+        return $str;
+    }
+
     public function customer_choice($current, $url) {
         global $OUTPUT;
 
@@ -222,105 +244,42 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str = '<table class="shop-main-menu">';
+        $template = new StdClass;
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/shop/edit_shop.php');
-        $str .= '<a href="'.$linkurl.'">'.get_string('editshopsettings', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('editshopsettings_desc', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->supportsinstances = false;
+        if (local_shop_supports_feature('shop/instances')) {
+            $template->supportsinstances = true;
+            $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops'));
+        } else {
+            $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php');
+        }
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
-        $str .= '<a href="'.$linkurl.'">'.get_string('allbills', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('searchinbills', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances'));
-        $str .= '<a href="'.$linkurl.'">'.get_string('allproductinstances', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('searchinproductinstances', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers'));
-        $str .= '<a href="'.$linkurl.'">'.get_string('allcustomers', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('searchincustomers', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes'));
-        $str .= '<a href="'.$linkurl.'">'.get_string('managetaxes', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('managetaxesdesc', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->billsurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
+        $template->productsurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances'));
+        $template->customersurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers'));
+        $template->taxesurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes'));
 
         if (!empty($config->useshipping)) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="25%">';
-            $linkurl = new moodle_url('/local/shop/shipzones/index.php');
-            $str .= '<a href="'.$linkurl.'">'.get_string('manageshipping', 'local_shop').'</a>';
-            $str .= '</td>';
-            $str .= '<td width="75%">';
-            $str .= get_string('manageshippingdesc', 'local_shop');
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->useshipping = true;
+            $template->shippingurl = new moodle_url('/local/shop/shipzones/index.php');
         }
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $linkurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));
-        $str .= '<a href="'.$linkurl.'">'.get_string('scantrace', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td width="75%">';
-        $str .= get_string('tracescandesc', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->traceurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));
 
         if (has_capability('moodle/site:config', context_system::instance())) {
-            $str .= '<tr valign="top">';
-            $str .= '<td width="25%">';
-            $settingsurl = new moodle_url('/admin/settings.php', array('section' => 'local_shop'));
-            $str .= '<a href="'.$settingsurl.'">'.get_string('settings', 'local_shop').'</a>';
-            $str .= '</td>';
-            $str .= '<td width="75%">';
-            $str .= get_string('generalsettings', 'local_shop');
-            $str .= '</td>';
-            $str .= '</tr>';
+            $template->hassiteadmin = true;
+            $template->settingsurl = new moodle_url('/admin/settings.php', array('section' => 'local_shop'));
         }
 
-        $str .= '<tr valign="top">';
-        $str .= '<td width="25%">';
-        $reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
-        $str .= '<a href="'.$reseturl.'">'.get_string('reset', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '<td>';
-        $str .= get_string('resetdesc', 'local_shop');
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
 
-        $str .= '</table>';
+        if (local_shop_supports_feature('shop/partners')) {
+            $template->supportspartners = true;
+            $params = array('id' => $theshop->id, 'view' => 'viewAllPartners');
+            $template->partnersurl = new moodle_url('/local/shop/pro/partners/view.php', $params);
+        }
 
-        return $str;
+        return $this->output->render_from_template('local_shop/main_menu', $template);
     }
 
     public function back_buttons() {
@@ -366,7 +325,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 /**
  * A base class to centralize all common things
  */
-class local_shop_base_renderer {
+class local_shop_base_renderer extends \plugin_renderer_base {
 
     // Context references.
     protected $theblock;
@@ -423,5 +382,55 @@ class local_shop_base_renderer {
         $str .= '<br/>';
 
         return $str;
+    }
+
+    public function print_screen_button() {
+        $template = new StdClass();
+        return $this->output->render_from_template('local_shop/commons_print_screen_button', $template);
+    }
+
+    /**
+     * Renders a template by string with the given context.
+     *
+     * The provided data needs to be array/stdClass made up of only simple types.
+     * Simple types are array,stdClass,bool,int,float,string
+     *
+     * @since 2.9
+     * @param array|stdClass $context Context containing data for the template.
+     * @return string|boolean
+     */
+    public function render_from_string($templatestring, $context) {
+
+        $mustache = $this->get_mustache();
+        $loader = new Mustache_Loader_StringLoader();
+        $mustache->setLoader($loader);
+
+        try {
+            // Grab a copy of the existing helper to be restored later.
+            $uniqidhelper = $mustache->getHelper('uniqid');
+        } catch (Mustache_Exception_UnknownHelperException $e) {
+            // Helper doesn't exist.
+            $uniqidhelper = null;
+        }
+
+        // Provide 1 random value that will not change within a template
+        // but will be different from template to template. This is useful for
+        // e.g. aria attributes that only work with id attributes and must be
+        // unique in a page.
+        $mustache->addHelper('uniqid', new \core\output\mustache_uniqid_helper());
+
+        $renderedtemplate = $mustache->render($templatestring, $context);
+
+        // If we had an existing uniqid helper then we need to restore it to allow
+        // handle nested calls of render_from_template.
+        if ($uniqidhelper) {
+            $mustache->addHelper('uniqid', $uniqidhelper);
+        }
+
+        return $renderedtemplate;
+    }
+
+    public function set_page($page) {
+        $this->page = $page;
     }
 }

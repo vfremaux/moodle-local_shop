@@ -548,7 +548,7 @@ function check_pass_code(productname, textinput, event) {
 
 
 function checkemail(textselect) {
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(textselect.value)) {
+    if (/^\w+([\.+-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(textselect.value)) {
         return (true);
     }
     alert("<?php echo $invalidemailstr ?>");
