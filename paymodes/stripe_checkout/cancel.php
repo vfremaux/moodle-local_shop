@@ -24,8 +24,8 @@
 // Get return parms and redirect to shop.
 
 require('../../../../config.php');
-require_once $CFG->dirroot.'/local/shop/paymodes/stripe_checkout/stripe_checkout.class.php';
-require_once $CFG->dirroot.'/local/shop/front/lib.php';
+require_once($CFG->dirroot.'/local/shop/paymodes/stripe_checkout/stripe_checkout.class.php');
+require_once($CFG->dirroot.'/local/shop/front/lib.php');
 
 /*
  * we cannot know yet which block instanceplays as infomation is in the stripe
