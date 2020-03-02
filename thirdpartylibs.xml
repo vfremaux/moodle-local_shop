@@ -21,18 +21,4 @@
     <version>3.0</version>
     <licenseversion></licenseversion>
   </library>
-   <library>
-    <location>test</location>
-    <name>Testing additional software</name>
-    <license>GPL</license>
-    <version>3.0</version>
-    <licenseversion></licenseversion>
-  </library>
-  <library>
-    <location>paymodes/stripe_checkout/extralib</location>
-    <name>Stripe Checkout PHP bridge</name>
-    <license></license>
-    <version></version>
-    <licenseversion></licenseversion>
-  </library>
 </libraries>
