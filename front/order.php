@@ -61,12 +61,24 @@ echo $renderer->admin_options();
 $bill = null;
 echo $renderer->customer_info($bill);
 
+$initialview = '';
 $eulas = $renderer->check_and_print_eula_conditions();
-$initialview = (empty($eulas)) ? '' : ' style="display:none" ';
+if (empty($SESSION->shoppingcart->eulas)) {
+    // If eulas status is not yet determined or has been reset
+    if (empty($eulas)) {
+        $SESSION->shoppingcart->eulas = 'approved'; // Including if no eula at all.
+    } else {
+        $initialview = ' style="display:none" ';
+        $SESSION->shoppingcart->eulas = 'required';
+    }
+}
+$params = array('eulas' => $SESSION->shoppingcart->eulas);
+$PAGE->requires->js_call_amd('local_shop/front', 'initeulas', array($params));
 
 // Print main ordering table.
 
-echo '<form name="navigate" action="'.$CFG->wwwroot.'/local/shop/front/view.php" method="post">';
+$actionurl = new moodle_url('/local/shop/front/view.php');
+echo '<form name="navigate" action="'.$actionurl.'" method="post">';
 
 echo '<div id="order" '.$initialview.'>';
 
@@ -81,9 +93,14 @@ foreach ($SESSION->shoppingcart->order as $shortname => $fooq) {
 }
 echo '</table>';
 
-echo $renderer->full_order_totals();
-echo $renderer->full_order_taxes();
+echo $renderer->full_order_totals($bill, $theshop);
+echo $renderer->full_order_taxes($bill, $theshop);
 echo $renderer->payment_block();
+
+$paymentservicenotification = get_string('paymentservicenotification', 'local_shop');
+if (!empty($paymentservicenotification)) {
+    echo $OUTPUT->notification($paymentservicenotification);
+}
 
 if (!empty($config->sellermail)) {
     echo '<p>';
@@ -99,20 +116,14 @@ echo '</div>';
 $options = array();
 $options['inform'] = true;
 $options['nextstring'] = 'launch';
+if (!shop_has_enabled_paymodes($theshop)) {
+    $options['nextdisabled'] = 'disabled="disabled"';
+}
 
 echo $renderer->action_form('order', $options);
 
 echo '</form>';
 
-// Hide all region-pre to avoid side blocks to mess.
-if (!empty($eulas)) {
-    echo '<script type="text/javascript">';
-    echo 'function hideblocks() {';
-    echo 'preregion = document.getElementById(\'region-pre\');';
-    echo 'preregion.style.display = \'none\';';
-    echo '}';
-    echo 'window.onload = function() { hideblocks(); }';
-    echo '</script>';
+if ($SESSION->shoppingcart->eulas != 'approved') {
+    echo $eulas;
 }
-
-echo $eulas;

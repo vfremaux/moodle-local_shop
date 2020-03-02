@@ -169,9 +169,7 @@ class Product_Form extends CatalogItem_Form {
     }
 
     public function set_data($defaults) {
-
         $context = context_system::instance();
-
         $this->set_name_data($defaults, $context);
         $this->set_document_asset_data($defaults, $context);
         parent::set_data($defaults);

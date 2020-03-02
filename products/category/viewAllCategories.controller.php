@@ -69,7 +69,7 @@ class category_controller {
                 break;
 
             case 'edit':
-                // Get data from $data atrribute.
+                // Get data from $data attribute.
                 break;
         }
 
@@ -148,19 +148,20 @@ class category_controller {
                 }
             } else {
                 $category->id = $category->categoryid;
-                if (!$category->id = $DB->update_record('local_shop_catalogcategory', $category)) {
-                    print_error('errorupdatecategory', 'local_shop');
-                }
+                unset($category->categoryid);
+                $DB->update_record('local_shop_catalogcategory', $category);
             }
 
             $context = \context_system::instance();
 
             // Process text fields from editors.
             if ($this->mform) {
+                $options = array('subdirs' => true);
+
                 // We do not have form runnig tests.
                 $draftideditor = file_get_submitted_draft_itemid('description_editor');
                 $category->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'categorydescription',
-                                                                $category->id, array('subdirs' => true), $category->description);
+                                                                $category->id, $this->mform->editoroptions, $category->description);
                 $category = file_postupdate_standard_editor($category, 'description', $this->mform->editoroptions, $context,
                                                             'local_shop', 'categorydescription', $category->id);
 

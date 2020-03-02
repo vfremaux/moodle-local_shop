@@ -24,6 +24,10 @@ namespace local_shop\front;
 
 defined('MOODLE_INTERNAL') || die();
 
+use StdClass;
+use moodle_url;
+use context_system;
+
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/auth/ticket/lib.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/production.php');
@@ -63,7 +67,7 @@ class production_controller extends front_controller_base {
             $this->data = (object)$data;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass;
         }
 
         switch ($cmd) {
@@ -99,7 +103,7 @@ class production_controller extends front_controller_base {
             }
         }
 
-        $systemcontext = \context_system::instance();
+        $systemcontext = context_system::instance();
 
         // Simpler to handle in code.
         $afullbill = $this->abill;
@@ -216,8 +220,10 @@ class production_controller extends front_controller_base {
                  */
                 shop_aggregate_production($afullbill, $productionfeedback, $this->interactive);
             } else {
-                $productionfeedback = new \StdClass;
+                $productionfeedback = new StdClass;
                 $productionfeedback->public = 'Completed';
+                $productionfeedback->private = 'Completed';
+                $productionfeedback->salesadmin = 'Completed';
                 shop_aggregate_production($afullbill, $productionfeedback, $this->interactive);
             }
         }
@@ -226,13 +232,29 @@ class production_controller extends front_controller_base {
         shop_trace("[{$afullbill->transactionid}] ".'Production Controller : Transaction Complete Operations');
         if ($this->interactive && $this->ipncall) {
             mtrace("[{$afullbill->transactionid}] ".'Production Controller : Transaction Complete Operations');
+            mtrace('--- Public customer feedback ------------------');
             mtrace($productionfeedback->public);
+            mtrace('--- Private customer feedback ------------------');
             mtrace($productionfeedback->private);
+            mtrace('--- Sales admin feedback ------------------');
+            mtrace($productionfeedback->salesadmin);
+            mtrace('---------------------------------------');
         }
 
         // Notify end user.
         // Feedback customer with mail confirmation.
         $customer = $DB->get_record('local_shop_customer', array('id' => $afullbill->customerid));
+
+        if (empty($afullbill->customeruser)) {
+            $afullbill->customeruser = $DB->get_record('user', array('id' => $afullbill->customer->hasaccount));
+        }
+
+        if ($afullbill->customeruser) {
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $afullbill->id, 'transid' => $afullbill->transactionid));
+            $ticket = ticket_generate($afullbill->customeruser, 'immediate access', $billurl);
+        } else {
+            $ticket = 'NOUSER';
+        }
 
         $paymodename = get_string($afullbill->paymode, 'shoppaymodes_'.$afullbill->paymode);
         $vars = array('SERVER' => $SITE->shortname,
@@ -245,16 +267,16 @@ class production_controller extends front_controller_base {
                       'COUNTRY' => $customer->country,
                       'ITEMS' => $afullbill->itemcount,
                       'PAYMODE' => $paymodename,
-                      'AMOUNT' => sprintf("%.2f", round($afullbill->amount, 2)));
+                      'AMOUNT' => sprintf("%.2f", round($afullbill->amount, 2)),
+                      'TICKET' => $ticket);
         $notification = shop_compile_mail_template('sales_feedback', $vars, '');
         $params = array('id' => $afullbill->shopid,
                         'blockid' => $afullbill->blockid,
                         'view' => 'bill',
-                        'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
         $customerbillviewurl = new \moodle_url('/local/shop/front/view.php', $params);
 
-        $seller = new \StdClass;
+        $seller = new StdClass;
         $seller->id = $DB->get_field('user', 'id', array('username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id));
         $seller->firstname = '';
         $seller->lastname = $config->sellername;
@@ -278,17 +300,13 @@ class production_controller extends front_controller_base {
             $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', '', $notification);
         }
 
-        if (empty($afullbill->customeruser)) {
-            $afullbill->customeruser = $DB->get_record('user', array('id' => $afullbill->customer->hasaccount));
-        }
-
         if ($afullbill->customeruser) {
             $sent = ticket_notify($afullbill->customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
             if ($sent) {
                 $message = "[{$afullbill->transactionid}] Production Controller :";
                 $message .= " shop Transaction Confirm Notification to Customer";
                 shop_trace($message);
-                shop_trace($sentnotification, 'mail');
+                shop_trace($sentnotification, 'mail', $afullbill->customeruser);
             } else {
                 $message = "[{$afullbill->transactionid}] Production Controller Warning :";
                 $message .= " Failed to notify notification to Customer";
@@ -325,7 +343,6 @@ class production_controller extends front_controller_base {
 
         $params = array('id' => $afullbill->shopid,
                         'view' => 'viewBill',
-                        'billid' => $afullbill->id,
                         'transid' => $afullbill->transactionid);
 
         $administratorviewurl = new \moodle_url('/local/shop/bills/view.php', $params);;
@@ -335,7 +352,7 @@ class production_controller extends front_controller_base {
 
             $title = $SITE->shortname.' Backoffice : '.get_string('orderconfirm', 'local_shop');
 
-            if (!empty($productionfeedback->private)) {
+            if (!empty($productionfeedback->salesadmin)) {
                 $sn = str_replace('<%%PRODUCTION_DATA%%>', $productionfeedback->salesadmin, $salesnotification);
             } else {
                 $sn = str_replace('<%%PRODUCTION_DATA%%>', '', $salesnotification);

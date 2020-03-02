@@ -162,6 +162,14 @@ function xmldb_local_shop_install() {
         set_role_contextlevels($salesroleid, array(CONTEXT_BLOCK, CONTEXT_SYSTEM));
     }
 
+    // Create the sales manager role if absent.
+    if (!$DB->record_exists('role', array('shortname' => 'customer'))) {
+        $rolestr = get_string('customerrolename', 'local_shop');
+        $roledesc = get_string('customerroledesc', 'local_shop');
+        $customerroleid = create_role($rolestr, 'customer', str_replace("'", "\\'", $roledesc), '');
+        set_role_contextlevels($customerroleid, array(CONTEXT_COURSE, CONTEXT_SYSTEM));
+    }
+
     // Create first catalog for default shop.
     $catalog = new StdClass;
     $catalog->name = get_string('defaultcatalogname', 'local_shop');

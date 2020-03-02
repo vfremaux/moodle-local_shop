@@ -1,0 +1,271 @@
+<table width="100%" style="font-family:freesans">
+    <tr>
+        <td>
+            <h1>{{{billheadingstr}}}</h1>
+            {{#subheaderstring}}
+            <div>
+            {{subheaderstring}}
+            </div>
+            {{/subheaderstring}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="70%">
+            <b>{{sellername}}</b><br>
+            <b>{{selleraddress}}</b><br>
+            <b>{{sellerzip}} {{sellercity}}</b><br>
+            {{sellercountry}}<br>
+            <br>
+
+            <b>N°&nbsp;: </b> {{billuniqueid}}<br>
+            <b>{{#str}}transactionid, local_shop{{/str}}:</b> <span style="background-color:#eee;font-family:monospace">{{billtransid}}</span><br>
+            <br>
+            <b>{{#str}}on, local_shop{{/str}} </b> {{billemissiondate}}
+        </td>
+        <td width="30%" align="right">
+            <div style="text-align:left">
+                <h3>{{#str}}customer, local_shop{{/str}}</h3>
+                {{customerorganisation}}<br>
+{{customerfirstname}} {{customerlastname}}<br>
+{{customeraddress}}<br>
+{{customerzip}} {{customercity}}<br>
+{{customercountry}}<br>
+            </div>
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td colspan="2">
+            <h2>{{#str}}order, local_shop{{/str}}</h2>
+        </td>
+    </tr>
+</tbody></table>
+
+<table cellspacing="5" style="font-size:80%;font-family:freesans">
+    <tbody>
+        <tr valign="top">
+            <td width="50%" align="left" style="background-color:#ddd;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}designation, local_shop{{/str}}</b></div>
+            </td>
+
+            <td width="14%" align="left" style="background-color:#ddd;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}reference, local_shop{{/str}}</b></div>
+            </td>
+
+            <td width="12%" align="left" style="background-color:#ddd;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}unitprice, local_shop{{/str}}</b></div>
+            </td>
+
+            <td width="12%" style="background-color:#ddd;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}quantity, local_shop{{/str}}</b></div>
+            </td>
+
+            <th width="12%" align="right" style="text-align:right" style="background-color:#ddd;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}totalpricettc, local_shop{{/str}}</b></div>
+            </th>
+        </tr>
+
+        {{#billlines}}
+        <tr valign="top">
+            <td width="50%" align="left" style="padding:5px">
+                    {{{abstract}}}
+                {{#description}}
+                <br/>
+                {{{description}}}
+                {{/description}}
+            </td>
+
+            <td width="14%" align="left" style="padding:5px">
+                {{itemcode}}
+            </td>
+
+            <td width="12%" align="left" style="padding:5px">
+                {{unitcost}}&nbsp;{{{billcurrency}}}
+            </td>
+
+            <td width="12%" style="padding:5px">
+                {{q}}
+            </td>
+
+            <td width="12%" align="right" style="text-align:right;padding:5px">
+                {{totalprice}}&nbsp;{{{billcurrency}}}
+            </td>
+        </tr>
+
+        {{#tablebreak}}
+    </tbody>
+</table>
+<table cellspacing="5" style="font-size:80%;font-family:freesans">
+    <tbody>
+        {{/tablebreak}}
+        {{/billlines}}
+
+    </tbody>
+</table>
+
+<table width="100%" cellspacing="5" style="font-family:freesans">
+    <tbody>
+        <tr valign="top">
+            <th colspan="3">
+                {{#str}}totals, local_shop{{/str}}
+            </th>
+        </tr>
+
+        <tr valign="top">
+            <td width="40%" style="font-size:80%;padding:5px">
+                {{#str}}subtotal, local_shop{{/str}}:
+            </td>
+
+            <td width="40%" style="font-size:80%;padding:5px">
+                &nbsp;
+            </td>
+
+            <td width="20%" align="right" style="text-align:right;font-size:80%;padding:5px">
+                {{{billtaxedtotal}}}&nbsp;{{{billcurrency}}}
+            </td>
+        </tr>
+
+        {{#discountrate}}
+        <tr valign="top">
+            <td width="40%" style="font-size:80%;padding:5px">
+                &nbsp;
+            </td>
+            <td width="40%" style="font-size:80%;padding:5px">
+                {{#str}}discount, local_shop{{/str}}:
+            </td>
+
+            <td width="20%" align="right;font-size:80%;padding:5px">
+                <b>-{{billdiscountrate}} %</b>
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td width="40%" style="font-size:80%;padding:5px">
+                &nbsp;
+            </td>
+
+            <td width="40%" style="font-size:80%;padding:5px">
+                {{#str}}discountamount, local_shop{{/str}}:
+            </td>
+            <td width="20%" align="right;font-size:80%;padding:5px">
+                {{{billdiscount}}}&nbsp;{{{billcurrency}}}</b>
+            </td>
+        </tr>
+        {{/discountrate}}
+
+        {{^hasshipping}}
+        <tr valign="top">
+            <td width="40%" style="font-size:100%;padding:5px">
+                <b>{{#str}}finaltotalprice, local_shop{{/str}}</b>:
+            </td>
+
+            <td width="40%" style="font-size:100%;padding:5px">
+                &nbsp;
+            </td>
+
+            <td width="20%" style="text-align:right;font-size:100%;padding:5px">
+                <b>{{{billfinaltaxedtotal}}}&nbsp;{{{billcurrency}}}</b>
+            </td>
+        </tr>
+        {{/hasshipping}}
+
+        <tr valign="top">
+            <td width="40%" style="font-size:80%;padding:5px">
+                {{#str}}untaxedsubtotal, local_shop{{/str}}:
+            </td>
+
+            <td width="40%" style="font-size:80%;padding:5px">
+                &nbsp;
+            </td>
+            <td width="20%" style="text-align:right;font-size:80%;padding:5px">
+                {{{billfinaluntaxedtotal}}}&nbsp;{{{billcurrency}}}
+            </td>
+        </tr>
+
+        {{#hasshipping}}
+        <tr valign="top">
+            <td width="40%" style="font-size:80%;padding:5px">
+                &nbsp;
+            </td>
+
+            <td width="40%" style="font-size:80%;padding:5px">
+                {{#str}}shipping, local_shop{{/str}}:
+            </td>
+
+            <td width="20%" align="right" style="text-align:right;font-size:80%;padding:5px">
+                {{{shippingtaxedvalue}}}&nbsp;{{{currency}}}
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td width="40%" style="font-size:100%;padding:5px">
+                <b>{{#str}}finaltotalprice, local_shop{{/str}}</b>:
+            </td>
+
+            <td width="40%" style="font-size:100%;padding:5px">
+                &nbsp;
+            </td>
+
+            <td width="20%" align="right" style="text-align:right;font-size:100%;padding:5px">
+                <b>{{{finalshippedtaxedtotal}}}&nbsp;{{{currency}}}
+            </td>
+        </tr>
+        {{/hasshipping}}
+
+    </tbody>
+</table>
+
+<h2>{{#str}}taxes, local_shop{{/str}}</h2>
+<table width="100%" cellspacing="5" style="font-family:freesans">
+    <tbody>
+        <tr valign="top">
+            <th align="left" style="background-color:#ddd;font-size:80%;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}taxname, local_shop{{/str}}</b></div>
+            </th>
+            <th align="left" style="background-color:#ddd;font-size:80%;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}taxratio, local_shop{{/str}}</b></div>
+            </th>
+            <th align="right" style="background-color:#ddd;text-align:right;font-size:80%;padding:5px">
+                <div style="background-color:#ddd;line-height:6pt"><b>{{#str}}taxamount, local_shop{{/str}}</b></div>
+            </th>
+        </tr>
+
+        {{#taxlines}}
+        <tr valign="top">
+            <td style="font-size:80%;padding:5px">
+                {{taxtitle}}
+            </td>
+            <td  style="font-size:80%;padding:5px">
+                {{taxratio}}
+            </td>
+            <td style="text-align:right;font-size:80%;padding:5px">
+                {{taxamount}} {{{currency}}}
+            </td>
+        </tr>
+        {{/taxlines}}
+
+        <tr valign="top">
+            <td width="40%" style="font-size:80%;padding:5px">
+                <b>{{#str}}totaltaxes, local_shop{{/str}}</b>
+            </td>
+            <td width="40%" style="font-size:80%;padding:5px">
+                &nbsp;
+            </td>
+            <td width="20%" style="text-align:right;font-size:80%;padding:5px">
+                {{{totaltaxes}}} {{{currency}}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>{{#str}}paymode, local_shop{{/str}}</h2>
+
+<div>
+    {{billpaymode}}
+</div>
+<div id="order-mailto">
+    {{{heading}}}
+    <p>{{#str}}forquestionssendmailto, local_shop{{/str}} :
+    <a href="mailto:{{{selleremail}}}">{{{selleremail}}}</a>
+</div>

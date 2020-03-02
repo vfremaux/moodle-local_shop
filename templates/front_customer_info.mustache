@@ -1,0 +1,101 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_customer_info
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_customer_info -->
+<div id="shop-customerinfo">
+    <table cellspacing="4" width="100%">
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}orderID, local_shop{{/str}}</b> {{transid}}
+            </td>
+            <td width="40%" valign="top">
+                <b>{{#str}}on, local_shop{{/str}}:</b> {{{emissiondate}}}
+            </td>
+        </tr>
+
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}organisation, local_shop{{/str}}:</b> {{{organisation}}}
+            </td>
+            <td width="40%" valign="top">
+            </td>
+        </tr>
+
+        {{#usedistinctinvoiceinfo}}
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}department{{/str}}}}:</b> {{{department}}}
+            </td>
+            <td width="40%" valign="top">
+            </td>
+        </tr>
+        {{/usedistinctinvoiceinfo}}
+
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}customer, local_shop{{/str}}:</b> {{{customername}}}
+            </td>
+            <td width="40%" valign="top">
+                {{#haspartner}}
+                <b>{{#str}}partner, local_shop{{/str}}:</b> {{{partnername}}}
+                {{/haspartner}}
+            </td>
+        </tr>
+
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}city{{/str}}: </b> {{{city}}}
+            </td>
+            <td width="40%" valign="top">
+            </td>
+        </tr>
+
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}country{{/str}}:</b> {{{country}}}
+            </td>
+            <td width="40%" valign="top">
+            </td>
+        </tr>
+
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}email{{/str}}:</b> {{{email}}}
+            </td>
+            <td width="40%" valign="top">
+            </td>
+        </tr>
+
+        {{#usedistinctinvoiceinfo}}
+        <tr>
+            <td width="60%" valign="top">
+                <b>{{#str}}vatcode, local_shop{{/str}}:</b> {{{vatcode}}}
+            </td>
+            <td width="40%" valign="top">
+            </td>
+        </tr>
+        {{/usedistinctinvoiceinfo}}
+
+    </table>
+</div>
+<!-- /local_shop/front_customer_info -->

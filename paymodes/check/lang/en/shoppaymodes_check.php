@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Check does not directly store any personal data about any user.';
+
 $string['pluginname'] = 'Bank check';
 $string['check'] = 'Check';
 $string['enablecheck'] = 'Check payment';

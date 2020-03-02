@@ -16,6 +16,10 @@
 
 global $CFG;
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat AssignRoleOnContext ne détient directement aucune donnée relative aux utilisateurs.';
+
+
 $string['handlername'] = 'Assignation de rôle sur contexte';
 $string['pluginname'] = 'Assignation de rôle sur contexte';
 

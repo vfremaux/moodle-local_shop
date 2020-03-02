@@ -1,0 +1,127 @@
+
+
+
+<!-- local_shop/main_menu -->
+<table class="shop-main-menu">
+
+    {{^supportsinstances}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{shopsettingsurl}}}">{{#str}}editshopsettings, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}editshopsettings_desc, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/supportsinstances}}
+    {{#supportsinstances}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{allshopsurl}}}">{{#str}}allshops, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}allshops_desc, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/supportsinstances}}
+
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{billsurl}}}">{{#str}}allbills, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}searchinbills, local_shop{{/str}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{productsurl}}}">{{#str}}allproductinstances, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}searchinproductinstances, local_shop{{/str}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{customersurl}}}">{{#str}}allcustomers, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}searchincustomers, local_shop{{/str}}
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{taxesurl}}}">{{#str}}managetaxes, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}managetaxesdesc, local_shop{{/str}}
+        </td>
+    </tr>
+
+    {{#supportspartners}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{partnersurl}}}">{{#str}}managepartners, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}managepartners_desc, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/supportspartners}}
+
+    {{#useshipping}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{shippingurl}}}">{{#str}}manageshipping, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}manageshippingdesc, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/useshipping}}
+
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{traceurl}}}">{{#str}}scantrace, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}tracescandesc, local_shop{{/str}}
+        </td>
+    </tr>
+
+    {{#hassiteadmin}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{settingsurl}}}">{{#str}}settings, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}generalsettings, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/hassiteadmin}}
+
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{reseturl}}}">{{#str}}reset, local_shop{{/str}}</a>
+        </td>
+
+        <td>
+            {{#str}}resetdesc, local_shop{{/str}}
+        </td>
+    </tr>
+
+</table>
+<!-- /local_shop/main_menu -->

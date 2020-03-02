@@ -15,34 +15,56 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/productblock
+    @template local_shop/front_product_block
 
     Classes required for JS:
     * none
 
 }}
-<!-- productblock -->
-<a name="{{code}}"></a>
+<!-- local_shop/front_product_block -->
 <div class="shop-article {{subelementclass}}">
 
-    <div class="shop-front-productpix">{{{image}}}</div>
+    <div class="shop-front-productpix">
+    {{#hasimage}}
+        <a class="fancybox" rel="group" href="{{{imageurl}}}"><img class="{{subelementclass}}" src="{{{thumburl}}}"></a>
+    {{/hasimage}}
+    {{^hasimage}}
+        <img class="{{subelementclass}}" src="{{{thumburl}}}">
+    {{/hasimage}}
+    </div>
 
     <div class="shop-front-productdef">
+        <a name="{{code}}"></a>
         {{#isbundlepart}}
-            <h3 class="shop-front-partof">{{name}}</h3>
-            <div class="shop-front-description">{{{description}}}</div>
+            <h2 class="shop-front-partof">{{{name}}}</h2>
+            <h3 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+                {{{description}}}
+            </h3>
+            {{#shortdescription}}
+            <div class="shop-front-description-toggle">
+                <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
+            </div>
+            {{/shortdescription}}
         {{/isbundlepart}}
+
         {{^isbundlepart}}
             {{#showname}}
             {{^issetpart}}
-            <h2>{{name}}</h2>
+            <h1>{{name}}</h1>
             {{/issetpart}}
             {{#issetpart}}
-            <h4>{{name}}</h4>
+            <h2>{{name}}</h2>
             {{/issetpart}}
             {{/showname}}
             {{#showdescription}}
-            <div class="shop-front-description">{{{description}}}</div>
+            <h3 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+                {{{description}}}
+            </h3>
+            {{#shortdescription}}
+            <div class="shop-front-description-toggle">
+                <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
+            </div>
+            {{/shortdescription}}
             {{/showdescription}}
             {{#notavailable}}
             <div class="shop-not-available">{{notavailable}}</div>
@@ -56,22 +78,22 @@
 
             {{#canorder}}
             <div class="shop-front-refblock">
-                <div class="shop-front-ref">{{refstr}} : {{{code}}}</div>
-
-                {{^pricelist}}
-                <div class="shop-front-label">{{puttcstr}}</div>
-                <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
-                {{/pricelist}}
-                {{#pricelist}}
+                <div class="shop-front-ref">{{refstr}}&nbsp;: {{{code}}}</div>
 
                 <div class="shop-front-pricelist">
+                    {{^pricelist}}
                     <div class="shop-front-label">{{puttcstr}}</div>
-                    {{#prices}}
-                    <div class="shop-front-pricerange">{{range}} : </div>
-                    <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
-                    {{/prices}}
+                    <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
+                    {{/pricelist}}
+                    {{#pricelist}}
+
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                        {{#prices}}
+                        <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                        <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
+                        {{/prices}}
+                    {{/pricelist}}
                 </div>
-                {{/pricelist}}
 
                 {{#available}}
                 <div class="shop-front-order">
@@ -86,14 +108,17 @@
                                     id="ci-{{shortname}}"
                                     value="{{buystr}}"
                                     onclick="{{{jshandleraddunit}}}" {{{disabled}}} />
-                    <div class="shop-order-item" id="bag_{{shortname}}"></div>
-                    {{{units}}}
+
                 </div>
                 {{/available}}
+
+                <div class="shop-order-bag">
+                    <div class="shop-order-item" id="bag_{{shortname}}">{{{units}}}</div>
+                </div>
             </div>
             {{/canorder}}
-        </div>
+
         {{/isbundlepart}}
     </div>
 </div>
-<!-- /productblock -->
+<!-- /local_shop/front_product_block -->

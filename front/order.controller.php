@@ -62,6 +62,16 @@ class order_controller extends front_controller_base {
 
         $config = get_config('local_shop');
 
+        if ($cmd == 'agreeeulas') {
+            $shoppingcart->eulas = 'approved';
+            return;
+        }
+
+        if ($cmd == 'reseteulas') {
+            $shoppingcart->eulas = 'required';
+            return;
+        }
+
         if ($cmd == 'navigate') {
             if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('order');

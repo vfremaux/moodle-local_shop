@@ -1,0 +1,55 @@
+
+
+<!-- local_shop/customerdetail -->
+<table class="generaltable">
+    <tr>
+        <td>
+            <b>{{#str}}identification, local_shop{{/str}}:</b>
+        </td>
+
+        <td>
+            <a href="mailto:{{email}}">{{email}}</a>
+        </td>
+
+        <td>
+            <b>{{#str}}moodleaccount, local_shop{{/str}}:</b>
+        </td>
+
+        <td>
+            {{#hasaccount}}
+                <a href="{{{userurl}}}">{{#str}}viewmoodleaccount, local_shop{{/str}}</a>
+            {{/hasaccount}}
+            {{^hasaccount}}
+                {{#str}}nomoodleaccount, local_shop{{/str}}
+            {{/hasaccount}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <b>{{#str}}customer, local_shop{{/str}}:</b>
+        </td>
+        <td colspan="3">
+            {{lastname}} {{firstname}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <b>{{#str}}city{{/str}}</b>:
+        </td>
+        <td colspan="3">
+            {{city}}
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <b>{{#str}}country{{/str}}</b>:
+        </td>
+        <td colspan="3">
+            {{country}}
+        </td>
+    </tr>
+</table>
+<!-- /local_shop/customerdetail -->

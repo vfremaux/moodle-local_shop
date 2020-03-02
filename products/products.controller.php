@@ -69,27 +69,33 @@ class product_controller {
                 break;
 
             case 'delete' :
-                $this->data->productids = required_param_array('items', PARAM_INT);
+                $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
-            case 'deleteset' :
-                $this->data->setid = required_param('setid', PARAM_INT);
+
+            case 'deleteselection' :
+                $this->data->itemids = required_param_array('itemids', PARAM_INT);
                 break;
+
             case 'unlink' :
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
+
             case 'toset':
             case 'tobundle':
             case 'clone':
                 // Item id will be given as the remote master id (no local override).
                 $this->data->itemid = required_param('itemid', PARAM_INT);
                 break;
+
             case 'makecopy':
                 // Item id will be given as the remote master id (no local override).
                 $this->data->masteritemid = required_param('itemid', PARAM_INT);
                 break;
+
             case 'freecopy' :
                 $this->data->localitemid = required_param('itemid', PARAM_INT);
                 break;
+
             case 'search' :
                 $this->data->by = required_param('by', PARAM_TEXT);
                 $this->data->code = optional_param('code', '', PARAM_TEXT);
@@ -111,182 +117,231 @@ class product_controller {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
-        if ($cmd == 'edit') {
+        switch ($cmd) {
 
-            $this->data->id = @$this->data->itemid;
-            $this->data->catalogid = $this->thecatalog->id;
+            case 'edit': {
 
-            $this->data->description = $this->data->description_editor['text'];
-            $this->data->descriptionformat = $this->data->description_editor['format'];
+                $this->data->id = @$this->data->itemid;
+                $this->data->catalogid = $this->thecatalog->id;
 
-            $this->data->notes = $this->data->notes_editor['text'];
-            $this->data->notesformat = $this->data->notes_editor['format'];
+                $this->data->description = $this->data->description_editor['text'];
+                $this->data->descriptionformat = $this->data->description_editor['format'];
 
-            $this->data->eula = $this->data->eula_editor['text'];
-            $this->data->eulaformat = $this->data->eula_editor['format'];
+                $this->data->notes = $this->data->notes_editor['text'];
+                $this->data->notesformat = $this->data->notes_editor['format'];
 
-            if (empty($this->data->renewable)) {
-                $this->data->renewable = 0;
-            }
+                $this->data->eula = $this->data->eula_editor['text'];
+                $this->data->eulaformat = $this->data->eula_editor['format'];
 
-            // Check product handler related  constraints
-            if (!empty($this->data->enablehandler)) {
-                $thehandler = $this->data->enablehandler;
-                if (!empty($thehandler) &&
-                        file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$thehandler.'/'.$thehandler.'.class.php')) {
-                    include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$thehandler.'/'.$thehandler.'.class.php');
-                    $classtype = "shop_handler_{$thehandler}";
-                    $handler = new $classtype(null);
-
-                    if ($max = $handler->get_max_quantity()) {
-                        // force max quantity on the product, due to associated handler.
-                        $this->data->maxdeliveryquant = $max;
-                    }
+                if (empty($this->data->renewable)) {
+                    $this->data->renewable = 0;
                 }
-            }
 
-            if (empty($this->data->itemid)) {
+                // Check product handler related  constraints
+                if (!empty($this->data->enablehandler)) {
+                    $thehandler = $this->data->enablehandler;
+                    if (!empty($thehandler) &&
+                            file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$thehandler.'/'.$thehandler.'.class.php')) {
+                        include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$thehandler.'/'.$thehandler.'.class.php');
+                        $classtype = "shop_handler_{$thehandler}";
+                        $handler = new $classtype(null);
 
-                $this->data->shortname = CatalogItem::compute_item_shortname($this->data);
-
-                $this->data->id = $DB->insert_record('local_shop_catalogitem', $this->data);
-
-                // We have items in the set. update relevant products.
-                if (!empty($this->data->productsinset) && is_array($this->data->productsinset)) {
-                    foreach ($this->productsinset as $productid) {
-                        $record = new \StdClass;
-                        $record->id = $productid;
-                        $record->setid = $this->data->id;
-                        $DB->update_record('local_shop_catalogitem', $record);
-                    }
-                }
-                unset($this->data->productsinset); // Clean the record.
-                // If slave catalogue must insert a master copy.
-                if ($this->thecatalog->isslave) {
-                    $this->data->catalogid = $this->thecatalog->groupid;
-                    $this->data->id = $DB->insert_record('local_shop_catalogitem', $this->data);
-                }
-            } else {
-                unset($this->data->itemid);
-
-                // Recompute an updated shortname.
-                $this->data->shortname = CatalogItem::compute_item_shortname($this->data);
-
-                $DB->update_record('local_shop_catalogitem', $this->data);
-            }
-
-            $context = \context_system::instance();
-
-            // Process text fields from editors.
-            if ($this->mform) {
-                // We do not have form in unit tests.
-                $draftideditor = file_get_submitted_draft_itemid('description_editor');
-                $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
-                                                                      'catalogitemdescription', $this->data->id,
-                                                                      array('subdirs' => true), $this->data->description);
-                $this->data = file_postupdate_standard_editor($this->data, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'catalogitemdescription', $this->data->id);
-
-                $draftideditor = file_get_submitted_draft_itemid('notes_editor');
-                $this->data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
-                                                          $this->data->id, array('subdirs' => true), $this->data->notes);
-                $this->data = file_postupdate_standard_editor($this->data, 'notes', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'catalogitemnotes', $this->data->id);
-
-                $draftideditor = file_get_submitted_draft_itemid('eula_editor');
-                $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
-                                                         $this->data->id, array('subdirs' => true), $this->data->eula);
-                $this->data = file_postupdate_standard_editor($this->data, 'eula', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'catalogitemeula', $this->data->id);
-
-                $usercontext = \context_user::instance($USER->id);
-                shop_products_process_files($this->data, $context, $usercontext);
-
-                // Post update record in DB.
-                $DB->update_record('local_shop_catalogitem', $this->data);
-            }
-
-            return new CatalogItem($this->data->id);
-        } else if ($cmd == 'delete') {
-
-            foreach ($this->data->productids as $ciid) {
-                $theitem = new CatalogItem($ciid);
-
-                // If catalog is not independant, all copies should be removed.
-                if ($this->thecatalog->ismaster) {
-                    $slaves = $this->thecatalog->get_slaves();
-                    foreach ($slaves as $s) {
-                        if ($clone = $s->get_product_by_code($theitem->code)) {
-                            $clone->fulldelete();
+                        if ($max = $handler->get_max_quantity()) {
+                            // force max quantity on the product, due to associated handler.
+                            $this->data->maxdeliveryquant = $max;
                         }
                     }
                 }
-                $theitem->fulldelete();
+
+                if (empty($this->data->itemid)) {
+
+                    $this->data->shortname = CatalogItem::compute_item_shortname($this->data);
+
+                    $this->data->id = $DB->insert_record('local_shop_catalogitem', $this->data);
+
+                    // We have items in the set. update relevant products.
+                    if (!empty($this->data->productsinset) && is_array($this->data->productsinset)) {
+                        foreach ($this->productsinset as $productid) {
+                            $record = new \StdClass;
+                            $record->id = $productid;
+                            $record->setid = $this->data->id;
+                            $DB->update_record('local_shop_catalogitem', $record);
+                        }
+                    }
+                    unset($this->data->productsinset); // Clean the record.
+                    // If slave catalogue must insert a master copy.
+                    if ($this->thecatalog->isslave) {
+                        $this->data->catalogid = $this->thecatalog->groupid;
+                        $this->data->id = $DB->insert_record('local_shop_catalogitem', $this->data);
+                    }
+                } else {
+                    unset($this->data->itemid);
+
+                    // Recompute an updated shortname.
+                    $this->data->shortname = CatalogItem::compute_item_shortname($this->data);
+
+                    $DB->update_record('local_shop_catalogitem', $this->data);
+                }
+
+                $context = \context_system::instance();
+
+                // Process text fields from editors.
+                if ($this->mform) {
+                    // We do not have form in unit tests.
+                    $draftideditor = file_get_submitted_draft_itemid('description_editor');
+                    $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
+                                                                          'catalogitemdescription', $this->data->id,
+                                                                          array('subdirs' => true), $this->data->description);
+                    $this->data = file_postupdate_standard_editor($this->data, 'description', $this->mform->editoroptions, $context, 'local_shop',
+                                                            'catalogitemdescription', $this->data->id);
+
+                    $draftideditor = file_get_submitted_draft_itemid('notes_editor');
+                    $this->data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
+                                                              $this->data->id, array('subdirs' => true), $this->data->notes);
+                    $this->data = file_postupdate_standard_editor($this->data, 'notes', $this->mform->editoroptions, $context, 'local_shop',
+                                                            'catalogitemnotes', $this->data->id);
+
+                    $draftideditor = file_get_submitted_draft_itemid('eula_editor');
+                    $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
+                                                             $this->data->id, array('subdirs' => true), $this->data->eula);
+                    $this->data = file_postupdate_standard_editor($this->data, 'eula', $this->mform->editoroptions, $context, 'local_shop',
+                                                            'catalogitemeula', $this->data->id);
+
+                    $usercontext = \context_user::instance($USER->id);
+                    shop_products_process_files($this->data, $context, $usercontext);
+
+                    // Post update record in DB.
+                    $DB->update_record('local_shop_catalogitem', $this->data);
+                }
+
+                return new CatalogItem($this->data->id);
             }
-        }
 
-        /* ***** We unlink a linked product ***** */
-        if ($cmd == 'unlink') {
-            $item = new CatalogItem($this->data->itemid);
-            $item->unlink();
-        }
+            case 'delete': {
 
-        /* ****** Clone a product or a set/bundle element as a product ***** */
-        if ($cmd == 'clone') {
-            $original = new CatalogItem($this->data->itemid);
-            $original->clone_instance();
-            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
-        }
+                try {
+                    $theitem = new CatalogItem($this->data->itemid);
 
-        /* ****** converts a product into a set ***** */
-        if ($cmd == 'toset') {
-            $original = new CatalogItem($this->data->itemid);
-            $original->setid = 0;
-            $original->isset = 1;
-            $original->save();
-            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
-        }
-
-        /* ****** converts a product into a set ***** */
-        if ($cmd == 'tobundle') {
-            $original = new CatalogItem($this->data->itemid);
-            $original->setid = $original->id;
-            $original->isset = 0;
-            $original->save();
-            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
-        }
-
-        /* ****** converts a product into a set ***** */
-        if ($cmd == 'toproduct') {
-            $original = new CatalogItem($this->data->itemid);
-            redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
-        }
-
-        /* ***** make a local physical clone of the master product in this slave catalog ***** */
-        if ($cmd == 'makecopy') {
-            // Get source item in master catalog.
-            $item = new CatalogItem($this->data->masteritemid);
-            $result = CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id));
-            if (empty($result)) {
-                $item->catalogid = $this->thecatalog->id; // Binding to local catalog.
-                $item->id = 0; // Ensure new record.
-                $item->save();
+                    // If catalog is not independant, all copies should be removed.
+                    if ($this->thecatalog->ismaster) {
+                        $slaves = $this->thecatalog->get_slaves();
+                        foreach ($slaves as $s) {
+                            if ($clone = $s->get_product_by_code($theitem->code)) {
+                                $clone->fulldelete();
+                            }
+                        }
+                    }
+                    $theitem->fulldelete();
+                } catch (Exception $e) {
+                    // Silently do nothing.
+                    assert(1);
+                }
+                break;
             }
-            /*
-             * Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
-             * reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
-             */
-        }
 
-        /* **** Delete the local copy **** */
-        if ($cmd == 'freecopy') {
-            $localitem = new CatalogItem($this->data->localitemid);
-            $localitem->delete();
-        }
+            /* ***** We delete a set of product ***** */
+            case 'deleteselection': {
 
-        /* ***** searches and filters the product list ***** */
-        if ($cmd == 'search') {
-            return CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
+                foreach ($this->data->itemids as $itemid) {
+                    try {
+                        $theitem = new CatalogItem($itemid);
+
+                        // If catalog is not independant, all copies should be removed.
+                        if ($this->thecatalog->ismaster) {
+                            $slaves = $this->thecatalog->get_slaves();
+                            foreach ($slaves as $s) {
+                                if ($clone = $s->get_product_by_code($theitem->code)) {
+                                    $clone->fulldelete();
+                                }
+                            }
+                        }
+                        $theitem->fulldelete();
+                    } catch (Exception $e) {
+                        // Silently do nothing.
+                        assert(1);
+                    }
+                }
+                break;
+            }
+
+            /* ***** We unlink a linked product ***** */
+            case 'unlink': {
+                /*
+                 * Action depends on product type : for real products, unklinks from bundle or set.
+                 * for bundles or sets, unlink all internal elements
+                 */
+                 try {
+                    $item = new CatalogItem($this->data->itemid);
+                    $item->unlink();
+                } catch (Exception $ex) {
+                    assert(1);
+                }
+                break;
+            }
+
+            /* ****** Clone a product or a set/bundle element as a product ***** */
+            case 'clone': {
+                $original = new CatalogItem($this->data->itemid);
+                $original->clone_instance();
+                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+            }
+
+            /* ****** converts a product into a set ***** */
+            case 'toset': {
+                $original = new CatalogItem($this->data->itemid);
+                $original->setid = 0;
+                $original->enablehandler = 0;
+                $original->handlerparams = '';
+                $original->isset = PRODUCT_SET;
+                $original->save();
+                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+            }
+
+            /* ****** converts a product into a bundle ***** */
+            case 'tobundle': {
+                $original = new CatalogItem($this->data->itemid);
+                $original->setid = 0;
+                $original->enablehandler = 0;
+                $original->handlerparams = '';
+                $original->isset = PRODUCT_BUNDLE;
+                $original->save();
+                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+            }
+
+            /* ****** converts a product into a set ***** */
+            case 'toproduct': {
+                $original = new CatalogItem($this->data->itemid);
+                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+            }
+
+            /* ***** make a local physical clone of the master product in this slave catalog ***** */
+            case 'makecopy': {
+                // Get source item in master catalog.
+                $item = new CatalogItem($this->data->masteritemid);
+                $result = CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id));
+                if (empty($result)) {
+                    $item->catalogid = $this->thecatalog->id; // Binding to local catalog.
+                    $item->id = 0; // Ensure new record.
+                    $item->save();
+                }
+                /*
+                 * Note about documents handling : when cloning a slave copy, no documents are cloned. Image and thumb will be
+                 * reused from the master pieace, while a new leaflet should be uploaded for the clone. f.e. translated leaflet.
+                 */
+                 break;
+            }
+
+            /* **** Delete the local copy **** */
+            case 'freecopy': {
+                $localitem = new CatalogItem($this->data->localitemid);
+                $localitem->delete();
+                break;
+            }
+
+            /* ***** searches and filters the product list ***** */
+            case 'search': {
+                return CatalogItem::search($this->data->by, $this->data->code, $this->data->shortname, $this->data->name);
+            }
         }
     }
 

@@ -1,16 +1,50 @@
+{{!
+    This file is part of The Local Shop Plugin
 
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/productset
+
+    Classes required for JS:
+    * none
+
+}}
 <!-- productset -->
 <div class="shop-article set">
-    <div class="shop-front-setcaption">
-        <h2>{{name}}</h2>
-        <div class="shop-front-description">{{{description}}}</div>
-    </div>
+    <div class="shop-front-productpix">{{{image}}}</div>
 
-    <div class="shop-front-elements fluid-row">
-    {{#elements}}
-        {{{element}}}
-    {{/elements}}
+    <div class="shop-front-productdef">
+        <div class="shop-front-setcaption">
+            <h1>{{{name}}}</h1>
+            {{#sethasdescription}}
+                <h2 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+                    {{{description}}}
+                </h2>
+                {{#shortdescription}}
+                <div class="shop-front-description-toggle">
+                    <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
+                </div>
+                {{/shortdescription}}
+            {{/sethasdescription}}
+        </div>
+
+        <div class="shop-front-elements flex-row">
+        {{#elements}}
+            {{> local_shop/front_product_block }}
+        {{/elements}}
+        </div>
     </div>
 </div>
 <!-- /productset -->

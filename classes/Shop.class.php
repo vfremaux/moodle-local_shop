@@ -265,6 +265,22 @@ class Shop extends ShopObject {
         }
     }
 
+    public function export_to_ws() {
+
+        $export = new \StdClass;
+
+        $export->id = $this->record->id;
+        $export->name = format_string($this->record->name);
+        $export->catalogid = $this->record->catalogid;
+        $export->description = format_text($this->record->description, $this->record->descriptionformat);
+        $export->allowtax = $this->record->allowtax;
+        $export->eulas = format_text($this->record->eulas, $this->record->eulaformat);
+        $export->paymodes = $this->record->paymodes;
+        $export->defaultpaymode = $this->record->defaultpaymode;
+
+        return $export;
+    }
+
     public static function count($filter) {
         return parent::_count(self::$table, $filter);
     }

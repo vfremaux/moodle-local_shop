@@ -1,0 +1,39 @@
+
+
+
+
+<!-- local_shop/bills_item_total_line -->
+    <tr id="producttotalcaption_{{shortname}}">
+        <td class="shop-ordercaptioncell" colspan="3">
+            {{name}}
+        </td>
+    </tr>
+
+    <tr id="producttotal_{{shortname}}">
+        <td class="shop-ordercell">
+            <a title="{{#str}}clearall, local_shop{{/str}}" href="{{{jsclearhandler}}}">
+                {{{deleteicon}}}
+            </a>
+
+            <input type="text"
+                    class="order-detail"
+                    id="id_{{shortname}}"
+                    name="{{shortname}}" value="{{preset}}" size="3" onChange="{{{jsupdatehandler}}}">
+        </td>
+
+        <td class="shop-ordercell">
+            <p>x {{ttcprice}} {{currency}} :
+        </td>
+
+        <td class="shop-ordercell">
+            <input type="text"
+                class="order-detail"
+                id="id_total_{{shortname}}"
+                name="{{shortname}}_total"
+                value="{{total}}"
+                size="10"
+                disabled
+                class="totals">
+        </td>
+    </tr>
+<!-- /local_shop/bills_item_total_line -->

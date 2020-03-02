@@ -1,0 +1,100 @@
+
+
+
+<!-- local_shop/bills_bill_item_line -->
+
+    {{#head}}
+    <tr valign="top">
+
+        <th style="text-align:left" class="header c0" style="width:2%">
+            {{#str}}order, local_shop{{/str}}
+        </th>
+
+        <th style="text-align:left" class="header c1" style="width:2%">
+            {{#str}}code, local_shop{{/str}}
+        </th>
+
+        <th style="text-align:left" class="header c2">
+            {{#str}}product, local_shop{{/str}}
+        </th>
+
+        <th style="text-align:left" class="header c3">
+            {{#str}}deadline, local_shop{{/str}}
+        </th>
+
+        <th style="text-align:left" class="header c4">
+            {{#str}}unittex, local_shop{{/str}}
+        </th>
+
+        <th style="text-align:left" class="header c5" style="width:2%">
+            {{#str}}quant, local_shop{{/str}}
+        </th>
+
+        <th style="text-align:left" class="header c6">
+            {{#str}}totaltex, local_shop{{/str}}
+        </th>
+
+        <th class="header c7" style="width:2%">
+            {{#str}}taxcode, local_shop{{/str}}
+        </th>
+
+        <th class="header lastcol">
+            {{#str}}orders, local_shop{{/str}}
+        </th>
+    </tr>
+    {{/head}}
+
+    {{^head}}
+    <tr valign="top">
+        <td width="30" class="cell c0">
+            <a class="activeLink" href="{{{billurl}}}">{{ordering}}</a>
+        </td>
+
+        <td width="60" class="cell c1">
+            {{itemcode}}
+        </td>
+
+        <td width="*" class="cell c2">
+            {{{abstract}}}
+        </td>
+
+        <td width="40" class="cell c3">
+            {{delay}}
+        </td>
+
+        <td width="80" class="cell c4">
+            {{unitcost}} {{{currency}}}
+        </td>
+        <td width="30" class="cell c5">
+            {{quantity}}
+        </td>
+
+        <td width="80" class="cell c6">
+            <span id="price_{{billordering}}">{{totalprice}} {{{currency}}}</span>
+        </td>
+
+        <td width="30" class="cell c7">
+            {{taxcode}}
+        </td>
+
+        <td width="60" class="cell lastcol">
+            <div class="shop-line-commands">
+
+            {{^isidnumbered}}
+            <a href="{{{moveurl}}}" title="{{#str}}move{{/str}}">{{{movepix}}}</a>
+            <a href="{{{editurl}}}" title="{{#str}}edit{{/str}}">{{{editpix}}}</a>
+            <a href="{{{deleteurl}}}" title="{{#str}}delete{{/str}}">{{{deletepix}}}</a>
+            {{/isidnumbered}}
+
+            </div>
+        </td>
+    </tr>
+
+    <tr valign="top">
+        <td>&nbsp;</td>
+        <td valign="top" class="itemDescription" colspan="9">
+            {{{description}}}
+        </td>
+    </tr>
+    {{/head}}
+<!-- /local_shop/bills_bill_item_line -->

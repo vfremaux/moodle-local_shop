@@ -71,6 +71,12 @@ class shop_export_source_allbills {
             array('name' => 'items',
                   'width' => 60,
                   'format' => 'smalltext'),
+            array('name' => 'shortnames',
+                  'width' => 60,
+                  'format' => 'smalltext'),
+            array('name' => 'itemnames',
+                  'width' => 60,
+                  'format' => 'smalltext'),
             array('name' => 'firstname',
                   'width' => 20,
                   'format' => 'smalltext'),
@@ -108,6 +114,26 @@ class shop_export_source_allbills {
     public function get_data(&$params) {
         global $DB;
 
+        $sqlparams = array($params->catalogid);
+
+        $yearclause = '';
+        $monthclause = '';
+        $statusclause = '';
+        if (!empty($params->y)) {
+            $yearclause = ' AND YEAR(FROM_UNIXTIME(b.emissiondate)) = ? ';
+            $sqlparams[] = $params->y;
+        }
+
+        if (!empty($params->m)) {
+            $monthclause = ' AND MONTH(FROM_UNIXTIME(b.emissiondate)) = ? ';
+            $sqlparams[] = $params->m;
+        }
+
+        if (!empty($params->status)) {
+            $statusclause = ' AND b.status = ? ';
+            $sqlparams[] = $params->status;
+        }
+
         $sql = "
             SELECT
                 b.transactionid,
@@ -122,6 +148,8 @@ class shop_export_source_allbills {
                 b.taxes,
                 b.amount,
                 GROUP_CONCAT(bi.itemcode ORDER BY bi.ordering SEPARATOR ',') as items,
+                GROUP_CONCAT(ci.shortname ORDER BY bi.ordering SEPARATOR ',') as shortnames,
+                GROUP_CONCAT(ci.name ORDER BY bi.ordering SEPARATOR ', ') as itemnames,
                 c.firstname,
                 c.lastname,
                 c.address,
@@ -145,12 +173,15 @@ class shop_export_source_allbills {
                 b.customerid = c.id AND
                 ci.code = bi.itemcode AND
                 ci.catalogid = ?
+                {$yearclause}
+                {$monthclause}
+                {$statusclause}
             GROUP BY
                 b.id
             ORDER BY
                 b.ordering
         ";
-        $data = $DB->get_records_sql($sql, array($params->catalogid));
+        $data = $DB->get_records_sql($sql, $sqlparams);
 
         return array($data);
     }

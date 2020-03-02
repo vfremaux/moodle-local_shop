@@ -261,10 +261,17 @@ function shop_backup_for_template($courseid, $options = array(), &$log = '') {
 
 /**
  * generates a username from given identity
- * @param object $user a user record
+ * @param object $user a user record. 
+ * @param bool $checkunique if true, generates indexed untill not found in DB.
  * @return a username
  */
-function shop_generate_username($user) {
+function shop_generate_username($user, $checkunique = false) {
+    global $DB;
+
+    if (empty($user)) {
+        debugging("Empty user");
+        return;
+    }
     $firstname = $user->firstname;
     $lastname = $user->lastname;
 
@@ -275,21 +282,36 @@ function shop_generate_username($user) {
     $lastname = str_replace('\'', '', $lastname);
     $lastname = preg_replace('/\s+/', '-', $lastname);
     $username = $firstname.'.'.$lastname;
-    $username = str_replace('é', 'e', $username);
-    $username = str_replace('è', 'e', $username);
-    $username = str_replace('ê', 'e', $username);
-    $username = str_replace('ë', 'e', $username);
-    $username = str_replace('ö', 'o', $username);
-    $username = str_replace('ô', 'o', $username);
-    $username = str_replace('ü', 'u', $username);
-    $username = str_replace('û', 'u', $username);
-    $username = str_replace('ù', 'u', $username);
-    $username = str_replace('î', 'i', $username);
-    $username = str_replace('ï', 'i', $username);
-    $username = str_replace('à', 'a', $username);
-    $username = str_replace('â', 'a', $username);
-    $username = str_replace('ç', 'c', $username);
-    $username = str_replace('ñ', 'n', $username);
+    $username = str_replace('Ã©', 'e', $username);
+    $username = str_replace('Ã¨', 'e', $username);
+    $username = str_replace('Ãª', 'e', $username);
+    $username = str_replace('Ã«', 'e', $username);
+    $username = str_replace('Ã¶', 'o', $username);
+    $username = str_replace('Ã´', 'o', $username);
+    $username = str_replace('Ã¼', 'u', $username);
+    $username = str_replace('Ã»', 'u', $username);
+    $username = str_replace('Ã¹', 'u', $username);
+    $username = str_replace('Ã®', 'i', $username);
+    $username = str_replace('Ã¯', 'i', $username);
+    $username = str_replace('Ã ', 'a', $username);
+    $username = str_replace('Ã¢', 'a', $username);
+    $username = str_replace('Ã§', 'c', $username);
+    $username = str_replace('Ã±', 'n', $username);
+
+    if ($checkunique) {
+        $ix = '';
+        $usernamebase = $username;
+
+        while ($DB->record_exists('user', array('username' => $username, 'deleted' => 0))) {
+            if ($ix == '') {
+                $ix = 1;
+            } else {
+                $ix = $ix + 1;
+            }
+            $username = $usernamebase.$ix;
+        }
+    }
+
     return $username;
 }
 
@@ -387,7 +409,6 @@ function shop_restore_template($archivefile, $data) {
 
     return $newcourseid;
 }
-
 
 /**
  * Create category with the given name and parentID returning a category ID
@@ -494,9 +515,14 @@ function shop_close_trace($output) {
 /**
  * outputs into an open trace (ligther than debug_trace)
  * @param string $str
+ * @param string $output the destination trace (empty or 'mail')
+ * @param string $dest for mail trace, the destination user of the mail.
  */
-function shop_trace_open($str, $output) {
+function shop_trace_open($str, $output, $dest) {
     global $CFG;
+    static $iter = 0;
+
+    $iter++;
 
     $date = new DateTime();
     $u = microtime(true);
@@ -504,11 +530,16 @@ function shop_trace_open($str, $output) {
 
     if (empty($output)) {
         if (!empty($CFG->merchanttrace)) {
-            fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+            fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-  ".$str."\n");
         }
     } else if ($output == 'mail') {
         if (!empty($CFG->merchantmailtrace)) {
-            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-\n");
+            fputs($CFG->merchantmailtrace, "MailTo: ".$dest->email."\n");
+            fputs($CFG->merchantmailtrace, "MailContent:\n");
+            fputs($CFG->merchantmailtrace, "@@@@@@@@\n");
+            fputs($CFG->merchantmailtrace, $str."\n");
+            fputs($CFG->merchantmailtrace, "@@@@@@@@\n");
         }
     }
 }
@@ -516,7 +547,7 @@ function shop_trace_open($str, $output) {
 /**
  * write to the trace
  */
-function shop_trace($str, $output = '') {
+function shop_trace($str, $output = '', $dest = null) {
     global $CFG;
 
     if (empty($output)) {
@@ -532,7 +563,7 @@ function shop_trace($str, $output = '') {
     }
 
     if (shop_open_trace($output)) {
-        shop_trace_open($str, $output);
+        shop_trace_open($str, $output, $dest);
         shop_close_trace($output);
     }
 }
@@ -605,6 +636,7 @@ function shop_build_context() {
     }
 
     $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
+
     if ($SESSION->shop->shopid) {
         try {
             $theshop = new Shop($SESSION->shop->shopid);
@@ -622,7 +654,7 @@ function shop_build_context() {
     }
 
     if (!$theshop) {
-        // No shops available at all. Redirect o shop management.
+        // No shops available at all. Redirect to shop management.
         redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
     }
 
@@ -659,6 +691,7 @@ function shop_build_context() {
     if (!empty($SESSION->shop->blockid)) {
         $theblock = shop_get_block_instance($SESSION->shop->blockid);
     }
+
     return array($theshop, $thecatalog, $theblock);
 }
 
@@ -741,7 +774,10 @@ function shop_get_transid() {
     global $DB;
 
     // Seek for a unique transaction ID.
-    $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32), 'MOODLE_SHOP')), 0, 30));
+    $timemark = sprintf('%f', microtime(true) + rand(0, 32));
+    $seed = crypt($timemark, 'MOODLE_SHOP');
+    $seedstr = base64_encode($seed);
+    $transid = strtoupper(substr($seedstr, 0, 30));
     while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
         $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32), 'MOODLE_SHOP')), 0, 30));
     }
@@ -791,8 +827,191 @@ function shop_list_reorder($selectcontext, $table) {
         $ix = 1;
         foreach ($allrecs as $rec) {
             $rec->sortorder = $ix;
-            $DB->update_record($rec);
+            $DB->update_record($table, $rec);
             $ix++;
         }
     }
+}
+
+function shop_get_enabled_paymodes($theshop) {
+    global $USER;
+
+    $config = get_config('local_shop');
+
+    $paymodes = get_list_of_plugins('/local/shop/paymodes');
+    $systemcontext = context_system::instance();
+
+    $availables = array();
+
+    \local_shop\Shop::expand_paymodes($theshop);
+    foreach ($paymodes as $var) {
+
+        $paymodeplugin = shop_paymode::get_instance($theshop, $var);
+
+        // User must be allowed to use non immediate payment methods.
+
+        $instant = $paymodeplugin->is_instant_payment();
+
+        if (!$instant) {
+            if (!has_capability('local/shop:paycheckoverride', $systemcontext) &&
+                !has_capability('local/shop:usenoninstantpayments', $systemcontext) && !$config->testoverride) {
+                continue;
+            }
+        }
+
+        if (!empty($USER->realuser)) {
+            $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->realuser);
+        } else {
+            $isrealadmin = has_capability('moodle/site:config', $systemcontext, $USER->id);
+        }
+
+        if ($var == 'test') {
+            if (!$isrealadmin) {
+                continue;
+            }
+        } else {
+            if ($config->test && $instant) {
+                if (empty($config->testoverride)) {
+                    if (!isloggedin()) {
+                        continue;
+                    }
+                }
+            }
+        }
+
+        $isenabledvar = "enable$var";
+        $check = $theshop->{$isenabledvar};
+        if ($check) {
+            $availables[] = $var;
+        }
+    }
+
+    return $availables;
+}
+
+function shop_has_enabled_paymodes($theshop) {
+    $availables = shop_get_enabled_paymodes($theshop);
+    return !empty($availables);
+}
+
+function shop_get_bill_tabs($total, $fullview) {
+
+    $view = optional_param('view', '', PARAM_TEXT);
+    $cur = optional_param('cur', 'EUR', PARAM_TEXT);
+    $url = new moodle_url('/local/shop/bills/view.php', array('view' => $view));
+    $nopaging = optional_param('nopaging', '0', PARAM_BOOL);
+
+    $rows = array();
+
+    if ($total->WORKING) {
+        $label = get_string('bill_WORKINGs', 'local_shop');
+        $rows[0][] = new tabobject('WORKING', "$url&status=WORKING&cur=$cur&nopaging=$nopaging", $label.' ('.$total->WORKING.')');
+    }
+
+    if ($fullview) {
+        $label = get_string('bill_PLACEDs', 'local_shop');
+        $rows[0][] = new tabobject('PLACED', "$url&status=PLACED&cur=$cur&nopaging=$nopaging", $label.' ('.$total->PLACED.')');
+
+        $label = get_string('bill_PENDINGs', 'local_shop');
+        $rows[0][] = new tabobject('PENDING', "$url&status=PENDING&cur=$cur&nopaging=$nopaging", $label.' ('.$total->PENDING.')');
+    }
+
+    $label = get_string('bill_SOLDOUTs', 'local_shop');
+    $rows[0][] = new tabobject('SOLDOUT', "$url&status=SOLDOUT&cur=$cur&nopaging=$nopaging", $label.' ('.$total->SOLDOUT.')');
+
+    $label = get_string('bill_COMPLETEs', 'local_shop');
+    $rows[0][] = new tabobject('COMPLETE', "$url&status=COMPLETE&cur=$cur&nopaging=$nopaging", $label.' ('.$total->COMPLETE.')');
+
+    if ($fullview) {
+        $label = get_string('bill_CANCELLEDs', 'local_shop');
+        $rows[0][] = new tabobject('CANCELLED', "$url&status=CANCELLED&cur=$cur&nopaging=$nopaging", $label.' ('.$total->CANCELLED.')');
+
+        $label = get_string('bill_FAILEDs', 'local_shop');
+        $rows[0][] = new tabobject('FAILED', "$url&status=FAILED&cur=$cur&nopaging=$nopaging", $label.' ('.$total->FAILED.')');
+    }
+
+    if ($total->PAYBACK) {
+        $label = get_string('bill_PAYBACKs', 'local_shop');
+        $rows[0][] = new tabobject('PAYBACK', "$url&status=PAYBACK&cur=$cur&nopaging=$nopaging", $label.' ('.$total->PAYBACK.')');
+    }
+
+    if ($fullview) {
+        $label = get_string('bill_ALLs', 'local_shop');
+        $rows[0][] = new tabobject('ALL', "$url&status=ALL&cur=$cur&nopaging=$nopaging", $label.' ('.$total->ALL.')');
+    }
+
+    return $rows;
+}
+
+function shop_get_bill_filtering() {
+    global $SESSION;
+
+    $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
+    $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
+    $SESSION->shop->billyear = $y;
+    $SESSION->shop->billmonth = $m;
+    $shopid = optional_param('shopid', 0, PARAM_INT);
+    $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
+    $cur = optional_param('cur', 'EUR', PARAM_TEXT);
+    $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
+
+    if ($shopid) {
+        $filter['shopid'] = $shopid;
+    }
+    if ($status != 'ALL') {
+        $filter['status'] = $status;
+    }
+    if (!empty($cur)) {
+        $filter['currency'] = $cur;
+    }
+    if (!empty($y)) {
+        $filter['YEAR(FROM_UNIXTIME(emissiondate))'] = $y;
+    }
+    if (!empty($m)) {
+        $filter['MONTH(FROM_UNIXTIME(emissiondate))'] = $m;
+    }
+
+    $filterclause = '';
+    $filterclause = " AND currency = '{$cur}' ";
+    if ($shopid) {
+        $filterclause .= " AND shopid = '{$shopid}' ";
+    }
+    if ($y) {
+        $filterclause .= " AND YEAR(FROM_UNIXTIME(emissiondate)) = '{$y}' ";
+    }
+    if ($m) {
+        $filterclause .= " AND MONTH(FROM_UNIXTIME(emissiondate)) = '{$m}' ";
+    }
+
+    $urlfilter = "y=$y&m=$m&status=$status&shopid=$shopid&cur=$cur&nopaging=$nopaging";
+
+    return array($filter, $filterclause, $urlfilter);
+}
+
+/**
+ * to fix some windows issues with strftime.
+ */
+function local_shop_strftimefixed($format, $timestamp=null) {
+    global $CFG;
+
+    if ($timestamp === null) $timestamp = time();
+
+    if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+        $format = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format);
+
+        // Be carefull windows only uses a 2 letters locale.
+        $locale = setlocale(LC_ALL, $CFG->lang);
+
+        // This has been seen on some Win2012 server environments where the fr locale comes out in latin or Windows encding.
+        return utf8_encode(strftime($format, $timestamp));
+    }
+
+    return strftime($format, $timestamp);
+}
+
+function shop_load_output_class($classname) {
+    global $CFG;
+
+    $classpath = $CFG->dirroot.'/local/shop/classes/output/'.$classname.'.class.php';
+    include_once($classpath);
 }

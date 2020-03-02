@@ -23,18 +23,24 @@
 }}
 <!-- frontproductbundle -->
 <div class="shop-article bundle">
-    {{image}}
 
-    <div class="shop-front-productpix">{{imagestr}}</div>
+    <div class="shop-front-productpix">{{{image}}}</div>
 
     <div class="shop-front-productdef">
         {{#ispart}}
-            <div class="shop-front-partof">{{name}}</div>
+            <div class="shop-front-partof">{{{name}}}</div>
         {{/ispart}}
         {{^ispart}}
-            <h2>{{name}}</h2>
+            <h1>{{{name}}}</h1>
             {{#hasdescription}}
-            <div class="shop-front-description">{{{description}}}</div>
+                <h2 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
+                    {{{description}}}
+                </h2>
+                {{#shortdescription}}
+                <div class="shop-front-description-toggle">
+                    <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
+                </div>
+                {{/shortdescription}}
             {{/hasdescription}}
         {{/ispart}}
 
@@ -43,26 +49,28 @@
         {{/hasleaflet}}
 
         <div class="shop-front-refblock">
-            <div class="shop-front-ref">{{refstr}} : {{code}}</div>
 
-            {{#elements}}
-                {{element}}
-            {{/elements}}
-
-            {{^pricelist}}
-            <div class="shop-front-label">{{puttcstr}}</div>
-            <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
-            {{/pricelist}}
-            {{#pricelist}}
+            <div class="shop-front-bundle-elements">
+                {{#elements}}
+                    {{> local_shop/front_product_block}}
+                {{/elements}}
+            </div>
 
             <div class="shop-front-pricelist">
+                <div class="shop-front-ref">{{refstr}}&nbsp;: {{code}}</div>
+                {{^pricelist}}
                 <div class="shop-front-label">{{puttcstr}}</div>
+                <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
+                {{/pricelist}}
+                {{#pricelist}}
+
                 {{#prices}}
-                <div class="shop-front-pricerange">{{range}} : </div>
-                <div class="shop-front-price">{{price}} {{{currencystr}}}</div>
+                <div class="shop-front-label">{{puttcstr}}</div>
+                <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
                 {{/prices}}
+                {{/pricelist}}
             </div>
-            {{/pricelist}}
 
             <div class="shop-front-order">
                 {{#password}}
@@ -82,10 +90,12 @@
                     value = "{{buystr}}"
                     onclick = "{{{jshandleraddunit}}}" {{{disabled}}} />
 
+            </div>
+
+            <div class="shop-order-bag">
                 <div class = "shop-order-item" id="bag_{{shortname}}">
                     {{{units}}}
                 </div>
-
             </div>
         </div>
     </div>

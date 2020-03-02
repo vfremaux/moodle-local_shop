@@ -1,0 +1,46 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_order_header
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- /local_shop/front_order_header -->
+    <tr valign="top">
+        <th width="60%" align="left" class="header c0">
+            {{#str}}designation, local_shop{{/str}}
+        </th>
+
+        <th width="20%" align="left" class="header c1">
+            {{#str}}reference, local_shop{{/str}}
+        </th>
+
+        <th width="8%" align="left" class="header c2">
+            {{#str}}unitprice, local_shop{{/str}}
+        </th>
+
+        <th width="4%" class="header c3">
+            {{#str}}quantity, local_shop{{/str}}
+        </th>
+
+        <th width="8%" align="right" style="text-align:right" class="header lastcol">
+            {{#str}}totalpricettc, local_shop{{/str}}
+        </th>
+    </tr>
+<!-- /local_shop/front_order_header -->

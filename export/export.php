@@ -53,6 +53,12 @@ $extractorclass = "shop_export_source_$what";
 $extractor = new $extractorclass();
 $params = new StdClass;
 $params->catalogid = $thecatalog->id;
+// Append all cleaned params added to the query string.
+foreach($_REQUEST as $key => $value) {
+    // At least text cleaning.
+    $params->$key = clean_param($value, PARAM_TEXT);
+}
+
 $datadesc = $extractor->get_data_description($params);
 $data = $extractor->get_data($params);
 

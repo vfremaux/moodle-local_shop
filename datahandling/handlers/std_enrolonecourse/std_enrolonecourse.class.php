@@ -34,6 +34,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
+require_once($CFG->dirroot.'/group/lib.php');
 
 use local_shop\Product;
 use local_shop\ProductEvent;
@@ -87,7 +88,11 @@ class shop_handler_std_enrolonecourse extends shop_handler {
     /**
      * Pre pay information always comme from shopping session.
      */
-    public function produce_prepay(&$data) {
+    public function produce_prepay(&$data, &$errorstatus) {
+
+        $message = "[{$data->transactionid}] STD_ENROL_ONE_COURSE Prepay :";
+        $message .= " Start processing.";
+        shop_trace($message);
 
         // Get customersupportcourse designated by handler internal params.
         if (!isset($data->actionparams['customersupport'])) {
@@ -104,7 +109,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             }
         }
 
-        $productionfeedback = shop_register_customer($data);
+        $productionfeedback = shop_register_customer($data, $errorstatus);
 
         return $productionfeedback;
     }
@@ -115,6 +120,10 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      */
     public function produce_postpay(&$data) {
         global $DB, $USER;
+
+        $message = "[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay :";
+        $message .= " Start processing.";
+        shop_trace($message);
 
         $config = get_config('local_shop');
 
@@ -182,14 +191,14 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : ".$message);
         } catch (Exception $exc) {
             $e = new StdClass;
-            $e->code = $data->code;
+            $e->code = $data->itemcode;
             $e->errorcode = 'Code : ROLE ASSIGN ISSUE';
-            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed enrol...");
+            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : Failed enrol... ".$exc->getMessage());
             $fb = get_string('productiondata_failure_public', 'shophandlers_std_enrolonecourse', $e);
             $productionfeedback->public = $fb;
             $fb = get_string('productiondata_failure_private', 'shophandlers_std_enrolonecourse', $course->id);
             $productionfeedback->private = $fb;
-            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_enrolonecourse', $course->id);
+            $fb = get_string('productiondata_failure_sales', 'shophandlers_std_enrolonecourse', $course);
             $productionfeedback->salesadmin = $fb;
             return $productionfeedback;
         }
@@ -225,7 +234,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $productionfeedback->public = $fb;
         $fb = get_string('productiondata_assign_private', 'shophandlers_std_enrolonecourse', $course->id);
         $productionfeedback->private = $fb;
-        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course->id);
+        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_enrolonecourse', $course);
         $productionfeedback->salesadmin = $fb;
 
         /*
@@ -258,13 +267,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         // Add all created users to group.
 
-        if (!$groupmember = $DB->get_record('groups_members', array('groupid' => $group->id, 'userid' => $USER->id))) {
-            $groupmember = new StdClass();
-            $groupmember->groupid = $group->id;
-            $groupmember->userid = $USER->id;
-            $groupmember->timeadded = $now;
-            $DB->insert_record('groups_members', $groupmember);
-        }
+        groups_add_member($group->id, $userid);
 
         // Add user to customer support.
 

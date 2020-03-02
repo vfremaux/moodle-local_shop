@@ -21,6 +21,7 @@ $string['currentbill'] = 'Order';
 $string['currentbillitem'] = 'Order item';
 $string['currentcustomer'] = 'Current customer';
 $string['editproductinstance'] = 'Edit product instance';
+$string['validity'] = 'Validity';
 $string['enddate'] = 'to';
 $string['enrol'] = 'Enrolment';
 $string['extradata'] = 'Production data';
