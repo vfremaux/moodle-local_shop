@@ -922,3 +922,7 @@ h2.shop-caption {
 #page-local-shop-front-view #region-main {
     min-height: 600px;
 }
+
+#page-local-shop-front-view [disabled="disabled"] {
+    opacity: 0.5;
+}

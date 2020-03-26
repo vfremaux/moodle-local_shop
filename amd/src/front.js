@@ -268,11 +268,11 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                 },
 
                 function(data) {
-                    log.debug(data);
                     var dataobj = JSON.parse(data);
                     $('#bag_' + productname).html(dataobj.html);
 
                     var maxquant = that.attr('data-maxquant');
+                    log.debug(maxquant + '>=' + dataobj.quant);
                     if ((maxquant > 0) && (dataobj.quant >= maxquant)) {
                         $('#ci-' + productname).attr('disabled', 'disabled');
                     }

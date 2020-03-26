@@ -517,7 +517,8 @@ class shop_front_renderer extends local_shop_base_renderer {
             if ($product->available) {
                 $template->available = true;
                 $template->buystr = get_string('buy', 'local_shop');
-                $isdisabled = !empty($product->record->maxdeliveryquant) && ($product->record->maxdeliveryquant >= $product->preset);
+                $template->disabled = '';
+                $isdisabled = !empty($product->record->maxdeliveryquant) && ($product->record->maxdeliveryquant <= $product->preset);
                 $template->disabled = ($isdisabled) ? 'disabled="disabled"' : '';
                 if ($product->password) {
                     $template->password = true;
