@@ -524,8 +524,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $template->needspasscodetobuystr = get_string('needspasscodetobuy', 'local_shop');
                     $template->disabled = 'disabled="disabled"';
                 }
-                $template->jshandleraddunit = 'ajax_add_unit('.$this->theshop->id;
-                $template->jshandleraddunit .= ', \''.$product->shortname.'\', \''.$product->maxdeliveryquant.'\')';
+                $template->maxdeliveryquant = $product->maxdeliveryquant;
                 $template->units = $this->units($product);
             }
         }
@@ -674,6 +673,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
 
         $template->unitimageurl = $product->get_sales_unit_url();
+        $template->shortname = $product->shortname;
         $template->tenunitsimageurl = $product->get_sales_ten_units_url();
 
         $q = @$SESSION->shoppingcart->order[$product->shortname];
@@ -690,7 +690,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         if (($i * 10 + $j) > 0) {
             $template->hashandler = true;
-            $template->jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
         }
 
         return $this->output->render_from_template('local_shop/front_units', $template);
@@ -794,10 +793,10 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $heading = get_string('customerinformation', 'local_shop');
         $heading .= ' <input type="checkbox"
-                         value="1"
-                         name="usedistinctinvoiceinfo"
-                         onchange="local_toggle_invoiceinfo(this)"
-                         '.$checked.' />';
+                             class="local-shop-toggle-invoiceinfo"
+                             value="1"
+                             name="usedistinctinvoiceinfo"
+                            '.$checked.' />';
         $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
         $str .= $this->output->heading($heading);
 

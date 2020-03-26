@@ -51,7 +51,23 @@ $category = optional_param('category', 0, PARAM_ALPHA);
 // Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
-$params = array('shopid' => $theshop->id);
+$units = 0;
+if (isset($SESSION->shoppingcart->order)) {
+    foreach ($SESSION->shoppingcart->order as $shortname => $q) {
+        $units += $q;
+    }
+}
+
+// Calculates and updates the seat count.
+$requiredroles = $thecatalog->check_required_roles();
+$required = $thecatalog->check_required_seats();
+$assigned = shop_check_assigned_seats($requiredroles);
+
+// $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
+$params = ['shopid' => $theshop->id,
+           'units' => $units,
+           'required' => $required,
+           'assigned' => $assigned];
 $PAGE->requires->js_call_amd('local_shop/front', 'init', array($params));
 
 $view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);

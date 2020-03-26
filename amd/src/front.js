@@ -33,8 +33,11 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             $('.local-shop-order-detail').bind('change', this.update_product);
             $('.local-shop-password').bind('keypress', this.check_pass_code);
             $('.local-shop-email').bind('change', this.check_email);
+            $('.local-shop-add-unit').bind('click', this.add_unit);
+            $('.local-shop-delete-unit').bind('click', this.delete_unit);
             $('.local-shop-add-assign').bind('change', this.add_assign);
             $('.local-shop-delete-assign').bind('click', this.delete_assign);
+            $('.local-shop-toggle-invoiceinfo').bind('change', this.toggle_invoiceinfo);
 
             if (params) {
                 shopfront.shopid = params.shopid;
@@ -65,12 +68,31 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
             var that = $(this);
 
-            if (that.attr('src').match(/open/)) {
+            if (that.attr('src').match('/open/')) {
                 that.attr('src', that.attr('src').replace('open', 'close'));
                 that.parent().parent().children('.shop-front-description').removeClass('shop-desc-gradient');
             } else {
                 that.attr('src', that.attr('src').replace('close', 'open'));
                 that.parent().parent().children('.shop-front-description').addClass('shop-desc-gradient');
+            }
+        },
+
+        toggle_invoiceinfo: function() {
+
+            var elm;
+
+            if (this.checked) {
+                $('#shop-invoiceinfo-wrapper').css('display', 'block');
+                if (document.driverform.elements['invoiceinfo::organisation'].value == '') {
+                    elm = document.driverform.elements['invoiceinfo::organisation'];
+                    elm.value = document.driverform.elements['customerinfo::organisation'].value;
+                }
+                if (document.driverform.elements['invoiceinfo::city'].value == '') {
+                    elm = document.driverform.elements['invoiceinfo::city'];
+                    elm.value = document.driverform.elements['customerinfo::city'].value;
+                }
+            } else {
+                $('#shop-invoiceinfo-wrapper').css('display', 'none');
             }
         },
 
@@ -158,7 +180,8 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                         $('#next-button').attr('disabled', null);
                         $('#next-button').attr('title', shopfront.strings[2]);
                     }
-                }
+                },
+                'json'
             );
         },
 
@@ -211,7 +234,8 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                         $('#next-button').attr('disabled', null);
                         $('#next-button').attr('title', shopfront.strings[2]);
                     }
-                }
+                },
+                'json'
             );
         },
 
@@ -219,7 +243,10 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
          * @TODO id to remove
          *
          */
-        add_unit: function() {
+        add_unit: function(e) {
+
+            e.stopPropagation();
+            e.preventDefault();
 
             var that = $(this);
 
@@ -251,7 +278,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_totals();
 
                 },
-                'html'
+                'json'
             );
 
             shopfront.units++;
@@ -261,7 +288,10 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             $('#next-button').attr('title', shopfront.strings[2]);
         },
 
-        delete_unit: function() {
+        delete_unit: function(e) {
+
+            e.stopPropagation();
+            e.preventDefault();
 
             var that = $(this);
 
@@ -286,7 +316,8 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_details();
                     shopfront.update_totals();
                     $('#ci-' + productname).attr('disabled', null);
-                }
+                },
+                'json'
             );
 
             shopfront.units--;
@@ -298,7 +329,10 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             }
         },
 
-        clear_product: function() {
+        clear_product: function(e) {
+
+            e.stopPropagation();
+            e.preventDefault();
 
             var that = $(this);
 
@@ -327,11 +361,14 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_details();
                     shopfront.update_totals();
                 },
-                'html'
+                'json'
             );
         },
 
-        update_product: function() {
+        update_product: function(e) {
+
+            e.stopPropagation();
+            e.preventDefault();
 
             var that = $(this);
 
@@ -364,7 +401,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_details();
                     shopfront.update_totals();
                 },
-                'html'
+                'json'
             );
         },
 
@@ -384,8 +421,12 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                 function(data) {
                     var dataobj = JSON.parse(data);
                     $('#shop-ordertotals').html(dataobj.html);
+                    $('.local-shop-detail-delete').unbind('click');
+                    $('.local-shop-detail-delete').bind('click', shopfront.clear_product);
+                    $('.local-shop-order-detail').unbind('change');
+                    $('.local-shop-order-detail').bind('change', shopfront.update_product);
                 },
-                'html'
+                'json'
             );
         },
 
@@ -404,7 +445,10 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                 function(data) {
                     var dataobj = JSON.parse(data);
                     $('#order-detail').html(dataobj.html);
-                }
+                    $('.local-shop-delete-unit').unbind('click');
+                    $('.local-shop-delete-unit').bind('click', shopfront.delete_unit);
+                },
+                'json'
             );
         },
 
@@ -486,7 +530,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                                 }
                             }
                         },
-                        'html'
+                        'json'
                     );
                 }
             );
@@ -543,7 +587,8 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                                     $('#' + r + 'list' + p).html(html);
                                 }
                             }
-                        }
+                        },
+                        'json'
                     );
                 }
             );
@@ -583,7 +628,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                         $('#ci-pass-status-' + productname).html(ajax_failure_img);
                     }
                 },
-                'html'
+                'json'
             );
         },
 

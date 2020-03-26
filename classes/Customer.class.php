@@ -143,7 +143,7 @@ class Customer extends ShopObject {
                $order $dir
         ";
 
-        $offset = optional_param('offest', '', PARAM_ALPHA);
+        $offset = optional_param('offset', 0, PARAM_INT);
         $customers = $DB->get_records_sql($sql, $params, $offset, $config->maxitemsperpage);
         $customersarr = array();
         foreach ($customers as $c) {

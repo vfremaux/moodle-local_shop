@@ -207,12 +207,8 @@ class shop_controller extends front_controller_base {
 
         } else if ($cmd == 'deleteunit') {
 
-            debug_trace("Executing deleteunit");
-
             if ($this->data->clearall) {
-                debug_trace("Executing clear all on {$this->data->shortname} ");
                 unset($SESSION->shoppingcart->order[$this->data->shortname]);
-                debug_trace($SESSION->shoppingcart->order);
             } else {
                 @$SESSION->shoppingcart->order[$this->data->shortname]--;
             }

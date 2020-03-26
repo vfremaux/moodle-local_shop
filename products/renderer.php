@@ -40,38 +40,22 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<div class="shop-table container-fluid">';
-        $str .= '<div class="shop-row">';
-        $str .= '<div class="shop-cell header span4">'.get_string('name', 'local_shop').'</div>';
-        $str .= '<div class="shop-cell header span4">'.format_string($this->thecatalog->name).'</div>';
-        $str .= '<div class="shop-cell header span4">';
+        $template->catalogname = format_string($this->thecatalog->name);
 
         if ($this->thecatalog->ismaster) {
-            $str .= get_string('master', 'local_shop');
+            $template->ismaster = true;
         } else if ($this->thecatalog->isslave) {
-            $str .= get_string('slave', 'local_shop');
+            $template->isslave = true;
         } else {
-            $str .= get_string('standalone', 'local_shop');
+            $template->isstandalone = true;
         }
-        $str .= '</div>';
-        $str .= '</div>';
 
-        $str .= '<div class="shop-row row-fluid">';
-        $str .= '<div class="shop-cell param span4">'.get_string('description').'</div>';
-        $str .= '<div class="shop-cell value span8">'.$this->thecatalog->description.'</div>';
-        $str .= '</div>';
+        $template->description = format_string($this->thecatalog->description);
+        $template->shops = 0 + Shop::count(array('catalogid' => $this->thecatalog->id));
 
-        $shops = Shop::count(array('catalogid' => $this->thecatalog->id));
-        $str .= '<div class="shop-row row-fluid">';
-        $str .= '<div class="shop-cell param span4">'.get_string('shops', 'local_shop').'</div>';
-        $str .= '<div class="shop-cell value span8">'.(0 + $shops).'</div>';
-        $str .= '</div>';
-
-        $str .= '</div>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/products_catalogheader', $template);
     }
 
     public function product_admin_line($product) {
@@ -213,7 +197,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template->thumburl = $set->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = $OUTPUT->pix_url('productset', 'local_shop');
+            $template->thumburl = $OUTPUT->image_url('productset', 'local_shop');
         }
         $template->code = $set->code;
         $template->shortname = $set->shortname;
@@ -285,7 +269,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $template->engravedclass = ((@$bundle->masterrecord == 0) ? '' : 'engraved');
         $template->thumburl = $bundle->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = $OUTPUT->pix_url('productbundle', 'local_shop');
+            $template->thumburl = $OUTPUT->image_url('productbundle', 'local_shop');
         }
         $template->code = $bundle->code;
         $template->shortname = $bundle->shortname;
@@ -642,10 +626,10 @@ class shop_products_renderer extends local_shop_base_renderer {
         $row[] = $DB->count_records('local_shop_catalogitem', array('categoryid' => $category->id));
 
         if ($category->visible) {
-            $pixurl = $OUTPUT->pix_url('t/hide');
+            $pixurl = $OUTPUT->image_url('t/hide');
             $cmd = 'hide';
         } else {
-            $pixurl = $OUTPUT->pix_url('t/show');
+            $pixurl = $OUTPUT->image_url('t/show');
             $cmd = 'show';
         }
         $commands = "<a href=\"{$url}&amp;what=$cmd&amp;categoryid={$category->id}\"><img src=\"$pixurl\" /></a>";
