@@ -266,6 +266,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                 },
 
                 function(data) {
+                    log.debug(data);
                     var dataobj = JSON.parse(data);
                     $('#bag_' + productname).html(dataobj.html);
 
