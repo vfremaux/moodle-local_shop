@@ -817,12 +817,7 @@ ul.shop-test-result {
 
 .shop-front-description-toggle {
     text-align:center;
-}
-
-.shop-front-description-toggle img {
-    margin-left:auto;
-    margin-right:auto;
-    margin-bottom:10px;
+    margin-bottom: 20px;
 }
 
 td.right-align {
