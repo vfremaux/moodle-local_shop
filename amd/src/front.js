@@ -251,7 +251,6 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             var that = $(this);
 
             var productname = that.attr('data-product');
-            var maxquant = that.attr('data-maxquant');
 
             var urlbase = cfg.wwwroot + '/local/shop/front/ajax/service.php';
 
@@ -270,6 +269,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     var dataobj = JSON.parse(data);
                     $('#bag_' + productname).html(dataobj.html);
 
+                    var maxquant = that.attr('data-maxquant');
                     if ((maxquant > 0) && (dataobj.quant >= maxquant)) {
                         $('#ci-' + productname).attr('disabled', 'disabled');
                     }
