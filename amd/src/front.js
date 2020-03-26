@@ -275,7 +275,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     log.debug(maxquant + '>=' + dataobj.quant);
                     if ((maxquant > 0) && (dataobj.quant >= maxquant)) {
                         log.debug('disabling product add button ' + productname);
-                        $('#ci-' + productname).prop('disabled', 'disabled');
+                        $('#ci-' + productname).prop('disabled', true);
                     }
 
                     shopfront.update_details();
@@ -320,7 +320,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_details();
                     shopfront.update_totals();
                     log.debug('enabling product add button ' + productname);
-                    $('#ci-' + productname).prop('disabled', null);
+                    $('#ci-' + productname).prop('disabled', false);
                 },
                 'html'
             );
