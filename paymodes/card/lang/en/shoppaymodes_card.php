@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Card does not directly store any personal data about any user.';
+
 $string['pluginname'] = 'Credit card payment (generic)';
 $string['enablecard'] = 'Credit card payment';
 $string['enablecard2'] = 'Credit card payment';

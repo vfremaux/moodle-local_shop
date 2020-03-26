@@ -1,7 +1,8 @@
 /* Generic shop table */
 
 .shop-table {
-    display: table;
+    display: flex;
+    flex-direction: column;
     padding: 0 !important;
     text-align: left;
     width: 100%;
@@ -568,7 +569,7 @@ table.shop-role-assignations > tr > td {
     padding-left: 30px;
 }
 
-.shop-article{
+.shop-article {
     font-size: 100%;
     vertical-align: top;
     align-items: center;
@@ -644,21 +645,16 @@ h3.shop-front-partof {
 
 .shop-front-refblock {
     display: flex;
-/*    grid-template-columns: 80% 11% 9%;
-    grid-template-rows: 1fr 1fr; */
+	justify-content: flex-end;
 }
 
-.shop-front-pricelist,
-.shop-front-ref,
-.shop-front-order {
-    grid-row: 1;
+.shop-front-refblock > div {
+	margin: 0 20px;
 }
 
 .shop-order-bag {
-    grid-row: 2;
-    text-align:right;
-    grid-column: 1 / span 3;
-    padding-top: 10px;
+    text-align: right;
+	min-width: 80px;
 }
 
 .shop-front-bundle-elements {
@@ -698,21 +694,13 @@ shop-order-paymode {
     opacity: 0.5;
 }
 
-.shop-desc-gradient {
-    /*
-    background: -moz-linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
-    background: -webkit-linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
-    background: linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    */
-    max-height: 2.6em;
-    margin-bottom: 1.3em;
-    overflow: hidden;
+.shop-modal-box {
+	padding: 40px;
 }
 
-.shop-desc-gradient:after {
-    content: "...";
+.shop-modal-box .shop-front-order  {
+	margin-left: auto;
+	margin-right: 0;
 }
 
 .shop-main-menu td {

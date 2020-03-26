@@ -72,7 +72,8 @@ if ($hassiteconfig) {
     $key = 'local_shop/maxitemsperpage';
     $label = get_string('maxitemsperpage', 'local_shop');
     $desc = get_string('configmaxitemsperpage', 'local_shop');
-    $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
+    $default = 30;
+    $settings->add(new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT));
 
     $key = 'local_shop/hideproductswhennotavailable';
     $label = get_string('hideproductswhennotavailable', 'local_shop');
@@ -292,5 +293,4 @@ if ($hassiteconfig) {
         $desc = get_string('plugindist_desc', 'local_shop');
         $settings->add(new admin_setting_heading('plugindisthdr', $label, $desc));
     }
-
 }

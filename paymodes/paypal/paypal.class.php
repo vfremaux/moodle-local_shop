@@ -73,7 +73,7 @@ class shop_paymode_paypal extends shop_paymode {
             $template->sellername = $config->paypalsellername;
             $template->selleritemname = $config->paypalselleritemname;
         }
-        $template->paypalacceptedstr = print_string('paypalaccepted', 'shoppaymodes_paypal');
+        $template->paypalacceptedstr = get_string('paypalaccepted', 'shoppaymodes_paypal');
         $template->shopname = $this->theshop->name;
         $template->shopid = $this->theshop->id;
         $template->testmodestr = get_string('testmode', 'local_shop');

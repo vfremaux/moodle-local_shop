@@ -50,6 +50,7 @@ $string['cb'] = 'Carte bancaire';
 $string['cbonpaypal'] = 'Carte bancaire sur Paypal';
 $string['chooseparticipant'] = 'Choisir un participant';
 $string['clearall'] = 'Supprimer toutes les unités';
+$string['close'] = 'Fermer';
 $string['code'] = 'Code';
 $string['configforcedownloadleaflet'] = 'Forcer le téléchargement des brochures';
 $string['confighideproductswhennotavailable'] = 'Si actif, les produits non disponibles (dû aux règles de vérification, bien que toujours publiés à la vente) ne seront pas du tout affichés. Sinon, les produits seront affichés masqués et sans le bouton de commande.';

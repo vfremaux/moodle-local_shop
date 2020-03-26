@@ -107,18 +107,19 @@ class local_shop_renderer extends local_shop_base_renderer {
     public function paging_results($portlet) {
         $str = '';
         if (empty($portlet->pagesize)) {
-            $portlet->pagesize = 20;
+            $portlet->pagesize = 30;
         }
         if ($portlet->pagesize < $portlet->total) {
             $pages = ceil($portlet->total / $portlet->pagesize);
-            if ($offset = optional_param('offset', 0, PARAM_INT) > 0) {
+            $offset = optional_param('offset', 0, PARAM_INT);
+            if ($offset > 0) {
                 $pageoffset = $offset - $portlet->pageSize;
                 $str .= '<a href="'.$portlet->url.'&offset='.$pageoffset.'">&lt;</a> - ';
             }
             $str .= '<span class="paging">';
             for ($i = 1; $i <= $pages; $i++) {
                 if ($i == ($offset / $portlet->pagesize) + 1) {
-                    echo " $i - ";
+                    $str .= ' <div style="display:inline-block;color:white;background-color:#666;border-radius:10px;padding:0px 6px 2px 6px">'.$i.'</div> - ';
                 } else {
                     $pageoffset = $portlet->pagesize * ($i - 1);
                     $str .= '<a class="paging" href="'.$portlet->url.'&offset='.$pageoffset.'">'.$i.'</a> - ';
@@ -128,9 +129,11 @@ class local_shop_renderer extends local_shop_base_renderer {
             if ($offset + $portlet->pagesize < $portlet->total) {
                 $pageoffset = $offset + $portlet->pagesize;
                 $nexturl = $portlet->url.'&offset='.$pageoffset;
-                $str .= '<a href="'.$nexturl.'" ?>">&gt;</a>';
+                $str .= '<a href="'.$nexturl.'" >&gt;</a>';
             }
         }
+
+        return $str;
     }
 
     public function catalog_choice($url) {

@@ -21,6 +21,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Transfer does not directly store any personal data about any user.';
+
 $string['enabletransfer'] = 'Bank transfer payment';
 $string['enabletransfer2'] = 'Bank transfer payment';
 $string['enabletransfer3'] = 'You choosed to pay transfering funds...';
@@ -40,7 +43,7 @@ $string['pending_followup_text_tpl'] = '
 <p>If your activation seems being late (the fund transfer normal delay plus 24 to 48 work hours), pleae contact our sales services.</p>
 ';
 
-$string['print_procedure_tpl'] = '
+$string['print_procedure_text_tpl'] = '
 <p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Order a fund transfer from your banking agency to:<br>
 
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>

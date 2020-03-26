@@ -9,7 +9,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
         init: function() {
 
-            $('#id_s_local_shpo_licensekey').bind('change', this.check_product_key);
+            $('#id_s_local_shop_licensekey').bind('change', this.check_product_key);
             $('#id_s_local_shop_licensekey').trigger('change');
             log.debug('AMD Pro js initialized for local shop sytem');
         },

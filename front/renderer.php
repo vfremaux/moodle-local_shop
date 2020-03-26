@@ -33,8 +33,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     protected $context;
 
-    protected $view;
-
     const STATE_DONE = 0;
     const STATE_TODO = 1;
     const STATE_FREEZE = 2;
@@ -439,6 +437,8 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->ispart = $product->ispart;
         $template->issetpart = $product->issetpart;
         $template->isbundlepart = $product->isbundlepart;
+        $template->id = $product->id;
+        $template->shortname = $product->shortname;
         $template->code = $product->code;
         $template->subelementclass = $subelementclass;
 
@@ -452,7 +452,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->thumburl = $product->get_thumb_url();
 
         $template->name = format_string($product->name);
-        $template->code = $product->code;
         $template->shortname = $product->shortname;
         $template->puttcstr = get_string('puttc', 'local_shop');
 
@@ -468,20 +467,19 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->showname = $product->showsnameinset;
         }
 
-        $template->shortdescription = false;
+        $template->isshortdescription = false;
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
             $template->description = format_text($product->description, FORMAT_MOODLE, array('para' => false));
 
             $cutoff = $config->shortdescriptionthreshold;
-            if ($product->issetpart) {
-                $cutoff = floor($cutoff / 2);
-            }
-            if (core_text::strlen($product->description) > $cutoff) {
-                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
+            $template->shortdescription = $this->trim_chars($product->description, $cutoff);
+
+            if (($template->description != $template->shortdescription) || $product->has_leaflet()) {
+                // $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
                 $template->readmorestr = get_string('readmore', 'local_shop');
-                $template->shortdescription = true;
+                $template->isshortdescription = true;
             }
         } else {
             $template->description = '';
@@ -698,6 +696,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_units', $template);
     }
 
+    /**
+     * prints order detail lines.
+     */
     public function order_detail(&$categories) {
         global $SESSION;
 
@@ -740,6 +741,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * Prints a single product line in order details summary.
+     */
     public function product_total_line(&$product) {
         global $CFG;
 
@@ -762,14 +766,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->name = $product->name;
         $template->currency = $product->currency;
         $template->disabled = ' disabled="disabled" ';
-        if ($this->view == 'shop') {
+        $template->maxdeliveryquant = $product->maxdeliveryquant;
+        if ($view == 'shop') {
             $template->isshopview = true;
-            $template->clearjshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
-            $template->clearjshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
             $template->disabled = '';
         }
-        $template->jshandler = 'ajax_update_product('.$this->theshop->id;
-        $template->jshandler .= ', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')';
         $template->ttcprice = 'x '.sprintf("%0.2f", round($ttcprice, 2));
 
         return $this->output->render_from_template('local_shop/front_product_total_line', $template);
@@ -1087,9 +1088,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str .= @$participant->firstname;
         $str .= '</td>';
         $str .= '<td align="right">';
-        $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
-        $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
+        $str .= '<a class="local-shop-delete-assign"
+                    data-product="'.$shortname.'"
+                    data-role="'.$role.'"
+                    data-email="'.$participant->email.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
         $str .= '</td>';
         $str .= '</tr>';
 
@@ -1124,8 +1126,11 @@ class shop_front_renderer extends local_shop_base_renderer {
                 }
             }
         }
-        $params = array('' => get_string('chooseparticipant', 'local_shop'));
-        $attrs = array('onchange' => 'ajax_add_assign(\''.$role.'\', \''.$shortname.'\', this)');
+        $params = ['' => get_string('chooseparticipant', 'local_shop')];
+        $attrs = ['data-product' => $shortname,
+                  'data-role' => $role,
+                  'data-requiredroles' => json_encode($this->thecatalog->check_required_roles()),
+                  'class' => 'local-shop-add-assign'];
         $str .= html_writer::select($options, 'addassign'.$role.'_'.$shortname, '', $params, $attrs);
 
         return $str;
@@ -1832,4 +1837,28 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
         return $this->output->render_from_template('local_shop/bills_link_to_bill', $template);
     }
+
+	/**
+	 * Cut a text to some length.
+	 *
+	 * @param $str
+	 * @param $n
+	 * @param $end_char
+	 * @return string
+	 */
+	public function trim_chars($str, $n = 500, $endchar = '...') {
+		if (strlen($str) < $n) {
+			return $str;
+		}
+
+		$str = preg_replace("/\s+/", ' ', str_replace(array("\r\n", "\r", "\n"), ' ', $str));
+		if (mb_strlen($str) <= $n) {
+			return $str;
+		}
+
+		$out = "";
+		$small = mb_substr($str, 0, $n);
+		$out = $small.$endchar;
+		return $out;
+	}
 }

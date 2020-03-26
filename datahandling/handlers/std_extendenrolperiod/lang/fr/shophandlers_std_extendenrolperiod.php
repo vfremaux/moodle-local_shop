@@ -16,6 +16,9 @@
 
 global $CFG;
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat ExtendEnrolPeriod ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['handlername'] = 'Extension d\'inscription';
 $string['pluginname'] = 'Extension d\'inscription';
 

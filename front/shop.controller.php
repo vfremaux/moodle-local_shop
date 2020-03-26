@@ -129,7 +129,7 @@ class shop_controller extends front_controller_base {
                             $SESSION->shoppingcart->partner->partnertag = array_shift($parts); // May be empty.
                         }
                         if (!empty($parts)) {
-                            /**
+                            /*
                              * The customer email can serve for preauth when partner is validated and a moodle user
                              * with such mail exists.
                              */
@@ -207,8 +207,12 @@ class shop_controller extends front_controller_base {
 
         } else if ($cmd == 'deleteunit') {
 
+            debug_trace("Executing deleteunit");
+
             if ($this->data->clearall) {
+                debug_trace("Executing clear all on {$this->data->shortname} ");
                 unset($SESSION->shoppingcart->order[$this->data->shortname]);
+                debug_trace($SESSION->shoppingcart->order);
             } else {
                 @$SESSION->shoppingcart->order[$this->data->shortname]--;
             }

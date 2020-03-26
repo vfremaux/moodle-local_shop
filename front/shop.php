@@ -24,7 +24,27 @@ defined('MOODLE_INTERNAL') || die();
 
 use local_shop\Category;
 
-$PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
+$units = 0;
+if (isset($SESSION->shoppingcart->order)) {
+    foreach ($SESSION->shoppingcart->order as $shortname => $q) {
+        $units += $q;
+    }
+}
+
+// Calculates and updates the seat count.
+$requiredroles = $thecatalog->check_required_roles();
+$required = $thecatalog->check_required_seats();
+$assigned = shop_check_assigned_seats($requiredroles);
+$notassignedstr = str_replace("'", '\\\'', get_string('notallassigned', 'local_shop'));
+$myorderstr = str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'));
+$invalidemailstr = get_string('invalidemail', 'local_shop');
+
+// $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
+$params = ['shopid' => $theshop->id,
+           'units' => $units,
+           'required' => $required,
+           'assigned' => $assigned];
+$PAGE->requires->js_call_amd('local_shop/front', 'init', [$params]);
 
 // Check see all mode in session.
 if (isloggedin() && is_siteadmin()) {

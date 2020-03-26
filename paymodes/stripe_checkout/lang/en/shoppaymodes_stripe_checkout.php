@@ -22,6 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes StripeCheckout does not directly store any personal data about any user.';
+
 $string['checkout'] = 'Pay now !';
 $string['configsecret'] = 'This is the secret code to authentify transmission';
 $string['configsid'] = 'Stripe Account Idendifier';

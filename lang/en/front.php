@@ -48,6 +48,7 @@ $string['cb'] = 'Credit card';
 $string['cbonpaypal'] = 'Credit card via Paypal';
 $string['chooseparticipant'] = 'Choose participant';
 $string['clearall'] = 'Clear all units';
+$string['close'] = 'Close';
 $string['code'] = 'Code';
 $string['configdefaultnavsteps'] = 'Some office owners may reorder the steps in the front process. Keep in mind some orders might NOT work correctly, f.e. trying to get payment before fhoc cart and customer are defined.';
 $string['configforcedownloadleaflet'] = 'Force download of leaflet';
