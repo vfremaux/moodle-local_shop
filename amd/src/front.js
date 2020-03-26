@@ -275,7 +275,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     log.debug(maxquant + '>=' + dataobj.quant);
                     if ((maxquant > 0) && (dataobj.quant >= maxquant)) {
                         log.debug('disabling product add button ' + productname);
-                        $('#ci-' + productname).prop('disabled', true);
+                        $('#ci-' + productname).attr('disabled', 'disabled');
                     }
 
                     shopfront.update_details();
@@ -320,7 +320,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_details();
                     shopfront.update_totals();
                     log.debug('enabling product add button ' + productname);
-                    $('#ci-' + productname).prop('disabled', false);
+                    $('#ci-' + productname).attr('disabled', null);
                 },
                 'html'
             );
@@ -348,6 +348,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             $('#bag_' + productname).html(shopfront.waiter());
 
             $('#id_' + productname).val(0);
+            $('#ci-' + productname).attr('disabled', null);
             $('#id_total_' + productname).val(0);
 
             $.post(
@@ -401,7 +402,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                 },
                 function(data) {
                     var dataobj = JSON.parse(data);
-                    $('#bag_'+productname).html(dataobj.html);
+                    $('#bag_' + productname).html(dataobj.html);
 
                     shopfront.update_details();
                     shopfront.update_totals();
