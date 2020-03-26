@@ -38,6 +38,8 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             $('.local-shop-add-assign').bind('change', this.add_assign);
             $('.local-shop-delete-assign').bind('click', this.delete_assign);
             $('.local-shop-toggle-invoiceinfo').bind('change', this.toggle_invoiceinfo);
+            $('.local-shop-delete-user').bind('click', this.delete_user);
+            $('.local-shop-add-user').bind('click', this.add_user);
 
             if (params) {
                 shopfront.shopid = params.shopid;
@@ -453,9 +455,10 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             );
         },
 
-        add_user: function(formobj) {
+        add_user: function() {
 
             var that = $(this);
+            var formobj = document.forms['participant'];
 
             var urlbase = cfg.wwwroot + '/local/shop/front/ajax/service.php';
 

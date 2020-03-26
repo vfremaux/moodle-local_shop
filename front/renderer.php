@@ -517,14 +517,14 @@ class shop_front_renderer extends local_shop_base_renderer {
             if ($product->available) {
                 $template->available = true;
                 $template->buystr = get_string('buy', 'local_shop');
-                $isdisabled = $product->maxdeliveryquant && ($product->maxdeliveryquant == $product->preset);
-                $disabled = ($isdisabled) ? 'disabled="disabled"' : '';
+                $isdisabled = !empty($product->record->maxdeliveryquant) && ($product->record->maxdeliveryquant >= $product->preset);
+                $template->disabled = ($isdisabled) ? 'disabled="disabled"' : '';
                 if ($product->password) {
                     $template->password = true;
                     $template->needspasscodetobuystr = get_string('needspasscodetobuy', 'local_shop');
                     $template->disabled = 'disabled="disabled"';
                 }
-                $template->maxdeliveryquant = $product->maxdeliveryquant;
+                $template->maxdeliveryquant = $product->record->maxdeliveryquant;
                 $template->units = $this->units($product);
             }
         }
@@ -944,157 +944,39 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         static $i = 0;
 
-        $str = '';
+        $template = new StdClass;
+        $template->i = $i;
 
-        $str .= '<tr>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="lastname_foo_'.$i.'"
-                        size="15"
-                        disabled="disabled"
-                        class="shop-disabled" />';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="firstname_foo_'.$i.'"
-                        size="15"
-                        disabled="disabled"
-                        class="shop-disabled" />';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="mail_foo_'.$i.'"
-                        size="20"
-                        disabled="disabled"
-                        class="shop-disabled" />';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text"
-                        name="city_foo_'.$i.'"
-                        size="14"
-                        disabled="disabled"
-                        class="shop-disabled" />';
-        $str .= '</td>';
-        if (!empty($this->theshop->endusermobilephonerequired)) {
-            $str .= '<td align="left">';
-            $str .= '<input type="text"
-                            name="phone2_foo_'.$i.'"
-                            size="13"
-                            disabled="disabled"
-                            class="shop-disabled" />';
-            $str .= '</td>';
-        }
-        if (!empty($this->theshop->enduserorganisationrequired)) {
-            $str .= '<td align="left">';
-            $str .= '<input type="text"
-                            name="institution_foo_'.$i.'"
-                            size="13"
-                            disabled="disabled"
-                            class="shop-disabled" />';
-            $str .= '</td>';
-        }
-        $str .= '<td align="left">';
-        $str .= '</td>';
-        $str .= '<td align="right">';
-        $str .= '</td>';
-        $str .= '</tr>';
+        $template->endusermobilephonerequired = $this->theshop->endusermobilephonerequired;
+        $template->enduserorganisationrequired = $this->theshop->enduserorganisationrequired;
 
         $i++;
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_participant_blanckrow', $template);
     }
 
     public function new_participant_row() {
-        global $CFG;
 
         $this->check_context();
 
-        $str = '';
+        $template = new StdClass;
+        $template->endusermobilephonerequired = $this->theshop->endusermobilephonerequired;
+        $template->enduserorganisationrequired = $this->theshop->enduserorganisationrequired;
 
-        $str .= '<form name="participant">';
-        $str .= '<table width="100%">';
-        $str .= '<tr>';
-        $str .= '<td align="left">';
-        $str .= get_string('lastname');
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= get_string('firstname');
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= get_string('email');
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= get_string('city');
-        $str .= '</td>';
-        if (!empty($this->theshop->endusermobilephonerequired)) {
-            $str .= '<td align="left">';
-            $str .= get_string('phone2');
-            $str .= '</td>';
-        }
-        if (!empty($this->theshop->enduserorganisationrequired)) {
-            $str .= '<td align="left">';
-            $str .= get_string('institution');
-            $str .= '</td>';
-        }
-        $str .= '<td align="right">';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '<tr>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text" name="lastname" size="15" />';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text" name="firstname" size="15" />';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text" name="email" size="20" />';
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= '<input type="text" name="city" size="14" />';
-        $str .= '</td>';
-        if (!empty($this->theshop->endusermobilephonerequired)) {
-            $str .= '<td align="left">';
-            $str .= '<input type="text" name="phone2" size="13" maxlength="10" />';
-            $str .= '</td>';
-        }
-        if (!empty($this->theshop->enduserorganisationrequired)) {
-            $str .= '<td align="left">';
-            $str .= '<input type="text" name="institution" size="15" size="15" maxlength="40" />';
-            $str .= '</td>';
-        }
-        $str .= '<td align="right">';
-        $jshandler = 'ajax_add_user(document.forms[\'participant\'])';
-        $label = get_string('addparticipant', 'local_shop');
-        $str .= '<input type="button" value="'.$label.'" name="add_button" onclick="'.$jshandler.'" />';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '</table>';
-        $str .= '</form>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_new_participant_row', $template);
     }
 
     public function assignation_row($participant, $role, $shortname) {
         global $CFG;
 
-        $str = '';
+        $template = new StdClass;
+        $template->lastname = @$participant->lastname;
+        $template->firstname = @$participant->firstname;
+        $template->shortname = $shortname;
+        $template->role = $role;
+        $template->email = $participant->email;
 
-        $str .= '<tr>';
-        $str .= '<td align="left">';
-        $str .= @$participant->lastname;
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= @$participant->firstname;
-        $str .= '</td>';
-        $str .= '<td align="right">';
-        $str .= '<a class="local-shop-delete-assign"
-                    data-product="'.$shortname.'"
-                    data-role="'.$role.'"
-                    data-email="'.$participant->email.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/front_assignation_row', $template);
     }
 
     /**
