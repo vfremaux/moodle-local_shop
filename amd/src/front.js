@@ -181,7 +181,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                         $('#next-button').attr('title', shopfront.strings[2]);
                     }
                 },
-                'json'
+                'html'
             );
         },
 
@@ -235,7 +235,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                         $('#next-button').attr('title', shopfront.strings[2]);
                     }
                 },
-                'json'
+                'html'
             );
         },
 
@@ -278,7 +278,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_totals();
 
                 },
-                'json'
+                'html'
             );
 
             shopfront.units++;
@@ -317,7 +317,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_totals();
                     $('#ci-' + productname).attr('disabled', null);
                 },
-                'json'
+                'html'
             );
 
             shopfront.units--;
@@ -361,7 +361,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_details();
                     shopfront.update_totals();
                 },
-                'json'
+                'html'
             );
         },
 
@@ -401,7 +401,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     shopfront.update_details();
                     shopfront.update_totals();
                 },
-                'json'
+                'html'
             );
         },
 
@@ -426,7 +426,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     $('.local-shop-order-detail').unbind('change');
                     $('.local-shop-order-detail').bind('change', shopfront.update_product);
                 },
-                'json'
+                'html'
             );
         },
 
@@ -448,7 +448,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     $('.local-shop-delete-unit').unbind('click');
                     $('.local-shop-delete-unit').bind('click', shopfront.delete_unit);
                 },
-                'json'
+                'html'
             );
         },
 
@@ -530,7 +530,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                                 }
                             }
                         },
-                        'json'
+                        'html'
                     );
                 }
             );
@@ -588,7 +588,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                                 }
                             }
                         },
-                        'json'
+                        'html'
                     );
                 }
             );
@@ -628,7 +628,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                         $('#ci-pass-status-' + productname).html(ajax_failure_img);
                     }
                 },
-                'json'
+                'html'
             );
         },
 
