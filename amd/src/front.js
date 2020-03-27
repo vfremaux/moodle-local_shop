@@ -271,15 +271,15 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                     var dataobj = JSON.parse(data);
                     $('#bag_' + productname).html(dataobj.html);
 
+                    shopfront.update_details();
+                    shopfront.update_totals();
+
                     var maxquant = that.attr('data-maxquant');
                     log.debug(maxquant + '>=' + dataobj.quant);
                     if ((maxquant > 0) && (dataobj.quant >= maxquant)) {
                         log.debug('disabling product add button ' + productname);
                         $('#ci-' + productname).attr('disabled', 'disabled');
                     }
-
-                    shopfront.update_details();
-                    shopfront.update_totals();
 
                 },
                 'html'
@@ -319,6 +319,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
                     shopfront.update_details();
                     shopfront.update_totals();
+
                     log.debug('enabling product add button ' + productname);
                     $('#ci-' + productname).attr('disabled', null);
                 },
