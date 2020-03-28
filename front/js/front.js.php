@@ -51,6 +51,3 @@ $assigned = shop_check_assigned_seats($requiredroles);
 $notassignedstr = str_replace("'", '\\\'', get_string('notallassigned', 'local_shop'));
 $myorderstr = str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'));
 $invalidemailstr = get_string('invalidemail', 'local_shop');
-?>
-
-}

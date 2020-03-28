@@ -3,7 +3,7 @@
  */
 // jshint unused:false, undef:false
 
-define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
+define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, str) {
 
     var shopfront = {
 
@@ -27,6 +27,18 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
         strings: [],
 
         init: function(params) {
+
+            var stringdefs = [
+                {key: 'invalidemail', component: 'local_shop'}, // 0
+                {key: 'notallassigned', component: 'local_shop'}, // 1
+                {key: 'continue', component: 'local_shop'}, // 2
+                {key: 'emptyorder', component: 'local_shop'}, // 3
+            ];
+
+            str.get_strings(stringdefs).done(function(s) {
+                shopfront.strings = s;
+            });
+
             // Get all description toggles and bind them.
             $('.shop-description-toggle').bind('click', this.toggle_description);
             $('.local-shop-detail-delete').bind('click', this.clear_product);

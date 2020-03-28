@@ -98,6 +98,15 @@ class shop_paymode_paypal extends shop_paymode {
         $template->returnurl = new moodle_url('/local/shop/paymodes/paypal/process.php', $params);
         $template->notifyurl = new moodle_url('/local/shop/paymodes/paypal/paypal_ipn.php');
         $template->cancelurl = new moodle_url('/local/shop/paymodes/paypal/cancel.php', $params);
+
+        if ($template->istesting) {
+            if (!empty($config->htaccesscred)) {
+                $template->returnurl = preg_replace('#^(https?//\\:)#', '$1'.$config->htaccesscred.'@', $template->returnurl);
+                $template->notifyurl = preg_replace('#^(https?//\\:)#', '$1'.$config->htaccesscred.'@', $template->notifyurl);
+                $template->cancelurl = preg_replace('#^(https?//\\:)#', '$1'.$config->htaccesscred.'@', $template->cancelurl);
+            }
+        }
+
         $template->paypallogourl = new moodle_url('/local/shop/paymodes/paypal/pix/logo_paypal_106x29.png');
         $template->lang = strtoupper(current_language());
         if (!in_array($template->lang, $paypalsupportedlangs)) {

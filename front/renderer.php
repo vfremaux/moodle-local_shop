@@ -953,31 +953,23 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $i++;
 
-        return $this->output->render_from_template('local_shop/front_participant_blanckrow', $template);
+        return $this->output->render_from_template('local_shop/front_participant_blankrow', $template);
     }
 
     public function new_participant_row() {
+        global $SESSION;
 
         $this->check_context();
 
         $template = new StdClass;
         $template->endusermobilephonerequired = $this->theshop->endusermobilephonerequired;
         $template->enduserorganisationrequired = $this->theshop->enduserorganisationrequired;
+        $template->requiredroles = implode(',', $this->thecatalog->check_required_roles());
+        if (!empty($SESSION->shoppingcart->order)) {
+            $template->products = implode(',', array_keys($SESSION->shoppingcart->order));
+        }
 
         return $this->output->render_from_template('local_shop/front_new_participant_row', $template);
-    }
-
-    public function assignation_row($participant, $role, $shortname) {
-        global $CFG;
-
-        $template = new StdClass;
-        $template->lastname = @$participant->lastname;
-        $template->firstname = @$participant->firstname;
-        $template->shortname = $shortname;
-        $template->role = $role;
-        $template->email = $participant->email;
-
-        return $this->output->render_from_template('local_shop/front_assignation_row', $template);
     }
 
     /**
@@ -1023,30 +1015,27 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $str = '';
+        $template = new Stdclass;
 
         $roleassigns = @$SESSION->shoppingcart->users;
 
-        $str .= $this->output->heading(get_string(str_replace('_', '', $role), 'local_shop'));  // Remove pseudo roles markers.
+        $template->productname = get_string(str_replace('_', '', $role), 'local_shop'));  // Remove pseudo roles markers.
+        $template->shortname = $shortname;
         if (!empty($roleassigns[$shortname][$role])) {
-            $str .= '<div class="shop-role-list-container">';
-            $str .= '<table width="100%" class="shop-role-list">';
             foreach ($roleassigns[$shortname][$role] as $participant) {
-                $str .= $this->assignation_row($participant, $role, $shortname, true);
+                $participanttpl = new StdClass;
+                $participanttpl->lastname = @$participant->lastname;
+                $participanttpl->firstname = @$participant->firstname;
+                $participanttpl->role = $role;
+                $participanttpl->email = $participant->email;
+                $template->participants[] = $participanttpl;
             }
-            $str .= '</table>';
-            $str .= '</div>';
-        } else {
-            $str .= '<div class="shop-role-list-container">';
-            $str .= '<div class="shop-role-list">';
-            $str .= get_string('noassignation', 'local_shop');
-            $str .= '</div>';
-            $str .= '</div>';
         }
+
+        $template->canassign = false;
         if (@$SESSION->shoppingcart->assigns[$shortname] < $SESSION->shoppingcart->order[$shortname]) {
-            $str .= $this->assignation_select($role, $shortname, true);
-        } else {
-            $str .= get_string('seatscomplete', 'local_shop');
+            $template->canassign = true;
+            $template->assignselect = $this->assignation_select($role, $shortname, true);
         }
 
         return $str;
@@ -1363,27 +1352,21 @@ class shop_front_renderer extends local_shop_base_renderer {
      */
     public function seat_roles_assignation_form(&$catalogentry, &$requiredroles, $shortname, $q) {
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<fieldset>';
-        $title = get_string('seatassignation', 'local_shop', $q).' : '.$catalogentry->name;
-        $str .= '<legend><h2>'.$title.'</h2></legend>';
+        $template->q = $q;
+        $template->productname = $catalogentry->name;
+        $template->shortname = $shortname;
 
-        $colwidth = floor(100 / (2 + count($requiredroles)));
-        $str .= '<table width="100%" class="shop-role-assignations">';
-        $str .= '<tr valign="top">';
+        $template->colwidth = floor(100 / (2 + count($requiredroles)));
         foreach ($requiredroles as $role) {
-            $str .= '<td width="'.$colwidth.'%">';
-            $str .= '<div id="'.$role.'list'.$shortname.'">';
-            $str .= $this->role_list($role, $shortname, $q);
-            $str .= '</div>';
-            $str .= '</td>';
+            $roletpl = new StdClass;
+            $roletpl->role = $role;
+            $roletpl->rolelist = $this->role_list($role, $shortname, $q);
+            $template->roles[] = $roletpl;
         }
-        $str .= '</tr>';
-        $str .= '</table>';
-        $str .= '</fieldset>';
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_role_assignation_form', $template);
     }
 
     /**

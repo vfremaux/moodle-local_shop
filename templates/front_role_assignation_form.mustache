@@ -1,0 +1,21 @@
+
+
+<!-- local_shop/front_role_assingation_form -->
+<fieldset>
+    <legend>
+        <h2>{{#str}}seatassignation, local_shop, {{q}}{{/str}} : {{{catalogname}}}</h2>
+    </legend>
+
+    <table width="100%" class="shop-role-assignations">
+        <tr valign="top">
+            {{#roles}}
+            <td width="{{colwidth}}%">
+                <div id="{{role}}list{{shortname}}">
+                {{{rolelist}}}
+                </div>
+            </td>
+            {{/roles}}
+        </tr>
+    </table>
+</fieldset>
+<!-- /local_shop/front_role_assingation_form -->

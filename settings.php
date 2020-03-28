@@ -69,6 +69,11 @@ if ($hassiteconfig) {
     $desc = get_string('configtestoverride', 'local_shop');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
+    $key = 'local_shop/htaccesscred';
+    $label = get_string('htaccesscred', 'local_shop');
+    $desc = get_string('confightaccesscred', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, ''));
+
     $key = 'local_shop/maxitemsperpage';
     $label = get_string('maxitemsperpage', 'local_shop');
     $desc = get_string('configmaxitemsperpage', 'local_shop');

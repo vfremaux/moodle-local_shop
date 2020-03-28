@@ -10,7 +10,7 @@
         <td align="left">{{#str}}email{{/str}}</td>
         <td align="left">{{#str}}city{{/str}}</td>
         {{#endusermobilephonerequired}}
-        <td align="left">{#str}}phone2{{/str}}</td>
+        <td align="left">{{#str}}phone2{{/str}}</td>
         {{/endusermobilephonerequired}}
         {{#enduserorganisationrequired}}
         <td align="left">{{#str}}institution{{/str}}</td>
@@ -45,7 +45,9 @@
             <input type="button"
                    value="{{#str}}addparticipant, local_shop{{/str}}"
                    name="add_button"
-                   class="local-shop-add-user" />
+                   class="local-shop-add-user"
+                   data-requiredroles="{{requiredroles}}"
+                   data-products="{{products}}" />
         </td>
     </tr>
 </table>
