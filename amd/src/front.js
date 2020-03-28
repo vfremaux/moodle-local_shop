@@ -514,6 +514,10 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     var i,j;
 
                     $('#participantlist').html(data);
+                    // Rebind delete icons.
+                    $('.local-shop-delete-user').unbind('click');
+                    $('.local-shop-delete-user').bind('click', shopfront.delete_user);
+
                     formobj = new Object();
                     formobj.lastname.value = '';
                     formobj.firstname.value = '';
@@ -580,8 +584,12 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     roles: JSON.stringify(roles)
                 },
                 function(data) {
-                    $('#participantlist').html(data);
                     var i,j;
+
+                    $('#participantlist').html(data);
+                    // Rebind delete icons.
+                    $('.local-shop-delete-user').unbind('click');
+                    $('.local-shop-delete-user').bind('click', shopfront.delete_user);
 
                     for (i = 0; i < roles.length; i++) {
                         for (j = 0; j < products.length; j++) {

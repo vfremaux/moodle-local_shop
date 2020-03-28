@@ -1019,7 +1019,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $roleassigns = @$SESSION->shoppingcart->users;
 
-        $template->productname = get_string(str_replace('_', '', $role), 'local_shop'));  // Remove pseudo roles markers.
+        $template->productname = get_string(str_replace('_', '', $role), 'local_shop');  // Remove pseudo roles markers.
         $template->shortname = $shortname;
         if (!empty($roleassigns[$shortname][$role])) {
             foreach ($roleassigns[$shortname][$role] as $participant) {
@@ -1027,7 +1027,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $participanttpl->lastname = @$participant->lastname;
                 $participanttpl->firstname = @$participant->firstname;
                 $participanttpl->role = $role;
-                $participanttpl->email = $participant->email;
+                $participanttpl->email = @$participant->email;
                 $template->participants[] = $participanttpl;
             }
         }
@@ -1038,7 +1038,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->assignselect = $this->assignation_select($role, $shortname, true);
         }
 
-        return $str;
+        return $this->output->render_from_template('local_shop/front_assignation_role_list', $template);
     }
 
     public function cart_summary() {
