@@ -156,12 +156,12 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
             var urlbase = cfg.wwwroot + '/local/shop/front/ajax/service.php';
 
-            var requiredroles = JSON.parse(that.attr('data-requiredroles'));
+            var requiredroles = that.attr('data-requiredroles').split(',');
             var role, rix;
 
             for (rix in requiredroles) {
                 role = requiredroles[rix];
-                $('#' + role + 'list' + product).html(shopfront.waiter());
+                $('#addassign' + role + 'list' + product).html(shopfront.waiter());
             }
 
             $.post(
@@ -178,7 +178,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     var rolestubs = JSON.parse(data);
                     for (rix in requiredroles) {
                         role = requiredroles[rix];
-                        $('#' + role + 'list' + product).html(rolestubs.content[role]);
+                        $('#addassign' + role + 'list' + product).html(rolestubs.content[role]);
                     }
 
                     // this need be done on positive return or we might unsync
@@ -209,12 +209,12 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
             var urlbase = cfg.wwwroot+'/local/shop/front/ajax/service.php';
 
-            var requiredroles = that.attr('data-requiredroles');
+            var requiredroles = that.attr('data-requiredroles').split(',');
             var role,rix;
 
             for (rix in requiredroles) {
                 role = requiredroles[rix];
-                $('#' + role + 'list' + product).html(shopfront.waiter());
+                $('#assignrole' + role + 'list' + product).html(shopfront.waiter());
             }
 
             $.post(
@@ -231,7 +231,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     var rolestubs = JSON.parse(data);
                     for (rix in requiredroles) {
                         role = requiredroles[rix];
-                        $('#' + role + 'list' + product).html(rolestubs.content[role]);
+                        $('#assignrole' + role + 'list' + product).html(rolestubs.content[role]);
                     }
                     shopfront.assigned--;
                     if (shopfront.assigned < 0) {
@@ -471,6 +471,10 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             );
         },
 
+        /**
+         * Adds a user in the participant list.
+         * Update role assign selection list.
+         */
         add_user: function() {
 
             var that = $(this);
@@ -518,7 +522,8 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     $('.local-shop-delete-user').unbind('click');
                     $('.local-shop-delete-user').bind('click', shopfront.delete_user);
 
-                    formobj = new Object();
+                    // Reset firstname, lastname and email for next user.
+                    formobj = document.forms['participant'];
                     formobj.lastname.value = '';
                     formobj.firstname.value = '';
                     formobj.email.value = '';
@@ -530,7 +535,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
                     for (i = 0; i < roles.length; i++) {
                         for (j = 0; j < products.length; j++) {
-                            $('#' + roles[i] + 'list' + products[j]).html(shopfront.waiter());
+                            $('#addassign' + roles[i] + 'list' + products[j]).html(shopfront.waiter());
                         }
                     }
 
@@ -550,13 +555,14 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                                 for (j = 0; j < products.length; j++) {
                                     p = products[j];
                                     html = obj.content[r][p];
-                                    $('#' + r + 'list' + p).html(html);
+                                    $('#addassign' + r + 'list' + p).html(html);
                                 }
                             }
                         },
                         'html'
                     );
-                }
+                },
+                'html'
             );
         },
 

@@ -910,7 +910,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     public function participant_row($participant = null) {
-        global $CFG;
+        global $CFG, $SESSION;
 
         $template = new StdClass;
 
@@ -934,6 +934,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $template->endusermobilephonerequired = !empty($this->theshop->endusermobilephonerequired);
             $template->enduserorganisationrequired = !empty($this->theshop->enduserorganisationrequired);
+        }
+
+        $template->requiredroles = implode(',', $this->thecatalog->check_required_roles());
+        if (!empty($SESSION->shoppingcart->order)) {
+            $template->products = implode(',', array_keys($SESSION->shoppingcart->order));
         }
 
         return $this->output->render_from_template('local_shop/front_participant_row', $template);
@@ -1003,7 +1008,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $params = ['' => get_string('chooseparticipant', 'local_shop')];
         $attrs = ['data-product' => $shortname,
                   'data-role' => $role,
-                  'data-requiredroles' => json_encode($this->thecatalog->check_required_roles()),
+                  'data-requiredroles' => implode(',', $this->thecatalog->check_required_roles()),
                   'class' => 'local-shop-add-assign'];
         $str .= html_writer::select($options, 'addassign'.$role.'_'.$shortname, '', $params, $attrs);
 

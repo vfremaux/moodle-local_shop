@@ -84,7 +84,9 @@
         <td align="right">
             <a title="{{#str}}deleteparticipant, local_shop{{/str}}"
                 class="local-shop-delete-user"
-                data-ptmail="{{{email}}}">{{#pix}}t/delete{{/pix}}</a>
+                data-ptmail="{{{email}}}"
+                data-requiredroles="{{requiredroles}}"
+                data-products="{{products}}">{{#pix}}t/delete{{/pix}}</a>
         </td>
     </tr>
     {{/participant}}
