@@ -78,7 +78,8 @@ echo $renderer->admin_options();
 echo '<fieldset>';
 echo '<legend>'.get_string('participants', 'local_shop').'</legend>';
 
-if (count($SESSION->shoppingcart->participants) < $SESSION->shoppingcart->seats) {
+$newparticipantstyle = '';
+if (count($SESSION->shoppingcart->participants) >= $SESSION->shoppingcart->seats) {
     $newparticipantstyle = 'style="display:none"';
 }
 

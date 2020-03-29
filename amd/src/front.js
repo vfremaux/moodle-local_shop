@@ -565,6 +565,8 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                                     $('#' + r + 'list' + p).html(html);
                                 }
                             }
+                            $('.local-shop-add-assign').unbind('change');
+                            $('.local-shop-add-assign').bind('change', this.add_assign);
                         },
                         'html'
                     );
@@ -633,6 +635,8 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                                     $('#' + r + 'list' + p).html(html);
                                 }
                             }
+                            $('.local-shop-add-assign').unbind('change');
+                            $('.local-shop-add-assign').bind('change', this.add_assign);
                         },
                         'html'
                     );
