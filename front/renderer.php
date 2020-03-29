@@ -961,7 +961,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_participant_blankrow', $template);
     }
 
-    public function new_participant_row() {
+    /**
+     * Prints the form to input participant data.
+     * @param int $maxseats the number of purchased seats, depending on the content of the shopping cart.
+     */
+    public function new_participant_row($availableseats = 0) {
         global $SESSION;
 
         $this->check_context();
@@ -969,6 +973,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
         $template->endusermobilephonerequired = $this->theshop->endusermobilephonerequired;
         $template->enduserorganisationrequired = $this->theshop->enduserorganisationrequired;
+        $template->availableseats = $availableseats;
         $template->requiredroles = implode(',', $this->thecatalog->check_required_roles());
         if (!empty($SESSION->shoppingcart->order)) {
             $template->products = implode(',', array_keys($SESSION->shoppingcart->order));

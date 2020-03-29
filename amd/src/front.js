@@ -533,9 +533,15 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                         formobj.phone2.value = '';
                     }
 
+                    var availables = that.attr('data-availableseats');
+                    that.attr('data-availableseats', availables - 1);
+                    if (availables === 0) {
+                        that.attr('disabled', 'disabled');
+                    }
+
                     for (i = 0; i < roles.length; i++) {
                         for (j = 0; j < products.length; j++) {
-                            $('#addassign' + roles[i] + 'list' + products[j]).html(shopfront.waiter());
+                            $('#' + roles[i] + 'list' + products[j]).html(shopfront.waiter());
                         }
                     }
 
@@ -555,7 +561,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                                 for (j = 0; j < products.length; j++) {
                                     p = products[j];
                                     html = obj.content[r][p];
-                                    $('#addassign' + r + 'list' + p).html(html);
+                                    $('#' + r + 'list' + p).html(html);
                                 }
                             }
                         },
@@ -596,6 +602,10 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     // Rebind delete icons.
                     $('.local-shop-delete-user').unbind('click');
                     $('.local-shop-delete-user').bind('click', shopfront.delete_user);
+
+                    var availables = that.attr('data-availableseats');
+                    that.attr('data-availableseats', availables + 1);
+                    that.attr('disabled', null);
 
                     for (i = 0; i < roles.length; i++) {
                         for (j = 0; j < products.length; j++) {

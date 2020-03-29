@@ -62,6 +62,9 @@ if ($action) {
 $requiredroles = $thecatalog->check_required_roles();
 $assigned = shop_check_assigned_seats($requiredroles);
 
+// Get all data about order in session.
+$orderbag = shop_get_orderbag();
+
 echo $out;
 
 echo '<center>';
@@ -75,15 +78,17 @@ echo $renderer->admin_options();
 echo '<fieldset>';
 echo '<legend>'.get_string('participants', 'local_shop').'</legend>';
 
-echo '<div id="addparticipant" style="text-align:left"><p>';
-$stringkey = (@$SESSION->shoppingcart->seats <= 1) ? 'participanthelper1' : 'participanthelper1plural';
-print_string($stringkey, 'local_shop', $SESSION->shoppingcart->seats);
-print_string('participanthelper2', 'local_shop', $SESSION->shoppingcart->seats);
-echo '</p></div>';
+if (count($SESSION->shoppingcart->participants) < $SESSION->shoppingcart->seats) {
+    echo '<div id="addparticipant" style="text-align:left"><p>';
+    $stringkey = (@$SESSION->shoppingcart->seats <= 1) ? 'participanthelper1' : 'participanthelper1plural';
+    print_string($stringkey, 'local_shop', $SESSION->shoppingcart->seats);
+    print_string('participanthelper2', 'local_shop', $SESSION->shoppingcart->seats);
+    echo '</p></div>';
 
-echo '<div id="addparticipant">';
-echo $renderer->new_participant_row();
-echo '</div>';
+    echo '<div id="addparticipant">';
+    echo $renderer->new_participant_row($SESSION->shoppingcart->seats - count($SESSION->shoppingcart->participants));
+    echo '</div>';
+}
 
 echo '<table width="100%" id="participantlist" class="generaltable">';
 $i = 0;
@@ -100,20 +105,8 @@ for (; $i < $SESSION->shoppingcart->seats; $i++) {
 }
 echo '</table>';
 
-foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
-    $catalogentry = $thecatalog->get_product_by_shortname($shortname);
-
-    switch ($catalogentry->quantaddressesusers) {
-        case SHOP_QUANT_AS_SEATS:
-            $q = $quantity;
-            break;
-        case SHOP_QUANT_ONE_SEAT:
-            $q = 1;
-            break;
-        default:
-            continue 2;
-    }
-    echo $renderer->seat_roles_assignation_form($catalogentry, $requiredroles, $shortname, $q);
+foreach ($orderbag as $orderentry) {
+    echo $renderer->seat_roles_assignation_form($orderentry->catalogentry, $requiredroles, $orderentry->shortname, $orderentry->q);
 }
 
 $options['nextstyle'] = ($assigned < $required) ? 'opacity:0.5' : '';
