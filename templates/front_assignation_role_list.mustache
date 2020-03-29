@@ -1,0 +1,31 @@
+
+
+
+<!-- local_shop/front_assignation_role_list -->
+
+        <h3>{{rolename}}</h3>
+
+        {{#notempty}}
+            <div class="shop-role-list-container">
+                <table width="100%" class="shop-role-list">
+                    {{#participants}}
+                    {{> local_shop/front_assignation_row}}
+                    {{/participants}}
+                </table>
+            </div>
+        {{/notempty}}
+        {{^notempty}}
+            <div class="shop-role-list-container">
+                <div class="shop-role-list">
+                    {{#str}}noassignation, local_shop{{/str}}
+                </div>
+            </div>
+        {{/notempty}}
+
+        {{#canassign}}
+            {{{assignselect}}}
+        {{/canassign}}
+        {{^canassign}}
+            {{#str}}seatscomplete, local_shop{{/str}}
+        {{/canassign}}
+<!-- /local_shop/front_assignation_role_list -->

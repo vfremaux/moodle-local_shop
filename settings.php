@@ -69,10 +69,16 @@ if ($hassiteconfig) {
     $desc = get_string('configtestoverride', 'local_shop');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
+    $key = 'local_shop/htaccesscred';
+    $label = get_string('htaccesscred', 'local_shop');
+    $desc = get_string('confightaccesscred', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, ''));
+
     $key = 'local_shop/maxitemsperpage';
     $label = get_string('maxitemsperpage', 'local_shop');
     $desc = get_string('configmaxitemsperpage', 'local_shop');
-    $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
+    $default = 30;
+    $settings->add(new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT));
 
     $key = 'local_shop/hideproductswhennotavailable';
     $label = get_string('hideproductswhennotavailable', 'local_shop');
@@ -266,10 +272,11 @@ if ($hassiteconfig) {
 
     if (local_shop_supports_feature('docgen/pdf')) {
         include_once($CFG->dirroot.'/local/vflibs/tcpdflib.php');
-        tcpdf_add_standard_plugin_settings($settings, 'local_shop');
+        $defaultbill = implode('', file($CFG->dirroot.'/local/shop/templates/bills_default_pdf_template.mustache'));
+        tcpdf_add_standard_plugin_settings($settings, 'local_shop', $defaultbill);
 
         /* Some more applicative specific purpose settings */
-        $key = 'local_shpo/billpaidstampimage';
+        $key = 'local_shop/billpaidstampimage';
         $label = get_string('billpaidstamp', 'local_shop');
         $desc = get_string('billpaidstamp_desc', 'local_shop');
         $settings->add(new admin_setting_configstoredfile($key, $label, $desc, 'billpaidstamp'));
@@ -291,5 +298,4 @@ if ($hassiteconfig) {
         $desc = get_string('plugindist_desc', 'local_shop');
         $settings->add(new admin_setting_heading('plugindisthdr', $label, $desc));
     }
-
 }

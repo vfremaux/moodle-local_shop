@@ -78,6 +78,10 @@ function bill_transition_pending_soldout($billorid) {
             shop_trace($message);
             // Notify end user.
             // Feedback customer with mail confirmation.
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $bill->id, 'transid' => $bill->transactionid));
+            $customeruser = $DB->get_record('user', array('id' => $bill->customer->hasaccount));
+            $ticket = ticket_generate($customeruser, 'delegated access', $billurl);
+
             $vars = array('SERVER' => $SITE->shortname,
                           'SERVER_URL' => $CFG->wwwroot,
                           'SELLER' => $config->sellername,
@@ -88,7 +92,8 @@ function bill_transition_pending_soldout($billorid) {
                           'COUNTRY' => $bill->customer->country,
                           'ITEMS' => count($bill->itemcount),
                           'PAYMODE' => get_string($bill->paymode, 'local_shop'),
-                          'AMOUNT' => $bill->amount);
+                          'AMOUNT' => $bill->amount,
+                          'TICKET' => $ticket);
             $notification  = shop_compile_mail_template('sales_feedback', $vars, '');
             $params = array('shopid' => $bill->shopid,
                             'view' => 'bill',
@@ -102,7 +107,7 @@ function bill_transition_pending_soldout($billorid) {
             $seller->maildisplay = 1;
             $title = $SITE->shortname.' : '.get_string('yourorder', 'local_shop');
             $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->private, $notification);
-            ticket_notify($bill->user, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
+            ticket_notify($customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
         }
     } else {
         shop_trace("[ERROR] Transition error : Bad bill ID $billid");
@@ -149,7 +154,12 @@ function bill_transition_placed_pending($billorid) {
 
         // Now notify user the order and all products have been activated.
         if (!empty($productiondata->private)) {
+
             // Notify end user.
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $bill->id, 'transid' => $bill->transactionid));
+            $customeruser = $DB->get_record('user', array('id' => $bill->customer->hasaccount));
+            $ticket = ticket_generate($customeruser, 'delegated access', $billurl);
+
             // Feedback customer with mail confirmation.
             $vars = array('SERVER' => $SITE->shortname,
                           'SERVER_URL' => $CFG->wwwroot,
@@ -161,7 +171,8 @@ function bill_transition_placed_pending($billorid) {
                           'COUNTRY' => $bill->customer->country,
                           'ITEMS' => count($bill->billItems),
                           'PAYMODE' => get_string($bill->paymode, 'local_shop'),
-                          'AMOUNT' => $bill->amount);
+                          'AMOUNT' => $bill->amount,
+                          'TICKET' => $ticket);
             $notification  = shop_compile_mail_template('sales_feedback', $vars, '');
             $params = array('shopid' => $bill->shopid, 'view' => 'bill', 'billid' => $bill->id, 'transid' => $bill->transactionid);
             $customerbillviewurl = new moodle_url('/local/shop/front/view.php', $params);
@@ -172,7 +183,6 @@ function bill_transition_placed_pending($billorid) {
             $seller->maildisplay = 1;
             $title = $SITE->shortname.' : '.get_string('yourorder', 'local_shop');
             $sentnotification = str_replace('<%%PRODUCTION_DATA%%>', $productiondata->private, $notification);
-            $customeruser = $DB->get_record('user', array('id' => $bill->customer->hasaccount));
             ticket_notify($customeruser, $seller, $title, $sentnotification, $sentnotification, $customerbillviewurl);
         }
 

@@ -43,6 +43,8 @@ $string['enablehandler'] = 'Activer le traitement d\'achat&nbsp;';
 $string['eula'] = 'Texte des conditions de vente et d\'utilisation&nbsp;';
 $string['financials'] = 'Paramètres financiers';
 $string['handlerparams'] = 'Paramètres du gestionnaire&nbsp;';
+$string['helpcode'] = 'code produit';
+$string['helpshortname'] = 'nom court produit';
 $string['newbundle'] = 'Nouveau lot';
 $string['newcategory'] = 'Nouvelle catégorie';
 $string['newitem'] = 'Nouvel élément';
@@ -61,14 +63,13 @@ $string['parentcategory'] = 'Parent';
 $string['quantaddressesusers'] = 'La quantité adresse des sièges&nbsp;';
 $string['renewable'] = 'Renouvelable&nbsp;';
 $string['rootcategory'] = '-- Racine --';
-$string['removeproductfrombundle'] = 'Enlever le produit du lot';
 $string['removeproductfromcatalogue'] = 'Supprimer le produit du catalogue';
-$string['removeproductfromset'] = 'Enlever le produit de l\'assemblage';
 $string['removeset'] = 'Supprimer l\'assemblage';
 $string['requiredataadvice'] = 'Votre commande nécessite des informations que vous DEVEZ FOURNIR AVANT de pouvoir soumettre.';
 $string['requireddata'] = 'Données à fournir par le client&nbsp;';
 $string['requiredformatsuccess'] = 'Le format JSON des données requises est correct.';
 $string['requireddatacaption'] = 'Certains des produits commandés nécessitent certaines données pour leur configuration. Entrez et validez les informations ci-dessous avant de continuer votre achat.';
+$string['shortname'] = 'Nom web court';
 $string['toset'] = 'Convertir en assemblage';
 $string['tobundle'] = 'Convertir en lot';
 $string['toproduct'] = 'Convertir en produit simple';
@@ -209,3 +210,7 @@ $string['productiondata_help'] = 'Des données supplémentaires attachées au pr
 Ces données ne sont ni liées au gestionnaire, et ne sont pas des options du client, mais des données fournies à des mécanismes de boutique ou des
 customisations additionnelles. A titre d\'exemple, des données d\'identité de composant pour une vérification automatique des numéros de license.
 Entrez les données sous forme d\'une chaine JSON représentant un tableau associatif de données (simples ou complexes selon le mécanisme à alimenter).';
+
+$string['helpcode_help'] = 'Un code produit pouvant servir de jointure avec d\'autres applicatifs tiers.';
+
+$string['helpshortname_help'] = 'Le nom court du produit doit être compatible Web, Url, Html et Javascript. Il est obtenu par transforation du code produit.';

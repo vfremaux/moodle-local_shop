@@ -137,7 +137,7 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo $OUTPUT->box_end();
 
     echo '<div id="shop-buttons"><center>';
-    echo $renderer->printable_bill_link($afullbill);
+    echo $renderer->printable_bill_link($afullbill->id, $transid);
     echo $renderer->shop_return_button($theshop);
 
     // If testing the shop, provide a manual link to generate the paypal_ipn call.

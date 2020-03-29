@@ -1,0 +1,33 @@
+
+
+
+<!-- local_shop/products_set_admin_line -->
+<tr class="shop-{{statusclass}}line shop-set-row">
+    <!-- td width="30" class="{{slaveclass}}">
+        <input type="checkbox" name="items[]" value="{{id}}" />
+    </td -->
+
+    <td class="{{slaveclass}}" align="center">
+        <img src="{{thumburl}}" vspace="10" border="0" height="50">
+    </td>
+
+    <td class="name {{slaveclass}}">
+        <b>{{code}}</b><br/>
+        ({{shortname}})
+    </td>
+
+    <td class="name {{slaveclass}}" colspan="9">
+        {{name}}
+    </td>
+    <td width="10" class="lastcol shop-controls">
+        {{{controls}}}
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2">&nbsp;</td>
+    <td class="list" colspan="9">
+        {{{subs}}}
+    </td>
+</tr>
+<!-- /local_shop/products_set_admin_line -->

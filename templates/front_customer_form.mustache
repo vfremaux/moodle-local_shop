@@ -25,10 +25,10 @@
 <div id="shop-customerdata">
     <table cellspacing="3" width="100%">
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 <input type="text"
                        name="customerinfo::lastname"
                        size="20"
@@ -36,10 +36,10 @@
             </td>
         </tr>
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 <input type="text"
                        name="customerinfo::firstname"
                        size="20"
@@ -49,10 +49,10 @@
 
         {{#customerorganisationrequired}}
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}organisation, local_shop{{/str}}:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 <input type="text"
                        name="customerinfo::organisation"
                        size="26"
@@ -63,10 +63,10 @@
         {{/customerorganisationrequired}}
 
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}address{{/str}}<sup style="color: red">*</sup>:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 <input type="text"
                        name="customerinfo::address"
                        size="26"
@@ -75,10 +75,10 @@
         </tr>
 
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}city{{/str}}<sup style="color: red">*</sup>:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 <input type="text"
                        name="customerinfo::city"
                        size="26"
@@ -87,10 +87,10 @@
         </tr>
 
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}zip, local_shop{{/str}}<sup style="color : red">*</sup>:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 <input type="text"
                        name="customerinfo::zip"
                        size="6"
@@ -99,23 +99,23 @@
         </tr>
 
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}country{{/str}}<sup style="color: red">*</sup>:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 {{{countryselect}}}
             </td>
         </tr>
 
         <tr valign="top">
-            <td align="right">
+            <td align="right" class="form-label">
                 <b>{{#str}}email, local_shop{{/str}}<sup style="color: red">*</sup>:</b>
             </td>
-            <td align="left">
+            <td align="left" class="form-input">
                 <input type="text"
                        name="customerinfo::email"
                        size="30"
-                       onchange="checkemail(this)" value="{{{email}}}" />';
+                       onchange="checkemail(this)" value="{{{email}}}" />
             </td>
         </tr>
     </table>

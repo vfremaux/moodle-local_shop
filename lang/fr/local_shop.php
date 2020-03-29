@@ -18,6 +18,7 @@ $string['shop:salesadmin'] = 'Est administrateur de ventes';
 $string['shop:beassigned'] = 'Est assigné'; // Check this is really used.
 $string['shop:accessallowners'] = 'Peut voir toutes les données des sous-vendeurs';
 $string['shop:discountagreed'] = 'Bénéficie d\'une remise de base sur les produits';
+$string['shop:export'] = 'Peut exporter les définitions de la boutique';
 $string['shop:seconddiscountagreed'] = 'Bénéficie d\'une meilleure remise sur les produits';
 $string['shop:thirddiscountagreed'] = 'Bénéficie de la meilleure remise sur les produits';
 $string['shop:paycheckoverride'] = 'Déclenche la réalisation des produits même avec un paiement non interactif';
@@ -129,6 +130,7 @@ $string['configdiscounttheshold'] = 'Le seuil du chiffre d\'affaire pour remises
 $string['configendusermobilephonerequired'] = 'Téléphone mobile demandé (participant)';
 $string['configenduserorganisationrequired'] = 'Organisation demandée (participant)';
 $string['configeula'] = 'Conditions de vente';
+$string['confightaccesscred'] = 'Si moodle est opéré derrière une authentification HTTP, le schéma d\'authentification (login:password) pour les retours des services tiers.';
 $string['configiban'] = 'Le numéro IBAN du compte du commerçant';
 $string['configmaxitemsperpage'] = 'Nombre maximum d\'items par page';
 $string['configprinttabbedcategories'] = 'Afficher les catégories en onglets';
@@ -194,6 +196,7 @@ $string['discountrate'] = 'Taux de remise';
 $string['discountrate2'] = 'Taux de remise 2';
 $string['discountrate3'] = 'Taux de remise 3';
 $string['discounts'] = 'Réglages des remises';
+$string['discountpolicies'] = 'Politiques de remise';
 $string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour remise';
 $string['dispo'] = 'Dispo';
 $string['downloadpdfbill'] = 'Télécharger en PDF';
@@ -238,6 +241,7 @@ $string['helpdescription'] = 'la description';
 $string['helpnote'] = 'les notes';
 $string['helptax'] = 'la taxe';
 $string['hour'] = '(heure)';
+$string['htaccesscred'] = 'Authentification des retours HTTP (test)';
 $string['iban'] = 'Code IBAN';
 $string['identifiedby'] = 'identifié par';
 $string['image'] = 'Image :';
@@ -467,6 +471,8 @@ $string['value'] = 'Valeur fixe';
 $string['vendorinfo'] = 'Identité du vendeur';
 $string['warning'] = 'Alerte&nbsp;:&ensp;';
 $string['worktype'] = 'Type de prestation';
+
+$string['local_shop_backoffice_read_service'] = 'Backoffice shop definition access';
 
 $string['privacy:metadata:shop_customer:id'] = 'L\'identifiant interne du client';
 $string['privacy:metadata:shop_customer:firstname'] = 'Le prénom du client';
@@ -768,6 +774,7 @@ require($CFG->dirroot.'/local/shop/lang/fr/front.php');
 require($CFG->dirroot.'/local/shop/lang/fr/catalogs.php');
 require($CFG->dirroot.'/local/shop/lang/fr/shops.php');
 require($CFG->dirroot.'/local/shop/lang/fr/bills.php');
+require($CFG->dirroot.'/local/shop/lang/fr/partner.php');
 require($CFG->dirroot.'/local/shop/lang/fr/products.php');
 require($CFG->dirroot.'/local/shop/lang/fr/purchasemanager.php');
 require($CFG->dirroot.'/local/shop/lang/fr/customers.php');

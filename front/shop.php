@@ -24,7 +24,9 @@ defined('MOODLE_INTERNAL') || die();
 
 use local_shop\Category;
 
-$PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
+$notassignedstr = str_replace("'", '\\\'', get_string('notallassigned', 'local_shop'));
+$myorderstr = str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'));
+$invalidemailstr = get_string('invalidemail', 'local_shop');
 
 // Check see all mode in session.
 if (isloggedin() && is_siteadmin()) {
@@ -51,12 +53,22 @@ $category = optional_param('category', null, PARAM_INT);
 if (empty($category)) {
     // Explicit the category.
     $catids = array_keys($categories);
-    $firstcategory = array_shift($catids);
-    $category = new Category($firstcategory);
-    if ($category->is_empty()) {
-        $firstcategory = $category->get_first_non_empty_child();
+    $firstcategory = 0;
+    while ($cat = array_shift($catids)) {
+        $category = new Category($cat);
+        if ($category->is_empty()) {
+            $cat = $category->get_first_non_empty_child();
+        }
+        if ($cat) {
+            $firstcategory = $cat;
+            break;
+        }
     }
 
+    if (!$firstcategory) {
+        print_error("Something is wrong in this shop. No categories usable.");
+        die;
+    }
     $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }

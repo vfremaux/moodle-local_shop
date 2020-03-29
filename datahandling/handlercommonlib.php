@@ -82,24 +82,27 @@ function shop_register_customer($data, &$errorstatus) {
             return $productionfeedback;
         }
 
-        if (!shop_create_customer_user($data, $data->bill->customer, $newuser)) {
-            $message = "[{$data->transactionid}] Prepay Commons Error :";
-            $message .= " User could not be created {$newuser->username}.";
+        if (empty($data->bill->customer->hasaccount)) {
+            // customer may have been created by a previous product in bill or in bundle.
+            if (!shop_create_customer_user($data, $data->bill->customer, $newuser)) {
+                $message = "[{$data->transactionid}] Prepay Commons Error :";
+                $message .= " User could not be created {$newuser->username}.";
+                shop_trace($message);
+                $errorstatus = true;
+                $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
+                $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
+                $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
+                return $productionfeedback;
+            }
+            $message = "[{$data->transactionid}] Prepay Commons :";
+            $message .= " New user created {$newuser->username}.";
             shop_trace($message);
-            $errorstatus = true;
-            $productionfeedback->public = get_string('customeraccounterror', 'local_shop', $newuser->username);
-            $productionfeedback->private = get_string('customeraccounterror', 'local_shop', $newuser->username);
-            $productionfeedback->salesadmin = get_string('customeraccounterror', 'local_shop', $newuser->username);
-            return $productionfeedback;
-        }
-        $message = "[{$data->transactionid}] Prepay Commons :";
-        $message .= " New user created {$newuser->username}.";
-        shop_trace($message);
 
-        $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
-        $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $newuser->username);
-        $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
-        $productionfeedback->salesadmin = $fb;
+            $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
+            $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $newuser->username);
+            $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
+            $productionfeedback->salesadmin = $fb;
+        }
     }
 
     return $productionfeedback;
@@ -165,7 +168,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
     // Create Moodle User but no assignation.
     $newuser = new StdClass();
-    $newuser->username = shop_generate_username($customer);
+    $newuser->username = shop_generate_username($customer, true); // Unique username
     $newuser->city = $customer->city;
     $newuser->country = (!empty($customer->country)) ? $customer->country : $CFG->country;
     $newuser->lang = (!empty($customer->lang)) ? $customer->lang : $CFG->lang;
@@ -252,7 +255,7 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     $customercontext = context_user::instance($customer->hasaccount);
     $studentrole = $DB->get_record('role', array('shortname' => 'student'));
 
-    $participant->username = shop_generate_username($participant); // Makes it unique.
+    $participant->username = shop_generate_username($participant, true); // Makes it unique.
 
     /*
      * Let cron generate passwords.
@@ -272,17 +275,8 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     if ($participant->id = $DB->insert_record('user', $participant)) {
 
         // Passwords will be created and sent out on cron.
-        $pref = new StdClass();
-        $pref->userid = $participant->id;
-        $pref->name = 'create_password';
-        $pref->value = 1;
-        $DB->insert_record('user_preferences', $pref);
-
-        $pref = new StdClass();
-        $pref->userid = $participant->id;
-        $pref->name = 'auth_forcepasswordchange';
-        $pref->value = 0;
-        $DB->insert_record('user_preferences', $pref);
+        set_user_preference('create_password', 1, $participant->id);
+        set_user_preference('auth_forcepasswordchange', 0, $participant->id);
     }
 
     /*

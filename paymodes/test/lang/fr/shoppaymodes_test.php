@@ -21,6 +21,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Test ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['enabletest'] = 'Paiement test pour mise au point';
 $string['enabletest2'] = 'Paiement test pour mise au point';
 $string['enabletst3'] = 'Ce mode de paiement ne doit pas être activé en production. Il permet de régler virtuellement une facture pour tester les actions de production...';

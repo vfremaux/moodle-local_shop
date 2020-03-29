@@ -148,6 +148,9 @@ class ShopObject {
         if (!empty($filter)) {
             $sql .= " WHERE ";
             foreach ($filter as $cond => $value) {
+                if ($value == '*') {
+                    continue;
+                }
                 $wheres[] = "$cond = ? ";
                 $params[] = $value;
             }
@@ -196,6 +199,35 @@ class ShopObject {
         $recordscount = $DB->count_records_sql($sql, $params, $limitfrom, $limitnum);
 
         return $recordscount;
+    }
+
+    /**
+     * Sum calculable fields of object instances. If some filtering is needed, override
+     * this method providing a filter as input.
+     * @param array $filter an array of specialized field filters
+     * @param string $field what field to sum on.
+     * @return a single scalar summed value.
+     */
+    static protected function _sum($table, $field, $filter = array()) {
+        global $DB;
+
+        $params = array();
+        $sql = "SELECT SUM({$field}) as summed FROM {{$table}} ";
+        if (!empty($filter)) {
+            $sql .= " WHERE ";
+            foreach ($filter as $cond => $value) {
+                if ($value == '*') {
+                    continue;
+                }
+                $wheres[] = "$cond = ? ";
+                $params[] = $value;
+            }
+            $sql .= implode(' AND ', $wheres);
+        }
+
+        $sumresult = $DB->get_record_sql($sql, $params);
+
+        return 0 + $sumresult->summed;
     }
 
     /**

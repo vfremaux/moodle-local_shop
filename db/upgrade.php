@@ -277,5 +277,50 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2018033000, 'local', 'shop');
     }
 
+    if ($oldversion < 2019050301) {
+        // Add extradata local_shop_product.
+        $table = new xmldb_table('local_shop_bill');
+
+        $field = new xmldb_field('test');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, 1, null, XMLDB_NOTNULL, null, 0, 'productionfeedback');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('partnerid');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0, 'test');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('partnertag');
+        $field->set_attributes(XMLDB_TYPE_CHAR, '16', null, null, null, null, 'partnerid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define table local_shop_partner to be created.
+        $table = new xmldb_table('local_shop_partner');
+
+        // Adding fields to table local_shop_partner.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('shopid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('partnerkey', XMLDB_TYPE_CHAR, '16', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('referer', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('enabled', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+
+        // Adding keys to table local_shop.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('tnxid_unique_partnerkey', XMLDB_KEY_UNIQUE, array('partnerkey'));
+
+        // Conditionally launch create table for local_shop.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2019050301, 'local', 'shop');
+    }
+
     return $result;
 }

@@ -17,4 +17,4 @@
 $string['billtemplate'] = 'Pdf HTML alternative template for bill';
 $string['billtemplate_desc'] = 'An alternate template for generating bills. See /local/shop/templates/bills_default_pdf_template.mustache as start point.';
 $string['billpaidstamp'] = 'A stamp for paid bill marking';
-$string['billpaidstamp_desc'] = 'A jpg or png image. Transparency is NOT supported in tcpdf. Associated printconfigs : paidstampx, paidstampy; paidstampw and paidstamph.';
+$string['billpaidstamp_desc'] = 'A jpg or png image. Transparency is NOT supported in tcpdf. Associated printconfigs : <code>paidstampx</code>, <code>paidstampy</code>, <code>paidstampw</code> and <code>paidstamph</code>.';

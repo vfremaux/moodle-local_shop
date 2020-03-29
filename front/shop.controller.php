@@ -22,6 +22,7 @@
  */
 namespace local_shop\front;
 
+use \StdClass;
 use \moodle_url;
 use \core_text;
 
@@ -45,15 +46,27 @@ class shop_controller extends front_controller_base {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass;
         }
 
+        // Redirection to specific category.
         $this->data->redirect = optional_param('redirect', false, PARAM_BOOL);
+
+        // Autodrive let shop go forward by redirects as far as it cans, tha tis not needing inputing data.
+        // This may be used for partner driven purchases.
+        $this->data->autodrive = optional_param('autodrive', false, PARAM_BOOL);
 
         switch ($cmd) {
             case 'import':
                 foreach (array_keys($_GET) as $inputkey) {
                     if ($inputkey == 'shipping') {
+                        continue;
+                    }
+                    if ($inputkey == 'partner') {
+                        $this->data->partner = optional_param($inputkey, '', PARAM_TEXT);
+                        continue;
+                    }
+                    if (in_array($inputkey, ['view', 'origin', 'what', 'autodrive', 'shopid'])) {
                         continue;
                     }
                     $this->data->$inputkey = optional_param($inputkey, 0, PARAM_INT);
@@ -88,7 +101,7 @@ class shop_controller extends front_controller_base {
     }
 
     public function process($cmd) {
-        global $SESSION;
+        global $SESSION, $CFG, $DB;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
@@ -99,18 +112,56 @@ class shop_controller extends front_controller_base {
         if ($cmd == 'import') {
 
             unset($SESSION->shoppingcart);
-            $SESSION->shoppingcart = new \StdClass;
+            $SESSION->shoppingcart = new StdClass;
             $SESSION->shoppingcart->order = array();
             foreach (array_keys((array)$this->data) as $inputkey) {
                 if ($inputkey == 'shipping') {
                     continue;
                 }
-                $SESSION->shoppingcart->order[$inputkey] = $this->data->$inputkey;
+                if (local_shop_supports_feature('shop/partners')) {
+                    include_once($CFG->dirroot.'/local/shop/pro/classes/Partner.class.php');
+                    if ($inputkey == 'partner') {
+                        // Save partner info in session.
+                        $SESSION->shoppingcart->partner = new StdClass;
+                        $parts = explode('_', $this->data->partner);
+                        $SESSION->shoppingcart->partner->partnerkey = array_shift($parts);
+                        if (!empty($parts)) {
+                            $SESSION->shoppingcart->partner->partnertag = array_shift($parts); // May be empty.
+                        }
+                        if (!empty($parts)) {
+                            /*
+                             * The customer email can serve for preauth when partner is validated and a moodle user
+                             * with such mail exists.
+                             */
+                            $SESSION->shoppingcart->partner->customeremail = array_shift($parts); // May be empty.
+                        }
+                        $SESSION->shoppingcart->partner->validated = \local_shop\Partner::validate($SESSION->shoppingcart->partner->partnerkey);
+
+                        // Generate precocely a transaction id.
+                        $transid = shop_get_transid();
+                        $SESSION->shoppingcart->transid = $transid;
+                        shop_trace("$transid - Partner call. Partner data : {$this->data->partner}");
+                        continue;
+                    }
+                }
+                if (in_array($inputkey, array('shopid', 'origin', 'partner', 'autodrive', 'blockid', 'category', 'view', 'what'))) {
+                    continue;
+                }
+
+                if ($ci = $DB->get_record('local_shop_catalogitem', array('code' => $inputkey))) {
+                    // Only if registered product.
+                    $SESSION->shoppingcart->order[$ci->shortname] = $this->data->$inputkey;  // Gives quantity to shortname.
+                }
             }
             $category = optional_param('category', '', PARAM_INT);
             $shopid = required_param('shopid', PARAM_INT);
-            $blockid = required_param('blockid', PARAM_INT);
+            $blockid = optional_param('blockid', 0, PARAM_INT);
             $params = array('view' => 'shop', 'shopid' => $shopid, 'category' => $category, 'blockid' => $blockid);
+
+            if ($this->data->autodrive) {
+                $params['what'] = 'navigate';
+                $SESSION->shoppingcart->autodrive = true;
+            }
             redirect(new moodle_url('/local/shop/front/view.php', $params));
 
         } else if ($cmd == 'clearall') {
@@ -123,7 +174,7 @@ class shop_controller extends front_controller_base {
 
             @$SESSION->shoppingcart->order[$this->data->shortname]++;
             $product = $this->thecatalog->get_product_by_shortname($this->data->shortname);
-            $output = new \StdClass();
+            $output = new StdClass();
             if (empty($this->data->redirect)) {
                 $output->html = $this->renderer->units($product);
                 $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
@@ -144,7 +195,7 @@ class shop_controller extends front_controller_base {
             }
             @$SESSION->shoppingcart->order[$this->data->shortname] = $this->data->quant;
             if (empty($this->data->redirect)) {
-                $output = new \StdClass();
+                $output = new StdClass();
                 $output->html = $this->renderer->units($product);
                 $output->quant = $SESSION->shoppingcart->order[$this->data->shortname];
                 $output = json_encode($output);
@@ -199,7 +250,7 @@ class shop_controller extends front_controller_base {
             }
 
             if (empty($this->data->redirect)) {
-                $outputobj = new \StdClass();
+                $outputobj = new StdClass();
                 $outputobj->html = $this->renderer->units($catalogitem);
                 $outputobj->quant = 0 + @$SESSION->shoppingcart->order[$this->data->shortname];
                 $output = json_encode($outputobj);
@@ -212,20 +263,20 @@ class shop_controller extends front_controller_base {
         } else if ($cmd == 'orderdetails') {
 
             $categories = $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
-            $output = new \StdClass;
+            $output = new StdClass;
             $output->html = $this->renderer->order_detail($categories);
             $output = json_encode($output);
 
         } else if ($cmd == 'ordertotals') {
 
             $this->thecatalog->get_all_products($fooproducts); // Loads categories with products.
-            $output = new \StdClass;
+            $output = new StdClass;
             $output->html = $this->renderer->order_totals($this->thecatalog);
             $output = json_encode($output);
 
         } else if ($cmd == 'checkpasscode') {
 
-            $output = new \StdClass;
+            $output = new StdClass;
             if ($product = $this->thecatalog->get_product_by_shortname($this->data->shortname)) {
                 if ($this->data->passcode == $product->password) {
                     $output->status = 'passed';

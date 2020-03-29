@@ -25,6 +25,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/locallib.php');
+
 /**
  * checks if there are any catalogs available
  * @return boolean
@@ -42,4 +44,75 @@ function local_shop_has_shops() {
     }
 
     return $shops > 0;
+}
+
+/**
+ * Searches in the shop for a product matching the shortname, or
+ * having a handler that matches the shortname.
+ */
+function local_shop_related_product($courseorid, $shopid = 0) {
+    global $DB;
+
+    $candidateproduct = null;
+
+    if (is_numeric($courseorid)) {
+        $shortname = $DB->get_field('course', 'shortname', ['id' => $courseorid]);
+    } else {
+        $shortname = $courseorid->code;
+    }
+
+    $sql = '
+        SELECT
+            ci.*
+        FROM
+            {local_shop_catalogitem} ci,
+            {local_shop_catalog} c
+        WHERE
+            ci.catalogid = c.id AND
+            ci.status = "AVAILABLE"
+    ';
+    $sql .= \local_shop\Catalog::get_isloggedin_sql('ci');
+
+    $sql .= " AND shortname = ? ";
+    $params = ['shortname' => $shortname];
+    if ($shopid) {
+        $sql .= " AND c.shopid = ? ";
+        $params['shopid'] = $shopid;
+    }
+    $directproducts = $DB->get_records_sql($sql, $params);
+    if (!empty($directproducts)) {
+        $candidate = array_shift($directproducts);
+        $candidateproduct = new \local_shop\CatalogItem($candidate->id);
+        $candidateproduct->check_availability();
+        if (!$candidateproduct->available) {
+            $candidateproduct = null;
+        }
+    }
+
+    if (empty($candidateproduct)) {
+
+        // Indirect products are not named with the shortname, but allow single enrol in the course.
+        $select = '
+            (handlerparams LIKE ? OR handlerparams LIKE ?) AND
+            enablehandler = "std_enrolonecourse" AND
+            status = "AVAILABLE"
+        ';
+        $select .= \local_shop\Catalog::get_isloggedin_sql('');
+
+        $params = ['%coursename='.$shortname, '%coursename='.$shortname.'&%'];
+        if ($indirectproducts = $DB->get_records_select('local_shop_catalogitem', $select, $params)) {
+            $candidate = array_shift($indirectproducts);
+            $candidateproduct = new \local_shop\CatalogItem($candidate->id);
+            $candidateproduct->check_availability();
+            if (!$candidateproduct->available) {
+                $candidateproduct = null;
+            }
+        }
+    }
+
+    return $candidateproduct;
+}
+
+function local_shop_trace($message, $output = '', $dest = null) {
+    shop_trace($message, $output, $dest);
 }

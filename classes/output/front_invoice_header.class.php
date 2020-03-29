@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_shop\output;
 
@@ -38,13 +52,13 @@ class front_invoice_header implements \Templatable {
             $template->withlogo = true;
 
             if (!empty($config->sellerlogo)) {
-                $syscontext = context_system::instance();
+                $syscontext = \context_system::instance();
                 $component = 'local_shop';
                 $filearea = 'shoplogo';
                 $itemid = 0;
                 $filepath = $config->sellerlogo;
                 $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
-                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
+                $template->logourl = \moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
             } else {
                 $template->logourl = $OUTPUT->image_url('logo', 'theme');
             }

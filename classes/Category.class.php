@@ -122,6 +122,8 @@ class Category extends ShopObject {
             WHERE
                 cc.id = ci.categoryid AND
                 cc.parentid = ?
+            ORDER BY
+                cc.sortorder
         ";
 
         if ($firstcat = $DB->get_records_sql($sql, array($this->id), 0, 1)) {
@@ -130,6 +132,18 @@ class Category extends ShopObject {
         }
 
         return 0;
+    }
+
+    public function export_to_ws() {
+        $export = new \Stdclass;
+
+        $export->id = $this->record->id;
+        $export->catalogid = $this->record->catalogid;
+        $export->name = format_string($this->record->name);
+        $export->description = format_text($this->record->description, $this->record->descriptionformat);
+        $export->visible = $this->record->visible;
+
+        return $export;
     }
 
     /**
