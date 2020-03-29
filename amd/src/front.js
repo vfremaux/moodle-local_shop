@@ -536,6 +536,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     var availables = that.attr('data-availableseats');
                     that.attr('data-availableseats', availables - 1);
                     if (availables === 0) {
+                        log.debug("Disabling " + that.attr('id'));
                         that.attr('disabled', 'disabled');
                     }
 

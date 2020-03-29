@@ -63,7 +63,7 @@ $requiredroles = $thecatalog->check_required_roles();
 $assigned = shop_check_assigned_seats($requiredroles);
 
 // Get all data about order in session.
-$orderbag = shop_get_orderbag();
+$orderbag = shop_get_orderbag($thecatalog);
 
 echo $out;
 
@@ -106,7 +106,7 @@ for (; $i < $SESSION->shoppingcart->seats; $i++) {
 echo '</table>';
 
 foreach ($orderbag as $orderentry) {
-    echo $renderer->seat_roles_assignation_form($orderentry->catalogentry, $requiredroles, $orderentry->shortname, $orderentry->q);
+    echo $renderer->seat_roles_assignation_form($orderentry->catalogentry, $requiredroles, $orderentry->shortname, $orderentry->seats);
 }
 
 $options['nextstyle'] = ($assigned < $required) ? 'opacity:0.5' : '';

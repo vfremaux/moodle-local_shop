@@ -446,7 +446,7 @@ function shop_checksum($productref) {
  * input.
  * @return array $orderbag an array of orderentries.
  */
-function shop_get_orderbag() {
+function shop_get_orderbag($thecatalog) {
     global $SESSION;
 
     $maxseats = 0;
@@ -456,7 +456,7 @@ function shop_get_orderbag() {
         $orderentry->shortname = $shortname;
         $orderentry->catalogentry = $thecatalog->get_product_by_shortname($shortname);
 
-        switch ($catalogentry->quantaddressesusers) {
+        switch ($orderentry->catalogentry->quantaddressesusers) {
             case SHOP_QUANT_AS_SEATS:
                 $orderentry->seats = $quantity;
                 break;
