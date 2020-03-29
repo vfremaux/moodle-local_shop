@@ -607,6 +607,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     var availables = that.attr('data-availableseats');
                     that.attr('data-availableseats', availables + 1);
                     that.attr('disabled', null);
+                    $('#addparticipant-line').css('display', 'block');
 
                     for (i = 0; i < roles.length; i++) {
                         for (j = 0; j < products.length; j++) {
