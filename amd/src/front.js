@@ -289,8 +289,8 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     var maxquant = that.attr('data-maxquant');
                     log.debug(maxquant + '>=' + dataobj.quant);
                     if ((maxquant > 0) && (dataobj.quant >= maxquant)) {
-                        log.debug('disabling product add button ' + productname);
                         $('#ci-' + productname).attr('disabled', 'disabled');
+                        $('#cimod-' + productname).attr('disabled', 'disabled');
                     }
 
                 },
@@ -334,6 +334,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
                     log.debug('enabling product add button ' + productname);
                     $('#ci-' + productname).attr('disabled', null);
+                    $('#cimod-' + productname).attr('disabled', null);
                 },
                 'html'
             );
@@ -657,6 +658,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             var ajax_failure_img = '<img width="14" height="14" src="' + cfg.wwwroot + '/local/shop/pix/invalid.png" />';
 
             $('#ci-pass-status-' + productname).html(ajax_waiter_img);
+            $('#cimod-pass-status-' + productname).html(ajax_waiter_img);
 
             var input = that.val() + e.key;
 
@@ -674,8 +676,11 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                     if (dataobj.status == 'passed') {
                         $('#ci-' + productname).attr('disabled', null);
                         $('#ci-pass-status-' + productname).html(ajax_success_img);
+                        $('#cimod-' + productname).attr('disabled', null);
+                        $('#cimod-pass-status-' + productname).html(ajax_success_img);
                     } else {
                         $('#ci-pass-status-' + productname).html(ajax_failure_img);
+                        $('#cimod-pass-status-' + productname).html(ajax_failure_img);
                     }
                 },
                 'html'

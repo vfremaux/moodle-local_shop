@@ -1,45 +1,50 @@
 
 
 <!-- local_shop/front_modal_product -->
-	<h3 class="shop-front-description">
-		{{{shortdescription}}}
-	</h3>
-	{{#isshortdescription}}
-	<div class="shop-front-description-toggle">
-		<button type="button" class="btn" id="toggle-item-modal-{{shortname}}" data-toggle="modal" data-target="#item-modal-{{shortname}}">{{readmorestr}}</button>
-	</div>
-	<div class="shop-front-description-full modal" role="dialog" id="item-modal-{{shortname}}">
-		<div class="modal-dialog">
-			<div class="modal-content shop-modal-box">
-				<h2 class="shop-front-partof">{{{name}}}</h2>
-				{{{description}}}
+    <h3 class="shop-front-description">
+        {{{shortdescription}}}
+    </h3>
+    {{#isshortdescription}}
+    <div class="shop-front-description-toggle">
+        <button type="button" class="btn" id="toggle-item-modal-{{shortname}}" data-toggle="modal" data-target="#item-modal-{{shortname}}">{{readmorestr}}</button>
+    </div>
+    <div class="shop-front-description-full modal" role="dialog" id="item-modal-{{shortname}}">
+        <div class="modal-dialog">
+            <div class="modal-content shop-modal-box">
+                <h2 class="shop-front-partof">{{{name}}}</h2>
+                {{{description}}}
 
-				{{#hasleaflet}}
-				<div class="shop-front-leaflet">
-					<a href="{{{leafleturl}}}" target="_blank">{{leafletlinkstr}}</a>
-				</div>
-				{{/hasleaflet}}
+                {{#hasleaflet}}
+                <div class="shop-front-leaflet">
+                    <a href="{{{leafleturl}}}" target="_blank">{{leafletlinkstr}}</a>
+                </div>
+                {{/hasleaflet}}
 
-				{{#available}}
-				<div class="shop-front-order">
-					{{#password}}
-					<input type="text" id="ci-pass-{{shortname}}" value="" maxlength="8" size="8"
-									   onkeypress="check_pass_code(\'{{shortname}}\', this, event)"
-									   title="{{needspasscodetobuystr}}" />
-					<div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
+                {{#available}}
+                <div class="shop-front-order">
+                    {{#password}}
+                    <input type="text"
+                           id="cimod-pass-{{shortname}}"
+                           value=""
+                           maxlength="8"
+                           size="8"
+                           data-product="{{shortname}}"
+                           class="local-shop-password"
+                           title="{{needspasscodetobuystr}}" />
+                    <div id="cimod-pass-status-{{shortname}}" class="shop-pass-state"></div>
 
-					{{/password}}
-					<input type="button"
-									id="ci-{{shortname}}"
-									value="{{buystr}}"
-									onclick="{{{jshandleraddunit}}}" {{{disabled}}} />
+                    {{/password}}
+                    <input type="button"
+                                    id="cimod-{{shortname}}"
+                                    value="{{buystr}}"
+                                    onclick="{{{jshandleraddunit}}}" {{{disabled}}} />
 
-				</div>
-				{{/available}}
+                </div>
+                {{/available}}
 
-				<button type="button" class="btn btn-default" style="margin-top: 20px" data-dismiss="modal">{{#str}}close, local_shop{{/str}}</button>
-				</div>
-		</div>
-	</div>
-	{{/isshortdescription}}
+                <button type="button" class="btn btn-default" style="margin-top: 20px" data-dismiss="modal">{{#str}}close, local_shop{{/str}}</button>
+                </div>
+        </div>
+    </div>
+    {{/isshortdescription}}
 <!-- /local_shop/front_modal_product -->
