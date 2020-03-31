@@ -182,14 +182,21 @@ class shop_paymode_paypal extends shop_paymode {
         }
     }
 
-    // Processes a payment asynchronous confirmation.
+    /**
+     * Processes a payment asynchronous confirmation.
+     */
     public function process_ipn() {
         global $CFG, $DB;
 
         // Get all input parms.
         $transid = required_param('invoice', PARAM_TEXT);
         // Get the shopid. Not sure its needed any more.
-        list($shopid) = required_param('custom', PARAM_TEXT);
+        $custom = required_param('custom', PARAM_TEXT);
+        if (is_scalar($custom)) {
+            $shopid = $custom;
+        } else {
+            list($shopid) = $custom;
+        }
 
         if (empty($transid)) {
             shop_trace("[ERROR] Paypal IPN : Empty Transaction ID");
@@ -203,7 +210,7 @@ class shop_paymode_paypal extends shop_paymode {
 
         // Integrity check : the bill must belong to the shop wich is returned as info in custom Paypal data.
         if ($afullbill->shopid != $shopid) {
-            shop_trace("[$transid] Paypal IPN ERROR : Paypal returned info do not match the bill's shop.");
+            shop_trace("[$transid] Paypal IPN ERROR : Paypal returned info ($shopid) do not match the bill's shop ({$afullbill->shopid}).");
             die;
         }
 
@@ -242,7 +249,7 @@ class shop_paymode_paypal extends shop_paymode {
             try {
                 $DB->insert_record('local_shop_paypal_ipn', $paypalipn);
             } catch (Exception $e) {
-                shop_trace("[$transid] Paypal IPN : Recording paypal event error");
+                shop_trace("[$transid] Paypal IPN : Recording paypal event error ".$DB->get_last_error());
             }
         }
 

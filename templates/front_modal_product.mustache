@@ -37,7 +37,10 @@
                     <input type="button"
                                     id="cimod-{{shortname}}"
                                     value="{{buystr}}"
-                                    onclick="{{{jshandleraddunit}}}" {{{disabled}}} />
+                                    data-product="{{shortname}}"
+                                    data-maxquant="{{maxdeliveryquant}}"
+                                    class="local-shop-add-unit"
+                                    {{{disabled}}} />
 
                 </div>
                 {{/available}}

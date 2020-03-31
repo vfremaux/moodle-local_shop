@@ -961,6 +961,24 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_participant_blankrow', $template);
     }
 
+    public function add_participant() {
+        global $SESSION;
+
+        $template = new Stdclass;
+
+        if (count($SESSION->shoppingcart->participants) >= $SESSION->shoppingcart->seats) {
+            $template->newparticipantstyle = 'style="display:none"';
+        }
+
+        $stringkey = (@$SESSION->shoppingcart->seats <= 1) ? 'participanthelper1' : 'participanthelper1plural';
+        $template->helper = get_string($stringkey, 'local_shop', $SESSION->shoppingcart->seats);
+        $template->seats = $SESSION->shoppingcart->seats;
+
+        $template->newform = $renderer->new_participant_row($SESSION->shoppingcart->seats - count($SESSION->shoppingcart->participants));
+
+        return $this->output->render_from_template('local_shop/add_participant', $template);
+    }
+
     /**
      * Prints the form to input participant data.
      * @param int $maxseats the number of purchased seats, depending on the content of the shopping cart.
@@ -1422,8 +1440,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $str = '';
-
         // Samples for json programming.
         /*
         $test = array(
@@ -1447,139 +1463,100 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $shoppingcart = $SESSION->shoppingcart;
 
-        if (!empty($shoppingcart->order)) {
-            $str .= '<form name="shop-requirements">';
-            $str .= '<input type="hidden" name="view" value="purchaserequ">';
-            $str .= '<input type="hidden" name="id" value="'.$this->theshop->id.'">';
-            $str .= '<input type="hidden" name="blockid" value="'.$this->theblock->id.'">';
-            $str .= '<input type="hidden" name="what" value="collect">';
-            $str .= '<div id="shop-requirement-list">';
-            $str .= '<div id="shop-requirement-caption">';
-            $str .= get_string('requireddatacaption', 'local_shop');
-            $str .= '</div>';
-            foreach ($shoppingcart->order as $itemname => $itemcount) {
-                $product = $this->thecatalog->get_product_by_shortname($itemname);
-                $requireddata = $product->requireddata;
-                // Take care, result of magic _get() is not directly testable.
-                $requirements = array_values((array)json_decode($requireddata));
-                if (!empty($requirements)) {
-                    $str .= '<div class="shop-product-requ">';
-                    $str .= '<div class="shop-product-name">'.$product->name.'</div>';
-                    for ($i = 0; $i < $itemcount; $i++) {
-                        $str .= '<div class="shop-product-requirements">';
-                        $label = get_string('instance', 'local_shop', $i + 1);
-                        $str .= '<div class="shop-product-requirement">'.$label.'</div>';
-                        foreach ($requirements as $requ) {
-                            $reqobj = (object)$requ;
-
-                            $attributes = '';
-                            if (!empty($reqobj->attrs)) {
-                                foreach ($reqobj->attrs as $key => $value) {
-                                    $attributes .= " {$key}=\"{$value}\" ";
-                                }
-                            }
-
-                            $str .= '<div class="shop-requirement">';
-                            $inputclass = '';
-                            if (!empty($errors[$itemname][$reqobj->field][$i])) {
-                                $str .= '<div class="shop-requ-error">';
-                                $str .= $errors[$itemname][$reqobj->field][$i];
-                                $str .= '</div>';
-                                $inputclass = 'class="shop-requ-input-error" ';
-                            }
-                            $str .= '<div class="requ-label">';
-                            $str .= $reqobj->label;
-                            $str .= '</div>'; // Closing requ-label.
-                            switch ($reqobj->type) {
-                                case 'text':
-                                case 'textfield':
-                                    $str .= '<div class="requ-param">';
-                                    $value = @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
-                                    $str .= '<input type"text"
-                                                    name="'.$itemname.'/'.$reqobj->field.$i.'"
-                                                    id="id-'.$reqobj->field.$i.'"
-                                                    value="'.$value.'"
-                                                    '.$attributes.'
-                                                    '.$inputclass.'/>';
-                                    $str .= '<div class="requ-desc">';
-                                    $str .= @$reqobj->desc;
-                                    $str .= '</div>'; // Closing requ-desc.
-                                    $str .= '</div>'; // Closing requ-param.
-                                    break;
-
-                                case 'textarea':
-                                    $str .= '<div class="requ-param">';
-                                    $str .= '<textarea name="'.$itemname.'/'.$reqobj->field.$i.'"
-                                                       id="id-'.$reqobj->field.$i.'"
-                                                       '.$attributes.'
-                                                       '.$inputclass.'>';
-                                    $str .= @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
-                                    $str .= '</textarea>';
-                                    $str .= '<div class="requ-desc">';
-                                    $str .= $reqobj->desc;
-                                    $str .= '</div>';
-                                    $str .= '</div>';
-                                    break;
-
-                                case 'checkbox':
-                                    $ischecked = @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
-                                    $checked = ($ischecked) ? 'checked="checked"' : '';
-                                    $str .= '<div class="requ-param">';
-                                    $str .= '<input type="checkbox"
-                                                    name="'.$itemname.'/'.$reqobj->field.$i.'"
-                                                    id="id-'.$reqobj->field.$i.'"
-                                                    '.$checked.'
-                                                    '.$attributes.'
-                                                    '.$inputclass.'>';
-                                    $str .= '<div class="requ-desc">';
-                                    $str .= $reqobj->desc;
-                                    $str .= '</div>';
-                                    $str .= '</div>';
-                                    break;
-
-                                case 'select':
-                                    $str .= '<div class="requ-param">';
-                                    $str .= '<select name="'.$itemname.'/'.$reqobj->field.$i.'"
-                                                     id="id-'.$reqobj->field.$i.'"
-                                                     '.$attributes.'
-                                                     '.$inputclass.'>';
-                                    $options = $reqobj->options;
-                                    if ($options) {
-                                        foreach ($options as $optkey => $optvalue) {
-                                            $isselected = $optkey == @$shoppingcart->customerdata[$itemname][$reqobj->field][$i];
-                                            $selected = ($isselected) ? 'selected' : '';
-                                            $str .= '<option name="'.$optkey.'" '.$selected.'>'.$optvalue.'</option>';
-                                        }
-                                    }
-                                    $str .= '</select>';
-                                    $str .= '<div class="requ-desc">';
-                                    $str .= $reqobj->desc;
-                                    $str .= '</div>';
-                                    $str .= '</div>';
-                                    break;
-
-                                default:
-                                    $str .= '<div class="shop-error">';
-                                    $a = "{$itemname}|{$reqobj->field}|{$reqobj->type}";
-                                    $str .= get_string('errorrequirementfieldtype', 'local_shop', $a);
-                                    $str .= '</div>';
-                            }
-                            $str .= '</div>'; // Closing shop-requirement.
-                        }
-                        $str .= '</div>';
-                    }
-                }
-            }
-            $extraclass = (empty($shoppingcart->customerdata)) ? 'unsaved' : '';
-            $str .= '<div id="requ-submit" class="'.$extraclass.'">';
-            $label = get_string('saverequs', 'local_shop');
-            $str .= '<input type="submit" name="go_btn" value="'.$label.'" style="width:200px" />';
-            $str .= '</div>'; // Closes requ-submit.
-            $str .= '</div>';
-            $str .= '</form>';
+        if (empty($shoppingcart->order)) {
+            return;
         }
 
-        return $str;
+        $template = new StdClass;
+
+        $template->shopid = $this->theshop->id;
+        $template->blockid = $this->theblock->id;
+        foreach ($shoppingcart->order as $itemname => $itemcount) {
+
+            $ordertpl = new StdClass;
+
+            $product = $this->thecatalog->get_product_by_shortname($itemname);
+            $ordertpl->productname = format_string($product->name);
+            $ordertpl->itemname = $product->shortname;
+
+            $requireddata = $product->requireddata;
+            // Take care, result of magic _get() is not directly testable.
+            $requirements = array_values((array)json_decode($requireddata));
+            if (empty($requirements)) {
+                $ordertpl->jsonerror = true;
+                $ordertpl->jsonerrorstr = $this->output->notification(get_string('hasjsonerrors', 'local_shop', $ordertpl), 'error');
+                $template->orderentries[] = $ordertpl;
+                continue;
+            }
+
+            for ($i = 0; $i < $itemcount; $i++) {
+                $itemtpl = new StdClass;
+                $itemtpl->i = $i;
+                $itemtpl->ix = $i + 1;
+                $itemtpl->label = get_string('instance', 'local_shop', $i + 1);
+                foreach ($requirements as $requ) {
+                    $requtpl = (object)$requ;
+
+                    // forge HTML attributes.
+                    $requtpl->attributes = '';
+                    if (!empty($requtpl->attrs)) {
+                        foreach ($requtpl->attrs as $key => $value) {
+                            $requtpl->attributes .= " {$key}=\"{$value}\" ";
+                        }
+                    }
+
+                    $requtpl->inputclass = '';
+                    if (!empty($errors[$itemname][$requtpl->field][$i])) {
+                        $requtpl->error = $errors[$itemname][$requtpl->field][$i];
+                        $requtpl->inputclass = 'class="shop-requ-input-error" ';
+                    }
+                    switch ($requtpl->type) {
+                        case 'text':
+                        case 'textfield':
+                            $requtpl->istextfield = true;
+                            $requtpl->value = @$shoppingcart->customerdata[$itemname][$requtpl->field][$i];
+                            break;
+
+                        case 'textarea':
+                            $requtpl->istextarea = true;
+                            $requtpl->value = @$shoppingcart->customerdata[$itemname][$requtpl->field][$i];
+                            break;
+
+                        case 'checkbox':
+                            $requtpl->ischeckbox = true;
+                            $ischecked = @$shoppingcart->customerdata[$itemname][$requtpl->field][$i];
+                            $requtpl->checked = ($ischecked) ? 'checked="checked"' : '';
+                            break;
+
+                        case 'select':
+                            $requtpl->isselect = true;
+                            $options = $requobj->options;
+                            if ($options) {
+                                foreach ($options as $optkey => $optvalue) {
+                                    $opttpl = new StdClass;
+                                    $isselected = $optkey == @$shoppingcart->customerdata[$itemname][$requtpl->field][$i];
+                                    $opttpl->selected = ($isselected) ? 'selected' : '';
+                                    $opttpl->opt = $optkey;
+                                    $opttpl->value = $optvalue;
+                                    $requtpl->options[] = $opttpl;
+                                }
+                            }
+                            break;
+
+                        default:
+                            $requtpl->iserror = true;
+                            $itemsignature = "{$itemname}|{$reqobj->field}|{$requtpl->type}";
+                    }
+
+                    $itemtpl->requirements[] = $requtpl;
+                }
+                $ordertpl->items[] = $itemtpl;
+            }
+            $template->orderentries[] = $ordertpl;
+        }
+        $template->extraclass = (empty($shoppingcart->customerdata)) ? 'unsaved' : '';
+
+        return $this->output->render_from_template('local_shop/front_customer_requirements_form', $template);
     }
 
     /**

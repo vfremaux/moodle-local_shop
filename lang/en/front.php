@@ -97,6 +97,7 @@ $string['getinvoice'] = 'Get the invoice';
 $string['givetransactioncodeforallrequest'] = 'Give this identifier for any communication with us';
 $string['gotoadminlink'] = 'Go to admin screens';
 $string['gotocustomerservice'] = 'Go to your customer service area';
+$string['hasjsonerrors'] = 'This product is misconfigured with json errors. Shop administrators should review their product definition on {$a->itemname}.';
 $string['help_informations'] = 'Information about your account';
 $string['here'] = 'here.';
 $string['hideproductswhennotavailable'] = 'Hide products if not available';

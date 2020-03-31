@@ -99,6 +99,7 @@ $string['getinvoice'] = 'Visualiser la facture (proforma)';
 $string['givetransactioncodeforallrequest'] = 'Joignez à toute demande votre code de transaction apparaissant sur les écrans';
 $string['gotoadminlink'] = 'Aller à la page d\'administration ';
 $string['gotocustomerservice'] = 'Aller votre espace client&ensp;';
+$string['hasjsonerrors'] = 'Ce produit a des erreurs dans sa configuration. Les administrateurs de la boutique doivent réviser la définition du produit : {$a->itemname}.';
 $string['help_informations'] = 'les informations de compte';
 $string['here'] = 'ici.';
 $string['hideproductswhennotavailable'] = 'Cacher les produits non disponibles';
