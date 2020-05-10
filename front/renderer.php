@@ -33,8 +33,8 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     protected $context;
 
-    const STATE_DONE = 0;
-    const STATE_TODO = 1;
+    const STATE_DONE = 0; // Those steps have been completed.
+    const STATE_TODO = 1; // Those steps are still to do.
     const STATE_FREEZE = 2;
 
     /**
@@ -46,7 +46,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        // This converts configuration steps to internal effective steps.
+        // This converts configuration progress code to internal effective steps.
         $radicals = array(
             'CHOOSE' => 'shop',
             'CONFIGURE' => 'purchaserequ',
@@ -54,10 +54,23 @@ class shop_front_renderer extends local_shop_base_renderer {
             'CUSTOMER' => 'customer',
             'CONFIRM' => 'order',
             'PAYMENT' => 'payment',
-            'PENDING' => 'payment', // Payment blockd for some reason.
+            'PENDING' => 'produce', // Payment blockid for some reason.
             'PRODUCE' => 'produce',
             'BILL' => 'invoice',
             'INVOICE' => 'invoice',
+        );
+
+        $stepicons = array(
+            'shop' => 'CHOOSE',
+            'purchaserequ' => 'CONFIGURE',
+            'users' => 'USERS',
+            'customer' => 'CUSTOMER',
+            'order' => 'CONFIRM',
+            'payment' => 'PAYMENT',
+            'pending' => 'PENDING', // Payment blockid for some reason.
+            'produce' => 'PRODUCE',
+            'invoice' => 'INVOICE',
+            'bill' => 'INVOICE',
         );
 
         // This converts API inputs to internal effective steps.
@@ -68,12 +81,10 @@ class shop_front_renderer extends local_shop_base_renderer {
             'customer' => 'customer',
             'order' => 'order',
             'payment' => 'payment',
-            'pending' => 'payment', // Payment blockd for some reason.
+            'pending' => 'produce', // Production blocked for some reason (no payment).
             'produce' => 'produce',
             'invoice' => 'invoice',
         );
-
-        $stepicons = array_flip($radicals);
 
         $str .= '<div id="progress">';
         $str .= '<center>';
@@ -81,29 +92,41 @@ class shop_front_renderer extends local_shop_base_renderer {
         $steps = explode(',', $this->theshop->navsteps);
 
         $state = self::STATE_DONE;
-        $iconstate = '_on';
+        $iconstate = '';
         foreach ($steps as $step) {
+            if ($step == "shop") {
+                // continue;
+            }
             if (($state == self::STATE_DONE)) {
-                $iconstate = '_on';
+                $iconstate = '';
                 if ($inputmapping[$step] == $radicals[$progress]) {
+                    $iconstate = '_on';
                     $state = self::STATE_TODO;
                 }
             } else if ($state == self::STATE_TODO) {
                 $iconstate = '_off';
                 $state = self::STATE_FREEZE;
+            } else {
+                // FREEZED.
+                $iconstate = '_off';
             }
 
             // Disable step on configuration or environment conditions.
             $icon = $stepicons[trim($step)];
-            if (!empty($SESSION->shoppingcart->norequs) && ($icon == 'CONFIGURE') && ($iconstate == '_on')) {
+
+            if ($icon == 'PRODUCE' && $progress == 'PENDING') {
+                $icon = 'PENDING';
+            }
+
+            if (!empty($SESSION->shoppingcart->norequs) && ($icon == 'CONFIGURE') && ($iconstate == '')) {
                 $iconstate = '_dis';
             }
-            if (empty($SESSION->shoppingcart->seats) && ($icon == 'USERS') && ($iconstate == '_on')) {
+            if (empty($SESSION->shoppingcart->seats) && ($icon == 'USERS') && ($iconstate == '')) {
                 $iconstate = '_dis';
             }
 
             $stepicon = $this->output->image_url(current_language().'/'.$icon.$iconstate, 'local_shop');
-            $str .= '<img src="'.$stepicon.'" />&nbsp;';
+            $str .= '<img src="'.$stepicon.'" />';
         }
         $str .= '</center>';
         $str .= '</div>';
@@ -433,15 +456,29 @@ class shop_front_renderer extends local_shop_base_renderer {
         $subelementclass = (!empty($product->ispart)) ? 'element' : 'product';
         $subelementclass .= ($product->available) ? '' : ' shadowed';
 
+        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
         $template->subelementclass = $subelementclass;
         $template->ispart = $product->ispart;
         $template->issetpart = $product->issetpart;
+        if ($template->issetpart) {
+            $template->itemtype = 'is-set-part';
+        }
         $template->isbundlepart = $product->isbundlepart;
+        if ($template->isbundlepart) {
+            $template->itemtype = 'is-bundle-part';
+        }
         $template->id = $product->id;
         $template->shortname = $product->shortname;
         $template->code = $product->code;
         $template->subelementclass = $subelementclass;
 
+        // Get Handler guessed image
+        list($handler, $unusedmethod) = $product->get_handler_info('get_alternative_thumbnail_url', '');
+        if (!empty($handler)) {
+            $template->thumburl = $handler->get_alternative_thumbnail_url($product);
+        }
+
+        // Get Shop Catalog overriding image.
         $image = $product->get_image_url();
         if ($image) {
             $template->hasimage = true;
@@ -449,15 +486,18 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $template->hasimage = false;
         }
-        $template->thumburl = $product->get_thumb_url();
+        $thumburloverride = $product->get_thumb_url(!empty($template->thumburl));
+        if (!empty($thumburloverride)) {
+            $template->thumburl = $thumburloverride;
+        }
+        if (empty($template->thumburl)) {
+            // Get the absolute default as last chance.
+            $template->thumburl = $product->get_thumb_url(false);
+        }
 
         $template->name = format_string($product->name);
         $template->shortname = $product->shortname;
         $template->puttcstr = get_string('puttc', 'local_shop');
-
-        if (!empty($product->isbundlepart)) {
-            $template->isbundlepart = true;
-        }
 
         $template->showdescription = true;
         $template->showname = true;
@@ -467,19 +507,24 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->showname = $product->showsnameinset;
         }
 
+        $template->hasdetails = false;
         $template->isshortdescription = false;
+        $template->available = !$product->noorder && $product->available;
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
             $template->description = format_text($product->description, FORMAT_MOODLE, array('para' => false));
 
             $cutoff = $config->shortdescriptionthreshold;
-            $template->shortdescription = $this->trim_chars($product->description, $cutoff);
+            $template->shortdescription = $this->trim_chars($template->description, $cutoff);
 
             if (($template->description != $template->shortdescription) || $product->has_leaflet()) {
                 // $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
                 $template->readmorestr = get_string('readmore', 'local_shop');
                 $template->isshortdescription = true;
+                $template->hasdetails = ($product->isbundlepart && $product->available) ||
+                    ($product->issetpart && $product->available) ||
+                    (!$product->ispart && $product->available);
             }
         } else {
             $template->description = '';
@@ -515,7 +560,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
 
             if ($product->available) {
-                $template->available = true;
                 $template->buystr = get_string('buy', 'local_shop');
                 $template->disabled = '';
                 $isdisabled = !empty($product->record->maxdeliveryquant) && ($product->record->maxdeliveryquant <= $product->preset);
@@ -548,19 +592,23 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
 
         $template->name = format_string($set->name);
+        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
+
+        $template->hasdescription = false;
+        $template->available = $set->available;
+        $template->isshortdescription = false;
         if ($set->description) {
-            $set->description = file_rewrite_pluginfile_urls($set->description, 'pluginfile.php', $this->context->id, 'local_shop',
-                                               'catalogitemdescription', $set->id);
-            $template->sethasdescription = true;
+            $template->hasdescription = true;
             $template->description = format_text($set->description, FORMAT_MOODLE, array('para' => false));
+
             $cutoff = $config->shortdescriptionthreshold;
-            if (core_text::strlen($set->description) > $cutoff) {
-                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
+            $template->shortdescription = $this->trim_chars($template->description, $cutoff);
+
+            if ($template->description != $template->shortdescription) {
                 $template->readmorestr = get_string('readmore', 'local_shop');
-                $template->shortdescription = true;
+                $template->isshortdescription = true;
+                $template->hasdetails = $set->available;
             }
-        } else {
-            $template->sethasdescription = false;
         }
 
         $image = $set->get_image_url();
@@ -569,10 +617,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $template->image = '<img src="'.$set->get_thumb_url().'">';
         }
+        $template->thumburl = $set->get_thumb_url(false);
 
         foreach ($set->elements as $element) {
             $element->check_availability();
-            $element->noorder = false; // Bundle can only be purchased as a group.
+            $element->noorder = false; // Set let purchase individual elements.
             $element->ispart = true; // Reduced title.
             $element->issetpart = true; // Reduced title.
             $template->elements[] = $this->product_block($element, true);
@@ -594,6 +643,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template->code = $bundle->code;
         $template->shortname = $bundle->shortname;
+        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
 
         $image = $bundle->get_image_url();
         if ($image) {
@@ -601,36 +651,43 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $template->image = '<img src="'.$bundle->get_thumb_url().'">';
         }
+        $template->thumburl = $bundle->get_thumb_url(false);
 
-        if (!empty($bundle->ispart)) {
-            $template->name = format_string($bundle->name);
-        } else {
-            $template->name = format_string($bundle->name);
+        $template->name = format_string($bundle->name);
+
+        if (empty($bundle->ispart)) {
+            $template->hasdescription = false;
+            $template->isshortdescription = false;
             if ($bundle->description) {
                 $template->hasdescription = true;
                 $template->description = format_text($bundle->description, FORMAT_MOODLE, array('para' => false));
-            }
-            $cutoff = $config->shortdescriptionthreshold;
-            if (core_text::strlen($bundle->description) > $cutoff) {
-                // $template->rarrowpix = $OUTPUT->image_url('rarrow', 'local_shop');
-                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
-                $template->readmorestr = get_string('readmore', 'local_shop');
-                $template->shortdescription = true;
+
+                $cutoff = $config->shortdescriptionthreshold;
+                $template->shortdescription = $this->trim_chars($template->description, $cutoff);
+
+                if ($template->description != $template->shortdescription) {
+                    $template->readmorestr = get_string('readmore', 'local_shop');
+                    $template->isshortdescription = true;
+                    $template->hasdetails = $bundle->available;
+                }
             }
         }
 
         if ($bundle->has_leaflet()) {
+            $template->hasleaflet = true;
             $template->leafleturl = $bundle->get_leaflet_url();
             $template->linklabel = get_string('leafletlink', 'local_shop');
         }
 
         $template->refstr = get_string('ref', 'local_shop');
+        $template->canorder = true;
         $template->puttcstr = get_string('puttc', 'local_shop');
         $template->currency = $bundle->currency;
 
+        $template->available = false;
         foreach ($bundle->elements as $element) {
             // $elementtpl = new StdClass;
-            $element->check_availability();
+            $template->available = $template->available || $element->check_availability();
             $element->noorder = true; // Bundle can only be purchased as a group.
             $element->isbundlepart = true; // Reduced title.
             $element->ispart = true;
@@ -652,15 +709,13 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         $template->buystr = get_string('buy', 'local_shop');
+        $template->maxdeliveryquant = $bundle->maxdeliveryquant;
         $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '';
         if ($bundle->password) {
             $template->password = true;
-            $template->jshandler = 'check_pass_code(\''.$bundle->shortname.'\', this, event)';
             $template->needspasscodetobuystr = get_string('needspasscodetobuy', 'local_shop');
             $template->disabled = 'disabled="disabled"';
         }
-        $template->jshandleraddunit = 'ajax_add_unit('.$this->theshop->id;
-        $template->jshandleraddunit .= ', \''.$bundle->shortname.'\', \''.$bundle->maxdeliveryquant.'\')';
         $template->units = $this->units($bundle);
 
         return $this->output->render_from_template('local_shop/front_product_bundle', $template);
@@ -801,7 +856,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
         $str .= $this->output->heading($heading);
 
+        $template = new StdClass;
+
         if (isloggedin() && !isguestuser()) {
+
             $lastname = $USER->lastname;
             $firstname = $USER->firstname;
 
@@ -820,6 +878,14 @@ class shop_front_renderer extends local_shop_base_renderer {
             $hascountry = !empty($shoppingcart->customerinfo['country']);
             $country = $hascountry ? $shoppingcart->customerinfo['country'] : $USER->country;
             $email = $USER->email;
+            $template->mailislocked = true;
+
+            $template->notsamemail = false;
+            // Signal mail was attempted to change in the loggedout form.
+            if (!empty($shoppingcart->customerinfo['email']) && ($shoppingcart->customerinfo['email'] != $USER->email)) {
+                $template->notsamemail = true;
+                $template->givenmail = @$shoppingcart->customerinfo['email'];
+            }
 
             // Get potential ZIP code information from an eventual customer record.
             if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id, 'email' => $email))) {
@@ -828,6 +894,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $address = $hasaddress ? $shoppingcart->customerinfo['address'] : $customer->address;
             }
         } else {
+            $template->mailislocked = false;
             $lastname = @$shoppingcart->customerinfo['lastname'];
             $firstname = @$shoppingcart->customerinfo['firstname'];
             $organisation = @$shoppingcart->customerinfo['organisation'];
@@ -846,7 +913,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-        $template = new StdClass;
         $template->lastname = $lastname;
         $template->firstname = $firstname;
         $template->customerorganisationrequired = $this->theshop->customerorganisationrequired;
@@ -1601,9 +1667,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
         $params = array('view' => 'customer',
                         'shopid' => $this->theshop->id,
-                        'blockid' => (0 + @$this->theblock->instance->id));
+                        'blockid' => (0 + @$this->theblock->instance->id),
+                        'what' => 'login');
         $thisurl = new moodle_url('/local/shop/front/view.php', $params);
-        $template->loginurl = new moodle_url('/login/index.php', array('wantsurl' => $thisurl));
+        $template->shopurl = $thisurl;
 
         return $this->output->render_from_template('local_shop/front_login_button', $template);
     }
@@ -1690,27 +1757,124 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/bills_link_to_bill', $template);
     }
 
-	/**
-	 * Cut a text to some length.
-	 *
-	 * @param $str
-	 * @param $n
-	 * @param $end_char
-	 * @return string
-	 */
-	public function trim_chars($str, $n = 500, $endchar = '...') {
-		if (strlen($str) < $n) {
-			return $str;
-		}
+    /**
+     * Cut a text to some length.
+     *
+     * @param $str
+     * @param $n
+     * @param $end_char
+     * @return string
+     */
+    public function trim_chars($str, $n = 500, $endchar = '...') {
 
-		$str = preg_replace("/\s+/", ' ', str_replace(array("\r\n", "\r", "\n"), ' ', $str));
-		if (mb_strlen($str) <= $n) {
-			return $str;
-		}
+        $debug = optional_param('debug', false, PARAM_BOOL);
 
-		$out = "";
-		$small = mb_substr($str, 0, $n);
-		$out = $small.$endchar;
-		return $out;
-	}
+        $opentags = [];
+        $singletags = ['br', 'hr', 'img', 'input', 'link'];
+
+        if (empty($str)) {
+            // Optimize return.
+            return '';
+        }
+
+        // Tokenize around HTML tags.
+        $htmltagpattern = "#(.*?)(</?[^>]+?>)(.*)#s";
+        $end = $str;
+        $parts = [];
+        while (preg_match($htmltagpattern, $end, $matches)) {
+            if (!empty($matches[1])) {
+                array_push($parts, $matches[1]);
+            }
+            if (!empty($matches[2])) {
+                array_push($parts, $matches[2]);
+            }
+            $end = $matches[3];
+        }
+        if (!empty($matches)) {
+            // Take last end that has no more tags inside.
+            array_push($parts, $end);
+        }
+
+        $buflen = 0;
+        $buf = '';
+        $iscutoff = false;
+
+        if ($debug) {
+            echo "Having ".count($parts)." to parse\n";
+        }
+
+        while ($part = array_shift($parts)) {
+
+            if ($buflen > $n) {
+                $iscutoff = true;
+                if ($debug) {
+                    echo "Cutting off\n";
+                }
+                break;
+            }
+
+            if (strpos($part, '<') === 0) {
+                // is a tag.
+                preg_match('#<(/?)([a-zA-Z0-6]+).*(/?)>#', $part, $matches);
+                $isendtag = !empty($matches[1]);
+                $tagname = $matches[2];
+                $issingletag = (!empty($matches[3]) || in_array($tagname, $singletags));
+                if (!$issingletag) {
+                    if (!$isendtag) {
+                        // So its a starting tag and NOT single.
+                        if ($debug) {
+                            echo "Start Tag $tagname\n";
+                        }
+                        array_push($opentags, $tagname);
+                    } else {
+                        // So its an ending tag. We just check it has been correctly stacked.
+                        $lasttag = array_pop($opentags);
+                        if ($debug) {
+                            echo "End Tag $tagname\n";
+                        }
+                        if ($lasttag !== $tagname) {
+                            // This is a nesting error in the source HTML.
+                            throw new moodle_exception("Malformed HTML content somewhere in product descriptions");
+                        }
+                    }
+                } else {
+                    if ($debug) {
+                        echo "Single Tag $tagname\n";
+                    }
+                }
+            } else {
+                // Is text.
+                // TODO : cut the text to the remaining amount of chars to get near $n chars.
+                $buflen += mb_strlen(str_replace("\n", '', $part));
+                if ($debug) {
+                    echo "Text node '$part': Adding ".mb_strlen(str_replace("\n", '', $part))."\n";
+                    echo "Buflen : $buflen\n";
+                }
+            }
+            $buf .= $part;
+        }
+
+        if (!$iscutoff) {
+            if ($debug) {
+                echo '</pre>';
+            }
+            return $str;
+        }
+
+        if (!empty($parts)) {
+            // Add final ellipsis if there is something retained in original string.
+            $buf .= $endchar;
+        }
+
+        // At this point, $opentags should be empty if all openedtags have been closed.
+        while (!empty($opentags)) {
+            $closing = '</'.array_pop($opentags).'>';
+            $buf .= $closing;
+        }
+
+        if ($debug) {
+            echo '</pre>';
+        }
+        return $buf;
+    }
 }

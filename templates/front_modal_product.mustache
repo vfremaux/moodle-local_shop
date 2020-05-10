@@ -1,53 +1,96 @@
 
 
 <!-- local_shop/front_modal_product -->
-    <h3 class="shop-front-description">
-        {{{shortdescription}}}
-    </h3>
-    {{#isshortdescription}}
-    <div class="shop-front-description-toggle">
-        <button type="button" class="btn" id="toggle-item-modal-{{shortname}}" data-toggle="modal" data-target="#item-modal-{{shortname}}">{{readmorestr}}</button>
-    </div>
-    <div class="shop-front-description-full modal" role="dialog" id="item-modal-{{shortname}}">
-        <div class="modal-dialog">
-            <div class="modal-content shop-modal-box">
-                <h2 class="shop-front-partof">{{{name}}}</h2>
-                {{{description}}}
+<h3 class="shop-front-description">{{{shortdescription}}}</h3>
 
+{{#isshortdescription}}
+{{#hasdetails}}
+<div class="shop-front-description-toggle">
+    <button type="button" class="btn" id="toggle-item-modal-{{shortname}}" data-toggle="modal" data-target="#item-modal-{{shortname}}">{{readmorestr}}</button>
+</div>
+{{/hasdetails}}
+
+<div class="shop-front-description-full modal {{{itemtype}}}" role="dialog" id="item-modal-{{shortname}}">
+    <div class="modal-dialog">
+
+        <div class="shop-modal-header">
+
+            <div class="modal-thumbnail">
+                <img class="{{subelementclass}}" src="{{{thumburl}}}">
+            </div>
+
+            <div class="modal-metadata">
+
+                <div class="shop-front-ref">{{refstr}}&nbsp;: {{{code}}}</div>
                 {{#hasleaflet}}
                 <div class="shop-front-leaflet">
                     <a href="{{{leafleturl}}}" target="_blank">{{leafletlinkstr}}</a>
                 </div>
                 {{/hasleaflet}}
+            </div>
 
+            <div class="shop-front-order">
                 {{#available}}
-                <div class="shop-front-order">
-                    {{#password}}
-                    <input type="text"
-                           id="cimod-pass-{{shortname}}"
-                           value=""
-                           maxlength="8"
-                           size="8"
-                           data-product="{{shortname}}"
-                           class="local-shop-password"
-                           title="{{needspasscodetobuystr}}" />
-                    <div id="cimod-pass-status-{{shortname}}" class="shop-pass-state"></div>
+                {{#password}}
+                <input type="text"
+                       id="cimod-pass-{{shortname}}"
+                       value=""
+                       maxlength="8"
+                       size="8"
+                       data-product="{{shortname}}"
+                       class="local-shop-password"
+                       title="{{needspasscodetobuystr}}" />
+                <span id="cimod-pass-status-{{shortname}}" class="shop-pass-state"></span><br/>
+                {{/password}}
 
-                    {{/password}}
-                    <input type="button"
-                                    id="cimod-{{shortname}}"
-                                    value="{{buystr}}"
-                                    data-product="{{shortname}}"
-                                    data-maxquant="{{maxdeliveryquant}}"
-                                    class="local-shop-add-unit"
-                                    {{{disabled}}} />
+                <input type="button"
+                                id="cimod-{{shortname}}"
+                                value="{{buystr}}"
+                                data-product="{{shortname}}"
+                                data-maxquant="{{maxdeliveryquant}}"
+                                class="local-shop-add-unit"
+                                {{{disabled}}} /><br/>
 
+                <div class="shop-front-pricelist">
+                    {{^pricelist}}
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                    <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                    {{/pricelist}}
+                    {{#pricelist}}
+
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                        {{#prices}}
+                        <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                        <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                        {{/prices}}
+                    {{/pricelist}}
                 </div>
                 {{/available}}
-
-                <button type="button" class="btn btn-default" style="margin-top: 20px" data-dismiss="modal">{{#str}}close, local_shop{{/str}}</button>
+                {{#isbundlepart}}
+                <div class="shadowed">
+                {{#str}}isbundlepart_desc, local_shop{{/str}}
                 </div>
+                {{/isbundlepart}}
+
+                <img
+                    data-dismiss="modal"
+                    alt="{{#str}}close, local_shop{{/str}}"
+                    aria-hidden="true"
+                    src="{{{pixcloseurl}}}"
+                    style="position:absolute; top:2px; right:2px" />
+                <!-- button
+                    type="button"
+                    class="btn btn-default"
+                    style="margin-top: 20px"
+                    data-dismiss="modal">{{#str}}close, local_shop{{/str}}</button -->
+            </div>
+        </div>
+
+        <div class="modal-content shop-modal-box">
+            <h2 class="shop-front-partof">{{{name}}}</h2>
+            {{{description}}}
         </div>
     </div>
-    {{/isshortdescription}}
+</div>
+{{/isshortdescription}}
 <!-- /local_shop/front_modal_product -->

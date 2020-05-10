@@ -52,6 +52,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         } else {
             $template->heading = get_string('bill', 'local_shop');
         }
+
         $template->billunique = 'B-'.date('Ymd', $afullbill->emissiondate).'-'.$afullbill->id;
         $template->emissiondate = userdate($afullbill->emissiondate);
 
@@ -573,7 +574,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param object $bill
      */
     public function full_bill_taxes($bill) {
-        global $OUTPUT, $PAGE;
+        global $PAGE;
 
         $renderer = $PAGE->get_renderer('local_shop');
 
@@ -589,35 +590,31 @@ class shop_bills_renderer extends local_shop_base_renderer {
     }
 
     public function field_start($legend, $class) {
+        $template = new StdClass;
+        $template->varclass = $class;
+        $template->legend = $legend;
 
-        $str = '';
-        $str .= '<fieldset class="'.$class."\">\n";
-        $str .= '<legend>'.$legend."</legend>\n";
-
-        return $str;
+        return $this->output->render_from_template('local_shop/bills_field_start', $template);
     }
 
     public function field_end() {
-        return '</fieldset>';
+        $template = new StdClass;
+        return $this->output->render_from_template('local_shop/bills_field_end', $template);
     }
 
     public function bill_footer($bill) {
-        $str = '';
-
-        // Weird effect of empty on a magic attribute.
         $billfooter = $bill->thecatalogue->billfooter;
+        $template = new StdClass;
+        $systemcontext = context_system::instance();
         if (!empty($billfooter)) {
-            $str .= '<div class="shop-bill-footer">';
-            $str .= $billfooter;
-            $str .= '</div>';
+            $billfooter = file_rewrite_pluginfile_urls($billfooter, 'pluginfile.php', $systemcontext->id,
+                'local_shop', 'catalogbillfooter', $bill->thecatalogue->id, null);
+            $template->billfooter = $billfooter;
         }
-
-        return $str;
+        return $this->output->render_from_template('local_shop/bills_bill_footer', $template);
     }
 
     public function bill_merchant_line($portlet) {
-
-        $str = '';
 
         if (is_null($portlet)) {
             $template = new StdClass;
@@ -704,16 +701,13 @@ class shop_bills_renderer extends local_shop_base_renderer {
                         'at' => $ordering);
         $relocateurl = new moodle_url('/local/shop/bills/view.php', $params);
 
-        $str = '';
-
-        $str .= '<tr class="billRow">';
-        $str .= '<td>';
         $pixurl = $OUTPUT->image_url('relocatebox', 'local_shop');
-        $str .= '<a href="'.$relocateurl.'"><img src="'.$pixurl.'" class="shop-relocate-box" ></a>';
-        $str .= '</td>';
-        $str .= '</tr>';
 
-        return $str;
+        $template = new StdClass;
+        $template->relocateurl = $relocateurl;
+        $template->pixurl = $pixurl;
+
+        return $this->output->render_from_template('local_shop/bills_relocate_box', $template);
     }
 
     public function attachments($bill) {
@@ -772,26 +766,20 @@ class shop_bills_renderer extends local_shop_base_renderer {
     }
 
     public function bill_controls($bill) {
-
-        $str = '';
-        $str .= '<table width="100%">';
-        $str .= '<tr>';
-        $str .= '<td align="right">';
+        $template = new StdClass;
 
         if (empty($bill->idnumber)) {
+            $template->bill = false;
             $params = array('id' => $this->theshop->id, 'billid' => $bill->id);
             $billitemurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
-            $str .= '<a href="'.$billitemurl.'">'.get_string('newbillitem', 'local_shop').'</a> - ';
+            $template->billitemurl = $billitemurl;
+        } else {
+            $template->bill = true;
         }
-        $params = array('id' => $this->theshop->id, 'view' => 'viewBill', 'billid' => $bill->id, 'what' => 'recalculate');
+        $params = ['id' => $this->theshop->id, 'view' => 'viewBill', 'billid' => $bill->id, 'what' => 'recalculate'];
         $recalcurl = new moodle_url('/local/shop/bills/view.php', $params);
-        $str .= '<a href="'.$recalcurl.'">'.get_string('recalculate', 'local_shop').'</a>';
-        $str .= '</td>';
-        $str .= '</tr>';
-        $str .= '</table>';
-        $str .= '<br />';
-
-        return $str;
+        $template->recalcurl = $recalcurl;
+        return $this->output->render_from_template('local_shop/bills_bill_controls', $template);
     }
 
     public function lettering_form($shopid, &$afullbill) {
@@ -837,28 +825,22 @@ class shop_bills_renderer extends local_shop_base_renderer {
     }
 
     public function search_results($results, $theshop) {
-
-        $str = '<table width="100%" class="generaltable">';
-        foreach ($results as $bill) {
+        $template = new StdClass;
+        $odd = 0;
+        foreach ($result as $bill) {
             $afullbill = Bill::get_by_transaction($bill->transactionid);
-            $str .= $this->search_bill_line($afullbill);
+            $bill->lineclass = ($odd) ? 'r0' : 'r1';
+            $odd = ($odd + 1) % 2;
+            $template->afullbill[] = $bill;
         }
 
-        $str .= '</table>';
-
-        return $str;
+        return $this->output->render_from_template('local_shop/bills_search_result', $template);
     }
 
     public function bill_status_line($status) {
-
-        $str = '';
-        $str .= '<tr>';
-        $str .= '<td colspan="5" class="grouphead">';
-        $str .= '<b>'.get_string('bill_' . $status . 's', 'local_shop').'</b>';
-        $str .= '</td>';
-        $str .= '</tr>';
-
-        return $str;
+        $template = new StdClass;
+        $template->statusstr = get_string('bill_'.$status.'s', 'local_shop');
+        return $this->output->render_from_template('local_shop/bills_bill_status_line', $template);
     }
 
     public function bill_group_subtotal($subtotal, $billcurrency, $samecurrency) {
@@ -866,11 +848,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $template->subtotal = sprintf('%.2f', round($subtotal, 2));
         $template->currency = get_string($billcurrency.'symb', 'local_shop');
-        if ($samecurrency) {
-            $template->issamecurency = true;
-        } else {
-            $template->issamecurency = false;
-        }
+        $template->issamecurrency = $samecurrency;
 
         return $this->output->render_from_template('local_shop/bills_group_subtotal', $template);
     }
@@ -891,14 +869,12 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $excelurl = new moodle_url('/local/shop/export/export.php', $params);
         $billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
 
-        $str = '';
+        $template = new StdClass;
 
-        $str .= '<div id="shop-bill-view-links">';
-        $str .= '<a class="btn button" href="'.$excelurl.'" target="_blank">'.get_string('exportasxls', 'local_shop').'</a>';
-        $str .= ' - <a class="btn button" href="'.$billurl.'">'.get_string('newbill', 'local_shop').'</a>';
-        $str .= '</div>';
+        $template->excelurl = $excelurl;
+        $template->billurl = $billurl;
 
-        return $str;
+        return $this->output->render_from_template('local_shop/bills_bill_view_links', $template);
     }
 
     public function no_paging_switch($url, $urlfilter) {
@@ -916,7 +892,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
     }
 
     public function bill_options($mainrenderer, $fullview) {
-        global $OUTPUT;
+        global $SESSION;
 
         $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
         $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
@@ -928,7 +904,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $customerid = optional_param('customerid', 0, PARAM_INT);
         $shopid = optional_param('shopid', 1, PARAM_INT);
 
-        $template = new \StdClass;
+        $template = new StdClass;
 
         $params = array('view' => 'viewAllBills',
                         'dir' => $dir,
@@ -938,8 +914,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
                         'shopid' => $shopid,
                         'cur' => $cur,
                         'y' => $y,
-                        'm' => $m
-                        );
+                        'm' => $m);
 
         $url = new moodle_url('/local/shop/bills/view.php', $params);
         $url->remove_params('cur');
@@ -981,6 +956,6 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $template->switchviewstr = get_string('fullviewon', 'local_shop');
         }
 
-        return $OUTPUT->render_from_template('local_shop/bills_options', $template);
+        return $this->output->render_from_template('local_shop/bills_options', $template);
     }
 }

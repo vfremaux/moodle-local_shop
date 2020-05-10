@@ -23,7 +23,7 @@
 }}
 <!-- local_shop/front_customer_form -->
 <div id="shop-customerdata">
-    <table cellspacing="3" width="100%">
+    <table cellspacing="3" width="100%" class="generaltable shoptable">
         <tr valign="top">
             <td align="right" class="form-label">
                 <b>{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</b>
@@ -112,10 +112,22 @@
                 <b>{{#str}}email, local_shop{{/str}}<sup style="color: red">*</sup>:</b>
             </td>
             <td align="left" class="form-input">
+                {{#mailislocked}}
+                <input type="text"
+                       name="customerinfo::email_disabled"
+                       size="30"
+                       value="{{{email}}}" disabled="disabled" />
+                <input type="hidden" name="customerinfo::email" value="{{{email}}}" />
+                {{#notsamemail}}
+                <br/><div class="shop-warning">{{#str}}notsameaccountmail, local_shop, {{givenmail}} {{/str}}</div>
+                {{/notsamemail}}
+                {{/mailislocked}}
+                {{^mailislocked}}
                 <input type="text"
                        name="customerinfo::email"
                        size="30"
                        onchange="checkemail(this)" value="{{{email}}}" />
+                {{/mailislocked}}
             </td>
         </tr>
     </table>

@@ -50,6 +50,16 @@ echo $out;
 
 // Start ptinting page.
 
+if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_COMPLETE) {
+    echo '<center>';
+    echo $renderer->progress('BILL');
+    echo '</center>';
+} else {
+    echo '<center>';
+    echo $renderer->progress('PENDING');
+    echo '</center>';
+}
+
 echo $OUTPUT->box_start('', 'shop-invoice');
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
@@ -102,9 +112,6 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
         echo $OUTPUT->box_end();
     }
 } else {
-    echo '<center>';
-    echo $renderer->progress('PENDING');
-    echo '</center>';
 
     echo $OUTPUT->box_start();
     echo $config->sellername.' ';

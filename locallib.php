@@ -556,6 +556,9 @@ function shop_trace($str, $output = '', $dest = null) {
             return;
         }
     } else if ($output == 'mail') {
+        if (empty($dest)) {
+            throw new coding_exception("Shop mail trace needs the destination user to be set");
+        }
         if (!empty($CFG->merchantmailtrace)) {
             shop_trace_open($str, $output);
             return;

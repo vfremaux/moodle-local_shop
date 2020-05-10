@@ -74,7 +74,6 @@ if (empty($category)) {
 }
 
 $categories = $thecatalog->get_all_products($shopproducts);
-
 echo $out;
 
 $units = 0;
@@ -89,7 +88,6 @@ echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 echo $OUTPUT->box(format_text($theshop->description, $theshop->descriptionformat), 'shop-description');
 
 echo $renderer->admin_options();
-echo $renderer->progress('CHOOSE');
 
 echo '<form name="caddie" action="">';
 echo '<table width="100%" cellspacing="10"><tr valign="top"><td width="*">';

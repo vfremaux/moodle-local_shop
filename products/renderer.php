@@ -92,7 +92,23 @@ class shop_products_renderer extends local_shop_base_renderer {
             $template->id = $product->id;
             $template->statusclass = strtolower($product->status);
             $template->slaveclass  = (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) ? '' : 'engraved slaved';
-            $template->thumburl = $product->get_thumb_url();
+
+            $template->thumburl = '';
+            // Get Handler guessed image.
+            list($handler, $unusedmethod) = $product->get_handler_info('get_alternative_thumbnail_url', '');
+            if (!empty($handler)) {
+                $template->thumburl = $handler->get_alternative_thumbnail_url($product);
+            }
+
+            $thumburloverride = $product->get_thumb_url(!empty($template->thumburl));
+            if (!empty($thumburloverride)) {
+                $template->thumburl = $thumburloverride;
+            }
+            if (empty($template->thumburl)) {
+                // Get the absolute default as last chance.
+                $template->thumburl = $product->get_thumb_url(false);
+            }
+
             $template->code = $product->code;
             $template->shortname = $product->shortname;
             $template->name = format_string($product->name);
@@ -143,7 +159,7 @@ class shop_products_renderer extends local_shop_base_renderer {
                 $cmds .= '<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/copy', get_string('copy')).'</a> ';
 
                 $deletestr = get_string('deleteproduct', 'local_shop');
-                $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'items[]' => $product->id);
+                $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid' => $product->id);
                 $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
                 $cmds .= '&nbsp;<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/delete', $deletestr).'</a>';
             }
@@ -197,7 +213,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template->thumburl = $set->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = $OUTPUT->image_url('productset', 'local_shop');
+            $template->thumburl = $OUTPUT->pix_url('productset', 'local_shop');
         }
         $template->code = $set->code;
         $template->shortname = $set->shortname;
@@ -269,7 +285,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $template->engravedclass = ((@$bundle->masterrecord == 0) ? '' : 'engraved');
         $template->thumburl = $bundle->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = $OUTPUT->image_url('productbundle', 'local_shop');
+            $template->thumburl = local_shop_pix_url('productbundle', 'local_shop');
         }
         $template->code = $bundle->code;
         $template->shortname = $bundle->shortname;
@@ -547,18 +563,17 @@ class shop_products_renderer extends local_shop_base_renderer {
         $catoptions = array();
         $this->feed_chooser($catoptions, $categories);
 
-        $str = '';
-
-        if (count($categories) > 1) {
-
-            $name = 'categoryid';
-            $str .= '<div class="shop-category-chooser">';
-            $params = array(0 => get_string('allcategories', 'local_shop'));
-            $str .= get_string('category', 'local_shop').' : '.$OUTPUT->single_select($url, $name, $catoptions, $current, $params);
-            $str .= '</div>';
+        if (count($categories) <= 1) {
+            return '';
         }
 
-        return $str;
+        $template = new StdClass;
+        $name = 'categoryid';
+        $params = array(0 => get_string('allcategories', 'local_shop'));
+        $categoryselect = $OUTPUT->single_select($url, $name, $catoptions, $current, $params);
+        $template->categories = get_string('category', 'local_shop').' : '.$categoryselect;
+
+        return $this->output->render_from_template('local_shop/products_category_chooser', $template);
     }
 
     protected function feed_chooser(&$catoptions, $categories, $prefix = '') {
@@ -604,7 +619,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $subs = Category::get_instances(array('catalogid' => $this->thecatalog->id,
                                               'parentid' => $category->id), "$order $dir");
 
-        $params = array('id' => $this->theshop->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
+        $params = array('catalogid' => $this->thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
         $url = new moodle_url('/local/shop/products/category/view.php', $params);
         $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid);
         $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
@@ -626,19 +641,19 @@ class shop_products_renderer extends local_shop_base_renderer {
         $row[] = $DB->count_records('local_shop_catalogitem', array('categoryid' => $category->id));
 
         if ($category->visible) {
-            $pixurl = $OUTPUT->image_url('t/hide');
+            $pixurl = local_shop_pix_url('t/hide', 'core');
             $cmd = 'hide';
         } else {
-            $pixurl = $OUTPUT->image_url('t/show');
+            $pixurl = local_shop_pix_url('t/show', 'core');
             $cmd = 'show';
         }
         $commands = "<a href=\"{$url}&amp;what=$cmd&amp;categoryid={$category->id}\"><img src=\"$pixurl\" /></a>";
-        $params = array('id' => $this->theshop->id, 'categoryid' => $category->id, 'what' => 'updatecategory');
+        $params = array('catalogid' => $this->thecatalog->id, 'categoryid' => $category->id, 'what' => 'updatecategory');
         $editurl = new moodle_url('/local/shop/products/category/edit_category.php', $params);
         $commands .= '&nbsp;<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 
         if (empty($subs)) {
-            $params = array('shopid' => $this->theshop->id,
+            $params = array('catalogid' => $this->thecatalog->id,
                             'view' => 'viewAllCategories',
                             'order' => $order,
                             'dir' => $dir,

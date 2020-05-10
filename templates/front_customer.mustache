@@ -5,14 +5,10 @@
 <div id="shop-customer-info" class="shop-data">
 
     {{#canlogin}}
-    <form name="loginform" action="{{{loginurl}}}" method="post">
-    <input type="hidden" name="wantsurl" value"{{{shopurl}}}">
-    <input type="hidden" name="id" value="{{shopid}}" />
-
         <fieldset>
         <legend>{{#str}}login, local_shop{{/str}}</legend>
 
-        <table width="100%" class="generaltable">
+        <table width="100%">
             <tr valign="top">
                 <td>
                     {{{loginform}}}
@@ -20,20 +16,24 @@
             </tr>
         </table>
         </fieldset>
-    </form>
     {{/canlogin}}
 
     <form name="driverform" action="{{{shopurl}}}" method="post">
 
     <fieldset>
+        {{#canlogin}}
+        <legend>{{#str}}newaccountinfo, local_shop{{/str}}</legend>
+        {{/canlogin}}
+        {{^canlogin}}
         {{#oldaccount}}
         <legend>{{#str}}customerinfo, local_shop{{/str}}</legend>
         {{/oldaccount}}
         {{^oldaccount}}
-        <legend>{{#str}}newaccountinfo, local_shop{{/str}}</legend>
+        <legend>{{#str}}addcustomerinfo, local_shop{{/str}}</legend>
         {{/oldaccount}}
+        {{/canlogin}}
 
-        <table width="100%" class="generaltable">
+        <table width="100%">
             <tr valign="top">
                 <td>
                     {{{customerinfoerrors}}}

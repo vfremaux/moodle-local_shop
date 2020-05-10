@@ -50,11 +50,11 @@ echo $out;
 
 // Start ptinting page.
 
+echo $renderer->progress('CONFIRM');
+
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $OUTPUT->box_start('', 'orderpanel');
-
-echo $renderer->progress('CONFIRM');
 
 echo $renderer->admin_options();
 

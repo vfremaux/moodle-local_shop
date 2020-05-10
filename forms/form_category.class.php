@@ -46,9 +46,8 @@ class Category_Form extends moodleform {
 
         $mform =& $this->_form;
 
-        // The shop id.
-        $mform->addElement('hidden', 'id');
-        $mform->setType('id', PARAM_INT);
+        $mform->addElement('hidden', 'catalogid');
+        $mform->setType('catalogid', PARAM_INT);
 
         $mform->addElement('hidden', 'categoryid');
         $mform->setType('categoryid', PARAM_INT);

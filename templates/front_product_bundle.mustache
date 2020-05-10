@@ -32,16 +32,7 @@
         {{/ispart}}
         {{^ispart}}
             <h1>{{{name}}}</h1>
-            {{#hasdescription}}
-                <h2 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
-                    {{{description}}}
-                </h2>
-                {{#shortdescription}}
-                <div class="shop-front-description-toggle">
-                    <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
-                </div>
-                {{/shortdescription}}
-            {{/hasdescription}}
+            {{> local_shop/front_modal_product }}
         {{/ispart}}
 
         {{#hasleaflet}}
@@ -56,47 +47,56 @@
                 {{/elements}}
             </div>
 
-            <div class="shop-front-pricelist">
-                <div class="shop-front-ref">{{refstr}}&nbsp;: {{code}}</div>
-                {{^pricelist}}
-                <div class="shop-front-label">{{puttcstr}}</div>
-                <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
-                {{/pricelist}}
-                {{#pricelist}}
+            {{#canorder}}
+            <div class="shop-front-refblock">
+                <div class="shop-front-ref">{{refstr}}&nbsp;: {{{code}}}</div>
 
-                {{#prices}}
-                <div class="shop-front-label">{{puttcstr}}</div>
-                <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
-                <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
-                {{/prices}}
-                {{/pricelist}}
-            </div>
+                <div class="shop-front-pricelist">
+                    {{^pricelist}}
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                    <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                    {{/pricelist}}
+                    {{#pricelist}}
 
-            <div class="shop-front-order">
-                {{#password}}
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                        {{#prices}}
+                        <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                        <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                        {{/prices}}
+                    {{/pricelist}}
+                </div>
 
-                <input type="text"
-                       id = "ci-pass-{{shortname}}"
-                       value = ""
-                       maxlength = "8"
-                       size = "8"
-                       onkeypress = "{{{jshandler}}}"
-                       title = "{{needspasscodetobuystr}}" />
-                <div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
-                {{/password}}
+                {{#available}}
+                <div class="shop-front-order">
+                    {{#password}}
+                    <input type="text"
+                            id="ci-pass-{{shortname}}"
+                            data-product="{{shortname}}"
+                            value=""
+                            maxlength="8"
+                            size="8"
+                            class="local-shop-password"
+                            title="{{needspasscodetobuystr}}" />
+                    <div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
 
-                <input type="button"
-                    id = "ci-{{shortname}}"
-                    value = "{{buystr}}"
-                    onclick = "{{{jshandleraddunit}}}" {{{disabled}}} />
+                    {{/password}}
+                    <input type="button"
+                                    id="ci-{{shortname}}"
+                                    value="{{buystr}}"
+                                    data-product="{{shortname}}"
+                                    data-maxquant="{{maxdeliveryquant}}"
+                                    class="local-shop-add-unit"
+                                    {{{disabled}}} />
 
-            </div>
+                </div>
+                {{/available}}
 
-            <div class="shop-order-bag">
-                <div class = "shop-order-item" id="bag_{{shortname}}">
-                    {{{units}}}
+                <div class="shop-order-bag">
+                    <div class="shop-order-item" id="bag_{{shortname}}">{{{units}}}</div>
                 </div>
             </div>
+            {{/canorder}}
+
         </div>
     </div>
 </div>

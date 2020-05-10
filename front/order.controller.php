@@ -22,6 +22,8 @@
  */
 namespace local_shop\front;
 
+use \StdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
@@ -36,7 +38,7 @@ class order_controller extends front_controller_base {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass;
         }
 
         switch ($cmd) {
