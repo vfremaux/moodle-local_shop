@@ -89,6 +89,22 @@ class Catalog extends ShopObject {
     }
 
     /**
+     * Gets first available category in current catalog.
+     */
+    public function get_first_category() {
+        global $DB;
+
+        $params = ['catalogid' => $this->id, 'parentid' => 0];
+        $firstcategoryarr = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', '*', 0, 1);
+        if ($firstcategoryarr) {
+            $values = array_values($firstcategoryarr);
+            $fc = array_pop($values);
+            return $fc;
+        }
+        return null;
+    }
+
+    /**
      * Get all catalog ids that reside in the same catalog dependency group
      * @param int $catalogid
      * @return an array of ids that are linked to this catalog
@@ -496,16 +512,20 @@ class Catalog extends ShopObject {
     /**
      * Queries a catalog to find a complete catalog item instance
      * @param string $shortname the shortname of the product
+     * @param boolean $mustexist if false, the function returns a "new item"
+     * empty element.
      * @return a CatalogItem object
      */
-    public function get_product_by_shortname($shortname) {
+    public function get_product_by_shortname($shortname, $mustexist = false) {
         global $DB;
 
         $params = array('catalogid' => $this->id, 'shortname' => $shortname);
         $record = $DB->get_record('local_shop_catalogitem', $params);
-        $catalogitem = new CatalogItem($record);
-
-        return $catalogitem;
+        if (!$mustexist || $record) {
+            $catalogitem = new CatalogItem($record);
+            return $catalogitem;
+        }
+        return null;
     }
 
     /**

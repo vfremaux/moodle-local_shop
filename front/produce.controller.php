@@ -41,7 +41,7 @@ class production_controller extends front_controller_base {
     protected $ipncall;
 
     /**
-     * this boolean value is true if the paiment is interactive, using online payment methods.
+     * this boolean value is true if the payment is interactive, using online payment methods.
      */
     public $interactive;
 
@@ -208,6 +208,10 @@ class production_controller extends front_controller_base {
                         }
                         if (!$holding) {
                             // If holding for repeatable tests, do not complete the bill.
+                            shop_trace("[{$afullbill->transactionid}] ".'Production Controller : Updating bill state to '.$afullbill->status);
+                            if ($this->interactive && $this->ipncall) {
+                                mtrace("[{$afullbill->transactionid}] ".'Production Controller : Updating bill state to '.$afullbill->status);
+                            }
                             $afullbill->save();
                         }
                     }

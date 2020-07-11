@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/backup/util/includes/restore_includes.php');
 require_once($CFG->libdir.'/filestorage/tgz_packer.php');
+require_once($CFG->dirroot.'/local/shop/compatlib.php');
 
 use local_shop\Catalog;
 use local_shop\Shop;
@@ -556,6 +557,9 @@ function shop_trace($str, $output = '', $dest = null) {
             return;
         }
     } else if ($output == 'mail') {
+        if (empty($dest)) {
+            throw new coding_exception("Shop mail trace needs the destination user to be set");
+        }
         if (!empty($CFG->merchantmailtrace)) {
             shop_trace_open($str, $output);
             return;

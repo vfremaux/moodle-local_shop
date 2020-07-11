@@ -30,6 +30,7 @@ use \core_privacy\local\request\writer;
 use \core_privacy\local\request\helper as request_helper;
 use \core_privacy\local\metadata\collection;
 use \core_privacy\local\request\transform;
+use \context_system;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -155,55 +156,16 @@ class provider implements
 
     /**
      * Get the list of contexts that contain user information for the specified user.
-     *
-     * In the case of forum, that is any forum where the user has made any post, rated any content, or has any preferences.
+     * All the user data are in systemlevel context. We pass the user's context to find him in exports.
      *
      * @param   int         $userid     The user to search.
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid) : \core_privacy\local\request\contextlist {
 
-        $ratingsql = \core_rating\privacy\provider::get_sql_join('rat', 'mod_forum', 'post', 'p.id', $userid);
-        // Fetch all forum discussions, and forum posts.
-        $sql = "SELECT c.id
-                  FROM {context} c
-                  JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
-                  JOIN {modules} m ON m.id = cm.module AND m.name = :modname
-                  JOIN {forum} f ON f.id = cm.instance
-             LEFT JOIN {forum_discussions} d ON d.forum = f.id
-             LEFT JOIN {forum_posts} p ON p.discussion = d.id
-             LEFT JOIN {forum_digests} dig ON dig.forum = f.id AND dig.userid = :digestuserid
-             LEFT JOIN {forum_subscriptions} sub ON sub.forum = f.id AND sub.userid = :subuserid
-             LEFT JOIN {forum_track_prefs} pref ON pref.forumid = f.id AND pref.userid = :prefuserid
-             LEFT JOIN {forum_read} hasread ON hasread.forumid = f.id AND hasread.userid = :hasreaduserid
-             LEFT JOIN {forum_discussion_subs} dsub ON dsub.forum = f.id AND dsub.userid = :dsubuserid
-             {$ratingsql->join}
-                 WHERE (
-                    p.userid        = :postuserid OR
-                    d.userid        = :discussionuserid OR
-                    dig.id IS NOT NULL OR
-                    sub.id IS NOT NULL OR
-                    pref.id IS NOT NULL OR
-                    hasread.id IS NOT NULL OR
-                    dsub.id IS NOT NULL OR
-                    {$ratingsql->userwhere}
-                )
-        ";
-        $params = [
-            'modname'           => 'forum',
-            'contextlevel'      => CONTEXT_MODULE,
-            'postuserid'        => $userid,
-            'discussionuserid'  => $userid,
-            'digestuserid'      => $userid,
-            'subuserid'         => $userid,
-            'prefuserid'        => $userid,
-            'hasreaduserid'     => $userid,
-            'dsubuserid'        => $userid,
-        ];
-        $params += $ratingsql->params;
-
         $contextlist = new \core_privacy\local\request\contextlist();
-        $contextlist->add_from_sql($sql, $params);
+        $contextlist->add_system_context();
+        $contextlist->add_user_context($userid);
 
         return $contextlist;
     }
@@ -223,131 +185,105 @@ class provider implements
         $user = $contextlist->get_user();
         $userid = $user->id;
 
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-
-        $sql = "SELECT
-                    c.id AS contextid,
-                    f.*,
-                    cm.id AS cmid,
-                    dig.maildigest,
-                    sub.userid AS subscribed,
-                    pref.userid AS tracked
-                  FROM {context} c
-                  JOIN {course_modules} cm ON cm.id = c.instanceid
-                  JOIN {forum} f ON f.id = cm.instance
-             LEFT JOIN {forum_digests} dig ON dig.forum = f.id AND dig.userid = :digestuserid
-             LEFT JOIN {forum_subscriptions} sub ON sub.forum = f.id AND sub.userid = :subuserid
-             LEFT JOIN {forum_track_prefs} pref ON pref.forumid = f.id AND pref.userid = :prefuserid
-                 WHERE (
-                    c.id {$contextsql}
-                )
-        ";
-
-        $params = [
-            'digestuserid'  => $userid,
-            'subuserid'     => $userid,
-            'prefuserid'    => $userid,
-        ];
-        $params += $contextparams;
-
-        // Keep a mapping of forumid to contextid.
-        $mappings = [];
-
-        $forums = $DB->get_recordset_sql($sql, $params);
-        foreach ($forums as $forum) {
-            $mappings[$forum->id] = $forum->contextid;
-
-            $context = \context::instance_by_id($mappings[$forum->id]);
-
-            // Store the main forum data.
-            $data = request_helper::get_context_data($context, $user);
-            writer::with_context($context)
-                ->export_data([], $data);
-            request_helper::export_context_files($context, $user);
-
-            // Store relevant metadata about this forum instance.
-            static::export_digest_data($userid, $forum);
-            static::export_subscription_data($userid, $forum);
-            static::export_tracking_data($userid, $forum);
+        $customeraccount = $DB->get_record('local_shop_customer', ['hasaccount' => $userid]);
+        self::export_customer_account($user, $customeraccount);
+        $bills = $DB->get_records('local_shop_bill', ['customerid' => $customeraccount->id], 'ordering');
+        if (!empty($bills)) {
+            foreach ($bills as $bill) {
+                self::export_bill($user, $bill);
+                $items = $DB->get_records('local_shop_billitem', ['billid' => $bill->id], 'ordering');
+                if (!empty($items)) {
+                    foreach ($items as $item) {
+                        self::export_bill_item($user, $item);
+                    }
+                }
+            }
         }
-        $forums->close();
 
-        if (!empty($mappings)) {
-            // Store all discussion data for this forum.
-            static::export_discussion_data($userid, $mappings);
-
-            // Store all post data for this forum.
-            static::export_all_posts($userid, $mappings);
+        $products = $DB->get_records('local_shop_product', ['customerid' => $customeraccount->id], 'startdate');
+        if (!empty($products)) {
+            foreach ($products as $product) {
+                self::export_product($user, $product);
+                $events = $DB->get_records('local_shop_productevent', ['productid' => $product->id], 'datecreated');
+                if (!empty($events)) {
+                    foreach($events as $event) {
+                        self::export_product_event($user, $event);
+                    }
+                }
+            }
         }
     }
 
-    /**
-     * Store all information about all discussions that we have detected this user to have access to.
-     *
-     * @param   int         $userid The userid of the user whose data is to be exported.
-     * @param   array       $mappings A list of mappings from forumid => contextid.
-     * @return  array       Which forums had data written for them.
-     */
-    protected static function export_discussion_data(int $userid, array $mappings) {
+    protected static function export_customer_account($user, $recordobj) {
         global $DB;
 
-        // Find all of the discussions, and discussion subscriptions for this forum.
-        list($foruminsql, $forumparams) = $DB->get_in_or_equal(array_keys($mappings), SQL_PARAMS_NAMED);
-        $sql = "SELECT
-                    d.*,
-                    g.name as groupname,
-                    dsub.preference
-                  FROM {forum} f
-                  JOIN {forum_discussions} d ON d.forum = f.id
-             LEFT JOIN {groups} g ON g.id = d.groupid
-             LEFT JOIN {forum_discussion_subs} dsub ON dsub.discussion = d.id AND dsub.userid = :dsubuserid
-             LEFT JOIN {forum_posts} p ON p.discussion = d.id
-                 WHERE f.id ${foruminsql}
-                   AND (
-                        d.userid    = :discussionuserid OR
-                        p.userid    = :postuserid OR
-                        dsub.id IS NOT NULL
-                   )
-        ";
-
-        $params = [
-            'postuserid'        => $userid,
-            'discussionuserid'  => $userid,
-            'dsubuserid'        => $userid,
-        ];
-        $params += $forumparams;
-
-        // Keep track of the forums which have data.
-        $forumswithdata = [];
-
-        $discussions = $DB->get_recordset_sql($sql, $params);
-        foreach ($discussions as $discussion) {
-            // No need to take timestart into account as the user has some involvement already.
-            // Ignore discussion timeend as it should not block access to user data.
-            $forumswithdata[$discussion->forum] = true;
-            $context = \context::instance_by_id($mappings[$discussion->forum]);
-
-            // Store related metadata for this discussion.
-            static::export_discussion_subscription_data($userid, $context, $discussion);
-
-            $discussiondata = (object) [
-                'name' => format_string($discussion->name, true),
-                'pinned' => transform::yesno((bool) $discussion->pinned),
-                'timemodified' => transform::datetime($discussion->timemodified),
-                'usermodified' => transform::datetime($discussion->usermodified),
-                'creator_was_you' => transform::yesno($discussion->userid == $userid),
-            ];
-
-            // Store the discussion content.
-            writer::with_context($context)
-                ->export_data(static::get_discussion_area($discussion), $discussiondata);
-
-            // Forum discussions do not have any files associately directly with them.
+        if (!$recordobj) {
+            return;
         }
 
-        $discussions->close();
+        // Necessary format transforms
+        $recordobj->hasaccount = transform::user($recordobj->hasaccount);
+        $recordobj->timecreated = transform::datetime($recordobj->timecreated);
 
-        return $forumswithdata;
+        // Data about the record.
+        writer::with_context(context_system::instance())->export_data([$recordobj->id], (object) $recordobj);
+    }
+
+    protected static function export_bill($user, $recordobj) {
+        global $DB;
+
+        if (!$recordobj) {
+            return;
+        }
+
+        $recordobj->userid = transform::user($recordobj->userid);
+        $recordobj->emissiondate = transform::datetime($recordobj->emissiondate);
+        $recordobj->lastactiondate = transform::datetime($recordobj->lastactiondate);
+        $recordobj->assignedto = transform::user($recordobj->assignedto);
+        $recordobj->ignoretax = transform::yesno($recordobj->ignoretax);
+
+        // Data about the record.
+        writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
+    }
+
+    protected static function export_bill_item($user, $recordobj) {
+        global $DB;
+
+        if (!$recordobj) {
+            return;
+        }
+
+        // Data about the record.
+        writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
+    }
+
+    protected static function export_product($user, $recordobj) {
+        global $DB;
+
+        if (!$recordobj) {
+            return;
+        }
+
+        $recordobj->customerid = transform::user($recordobj->customerid);
+        $recordobj->startdate = transform::datetime($recordobj->startdate);
+        $recordobj->enddate = transform::datetime($recordobj->enddate);
+        $recordobj->deleted = transform::yesno($recordobj->deleted);
+
+        // Data about the record.
+        writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
+    }
+
+    protected static function export_product_event($user, $recordobj) {
+        global $DB;
+
+        if (!$recordobj) {
+            return;
+        }
+
+        $recordobj->datecreated = transform::datetime($recordobj->datecreated);
+
+        // Data about the record.
+        writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
     }
 
     /**

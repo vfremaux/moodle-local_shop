@@ -60,7 +60,7 @@ class Shop_Form extends moodleform {
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 
-        // The shopid.
+        // The edited shopid.
         $mform->addElement('hidden', 'shopid');
         $mform->setType('shopid', PARAM_INT);
 

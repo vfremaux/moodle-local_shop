@@ -32,6 +32,7 @@ $string['paypal'] = 'Paypal';
 $string['paypalaccepted'] = 'Paiement par Paypal';
 $string['paypalmsg'] = 'Merci d\'utiliser Paypal pour vos transactions en ligne';
 $string['paypalpaymodeparams'] = 'Paramètres de configuration Paypal';
+$string['paypalipnsimulation'] = 'Simulation de paiement Paypal (mode test uniquement)';
 $string['paypalsellertestname'] = 'Compte Paypal vendeur test (sandbox)';
 $string['paypalsellername'] = 'Compte Paypal vendeur';
 $string['pluginname'] = 'Moyen de paiement Paypal';

@@ -69,7 +69,7 @@ class reset_controller {
      * @param string $cmd
      */
     public function process($cmd) {
-        global $OUTPUT, $DB;
+        global $OUTPUT, $DB, $CFG;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
@@ -121,15 +121,19 @@ class reset_controller {
                 $DB->delete_records('local_shop_billitem', null);
                 $DB->delete_records('local_shop_product', null);
                 $DB->delete_records('local_shop_productevent', null);
+
+                // Empties the merchant trace.
+                $cmd = "echo '' > {$CFG->dataroot}/merchant_trace.log";
+                exec($cmd);
             }
-            $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'));
+            $out .= $OUTPUT->notification(get_string('billsdeleted', 'local_shop'), 'success');
         }
 
         $out .= "</code>";
 
         if (!empty($this->data->customers)) {
             $DB->delete_records('local_shop_customer', null);
-            $out .= $OUTPUT->notification(get_string('customersdeleted', 'local_shop'));
+            $out .= $OUTPUT->notification(get_string('customersdeleted', 'local_shop'), 'success');
         }
 
         if (!empty($this->data->catalogs)) {
@@ -141,7 +145,7 @@ class reset_controller {
                 $DB->delete_records('local_shop_catalogitem', array());
                 $DB->delete_records('local_shop_catalog', array());
             }
-            $out .= $OUTPUT->notification(get_string('catalogsdeleted', 'local_shop'));
+            $out .= $OUTPUT->notification(get_string('catalogsdeleted', 'local_shop'), 'success');
         }
 
         return $out;

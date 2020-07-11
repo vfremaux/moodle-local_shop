@@ -74,23 +74,14 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $str = '<center>';
-        $str .= '<table width="100%" cellspacing="10" class="generaltable">';
+        $template = new StdClass();
 
-        $str .= $this->catalog_admin_line(null);
         if ($catalogs) {
-            // Take the first and unique one.
-            $c = array_shift($catalogs);
-            if (empty($config->useslavecatalogs)) {
-                if ($c->ismaster || $c->isslave) {
-                    return;
-                }
+            foreach ($catalogs as $c) {
+                $template->catalogs[] = $this->catalog_admin_line($c);
             }
-            $str .= $this->catalog_admin_line($c);
         }
-        $str .= '</table>';
-        $str .= '</center>';
 
-        return $str;
+        return $this->output->render_from_template('local_shop/catalogs', $template);
     }
 }

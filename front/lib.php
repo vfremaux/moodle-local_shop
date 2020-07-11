@@ -439,3 +439,35 @@ function shop_checksum($productref) {
     $crc1 = $crc % $crccount;
     return $crcrange[$crc1].$crcrange[$crc2];
 }
+
+/**
+ * decodes SESSION and get all info for participant form.
+ * @param int &$maxseats the max number of seats of all the order, as max number of participants to
+ * input.
+ * @return array $orderbag an array of orderentries.
+ */
+function shop_get_orderbag($thecatalog) {
+    global $SESSION;
+
+    $maxseats = 0;
+
+    foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
+        $orderentry = new StdClass;
+        $orderentry->shortname = $shortname;
+        $orderentry->catalogentry = $thecatalog->get_product_by_shortname($shortname);
+
+        switch ($orderentry->catalogentry->quantaddressesusers) {
+            case SHOP_QUANT_AS_SEATS:
+                $orderentry->seats = $quantity;
+                break;
+            case SHOP_QUANT_ONE_SEAT:
+                $orderentry->seats = 1;
+                break;
+            default:
+                continue 2;
+        }
+        $orderbag[] = $orderentry;
+    }
+
+    return $orderbag;
+}

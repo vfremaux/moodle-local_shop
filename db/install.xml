@@ -99,7 +99,7 @@
         <FIELD NAME="requireddata" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="describes complementary data to ask to user"/>
         <FIELD NAME="enablehandler" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false" COMMENT="enabled pre and post purchase handler"/>
         <FIELD NAME="handlerparams" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="give params to handler"/>
-        <FIELD NAME="password" TYPE="char" SIZE="8" NOTNULL="false" SEQUENCE="false" COMMENT="Access password to the product"/>
+        <FIELD NAME="password" TYPE="char" LENGTH="8" NOTNULL="false" SEQUENCE="false" COMMENT="Access password to the product"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -344,15 +344,15 @@
     <TABLE NAME="local_shop_paypal_ipn" COMMENT="Tracks paypal IPN returns">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="tnxid" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="txnid" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="transid" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="paypalinfo" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="paypalinfo" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="result" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="tnxid_is_unique" TYPE="unique" FIELDS="tnxid"/>
+        <KEY NAME="txnid_is_unique" TYPE="unique" FIELDS="txnid"/>
         <KEY NAME="transid_is_unique" TYPE="unique" FIELDS="transid"/>
       </KEYS>
     </TABLE>
