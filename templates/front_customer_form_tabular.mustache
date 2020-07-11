@@ -1,0 +1,136 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_customer_form
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_customer_form_table -->
+<div id="shop-customerdata">
+    <table cellspacing="3" width="100%" class="shoptable">
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="customerinfo::lastname"
+                       size="20"
+                       onchange="setupper(this)" value="{{{lastname}}}" />
+            </td>
+        </tr>
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="customerinfo::firstname"
+                       size="20"
+                       onchange="capitalizewords(this)" value="{{{firstname}}}" />
+            </td>
+        </tr>
+
+        {{#customerorganisationrequired}}
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}organisation, local_shop{{/str}}:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="customerinfo::organisation"
+                       size="26"
+                       maxlength="64"
+                       value="{{{organisation}}}" />
+            </td>
+        </tr>
+        {{/customerorganisationrequired}}
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}address{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="customerinfo::address"
+                       size="26"
+                       onchange="setupper(this)" value="{{{address}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}city{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="customerinfo::city"
+                       size="26"
+                       onchange="setupper(this)" value="{{{city}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}zip, local_shop{{/str}}<sup style="color : red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="customerinfo::zip"
+                       size="6"
+                       value="{{zip}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}country{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                {{{countryselect}}}
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}email, local_shop{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                {{#mailislocked}}
+                <input type="text"
+                       name="customerinfo::email_disabled"
+                       size="30"
+                       value="{{{email}}}" disabled="disabled" />
+                <input type="hidden" name="customerinfo::email" value="{{{email}}}" />
+                {{#notsamemail}}
+                <br/><div class="shop-warning">{{#str}}notsameaccountmail, local_shop, {{givenmail}} {{/str}}</div>
+                {{/notsamemail}}
+                {{/mailislocked}}
+                {{^mailislocked}}
+                <input type="text"
+                       name="customerinfo::email"
+                       size="30"
+                       onchange="checkemail(this)" value="{{{email}}}" />
+                {{/mailislocked}}
+            </td>
+        </tr>
+    </table>
+
+</div>
+<!-- /local_shop/front_customer_form_table -->

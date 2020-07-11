@@ -31,6 +31,8 @@ use local_shop\Customer;
 
 $action = optional_param('what', '', PARAM_TEXT);
 
+ini_set('memory_limit', '512M');
+
 if (!empty($action)) {
     include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
     $controller = new \local_shop\backoffice\customers_controller();

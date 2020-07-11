@@ -270,7 +270,7 @@ class product_controller {
                  * Action depends on product type : for real products, unklinks from bundle or set.
                  * for bundles or sets, unlink all internal elements
                  */
-                 try {
+                try {
                     $item = new CatalogItem($this->data->itemid);
                     $item->unlink();
                 } catch (Exception $ex) {

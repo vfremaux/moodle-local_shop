@@ -157,6 +157,7 @@ function local_shop_get_file_areas() {
         'eula' => 'local_shop',
         'catalogdescription' => 'local_shop_catalog',
         'catalogsalesconditions' => 'local_shop_catalog',
+        'catalogbillfooter' => 'local_shop_catalog',
         'catalogitemdescription' => 'local_shop_catalogitem',
         'catalogitemnotes' => 'local_shop_catalogitem',
         'catalogitemthumb' => 'local_shop_catalogitem',

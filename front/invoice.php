@@ -29,6 +29,13 @@ use local_shop\Bill;
 
 $action = optional_param('what', '', PARAM_TEXT);
 $transid = required_param('transid', PARAM_RAW);
+
+if (!$afullbill = Bill::get_by_transaction($transid)) {
+    $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
+    $viewurl = new moodle_url('/local/shop/front/view.php', $params);
+    print_error('invalidtransid', 'local_shop', $viewurl);
+}
+
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/invoice.controller.php');
     $controller = new \local_shop\front\invoice_controller($theshop, $thecatalog, $theblock);
@@ -50,6 +57,16 @@ echo $out;
 
 // Start ptinting page.
 
+if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_COMPLETE) {
+    echo '<center>';
+    echo $renderer->progress('BILL');
+    echo '</center>';
+} else {
+    echo '<center>';
+    echo $renderer->progress('PENDING');
+    echo '</center>';
+}
+
 echo $OUTPUT->box_start('', 'shop-invoice');
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
@@ -57,10 +74,6 @@ echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 $afullbill = Bill::get_by_transaction($transid);
 
 if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_COMPLETE) {
-
-    echo '<center>';
-    echo $renderer->progress('BILL');
-    echo '</center>';
 
     echo $renderer->invoice_header($afullbill);
 
@@ -102,9 +115,6 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
         echo $OUTPUT->box_end();
     }
 } else {
-    echo '<center>';
-    echo $renderer->progress('PENDING');
-    echo '</center>';
 
     echo $OUTPUT->box_start();
     echo $config->sellername.' ';

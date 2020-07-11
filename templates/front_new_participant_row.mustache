@@ -1,0 +1,56 @@
+
+
+
+<!-- local_shop/front_new_participant_row -->
+<form name="participant">
+<table width="100%">
+    <tr>
+        <td align="left">{{#str}}lastname{{/str}}</td>
+        <td align="left">{{#str}}firstname{{/str}}</td>
+        <td align="left">{{#str}}email{{/str}}</td>
+        <td align="left">{{#str}}city{{/str}}</td>
+        {{#endusermobilephonerequired}}
+        <td align="left">{{#str}}phone2{{/str}}</td>
+        {{/endusermobilephonerequired}}
+        {{#enduserorganisationrequired}}
+        <td align="left">{{#str}}institution{{/str}}</td>
+        {{/enduserorganisationrequired}}
+        <td align="right"></td>
+    </tr>
+
+    <tr>
+        <td align="left">
+            <input type="text" name="lastname" size="15" />
+        </td>
+        <td align="left">
+            <input type="text" name="firstname" size="15" />
+        </td>
+        <td align="left">
+            <input type="text" name="email" size="20" />
+        </td>
+        <td align="left">
+            <input type="text" name="city" size="14" />
+        </td>
+        {{#endusermobilephonerequired}}
+        <td align="left">
+            <input type="text" name="phone2" size="13" maxlength="10" />
+        </td>
+        {{/endusermobilephonerequired}}
+        {{#enduserorganisationrequired}}
+        <td align="left">
+            <input type="text" name="institution" size="15" size="15" maxlength="40" />
+        </td>
+        {{/enduserorganisationrequired}}
+        <td align="right">
+            <input type="button"
+                   value="{{#str}}addparticipant, local_shop{{/str}}"
+                   name="add_button"
+                   class="local-shop-add-user"
+                   data-availableseats="{{availableseats}}"
+                   data-requiredroles="{{requiredroles}}"
+                   data-products="{{products}}" />
+        </td>
+    </tr>
+</table>
+</form>
+<!-- /local_shop/front_new_participant_row -->

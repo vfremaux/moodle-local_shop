@@ -25,6 +25,10 @@
  */
 namespace local_shop;
 
+use \StdClass;
+use \context_system;
+use \Exception;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/locallib.php');
@@ -122,7 +126,7 @@ class Bill extends ShopObject {
         $this->theshop = $theshop;
         $this->theblock = $theblock;
 
-        $this->context = \context_system::instance();
+        $this->context = context_system::instance();
 
         parent::__construct($idorrecord, self::$table);
 
@@ -170,11 +174,11 @@ class Bill extends ShopObject {
 
         } else {
             if (empty($theshop)) {
-                throw new \Exception('Null Shop not allowed when creating bill');
+                throw new Exception('Null Shop not allowed when creating bill');
             }
 
             if (empty($thecatalogue)) {
-                throw new \Exception('Null Shop not allowed when creating bill');
+                throw new Exception('Null Shop not allowed when creating bill');
             }
 
             $lastordering = $DB->get_field('local_shop_bill', 'MAX(ordering)', array());
@@ -311,7 +315,7 @@ class Bill extends ShopObject {
             $DB->delete_records('local_shop_billitem', array('billid' => $this->id, 'type' => 'DISCOUNT'));
 
             foreach ($this->items as $bi) {
-                $birec = new \StdClass();
+                $birec = new StdClass;
                 $birec->type = 'DISCOUNT';
                 $birec->itemcode = $bi->itemcode;
                 $birec->catalogitem = $bi->catalogitem;
@@ -524,7 +528,7 @@ class Bill extends ShopObject {
     public static function count_by_states($fullview, $filterclause) {
         global $DB;
 
-        $total = new \StdClass;
+        $total = new StdClass;
         $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $filterclause");
 
         if ($fullview) {

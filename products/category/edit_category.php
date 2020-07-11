@@ -46,7 +46,9 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/category/edit_category.php', array('categoryid' => $categoryid));
+$params = array('catalogid' => $thecatalog->id, 'categoryid' => $categoryid);
+$url = new moodle_url('/local/shop/products/category/edit_category.php', $params);
+
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -72,20 +74,20 @@ if ($categoryid) {
     $category = $DB->get_record('local_shop_catalogcategory', array('id' => $categoryid));
     $mform = new Category_Form('', array('what' => 'edit', 'parents' => $allcatsmenu));
     $category->categoryid = $category->id;
-    $category->id = $theshop->id;
+    $category->catalogid = $thecatalog->id;
 
     $mform->set_data($category);
 } else {
     $mform = new Category_Form('', array('what' => 'add', 'parents' => $allcatsmenu));
     $formdata = new StdClass();
-    $formdata->id = $theshop->id;
+    $formdata->catalogid = $thecatalog->id;
     $formdata->description = '';
     $formdata->descriptionformat = FORMAT_MOODLE;
     $mform->set_data($formdata);
 }
 
 if ($mform->is_cancelled()) {
-    $params = array('id' => $theshop->id, 'view' => 'viewAllProducts');
+    $params = array('catalogid' => $thecatalog->id, 'view' => 'viewAllProducts');
     redirect(new moodle_url('/local/shop/products/view.php', $params));
 }
 
@@ -98,7 +100,7 @@ if ($data = $mform->get_data()) {
     $processor->receive('edit', $data, $mform);
     $processor->process('edit');
 
-    redirect(new moodle_url('/local/shop/products/category/view.php', array('id' => $theshop->id, 'view' => 'viewAllCategories')));
+    redirect(new moodle_url('/local/shop/products/category/view.php', array('catalogid' => $thecatalog->id, 'view' => 'viewAllCategories')));
 }
 
 echo $OUTPUT->header();
