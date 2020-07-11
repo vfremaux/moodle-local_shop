@@ -349,6 +349,88 @@ class CatalogItem extends ShopObject {
     }
 
     /**
+     * Gets back some information about handler and callable method for post prod operations
+     * @param string $method the product method name
+     * @return an array with an handler object instance and a callable method name
+     */
+    public function get_handler_info($method, $type = 'postprod') {
+        global $CFG;
+
+        if (!empty($this->isset)) {
+            // Bundle or set.
+            return [null,null];
+        }
+
+        $handler = null;
+        $methodname = null;
+
+        if ($type == 'postprod') {
+            $productinfo = $this->extract_production_data();
+
+            if (empty($productinfo->handler)) {
+                return [null, null];
+            }
+
+            $h = $productinfo->handler;
+
+            if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
+                print_error('errorbadhandler', 'local_shop', $h);
+            }
+
+            include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
+
+            $classname = 'shop_handler_'.$productinfo->handler;
+            $handler = new $classname('');
+        } else {
+            $handler = $this->get_handler();
+            if (is_object($handler)) {
+                $classname = get_class($handler);
+            } else {
+                return [null, null];
+            }
+        }
+
+        if (!empty($method)) {
+            $methodname = $method;
+            if (!empty($type)) {
+                // Extend possible queries, Keep the alternative for older compatibility.
+                $methodname = $type.'_'.$method;
+            }
+            if (!method_exists($classname, $methodname)) {
+                if ($type == 'postprod') {
+                    print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
+                } else {
+                    return [null, null];
+                }
+            }
+        }
+
+        return array($handler, $methodname);
+    }
+
+    /**
+     * get info out of production data (in product)
+     * @return an object
+     */
+    public function extract_production_data() {
+
+        $info = new \StdClass();
+
+        $productiondata = $this->productiondata;
+
+        if (!empty($productiondata)) {
+            if ($pairs = explode('&', $this->productiondata)) {
+                foreach ($pairs as $pair) {
+                    list($key, $value) = explode('=', $pair);
+                    $info->$key = $value;
+                }
+            }
+        }
+
+        return $info;
+    }
+
+    /**
      * Gets a suitable handler object for this catalog item
      */
     public function get_handler() {
@@ -425,7 +507,17 @@ class CatalogItem extends ShopObject {
     public function unlink() {
         global $DB;
 
-        $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
+        if (!$this->isset) {
+            // Unlink self from set or bundle.
+            $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
+        } else {
+            // Unlink all linked elements.
+            if (!empty($this->elements)) {
+                foreach ($this->elements as $ci) {
+                    $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $ci->id));
+                }
+            }
+        }
     }
 
     public function has_leaflet() {
@@ -586,7 +678,11 @@ class CatalogItem extends ShopObject {
         $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
         while ($DB->record_exists('local_shop_catalogitem', $params)) {
             $this->record->code .= '1';
+            $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
         }
+
+        $this->record->shortname = strtolower($this->record->code);
+        $this->record->shortname = str_replace(' ', '', $this->record->shortname);
 
         $this->save();
 
@@ -642,11 +738,7 @@ class CatalogItem extends ShopObject {
         $export->requireddata = $this->record->requireddata;
         $export->leafleturl = ''.$this->get_leaflet_url();
         $export->thumburl = ''.$this->get_thumb_url();
-        $export->imageurl =  ''.$this->get_image_url();
-
-        if ($withsubs) {
-            
-        }
+        $export->imageurl = ''.$this->get_image_url();
 
         return $export;
     }

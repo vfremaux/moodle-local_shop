@@ -38,7 +38,7 @@ if ($action != '') {
     $controller->process($action);
 }
 
-$params = array('id' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
+$params = array('catalogid' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
 $url = new moodle_url('/local/shop/products/category/view.php', $params);
 
 // Eliminate tests.
@@ -61,7 +61,7 @@ if (empty($categories)) {
     echo $renderer->categories($categories, $order, $dir);
 }
 
-$editurl = new moodle_url('/local/shop/products/category/edit_category.php', array('id' => $thecatalog->id));
+$editurl = new moodle_url('/local/shop/products/category/edit_category.php', array('catalogid' => $thecatalog->id));
 $params = array('shopid' => $theshop->id, 'catalogid' => $thecatalog->id, 'view' => 'viewAllProducts');
 $catalogurl = new moodle_url('/local/shop/products/view.php', $params);
 echo '<div class="addlink"><a href="'.$editurl.'">'.$addcategorystr.'</a> -';

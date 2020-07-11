@@ -144,28 +144,6 @@ class Product extends ShopObject {
     }
 
     /**
-     * get info out of production data (in product)
-     * @return an object
-     */
-    public function extract_production_data() {
-
-        $info = new \StdClass();
-
-        $productiondata = $this->productiondata;
-
-        if (!empty($productiondata)) {
-            if ($pairs = explode('&', $this->productiondata)) {
-                foreach ($pairs as $pair) {
-                    list($key, $value) = explode('=', $pair);
-                    $info->$key = $value;
-                }
-            }
-        }
-
-        return $info;
-    }
-
-    /**
      * get info out of extra data (in product)
      * @return an object
      */
@@ -332,38 +310,6 @@ class Product extends ShopObject {
         }
 
         return $link;
-    }
-
-    /**
-     * Gets back some information about handler and callable method for post prod operations
-     * @param string $method the product method name
-     * @return an array with an handler object instance and a callable method name
-     */
-    public function get_handler_info($method) {
-        global $CFG;
-
-        $productinfo = $this->extract_production_data();
-        $handler = null;
-        $methodname = null;
-        if (!empty($productinfo->handler)) {
-            $h = $productinfo->handler;
-            if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
-                print_error('errorbadhandler', 'local_shop', $h);
-            }
-
-            include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
-
-            $classname = 'shop_handler_'.$productinfo->handler;
-            $handler = new $classname('');
-
-            if (!empty($method)) {
-                $methodname = 'postprod_'.$method;
-                if (!method_exists($classname, $methodname)) {
-                    print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
-                }
-            }
-        }
-        return array($handler, $methodname);
     }
 
     /**

@@ -66,6 +66,9 @@ class shop_controller extends front_controller_base {
                         $this->data->partner = optional_param($inputkey, '', PARAM_TEXT);
                         continue;
                     }
+                    if (in_array($inputkey, ['view', 'origin', 'what', 'autodrive', 'shopid'])) {
+                        continue;
+                    }
                     $this->data->$inputkey = optional_param($inputkey, 0, PARAM_INT);
                 }
                 break;
@@ -126,7 +129,7 @@ class shop_controller extends front_controller_base {
                             $SESSION->shoppingcart->partner->partnertag = array_shift($parts); // May be empty.
                         }
                         if (!empty($parts)) {
-                            /**
+                            /*
                              * The customer email can serve for preauth when partner is validated and a moodle user
                              * with such mail exists.
                              */
@@ -141,12 +144,13 @@ class shop_controller extends front_controller_base {
                         continue;
                     }
                 }
-                if (in_array($inputkey, array('shopid', 'autodrive', 'blockid', 'category', 'view', 'what'))) {
+                if (in_array($inputkey, array('shopid', 'origin', 'partner', 'autodrive', 'blockid', 'category', 'view', 'what'))) {
                     continue;
                 }
-                if ($DB->record_exists('local_shop_catalogitem', array('shortname' => $inputkey))) {
+
+                if ($ci = $DB->get_record('local_shop_catalogitem', array('code' => $inputkey))) {
                     // Only if registered product.
-                    $SESSION->shoppingcart->order[$inputkey] = $this->data->$inputkey;
+                    $SESSION->shoppingcart->order[$ci->shortname] = $this->data->$inputkey;  // Gives quantity to shortname.
                 }
             }
             $category = optional_param('category', '', PARAM_INT);
@@ -158,7 +162,6 @@ class shop_controller extends front_controller_base {
                 $params['what'] = 'navigate';
                 $SESSION->shoppingcart->autodrive = true;
             }
-
             redirect(new moodle_url('/local/shop/front/view.php', $params));
 
         } else if ($cmd == 'clearall') {

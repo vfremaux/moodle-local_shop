@@ -1,0 +1,32 @@
+
+
+<!-- local_shop/products_catalogheader -->
+<div class="shop-table">
+    <div class="shop-row">
+        <div class="shop-cell header">{{#str}}name, local_shop{{/str}}</div>
+        <div class="shop-cell header">{{{catalogname}}}</div>
+        <div class="shop-cell header">
+            {{#ismaster}}
+                {{#str}}master, local_shop{{/str}}
+            {{/ismaster}}
+            {{#isslave}}
+                {{#str}}slave, local_shop{{/str}}
+            {{/isslave}}
+            {{#isstandalone}}
+                {{#str}}standalone, local_shop{{/str}}
+            {{/isstandalone}}
+        </div>
+    </dir>
+
+    <div class="shop-row">
+        <div class="shop-cell param">{{#str}}description{{/str}}</div>
+        <div class="shop-cell value">{{{description}}}</div>
+    </div>
+
+    <div class="shop-row">
+        <div class="shop-cell param">{{#str}}shops, local_shop{{/str}}</div>
+        <div class="shop-cell value">{{shops}}</div>
+    </div>
+
+</div>
+<!-- /local_shop/products_catalogheader -->

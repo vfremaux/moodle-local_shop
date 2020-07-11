@@ -87,7 +87,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $pendingcount = 0;
             $runningcount = 0;
             $producttpl->statusclass = '';
-            $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'ProductDetail', 'itemid' => $product->id));
+            $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewProductDetail', 'itemid' => $product->id));
             $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
             $producttpl->designation = format_string($product->name);
             $producttpl->reference = $productinstance->reference;
@@ -162,18 +162,13 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
     }
 
     public function filters($ownermenu, $customermenu) {
-        $str = '';
+        global $OUTPUT;
 
-        $str .= '<div class="form-filter-menus">';
-        $str .= '<div class="form-filter-owner">';
-        $str .= $ownermenu;
-        $str .= '</div>';
-        $str .= '<div class="form-filter-customer">';
-        $str .= $customermenu;
-        $str .= '</div>';
-        $str .= '</div>';
+        $template = new StdClass;
+        $template->ownermenu = $ownermenu;
+        $template->customermenu = $customermenu;
 
-        return $str;
+        return $this->output->render_from_template('local_shop/purchasemanager_filters', $template);
     }
 
     public function add_instance_button() {

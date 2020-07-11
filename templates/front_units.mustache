@@ -1,0 +1,17 @@
+
+
+<!-- local_shop/front_units -->
+
+{{#packs}}
+&nbsp;<img src="{{{tenunitsimageurl}}}" align="middle" />
+{{/packs}}
+
+{{#units}}
+&nbsp;<img src="{{{unitimageurl}}}" align="middle" />
+{{/units}}
+
+{{#hashandler}}
+&nbsp;
+<a title="{{#str}}deleteone, local_shop{{/str}}" class="local-shop-delete-unit" data-product="{{shortname}}">{{#pix}}t/delete{{/pix}}</a>
+{{/hashandler}}
+<!-- local_shop/front_units -->

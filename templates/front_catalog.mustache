@@ -1,0 +1,46 @@
+<?php
+
+<!-- local_front/catalog -->
+{{^hascategories}}
+{{{notification}}}
+{{/hascategories}}
+
+{{#hascategories}}
+
+{{#categorytabs}}
+{{{category}}}
+{{/categorytabs}}
+
+{{#categories}}
+{{#withtabs}}
+<div class="shopcategory" id="category{{id}}" />
+{{/withtabs}}
+{{^withtabs}}
+{{#hasmorethanone}}
+{{{heading}}}
+{{/hasmorethanone}}
+{{/withtabs}}
+
+    {{#description}}
+    <div class="shop-category-description">
+        {{{description}}}
+    </div>
+    {{/description}}
+
+    {{^hasproducts}}
+    {{{noproductincategorynotification}}}
+    {{/hasproducts}}
+
+    {{#hasproducts}}
+    {{#products}}
+    {{{product}}}
+    {{/products}}
+    {{/hasproducts}}
+
+{{#withtabs}}
+</div>
+{{/withtabs}}
+{{/categories}}
+
+{{/hascategories}}
+<!-- /local_front/catalog -->

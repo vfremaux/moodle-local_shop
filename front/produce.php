@@ -75,13 +75,20 @@ $supportstr = (empty($supportstr)) ? '(No support info)' : $supportstr;
 
 echo $out;
 
-echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
-
 $completestates = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
 if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo '<center>';
-
     echo $renderer->progress('PRODUCE');
+    echo '</center>';
+} else {
+    echo '<center>';
+    echo $renderer->progress('PENDING');
+    echo '</center>';
+}
+
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
+
+if (in_array($afullbill->status, $completestates) || $return == -1) {
 
     // Controller tells us we already produced that.
     if ($return == -1) {
@@ -121,9 +128,6 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo $OUTPUT->box_end();
 
 } else {
-    echo '<center>';
-    echo $renderer->progress('PENDING');
-    echo '</center>';
 
     echo $OUTPUT->box_start('shop-notification');
     echo $OUTPUT->box_start('shop-notification-message');
@@ -137,7 +141,7 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo $OUTPUT->box_end();
 
     echo '<div id="shop-buttons"><center>';
-    echo $renderer->printable_bill_link($afullbill);
+    echo $renderer->printable_bill_link($afullbill->id, $transid);
     echo $renderer->shop_return_button($theshop);
 
     // If testing the shop, provide a manual link to generate the paypal_ipn call.
@@ -146,5 +150,5 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
         paypal_print_test_ipn_link($SESSION->shoppingcart->transid, $theshop->id);
     }
 
-    echo '</center></div>';
+    echo '</div>';
 }

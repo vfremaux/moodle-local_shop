@@ -77,16 +77,14 @@ if ($productline = $thecatalog->get_products()) {
 
     $productcodestr = get_string('code', 'local_shop');
     $productnamestr = get_string('name', 'local_shop');
-    $productdescstr = get_string('description');
     $productparamsstr = get_string('handlerparams', 'local_shop');
     $productrequirementsstr = get_string('requiredparams', 'local_shop');
 
     $testtable->width = "100%";
-    $testtable->size = array('5%', '10%', '20%', '25%', '20%', '20%');
+    $testtable->size = array('5%', '10%', '25%', '20%', '20%');
     $testtable->head = array('',
                              "<b>$productcodestr</b>",
                              "<b>$productnamestr</b>",
-                             "<b>$productdescstr</b>",
                              "<b>$productparamsstr</b>",
                              "<b>$productrequirementsstr</b>");
 
@@ -98,7 +96,6 @@ if ($productline = $thecatalog->get_products()) {
         $testtable->data[] = array($selbox,
                                    $productcode,
                                    $productlink,
-                                   $catalogitem->description,
                                    '<b>'.$catalogitem->enablehandler.'</b><br/>'.$catalogitem->get_serialized_handlerparams(),
                                    $catalogitem->requireddata);
     }

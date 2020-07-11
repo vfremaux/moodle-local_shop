@@ -34,10 +34,16 @@ $billrenderer->load_context($theshop, $thecatalog, $theblock);
 if (!$bill = Bill::get_by_transaction($transid)) {
     $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-    print_error('invalidtransid', 'local_shop', $viewurl);
+    $errormessage = get_string('invalidtransid', 'local_shop', $viewurl);
 }
 
 echo $out;
+
+if (!empty($errormessage)) {
+    echo $OUTPUT->notification($errormessage, 'error');
+    echo $OUTPUT->footer;
+    die;
+}
 
 $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
 if (!in_array($bill->status, $realized)) {

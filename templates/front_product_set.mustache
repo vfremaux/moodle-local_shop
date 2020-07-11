@@ -27,18 +27,13 @@
 
     <div class="shop-front-productdef">
         <div class="shop-front-setcaption">
-            <h2>{{{name}}}</h2>
-            {{#hasdescription}}
-                <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
-                    {{{description}}}
-                </div>
-                {{#shortdescription}}
-                <div class="shop-front-description-toggle">
-                    <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
-                </div>
-                {{/shortdescription}}
-            {{/hasdescription}}
+            <h1>{{{name}}}</h1>
+            {{> local_shop/front_modal_product }}
         </div>
+
+        {{#hasleaflet}}
+            <div class="shop-front-leaflet"><a href="{{{leafleturl}}}" target="_blank">{{linklabel}}</a></div>
+        {{/hasleaflet}}
 
         <div class="shop-front-elements flex-row">
         {{#elements}}

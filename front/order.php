@@ -50,11 +50,11 @@ echo $out;
 
 // Start ptinting page.
 
+echo $renderer->progress('CONFIRM');
+
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $OUTPUT->box_start('', 'orderpanel');
-
-echo $renderer->progress('CONFIRM');
 
 echo $renderer->admin_options();
 
@@ -62,18 +62,18 @@ $bill = null;
 echo $renderer->customer_info($bill);
 
 $initialview = '';
-if (empty($SESSION->eulas)) {
+$eulas = $renderer->check_and_print_eula_conditions();
+if (empty($SESSION->shoppingcart->eulas)) {
     // If eulas status is not yet determined or has been reset
-    $eulas = $renderer->check_and_print_eula_conditions();
     if (empty($eulas)) {
-        $SESSION->eulas = 'approved'; // Including if no eula at all.
+        $SESSION->shoppingcart->eulas = 'approved'; // Including if no eula at all.
     } else {
         $initialview = ' style="display:none" ';
-        $SESSION->eulas = 'required';
+        $SESSION->shoppingcart->eulas = 'required';
     }
-    $params = array('eulas' => $SESSION->eulas);
-    $PAGE->requires->js_call_amd('local_shop/front', 'initeulas', array($params));
 }
+$params = array('eulas' => $SESSION->shoppingcart->eulas);
+$PAGE->requires->js_call_amd('local_shop/front', 'initeulas', array($params));
 
 // Print main ordering table.
 
@@ -95,7 +95,15 @@ echo '</table>';
 
 echo $renderer->full_order_totals($bill, $theshop);
 echo $renderer->full_order_taxes($bill, $theshop);
+
+echo '</div>';
+
 echo $renderer->payment_block();
+
+$paymentservicenotification = get_string('paymentservicenotification', 'local_shop');
+if (!empty($paymentservicenotification)) {
+    echo $OUTPUT->notification($paymentservicenotification);
+}
 
 if (!empty($config->sellermail)) {
     echo '<p>';
@@ -105,8 +113,6 @@ if (!empty($config->sellermail)) {
 }
 
 echo $OUTPUT->box_end();
-
-echo '</div>';
 
 $options = array();
 $options['inform'] = true;
@@ -119,6 +125,6 @@ echo $renderer->action_form('order', $options);
 
 echo '</form>';
 
-if (empty($SESSION->eulasapproved) && !empty($eulas)) {
+if ($SESSION->shoppingcart->eulas != 'approved') {
     echo $eulas;
 }
