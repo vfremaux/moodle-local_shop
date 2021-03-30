@@ -6,10 +6,6 @@
 
     {{#head}}
     <tr>
-
-        <th class="header c0">
-        </th>
-
         <th class="header c1">
             {{#str}}num, local_shop{{/str}}
         </th>
@@ -30,7 +26,19 @@
             {{#str}}lettering, local_shop{{/str}}
         </th>
 
-        <th class="header lastcol">
+        {{#haspartners}}
+        <th class="header c3">
+            {{#str}}partner, local_shop{{/str}}
+        </th>
+        {{/haspartners}}
+
+        {{#hasdiscounts}}
+        <th class="header c3">
+            {{#str}}discount, local_shop{{/str}}
+        </th>
+        {{/hasdiscounts}}
+
+        <th class="header lastcol" align="right" style="text-align: right">
             {{#str}}amount, local_shop{{/str}}
         </th>
 
@@ -40,9 +48,6 @@
 
     {{^head}}
     <tr valign="top">
-        <td width="30" class="cell c0">
-            &nbsp;
-        </td>
 
         <td width="120" class="cell c1">
             <a class="activeLink" href="{{{billurl}}}">B-{{emissiondate}}-{{id}}</a>
@@ -70,8 +75,39 @@
             {{idnumber}}
         </td>
 
+        {{#haspartners}}
+        <td width="120" class="cell c2">
+            {{#partnerkey}}
+            <div title="{{partnername}}">{{partnerkey}}</div>
+            {{/partnerkey}}
+        </td>
+        {{/haspartners}}
+
+        {{#hasdiscounts}}
+        <td width="120" class="cell c2">
+            {{#data1}}
+            <div class="amount-primary" data-source="{{source1}}">{{{data1}}} {{{currency}}}</div>
+            {{#hasdata2}}
+            <div class="amount-secondary" data-source="{{source2}}">{{data2}} {{{currency}}}</div>
+            {{/hasdata2}}
+            <code data-source="discountcodes">{{discountcodes}}</code>
+            {{/data1}}
+            {{^data1}}
+            {{#billhasdiscounts}}
+            0.00
+            {{/billhasdiscounts}}
+            {{^billhasdiscounts}}
+            --
+            {{/billhasdiscounts}}
+            {{/data1}}
+        </td>
+        {{/hasdiscounts}}
+
         <td width="100" align="right" class="cell lastcol">
-            {{amount}} {{{currency}}}
+            <div class="amount-primary" data-source="{{amountsource1}}">{{{amount1}}} {{{currency}}}</div>
+            {{#amount2}}
+            <div class="amount-secondary" data-source="{{amountsource2}}">{{amount2}} {{{currency}}}</div>
+            {{/amount2}}
         </td>
     </tr>
 

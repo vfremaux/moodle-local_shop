@@ -72,6 +72,7 @@ class payment_controller extends front_controller_base {
         $SESSION->shoppingcart->debug = @$this->data->debug;
 
         if ($cmd == 'place') {
+            debug_trace('Payment controller: placing', TRACE_DEBUG);
             // Convert all data in bill records.
             // Customer info.
             $customer = (object)$SESSION->shoppingcart->customerinfo;
@@ -181,9 +182,26 @@ class payment_controller extends front_controller_base {
                 $itemrec->productiondata->id = $this->theshop->id;
                 // For further reference to some origin block parameters and defaults.
                 $itemrec->productiondata->blockid = 0 + @$this->theblock->id;
-                $itemrec->customerdata = @$SESSION->shoppingcart->customerdata[$shortname];
+                if (!empty($SESSION->shoppingcart->customerdata[$shortname])) {
+                    $itemrec->customerdata = $SESSION->shoppingcart->customerdata[$shortname];
+                } else {
+                    $itemrec->customerdata = '';
+                }
+
                 $bill->add_item_data($itemrec, $ordering++);
                 $totalitems += $quant;
+            }
+
+            if (local_shop_supports_feature('shop/discounts')) {
+                include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
+                $discounts = \local_shop\Discount::get_applicable_discounts($this->theshop->id);
+                if (!empty($discounts)) {
+                    foreach ($discounts as $d) {
+                        if ($d->check_applicability($bill)) {
+                            $d->apply_to_bill($bill);
+                        }
+                    }
+                }
             }
 
             /*

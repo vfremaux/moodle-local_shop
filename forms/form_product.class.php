@@ -39,6 +39,8 @@ class Product_Form extends CatalogItem_Form {
     public function definition() {
         global $OUTPUT, $DB;
 
+        $config = get_config('local_shop');
+
         if (!$this->is_slave()) {
 
             $select = "
@@ -95,9 +97,11 @@ class Product_Form extends CatalogItem_Form {
         $label = get_string('shownameinset', 'local_shop');
         $group[] = &$mform->createElement('advcheckbox', 'showsnameinset', '', $label);
         $mform->setDefault('showsnameinset', 1);
+
         $label = get_string('showdescriptioninset', 'local_shop');
         $group[] = &$mform->createElement('advcheckbox', 'showsdescriptioninset', '', $label);
         $mform->setDefault('showsdescriptioninset', 1);
+
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
 
         $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));
@@ -141,9 +145,14 @@ class Product_Form extends CatalogItem_Form {
             $mform->setType('quantaddressesusers', PARAM_INT);
             $mform->addHelpButton('quantaddressesusers', 'quantaddressesusers', 'local_shop');
 
-            $mform->addElement('advcheckbox', 'renewable', get_string('renewable', 'local_shop').':');
-            $mform->addHelpButton('renewable', 'renewable', 'local_shop');
-            $mform->disabledIf('renewable', 'enablehandler', 'eq', 0);
+            if (!empty($config->userenewableproducts)) {
+                $mform->addElement('advcheckbox', 'renewable', get_string('renewable', 'local_shop').':');
+                $mform->addHelpButton('renewable', 'renewable', 'local_shop');
+                $mform->disabledIf('renewable', 'enablehandler', 'eq', 0);
+            } else {
+                $mform->addElement('hidden', 'renewable', 0);
+                $mform->setType('renewable', PARAM_BOOL);
+            }
         } else {
             $mform->addelement('static', 'enablehandlershadow', get_string('enablehandler', 'local_shop').':');
             $mform->addelement('hidden', 'enablehandler');

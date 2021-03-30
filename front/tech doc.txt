@@ -1,0 +1,52 @@
+### Moodle shop front office doc
+
+### Shopping cart structure
+
+Shopping cart is a SESSION variable that holds all session time data about
+current purchase session.
+
+$shoppingcart = $SESSION->shoppingcart;
+
+Shopping cart holds and accumulate data and caches all along the purchase process,
+forth and back between screens. Shopping cart is destroyed:
+
+- When a purchase session concludes into a successful payment or placement order.
+- When a shopping cart is reset by the user
+
+Shopping cart should not be destroyed when a payment method fails, as the customer may
+have other payment method or cards available to conclude positively the transaction.
+
+Shopping cart vanishes out when the browser session is erased.
+
+## Shopping cart data members
+
+'order' : an array of "productcode" => quantity (integer) values
+
+Order is result of product choice into the front office offer, or as result as a preloaded
+order based on the input url decoding. Order is processed:
+
+- by the shop.controller controller to calculate order taxes and global sums. (*)
+- by the product customisation page if present (i.e. if at least one product calls for
+customer custom data input)
+- when "placing" order into the database (payment.controller)
+
+(*) This means that the shoppingcart is recalculated each time the customer browses out
+the product selection pages.
+
+Before discount/shipping calculation
+
+'taxedtotal': the total order command, raw amount issued from order array.
+'taxestotal': the total amount of taxes calculated on each product, depending on quantity and tax rate.
+'untaxedtotal': the untaxed value of the order
+
+After discount and shipping calculation
+
+'finaltaxedtotal': the total order command, including discounts and shipping.
+'finaltaxestotal': the total amount of taxes deducing discount taxes off.
+'finaluntaxedtotal': the untaxed final value of the order
+
+'discounts': An array of discounts defines that were detected as applicable.
+
+'taxes': the raw array of tax amounts by taxcode (tax id)
+
+'finaltaxes' : the final amount of each tax (by taxcode/taxid) after discounts and shipping.

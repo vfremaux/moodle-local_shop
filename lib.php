@@ -33,7 +33,9 @@ function local_shop_supports_feature($feature = null) {
     global $CFG;
     static $supports;
 
-    $config = get_config('local_shop');
+    if (!during_initial_install()) {
+        $config = get_config('local_shop');
+    }
 
     if (!isset($supports)) {
         $supports = array(
@@ -41,10 +43,11 @@ function local_shop_supports_feature($feature = null) {
                 'handlers' => array('fullstack'),
                 'paymodes' => array('fullstack'),
                 'catalog' => array('instances'),
-                'shop' => array('instances', 'partners'),
+                'shop' => array('instances', 'partners', 'discounts'),
                 'products' => array('editable'),
                 'docgen' => array('pdf'),
                 'api' => array('ws'),
+                'bill' => array('attachements', 'lettering'),
             ),
             'community' => array(
                 'handlers' => array('basic'),
@@ -157,6 +160,7 @@ function local_shop_get_file_areas() {
         'eula' => 'local_shop',
         'catalogdescription' => 'local_shop_catalog',
         'catalogsalesconditions' => 'local_shop_catalog',
+        'catalogbillfooter' => 'local_shop_catalog',
         'catalogitemdescription' => 'local_shop_catalogitem',
         'catalogitemnotes' => 'local_shop_catalogitem',
         'catalogitemthumb' => 'local_shop_catalogitem',
@@ -170,12 +174,14 @@ function local_shop_get_file_areas() {
 }
 
 /**
- * Get a subrenderer instance from a shop submodule
+ * Get a subrenderer instance from a shop submodule. The function recognizes
+ * any pro override or pro location before failing over to community renderers.
  * @param string $module
  */
 function shop_get_renderer($module = 'front') {
     global $CFG, $PAGE, $OUTPUT;
 
+    // Get the base renderer, switching to pro extension if possible.
     if ($module == 'base') {
         if (!local_shop_supports_feature('catalog/instances')) {
             return $PAGE->get_renderer('local_shop');
@@ -187,6 +193,7 @@ function shop_get_renderer($module = 'front') {
         }
     }
 
+    // Get other modules.
     $slashedmodule = '/'.$module;
 
     if (file_exists($CFG->dirroot."/local/shop/pro{$slashedmodule}/renderer.php") &&

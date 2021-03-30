@@ -46,37 +46,32 @@ seront validés dès réception de votre paiement.</p>
 
 $string['productiondata_private'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme.</p>
-<p>Vos coordonnées sont:<br/>
-<pre>
-Identifiant     {$a}<br/>
-</pre>
-<p>vous recevrez votre mot de passe dans un courriel à suivre dans les minutes qui viennent.</p>
-<p><b>Veuillez les noter quelque part où vous pouvez les retrouver avant de continuer...</b></p>
-<p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront été initialisés dès la confirmation automatique
+<p>Votre identifiant : {$a->username}</p>
+<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous pouvez les retrouver avant de continuer...</b></p>
+<p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront initialisés dès la confirmation automatique
 de votre règlement. Vous pourrez vous connecter
 et bénéficier de vos accès de formation. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p>
 <p><a href="'.$CFG->wwwroot.'/login/index.php">Accéder à la plate-forme de formation</a></p>
 ';
 
 $string['productiondata_sales'] = '
+<p><b>TXID: {$a->txid}</b></p>
 <p>Le compte utilisateur client a été ouvert sur la plate-forme.</p>
-Identifiant : {$a}<br/>
+Identifiant : {$a->username}<br/>
 ';
 
-$string['productiondata_assign_public'] = '
+$string['productiondata_post_public'] = '
 <p><b>Paiement enregistré</b></p>
-<p>Votre règlement a été validé. Vos accès ont été ajoutés au parcours de formation correpondant. Vous pouvez
-accéder directement à ce produit après vous être authentifié.</p>
+<p>Votre règlement a été validé. Vos accès ont été ajoutés au parcours de formation correpondant.</p>
 ';
 
-$string['productiondata_assign_private'] = '
+$string['productiondata_post_private'] = '
 <p><b>Paiement enregistré</b></p>
-<p>Votre règlement a été validé. Un rôle a été changé pour vous donner accès à des services supplémentaires. Vous pouvez
-accéder directement à ce produit après vous être authentifié.</p>
-<p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a}">Accéder directement à votre produit</a></p>
+<p>Votre règlement a été validé. Un rôle a été changé pour vous donner accès à des services supplémentaires.</p>
+<p><a href="'.$CFG->wwwroot.'/my/index.php">Accéder à votre offre de formration</a></p>
 ';
 
-$string['productiondata_assign_sales'] = '
-<p><b>Paiement enregistré</b></p>
-<p>Un role a été changé pour vous donner accès à des services supplémentaires.</p>
+$string['productiondata_post_sales'] = '
+<p><b>TXID: {$a->txid}</b></p>
+<p>Le role {$a->role} a été donnée à l\'utilisateur {$a->username} sur le contexte {$a->instancename}.</p>
 ';

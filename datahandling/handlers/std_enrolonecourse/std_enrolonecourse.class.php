@@ -34,6 +34,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
+require_once($CFG->dirroot.'/local/shop/compatlib.php');
 require_once($CFG->dirroot.'/group/lib.php');
 
 use local_shop\Product;
@@ -49,8 +50,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
     /**
      * this product should not be available if the current user (purchaser) is
-     * already certified, i.e. has a delivered certificate for the associated certificate.
-     * this might be better checked by testing a shop product existance
+     * already enrolled in course.
      */
     public function is_available(&$catalogitem) {
         global $USER, $DB;
@@ -217,6 +217,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $product->instanceid = $ue->id;
         $product->startdate = $starttime;
         $product->enddate = $endtime;
+        $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
         $extra = array('handler' => 'std_enrolonecourse');
         $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
@@ -280,6 +281,54 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         return $productionfeedback;
     }
 
+    /*
+     * Gets a thumbnail from course overview files as thumb.
+     */
+    public function get_alternative_thumbnail_url($catalogitem) {
+        global $DB, $CFG;
+
+        $shouldexist = false;
+        if (!empty($catalogitem->handlerparams['coursename'])) {
+            $params = array('shortname' => $catalogitem->handlerparams['coursename']);
+            $course = $DB->get_record('course', $params);
+            $shouldexist = true;
+        } else if (!empty($catalogitem->handlerparams['courseidnumber'])) {
+            $params = array('idnumber' => $catalogitem->handlerparams['courseidnumber']);
+            $course = $DB->get_record('course', $params);
+            $shouldexist = true;
+        } else if (!empty($catalogitem->handlerparams['courseid'])) {
+            $params = array('id' => $catalogitem->handlerparams['courseid']);
+            $course = $DB->get_record('course', $params);
+            $shouldexist = true;
+        }
+
+        if (!$course) {
+            global $OUTPUT;
+            $context = context_system::instance();
+            if ($shouldexist && has_capability('local/shop:salesadmin', $context)) {
+                echo $OUTPUT->notification(get_string('potentialhandlererror', 'local_shop', $catalogitem->code), 'error');
+            }
+            return null;
+        }
+
+        // Thumb or viewable image.
+        // Take first available image NOT TOO LARGE (800px)
+        $courseinlist = local_shop_get_course_list($course);
+        foreach ($courseinlist->get_course_overviewfiles() as $file) {
+            if ($isimage = $file->is_valid_image()) {
+                $imageinfo = $file->get_imageinfo();
+                if ($imageinfo['width'] < 800) {
+                    $path = '/'. $file->get_contextid(). '/'. $file->get_component().'/';
+                    $path .= $file->get_filearea().$file->get_filepath().$file->get_filename();
+                    $return = ''.file_encode_url("$CFG->wwwroot/pluginfile.php", $path, !$isimage);
+                    return $return;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Dismounts all effects of the handler production when a product is deleted.
      * The contexttype will denote the type of Moodle object that was created. some
@@ -336,7 +385,8 @@ class shop_handler_std_enrolonecourse extends shop_handler {
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
-        $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
+        $mess = get_string('usinghandler', 'local_shop', $this->name);
+        $messages[$data->code][] = $mess;
 
         parent::unit_test($data, $errors, $warnings, $messages);
 

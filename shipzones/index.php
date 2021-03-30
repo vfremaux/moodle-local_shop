@@ -46,7 +46,7 @@ require_capability('local/shop:salesadmin', $context);
 
 $action = optional_param('what', '', PARAM_TEXT);
 if (!empty($action)) {
-    include($CFG->dirroot.'/local/shop/shipzones/shipzones.controller.php');
+    include_once($CFG->dirroot.'/local/shop/shipzones/shipzones.controller.php');
     $controller = new shpipzones_controller();
     $controller->process($action);
 }

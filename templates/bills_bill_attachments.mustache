@@ -21,28 +21,48 @@
     * none
 
 }}
-<!-- local_shop/bills_bill_attachment -->
-<div class="shop-bills-attachments">
+<!-- local_shop/bills_bill_attachments -->
+<div class="shop-bills-attachments mt-2">
 
-    {{{heading}}}
+    {{#billnoattachementnotification}}
+    <h2>{{#str}}attachments, local_shop{{/str}}</h2>
+    {{{billnoattachementnotification}}}
+    {{/billnoattachementnotification}}
 
-    {{^attachment}}
-        {{{nobillattachementnotification}}}
-    {{/attachment}}
-
-    {{#attachment}}
-    <table class="globaltable">
+    {{^billnoattachementnotification}}
+    {{#hasattachments}}
+    <h2>{{#str}}attachments, local_shop{{/str}}</h2>
+    <table class="generaltable" width="50%">
         {{#attachedfiles}}
-        {{{attachedfileline}}}
+        <tr>
+
+            <td width="10%">
+                <img src="{{{fileicon}}}">
+            </td>
+
+            <td width="60%">
+                <a href="{{{fileurl}}}">{{filename}}</a>
+            </td>
+
+            <td width="20%">
+            {{filesize}} b
+            </td>
+
+            <!-- td width="10%">
+                <a href="{{{linkurl}}}">{{#pix}}t/delete{{/pix}}</a>
+            </td -->
+
+        </tr>
         {{/attachedfiles}}
     </table>
-
-    {{/attachment}}
+    {{/hasattachments}}
 
     {{#attachurl}}
     <div class="shop-attach-a-file">
         <a href="{{{attachurl}}}" title="{{#str}}attach, local_shop{{/str}}">{{#pix}}attach, local_shop{{/pix}}</a>
     </div>
     {{/attachurl}}
+    {{/billnoattachementnotification}}
 
 </div>
+<!-- /local_shop/bills_bill_attachments -->

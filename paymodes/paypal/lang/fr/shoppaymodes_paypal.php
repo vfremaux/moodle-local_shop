@@ -32,6 +32,7 @@ $string['paypal'] = 'Paypal';
 $string['paypalaccepted'] = 'Paiement par Paypal';
 $string['paypalmsg'] = 'Merci d\'utiliser Paypal pour vos transactions en ligne';
 $string['paypalpaymodeparams'] = 'Paramètres de configuration Paypal';
+$string['paypalipnsimulation'] = 'Simulation de paiement Paypal (mode test uniquement)';
 $string['paypalsellertestname'] = 'Compte Paypal vendeur test (sandbox)';
 $string['paypalsellername'] = 'Compte Paypal vendeur';
 $string['pluginname'] = 'Moyen de paiement Paypal';
@@ -59,7 +60,9 @@ courriel d\'activation dès ce moment. Merci de votre achat.</p>
 ';
 
 $string['success_followup_text_tpl'] = '
-<p>Votre paiement a été confirmé par Paypal. Nous avons prcoédé à la mise en oeuvre de vos produits.</p>
+<p>Votre paiement a été confirmé par Paypal. Nous avons procédé à la mise en oeuvre de vos produits.</p>
+<p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne trouvez pas de courriel dans votre boite de réception, 
+pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
 <p>Si vous éprouvez des difficultés d\'accès, n\'hésitez
 pas à contacter notre service commercial <%%SUPPORT%%>.</p>
 ';

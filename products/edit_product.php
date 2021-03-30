@@ -64,8 +64,26 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $itemcatalog = $item->get_catalog();
-    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $itemcatalog));
+    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
+} else {
+    $item = new CatalogItem(null);
+    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
+}
+
+if ($mform->is_cancelled()) {
+    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $thecatalog->id)));
+}
+
+if ($data = $mform->get_data()) {
+    $controller = new \local_shop\backoffice\product_controller($thecatalog);
+    $controller->receive('edit', $data, $mform);
+    $controller->process('edit');
+
+    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $thecatalog->id)));
+}
+
+if ($itemid) {
+    $item = new CatalogItem($itemid);
     $itemrec = $item->record;
 
     // Replicates some attributes for variants.
@@ -86,24 +104,9 @@ if ($itemid) {
     $mform->set_data($itemrec);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
-    $itemcatalog = $thecatalog;
     $itemrec = $item->record;
     $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($itemrec);
-}
-
-if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $itemcatalog->id)));
-}
-
-if ($data = $mform->get_data()) {
-
-    $controller = new \local_shop\backoffice\product_controller($itemcatalog);
-    $controller->receive('edit', $data, $mform);
-    $controller->process('edit');
-
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $itemcatalog->id)));
 }
 
 echo $OUTPUT->header();

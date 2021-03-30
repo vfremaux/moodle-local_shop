@@ -36,6 +36,8 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $lastnamestr = get_string('lastname');
         $firstnamestr = get_string('firstname');
+        $placedstr = get_string('placed', 'local_shop');
+        $pendingsstr = get_string('pendings', 'local_shop');
         $purchasesstr = get_string('purchases', 'local_shop');
         $emailstr = get_string('email');
         $totalamountstr = get_string('totalamount', 'local_shop');
@@ -45,6 +47,8 @@ class shop_customers_renderer extends local_shop_base_renderer {
         $table->head = array('',
                              "<b>$lastnamestr $firstnamestr</b>",
                              "<b>$emailstr</b>",
+                             "<b>$placedstr</b>",
+                             "<b>$pendingsstr</b>",
                              "<b>$purchasesstr</b>",
                              "<b>$totalamountstr</b>",
                              '');
@@ -65,6 +69,8 @@ class shop_customers_renderer extends local_shop_base_renderer {
                 $email .= '&nbsp;'.$OUTPUT->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'));
             }
             $row[] = $email;
+            $row[] = $c->placedcount;
+            $row[] = $c->pendingscount;
             $row[] = $c->billcount;
             $row[] = sprintf("%.2f", round($c->totalaccount, 2)).' '.$this->theshop->defaultcurrency;
             $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));

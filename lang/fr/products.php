@@ -45,6 +45,7 @@ $string['financials'] = 'Paramètres financiers';
 $string['handlerparams'] = 'Paramètres du gestionnaire&nbsp;';
 $string['helpcode'] = 'code produit';
 $string['helpshortname'] = 'nom court produit';
+$string['idnumber'] = 'Identifiant externe';
 $string['newbundle'] = 'Nouveau lot';
 $string['newcategory'] = 'Nouvelle catégorie';
 $string['newitem'] = 'Nouvel élément';
