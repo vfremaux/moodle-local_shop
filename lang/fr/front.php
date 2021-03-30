@@ -134,7 +134,7 @@ $string['notallassigned'] = 'Vous avez rempli moins de sièges que votre command
 $string['notavailable'] = 'Vous ne pouvez acheter ce produit actuellement (ex: vous en détenez peut-être déjà un).';
 $string['notifications'] = 'Notifications';
 $string['notsameaccountmail'] = 'L\'adresse de courriel utilisée pour votre compte utilisateur est différent de celui que vous avez donné dans le formulaire client ({$a}). Les notifications seront envoyées à votre adresse d\'utilisateur. Vous devriez peut-être mettre à jour votre profil pour utiliser la nouvelle adresse.';
-$string['objects'] = 'objets';
+$string['objects'] = 'produit(s)';
 $string['on'] = 'Le ';
 $string['oneseat'] = 'Un siège par ordre d\'achat';
 $string['onlinepayment'] = 'Payement <br>(en ou hors ligne)';
@@ -149,7 +149,7 @@ $string['orderinputadmin'] = 'Entree de commande (admintrace)';
 $string['ordersheet'] = 'Bon de Commande';
 $string['ordersummary'] = 'Résumé de commande';
 $string['ordertempstatusadvice'] = '<span class="smalltext">Ce bon de commande est temporaire jusqu\'à l\'attribution de l\'identifiant de facture définitif par nos services.</span>';
-$string['ordertotal'] = 'Votre total d\'achat';
+$string['ordertotal'] = 'Total ';
 $string['participanthelper1'] = 'Vous pouvez enregistrer 1 participant dans votre commande.';
 $string['participanthelper1plural'] = 'Vous pouvez enregistrer jusqu\'à {$a} participants dans votre commande.';
 $string['participanthelper2'] = 'Utilisez le formulaire ci-dessous pour définir tous les participants, puis vous les affecterez aux formations disponibles dans votre commande. Vous pouvez enregistrer moins de personnes que le maximum autorisé, par exemple si certains de vos participants utilisent plusieurs sièges. Tant que votre session n\'est pas confirmée, vous pouvez modifier cette liste, enlever ou rajouter des personnes autant que nécessaire.';

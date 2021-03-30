@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 function local_shop_get_course_list($course) {
-    return new \course_in_list($course);
+    return new \core_course_list_element($course);
 }
 
 function local_shop_pix_url($pix, $component) {

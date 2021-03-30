@@ -1,0 +1,7 @@
+api mercanet_p615_PLUGIN_linux-2.6.9.tar créée le 08/07/10 à 11:25:50
+
+type d'api = PLUGIN
+offre = BNP
+OS = linux 2.6.9
+version = p615
+processeur = i686

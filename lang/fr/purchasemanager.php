@@ -40,4 +40,5 @@ $string['hasproductinstance'] = 'A un produit enregistré';
 $string['hasnoproductinstance'] = 'N\'a PAS de produit enregistré';
 $string['testproduct'] = 'Produit test';
 $string['unassigned'] = '--- Non attribué ---';
+$string['registered_product'] = 'Produit enregistré';
 

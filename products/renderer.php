@@ -512,7 +512,13 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $categoryid = 0 + @$SESSION->shop->categoryid;
+        $firstcategory = $thecatalog->get_first_category();
+        if ($firstcategory) {
+            $firstcategoryid = $firstcategory->id;
+        } else {
+            $firstcategoryid = 0;
+        }
+        $categoryid = optional_param('categoryid', $firstcategoryid, PARAM_INT);
 
         $template = new StdClass;
 

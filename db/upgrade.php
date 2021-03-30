@@ -322,5 +322,92 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2019050301, 'local', 'shop');
     }
 
+    if ($oldversion < 2020072900) {
+        // New version in version.php.
+
+        // Define table local_shop to be created.
+        $table = new xmldb_table('local_shop_discount');
+
+        // Adding fields to table local_shop_discount.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('shopid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('argument', XMLDB_TYPE_TEXT, 'medium', null, null, null, null);
+        $table->add_field('argumentformat', XMLDB_TYPE_INTEGER, '4', null, null, null, null);
+        $table->add_field('type', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('ruledata', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
+        $table->add_field('ratio', XMLDB_TYPE_NUMBER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('applyon', XMLDB_TYPE_CHAR, '8', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('applydata', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
+        $table->add_field('enabled', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('ordering', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('operator', XMLDB_TYPE_CHAR, '16', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table local_shop_discount.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('fk_local_shop_id_uniq_name', XMLDB_KEY_UNIQUE, array('shopid', 'name'));
+
+        // Conditionally launch create table for local_shop.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2020072900, 'local', 'shop');
+    }
+
+    if ($oldversion < 2020102200) {
+        // Add discount fields in local_shop_bill.
+        $table = new xmldb_table('local_shop_bill');
+
+        $field = new xmldb_field('discount');
+        $field->set_attributes(XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'paiedamount');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('untaxeddiscount');
+        $field->set_attributes(XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'discount');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('discounttaxes');
+        $field->set_attributes(XMLDB_TYPE_NUMBER, '10', null, null, null, null, 'untaxeddiscount');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2020102200, 'local', 'shop');
+    }
+
+    if ($oldversion < 2020111500) {
+        $table = new xmldb_table('local_shop_catalogitem');
+
+        $field = new xmldb_field('idnumber');
+        $field->set_attributes(XMLDB_TYPE_CHAR, '255', null, null, null, null, 'name');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('local_shop_partner');
+
+        $field = new xmldb_field('referer');
+        $field->set_attributes(XMLDB_TYPE_CHAR, '255', null, null, null, null, 'partnerkey');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('partnersecretkey');
+        $field->set_attributes(XMLDB_TYPE_CHAR, '32', null, null, null, null, 'referer');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // New version in version.php.
+        upgrade_plugin_savepoint(true, 2020111500, 'local', 'shop');
+    }
+
     return $result;
 }

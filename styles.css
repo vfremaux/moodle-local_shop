@@ -1,5 +1,10 @@
 /* Generic shop table */
 
+#page-local-shop-front-view #region-main-box {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
 .shop-table {
     display: flex;
     flex-direction: column;
@@ -18,7 +23,7 @@
 }
 
 .shop-cell.param {
-    background-color: #d0d0d0;
+    background-color: #ddd;
     border-bottom: 1px solid #fefefe;
     border-top: 1px solid #fefefe;
     color: white;
@@ -26,7 +31,7 @@
 }
 
 .shop-cell.header {
-    background-color: #a0a0a0;
+    background-color: #aaa;
     border-bottom: 1px solid #fefefe;
     border-top: 1px solid #fefefe;
     color: white;
@@ -35,9 +40,9 @@
 
 .shop-cell.value {
     background-color: #fefefe;
-    border-bottom: 1px solid #d0d0d0;
-    border-top: 1px solid #d0d0d0;
-    color: #808080;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    color: #888;
     font-weight: normal;
 }
 
@@ -57,19 +62,17 @@
 
 .shop-finalcount,
 .shop-finalcount * {
-    font-size: 1.15em;
+    font-size: 1.1em;
 }
 
 .shop-notification {
-    background-color: #fdfdfd;
-    border: 1px solid #f0f0f0;
     margin: 10px;
     padding: 30px;
 }
 
 .shop-notification-message {
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     font-size: 1.4em;
     padding: 15px;
 }
@@ -84,10 +87,10 @@
 }
 
 #shop-notification-result {
-    background-color: #4ac1b3;
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
-    color: white;
+    background-color: #eee;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    color: #444;
     font-size: 1.4em;
     margin-bottom: 20px;
     padding: 15px;
@@ -102,7 +105,7 @@
 
 #shop-adminlinks {
     background-color: #f0f0f0;
-    border:1px dashed  #e0e0e0;
+    border: 1px dashed  #ccc;
     border-radius: 7px;
     margin: 5px;
 }
@@ -126,9 +129,6 @@
     padding: 3px;
 }
 
-#shop-paymodes {
-}
-
 #shop-paymodes td {
     padding: 3px;
 }
@@ -140,8 +140,8 @@
 
 #shop-customerdata,
 #shop-organisationdata {
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     padding: 15px;
 }
 
@@ -150,7 +150,7 @@
 }
 
 .shop-billstate {
-    background-color: #D0DDE3;
+    background-color: #ddd;
     display: inline;
     padding: 2px;
     width: 120px;
@@ -162,7 +162,7 @@
 }
 
 .shop-grouphead {
-    background-color: #808090;
+    background-color: #888;
     color: white;
     font-size: 1.3em;
     padding: 1px;
@@ -204,8 +204,8 @@ div.shop-bill_error {
 }
 
 .shop-bills-searchlink {
-    width:150px;
-    display:inline-block;
+    width: 150px;
+    display: inline-block;
 }
 
 .shop-availableinternalline {
@@ -229,7 +229,7 @@ div.shop-bill_error {
 }
 
 .shop-abandonned {
-    background-color: #B0B0B0;
+    background-color: #bbb;
     border: 1px white solid;
 }
 
@@ -247,7 +247,7 @@ div.shop-bill_error {
 }
 
 .shop-billstate {
-    border: 1px solid #606060;
+    border: 1px solid #666;
     font-family: monospace;
     font-size: 1.5em;
     padding: 2px;
@@ -259,7 +259,7 @@ div.shop-bill_error {
 
 .shop-controls,
 .shop-setcontrols {
-    border-left: 1px solid #d0d0d0;
+    border-left: 1px solid #ccc;
     line-height: 20px;
     min-width: 80px;
     padding-left: 8px;
@@ -297,7 +297,7 @@ div.shop-bill_error {
 }
 
 .shop-relocate-box {
-    border: 1px dashed #b0b0b0;
+    border: 1px dashed #ccc;
 }
 
 .shop-front-leaflet {
@@ -306,14 +306,14 @@ div.shop-bill_error {
 
 input.shop-error,
 select.shop-error {
-    background-color: #fbcec6 !important;
-    background-image: url([[pix:theme|images/input_bg_error]]) !important;
-    color: black !important;
+    background-color: #fbcec6;
+    background-image: url([[pix:theme|images/input_bg_error]]);
+    color: black;
 }
 
 .shop-bills-flowcontrol {
     background-color: #fff0f0;
-    border: 4px #ff0000 solid;
+    border: 2px #f00 solid;
     border-radius: 8px;
     margin-left: 5px;
     margin-right: 5px;
@@ -323,8 +323,14 @@ select.shop-error {
 
 #billpanel,
 #orderpanel {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+#order {
+     border: 2px solid #ccc;
+     border-radius: 8px;
+     padding-left: 10px;
 }
 
 .providingline {
@@ -334,12 +340,12 @@ select.shop-error {
 
 .previewline {
     background-color: transparent;
-    color: #808080;
+    color: #888;
 }
 
 .suspendedline {
     background-color: #fefefe;
-    color: #a0a0a0;
+    color: #aaa;
 }
 
 .abandonnedline {
@@ -368,8 +374,8 @@ select.shop-error {
 
 .shop-role-list-container,
 .shop-information-area {
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     margin: 5px;
     padding: 15px;
 }
@@ -382,12 +388,12 @@ select.shop-error {
 }
 
 .shop-pricerange {
-    -khtml-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    background-color: #eeeeee;
-    border-radius: 6px;
-    color: #737379;
+    -khtml-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    background-color: #eee;
+    border-radius: 8px;
+    color: #777;
     font-weight: bolder;
     padding-left: 5px;
     padding: 1px;
@@ -396,6 +402,11 @@ select.shop-error {
 .shop-priceamount {
     font-weight: bolder;
     padding: 3px;
+}
+
+.discount-overriden-amount {
+    text-decoration: line-through;
+    color: #aaa;
 }
 
 .tiny-text {
@@ -415,8 +426,8 @@ select.shop-error {
 }
 
 .shop-error-notice {
-    background-color: #ffcccc;
-    border: 1px red solid;
+    background-color: #fcc;
+    border: 2px red solid;
     border-radius: 8px;
     font-size: 1.1em;
     font-weight: bold;
@@ -430,7 +441,7 @@ select.shop-error {
 }
 
 .shop-warning-result {
-    color: #cc9900;
+    color: #c90;
 }
 
 .shop-message-result {
@@ -438,10 +449,10 @@ select.shop-error {
 }
 
 .shop-warning {
-    color: #cc0000;
-    background-color: #ffeeee;
+    color: #c00;
+    background-color: #fee;
     padding: 5px;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 #addparticipant input,
@@ -459,7 +470,7 @@ select.shop-error {
 }
 
 div.shop-bill-abstract {
-    color: #606060;
+    color: #666;
     font-size: 0.8em;
 }
 
@@ -475,8 +486,8 @@ div.shop-bill-abstract {
 }
 
 #eulas-panel {
-    background-color: #ffffff;
-    border: solid 1px #d0d0d0;
+    background-color: #fff;
+    border: solid 1px #ccc;
     height: 60%;
     margin-right: 30px;
     overflow-y: scroll;
@@ -498,9 +509,9 @@ div.shop-bill-abstract {
 }
 
 #shop-requirement-caption {
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    border: 1px solid #808080;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
     font-size: 1.1em;
     margin-bottom: 15px;
     margin-top: 10px;
@@ -508,9 +519,9 @@ div.shop-bill-abstract {
 }
 
 .shop-product-requirements {
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    border: 1px solid #808080;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
     margin-top: 10px;
     padding: 5px;
 }
@@ -535,7 +546,7 @@ div.shop-bill-abstract {
 }
 
 .requ-desc {
-    color: #606060;
+    color: #666;
     font-size: 0.9em;
     font-style: italic;
     padding: 2px;
@@ -547,7 +558,7 @@ div.shop-bill-abstract {
 }
 
 #requ-submit.unsaved input {
-    background-image: -webkit-linear-gradient(top, #ffeeee, #ff6666) !important;
+    background-image: -webkit-linear-gradient(top, #fee, #f66) !important;
 }
 
 #requ-submit input {
@@ -555,11 +566,11 @@ div.shop-bill-abstract {
 }
 
 .shop-requ-error {
-    -moz-border-radius: 3px;
+    -moz-border-radius: 8px;
     background-color: #ffe0e0;
-    border-radius: 3px;
-    border: 1px solid red;
-    color: #A00000;
+    border-radius: 8px;
+    border: 2px solid red;
+    color: #a00000;
     font-size: 0.8em;
     margin: 4px;
     padding: 3px;
@@ -567,7 +578,7 @@ div.shop-bill-abstract {
 
 .shop-requ-input-error {
     background-color: #ffe0e0;
-    color: #ff0000;
+    color: #f00;
 }
 
 table.shop-role-assignations > tr > td {
@@ -601,7 +612,7 @@ table.shop-article {
 .shop-article.product,
 .shop-article.set,
 .shop-article.bundle {
-    border: 1px solid #fdfdfd;
+    border: 2px solid #fdfdfd;
     border-radius: 8px;
     margin: 10px 2px;
     padding: 15px;
@@ -631,25 +642,9 @@ h3.shop-front-partof {
     line-height: 1.2em;
 }
 
-/*
-.shop-article.bundle .shop-front-elements {
-    display: table;
-}
-
-.shop-article.bundle .shop-front-element {
-    display: table-row;
-}
-
-.shop-article.set .shop-front-elements {
+.shop-front-bundle-content {
     display: flex;
-    flex-direction: row;
 }
-
-.shop-article.set .shop-front-elements > div {
-    flex-basis: 49%;
-    margin: 0 20px;
-}
-*/
 
 .shop-front-productpix {
     display: table-cell;
@@ -661,9 +656,9 @@ h3.shop-front-partof {
 }
 
 .shop-front-productdef a[name]::before {
-    content:initial !important;
-    margin:0px !important;
-    padding:0px !important;
+    content: initial !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .shop-front-refblock {
@@ -698,18 +693,9 @@ h3.shop-front-partof {
     margin-right: 15px;
 }
 
-.shop-front-label:after{
-/*    content: ":"; */
-}
-
-.shop-front-price {
-    font-weight: bold;
-    margin-right: 3em;
-}
-
-shop-order-paymode {
-    background-color: #e0e0e0;
-    border: 1px solid #d0d0d0;
+.shop-order-paymode {
+    background-color: #eee;
+    border: 2px solid #ccc;
     border-radius: 8px;
     padding: 15px;
 }
@@ -732,9 +718,9 @@ shop-order-paymode {
     pointer-events: auto;
     background-color: #fff;
     background-clip: padding-box;
-    border: 1px solid #999;
-    border: 1px solid rgba(0,0,0,.2);
-    border-radius: 6px;
+    border: 2px solid #ccc;
+    border: 2px solid rgba(0,0,0,.2);
+    border-radius: 8px;
     -webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5);
     box-shadow: 0 5px 15px rgba(0,0,0,.5);
     outline: 0;
@@ -765,8 +751,8 @@ shop-order-paymode {
 }
 
 .shop-category-description {
-    border: 1px solid #f0f0f0;
-    border-radius: 10px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     margin: 10px;
     padding: 30px;
 }
@@ -822,11 +808,11 @@ shop-order-paymode {
 }
 
 .shop-line-commands {
-    padding: 3px;
+    padding: 5px;
     margin: 2px 2px 2px 5px;
-    border: 1px solid #d0d0d0;
-    background-color: #e8e8e8;
-    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #eee;
+    border-radius: 8px;
 }
 
 #shop-loginbox {
@@ -840,16 +826,16 @@ shop-order-paymode {
 }
 
 ul.shop-test-result {
-    padding: 4px 4px 4px 20px;
-    border-radius: 4px;
-    border: 1px solid gray;
+    padding: 5px 5px 5px 20px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
     background-color: #f0f0f0;
 }
 
 .shop-paymodes-choice {
     background-color: #f0f0f0;
-    border: 1px solid #a0a0a0;
-    border-radius: 6px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     margin: 5px 0;
     padding: 10px;
 }
@@ -882,8 +868,8 @@ td.right-align {
 }
 
 #shop-invoice {
-     border: 1px solid #444;
-     border-radius: 10px;
+     border: 2px solid #ccc;
+     border-radius: 8px;
 }
 
 #page-local-shop-front-view  .generaltable {
@@ -1008,4 +994,104 @@ h2.shop-caption {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+}
+
+div#shop-panel-caption {
+    border: solid 2px #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+div#shop-printable-bill {
+    text-align: center;
+}
+
+/* shop buttons (price and purchase) */
+
+.shop-front-label {
+    margin-right: 15px;
+    padding-top: 20px;
+}
+
+.shop-front-price-container {
+    background-color: #444;
+    /* background-color: $brandsecondary; Add in scss overrides for scss enabled themes */
+    border-radius: 50%;
+    width: 65px;
+    height: 65px;
+    box-shadow: 4px 4px 10px -2px #ccc;
+    color: #fff;
+}
+
+.shop-front-price {
+    position: relative;
+    font-weight: 700;
+    top: calc(35%);
+    text-align: center;
+    margin-right: 0em;
+    display: block;
+}
+
+#shop-adminlinks {
+    margin: 10px;
+    padding: 10px;
+    border: 2px dashed #faa;
+    background-color: #fdd;
+    border-radius: 8px;
+    width: min-content;
+    width: fit-content;
+    width: -moz-fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 30px;
+}
+
+#shop-customer-info {
+    margin: 0 40px;
+}
+
+#page-local-shop-front-view .generaltable tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.0);
+}
+
+#page-local-shop-front-view .generaltable tbody tr:hover {
+    background-color: transparent;
+}
+
+.discount-rate {
+    float: right;
+    padding: 0 10px;
+    background-color: #eee;
+    border-radius: 8px;
+}
+
+.amount-primary {
+    color: black;
+}
+
+.amount-secondary {
+    font-size: 0.85em;
+    color: #88e;
+}
+
+div.purchaseoption {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+input.purchaseoption {
+    position: relative;
+    height: 1.5em;
+    width: 1.5em;
+    margin-right: 20px;
+}
+
+input.purchaseoption:checked {
+    color: #080;
+}
+
+.shop-bills-tools {
+	font-size: 0.8em;
 }

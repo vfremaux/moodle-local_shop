@@ -25,8 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Catalog;
+use local_shop\Customer;
 use local_shop\Shop;
 
 /**
@@ -238,7 +240,9 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current);
+        $customers = array('' => get_string('allcustomers', 'local_shop')) + $customers;
+        $attrs['label'] = get_string('customer', 'local_shop').': ';
+        $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current, null, null, $attrs);
 
         return $str;
     }
@@ -252,19 +256,24 @@ class local_shop_renderer extends local_shop_base_renderer {
         $template->supportsinstances = false;
         if (local_shop_supports_feature('shop/instances')) {
             $template->supportsinstances = true;
-            $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops'));
+            $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops', 'id' => $theshop->id));
         } else {
-            $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php');
+            $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $theshop->id, 'shopid' => $theshop->id]);
         }
 
-        $template->billsurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
-        $template->productsurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances'));
-        $template->customersurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers'));
-        $template->taxesurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes'));
+        if (local_shop_supports_feature('shop/discounts')) {
+            $template->supportsdiscounts = true;
+            $template->discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', array('view' => 'viewAllDiscounts', 'id' => $theshop->id));
+        }
+
+        $template->billsurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills', 'id' => $theshop->id));
+        $template->productsurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances', 'id' => $theshop->id));
+        $template->customersurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers', 'id' => $theshop->id));
+        $template->taxesurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes', 'id' => $theshop->id));
 
         if (!empty($config->useshipping)) {
             $template->useshipping = true;
-            $template->shippingurl = new moodle_url('/local/shop/shipzones/index.php');
+            $template->shippingurl = new moodle_url('/local/shop/shipzones/index.php', ['id' => $theshop->id]);
         }
 
         $template->traceurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));

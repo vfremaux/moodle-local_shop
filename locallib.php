@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/backup/util/includes/restore_includes.php');
 require_once($CFG->libdir.'/filestorage/tgz_packer.php');
+require_once($CFG->dirroot.'/local/shop/compatlib.php');
 
 use local_shop\Catalog;
 use local_shop\Shop;
@@ -951,8 +952,15 @@ function shop_get_bill_filtering() {
 
     $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
     $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
+    $customerid = optional_param('customerid', 0 + @$SESSION->shop->customerid, PARAM_INT);
     $SESSION->shop->billyear = $y;
     $SESSION->shop->billmonth = $m;
+    $SESSION->shop->customerid = $customerid;
+    if (local_shop_supports_feature('shop/partners')) {
+        $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+        $SESSION->shop->partnerid = $p;
+    }
+
     $shopid = optional_param('shopid', 0, PARAM_INT);
     $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
     $cur = optional_param('cur', 'EUR', PARAM_TEXT);
@@ -973,6 +981,9 @@ function shop_get_bill_filtering() {
     if (!empty($m)) {
         $filter['MONTH(FROM_UNIXTIME(emissiondate))'] = $m;
     }
+    if (!empty($customerid)) {
+        $filter['customerid'] = $customerid;
+    }
 
     $filterclause = '';
     $filterclause = " AND currency = '{$cur}' ";
@@ -985,8 +996,21 @@ function shop_get_bill_filtering() {
     if ($m) {
         $filterclause .= " AND MONTH(FROM_UNIXTIME(emissiondate)) = '{$m}' ";
     }
+    if ($customerid) {
+        $filterclause .= " AND customerid = '{$customerid}' ";
+    }
+
+    if (local_shop_supports_feature('shop/partners')) {
+        if (!empty($p)) {
+            $filter['partnerid'] = $p;
+            $filterclause .= " AND partnerid = '{$p}' ";
+        }
+    }
 
     $urlfilter = "y=$y&m=$m&status=$status&shopid=$shopid&cur=$cur&nopaging=$nopaging";
+    if (local_shop_supports_feature('shop/partners')) {
+        $urlfilter = "p=$p&".$urlfilter;
+    }
 
     return array($filter, $filterclause, $urlfilter);
 }
@@ -1014,6 +1038,9 @@ function local_shop_strftimefixed($format, $timestamp=null) {
 
 function shop_load_output_class($classname) {
     global $CFG;
+
+    $parts = explode('\\', $classname);
+    $classname = array_pop($parts);
 
     $classpath = $CFG->dirroot.'/local/shop/classes/output/'.$classname.'.class.php';
     include_once($classpath);

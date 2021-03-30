@@ -20,3 +20,4 @@ $string['catalogs'] = 'Catalogues';
 $string['defaultcatalogname'] = 'Sales catalogue';
 $string['defaultcatalogdescription'] = 'Product line catalogue for selling Moodle assets';
 $string['billfooter'] = 'Bill footer';
+$string['usedcatalogcannotdelete'] = 'This catalog is used by at least one shop. It cannot be deleted.';

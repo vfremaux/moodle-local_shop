@@ -137,7 +137,7 @@ function xmldb_local_shop_install() {
     // Create the teacherowner role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'courseowner'))) {
         $rolestr = get_string('courseowner', 'local_shop');
-        $roledesc = get_string('courseownerdesc', 'local_shop');
+        $roledesc = get_string('courseowner_desc', 'local_shop');
         $courseownerid = create_role($rolestr, 'courseowner', str_replace("'", "\\'", $roledesc), 'editingteacher');
         set_role_contextlevels($courseownerid, array(CONTEXT_COURSECAT, CONTEXT_COURSE));
         $editingteacher   = $DB->get_record('role', array('shortname' => 'editingteacher'));
@@ -157,7 +157,7 @@ function xmldb_local_shop_install() {
     // Create the sales manager role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'sales'))) {
         $rolestr = get_string('salesrolename', 'local_shop');
-        $roledesc = get_string('salesroledesc', 'local_shop');
+        $roledesc = get_string('salesrole_desc', 'local_shop');
         $salesroleid = create_role($rolestr, 'sales', str_replace("'", "\\'", $roledesc), '');
         set_role_contextlevels($salesroleid, array(CONTEXT_BLOCK, CONTEXT_SYSTEM));
     }
@@ -165,7 +165,7 @@ function xmldb_local_shop_install() {
     // Create the sales manager role if absent.
     if (!$DB->record_exists('role', array('shortname' => 'customer'))) {
         $rolestr = get_string('customerrolename', 'local_shop');
-        $roledesc = get_string('customerroledesc', 'local_shop');
+        $roledesc = get_string('customerrole_desc', 'local_shop');
         $customerroleid = create_role($rolestr, 'customer', str_replace("'", "\\'", $roledesc), '');
         set_role_contextlevels($customerroleid, array(CONTEXT_COURSE, CONTEXT_SYSTEM));
     }

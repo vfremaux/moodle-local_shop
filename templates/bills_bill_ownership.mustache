@@ -1,0 +1,62 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/bills_bill_ownership
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/bills_bill_ownership -->
+<div class="shop-bills-ownership mt-2">
+
+    {{#billnoownershipnotification}}
+    <h2>{{#str}}ownership, local_shop{{/str}}</h2>
+    {{{billnoownershipnotification}}}
+    {{/billnoownershipnotification}}
+
+    {{^billnoownershipnotification}}
+    <h2>{{#str}}ownership, local_shop{{/str}}</h2>
+    <table class="generaltable" width="50%">
+        <tr>
+            <td width="50%">
+                {{#current}}
+                {{{current}}}
+                <a href="{{{unassignurl}}}" title="{{#str}}unassignpartner, local_shop{{/str}}">{{#pix}}t/delete{{/pix}}</a>
+                {{/current}}
+                {{^current}}
+                {{#str}}unset, local_shop{{/str}}
+                {{/current}}
+            </td>
+            <td width="50%">
+                {{#haspartners}}
+                <form action="{{{assignurl}}}">
+                <input type="hidden" name="what" value="assignpartner" />
+                <input type="hidden" name="view" value="viewBill" />
+                <input type="hidden" name="id" value="{{shopid}}" />
+                <input type="hidden" name="billid" value="{{billid}}" />
+                <input type="hidden" name="sesskey" value="{{sesskey}}" />
+                {{{partnerselect}}}
+                <button type="submit">{{#str}}assigntopartner, local_shop{{/str}}</button>
+                </form>
+                {{/haspartners}}
+            </td>
+        </tr>
+    </table>
+    {{/billnoownershipnotification}}
+</div>
+<!-- /local_shop/bills_bill_ownership -->

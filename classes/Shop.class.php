@@ -116,6 +116,12 @@ class Shop extends ShopObject {
      *
      */
     public function get_catalogue() {
+        if (empty($this->thecatalogue)) {
+            // Lazy loading if not preloaded.
+            if (!empty($this->record->catalogid)) {
+                $this->thecatalogue = new Catalog($this->record->catalogid);
+            }
+        }
         return $this->thecatalogue;
     }
 
@@ -213,6 +219,7 @@ class Shop extends ShopObject {
         return $shopurl;
     }
 
+    /*
     public function calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
         global $USER;
 
@@ -247,6 +254,7 @@ class Shop extends ShopObject {
 
         return $discountrate;
     }
+    */
 
     /**
      * Exports the shop into a YML string.

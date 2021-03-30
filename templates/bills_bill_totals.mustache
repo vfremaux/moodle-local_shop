@@ -46,36 +46,6 @@
     </tr>
     {{/hassubtotal}}
 
-    {{#discountrate}}
-    <tr valign="top">
-        <td width="40%" class="cell c0">
-            &nbsp;
-        </td>
-
-        <td width="40%" class="shop-totaltitle ratio cell c1">
-            {{#str}}discount, local_shop{{/str}}:
-        </td>
-
-        <td width="20%" id="discount-rate" class="shop-totals ratio cell c2 right-align">
-            <b>-{{discountrate}}%</b>
-        </td>
-    </tr>
-
-    <tr valign="top">
-        <td width="40%" class="cell c0">
-            &nbsp;
-        </td>
-
-        <td width="40%" class="shop-totaltitle cell c1">
-            {{#str}}totaldiscounted, local_shop{{/str}} :
-        </td>
-
-        <td width="20%" id="final-discounted-total" class="shop-totals cell c2 right-align">
-            {{{finaltaxedtotal}}}&nbsp;{{{currency}}}&nbsp;
-        </td>
-    </tr>
-    {{/discountrate}}
-
     <tr valign="top">
         <td width="40%" class="cell c0">
             {{#str}}untaxedsubtotal, local_shop{{/str}}

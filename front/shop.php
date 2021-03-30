@@ -50,10 +50,13 @@ $categories = $thecatalog->get_categories();
 
 // Choose a category.
 $category = optional_param('category', null, PARAM_INT);
+
 if (empty($category)) {
     // Explicit the category.
     $catids = array_keys($categories);
+
     $firstcategory = 0;
+
     while ($cat = array_shift($catids)) {
         $category = new Category($cat);
         if ($category->is_empty()) {
@@ -65,16 +68,32 @@ if (empty($category)) {
         }
     }
 
+    $errormessage = '';
     if (!$firstcategory) {
-        print_error("Something is wrong in this shop. No categories usable.");
-        die;
+        $errormessage = "Something is wrong in this shop. No categories usable (no categories, only hidden categories, or only empty categories).<br/>";
+        $errormessage .= "Shop : {$theshop->id}<br/>";
+        $errormessage .= "Catalog : {$thecatalog->id}<br/>";
+    } else {
+        $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
+        redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
-    $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
-    redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
 $categories = $thecatalog->get_all_products($shopproducts);
 echo $out;
+
+if (!empty($errormessage)) {
+        echo $OUTPUT->notification($errormessage, 'error');
+
+        $systemcontext = context_system::instance();
+        if (has_capability('local/shop:salesadmin', $systemcontext)) {
+            $url = new moodle_url('/local/shop/index.php', ['id' => $theshop->id]);
+            echo $OUTPUT->single_button($url, get_string('gotobackoffice', 'local_shop'));
+        }
+
+        echo $OUTPUT->footer();
+        die;
+}
 
 $units = 0;
 if (isset($SESSION->shoppingcart->order)) {

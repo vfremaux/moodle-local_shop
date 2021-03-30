@@ -4,7 +4,7 @@
 
     {{#hastaxlines}}
 
-    {{{heading}}}
+    <h2>{{#str}}taxes, local_shop{{/str}}</h2>
 
     <table cellspacing="5" class="generaltable" width="100%">
 
@@ -25,15 +25,15 @@
         {{#taxlines}}
         <tr class="shop-tax" valign="top">
             <td align="left" class="cell c0">
-                {{title}}
+                {{taxtitle}}
             </td>
 
             <td align="left" class="cell c1">
-                {{ratio}}
+                {{taxratio}}
             </td>
 
             <td align="left" class="cell c2 lastcoll">
-                {{tamount}}
+                {{{taxamount}}}
             </td>
         </tr>
         {{/taxlines}}

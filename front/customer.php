@@ -54,7 +54,7 @@ if (local_shop_supports_feature('shop/partners')) {
 }
 
 if ($action) {
-    include($CFG->dirroot.'/local/shop/front/customer.controller.php');
+    include_once($CFG->dirroot.'/local/shop/front/customer.controller.php');
     $controller = new \local_shop\front\customer_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action, $data);
     $resulturl = $controller->process($action);
