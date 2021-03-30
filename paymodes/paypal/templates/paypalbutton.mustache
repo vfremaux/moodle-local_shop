@@ -5,9 +5,8 @@
 </div>
 
 <div id="shop-panel">
-    <div align="center">
+    <div align="center" class="paypal-panel">
 
-        <p><b>{{shopname}}</b></p>
         <p><img alt="{{paypalacceptedstr}}" src="{{{paypallogourl}}}" /></p>
 
         {{#istesting}}
@@ -64,10 +63,10 @@
         </table>
         {{/istesting}}
     </div>
-<div id="shop-panel-nav">
 
-<div class="paypal-cancel">
-    <span class="shop-procedure-cancel">X</span>
-    <a href="{{{cancelurl}}}" class="smalltext">{{cancelstr}}</a>
+    <div class="paypal-cancel">
+        <span class="shop-procedure-cancel">X</span>
+        <a href="{{{cancelurl}}}" class="smalltext">{{cancelstr}}</a>
+    </div>
 </div>
 <!-- /shoppaymode_paypal/paypalbutton -->

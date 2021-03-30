@@ -32,10 +32,10 @@ class shop_shop_renderer {
 
     /**
      * prints a full catalog on screen
-     * @param objectref $theblock the shop block instance
-     * @param array $catgories the full product line extractred from Catalog
+     * @param int $id the current active shop instance
+     * @param array $shops All shops.
      */
-    public function shops($shops) {
+    public function shops($id, $shops) {
         global $OUTPUT;
 
         $namestr = get_string('name');
@@ -58,11 +58,15 @@ class shop_shop_renderer {
             }
             $blockcount = $sh->get_blocks();
 
-            $editurl = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $sh->id, 'sesskey' => sesskey()));
+            if (local_shop_supports_feature('shop/instances')) {
+                $editurl = new moodle_url('/local/shop/pro/shop/edit_shop.php', array('id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey()));
+            } else {
+                $editurl = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey()));
+            }
             $commands = '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 
             if ($blockcount == 0) {
-                $params = array('view' => 'viewAllShops', 'what' => 'delete', 'id' => $sh->id, 'sesskey' => sesskey());
+                $params = array('view' => 'viewAllShops', 'what' => 'delete', 'id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey());
                 $deleteurl = new moodle_url('/local/shop/shop/view.php', $params);
                 $commands .= ' <a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
             }

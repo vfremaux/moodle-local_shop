@@ -48,7 +48,7 @@ require_capability('local/shop:salesadmin', $context);
 $url = new moodle_url('/local/shop/front/scantrace.php');
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-$PAGE->set_title($SITE->fullname);
+$PAGE->set_title(get_string('scantrace', 'local_shop'));
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
 

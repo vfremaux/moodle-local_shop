@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->dirroot.'/local/shop/lib.php');
+
+// Capabilities.
+
 $string['shop:salesadmin'] = 'Est administrateur de ventes';
 $string['shop:beassigned'] = 'Est assigné'; // Check this is really used.
 $string['shop:accessallowners'] = 'Peut voir toutes les données des sous-vendeurs';
@@ -23,6 +29,8 @@ $string['shop:seconddiscountagreed'] = 'Bénéficie d\'une meilleure remise sur 
 $string['shop:thirddiscountagreed'] = 'Bénéficie de la meilleure remise sur les produits';
 $string['shop:paycheckoverride'] = 'Déclenche la réalisation des produits même avec un paiement non interactif';
 $string['shop:usenoninstantpayments'] = 'Peut utiliser des méthodes non interactives';
+
+// Transaction states.
 
 $string['ABANDONNED'] = 'Epuisé';
 $string['AVAILABLE'] = 'Disponible';
@@ -43,10 +51,10 @@ $string['REFUSED'] = 'Refusé';
 $string['SHIP_'] = 'Port dû&nbsp;';
 $string['SOLDOUT'] = 'Payée';
 $string['SUSPENDED'] = 'Suspendu';
-$string['ttc'] = 'TTC';
 $string['WORKING'] = 'En établissement (interne)';
+
 $string['a'] = 'Arg A';
-$string['abstract'] = 'Intitulé&nbsp;';
+$string['abstract'] = 'Intitulé ';
 $string['addcustomeraccount'] = 'Ajouter un nouveau compte client';
 $string['addshipping'] = 'Ajouter une définition de port';
 $string['addshippingzone'] = 'Ajouter une zone de livraison';
@@ -110,6 +118,7 @@ $string['categoryowner'] = 'Propriétaire de catégorie';
 $string['catname'] = 'Nom';
 $string['catnum'] = 'Numéro';
 $string['check'] = 'Vérifier';
+$string['checkpasswordemission'] = 'Tester l\'émission de mot de passe';
 $string['chooseall'] = 'Tout';
 $string['clear'] = 'supprimer le fichier';
 $string['code'] = 'Code';
@@ -127,6 +136,9 @@ $string['configdiscountrate'] = 'Fixe un taux de remise';
 $string['configdiscountrate2'] = 'Fixe un taux de remise pour les utilisateurs ayant la capacité local/shop:seconddiscountagreed activée';
 $string['configdiscountrate3'] = 'Fixe un taux de remise pour les utilisateurs ayant la capacité local/shop:thirddiscountagreed activée';
 $string['configdiscounttheshold'] = 'Le seuil du chiffre d\'affaire pour remises';
+$string['configelementimageheight'] = 'Hauteur de vignette de sous-composant de produit (px)';
+$string['configelementimagermargin'] = 'Marge droite de vignette de sous-composant de produit (px)';
+$string['configelementimagewidth'] = 'Largeur de vignette de sous-composant de produit (px)';
 $string['configendusermobilephonerequired'] = 'Téléphone mobile demandé (participant)';
 $string['configenduserorganisationrequired'] = 'Organisation demandée (participant)';
 $string['configeula'] = 'Conditions de vente';
@@ -134,18 +146,9 @@ $string['confightaccesscred'] = 'Si moodle est opéré derrière une authentific
 $string['configiban'] = 'Le numéro IBAN du compte du commerçant';
 $string['configmaxitemsperpage'] = 'Nombre maximum d\'items par page';
 $string['configprinttabbedcategories'] = 'Afficher les catégories en onglets';
-$string['configproductimagewidth'] = 'Largeur de vignette produit (px)';
 $string['configproductimageheight'] = 'Hauteur de vignette produit (px)';
 $string['configproductimagermargin'] = 'Marge droite de vignette produit (px)';
-$string['productimagewidth'] = 'Hauteur vignette';
-$string['productimageheight'] = 'Largeur vignette';
-$string['productimagermargin'] = 'Marge droite vignette';
-$string['configelementimagewidth'] = 'Largeur de vignette de sous-composant de produit (px)';
-$string['configelementimageheight'] = 'Hauteur de vignette de sous-composant de produit (px)';
-$string['configelementimagermargin'] = 'Marge droite de vignette de sous-composant de produit (px)';
-$string['elementimagewidth'] = 'Hauteur sous-vignette';
-$string['elementimageheight'] = 'Largeur sous-vignette';
-$string['elementimagermargin'] = 'Marge droite sous-vignette';
+$string['configproductimagewidth'] = 'Largeur de vignette produit (px)';
 $string['configselleraddress'] = 'L\'adresse du commerçant';
 $string['configsellerbillingaddress'] = 'L\'adresse  du service comptable du commerçant';
 $string['configsellerbillingcity'] = 'La ville du service comptable du commerçant';
@@ -173,12 +176,14 @@ $string['controls'] = 'Commandes';
 $string['countrycodelist'] = 'Liste des pays de diffusion';
 $string['countrytaxe'] = 'Pays de la taxe';
 $string['courseowner'] = 'Propriétaire du cours';
-$string['courseownerdesc'] = 'Le propriétaire du cours est responsable du contenu du cours et peut inviter d\'autres enseignants avec ou sans les droits d\'édition';
+$string['courseowner_desc'] = 'Le propriétaire du cours est responsable du contenu du cours et peut inviter d\'autres enseignants avec ou sans les droits d\'édition';
 $string['currentowner'] = 'Sous-vendeur';
 $string['customeraccount'] = 'Compte client';
 $string['customeraccounts'] = 'Comptes clients';
 $string['customername'] = 'Nom de client';
 $string['customerorganisationrequired'] = 'Organisation demandée sur l\'interface ';
+$string['customerrole_desc'] = 'Les personnes qui ont effectué un achat en boutique';
+$string['customerrolename'] = 'Client';
 $string['customersdeleted'] = 'Base client effacée';
 $string['dedicated'] = 'Spécifique';
 $string['defaultbilltitle'] = 'Achat en ligne {$a}';
@@ -191,16 +196,16 @@ $string['deletebillitems'] = 'Supprimer des éléments';
 $string['deletebills'] = 'Supprimer factures';
 $string['deleteproduct'] = 'Supprimer le produit';
 $string['description'] = 'Description&nbsp;:&ensp;';
+$string['disable'] = 'Désactiver';
 $string['disabled'] = 'Désactivé';
 $string['discountrate'] = 'Taux de remise';
 $string['discountrate2'] = 'Taux de remise 2';
 $string['discountrate3'] = 'Taux de remise 3';
 $string['discounts'] = 'Réglages des remises';
-$string['discountpolicies'] = 'Politiques de remise';
 $string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour remise';
 $string['dispo'] = 'Dispo';
-$string['downloadpdfbill'] = 'Télécharger en PDF';
 $string['dosearch'] = 'Rechercher';
+$string['downloadpdfbill'] = 'Télécharger en PDF';
 $string['edit_categories'] = 'Edition des catégories';
 $string['editbundle'] = 'Edition du lot';
 $string['editcatalog'] = 'Modification de la description du catalogue';
@@ -213,21 +218,31 @@ $string['editshop'] = 'Modifier une boutique';
 $string['editshopsettings'] = 'Modifier les paramètres de la boutique';
 $string['editshopsettings_desc'] = 'Cette version propose une instance unique de boutique Moodle. Vous pouvez modifier les paramètres ici.';
 $string['edittaxe'] = 'Edition d\'une taxe';
-$string['emulatecommunity'] = 'Emuler la version communautaire';
-$string['emulatecommunity_desc'] = 'Bascule le code sur la version communautaire. Le résultat est plus compatible avec d\'autres installations, mais certaines fonctionnalités avancées ne seront plus disponibles.';
+$string['elementimageheight'] = 'Largeur sous-vignette';
+$string['elementimagermargin'] = 'Marge droite sous-vignette';
+$string['elementimagewidth'] = 'Hauteur sous-vignette';
 $string['enablepaymodes'] = 'Modes de paiement&nbsp;';
+$string['enable'] = 'Activer';
 $string['error'] = 'Erreur&nbsp;:&ensp;';
 $string['errorbadhandler'] = 'Le fichier de ce gestionnaire ({$a}) n\'existe pas. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
-$string['errorunimplementedhandlermethod'] = 'Cette methode de postproduction ({$a}) n\'est pas écrite dans ce gestionnaire. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
 $string['errornotownedbill'] = 'Cette facture ne vous appartient pas.';
 $string['errorrequirementfieldtype'] = 'Type de champ inconnu {$a} dans les définitions de données requises';
+$string['errorunimplementedhandlermethod'] = 'Cette methode de postproduction ({$a}) n\'est pas écrite dans ce gestionnaire. Ceci est une erreur de programmation qui devrait être rapportée aux développeurs de la boutique Moodle.';
 $string['eulaagree'] = 'J\'accepte les conditions de ventes';
 $string['eulaheading'] = 'Conditions générales de ventes';
 $string['expectedpaiement'] = 'Délai de paiement&nbsp;';
 $string['experimental'] = 'Fonctionnalités expérimentales';
+$string['exportid'] = 'ID';
+$string['exportinstitution'] = 'Institution';
+$string['exportdepartment'] = 'Departement';
+$string['exportpartner'] = 'Partenaire';
+$string['exportdiscountcodes'] = 'Remises';
+$string['exporttransactionid'] = 'TxID';
+$string['exportonlinetransactionid'] = 'OnlineTxID';
+$string['exportidnumber'] = 'Lettrage';
 $string['formula'] = 'Formule';
-$string['fulldatefmt'] = '%d/%m/%Y %H:%M';
 $string['from'] = 'depuis (date)';
+$string['fulldatefmt'] = '%d/%m/%Y %H:%M';
 $string['generalsettings'] = 'Accède au formulaire de paramètres globaux dans l\'administration Moodle';
 $string['generateacode'] = 'Générer un code';
 $string['generic'] = 'Générique :';
@@ -255,13 +270,11 @@ $string['leaflet'] = 'Brochure&nbsp;:&ensp;';
 $string['leafletlink'] = 'Télécharger la brochure';
 $string['leafleturl'] = 'Url de Brochure&nbsp;:&ensp;';
 $string['link'] = 'Liaison ';
-$string['licenseprovider'] = 'Fournisseur version Pro';
-$string['licenseprovider_desc'] = 'Entrez la clef de votre distributeur.';
-$string['licensekey'] = 'Clef de license pro';
-$string['licensekey_desc'] = 'Entrez ici la clef de produit que vous avez reçu de votre distributeur.';
 $string['login'] = 'J\'ai déjà un compte';
+$string['managediscounts'] = 'Gérer les remises';
+$string['managediscounts_desc'] = 'Gérer des instances de remise suivant plusieurs politiques de remises';
 $string['manageshipping'] = 'Gérer les frais de port';
-$string['manageshippingdesc'] = 'Gère les zones de port et les frais par produits';
+$string['manageshipping_desc'] = 'Gère les zones de port et les frais par produits';
 $string['managetaxes'] = 'Gérer les taxes';
 $string['manybillsasresult'] = 'Plusieurs factures sont candidates pour les critères que vous avez utilisés. Vous pouvez choisir parmi ';
 $string['master'] = 'Catalogue maître';
@@ -309,13 +322,14 @@ $string['paiedamount'] = 'Montant payé';
 $string['param_a'] = 'Paramètre A&nbsp;';
 $string['param_b'] = 'Paramètre B&nbsp;';
 $string['param_c'] = 'Paramètre C&nbsp;';
+$string['partnerkey'] = 'Clef partenaire';
 $string['pastetransactionid'] = 'Coller un ID de transaction ';
 $string['paymentmethods'] = 'Modes de paiement';
 $string['paymodes'] = 'Mode de paiement&nbsp;';
 $string['picktransactionid'] = 'Choisir un ID de transaction ';
-$string['plugindist'] = 'Distribution du plugin';
 $string['pluginname'] = 'Boutique';
 $string['postproduction'] = 'Action sur un produit';
+$string['potentialhandlererror'] = 'Pour l\'administrateur des ventes : le produit {$a} a un gestionnaire configuré, mais l\'association du cours cible semble manquante ou erronée.';
 $string['price'] = 'Prix';
 $string['price2'] = 'Prix 2';
 $string['price3'] = 'Prix 3';
@@ -325,11 +339,14 @@ $string['printorderlink'] = 'Imprimer';
 $string['product'] = 'Produit :';
 $string['productcode'] = 'Code produit :';
 $string['productid'] = 'Identifiant produit';
+$string['productimageheight'] = 'Largeur vignette';
+$string['productimagermargin'] = 'Marge droite vignette';
+$string['productimagewidth'] = 'Hauteur vignette';
+$string['productioncomplete'] = 'Votre commande a été traitée.';
+$string['productionresults'] = 'Résultats de production';
 $string['productlabel'] = 'Label de produit';
 $string['productline'] = 'Catalogue Produit ';
 $string['productname'] = 'Nom de produit';
-$string['productionresults'] = 'Résultats de production';
-$string['productioncomplete'] = 'Votre commande a été traitée.';
 $string['productoperation'] = 'Opération sur votre produit';
 $string['productpostprocess'] = 'Actions sur les produits (post production)';
 $string['products'] = 'Produits&nbsp;:&ensp;';
@@ -341,24 +358,23 @@ $string['quantity'] = 'Quantité&nbsp;';
 $string['rate'] = 'Taux';
 $string['ratiotaxe'] = 'Ratio';
 $string['recalculate'] = 'Recalculer';
+$string['removesecurity'] = ' confirmez la suppression catalogues : ';
 $string['required'] = 'Champ obligatoire';
 $string['requiredformaterror'] = 'Il semble que la description des paramètres clients ne soit pas une chaine JSON correcte.';
 $string['requiredparams'] = 'Paramètres client';
 $string['reset'] = 'Réinitialiser';
+$string['reset_desc'] = 'Réinitialise la boutique';
 $string['resetbills'] = 'Effacer les commandes/factures';
 $string['resetcatalogs'] = 'Effacer les catalogues';
 $string['resetcustomers'] = 'Effacer la base client';
-$string['resetdesc'] = 'Réinitialise la boutique';
 $string['resetitems'] = 'Eléments à effacer';
 $string['results'] = 'Résultats';
 $string['runningbills'] = 'Factures&nbsp;: En cours';
 $string['sales'] = 'Ventes';
 $string['salesconditions'] = 'Conditions de vente&nbsp;:&ensp;';
 $string['salesmanagement'] = 'Administration des ventes';
-$string['salesroledesc'] = 'Les personnes qui ont ce rôle peuvent contrôler les opérations de la boutique en ligne';
+$string['salesrole_desc'] = 'Les personnes qui ont ce rôle peuvent contrôler les opérations de la boutique en ligne';
 $string['salesrolename'] = 'Commercial';
-$string['customerroledesc'] = 'Les personnes qui ont effectué un achat en boutique';
-$string['customerrolename'] = 'Client';
 $string['salesservice'] = 'Service commercial';
 $string['saverequs'] = 'Enregistrer votre configuration des produits';
 $string['scantrace'] = 'Scanner les traces marchandes';
@@ -373,7 +389,6 @@ $string['section'] = 'Catégorie&nbsp;:&ensp;';
 $string['seebigger'] = 'Voir en plus grand';
 $string['sel'] = 'Sel';
 $string['selectall'] = 'Selectionner tout';
-$string['unselectall'] = 'Désélectionner tout';
 $string['sellerID'] = 'Identifiant légal du commercçant';
 $string['selleraddress'] = 'Adresse du commerçant';
 $string['sellerbillingaddress'] = 'Adresse comptable du commerçant';
@@ -409,10 +424,10 @@ $string['shownameinset'] = 'Affichage du nom ';
 $string['signin'] = 'Se connecter';
 $string['slave'] = 'Catalogue lié';
 $string['slavegroupcannotbeedited'] = 'Un groupement d\'un produit esclave ne peut être modifié.';
-$string['slaveto'] = 'Lié à&nbsp;';
-$string['sold'] = 'Ventes&nbsp;:&ensp;';
+$string['slaveto'] = 'Lié à ';
 $string['softdelete'] = 'Désactiver le produit';
 $string['softrestore'] = 'Réactiver le produit';
+$string['sold'] = 'Ventes&nbsp;:&ensp;';
 $string['standalone'] = 'Catalogue indépendant';
 $string['status'] = 'Statut&nbsp;';
 $string['stock'] = 'Stock';
@@ -426,8 +441,10 @@ $string['taxformula'] = 'Formule permettant de calculer le prix TTC des produits
 $string['taxname'] = 'Nom de la taxe&nbsp;:&ensp;';
 $string['taxratio'] = 'Ratio de la taxe :';
 $string['tendays'] = 'dix jours';
+$string['tenunitspix'] = 'Icone pour 10 unités de vente&nbsp;:&ensp;';
 $string['testmodeactive'] = 'Le service de vente de Moodle est en mode test. Nous n\'autorisons pas les paiements dans ce mode hormis les administrateurs pour une fonction de test.';
 $string['testoverride'] = 'Suppression du verrou de test';
+$string['testuser'] = 'Tester l\'utilisateur';
 $string['threemonths'] = 'trois mois';
 $string['thumbnail'] = 'Vignette&nbsp;:&ensp;';
 $string['timetodo'] = 'Délai de facturation ';
@@ -438,13 +455,13 @@ $string['totaltaxed'] = 'Total TTC';
 $string['totaltaxes'] = 'Taxes (total)';
 $string['totaluntaxed'] = 'Total H.T.';
 $string['tracescan'] = 'Scanner';
-$string['tracescandesc'] = 'Examine les traces et extrait les transactions';
+$string['tracescan_desc'] = 'Examine les traces et extrait les transactions';
 $string['transactionid'] = 'Code Transaction';
+$string['ttc'] = 'TTC';
 $string['tvaeurope'] = 'Numéro de TVA intracommunautaire';
 $string['type'] = 'Type';
 $string['unit'] = 'Unit. (HT)';
 $string['unitpix'] = 'Icone d\'unité de vente&nbsp;:&ensp;';
-$string['tenunitspix'] = 'Icone pour 10 unités de vente&nbsp;:&ensp;';
 $string['unitprice1'] = 'Prix unit. HT (1)&nbsp;:&ensp;';
 $string['unitprice1'] = 'Prix unitaire HT';
 $string['unitprice2'] = 'Prix unit. HT (2)&nbsp;:&ensp;';
@@ -454,19 +471,20 @@ $string['unitprice5'] = 'Prix unit. HT (3)&nbsp;:&ensp;';
 $string['unittests'] = 'Tester les produits';
 $string['unity'] = 'Unitaire';
 $string['unitycost'] = 'Coût unitaire';
-$string['until'] = 'jusqu\'à';
 $string['unlockcatalogs'] = 'Verrou de suppression catalogues';
-$string['removesecurity'] = ' confirmez la suppression catalogues : ';
+$string['unselectall'] = 'Désélectionner tout';
+$string['unset'] = '-- Non défini --';
+$string['until'] = 'jusqu\'à';
 $string['usedelegation'] = 'Délégation de vente';
 $string['usedentries'] = 'Produits attribués';
-$string['userenrol'] = 'Inscription';
 $string['userdiscountagreed'] = 'Remise 1';
 $string['userdiscountagreed2'] = 'Remise 2';
 $string['userdiscountagreed3'] = 'Remise 3';
-$string['useshipping'] = 'Frais de port';
-$string['usinghandler'] = 'Gestionnaire utilisé&nbsp;: {$a}';
 $string['userenewableproducts'] = 'Activer les produits renouvellables';
+$string['userenrol'] = 'Inscription';
+$string['useshipping'] = 'Frais de port';
 $string['useslavecatalogs'] = 'Activer les catalogues maîtres/esclaves';
+$string['usinghandler'] = 'Gestionnaire utilisé&nbsp;: {$a}';
 $string['value'] = 'Valeur fixe';
 $string['vendorinfo'] = 'Identité du vendeur';
 $string['warning'] = 'Alerte&nbsp;:&ensp;';
@@ -751,10 +769,6 @@ $string['discountthreshold_help'] = '
 Le seuil du chiffre d\'affaire pour activer la première remise.
 ';
 
-$string['emulatecommunity_desc'] = 'Si elle est activée, cette option force le composant à fonctionner en
-version communautaire. Le fonctionnement sera plus compatible avec d\'autres installations, mais certaines
-fonctionnalités ne seront plus disponibles.';
-
 $string['eula_help'] = 'Vous devez prendre connaissance et accepter les conditions de vente suivantes avant
 de procéder à un achat sur {$a}. La validation de ce formulaire vaut pour acceptation de ces conditions.';
 
@@ -772,6 +786,7 @@ inviter des enseignants et d\'autres créateurs de cours. Il en reste respondabl
 global $CFG;
 require($CFG->dirroot.'/local/shop/lang/fr/front.php');
 require($CFG->dirroot.'/local/shop/lang/fr/catalogs.php');
+require($CFG->dirroot.'/local/shop/lang/fr/discounts.php');
 require($CFG->dirroot.'/local/shop/lang/fr/shops.php');
 require($CFG->dirroot.'/local/shop/lang/fr/bills.php');
 require($CFG->dirroot.'/local/shop/lang/fr/partner.php');
@@ -781,6 +796,10 @@ require($CFG->dirroot.'/local/shop/lang/fr/customers.php');
 require($CFG->dirroot.'/local/shop/lang/fr/tax.php');
 require($CFG->dirroot.'/local/shop/lang/fr/shipzones.php');
 require($CFG->dirroot.'/local/shop/lang/fr/pdf.php');
+
+if ('pro' == local_shop_supports_feature()) {
+    include($CFG->dirroot.'/local/shop/pro/lang/fr/pro.php');
+}
 
 // Currencies.
 
@@ -822,9 +841,4 @@ du produit.';
 $string['useslavecatalogs'] = 'Les catalogues maîtres esclaves permettent de créer des variantes locales de catalogues pour
 altérer la langue de présentation des produits ou les gammes de prix proposés.';
 
-$string['plugindist_desc'] = '
-<p>Ce plugin est distribué dans la communauté Moodle pour l\'évaluation de ses fonctions centrales
-correspondant à une utilisation courante du plugin. Une version "professionnelle" de ce plugin existe et est distribuée
-sous certaines conditions, afin de soutenir l\'effort de développement, amélioration; documentation et suivi des versions.</p>
-<p>Contactez un distributeur pour obtenir la version "Pro" et son support.</p>
-<p><a href="http://www.mylearningfactory.com/index.php/documentation/Distributeurs?lang=fr_utf8">Distributeurs MyLF</a></p>';
+include(__DIR__.'/pro_additional_strings.php');

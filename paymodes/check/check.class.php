@@ -44,13 +44,17 @@ class shop_paymode_check extends shop_paymode {
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_check');
         echo '<blockquote>';
         echo shop_compile_mail_template('print_procedure_text', array( 'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
-        echo shop_compile_mail_template('procedure_text', array(
+        $params = ['view' => 'bill', 'id' => $afullbill->theshop->id, 'transid' => $billdata->transid];
+        $billurl = new moodle_url('local/shop/front/view.php', $params);
+        $params = [
             'SELLER' => $this->_config->sellername,
-               'ADDRESS' => $this->_config->selleraddress,
-               'ZIP' => $this->_config->sellerzip,
-               'CITY' => $this->_config->sellercity,
-               'COUNTRY' => strtoupper($this->_config->sellercountry),
-               'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
+            'ADDRESS' => $this->_config->selleraddress,
+            'ZIP' => $this->_config->sellerzip,
+            'CITY' => $this->_config->sellercity,
+            'COUNTRY' => strtoupper($this->_config->sellercountry),
+            'BILL_URL' => $billurl,
+            'PROC_ORDER' => $proc++ ];
+        echo shop_compile_mail_template('procedure_text', $params, 'shoppaymodes_check');
         echo '</blockquote>';
     }
 
@@ -59,13 +63,16 @@ class shop_paymode_check extends shop_paymode {
         echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_check');
         echo '<blockquote>';
         echo shop_compile_mail_template('print_procedure_text_invoice', array( 'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
-        echo shop_compile_mail_template('procedure_text_invoice', array(
+        $billurl = new moodle_url('local/shop/front/view.php?view=bill&id='.$afullbill->shop->id.'&transid'.$billdata->transid);
+        $params = [
             'SELLER' => $this->_config->sellername,
-               'ADDRESS' => $this->_config->selleraddress,
-               'ZIP' => $this->_config->sellerzip,
-               'CITY' => $this->_config->sellercity,
-               'COUNTRY' => strtoupper($this->_config->sellercountry),
-               'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
+            'ADDRESS' => $this->_config->selleraddress,
+            'ZIP' => $this->_config->sellerzip,
+            'CITY' => $this->_config->sellercity,
+            'COUNTRY' => strtoupper($this->_config->sellercountry),
+            'BILL_URL' => $billurl,
+            'PROC_ORDER' => $proc++ ];
+        echo shop_compile_mail_template('procedure_text_invoice', $params, 'shoppaymodes_check');
         echo '</blockquote>';
     }
 

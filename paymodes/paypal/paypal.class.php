@@ -182,28 +182,55 @@ class shop_paymode_paypal extends shop_paymode {
         }
     }
 
-    // Processes a payment asynchronous confirmation.
+    /**
+     * Processes a payment asynchronous confirmation.
+     */
     public function process_ipn() {
-        global $CFG, $DB;
+        global $CFG, $DB, $SESSION, $OUTPUT, $PAGE;
+
+        $simulating = optional_param('simulating', '', PARAM_BOOL);
 
         // Get all input parms.
         $transid = required_param('invoice', PARAM_TEXT);
         // Get the shopid. Not sure its needed any more.
-        list($shopid) = required_param('custom', PARAM_TEXT);
+        $custom = required_param('custom', PARAM_TEXT);
+
+        if (is_scalar($custom)) {
+            $shopid = $custom;
+        } else {
+            list($shopid) = $custom;
+        }
+
+        if ($simulating) {
+            $PAGE->set_url(new moodle_url('/local/shop/paymodes/paypal/paypal_ipn.php'));
+            $PAGE->set_title(get_string('paypalipnsimulation', 'shoppaymodes_paypal'));
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('paypalipnsimulation', 'shoppaymodes_paypal'), 2);
+            echo '<pre>';
+        }
 
         if (empty($transid)) {
+            if ($simulating) {
+                mtrace("[ERROR] Paypal IPN : Empty Transaction ID");
+            }
             shop_trace("[ERROR] Paypal IPN : Empty Transaction ID");
             die;
         }
 
         if (!$afullbill = Bill::get_by_transaction($transid)) {
+            if ($simulating) {
+                mtrace("[$transid] Paypal IPN ERROR : No such order");
+            }
             shop_trace("[$transid] Paypal IPN ERROR : No such order");
             die;
         }
 
         // Integrity check : the bill must belong to the shop wich is returned as info in custom Paypal data.
         if ($afullbill->shopid != $shopid) {
-            shop_trace("[$transid] Paypal IPN ERROR : Paypal returned info do not match the bill's shop.");
+            if ($simulating) {
+                mtrace("[$transid] Paypal IPN ERROR : Paypal returned info ($shopid) do not match the bill's shop ({$afullbill->shopid}).");
+            }
+            shop_trace("[$transid] Paypal IPN ERROR : Paypal returned info ($shopid) do not match the bill's shop ({$afullbill->shopid}).");
             die;
         }
 
@@ -217,17 +244,28 @@ class shop_paymode_paypal extends shop_paymode {
 
         shop_trace("[$transid] Paypal IPN : paypal txn : $txnid");
         shop_trace("[$transid] Paypal IPN : paypal trans : $transid");
+        if ($simulating) {
+            mtrace("[$transid] Paypal IPN : paypal txn : $txnid");
+            mtrace("[$transid] Paypal IPN : paypal trans : $transid");
+        }
 
         foreach ($_POST as $key => $value) {
             $value = stripslashes($value);
             $querystring .= "&$key=".urlencode($value);
+            $value = clean_param($value, PARAM_TEXT);
             $data->$key = $value;
+            if ($simulating) {
+                mtrace("[$transid] Paypal IPN : paypal $key : ".$value);
+            }
             shop_trace("[$transid] Paypal IPN : paypal $key : ".$value);
         }
 
         $validationquery .= $querystring;
         // Control for replicated notifications (normal operations).
         if (empty($this->_config->test) && $DB->record_exists('local_shop_paypal_ipn', array('txnid' => $txnid))) {
+            if ($simulating) {
+                mtrace("[$transid] Paypal IPN : paypal event collision on $txnid");
+            }
             shop_trace("[$transid] Paypal IPN : paypal event collision on $txnid");
             shop_email_paypal_error_to_admin("Paypal IPN : Transaction $txnid is being repeated.", $data);
             die;
@@ -238,11 +276,17 @@ class shop_paymode_paypal extends shop_paymode {
             $paypalipn->paypalinfo = $querystring;
             $paypalipn->result = '';
             $paypalipn->timecreated = time();
+            if ($simulating) {
+                mtrace("[$transid] Paypal IPN : Recording paypal event");
+            }
             shop_trace("[$transid] Paypal IPN : Recording paypal event");
             try {
                 $DB->insert_record('local_shop_paypal_ipn', $paypalipn);
             } catch (Exception $e) {
-                shop_trace("[$transid] Paypal IPN : Recording paypal event error");
+                if ($simulating) {
+                    mtrace("[$transid] Paypal IPN : Recording paypal event error ".$DB->get_last_error());
+                }
+                shop_trace("[$transid] Paypal IPN : Recording paypal event error ".$DB->get_last_error());
             }
         }
 
@@ -256,86 +300,112 @@ class shop_paymode_paypal extends shop_paymode {
             $paypalurl = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
         }
 
-        if (empty($this->_config->test)) {
-            // Fetch the file on the consumer side and store it here through a CURL call.
+        // Fetch the file on the consumer side and store it here through a CURL call.
+        // If simulating, we are confirming a purchase for test. No need to validate again.
+        if (!$data->simulating) {
             $ch = curl_init("{$paypalurl}?$validationquery");
             shop_trace("[$transid] Paypal IPN : sending validation request: "."{$paypalurl}?$validationquery");
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, false);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Moodle');
+            if (!empty($this->_config->test)) {
+                curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-IPN-Moodle-Shop-Test-Agent');
+            } else {
+                curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-IPN-Moodle-Shop');
+            }
             curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             $rawresponse = curl_exec($ch);
-        } else {
-            // We fake an IPN validation in test mode.
-            shop_trace("[$transid] Paypal IPN : faking validation request for test: "."{$paypalurl}?$validationquery");
-            $rawresponse = 'VERIFIED'; // Just for testing end of procedure.
-        }
-        if ($rawresponse) {
-            if ($rawresponse == 'VERIFIED') {
-                if ($data->payment_status != "Completed" and $data->payment_status != "Pending") {
-                    $error = "Paypal IPN : Status not completed nor pending. Check transaction with customer.";
-                    shop_email_paypal_error_to_admin($error, $data);
 
-                    if (!empty($this->_config->test)) {
-                        mtrace("Paypal IPN : Status not completed nor pending. Check transaction with customer.");
-                    } else {
-                        shop_trace("[$transid] Paypal IPN : Status not completed nor pending. Check transaction with customer.");
-                    }
-                    die;
-                }
-                $prod = $this->_config->paypalsellername;
-                $test = $this->_config->paypalsellertestname;
-                $sellerexpectedname = (empty($this->_config->test)) ? $prod : $test;
-                if ($data->business != $sellerexpectedname) {   // Check that the business account is the one we want it to be.
-                    $error = "Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)";
-                    shop_email_paypal_error_to_admin($error, $data);
-                    if (!empty($this->_config->test)) {
-                        mtrace("Paypal IPN : Business email is $data->business (not $this->_config->paypalsellername)");
-                    } else {
-                        $message = "[$transid] Paypal IPN :";
-                        $message .= " Business email is $data->business (not $this->_config->paypalsellername)";
-                        shop_trace($message);
-                    }
-                    die;
-                }
-                $DB->set_field('shop_paypal_ipn', 'result', 'VERIFIED', array('txnid' => $txnid));
-                shop_trace("[$transid] Paypal IPN : Recording VERIFIED STATE on ".$txnid);
-                if (!empty($this->_config->test)) {
-                    mtrace('Paypal IPN : Recording VERIFIED STATE on '.$txnid);
-                }
-                /*
-                 * Bill has not yet been soldout through an IPN notification
-                 * sold it out and update both DB and memory record
-                 */
-                if ($afullbill->status != SHOP_BILL_SOLDOUT) {
-                    // Stores the back code of paypal.
-                    $tx = required_param('invoice', PARAM_TEXT);
-                    $afullbill->onlinetransactionid = $tx;
-                    $afullbill->paymode = 'paypal';
-                    $afullbill->status = SHOP_BILL_SOLDOUT;
-                    $afullbill->paymentfee = 0 + @$data->mc_fee;
-                    $afullbill->save(true);
-
-                    shop_trace("[$transid] Paypal IPN Start Production");
-                    // Perform final production.
-                    $action = 'produce';
-                    include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
-                    $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, null, $afullbill, true, false);
-                    $controller->process($action);
-                    shop_trace("[{$transid}] Paypal IPN End Production");
-                }
-
-                shop_trace("[$transid] Paypal IPN : End of transaction");
-                if (!empty($this->_config->test)) {
-                    mtrace('Paypal IPN : End of transaction');
-                }
+            if (empty($rawresponse)) {
+                shop_trace('[$transid] Paypal IPN ERROR : VERIFICATION RESPONSE ERROR');
+                die;
             }
-        } else {
-            shop_trace('[ERROR] Paypal IPN : ERROR');
+
+            shop_trace("[$transid] Paypal IPN : Raw Response : {$rawresponse}.");
+            if ($rawresponse != 'VERIFIED') {
+                shop_trace('[$transid] Paypal IPN ERROR : VERIFICATION ERROR');
+                die;
+            }
+
+            // At this point the IPN is a true return from PAYPAL AND is VERIFIED.
+
+            $DB->set_field('local_shop_paypal_ipn', 'result', 'VERIFIED', array('txnid' => $txnid));
+            shop_trace("[$transid] Paypal IPN : Recording VERIFIED STATE on ".$txnid);
+
+            if ($data->payment_status != "Completed" && $data->payment_status != "Pending") {
+                $error = "Paypal IPN : Status not completed nor pending. Check transaction with customer.";
+                shop_email_paypal_error_to_admin($error, $data);
+                shop_trace("[$transid] Paypal IPN : Status not completed nor pending. Check transaction with customer.");
+                die;
+            }
         }
+
+        if ($data->simulating && empty($this->_config->test)) {
+            mtrace("[$transid] Paypal IPN : Payment simulation only possible in test mode.");
+            shop_trace("[$transid] Paypal IPN : Payment simulation only possible in test mode.");
+            die;
+        }
+
+        if ($data->payment_status == "Pending") {
+            $error = "[$transid] Paypal IPN : Status is pending. Check transaction state in a while.";
+            if ($simulating) {
+                mtrace($error);
+            }
+            shop_trace($error);
+            die;
+        }
+
+        $prod = $this->_config->paypalsellername;
+        $test = $this->_config->paypalsellertestname;
+        $sellerexpectedname = (empty($this->_config->test)) ? $prod : $test;
+        if ($data->receiver_id != $sellerexpectedname) {   // Check that the business account is the one we want it to be.
+            $error = "[$transid] Paypal IPN : Business email is {$data->receiver_id} (not {$this->_config->paypalsellername})";
+            shop_email_paypal_error_to_admin($error, $data);
+            if ($simulating) {
+                mtrace($error);
+            }
+            shop_trace($error);
+            unset($SESSION->shoppingcart);
+            die;
+        }
+
+        // At this point, we have a payment confirmation.
+
+        /*
+         * Bill has not yet been soldout through an IPN notification
+         * sold it out and update both DB and memory record
+         */
+        if ($afullbill->status != SHOP_BILL_SOLDOUT) {
+            // Stores the back code of paypal.
+            $tx = required_param('invoice', PARAM_TEXT);
+            $afullbill->onlinetransactionid = $tx;
+            $afullbill->paymode = 'paypal';
+            $afullbill->status = SHOP_BILL_SOLDOUT;
+            $afullbill->paymentfee = 0 + @$data->mc_fee;
+            $afullbill->save(true);
+
+            shop_trace("[$transid] Paypal IPN Start Production");
+            if ($simulating) {
+                mtrace("[$transid] Paypal IPN Start Production");
+            }
+            // Perform final production.
+            $action = 'produce';
+            include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
+            $theblock = null;
+            $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $theblock, $afullbill, true, $simulating);
+            $controller->process($action);
+            if ($simulating) {
+                mtrace("[{$transid}] Paypal IPN End Production");
+            }
+            shop_trace("[{$transid}] Paypal IPN End Production");
+        }
+
+        if ($simulating) {
+            mtrace("[$transid] Paypal IPN : End of transaction");
+        }
+        shop_trace("[$transid] Paypal IPN : End of transaction");
     }
 
     /**

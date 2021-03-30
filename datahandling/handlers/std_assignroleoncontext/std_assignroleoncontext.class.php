@@ -198,6 +198,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $product->instanceid = $raid; // Register role assign instance.
         $product->startdate = $starttime;
         $product->enddate = $endtime;
+        $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
         $extra = array('handler' => 'std_assignroleoncontext');
         $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
@@ -216,11 +217,17 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             shop_register_customer_support($data->actionparams['customersupport'], $customeruser, $data->transactionid);
         }
 
-        $fb = get_string('productiondata_assign_public', 'shophandlers_std_assignroleoncontext');
+        $e = new StdClass;
+        $e->txid = $data->transactionid;
+        $e->username = $user->username;
+        $e->role = $role->shortname;
+        $e->instancename = $instancename;
+
+        $fb = get_string('productiondata_post_public', 'shophandlers_std_assignroleoncontext', $e);
         $productionfeedback->public = $fb;
-        $fb = get_string('productiondata_assign_private', 'shophandlers_std_assignroleoncontext', $instancename);
+        $fb = get_string('productiondata_post_private', 'shophandlers_std_assignroleoncontext', $e);
         $productionfeedback->private = $fb;
-        $fb = get_string('productiondata_assign_sales', 'shophandlers_std_assignroleoncontext', $instancename);
+        $fb = get_string('productiondata_post_sales', 'shophandlers_std_assignroleoncontext', $e);
         $productionfeedback->salesadmin = $fb;
 
         shop_trace("[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay : Completed in $instancename...");

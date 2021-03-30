@@ -83,7 +83,7 @@ if ($view == 'shop') {
 $url = new moodle_url('/local/shop/front/view.php', array('view' => $view, 'category' => $category));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-$PAGE->set_pagelayout('standard');
+$PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('shop', 'local_shop'));

@@ -65,6 +65,7 @@ class front_invoice_header implements \Templatable {
         }
 
         $template->headingstr = $OUTPUT->heading($headerstring, 1);
+        $template->headingstringstr = $headerstring; // Unformated version.
 
         $template->sellername = $config->sellername;
         $template->selleraddress = $config->selleraddress;

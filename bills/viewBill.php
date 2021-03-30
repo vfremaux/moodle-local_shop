@@ -91,6 +91,7 @@ echo $renderer->full_bill_taxes($afullbill, $theshop);
 echo $renderer->bill_footer($afullbill);
 
 echo $renderer->flow_controller($afullbill->status, $url);
+echo $renderer->ownership($afullbill);
 
 echo $renderer->attachments($afullbill);
 

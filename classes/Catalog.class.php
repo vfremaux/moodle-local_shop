@@ -89,6 +89,22 @@ class Catalog extends ShopObject {
     }
 
     /**
+     * Gets first available category in current catalog.
+     */
+    public function get_first_category() {
+        global $DB;
+
+        $params = ['catalogid' => $this->id, 'parentid' => 0];
+        $firstcategoryarr = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', '*', 0, 1);
+        if ($firstcategoryarr) {
+            $values = array_values($firstcategoryarr);
+            $fc = array_pop($values);
+            return $fc;
+        }
+        return null;
+    }
+
+    /**
      * Get all catalog ids that reside in the same catalog dependency group
      * @param int $catalogid
      * @return an array of ids that are linked to this catalog
@@ -119,7 +135,7 @@ class Catalog extends ShopObject {
     /**
      * Get catalog known categories
      */
-    public function get_categories($local = false, $visible = 1) {
+    public function get_categories($local = false, $visible = true) {
         global $DB;
 
         // Get true fetch if local are required.
@@ -128,7 +144,11 @@ class Catalog extends ShopObject {
         }
 
         // Get local categories.
-        $select = " catalogid = ? AND visible = ? ";
+        if ($visible) {
+            $select = " catalogid = ? AND visible = ? ";
+        } else {
+            $select = " catalogid = ? ";
+        }
         $params = array($this->id, $visible);
         $fields = '*,0 as masterrecord';
         if (!$localcats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'parentid,sortorder', $fields)) {
@@ -351,7 +371,7 @@ class Catalog extends ShopObject {
     public function get_all_products_for_admin(&$shopproducts) {
         global $SESSION, $DB;
 
-        $categories = $this->get_categories();
+        $categories = $this->get_categories(true, false);
 
         if (empty($categories)) {
             return array();

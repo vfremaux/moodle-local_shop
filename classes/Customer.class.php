@@ -121,7 +121,9 @@ class Customer extends ShopObject {
         $sql = "
             SELECT
                c.*,
-               COUNT(b.id) as billcount,
+               SUM( CASE WHEN (b.status = 'PLACED') THEN 1 ELSE 0 END) as placedcount,
+               SUM( CASE WHEN (b.status = 'PENDING') THEN 1 ELSE 0 END) as pendingscount,
+               SUM( CASE WHEN (b.status = 'SOLDOUT' OR b.status = 'COMPLETE') THEN 1 ELSE 0 END) as billcount,
                SUM(b.amount) as totalaccount
             FROM
                {local_shop_customer} as c

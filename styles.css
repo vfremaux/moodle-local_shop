@@ -1,5 +1,10 @@
 /* Generic shop table */
 
+#page-local-shop-front-view #region-main-box {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
 .shop-table {
     display: flex;
     flex-direction: column;
@@ -18,7 +23,7 @@
 }
 
 .shop-cell.param {
-    background-color: #d0d0d0;
+    background-color: #ddd;
     border-bottom: 1px solid #fefefe;
     border-top: 1px solid #fefefe;
     color: white;
@@ -26,7 +31,7 @@
 }
 
 .shop-cell.header {
-    background-color: #a0a0a0;
+    background-color: #aaa;
     border-bottom: 1px solid #fefefe;
     border-top: 1px solid #fefefe;
     color: white;
@@ -35,9 +40,9 @@
 
 .shop-cell.value {
     background-color: #fefefe;
-    border-bottom: 1px solid #d0d0d0;
-    border-top: 1px solid #d0d0d0;
-    color: #808080;
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    color: #888;
     font-weight: normal;
 }
 
@@ -57,19 +62,17 @@
 
 .shop-finalcount,
 .shop-finalcount * {
-    font-size: 1.15em;
+    font-size: 1.1em;
 }
 
 .shop-notification {
-    background-color: #fdfdfd;
-    border: 1px solid #f0f0f0;
     margin: 10px;
     padding: 30px;
 }
 
 .shop-notification-message {
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     font-size: 1.4em;
     padding: 15px;
 }
@@ -84,10 +87,10 @@
 }
 
 #shop-notification-result {
-    background-color: #4ac1b3;
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
-    color: white;
+    background-color: #eee;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    color: #444;
     font-size: 1.4em;
     margin-bottom: 20px;
     padding: 15px;
@@ -102,12 +105,9 @@
 
 #shop-adminlinks {
     background-color: #f0f0f0;
-    border:1px dashed  #e0e0e0;
+    border: 1px dashed  #ccc;
     border-radius: 7px;
     margin: 5px;
-}
-
-#shop-orderblock {
 }
 
 #page-blocks-shop-shop-view .generaltable td .lastcol {
@@ -118,7 +118,7 @@
     margin-left: 5px;
     margin-right: 10px;
     padding: 5px;
-    width: 20%
+    width: 20%;
 }
 
 #shop-ordertotals {
@@ -127,9 +127,6 @@
 
 #shop-ordertotals table td {
     padding: 3px;
-}
-
-#shop-paymodes {
 }
 
 #shop-paymodes td {
@@ -143,8 +140,8 @@
 
 #shop-customerdata,
 #shop-organisationdata {
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     padding: 15px;
 }
 
@@ -152,8 +149,8 @@
     padding: 3px;
 }
 
-.shop-billstate{
-    background-color: #D0DDE3;
+.shop-billstate {
+    background-color: #ddd;
     display: inline;
     padding: 2px;
     width: 120px;
@@ -164,8 +161,8 @@
     font-weight: bolder;
 }
 
-.shop-grouphead{
-    background-color: #808090;
+.shop-grouphead {
+    background-color: #888;
     color: white;
     font-size: 1.3em;
     padding: 1px;
@@ -207,8 +204,8 @@ div.shop-bill_error {
 }
 
 .shop-bills-searchlink {
-    width:150px;
-    display:inline-block;
+    width: 150px;
+    display: inline-block;
 }
 
 .shop-availableinternalline {
@@ -232,7 +229,7 @@ div.shop-bill_error {
 }
 
 .shop-abandonned {
-    background-color: #B0B0B0;
+    background-color: #bbb;
     border: 1px white solid;
 }
 
@@ -250,7 +247,7 @@ div.shop-bill_error {
 }
 
 .shop-billstate {
-    border: 1px solid #606060;
+    border: 1px solid #666;
     font-family: monospace;
     font-size: 1.5em;
     padding: 2px;
@@ -262,7 +259,7 @@ div.shop-bill_error {
 
 .shop-controls,
 .shop-setcontrols {
-    border-left: 1px solid #d0d0d0;
+    border-left: 1px solid #ccc;
     line-height: 20px;
     min-width: 80px;
     padding-left: 8px;
@@ -300,19 +297,23 @@ div.shop-bill_error {
 }
 
 .shop-relocate-box {
-    border: 1px dashed #b0b0b0;
+    border: 1px dashed #ccc;
+}
+
+.shop-front-leaflet {
+    margin: 20px 0;
 }
 
 input.shop-error,
 select.shop-error {
-    background-color: #fbcec6 !important;
-    background-image: url([[pix:theme|images/input_bg_error]]) !important;
-    color: black !important;
+    background-color: #fbcec6;
+    background-image: url([[pix:theme|images/input_bg_error]]);
+    color: black;
 }
 
 .shop-bills-flowcontrol {
     background-color: #fff0f0;
-    border: 4px #ff0000 solid;
+    border: 2px #f00 solid;
     border-radius: 8px;
     margin-left: 5px;
     margin-right: 5px;
@@ -322,22 +323,31 @@ select.shop-error {
 
 #billpanel,
 #orderpanel {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+#order {
+     border: 2px solid #ccc;
+     border-radius: 8px;
+     padding-left: 10px;
 }
 
 .providingline {
     background-color: transparent;
     color: #000;
 }
+
 .previewline {
     background-color: transparent;
-    color: #808080;
+    color: #888;
 }
+
 .suspendedline {
     background-color: #fefefe;
-    color: #a0a0a0;
+    color: #aaa;
 }
+
 .abandonnedline {
     background-color: #600000;
     color: #a00000;
@@ -364,8 +374,8 @@ select.shop-error {
 
 .shop-role-list-container,
 .shop-information-area {
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     margin: 5px;
     padding: 15px;
 }
@@ -378,12 +388,12 @@ select.shop-error {
 }
 
 .shop-pricerange {
-    -khtml-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    background-color: #eeeeee;
-    border-radius: 6px;
-    color: #737379;
+    -khtml-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    background-color: #eee;
+    border-radius: 8px;
+    color: #777;
     font-weight: bolder;
     padding-left: 5px;
     padding: 1px;
@@ -392,6 +402,11 @@ select.shop-error {
 .shop-priceamount {
     font-weight: bolder;
     padding: 3px;
+}
+
+.discount-overriden-amount {
+    text-decoration: line-through;
+    color: #aaa;
 }
 
 .tiny-text {
@@ -411,8 +426,8 @@ select.shop-error {
 }
 
 .shop-error-notice {
-    background-color: #ffcccc;
-    border: 1px red solid;
+    background-color: #fcc;
+    border: 2px red solid;
     border-radius: 8px;
     font-size: 1.1em;
     font-weight: bold;
@@ -426,11 +441,18 @@ select.shop-error {
 }
 
 .shop-warning-result {
-    color:#cc9900;
+    color: #c90;
 }
 
 .shop-message-result {
-    color:#2ba501;
+    color: #2ba501;
+}
+
+.shop-warning {
+    color: #c00;
+    background-color: #fee;
+    padding: 5px;
+    border-radius: 8px;
 }
 
 #addparticipant input,
@@ -448,7 +470,7 @@ select.shop-error {
 }
 
 div.shop-bill-abstract {
-    color: #606060;
+    color: #666;
     font-size: 0.8em;
 }
 
@@ -464,8 +486,8 @@ div.shop-bill-abstract {
 }
 
 #eulas-panel {
-    background-color: #ffffff;
-    border: solid 1px #d0d0d0;
+    background-color: #fff;
+    border: solid 1px #ccc;
     height: 60%;
     margin-right: 30px;
     overflow-y: scroll;
@@ -487,9 +509,9 @@ div.shop-bill-abstract {
 }
 
 #shop-requirement-caption {
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    border: 1px solid #808080;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
     font-size: 1.1em;
     margin-bottom: 15px;
     margin-top: 10px;
@@ -497,9 +519,9 @@ div.shop-bill-abstract {
 }
 
 .shop-product-requirements {
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    border: 1px solid #808080;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
     margin-top: 10px;
     padding: 5px;
 }
@@ -514,8 +536,8 @@ div.shop-bill-abstract {
 }
 
 .requ-label {
-    float:left;
-    width:30%;
+    float: left;
+    width: 30%;
 }
 
 .requ-param {
@@ -524,7 +546,7 @@ div.shop-bill-abstract {
 }
 
 .requ-desc {
-    color: #606060;
+    color: #666;
     font-size: 0.9em;
     font-style: italic;
     padding: 2px;
@@ -536,7 +558,7 @@ div.shop-bill-abstract {
 }
 
 #requ-submit.unsaved input {
-    background-image: -webkit-linear-gradient(top, #ffeeee, #ff6666) !important;
+    background-image: -webkit-linear-gradient(top, #fee, #f66) !important;
 }
 
 #requ-submit input {
@@ -544,11 +566,11 @@ div.shop-bill-abstract {
 }
 
 .shop-requ-error {
-    -moz-border-radius: 3px;
+    -moz-border-radius: 8px;
     background-color: #ffe0e0;
-    border-radius: 3px;
-    border: 1px solid red;
-    color: #A00000;
+    border-radius: 8px;
+    border: 2px solid red;
+    color: #a00000;
     font-size: 0.8em;
     margin: 4px;
     padding: 3px;
@@ -556,7 +578,7 @@ div.shop-bill-abstract {
 
 .shop-requ-input-error {
     background-color: #ffe0e0;
-    color: #ff0000;
+    color: #f00;
 }
 
 table.shop-role-assignations > tr > td {
@@ -590,10 +612,20 @@ table.shop-article {
 .shop-article.product,
 .shop-article.set,
 .shop-article.bundle {
-    border: 1px solid #fdfdfd;
+    border: 2px solid #fdfdfd;
     border-radius: 8px;
     margin: 10px 2px;
     padding: 15px;
+    display: flex;
+    align-items: flex-start;
+}
+
+@media screen and (max-width: 560px) {
+    .shop-article.product,
+    .shop-article.set,
+    .shop-article.bundle {
+        flex-wrap: wrap;
+    }
 }
 
 .shop-article * {
@@ -610,21 +642,8 @@ h3.shop-front-partof {
     line-height: 1.2em;
 }
 
-.shop-article.bundle .shop-front-elements {
-    display: table;
-}
-
-.shop-article.bundle .shop-front-element {
-    display: table-row;
-}
-
-.shop-article.set .shop-front-elements {
+.shop-front-bundle-content {
     display: flex;
-    flex-direction: row;
-}
-
-.shop-article.set .shop-front-elements > div {
-    flex-basis: 49%;
 }
 
 .shop-front-productpix {
@@ -637,32 +656,33 @@ h3.shop-front-partof {
 }
 
 .shop-front-productdef a[name]::before {
-    content:initial !important;
-    margin:0px !important;
-    padding:0px !important;
+    content: initial !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
-
 
 .shop-front-refblock {
     display: flex;
-	justify-content: flex-end;
+    justify-content: flex-end;
 }
 
 .shop-front-refblock > div {
-	margin: 0 20px;
+    margin: 0 20px;
 }
 
 .shop-order-bag {
     text-align: right;
-	min-width: 80px;
+    min-width: 80px;
 }
 
 .shop-front-bundle-elements {
     display: flex;
+    flex-wrap: wrap;
 }
 
-.shop-front-bundle-elements div {
-    flex-basis: 49%;
+.shop-front-bundle-elements > div {
+    flex-basis: 30%;
+    margin: 0 20px;
 }
 
 .shop-front-pricerange, .shop-front-price, .shop-front-label {
@@ -672,18 +692,10 @@ h3.shop-front-partof {
 .shop-front-label {
     margin-right: 15px;
 }
-.shop-front-label:after{
-/*    content: ":"; */
-}
 
-.shop-front-price {
-    font-weight: bold;
-    margin-right: 3em;
-}
-
-shop-order-paymode {
-    background-color: #e0e0e0;
-    border: 1px solid #d0d0d0;
+.shop-order-paymode {
+    background-color: #eee;
+    border: 2px solid #ccc;
     border-radius: 8px;
     padding: 15px;
 }
@@ -694,13 +706,40 @@ shop-order-paymode {
     opacity: 0.5;
 }
 
+.shop-modal-header {
+    display: flex;
+    width: 100%;
+    padding: 40px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-direction: row;
+    position: relative;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 2px solid #ccc;
+    border: 2px solid rgba(0,0,0,.2);
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5);
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+    outline: 0;
+}
+
 .shop-modal-box {
-	padding: 40px;
+    padding: 40px;
 }
 
 .shop-modal-box .shop-front-order  {
-	margin-left: auto;
-	margin-right: 0;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.shop-modal-header img.product,
+.shop-modal-header .modal-thumbnail img {
+    height: 150px;
+    margin-right: 40px;
+    width: 150px;
 }
 
 .shop-main-menu td {
@@ -712,8 +751,8 @@ shop-order-paymode {
 }
 
 .shop-category-description {
-    border: 1px solid #f0f0f0;
-    border-radius: 10px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     margin: 10px;
     padding: 30px;
 }
@@ -769,11 +808,15 @@ shop-order-paymode {
 }
 
 .shop-line-commands {
-    padding: 3px;
+    padding: 5px;
     margin: 2px 2px 2px 5px;
-    border: 1px solid #d0d0d0;
-    background-color: #e8e8e8;
-    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #eee;
+    border-radius: 8px;
+}
+
+#shop-loginbox {
+    padding-bottom: 20px;
 }
 
 .access-code {
@@ -783,16 +826,16 @@ shop-order-paymode {
 }
 
 ul.shop-test-result {
-    padding: 4px 4px 4px 20px;
-    border-radius: 4px;
-    border: 1px solid gray;
+    padding: 5px 5px 5px 20px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
     background-color: #f0f0f0;
 }
 
 .shop-paymodes-choice {
     background-color: #f0f0f0;
-    border: 1px solid #a0a0a0;
-    border-radius: 6px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     margin: 5px 0;
     padding: 10px;
 }
@@ -816,7 +859,7 @@ ul.shop-test-result {
 }
 
 .shop-front-description-toggle {
-    text-align:center;
+    text-align: left;
     margin-bottom: 20px;
 }
 
@@ -825,8 +868,8 @@ td.right-align {
 }
 
 #shop-invoice {
-     border: 1px solid #444;
-     border-radius: 10px;
+     border: 2px solid #ccc;
+     border-radius: 8px;
 }
 
 #page-local-shop-front-view  .generaltable {
@@ -839,7 +882,7 @@ td.right-align {
 }
 
 #page-local-shop-front-view h1 {
-     color : #000;
+     color: #000;
 }
 
 #page-local-shop-front-view .customer-data {
@@ -849,11 +892,11 @@ td.right-align {
      padding-bottom: 10px;
 }
 
-.sectionHeader h2, h2#invoice-taxes , h2#invoice-paymode, h2#order-mailto{
+.sectionHeader h2, h2#invoice-taxes , h2#invoice-paymode, h2#order-mailto {
      margin-left: 20px;
-     color:#444;
+     color: #444;
      border-bottom: 2px solid #444;
-     width:95%;
+     width: 95%;
      font-size: 1.5rem;
 }
 
@@ -898,7 +941,7 @@ h2.shop-caption {
 }
 
 .shop-front-description {
-    font-size: 1em;
+    font-size: 1.11em;
     line-height: 1.5em;
     font-weight: normal;
 }
@@ -925,4 +968,130 @@ h2.shop-caption {
 
 #page-local-shop-front-view [disabled="disabled"] {
     opacity: 0.5;
+}
+
+#progress img {
+    height: 50px;
+}
+
+.shopcategory .modal-dialog {
+    width: 80%;
+}
+
+@media screen and (max-width: 480px) {
+    .shopcategory .modal-dialog {
+        width: 95%;
+    }
+}
+
+.shop-article.product > .shop-front-productpix img, .shop-article.bundle > .shop-front-productpix img, .shop-article.set > .shop-front-productpix img {
+    height: 150px;
+    margin-right: 40px;
+    width: 150px;
+}
+
+#shop-bill-customerinfo {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+div#shop-panel-caption {
+    border: solid 2px #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+div#shop-printable-bill {
+    text-align: center;
+}
+
+/* shop buttons (price and purchase) */
+
+.shop-front-label {
+    margin-right: 15px;
+    padding-top: 20px;
+}
+
+.shop-front-price-container {
+    background-color: #444;
+    /* background-color: $brandsecondary; Add in scss overrides for scss enabled themes */
+    border-radius: 50%;
+    width: 65px;
+    height: 65px;
+    box-shadow: 4px 4px 10px -2px #ccc;
+    color: #fff;
+}
+
+.shop-front-price {
+    position: relative;
+    font-weight: 700;
+    top: calc(35%);
+    text-align: center;
+    margin-right: 0em;
+    display: block;
+}
+
+#shop-adminlinks {
+    margin: 10px;
+    padding: 10px;
+    border: 2px dashed #faa;
+    background-color: #fdd;
+    border-radius: 8px;
+    width: min-content;
+    width: fit-content;
+    width: -moz-fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 30px;
+}
+
+#shop-customer-info {
+    margin: 0 40px;
+}
+
+#page-local-shop-front-view .generaltable tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.0);
+}
+
+#page-local-shop-front-view .generaltable tbody tr:hover {
+    background-color: transparent;
+}
+
+.discount-rate {
+    float: right;
+    padding: 0 10px;
+    background-color: #eee;
+    border-radius: 8px;
+}
+
+.amount-primary {
+    color: black;
+}
+
+.amount-secondary {
+    font-size: 0.85em;
+    color: #88e;
+}
+
+div.purchaseoption {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+input.purchaseoption {
+    position: relative;
+    height: 1.5em;
+    width: 1.5em;
+    margin-right: 20px;
+}
+
+input.purchaseoption:checked {
+    color: #080;
+}
+
+.shop-bills-tools {
+	font-size: 0.8em;
 }

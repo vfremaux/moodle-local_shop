@@ -25,6 +25,7 @@ $string['Z6'] = 'Port dû zone OCEANIE';
 $string['accountnumber'] = 'N° de compte&ensp;';
 $string['addparticipant'] = 'Ajouter un participant';
 $string['address'] = 'Adresse&ensp;';
+$string['addcustomerinfo'] = 'Je renseigne mon compte client';
 $string['adminoptions'] = 'Outils administrateur&nbsp;:&ensp;';
 $string['agency'] = 'Guichet';
 $string['alltaxes'] = 'Total taxes&ensp;';
@@ -61,8 +62,8 @@ $string['continue'] = 'Continuer la commande';
 $string['customer'] = 'M./Mme/Mlle&ensp;';
 $string['customersupport'] = 'Support client';
 $string['customerisgone'] = 'Les données clientes ne sont plus disponibles. Ceci peut arriver lors de rebonds de production lors de tests.';
-$string['customerinfo'] = 'Vos coordonnées clientes';
-$string['customerinformation'] = 'Vos informations personnelles';
+$string['customerinfo'] = 'Mes coordonnées clientes';
+$string['customerinformation'] = 'Mes informations personnelles';
 $string['defaultnavsteps'] = 'Navigation par défaut';
 $string['navsteps'] = 'Navigation boutique';
 $string['configdefaultnavsteps'] = 'certains exploitants souhaiteront modifier l\'ordre de présentation des étapes d\'achat. Attention, certaines combinaisons pourraient conduire à un non fonctionnement du processus de boutique.';
@@ -99,6 +100,7 @@ $string['getinvoice'] = 'Visualiser la facture (proforma)';
 $string['givetransactioncodeforallrequest'] = 'Joignez à toute demande votre code de transaction apparaissant sur les écrans';
 $string['gotoadminlink'] = 'Aller à la page d\'administration ';
 $string['gotocustomerservice'] = 'Aller votre espace client&ensp;';
+$string['hasjsonerrors'] = 'Ce produit a des erreurs dans sa configuration. Les administrateurs de la boutique doivent réviser la définition du produit : {$a->itemname}.';
 $string['help_informations'] = 'les informations de compte';
 $string['here'] = 'ici.';
 $string['hideproductswhennotavailable'] = 'Cacher les produits non disponibles';
@@ -106,6 +108,7 @@ $string['ifordering'] = 'Si votre intention de commande est sup&eacute;rieure &a
 $string['instance'] = 'Instance {$a}';
 $string['intracommunautaryID'] = 'N° d\'Identification Intercommunautaire (TVA)';
 $string['invoiceinformation'] = 'Informations de facturation';
+$string['isbundlepart_desc'] = 'Ce produit fait partie d\'un lot, il ne peut être acheté seul.';
 $string['ismorethan'] = 'Si le montant de votre commande est supérieur à&ensp;';
 $string['isnotuser'] = 'N\'est pas un utilisateur de {$a}';
 $string['isuser'] = 'Est un utilisateur de {$a}';
@@ -130,7 +133,8 @@ $string['nocatalogs'] = 'Il n\'y a aucun catalogue';
 $string['notallassigned'] = 'Vous avez rempli moins de sièges que votre commande vous le permet. Affectez plus de personnes ou supprimez des unités à votre commande.';
 $string['notavailable'] = 'Vous ne pouvez acheter ce produit actuellement (ex: vous en détenez peut-être déjà un).';
 $string['notifications'] = 'Notifications';
-$string['objects'] = 'objets';
+$string['notsameaccountmail'] = 'L\'adresse de courriel utilisée pour votre compte utilisateur est différent de celui que vous avez donné dans le formulaire client ({$a}). Les notifications seront envoyées à votre adresse d\'utilisateur. Vous devriez peut-être mettre à jour votre profil pour utiliser la nouvelle adresse.';
+$string['objects'] = 'produit(s)';
 $string['on'] = 'Le ';
 $string['oneseat'] = 'Un siège par ordre d\'achat';
 $string['onlinepayment'] = 'Payement <br>(en ou hors ligne)';
@@ -145,7 +149,7 @@ $string['orderinputadmin'] = 'Entree de commande (admintrace)';
 $string['ordersheet'] = 'Bon de Commande';
 $string['ordersummary'] = 'Résumé de commande';
 $string['ordertempstatusadvice'] = '<span class="smalltext">Ce bon de commande est temporaire jusqu\'à l\'attribution de l\'identifiant de facture définitif par nos services.</span>';
-$string['ordertotal'] = 'Votre total d\'achat';
+$string['ordertotal'] = 'Total ';
 $string['participanthelper1'] = 'Vous pouvez enregistrer 1 participant dans votre commande.';
 $string['participanthelper1plural'] = 'Vous pouvez enregistrer jusqu\'à {$a} participants dans votre commande.';
 $string['participanthelper2'] = 'Utilisez le formulaire ci-dessous pour définir tous les participants, puis vous les affecterez aux formations disponibles dans votre commande. Vous pouvez enregistrer moins de personnes que le maximum autorisé, par exemple si certains de vos participants utilisent plusieurs sièges. Tant que votre session n\'est pas confirmée, vous pouvez modifier cette liste, enlever ou rajouter des personnes autant que nécessaire.';
@@ -191,7 +195,7 @@ $string['shortdescriptionthreshold'] = 'Description courte (seuil)';
 $string['configshortdescriptionthreshold'] = 'Nombre de caractères max avant la troncature de la description sur l\'interface';
 $string['specialdiscount'] = 'vous bénéficiez d\'<b>une remise exceptionnelle de</b>';
 $string['student'] = 'Apprenants';
-$string['subtotal'] = 'Sous total (TTC)';
+$string['subtotal'] = 'TTC avant remise';
 $string['supervisor'] = 'Superviseur';
 $string['supplyinstructions'] = '<b><span style="color:red">Choisissez votre mode de paiement</span></b>';
 $string['tax'] = 'Taxe';
@@ -204,6 +208,7 @@ $string['teacher'] = 'Formateurs';
 $string['testmode'] = 'Activation en mode test';
 $string['totaldiscounted'] = 'Total remisé&ensp;';
 $string['totalpricettc'] = 'TTC ';
+$string['totalpriceht'] = 'HT ';
 $string['totals'] = 'Totaux';
 $string['totaltaxes'] = 'Total taxes&ensp;';
 $string['totaprice'] = 'Prix Total';
@@ -220,6 +225,20 @@ $string['youcan'] = 'Vous pouvez';
 $string['yougetdiscountof'] = 'vous bénéficiez d\'une réduction de&ensp;';
 $string['yourorder'] = 'Votre commande';
 $string['zipandcity'] = 'Code postal et Ville&ensp;';
+
+$string['new_password_subject_tpl'] = '%SITE% : Creation de compte / mot de passe';
+$string['new_password_message_tpl'] = '
+%TESTMODE%
+<p>Cher %FULLNAME%</p>
+
+<p>Nous avons enregistré un nouveau compte pour vous sur le site : %SITE%</p>
+<p>Identifiant : %LOGIN%<br/>
+Mot de passe : %PASSWORD%</p>
+
+<p><a href="%URL%">Confirmez votre compte en vous connectant ici !</a><br>
+En cas de non fonctionnement, merci de contacter notre support aux coordonnées ci-dessous :<br/>
+%SUPPORT%
+';
 
 $string['transaction_input_tpl'] = '
 <h3><%%SELLER%%></h3>

@@ -28,13 +28,16 @@ class shop_export_source_allbills {
      * @param array &$params
      */
     public function get_data_description(&$params) {
-        global $DB;
+        global $DB, $CFG;
 
         $catalogue = $DB->get_record('local_shop_catalog', array('id' => $params->catalogid));
         $desc['filename'] = get_string('allbillsfile', 'local_shop', $catalogue->name);
         $desc['title'] = get_string('allbills', 'local_shop');
         $desc['colheadingformat'] = 'bold';
         $desc['columns'] = array(
+            array('name' => 'id',
+                  'width' => 10,
+                  'format' => 'smalltext'),
             array('name' => 'transactionid',
                   'width' => 40,
                   'format' => 'smalltext'),
@@ -71,9 +74,6 @@ class shop_export_source_allbills {
             array('name' => 'items',
                   'width' => 60,
                   'format' => 'smalltext'),
-            array('name' => 'shortnames',
-                  'width' => 60,
-                  'format' => 'smalltext'),
             array('name' => 'itemnames',
                   'width' => 60,
                   'format' => 'smalltext'),
@@ -104,7 +104,18 @@ class shop_export_source_allbills {
             array('name' => 'username',
                   'width' => 20,
                   'format' => 'smalltext'),
+            array('name' => 'institution',
+                  'width' => 20,
+                  'format' => 'smalltext'),
+            array('name' => 'department',
+                  'width' => 20,
+                  'format' => 'smalltext'),
         );
+
+        if (local_shop_supports_feature('shop/partners')) {
+            require_once($CFG->dirroot.'/local/shop/pro/localprolib.php');
+            \local_shop\local_pro_manager::add_bill_export_columns($desc['columns']);
+        }
         return array($desc);
     }
 
@@ -112,9 +123,7 @@ class shop_export_source_allbills {
      * @param array &$params
      */
     public function get_data(&$params) {
-        global $DB;
-
-        $sqlparams = array($params->catalogid);
+        global $DB, $CFG;
 
         $yearclause = '';
         $monthclause = '';
@@ -134,53 +143,59 @@ class shop_export_source_allbills {
             $sqlparams[] = $params->status;
         }
 
-        $sql = "
-            SELECT
-                b.transactionid,
-                b.onlinetransactionid,
-                b.idnumber,
-                b.title,
-                b.worktype,
-                b.status,
-                b.emissiondate,
-                b.lastactiondate,
-                b.untaxedamount,
-                b.taxes,
-                b.amount,
-                GROUP_CONCAT(bi.itemcode ORDER BY bi.ordering SEPARATOR ',') as items,
-                GROUP_CONCAT(ci.shortname ORDER BY bi.ordering SEPARATOR ',') as shortnames,
-                GROUP_CONCAT(ci.name ORDER BY bi.ordering SEPARATOR ', ') as itemnames,
-                c.firstname,
-                c.lastname,
-                c.address,
-                c.city,
-                c.zip,
-                c.country,
-                c.email,
-                c.hasaccount,
-                u.username
-            FROM
-                {local_shop_bill} b,
-                {local_shop_billitem} bi,
-                {local_shop_catalogitem} ci,
-                {local_shop_customer} c
-            LEFT JOIN
-                {user} u
-            ON
-                c.hasaccount = u.id
-            WHERE
-                bi.billid = b.id AND
-                b.customerid = c.id AND
-                ci.code = bi.itemcode AND
-                ci.catalogid = ?
-                {$yearclause}
-                {$monthclause}
-                {$statusclause}
-            GROUP BY
-                b.id
-            ORDER BY
-                b.ordering
-        ";
+        if (local_shop_supports_feature('shop/partners')) {
+            require_once($CFG->dirroot.'/local/shop/pro/localprolib.php');
+            $sql = \local_shop\local_pro_manager::get_bill_export_query();
+        } else {
+
+            $sql = "
+                SELECT
+                    b.id,
+                    b.transactionid,
+                    b.onlinetransactionid,
+                    b.idnumber,
+                    b.title,
+                    b.worktype,
+                    b.status,
+                    b.emissiondate,
+                    b.lastactiondate,
+                    b.untaxedamount,
+                    b.taxes,
+                    b.amount,
+                    GROUP_CONCAT(bi.itemcode ORDER BY bi.ordering SEPARATOR ',') as items,
+                    GROUP_CONCAT(bi.abstract ORDER BY bi.ordering SEPARATOR ',') as itemnames,
+                    c.firstname,
+                    c.lastname,
+                    c.address,
+                    c.city,
+                    c.zip,
+                    c.country,
+                    c.email,
+                    c.hasaccount,
+                    u.username,
+                    u.institution,
+                    u.department
+                FROM
+                    {local_shop_bill} b,
+                    {local_shop_billitem} bi,
+                    {local_shop_customer} c
+                LEFT JOIN
+                    {user} u
+                ON
+                    c.hasaccount = u.id
+                WHERE
+                    bi.billid = b.id AND
+                    b.customerid = c.id
+                    {$yearclause}
+                    {$monthclause}
+                    {$statusclause}
+                GROUP BY
+                    b.id
+                ORDER BY
+                    b.ordering
+            ";
+        }
+
         $data = $DB->get_records_sql($sql, $sqlparams);
 
         return array($data);

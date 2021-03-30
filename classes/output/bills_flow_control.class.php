@@ -49,6 +49,7 @@ class bills_flow_control implements \Templatable {
         $template = new \StdClass;
 
         $template->statusstr = get_string($this->status, 'local_shop');
+        $template->url = $this->url->out();
 
         if ($froms) {
             foreach ($froms as $from) {
