@@ -126,10 +126,11 @@ class shop_controller extends front_controller_base {
                         $parts = explode('_', $this->data->partner);
                         $SESSION->shoppingcart->partner->partnerkey = array_shift($parts);
                         if (!empty($parts)) {
+                            // This is a non functionnal entry, just for tagging in backoffice.
                             $SESSION->shoppingcart->partner->partnertag = array_shift($parts); // May be empty.
                         }
                         if (!empty($parts)) {
-                            /**
+                            /*
                              * The customer email can serve for preauth when partner is validated and a moodle user
                              * with such mail exists.
                              */
@@ -290,7 +291,7 @@ class shop_controller extends front_controller_base {
 
         } else if ($cmd == 'navigate') {
 
-            $shoppingcart = $SESSION->shoppingcart;
+            $shoppingcart = &$SESSION->shoppingcart;
 
             // Precalculates some sums.
             $shoppingcart->untaxedtotal = 0;
@@ -317,33 +318,40 @@ class shop_controller extends front_controller_base {
                 $shoppingcart->taxes[$ci->taxcode] += $ttc - $ht;
             }
 
-            $reason = '';
+            if (local_shop_supports_feature('shop/discounts')) {
+                include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
 
-            $discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->untaxedtotal, $this->context,
-                                                                            $reason);
-            if ($discountrate) {
-                $discountmultiplier = $discountrate / 100;
-                $shoppingcart->discount = $shoppingcart->taxedtotal * $discountmultiplier;
-                $shoppingcart->untaxeddiscount = $shoppingcart->untaxedtotal * $discountmultiplier;
-                $shoppingcart->finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - $discountmultiplier);
-                $shoppingcart->finaltaxedtotal = $shoppingcart->taxedtotal * (1 - $discountmultiplier);
-                $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal * (1 - $discountmultiplier);
+                $shoppingcart->discounts = \local_shop\Discount::get_applicable_discounts($this->theshop->id);
 
-                // Try one : apply discount to all tax lines.
-                if (!empty($shoppingcart->taxes)) {
-                    foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
-                        $shoppingcart->taxes[$tcode] *= 1 - $discountmultiplier;
+                if ($shoppingcart->discounts) {
+                    $shoppingcart->finaltaxes = [];
+                    // Recalculate each time it passes thru if order has changed.
+                    $discountpreview = \local_shop\Discount::preview_discount_in_session($this->theshop, true);
+
+                    // Apply all taxes reductions.
+                    $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal - $discountpreview->discounttax;
+                    if (!empty($shoppingcart->taxes)) {
+                        foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
+                            if (array_key_exists($tcode, $shoppingcart->taxes) && array_key_exists($tcode, $discountpreview->discounttaxes)) {
+                                $shoppingcart->finaltaxes[$tcode] = $shoppingcart->taxes[$tcode] - $discountpreview->discounttaxes[$tcode];
+                            } else {
+                                $shoppingcart->finaltaxes[$tcode] = 0;
+                            }
+                        }
                     }
                 }
-            } else {
-                $shoppingcart->discount = 0;
-                $shoppingcart->finaluntaxedtotal = $shoppingcart->untaxedtotal;
-                $shoppingcart->finaltaxedtotal = $shoppingcart->taxedtotal;
-                $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal;
             }
+
+            $shoppingcart->finaluntaxedtotal = $shoppingcart->untaxedtotal - $discountpreview->untaxeddiscount;
+            $shoppingcart->finaltaxedtotal = $shoppingcart->taxedtotal - $discountpreview->discount;
+
+            // Consistency check.
+            assert($shoppingcart->taxedtotal == $shoppingcart->untaxedtotal + $shoppingcart->taxestotal);
+            assert($shoppingcart->finaltaxedtotal == $shoppingcart->finaluntaxedtotal + $shoppingcart->finaltaxestotal);
 
             $next = $this->theshop->get_next_step('shop');
             $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+
             return new \moodle_url('/local/shop/front/view.php', $params);
         }
 

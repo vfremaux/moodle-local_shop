@@ -25,16 +25,44 @@ $string['enablemonetico'] = 'Monetico (Credit Mutuel)';
 $string['enablemonetico2'] = 'Credit Cards (Monetico)';
 $string['pluginname'] = 'Monetico Pay Mode';
 $string['monetico'] = 'Monetico (Credit Mutuel)';
-$string['moneticocurrencycode'] = 'Currency Code';
-$string['moneticomerchantid'] = 'Merchant ID';
+$string['configmoneticocurrencycode'] = 'Currency Code';
+$string['configmoneticocurrencycode_desc'] = 'Currency Code';
+$string['configmoneticomerchantid'] = 'Merchant ID';
+$string['configmoneticomerchantid_desc'] = 'Merchant ID';
 $string['moneticopaymentinvoiceinfo'] = 'Monetico (Crédit Mutuel)';
-$string['moneticoserviceurl'] = 'Service URL';
-$string['moneticousesecure'] = 'Use 3D Secure service';
-$string['moneticouselocaltime'] = 'Use local time';
+$string['configmoneticoserviceurl'] = 'Service URL';
+$string['configmoneticoserviceurl_desc'] = 'Service URL';
+$string['configmoneticousesecure'] = 'Use 3D Secure service';
+$string['configmoneticousesecure_desc'] = 'Use 3D Secure service';
+$string['moneticopaymodeparams'] = 'Monetico Paymode settings';
+$string['configmoneticotestcertificate'] = 'Production certificate';
+$string['configmoneticotestcertificate_desc'] = 'Production certificate';
+$string['configmoneticoprodcertificate'] = 'Production certificate';
+$string['configmoneticoprodcertificate_desc'] = 'Production certificate';
+$string['configmoneticobankbrand'] = 'Bank brand';
+$string['configmoneticobankbrand_desc'] = 'Bank brand';
+$string['configmoneticocountry'] = 'Country';
+$string['configmoneticocountry_desc'] = 'Country';
+$string['configmoneticocurrencycode'] = 'Currency';
+$string['configmoneticocurrencycode_desc'] = 'Currency';
 
-$string['systempayinfo'] = '
+$string['france'] = 'France';
+$string['england'] = 'England';
+$string['germany'] = 'Germany';
+$string['spain'] = 'Spain';
+
+$string['cur978'] = 'Euro';
+$string['cur840'] = 'US Dollar';
+$string['cur826'] = 'British Pound';
+$string['cur756'] = 'CH Franc';
+$string['cur036'] = 'AU Dollar';
+$string['cur124'] = 'CA Dollar';
+
+$string['cm'] = 'Crédit Mutuel';
+
+$string['moneticoinfo'] = '
 Monetico is a payment gateway adopted by several banks
-such as Crédit Mutuel in France. Its setup needs setting up crypted certificates and description files on the server
+in France. Its setup needs setting up crypted certificates and description files on the server
 that cannot be uploaded from the Web interface for security reasons. Please ask a Moodle Shop integrator to operate this setup for you and perform
 appropriate testing and service kick-off.
 ';

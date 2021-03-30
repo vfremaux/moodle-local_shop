@@ -235,34 +235,34 @@ class shop_paymode_monetico extends shop_paymode {
         $settings->add(new admin_setting_heading('local_shop/'.$this->name, $label, ''));
 
         $key = 'local_shop/monetico_service_url';
-        $label = get_string('moneticoserviceurl', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticoserviceurl', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticoserviceurl', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticoserviceurl_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
 
         $key = 'local_shop/monetico_merchant_id';
-        $label = get_string('moneticomerchantid', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticomerchantid', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticomerchantid', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticomerchantid_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
 
         $key = 'local_shop/monetico_test_certificate';
-        $label = get_string('moneticotestcertificate', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticotestcertificate', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticotestcertificate', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticotestcertificate_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
 
         $key = 'local_shop/monetico_prod_certificate';
-        $label = get_string('moneticoprodcertificate', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticoprodcertificate', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticoprodcertificate', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticoprodcertificate_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
 
         $key = 'local_shop/monetico_use_3dsecure';
-        $label = get_string('moneticousesecure', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticousesecure', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticousesecure', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticousesecure_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 1, PARAM_BOOL));
 
         $bankoptions = array('sg' => 'Société Générale');
         $key = 'local_shop/monetico_bank';
-        $label = get_string('moneticobankbrand', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticobankbrand', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticobankbrand', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticobankbrand_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configselect($key, $label, $desc, 'ce', $bankoptions));
 
         // TODO : Generalize.
@@ -272,8 +272,8 @@ class shop_paymode_monetico extends shop_paymode {
         $countryoptions['ES'] = get_string('spain', 'shoppaymodes_monetico');
 
         $key = 'local_shop/monetico_country';
-        $label = get_string('moneticocountry', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticocountry', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticocountry', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticocountry_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configselect($key, $label, $desc, '', $countryoptions));
 
         $currencycodesoptions = array('978' => get_string('cur978', 'shoppaymodes_monetico'),
@@ -283,14 +283,9 @@ class shop_paymode_monetico extends shop_paymode {
                                     '124' => get_string('cur124', 'shoppaymodes_monetico'));
 
         $key = 'local_shop/monetico_currency_code';
-        $label = get_string('moneticocurrencycode', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticocurrencycode', 'shoppaymodes_monetico');
+        $label = get_string('configmoneticocurrencycode', 'shoppaymodes_monetico');
+        $desc = get_string('configmoneticocurrencycode_desc', 'shoppaymodes_monetico');
         $settings->add(new admin_setting_configselect($key, $label, $desc, '', $currencycodesoptions));
-
-        $key = 'local_shop/monetico_use_localtime';
-        $label = get_string('moneticouselocaltime', 'shoppaymodes_monetico');
-        $desc = get_string('configmoneticouselocaltime', 'shoppaymodes_monetico');
-        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 1));
     }
 
     /**

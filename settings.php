@@ -38,7 +38,7 @@ if (is_dir($CFG->dirroot.'/local/adminsettings')) {
 
 if ($hassiteconfig) {
 
-    $settings = new admin_settingpage('local_shop', get_string('pluginname', 'local_shop'));
+    $settings = new admin_settingpage('localsettingshop', get_string('pluginname', 'local_shop'));
     $ADMIN->add('localplugins', $settings);
 
     $gotobackofficestr = get_string('gotobackoffice', 'local_shop');
@@ -69,10 +69,16 @@ if ($hassiteconfig) {
     $desc = get_string('configtestoverride', 'local_shop');
     $settings->add(new admin_setting_configcheckbox($key, $label, $desc, ''));
 
+    $key = 'local_shop/htaccesscred';
+    $label = get_string('htaccesscred', 'local_shop');
+    $desc = get_string('confightaccesscred', 'local_shop');
+    $settings->add(new admin_setting_configtext($key, $label, $desc, ''));
+
     $key = 'local_shop/maxitemsperpage';
     $label = get_string('maxitemsperpage', 'local_shop');
     $desc = get_string('configmaxitemsperpage', 'local_shop');
-    $settings->add(new admin_setting_configtext($key, $label, $desc, '', PARAM_TEXT));
+    $default = 30;
+    $settings->add(new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT));
 
     $key = 'local_shop/hideproductswhennotavailable';
     $label = get_string('hideproductswhennotavailable', 'local_shop');
@@ -292,5 +298,4 @@ if ($hassiteconfig) {
         $desc = get_string('plugindist_desc', 'local_shop');
         $settings->add(new admin_setting_heading('plugindisthdr', $label, $desc));
     }
-
 }

@@ -50,11 +50,11 @@ echo $out;
 
 // Start ptinting page.
 
+echo $renderer->progress('CONFIRM');
+
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $OUTPUT->box_start('', 'orderpanel');
-
-echo $renderer->progress('CONFIRM');
 
 echo $renderer->admin_options();
 
@@ -95,6 +95,9 @@ echo '</table>';
 
 echo $renderer->full_order_totals($bill, $theshop);
 echo $renderer->full_order_taxes($bill, $theshop);
+
+echo '</div>';
+
 echo $renderer->payment_block();
 
 $paymentservicenotification = get_string('paymentservicenotification', 'local_shop');
@@ -110,8 +113,6 @@ if (!empty($config->sellermail)) {
 }
 
 echo $OUTPUT->box_end();
-
-echo '</div>';
 
 $options = array();
 $options['inform'] = true;

@@ -67,9 +67,9 @@ class unittests_controller {
 
             include_once($CFG->dirroot.'/local/shop/datahandling/production.php');
 
-            $messages = '';
-            $errors = array();
-            $warnings = array();
+            $messages = [];
+            $errors = [];
+            $warnings = [];
 
             $this->thecatalog->get_all_products_for_admin($products);
             $this->theshop->thecatalogue = $this->thecatalog;

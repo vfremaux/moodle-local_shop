@@ -68,7 +68,7 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
     * @param    array   Options to control the element's display
     * @param    mixed   Either a typical HTML attribute string or an associative array
     */
-    function MoodleQuickForm_choosefile($elementName = null, $elementLabel = null, $options = array(), $attributes = null) {
+    function __construct($elementName = null, $elementLabel = null, $options = array(), $attributes = null) {
         $this->HTML_QuickForm_element($elementName, $elementLabel, $attributes);
         $this->_appendName = true;
         $this->_type = 'choosefile';
