@@ -1,0 +1,6 @@
+{
+    "plugintypes": {
+        "shoppaymodes": "local\/shop\/paymodes",
+        "shophandlers": "local\/shop\/datahandling\/handlers"
+    }
+}

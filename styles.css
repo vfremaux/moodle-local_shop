@@ -62,7 +62,7 @@
 
 .shop-finalcount,
 .shop-finalcount * {
-    font-size: 1.15em;
+    font-size: 1.1em;
 }
 
 .shop-notification {
@@ -90,7 +90,7 @@
     background-color: #eee;
     border: 2px solid #ccc;
     border-radius: 8px;
-    color: white;
+    color: #444;
     font-size: 1.4em;
     margin-bottom: 20px;
     padding: 15px;
@@ -402,6 +402,11 @@ select.shop-error {
 .shop-priceamount {
     font-weight: bolder;
     padding: 3px;
+}
+
+.discount-overriden-amount {
+    text-decoration: line-through;
+    color: #aaa;
 }
 
 .tiny-text {
@@ -1016,6 +1021,7 @@ div#shop-printable-bill {
     width: 65px;
     height: 65px;
     box-shadow: 4px 4px 10px -2px #ccc;
+    color: #fff;
 }
 
 .shop-front-price {
@@ -1051,4 +1057,41 @@ div#shop-printable-bill {
 
 #page-local-shop-front-view .generaltable tbody tr:hover {
     background-color: transparent;
+}
+
+.discount-rate {
+    float: right;
+    padding: 0 10px;
+    background-color: #eee;
+    border-radius: 8px;
+}
+
+.amount-primary {
+    color: black;
+}
+
+.amount-secondary {
+    font-size: 0.85em;
+    color: #88e;
+}
+
+div.purchaseoption {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+input.purchaseoption {
+    position: relative;
+    height: 1.5em;
+    width: 1.5em;
+    margin-right: 20px;
+}
+
+input.purchaseoption:checked {
+    color: #080;
+}
+
+.shop-bills-tools {
+	font-size: 0.8em;
 }

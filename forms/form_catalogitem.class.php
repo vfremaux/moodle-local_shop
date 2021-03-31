@@ -79,6 +79,9 @@ abstract class CatalogItem_Form extends moodleform {
             $mform->setType('code', PARAM_ALPHANUMEXT);
         }
 
+        $mform->addElement('text', 'idnumber', get_string('idnumber', 'local_shop'), $this->attributeslong);
+        $mform->setType('idnumber', PARAM_ALPHANUMEXT);
+
         $mform->addElement('text', 'name', get_string('name', 'local_shop'), $this->attributeslong);
         $mform->setType('name', PARAM_CLEANHTML);
         $mform->addRule('name', null, 'required');
@@ -376,7 +379,7 @@ abstract class CatalogItem_Form extends moodleform {
         $mform = $this->_form;
 
         if (!$this->is_slave()) {
-            if ($cats = $this->_customdata['catalog']->get_categories()) {
+            if ($cats = $this->_customdata['catalog']->get_categories(true, false)) {
                 foreach ($cats as $cat) {
                     $sectionopts[$cat->id] = format_string($cat->name);
                 }

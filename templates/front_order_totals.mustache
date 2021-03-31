@@ -38,12 +38,13 @@
             &nbsp;
         </td>
 
-        <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">
+        <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol" data-source="taxedtotal">
             {{{taxedtotal}}}&nbsp;{{{currency}}}
         </td>
     </tr>
 
-    {{#discountrate}}
+    {{#hasdiscounts}}
+    {{#discounts}}
     <tr valign="top">
         <td width="40%" class="cell c0">
             &nbsp;
@@ -51,11 +52,11 @@
         <td width="40%" class="shop-totaltitle ratio cell c1">
             {{#str}}discount, local_shop{{/str}}:
         </td>
-
-        <td width="20%" align="right" class="shop-totals ratio cell c2">
+        <td width="20%" align="right" class="shop-totals ratio cell c2" data-source="discountrate">
             <b>-{{discountrate}} %</b>
         </td>
     </tr>
+    {{/discounts}}
 
     <tr valign="top">
         <td width="40%" class="cell c0">
@@ -65,11 +66,11 @@
         <td width="40%" class="shop-totaltitle ratio cell c1">
             {{#str}}discountamount, local_shop{{/str}}:
         </td>
-        <td width="20%" align="right" class="shop-totals ratio cell c2">
+        <td width="20%" align="right" class="shop-totals ratio cell c2" data-source="discount">
             {{{discount}}}&nbsp;{{{currency}}}</b>
         </td>
     </tr>
-    {{/discountrate}}
+    {{/hasdiscounts}}
 
     <tr valign="top">
         <td width="40%" class="cell c0 shop-totaltitle topay">
@@ -80,7 +81,7 @@
             &nbsp;
         </td>
 
-        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">
+        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay" data-source="finaltaxedtotal">
             <b>{{{finaltaxedtotal}}}&nbsp;{{{currency}}}</b>
         </td>
     </tr>
@@ -93,7 +94,7 @@
         <td width="40%" class="cell c1">
             &nbsp;
         </td>
-        <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">
+        <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol" data-source="finaluntaxedtotal">
             {{{finaluntaxedtotal}}}&nbsp;{{{currency}}}
         </td>
     </tr>
@@ -108,7 +109,7 @@
             {{#str}}shipping, local_shop{{/str}}:
         </td>
 
-        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-totals">
+        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-totals" data-source="shippingtaxedvalue">
             {{{shippingtaxedvalue}}}&nbsp;{{{currency}}}
         </td>
     </tr>
@@ -122,7 +123,7 @@
             &nbsp;
         </td>
 
-        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">
+        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay" data-source="finalshippedtaxedtotal">
             <b>{{{finalshippedtaxedtotal}}}&nbsp;{{{currency}}}
         </td>
     </tr>

@@ -50,8 +50,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
     /**
      * this product should not be available if the current user (purchaser) is
-     * already certified, i.e. has a delivered certificate for the associated certificate.
-     * this might be better checked by testing a shop product existance
+     * already enrolled in course.
      */
     public function is_available(&$catalogitem) {
         global $USER, $DB;

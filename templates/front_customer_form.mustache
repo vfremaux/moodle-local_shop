@@ -33,6 +33,7 @@
                        id="id_lastname"
                        name="customerinfo::lastname"
                        size="20"
+                       maxlength="40"
                        onchange="setupper(this)" value="{{{lastname}}}" />
             </div>
         </div>
@@ -46,6 +47,7 @@
                        id="id_firstname"
                        name="customerinfo::firstname"
                        size="20"
+                       maxlength="40"
                        onchange="capitalizewords(this)" value="{{{firstname}}}" />
             </div>
         </div>
@@ -75,6 +77,7 @@
                        id="id_address"
                        name="customerinfo::address"
                        size="26"
+                       maxlength="255"
                        onchange="setupper(this)" value="{{{address}}}" />
             </div>
         </div>
@@ -88,6 +91,7 @@
                        id="id_city"
                        name="customerinfo::city"
                        size="26"
+                       maxlength="40"
                        onchange="setupper(this)" value="{{{city}}}" />
             </div>
         </div>
@@ -101,6 +105,7 @@
                        id="id_zip"
                        name="customerinfo::zip"
                        size="6"
+                       maxlength="6"
                        value="{{zip}}" />
             </div>
         </div>
@@ -124,6 +129,7 @@
                        id="id_email"
                        name="customerinfo::email_disabled"
                        size="30"
+                       maxlength="80"
                        value="{{{email}}}" disabled="disabled" />
                 <input type="hidden" name="customerinfo::email" value="{{{email}}}" />
                 {{#notsamemail}}
@@ -135,6 +141,7 @@
                        id="id_email"
                        name="customerinfo::email"
                        size="30"
+                       maxlength="80"
                        onchange="checkemail(this)" value="{{{email}}}" />
                 {{/mailislocked}}
             </div>

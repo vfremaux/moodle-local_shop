@@ -23,7 +23,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-abstract class shop_handler{
+abstract class shop_handler {
 
     public $productlabel;
 

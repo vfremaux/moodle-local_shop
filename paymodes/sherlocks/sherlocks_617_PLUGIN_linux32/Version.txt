@@ -1,0 +1,7 @@
+api sherlocks_617_PLUGIN_linux32-2.6.18.tar créée le 18/12/15 à 13:49:04
+
+type d'api = PLUGIN
+offre = CL
+OS = linux32 2.6.18
+version = p617
+processeur = x86_32

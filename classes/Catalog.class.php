@@ -135,7 +135,7 @@ class Catalog extends ShopObject {
     /**
      * Get catalog known categories
      */
-    public function get_categories($local = false, $visible = 1) {
+    public function get_categories($local = false, $visible = true) {
         global $DB;
 
         // Get true fetch if local are required.
@@ -144,7 +144,11 @@ class Catalog extends ShopObject {
         }
 
         // Get local categories.
-        $select = " catalogid = ? AND visible = ? ";
+        if ($visible) {
+            $select = " catalogid = ? AND visible = ? ";
+        } else {
+            $select = " catalogid = ? ";
+        }
         $params = array($this->id, $visible);
         $fields = '*,0 as masterrecord';
         if (!$localcats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'parentid,sortorder', $fields)) {
@@ -367,7 +371,7 @@ class Catalog extends ShopObject {
     public function get_all_products_for_admin(&$shopproducts) {
         global $SESSION, $DB;
 
-        $categories = $this->get_categories();
+        $categories = $this->get_categories(true, false);
 
         if (empty($categories)) {
             return array();

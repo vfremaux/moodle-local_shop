@@ -41,6 +41,9 @@ $offset = $billpage * $pagesize;
 
 $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
 $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
+if (local_shop_supports_feature('shop/partners')) {
+    $p = optional_param('p', 0 + @$SESSION->shop->patnerid, PARAM_INT);
+}
 $shopid = optional_param('shopid', 0, PARAM_INT);
 $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
 $cur = optional_param('cur', 'EUR', PARAM_TEXT);
@@ -125,13 +128,22 @@ if (empty($billsbystate)) {
     foreach (array_keys($billsbystate) as $billstate) {
         echo $renderer->bill_status_line($billstate);
 
-        $CFG->subtotal = 0;
-        foreach ($billsbystate[$billstate] as $portlet) {
-            $subtotal += floor($portlet->amount * 100) / 100;
-            echo $renderer->bill_merchant_line($portlet);
+        $subtotal = 0;
+        $untaxedsubtotal = 0;
+        foreach ($billsbystate[$billstate] as $bill) {
+            $subtotal += floor($bill->amount * 100) / 100;
+            $untaxedsubtotal += floor($bill->untaxedamount * 100) / 100;
+            echo $renderer->bill_merchant_line($bill);
         }
 
-        echo $renderer->bill_group_subtotal($subtotal, $billcurrency, $samecurrency);
+        $data = [
+            'data1' => $untaxedsubtotal,
+            'source1' => 'unataxedamount',
+            'data2' => $subtotal,
+            'source2' => 'amount',
+        ];
+
+        echo $renderer->bill_group_subtotal($data, $billcurrency, $samecurrency);
 
         $i++;
     }

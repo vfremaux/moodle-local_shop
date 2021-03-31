@@ -138,7 +138,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * Prints a summary form for the purchase
      */
     public function order_totals() {
-        global $SESSION;
+        global $SESSION, $CFG;
 
         $this->check_context();
 
@@ -166,16 +166,19 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->amount = sprintf('%0.2f', round($amount, 2));
         $template->totalobjects = $totalobjects;
 
-        $template->discountrate = $this->theshop->calculate_discountrate_for_user($amount, $this->context, $reason);
-        $template->reason = $reason;
-
-        if ($template->discountrate) {
-            $discounted = $amount - ($amount * $discountrate / 100);
-        } else {
-            $discounted = $amount;
+        if (local_shop_supports_feature('shop/discounts')) {
+            include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
+            $discountpreview = \local_shop\Discount::preview_discount_in_session($this->theshop);
+            if ($discountpreview) {
+                $template->hasdiscounts = !empty($discountpreview->discounts);
+                if ($template->hasdiscounts) {
+                    $template->discounts = $discountpreview->discounts;
+                }
+                $template->ispartial = $discountpreview->ispartial;
+                $template->reason = $discountpreview->reason;
+                $template->discounted = sprintf('%0.2f', round($amount - $discountpreview->discount, 2));
+            }
         }
-
-        $template->discounted = sprintf('%0.2f', round($discounted, 2));
 
         if (!empty($config->useshipping)) {
             $template->useshipping = true;
@@ -538,7 +541,11 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->description = '';
         }
         if (!$product->available) {
+            $template->notavailable = true;
             $template->notavailablestr = get_string('notavailable', 'local_shop');
+            if (!empty($product->notavailablereason)) {
+                $template->notavailablereason = $product->notavailablereason;
+            }
         }
 
         if ($product->has_leaflet()) {
@@ -1294,13 +1301,12 @@ class shop_front_renderer extends local_shop_base_renderer {
             $finaltaxestotal = $bill->finaltaxestotal;
         } else {
             $taxes = $SESSION->shoppingcart->taxes;
-            $finaltaxestotal = $SESSION->shoppingcart->finaltaxestotal;
         }
 
         try {
             $outputclass = 'front_taxes';
             shop_load_output_class($outputclass);
-            $tpldata = new \local_shop\output\front_taxes($taxes, $finaltaxestotal, $theshop);
+            $tpldata = new \local_shop\output\front_taxes($taxes, $theshop);
             $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_taxes', $template);
         } catch (Exception $e) {
@@ -1426,14 +1432,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         $reason = '';
-
-        $template->discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->taxedtotal,
-                                                                        $this->context, $reason);
-        $template->reason = $reason;
-        if ($template->discountrate) {
-            // Taxed value.
-            $template->discountedtaxed = sprintf('%0.2f', round($shoppingcart->taxedtotal * ($template->discountrate / 100), 2));
-        }
 
         if (!empty($shoppingcart->shipping)) {
             $template->hasshipping = $shoppingcart->shipping;

@@ -68,11 +68,11 @@ pas à contacter notre service commercial <%%SUPPORT%%>.</p>
 ';
 
 $string['print_procedure_text_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Imprimez <a href="Javascript:document.bill.submit();">la version imprimable du bon de commande</a>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Imprimez <a href="<%%BILL_URL%%>" target="_blank">la version imprimable du bon de commande</a>
 ';
 
 $string['print_procedure_invoice_text_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Imprimez <a href="Javascript:document.bill.submit();">la version imprimable de la facture proforma</a>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Imprimez <a href="<%%BILL_URL%%>" target="_blank">la version imprimable de la facture proforma</a>
 ';
 
 $string['success_followup_text_tpl'] = '

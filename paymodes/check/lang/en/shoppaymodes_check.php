@@ -69,11 +69,11 @@ $string['pending_followup_text_tpl'] = '
 ';
 
 $string['print_procedure_text_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="Javascript:document.bill.submit();">the printable version of the document</a>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="<%%BILL_URL%%>" target="_blank">the printable version of the document</a>
 ';
 
 $string['print_procedure_text_invoice_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="Javascript:document.bill.submit();">the paper version of the bill</a>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="<%%BILL_URL%%>" target="_blank">the paper version of the bill</a>
 ';
 
 $string['success_followup_text_tpl'] = '

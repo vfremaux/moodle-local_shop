@@ -57,13 +57,25 @@
         </td>
     </tr>
 
+    {{#supportsdiscounts}}
+    <tr valign="top">
+        <td width="25%">
+            <a href="{{{discountsurl}}}">{{#str}}managediscounts, local_shop{{/str}}</a>
+        </td>
+
+        <td width="75%">
+            {{#str}}managediscounts_desc, local_shop{{/str}}
+        </td>
+    </tr>
+    {{/supportsdiscounts}}
+
     <tr valign="top">
         <td width="25%">
             <a href="{{{taxesurl}}}">{{#str}}managetaxes, local_shop{{/str}}</a>
         </td>
 
         <td width="75%">
-            {{#str}}managetaxesdesc, local_shop{{/str}}
+            {{#str}}managetaxes_desc, local_shop{{/str}}
         </td>
     </tr>
 
@@ -86,7 +98,7 @@
         </td>
 
         <td width="75%">
-            {{#str}}manageshippingdesc, local_shop{{/str}}
+            {{#str}}manageshipping_desc, local_shop{{/str}}
         </td>
     </tr>
     {{/useshipping}}
@@ -97,7 +109,7 @@
         </td>
 
         <td width="75%">
-            {{#str}}tracescandesc, local_shop{{/str}}
+            {{#str}}tracescan_desc, local_shop{{/str}}
         </td>
     </tr>
 
@@ -119,7 +131,7 @@
         </td>
 
         <td>
-            {{#str}}resetdesc, local_shop{{/str}}
+            {{#str}}reset_desc, local_shop{{/str}}
         </td>
     </tr>
 

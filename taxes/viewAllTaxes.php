@@ -30,7 +30,7 @@ use local_shop\CatalogItem;
 
 $action = optional_param('what', '', PARAM_TEXT);
 if (!empty($action)) {
-    include($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
+    include_once($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
     $controller = new taxes_controller();
     $controller->process($action);
 }

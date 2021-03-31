@@ -25,8 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Catalog;
+use local_shop\Customer;
 use local_shop\Shop;
 
 /**
@@ -238,7 +240,9 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current);
+        $customers = array('' => get_string('allcustomers', 'local_shop')) + $customers;
+        $attrs['label'] = get_string('customer', 'local_shop').': ';
+        $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current, null, null, $attrs);
 
         return $str;
     }
@@ -255,6 +259,11 @@ class local_shop_renderer extends local_shop_base_renderer {
             $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops', 'id' => $theshop->id));
         } else {
             $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $theshop->id, 'shopid' => $theshop->id]);
+        }
+
+        if (local_shop_supports_feature('shop/discounts')) {
+            $template->supportsdiscounts = true;
+            $template->discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', array('view' => 'viewAllDiscounts', 'id' => $theshop->id));
         }
 
         $template->billsurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills', 'id' => $theshop->id));
