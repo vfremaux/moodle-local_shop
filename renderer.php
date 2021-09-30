@@ -166,7 +166,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         foreach ($shops as $s) {
             $shopmenu[$s->id] = format_string($s->name);
         }
-        $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid);
+        $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->id);
 
         return $str;
     }

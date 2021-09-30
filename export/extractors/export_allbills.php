@@ -128,6 +128,7 @@ class shop_export_source_allbills {
         $yearclause = '';
         $monthclause = '';
         $statusclause = '';
+        $shopclause = '';
         if (!empty($params->y)) {
             $yearclause = ' AND YEAR(FROM_UNIXTIME(b.emissiondate)) = ? ';
             $sqlparams[] = $params->y;
@@ -143,9 +144,14 @@ class shop_export_source_allbills {
             $sqlparams[] = $params->status;
         }
 
+        if (!empty($params->shopid)) {
+            $shopclause = ' AND b.shopid = ? ';
+            $sqlparams[] = $params->shopid;
+        }
+
         if (local_shop_supports_feature('shop/partners')) {
             require_once($CFG->dirroot.'/local/shop/pro/localprolib.php');
-            $sql = \local_shop\local_pro_manager::get_bill_export_query();
+            $sql = \local_shop\local_pro_manager::get_bill_export_query($yearclause, $monthclause, $statusclause, $shopclause);
         } else {
 
             $sql = "
@@ -189,6 +195,7 @@ class shop_export_source_allbills {
                     {$yearclause}
                     {$monthclause}
                     {$statusclause}
+                    {$shopclause}
                 GROUP BY
                     b.id
                 ORDER BY

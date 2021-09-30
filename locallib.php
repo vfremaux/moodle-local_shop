@@ -633,61 +633,39 @@ function shop_get_supported_currencies() {
 function shop_build_context() {
     global $SESSION, $DB;
 
-    $theshop = new Shop(null);
-
     if (!isset($SESSION->shop)) {
-        $SESSION->shop = new StdClass;
+        $SESSION->shop = new Shop(1);
+    }
+    $theshop = $SESSION->shop;
+
+    debug_trace("
+        SESSION INPUT : shopid = {$SESSION->shop->id} ; shopcatalogid = {$SESSION->shop->catalogid} ; catalogid = {$SESSION->catalogid}
+    ");
+
+    // Grab explicit input.
+    $shopid = optional_param('shopid', 0, PARAM_INT);
+    $catalogid = optional_param('catalogid', 0, PARAM_INT);
+
+    $thecatalog = null;
+    if (!empty($catalogid) && empty($shopid)) {
+        // We have epxlicit request for a catalog.
+        // Setup catalog and associated shop. RULE CHANGE  a catalog fits to one single shop instance.
+        $thecatalog = new Catalog($catalogid);
+        $SESSION->catalogid = $catalogid;
+        $shops = Shop::get_instances(['catalogid' => $catalogid]);
+
+        // Here $shops should have only one instance.
+        $theshop = array_shift($shops);
+
+        // Fix that in session
+        $SESSION->shop = $theshop;
     }
 
-    $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
-
-    if ($SESSION->shop->shopid) {
-        try {
-            $theshop = new Shop($SESSION->shop->shopid);
-            $SESSION->shop->catalogid = $theshop->catalogid;
-        } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->getMessage());
-        }
-    } else {
-        // Shopid is null. get lowest available shop as default.
-        $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
-        if ($shop = array_pop($shops)) {
-            $theshop = new Shop($shop->id);
-            $SESSION->shop->catalogid = $theshop->catalogid;
-        }
-    }
-
-    if (!$theshop) {
-        // No shops available at all. Redirect to shop management.
-        redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
-    }
-
-    /*
-     * Logic : forces session catalog to be operative,
-     * Defaults to the current shop bound catalog.
-     */
-    $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
-    if (empty($SESSION->shop->catalogid) || !$DB->record_exists('local_shop_catalog', array('id' => $SESSION->shop->catalogid))) {
-        // If no catalog defined in session or catalog is missing after deletion.
-        if ($theshop->id) {
-            // ... If we have a shop take the catalog of this shop ...
-            try {
-                $thecatalog = new Catalog($theshop->catalogid);
-                $SESSION->shop->catalogid = $thecatalog->id;
-            } catch (Exception $e) {
-                print_error('objecterror', 'local_shop', $e->getMessage());
-            }
-        }
-    }
-    try {
-        $thecatalog = new Catalog($SESSION->shop->catalogid);
-    } catch (Exception $e) {
-        if (preg_match('/local\/shop\/index.php/', $_SERVER['PHP_SELF'])) {
-            unset($SESSION->shop->catalogid);
-            redirect(me());
-        } else {
-            print_error('objecterror', 'local_shop', $e->getMessage());
-        }
+    if (!empty($shopid) && empty($catalogid)) {
+        $SESSION->shop = new Shop($shopid);
+        $theshop = $SESSION->shop;
+        $thecatalog = new Catalog($theshop->catalogid);
+        $SESSION->catalogid = $theshop->catalogid;
     }
 
     $theblock = null;
@@ -695,6 +673,31 @@ function shop_build_context() {
     if (!empty($SESSION->shop->blockid)) {
         $theblock = shop_get_block_instance($SESSION->shop->blockid);
     }
+
+    // Grab context objects in session if they were not explicitely required.
+    if (empty($theshop) && !empty($SESSION->shop->id)) {
+        $theshop = new Shop($SESSION->shop->id);
+        $thecatalog = new Catalog($SESSION->shop->catalogid);
+        $SESSION->catalogid = $SESSION->shop->catalogid;
+    }
+
+    if (empty($thecatalog)) {
+        $thecatalog = new Catalog($SESSION->catalogid);
+        $SESSION->catalogid = $thecatalog->id;
+
+        // Fix shop instance with required catalog;
+        $shops = Shop::get_instances(['catalogid' => $thecatalog->id]);
+
+        // Here $shops should have only one instance.
+        $theshop = array_shift($shops);
+
+        // Fix that in session
+        $SESSION->shop = $theshop;
+    }
+
+    debug_trace("
+        SESSION OUTPUT : shopid = {$SESSION->shop->id} ; shopcatalogid = {$SESSION->shop->catalogid} ; catalogid = {$SESSION->catalogid}
+    ");
 
     return array($theshop, $thecatalog, $theblock);
 }

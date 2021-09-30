@@ -36,6 +36,17 @@ use local_shop\CatalogItem;
 
 class shop_products_renderer extends local_shop_base_renderer {
 
+    public function shop_header() {
+        global $SESSION;
+        $theshop = new Shop($SESSION->shop->id);
+
+        $template = new StdClass;
+        $template->name = $theshop->name;
+        $template->description = format_text($theshop->description, $theshop->descriptionformat);
+
+        return $this->output->render_from_template('local_shop/products_shopheader', $template);
+    }
+
     public function catalog_header() {
 
         $this->check_context();
@@ -54,6 +65,14 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template->description = format_string($this->thecatalog->description);
         $template->shops = 0 + Shop::count(array('catalogid' => $this->thecatalog->id));
+        $shopinstances = Shop::get_instances(array('catalogid' => $this->thecatalog->id));
+        foreach ($shopinstances as $s) {
+            $shoptpl = new StdClass;
+            $shoptpl->id = $s->id;
+            $shoptpl->maincatid = $s->catalogid;
+            $shoptpl->name = $s->name;
+            $template->shopdata[] = $shoptpl;
+        }
 
         return $this->output->render_from_template('local_shop/products_catalogheader', $template);
     }

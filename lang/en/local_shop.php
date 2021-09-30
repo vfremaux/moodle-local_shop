@@ -332,6 +332,7 @@ $string['miscellaneous'] = 'Miscellaneous';
 $string['missingcode'] = 'Code must be given';
 $string['mytotal'] = 'See your cart total';
 $string['name'] = 'Name:';
+$string['namecopymark'] = ' - Copy';
 $string['newbill'] = 'New bill';
 $string['newbillitem'] = 'New bill item';
 $string['newcatalog'] = 'New catalog';

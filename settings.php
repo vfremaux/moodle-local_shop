@@ -25,20 +25,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
-// Settings default init.
-if (is_dir($CFG->dirroot.'/local/adminsettings')) {
-    // Integration driven code.
-    require_once($CFG->dirroot.'/local/adminsettings/lib.php');
-    list($hasconfig, $hassiteconfig, $capability) = local_adminsettings_access();
-} else {
-    // Standard Moodle code.
-    $capability = 'moodle/site:config';
-    $hasconfig = $hassiteconfig = has_capability($capability, context_system::instance());
-}
-
 if ($hassiteconfig) {
 
-    $settings = new admin_settingpage('local_shop', get_string('pluginname', 'local_shop'));
+    $settings = new admin_settingpage('localsettingshop', get_string('pluginname', 'local_shop'));
     $ADMIN->add('localplugins', $settings);
 
     $gotobackofficestr = get_string('gotobackoffice', 'local_shop');

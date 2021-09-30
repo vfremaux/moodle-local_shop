@@ -14,11 +14,11 @@
 }
 
 .shop-row {
-    display: table-row;
+    display: flex;
+    flex-direction: row;
 }
 
 .shop-cell {
-    display: table-cell;
     padding: 8px;
 }
 

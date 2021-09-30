@@ -201,9 +201,14 @@ class Shop extends ShopObject {
         return Bill::get_instances(array('shopid' => $this->id));
     }
 
+    /**
+     * Deleting shop will not necesarily delete the attached catalogue
+     * as some other shop instances may use it.
+     */
     public function delete() {
         global $DB;
 
+        // Delete all attached bills.
         if ($bills = $this->get_bills()) {
             foreach ($bills as $b) {
                 $b->delete();

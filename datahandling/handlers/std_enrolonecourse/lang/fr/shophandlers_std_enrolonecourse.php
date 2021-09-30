@@ -26,6 +26,7 @@ $string['errornocourse'] = 'cours cible non défini';
 $string['errorcoursenotexists'] = 'Cours cible {$a} non existant';
 $string['errorrole'] = 'Rôle {$a} non existant';
 $string['warningroledefaultstoteacher'] = 'Le rôle n\'est pas précisé. "Etudiant" utilisé par défaut.';
+$string['warninggrouptobecreated'] = 'Le groupe {$a} n\'existe pas dans le cours et sera créé lors de la première transaction.';
 
 $string['productiondata_public'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme. Un courriel vous a été envoyé

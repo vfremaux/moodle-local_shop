@@ -285,6 +285,7 @@ $string['miscellaneous'] = 'Autres options';
 $string['missingcode'] = 'Un code produit doit être mentionné';
 $string['mytotal'] = 'Voir mon total panier';
 $string['name'] = 'Nom&nbsp;:&ensp;';
+$string['namecopymark'] = ' - Copie';
 $string['nametaxe'] = 'Nom de taxe';
 $string['newbill'] = 'Nouvelle facture';
 $string['newbillitem'] = 'Nouvel élément de facture';
