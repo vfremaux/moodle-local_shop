@@ -100,6 +100,16 @@ class ShopObject {
         return true;
     }
 
+    public static function exists($id) {
+        global $DB;
+
+        if (empty(self::$table)) {
+            throw new coding_exception("Shop object exists :Internal table should have been initialized. Review coding.");
+        }
+
+        return $DB->record_exists(self::$table, array('id' => $id));
+    }
+
     /**
      * generic saving
      */

@@ -25,8 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
 use \local_shop\Catalog;
+use \local_shop\Shop;
 
 $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
@@ -55,7 +57,26 @@ $products = array();
 
 $thecatalog->get_all_products_for_admin($products);
 
-echo $out;
+$shopinstances = Shop::get_instances(array('catalogid' => $thecatalog->id));
+$shopcount = 0 + count($shopinstances);
+if ($shopcount == 1) {
+    $theshop = array_pop($shopinstances);
+    if ($SESSION->shop->id != $theshop->id) {
+        $SESSION->shop = $theshop;
+        $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'shopid' => $theshop->id];
+        $redirecturl = new moodle_url('/local/shop/products/view.php', $params);
+        redirect($redirecturl);
+    }
+    echo $out;
+    echo $OUTPUT->heading(get_string('activeshop', 'local_shop'));
+    echo $renderer->shop_header();
+} else if ($shopcount > 2) {
+    echo $out;
+    echo $OUTPUT->heading(get_string('activeshop', 'local_shop'));
+    echo $renderer->shop_header();
+} else {
+    echo $out;    
+}
 
 echo $OUTPUT->heading(get_string('catalogue', 'local_shop'));
 

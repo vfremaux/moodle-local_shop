@@ -244,7 +244,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
          * get separated from other learner teams.
          */
 
-        if (!$customerid = $data->customer->id) {
+        if (!is_object($data->customer) || !$customerid = $data->customer->id) {
             $customerid = $data->get_customerid();
         }
 
@@ -269,6 +269,27 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         // Add all created users to group.
 
         groups_add_member($group->id, $userid);
+
+        // Manage named group request.
+
+        if (!empty($data->actionparams['groupname'])) {
+            // Check if group exists and add it elsewhere.
+            $params= array('courseid' => $course->id, 'name' => $data->actionparams['groupname']);
+            if (!$group = $DB->get_record('groups', $params)) {
+                $group = new StdClass();
+                $group->courseid = $course->id;
+                $group->idnumber = '';
+                $group->name = $groupname;
+                $group->description = get_string('providedbymoodleshop', 'local_shop');
+                $group->descriptionformat = 1;
+                $group->enrolmentkey = 0;
+                $group->timecreated = $now;
+                $group->timemodified = $now;
+                $group->id = $DB->insert_record('groups', $group);
+            }
+
+            groups_add_member($group->id, $userid);
+        }
 
         // Add user to customer support.
 
@@ -396,21 +417,32 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $warnings[$data->code][] = get_string('errornocourse', 'shophandlers_std_enrolonecourse');
         } else {
             if (!empty($data->actionparams['coursename'])) {
-                if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+                if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
                     $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['coursename']);
                     $errors[$data->code][] = $fb;
                 }
             }
             if (!empty($data->actionparams['courseid'])) {
-                if (!$DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
+                if (!$course = $DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
                     $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['courseid']);
                     $errors[$data->code][] = $fb;
                 }
             }
             if (!empty($data->actionparams['courseidnumber'])) {
-                if (!$DB->get_record('course', array('idnumber' => $data->actionparams['courseidnumber']))) {
+                if (!$course = $DB->get_record('course', array('idnumber' => $data->actionparams['courseidnumber']))) {
                     $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecourse', $data->actionparams['courseidnumber']);
                     $errors[$data->code][] = $fb;
+                }
+            }
+
+            // If we have course, and an explicit groupname given, check groupname
+            if (!empty($course)) {
+                if (!empty($data->actionparams['groupname'])) {
+                    $params = array('courseid' => $course->id, 'name' => $data->actionparams['courseidnumber']);
+                    if (!$group = $DB->get_record('groups', $params)) {
+                        $fb = get_string('warninggrouptobecreated', 'shophandlers_std_enrolonecourse', $data->actionparams['groupname']);
+                        $warnings[$data->code][] = $fb;
+                    }
                 }
             }
         }

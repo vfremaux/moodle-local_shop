@@ -46,7 +46,7 @@ class shop_handler_std_createvinstance extends shop_handler {
         global $DB;
 
         if ($fieldname == 'shortname') {
-            if ($DB->record_exists('block_vmoodle', array('shortname' => $value)) {
+            if ($DB->record_exists('block_vmoodle', array('shortname' => $value))) {
                 $err = get_string('errorhostnameexists', 'shophanlders_createvinstance', $value);
                 $errors[$itemname][$fieldname][$instance] = $err;
                 return false;
@@ -238,7 +238,7 @@ class shop_handler_std_createvinstance extends shop_handler {
             $fb = get_string('productiondata_failure_sales', 'shophandlers_std_createvinstance', $data);
             $productionfeedback->salesadmin = $fb;
             $message = "[{$data->transactionid}] STD_CREATE_VINSTANCE Postpay Error :";
-            $message .= " Training credits not installed."
+            $message .= " Training credits not installed.";
             shop_trace($message);
             return $productionfeedback;
         }

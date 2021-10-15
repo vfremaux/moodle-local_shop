@@ -26,6 +26,7 @@ $string['errornocourse'] = 'No target course for product';
 $string['errorcoursenotexists'] = 'Course {$a} does not exist';
 $string['errorrole'] = 'Enrolment role {$a} does not exist';
 $string['warningroledefaultstoteacher'] = 'Enrolment role not defined. "Student" is used.';
+$string['warninggrouptobecreated'] = 'The group name {$a} does not exist in target course and will be created on first transaction.';
 
 $string['productiondata_public'] = '
 <p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate login information.</p>

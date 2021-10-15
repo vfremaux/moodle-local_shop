@@ -14,9 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['linkedblocks'] = 'Blocs liés';
-$string['allshops'] = 'Toutes les boutiques';
-$string['addshop'] = 'Ajouter une boutique';
-$string['editshop'] = 'Modifier une boutique';
-$string['errorshopexists'] = 'Une boutique existe déjà avec ce nom.';
-$string['activeshop'] = 'Boutique active';
+/**
+ * @package   local_shop
+ * @category  local
+ * @copyright 2006 Valery Fremaux
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$definitions = array(
+    'pro' => array(
+        'mode' => cache_store::MODE_APPLICATION
+    )
+);

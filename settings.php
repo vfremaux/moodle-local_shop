@@ -38,7 +38,7 @@ if (is_dir($CFG->dirroot.'/local/adminsettings')) {
 
 if ($hassiteconfig) {
 
-    $settings = new admin_settingpage('local_shop', get_string('pluginname', 'local_shop'));
+    $settings = new admin_settingpage('localsettingshop', get_string('pluginname', 'local_shop'));
     $ADMIN->add('localplugins', $settings);
 
     $gotobackofficestr = get_string('gotobackoffice', 'local_shop');

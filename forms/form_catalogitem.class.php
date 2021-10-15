@@ -69,6 +69,9 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
+        $mform->addElement('hidden', 'catalogid');
+        $mform->setType('catalogid', PARAM_INT);
+
         if (!$this->is_slave()) {
             $mform->addElement('text', 'code', get_string('code', 'local_shop'), $this->attributesshort);
             $mform->setType('code', PARAM_ALPHANUMEXT);
