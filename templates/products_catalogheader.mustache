@@ -1,11 +1,11 @@
 
 
 <!-- local_shop/products_catalogheader -->
-<table width="100%">
-    <tr>
-        <td>{{#str}}name, local_shop{{/str}}</td>
-        <td>{{{catalogname}}}</td>
-        <td>
+<div class="shop-table">
+    <div class="shop-row">
+        <div class="shop-cell header">{{#str}}name, local_shop{{/str}}</div>
+        <div class="shop-cell header">{{{catalogname}}}</div>
+        <div class="shop-cell header">
             {{#ismaster}}
                 {{#str}}master, local_shop{{/str}}
             {{/ismaster}}
@@ -15,25 +15,18 @@
             {{#isstandalone}}
                 {{#str}}standalone, local_shop{{/str}}
             {{/isstandalone}}
-        </td>
-    </tr>
+        </div>
+    </dir>
 
-    <tr>
-        <td class="param">{{#str}}description{{/str}}</div>
-        <td class="value" colspan="2">{{{description}}}</td>
-        <td></td>
-    </tr>
+    <div class="shop-row">
+        <div class="shop-cell param">{{#str}}description{{/str}}</div>
+        <div class="shop-cell value">{{{description}}}</div>
+    </div>
 
-    <tr>
-        <td class="param">{{#str}}shops, local_shop{{/str}}</td>
-        <td class="value">
-            {{shops}}
-            {{#shopdata}}
-            <a class="button btn-secondary" href="/local/shop/products/view.php?view=viewAllProducts&catalogid={{maincatid}}">{{{name}}}</a>
-            {{/shopdata}}
-        </td>
-        <td></td>
-    </tr>
+    <div class="shop-row">
+        <div class="shop-cell param">{{#str}}shops, local_shop{{/str}}</div>
+        <div class="shop-cell value">{{shops}}</div>
+    </div>
 
-</table>
+</div>
 <!-- /local_shop/products_catalogheader -->

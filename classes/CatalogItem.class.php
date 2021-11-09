@@ -171,7 +171,7 @@ class CatalogItem extends ShopObject {
      * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
      * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
      */
-    public function instance_by_idnumber($idnumber) {
+    public static function instance_by_idnumber($idnumber) {
         global $DB;
 
         if (empty($idnumber)) {
@@ -191,7 +191,7 @@ class CatalogItem extends ShopObject {
      * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
      * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
      */
-    public function instance_by_code($code) {
+    public static function instance_by_code($code) {
         global $DB;
 
         if (empty($code)) {
