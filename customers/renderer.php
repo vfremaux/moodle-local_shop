@@ -97,8 +97,8 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $template->email = $customer->email;
 
-        $template->hasemail = $customer->hasaccount;
-        if ($template->hasemail) {
+        $template->hasaccount = $customer->hasaccount;
+        if ($template->hasaccount) {
             $template->userurl = new moodle_url('/user/view.php', array('id' => $customer->hasaccount));
         }
 
@@ -172,6 +172,49 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $table->data[] = $row;
         }
         echo html_writer::table($table);
+    }
+
+    public function customers_options($mainrenderer) {
+        global $SESSION;
+
+        $shopid = optional_param('shopid', 0, PARAM_INT);
+        $dir = optional_param('dir', 'asc', PARAM_TEXT);
+        $sortorder = optional_param('order', 'lastname', PARAM_TEXT);
+
+        $template = new StdClass;
+
+        $params = array(
+            'view' => 'viewAllCustomers',
+            'dir' => $dir,
+            'order' => $sortorder,
+            'shopid' => $shopid,
+        );
+
+        $url = new moodle_url('/local/shop/customers/view.php', $params);
+        $url->remove_params('shopid');
+        $template->shopselect = $mainrenderer->shop_choice($url, true, $shopid);
+
+        /*
+        $params = array('view' => 'search');
+        $template->searchurl = new moodle_url('/local/shop/customers/view.php', $params);
+        $template->searchinbillsstr = get_string('searchincustomers', 'local_shop');
+        */
+
+        return $this->output->render_from_template('local_shop/customers_options', $template);
+    }
+
+    public function no_paging_switch($url, $urlfilter) {
+        $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
+        if ($nopaging) {
+            $str = '<span class="nolink">'.get_string('nopaging', 'local_shop').'</span>';
+        } else {
+            $urlfilter = str_replace('nopaging=0', 'nopaging=1', $urlfilter);
+            $urlfilter = preg_replace('/customerpage=\d+/', '', $urlfilter);
+            $urlfilter .= '&customerpage=-1';
+            $str = ' <a href="'.$url.'&'.$urlfilter.'">'.get_string('nopaging', 'local_shop').'</a>';
+        }
+
+        return $str;
     }
 
     public function customer_view_links() {

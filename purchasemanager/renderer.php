@@ -49,7 +49,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $template = new StdClass;
 
         $template->selstr = get_string('sel', 'local_shop');
-        $template->imagestr = get_string('image', 'local_shop');
+        $template->imagestr = '';
         $template->billstr = get_string('bill', 'local_shop');
         $template->codestr = get_string('code', 'local_shop');
         $template->designationstr = get_string('designation', 'local_shop');
@@ -91,6 +91,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
             $producttpl->designation = format_string($product->name);
             $producttpl->reference = $productinstance->reference;
+            $producttpl->extradata = $this->process_extradata($productinstance);
             $producttpl->renewable = ($product->renewable) ? get_string('yes') : '';
             $producttpl->pend = ($productinstance->enddate) ? date('Y/m/d H:i', $productinstance->enddate) : 'N.C.';
             $producttpl->pstart = date('Y/m/d H:i', $productinstance->startdate);
@@ -182,5 +183,33 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $str .= $OUTPUT->box_end();
 
         return $str;
+    }
+
+    /**
+     * Extracts some extra metadata if config requires.
+     */
+    protected function process_extradata($productinstance) {
+        $config = get_config('local_shop');
+
+        if (!empty($config->extradataonproductinstances)) {
+
+            $extrajson = $productinstance->extradata;
+            if (empty($extrajson)) {
+                return;
+            }
+
+            $extradata = json_decode($productinstance->extradata);
+
+            $extrafields = preg_split('/[\s,]+/', $config->extradataonproductinstances);
+            $fieldsarr = [];
+            foreach ($extrafields as $field) {
+                if (isset($extradata->$field)) {
+                    $fieldsarr[] = "$field: ".$extradata->$field; 
+                }
+            }
+            return implode(', ', $fieldsarr);
+        }
+
+        return '';
     }
 }

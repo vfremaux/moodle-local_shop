@@ -92,6 +92,7 @@ if ($itemid) {
     $handleropts['1'] = get_string('dedicated', 'local_shop');
     $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
 
+    $itemrec->catalogid = $thecatalog->id;
     $itemrec->codeshadow = $itemrec->code;
     $itemrec->enablehandlershadow = $handleropts[$itemrec->enablehandler];
     $itemrec->handlerparamsshadow = $itemrec->handlerparams;

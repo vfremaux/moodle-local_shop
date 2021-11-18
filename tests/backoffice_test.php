@@ -192,8 +192,10 @@ class local_shop_backoffice_testcase extends advanced_testcase {
             'name' => 'TestCatalog',
             'description_editor' => array('text' => 'Catalog for tests',
                 'format' => 1, 'itemid' => 0),
+/*
             'salesconditions_editor' => array('text' => 'Catalog sales conditions',
                 'format' => 1, 'itemid' => 0),
+*/
             'groupid' => 0,
             'countryrestrictions' => 'FR,BE',
             'linked' => 'free'
@@ -214,8 +216,10 @@ class local_shop_backoffice_testcase extends advanced_testcase {
             'name' => 'TestCatalog',
             'description_editor' => array('text' => 'Catalog for tests',
                 'format' => 1, 'itemid' => 0),
+/*
             'salesconditions_editor' => array('text' => 'Catalog sales conditions',
                 'format' => 1, 'itemid' => 0),
+*/
             'countryrestrictions' => 'FR,BE',
             'linked' => 'master'
         );
@@ -227,8 +231,10 @@ class local_shop_backoffice_testcase extends advanced_testcase {
             'name' => 'TestCatalogS1',
             'description_editor' => array('text' => 'Slave Catalog 1 for tests',
                 'format' => 1, 'itemid' => 0),
+/*
             'salesconditions_editor' => array('text' => 'Slave Catalog 1 sales conditions',
                 'format' => 1, 'itemid' => 0),
+*/
             'groupid' => $catalog->id,
             'countryrestrictions' => 'UK',
             'linked' => 'slave'
@@ -244,8 +250,10 @@ class local_shop_backoffice_testcase extends advanced_testcase {
             'name' => 'TestCatalogS2',
             'description_editor' => array('text' => 'Slave Catalog 2 for tests',
                 'format' => 1, 'itemid' => 0),
+/*
             'salesconditions_editor' => array('text' => 'Slave Catalog 2 sales conditions',
                 'format' => 1, 'itemid' => 0),
+*/
             'groupid' => $catalog->id,
             'countryrestrictions' => 'US',
             'linked' => 'slave'

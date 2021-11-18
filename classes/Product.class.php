@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 
 class Product extends ShopObject {
 
@@ -196,6 +197,17 @@ class Product extends ShopObject {
         }
 
         return implode('&', $pairs);
+    }
+
+    /**
+     * Defers to underlying catalogitem the request for info about handler
+     */
+    public function get_handler_info($method, $type = 'postprod') {
+        if (CatalogItem::exists($this->record->catalogitemid)) {
+            $ci = new CatalogItem($this->record->catalogitemid);
+            return $ci->get_handler_info($method, $type);
+        }
+        return [null, null];
     }
 
     public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {

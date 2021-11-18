@@ -19,7 +19,7 @@
  *
  * @package     local_shop
  * @category    local
- * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @caopyright  (C) 2016 Valery Fremaux (http://www.mylearningfactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
@@ -74,8 +74,10 @@ class Catalog_Form extends moodleform {
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
         $mform->addRule('description_editor', null, 'required');
 
+        /*
         $label = get_string('salesconditions', 'local_shop');
         $mform->addElement('editor', 'salesconditions_editor', $label, '', $this->editoroptions);
+        */
 
         $label = get_string('countrycodelist', 'local_shop');
         $mform->addElement('text', 'countryrestrictions', $label, $attributes);
@@ -131,8 +133,10 @@ class Catalog_Form extends moodleform {
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
                                                  'catalogdescription', $defaults->catalogid);
 
+        /*
         $defaults = file_prepare_standard_editor($defaults, 'salesconditions', $this->editoroptions, $context, 'local_shop',
                                                  'catalogsalesconditions', $defaults->catalogid);
+        */
 
         $defaults = file_prepare_standard_editor($defaults, 'billfooter', $this->editoroptions, $context, 'local_shop',
                                                  'catalogbillfooter', $defaults->catalogid);

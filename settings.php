@@ -80,6 +80,12 @@ if ($hassiteconfig) {
     $default = 30;
     $settings->add(new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT));
 
+    $key = 'local_shop/extradataonproductinstances';
+    $label = get_string('extradataonproductinstances', 'local_shop');
+    $desc = get_string('configextradataonproductinstances', 'local_shop');
+    $default = '';
+    $settings->add(new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT));
+
     $key = 'local_shop/hideproductswhennotavailable';
     $label = get_string('hideproductswhennotavailable', 'local_shop');
     $desc = get_string('confighideproductswhennotavailable', 'local_shop');
@@ -292,7 +298,8 @@ if ($hassiteconfig) {
 
     if (local_shop_supports_feature('emulate/community') == 'pro') {
         include_once($CFG->dirroot.'/local/shop/pro/prolib.php');
-        \local_shop\pro_manager::add_settings($ADMIN, $settings);
+        $promanager = local_shop\pro_manager::instance();
+        $promanager->add_settings($ADMIN, $settings);
     } else {
         $label = get_string('plugindist', 'local_shop');
         $desc = get_string('plugindist_desc', 'local_shop');

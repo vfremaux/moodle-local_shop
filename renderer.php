@@ -152,7 +152,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function shop_choice($url, $chooseall = false) {
+    public function shop_choice($url, $chooseall = false, $shopid = null) {
         global $SESSION, $OUTPUT;
 
         $str = '';
@@ -166,7 +166,11 @@ class local_shop_renderer extends local_shop_base_renderer {
         foreach ($shops as $s) {
             $shopmenu[$s->id] = format_string($s->name);
         }
-        $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid);
+        if (is_null($shopid)) {
+            $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid, null);
+        } else {
+            $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $shopid, null);
+        }
 
         return $str;
     }
@@ -280,7 +284,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         if (has_capability('moodle/site:config', context_system::instance())) {
             $template->hassiteadmin = true;
-            $template->settingsurl = new moodle_url('/admin/settings.php', array('section' => 'local_shop'));
+            $template->settingsurl = new moodle_url('/admin/settings.php', array('section' => 'localsettingshop'));
         }
 
         $template->reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));

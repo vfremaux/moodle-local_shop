@@ -19,7 +19,7 @@
  *
  * @package    local_shop
  * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -68,6 +68,9 @@ abstract class CatalogItem_Form extends moodleform {
         $config = get_config('local_shop');
 
         $mform = $this->_form;
+
+        $mform->addElement('hidden', 'catalogid');
+        $mform->setType('catalogid', PARAM_INT);
 
         if (!$this->is_slave()) {
             $mform->addElement('text', 'code', get_string('code', 'local_shop'), $this->attributesshort);

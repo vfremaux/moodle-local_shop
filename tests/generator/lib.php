@@ -118,7 +118,9 @@ class local_shop_generator extends component_generator_base {
             $data = (object) array(
                 'name' => 'Test catalog '.$catalogix,
                 'description_editor' => array('text' => 'Catalog instance for tests', 'format' => 1, 'itemid' => 0),
+/*
                 'salesconditions_editor' => array('text' => 'Catalog sales conditions', 'format' => 1, 'itemid' => 0),
+*/
                 'countryrestrictions' => '',
                 'linked' => 'free',
                 'groupid' => 0,
@@ -230,6 +232,7 @@ class local_shop_generator extends component_generator_base {
 
         $this->reset();
 
+        /*
         $catalogs = array(
           array('id' => '1','name' => 'Base catalog','description' => '<p>Catalog for independant products<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '0','countryrestrictions' => ''),
           array('id' => '2','name' => 'Master catalog 1','description' => '<p>Master products 1<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '2','countryrestrictions' => ''),
@@ -240,6 +243,19 @@ class local_shop_generator extends component_generator_base {
           array('id' => '7','name' => 'Master to delete','description' => '<p>To delete<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '7','countryrestrictions' => ''),
           array('id' => '8','name' => 'Master to delete w slaves','description' => '<p>Master with slaves to delete<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '8','countryrestrictions' => ''),
           array('id' => '9','name' => 'Slave to master to delete','description' => '<p>Slave to master to delete<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '8','countryrestrictions' => '')
+        );
+        */
+
+        $catalogs = array(
+          array('id' => '1','name' => 'Base catalog','description' => '<p>Catalog for independant products<br></p>','descriptionformat' => '1','groupid' => '0','countryrestrictions' => ''),
+          array('id' => '2','name' => 'Master catalog 1','description' => '<p>Master products 1<br></p>','descriptionformat' => '1','groupid' => '2','countryrestrictions' => ''),
+          array('id' => '3','name' => 'Master catalog 2','description' => '<p>Master records 2<br></p>','descriptionformat' => '1','groupid' => '3','countryrestrictions' => ''),
+          array('id' => '4','name' => 'Slave catalog 1 - 1','description' => '<p>slave to master 1<br></p>','descriptionformat' => '1','groupid' => '2','countryrestrictions' => ''),
+          array('id' => '5','name' => 'Slave 1 - 2','description' => '<p>Slave to master 1<br></p>','descriptionformat' => '1','groupid' => '2','countryrestrictions' => ''),
+          array('id' => '6','name' => 'Slave catalog 2 - 1','description' => '<p>Slave of Master 2<br></p>','descriptionformat' => '1','groupid' => '3','countryrestrictions' => ''),
+          array('id' => '7','name' => 'Master to delete','description' => '<p>To delete<br></p>','descriptionformat' => '1','groupid' => '7','countryrestrictions' => ''),
+          array('id' => '8','name' => 'Master to delete w slaves','description' => '<p>Master with slaves to delete<br></p>','descriptionformat' => '1','groupid' => '8','countryrestrictions' => ''),
+          array('id' => '9','name' => 'Slave to master to delete','description' => '<p>Slave to master to delete<br></p>','descriptionformat' => '1','groupid' => '8','countryrestrictions' => '')
         );
 
         foreach ($catalogs as $c) {

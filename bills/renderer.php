@@ -934,13 +934,13 @@ class shop_bills_renderer extends local_shop_base_renderer {
         if (local_shop_supports_feature('shop/partners')) {
             $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
         }
-        $shopid = optional_param('shopid', 0, PARAM_INT);
+
         $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
         $cur = optional_param('cur', 'EUR', PARAM_TEXT);
         $dir = optional_param('dir', 'asc', PARAM_TEXT);
-        $sortorder = optional_param('order', 'emissiondate', PARAM_TEXT);
+        $sortorder = optional_param('order', 'emissiondate DESC', PARAM_TEXT);
         $customerid = optional_param('customerid', 0, PARAM_INT);
-        $shopid = optional_param('shopid', 1, PARAM_INT);
+        $shopid = optional_param('shopid', 0, PARAM_INT);
 
         $template = new StdClass;
 
@@ -965,7 +965,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $url = new moodle_url('/local/shop/bills/view.php', $params);
         $url->remove_params('shopid');
-        $template->shopselect = $mainrenderer->shop_choice($url, true);
+        $template->shopselect = $mainrenderer->shop_choice($url, true, $shopid);
 
         $url = new moodle_url('/local/shop/bills/view.php', $params);
         $url->remove_params('y');
