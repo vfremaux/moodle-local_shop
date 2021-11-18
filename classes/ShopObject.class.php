@@ -188,7 +188,7 @@ class ShopObject {
      * @param array $filter an array of specialized field filters
      * @return array of object instances keyed by primary id.
      */
-    static protected function _count_instances($table, $filter = array(), $order = '', $fields = '*',
+    static protected function _count_instances($table, $filter = array(),
                                                $limitfrom = 0, $limitnum = '') {
         global $DB;
 

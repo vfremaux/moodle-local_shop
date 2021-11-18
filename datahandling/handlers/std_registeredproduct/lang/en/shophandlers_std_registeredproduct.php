@@ -38,7 +38,7 @@ $string['productiondata_post_private'] = '
 <p>Your product is now registered and ready for servicing.</p>
 ';
 
-$string['productiondata_produced_sales'] = '
+$string['productiondata_post_sales'] = '
 <p><b>TXID: {$a->txid}</b></p>
 <p><b>Payement has been received</b></p>
 <p>Customer {$a->username} has aquired a registered product {$a->productname}.</p>

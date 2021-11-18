@@ -169,6 +169,7 @@
     <TABLE NAME="local_shop_customer" COMMENT="Customers">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="shopid" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="firstname" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="lastname" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="address" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>

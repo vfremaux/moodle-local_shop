@@ -159,6 +159,10 @@ class Customer extends ShopObject {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light);
     }
 
+    public static function count_instances($filter = array(), $limitfrom = 0, $limitnum = '') {
+        return parent::_count_instances(self::$table, $filter, $limitfrom, $limitnum);
+    }
+
     public static function get_instances_menu($filter = array(), $order = 'lastname, firstname') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(firstname, ' ', lastname)");
     }

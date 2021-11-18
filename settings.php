@@ -25,17 +25,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
-// Settings default init.
-if (is_dir($CFG->dirroot.'/local/adminsettings')) {
-    // Integration driven code.
-    require_once($CFG->dirroot.'/local/adminsettings/lib.php');
-    list($hasconfig, $hassiteconfig, $capability) = local_adminsettings_access();
-} else {
-    // Standard Moodle code.
-    $capability = 'moodle/site:config';
-    $hasconfig = $hassiteconfig = has_capability($capability, context_system::instance());
-}
-
 if ($hassiteconfig) {
 
     $settings = new admin_settingpage('localsettingshop', get_string('pluginname', 'local_shop'));
@@ -78,6 +67,12 @@ if ($hassiteconfig) {
     $label = get_string('maxitemsperpage', 'local_shop');
     $desc = get_string('configmaxitemsperpage', 'local_shop');
     $default = 30;
+    $settings->add(new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT));
+
+    $key = 'local_shop/extradataonproductinstances';
+    $label = get_string('extradataonproductinstances', 'local_shop');
+    $desc = get_string('configextradataonproductinstances', 'local_shop');
+    $default = '';
     $settings->add(new admin_setting_configtext($key, $label, $desc, $default, PARAM_TEXT));
 
     $key = 'local_shop/hideproductswhennotavailable';
@@ -292,7 +287,8 @@ if ($hassiteconfig) {
 
     if (local_shop_supports_feature('emulate/community') == 'pro') {
         include_once($CFG->dirroot.'/local/shop/pro/prolib.php');
-        \local_shop\pro_manager::add_settings($ADMIN, $settings);
+        $promanager = local_shop\pro_manager::instance();
+        $promanager->add_settings($ADMIN, $settings);
     } else {
         $label = get_string('plugindist', 'local_shop');
         $desc = get_string('plugindist_desc', 'local_shop');

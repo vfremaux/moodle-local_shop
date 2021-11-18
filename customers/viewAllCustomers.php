@@ -29,9 +29,18 @@ require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Customer;
 
+$sortorder = optional_param('order', 'lastname', PARAM_TEXT);
+$dir = optional_param('dir', 'ASC', PARAM_TEXT);
 $action = optional_param('what', '', PARAM_TEXT);
+$shopid = optional_param('shopid', 0, PARAM_INT);
+$nopaging = optional_param('nopaging', 0, PARAM_BOOL);
+$pagesize = 20;
+$customerpage = optional_param('customerpage', 0, PARAM_INT);
+$offset = $customerpage * $pagesize;
 
 ini_set('memory_limit', '512M');
+
+list($filter, $filterclause, $urlfilter) = shop_get_customer_filtering();
 
 if (!empty($action)) {
     include_once($CFG->dirroot.'/local/shop/customers/customers.controller.php');
@@ -40,34 +49,46 @@ if (!empty($action)) {
     $controller->process($action);
 }
 
-$order = optional_param('order', 'lastname', PARAM_TEXT);
-$dir = optional_param('dir', 'ASC', PARAM_TEXT);
-$offset = optional_param('offset', 0, PARAM_INT);
-
-$params = array('view' => 'viewAllCustomers', 'order' => $order, 'dir' => $dir);
+$params = array('view' => 'viewAllCustomers', 'order' => $sortorder, 'dir' => $dir);
 $url = new moodle_url('/local/shop/customers/view.php', $params);
 
-$customerscount = $DB->count_records_select('local_shop_customer', " UPPER(email) NOT LIKE 'test%' "); // Eliminate tests.
 $config = get_config('local_shop');
 
-$customers = Customer::get_instances_for_admin($theshop);
+// $customers = Customer::get_instances_for_admin($theshop);
 
 echo $out;
 
-echo $mainrenderer->shop_choice($url, true);
-
 echo $OUTPUT->heading(get_string('customeraccounts', 'local_shop'), 1);
+
+echo $renderer->customers_options($mainrenderer);
+
+$total = Customer::count_instances($filter);
+if ($nopaging) {
+    $customers = Customer::get_instances($filter, $sortorder, '*');
+} else {
+    $customers = Customer::get_instances($filter, $sortorder, '*', $offset, $pagesize);
+}
 
 if (empty($customers)) {
     echo $OUTPUT->notification(get_string('nocustomers', 'local_shop'));
 } else {
-    echo $renderer->customers($customers);
-}
 
-$portlet = new StdClass();
-$portlet->url = $url;
-$portlet->total = $customerscount;
-$portlet->pagesize = $config->maxitemsperpage;
-echo $mainrenderer->paging_results($portlet);
+    // Print pager.
+    $urlpagingfilter = str_replace('nopaging=1', 'nopaging=0', $urlfilter);
+    $pagingbar = $OUTPUT->paging_bar($total, $customerpage, $pagesize, $url.'&'.$urlpagingfilter, 'customerpage');
+    if ($pagingbar) {
+        echo $pagingbar;
+        echo $renderer->no_paging_switch($url, $urlfilter);
+    }
+
+    echo $renderer->customers($customers);
+
+    if ($total > 20) {
+        if ($pagingbar) {
+            echo $pagingbar;
+            echo $renderer->no_paging_switch($url, $urlfilter);
+        }
+    }
+}
 
 echo $renderer->customer_view_links();

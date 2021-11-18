@@ -1093,5 +1093,14 @@ input.purchaseoption:checked {
 }
 
 .shop-bills-tools {
-	font-size: 0.8em;
+    font-size: 0.8em;
+}
+
+.purchased-product-name {
+    font-size: 0.8em;
+    color: #bbb;
+}
+.purchased-product-extradata {
+    font-size: 0.8em;
+    color: #bbb;
 }

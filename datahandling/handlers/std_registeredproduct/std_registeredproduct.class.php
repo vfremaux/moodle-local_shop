@@ -119,8 +119,9 @@ class shop_handler_std_registeredproduct extends shop_handler {
         }
 
         $e = new StdClass;
-        $e->username = $data->customeruser->username;
-        $e->fullname = $course->fullname;
+        $e->username = $data->bill->customeruser->username;
+        $e->fullname = '';
+        // TODO : identifify related support course for product : $e->fullname = $course->fullname;
         $e->name = $data->name;
         $e->txid = $data->transactionid;
         $productionfeedback->public = get_string('productiondata_post_public', 'shophandlers_std_registeredproduct', $e);
