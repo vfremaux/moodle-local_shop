@@ -1,0 +1,30 @@
+
+
+
+<!-- local_shop/productinstances_search_line -->
+    <tr class="{{lineclass}}">
+
+        <td>
+            <a class="activeLink" href="{{{productinstanceurl}}}">{{reference}}</a>
+        </td>
+
+        <td>
+            <a href="{{{customer.url}}}">{{customer.firstname}} {{customer.firstname}} / ({{customer.organisation}})</a>
+        </td>
+
+        <td>
+            {{startdate}} / {{enddate}}
+        </td>
+
+        <td>
+            {{catalogitem.name}} ({{catalogitem.shortname}})<br>
+            <span class="textlight">({{productype}})</span>
+        </td>
+
+        <td>
+            {{#hasbill}}
+            <a href="{{bill.url}}">{{bill.id}}</a>
+            {{/hasbill}}
+        </td>
+    </tr>
+<!-- /local_shop/productinstances_search_line -->

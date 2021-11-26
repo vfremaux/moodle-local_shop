@@ -61,8 +61,8 @@ $shopinstances = Shop::get_instances(array('catalogid' => $thecatalog->id));
 $shopcount = 0 + count($shopinstances);
 if ($shopcount == 1) {
     $theshop = array_pop($shopinstances);
-    if ($SESSION->shop->id != $theshop->id) {
-        $SESSION->shop = $theshop;
+
+    if (($SESSION->shop->id != $theshop->id)) {
         $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'shopid' => $theshop->id];
         $redirecturl = new moodle_url('/local/shop/products/view.php', $params);
         redirect($redirecturl);
@@ -75,7 +75,7 @@ if ($shopcount == 1) {
     echo $OUTPUT->heading(get_string('activeshop', 'local_shop'));
     echo $renderer->shop_header();
 } else {
-    echo $out;    
+    echo $out;
 }
 
 echo $OUTPUT->heading(get_string('catalogue', 'local_shop'));

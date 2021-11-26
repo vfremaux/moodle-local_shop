@@ -49,7 +49,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $template = new StdClass;
 
         $template->selstr = get_string('sel', 'local_shop');
-        $template->imagestr = get_string('image', 'local_shop');
+        $template->imagestr = '';
         $template->billstr = get_string('bill', 'local_shop');
         $template->codestr = get_string('code', 'local_shop');
         $template->designationstr = get_string('designation', 'local_shop');
@@ -91,6 +91,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
             $producttpl->designation = format_string($product->name);
             $producttpl->reference = $productinstance->reference;
+            $producttpl->extradata = $this->process_extradata($productinstance);
             $producttpl->renewable = ($product->renewable) ? get_string('yes') : '';
             $producttpl->pend = ($productinstance->enddate) ? date('Y/m/d H:i', $productinstance->enddate) : 'N.C.';
             $producttpl->pstart = date('Y/m/d H:i', $productinstance->startdate);
@@ -182,5 +183,122 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $str .= $OUTPUT->box_end();
 
         return $str;
+    }
+
+    /**
+     * Extracts some extra metadata if config requires.
+     */
+    protected function process_extradata($productinstance) {
+        $config = get_config('local_shop');
+
+        if (!empty($config->extradataonproductinstances)) {
+
+            $extrajson = $productinstance->extradata;
+            if (empty($extrajson)) {
+                return;
+            }
+
+            $extradata = json_decode($productinstance->extradata);
+
+            $extrafields = preg_split('/[\s,]+/', $config->extradataonproductinstances);
+            $fieldsarr = [];
+            foreach ($extrafields as $field) {
+                if (isset($extradata->$field)) {
+                    $fieldsarr[] = "$field: ".$extradata->$field; 
+                }
+            }
+            return implode('<br/>', $fieldsarr);
+        }
+
+        return '';
+    }
+
+    /**
+     * Print all search options in product instances.
+     * @param object $mainrenderer the shop main renderer for global functions
+     */
+    public function productinstances_options($mainrenderer, $fullview) {
+        global $SESSION;
+
+        $customerid = optional_param('customerid', 0, PARAM_INT);
+        $producttype = optional_param('producttype', '*', PARAM_TEXT);
+        $shopid = optional_param('shopid', 0, PARAM_INT);
+
+        $template = new StdClass;
+
+        $params = array(
+            'view' => 'viewAllProductInstances',
+            'dir' => $dir,
+            'order' => $sortorder,
+            'producttype' => $producttype,
+            'customerid' => $customerid,
+            'shopid' => $shopid,
+        );
+
+        $url = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+        $url->remove_params('shopid');
+        $template->shopselect = $mainrenderer->shop_choice($url, true, $shopid);
+
+        $url = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+        $url->remove_params('customerid');
+        $template->customerselect = $mainrenderer->customer_choice($customerid, $url, true);
+
+        $url = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+        $url->remove_params('producttype');
+        $template->customerselect = $this->contexttypes($producttype, $url, true);
+
+        $params = array('view' => 'search');
+        $template->searchurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+        $template->searchinproductsstr = get_string('searchinproductinstances', 'local_shop');
+
+        return $this->output->render_from_template('local_shop/productinstances_options', $template);
+    }
+
+    protected function contexttypes($activetype, $url) {
+        global $OUTPUT, $DB;
+
+        $sql = "
+            SELECT DISTINCT
+                contexttype
+            FROM
+                local_shop_product
+        ";
+        $types = $DB->get_records_sql($sql);
+
+        $str = '';
+
+        $types = array('' => get_string('alltypes', 'local_shop')) + array_combine(array_keys($types), array_keys($types));
+        $attrs['label'] = get_string('contexttype', 'local_shop').': ';
+        $str .= $OUTPUT->single_select($url, 'contexttype', $types, $current, null, null, $attrs);
+
+        return $str;
+    }
+
+    public function search_form($blockinstance, $unitcount) {
+        global $OUTPUT;
+
+        try {
+            $outputclass = 'productinstances_search_form';
+            shop_load_output_class($outputclass);
+            $tpldata = new \local_shop\output\productinstances_search_form($blockinstance, $unitcount);
+            $template = $tpldata->export_for_template($OUTPUT);
+            return $this->output->render_from_template('local_shop/productinstances_search_form', $template);
+        } catch (Exception $e) {
+            print_error("Missing output class $outputclass");
+        }
+    }
+
+    public function search_results($results, $theshop) {
+        $template = new StdClass;
+        $odd = 0;
+        foreach ($result as $unit) {
+            $unitobj = Product::instance_by_reference($unit->reference);
+            $bill->lineclass = ($odd) ? 'r0' : 'r1';
+            $odd = ($odd + 1) % 2;
+
+            $template->units[] = $unitobj;
+        }
+
+        return $this->output->render_from_template('local_shop/productinstances_search_result', $template);
     }
 }

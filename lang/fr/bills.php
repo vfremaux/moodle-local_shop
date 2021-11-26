@@ -25,6 +25,7 @@ $string['unassignpartner'] = 'Désassigner le partenaire';
 $string['attachments'] = 'Fichiers attachés';
 $string['backto'] = 'Revenir à l\'état';
 $string['bill'] = 'Facture&nbsp;:&ensp;';
+$string['billid'] = 'ID de facture';
 $string['billtitle'] = 'Titre de la facture&nbsp;:&ensp;';
 $string['bill_ALLs'] = 'Toutes';
 $string['bill_CANCELLEDs'] = 'Factures annulées';
@@ -83,6 +84,7 @@ $string['uniqueletteringfailure'] = '<a href="{$a}">Une autre facture</a> porte 
 $string['unittex'] = 'Unitaire hors taxes&nbsp;:&ensp;';
 $string['updatelettering'] = 'Mettre à jour';
 $string['pickuser'] = 'Choisissez un compte client ou un compte utilisateur&nbsp;:&ensp;';
+$string['searchforanidinstructions'] = 'chercher par ID (ou début d\'ID)';
 
 // Calendar.
 $string['jan'] = 'Janvier';

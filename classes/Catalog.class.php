@@ -71,7 +71,7 @@ class Catalog extends ShopObject {
             // These are fake fields to drive the editors in form.
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->billfooterformat = FORMAT_HTML;
-            $this->record->salesconditionsformat = FORMAT_HTML;
+/*            $this->record->salesconditionsformat = FORMAT_HTML; */
 
         } else {
             $this->record->name = get_string('newcatalog', 'local_shop');
@@ -79,8 +79,10 @@ class Catalog extends ShopObject {
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->isslave = 0;
             $this->record->ismaster = 0;
+/*
             $this->record->salesconditions = '';
             $this->record->salesconditionsformat = FORMAT_HTML;
+*/
             $this->record->billfooter = '';
             $this->record->billfooterformat = FORMAT_HTML;
             $this->record->groupid = 0;
@@ -919,7 +921,9 @@ class Catalog extends ShopObject {
         $export->id = $this->record->id;
         $export->name = format_string($this->record->name);
         $export->description = format_text($this->record->description, $this->record->descriptionformat);
+/*
         $export->salesconditions = $this->record->salesconditions;
+*/
         $export->countryrestrictions = $this->record->countryrestrictions;
 
         $categories = $this->get_categories();

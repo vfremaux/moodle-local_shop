@@ -157,6 +157,7 @@ class ShopObject {
         $sql .= " FROM {{$table}} ";
         if (!empty($filter)) {
             $sql .= " WHERE ";
+            $wheres[] = ' 1 = 1 ';
             foreach ($filter as $cond => $value) {
                 if ($value == '*') {
                     continue;
@@ -188,7 +189,7 @@ class ShopObject {
      * @param array $filter an array of specialized field filters
      * @return array of object instances keyed by primary id.
      */
-    static protected function _count_instances($table, $filter = array(), $order = '', $fields = '*',
+    static protected function _count_instances($table, $filter = array(),
                                                $limitfrom = 0, $limitnum = '') {
         global $DB;
 

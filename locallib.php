@@ -637,13 +637,15 @@ function shop_build_context() {
 
     if (!isset($SESSION->shop)) {
         $SESSION->shop = new StdClass;
+        $SESSION->shop->shopid = 1;
     }
 
-    $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
+    $shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
 
-    if ($SESSION->shop->shopid) {
+    if ($shopid) {
         try {
-            $theshop = new Shop($SESSION->shop->shopid);
+            $theshop = new Shop($shopid);
+            $SESSION->shop = $theshop;
             $SESSION->shop->catalogid = $theshop->catalogid;
         } catch (Exception $e) {
             print_error('objecterror', 'local_shop', $e->getMessage());
@@ -653,6 +655,7 @@ function shop_build_context() {
         $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
         if ($shop = array_pop($shops)) {
             $theshop = new Shop($shop->id);
+            $SESSION->shop = $theshop;
             $SESSION->shop->catalogid = $theshop->catalogid;
         }
     }
@@ -1011,6 +1014,27 @@ function shop_get_bill_filtering() {
     if (local_shop_supports_feature('shop/partners')) {
         $urlfilter = "p=$p&".$urlfilter;
     }
+
+    return array($filter, $filterclause, $urlfilter);
+}
+
+function shop_get_customer_filtering() {
+    global $SESSION;
+
+    $shopid = optional_param('shopid', 0, PARAM_INT);
+    $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
+
+    $filter = [];
+    if ($shopid) {
+        $filter['shopid'] = $shopid;
+    }
+
+    $filterclause = '';
+    if ($shopid) {
+        $filterclause .= " AND shopid = '{$shopid}' ";
+    }
+
+    $urlfilter = "shopid=$shopid&nopaging=$nopaging";
 
     return array($filter, $filterclause, $urlfilter);
 }

@@ -55,6 +55,7 @@ $string['noproductinbundle'] = 'Bundle is empty';
 $string['noproductincategory'] = 'Category is empty';
 $string['noproductinset'] = 'Set is empty';
 $string['noproducts'] = 'No products';
+$string['nounits'] = 'No product units';
 $string['nocatsslave'] = 'This is a slave catalog. No categories can be edited.';
 $string['parentcategory'] = 'Parent category';
 $string['rootcategory'] = '-- Root category --';

@@ -56,7 +56,7 @@ class BillItem extends ShopObject {
 
     public $actionparams; // Parameters decoded from handler params.
 
-    public function __construct($idorrec, $light = false, $internalrefs = null, $ordering = -1, $nosave = false) {
+    public function __construct($idorrec, $light = false, $internalrefs = [], $ordering = -1, $nosave = false) {
         global $DB;
 
         if (array_key_exists('bill', $internalrefs)) {

@@ -31,10 +31,36 @@ require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 class Product extends ShopObject {
 
     protected static $table = 'local_shop_product';
+
+    /**
+     * A sub object representing the customer
+     */
+    public $customer;
+
+    /**
+     * A sub object representing the current bill item.
+     */
+    public $currentbillitem;
+
+    /**
+     * A sub object representing the first bill item that has generated this product.
+     */
+    public $initialbillitem;
+
+    /**
+     * A sub object representing the initial catalogitem of this product.
+     */
+    public $catalogitem;
+
+    /**
+     * Boolean mark if there is an associated bill.
+     */
+    public $hasbill;
 
     /**
      * Build a full product instance.
@@ -52,6 +78,33 @@ class Product extends ShopObject {
                 // This builds a lightweight proxy of the Bill, without items.
                 return;
             }
+
+            // Populate sub objects.
+            if (!empty($this->record->customerid)) {
+                // Get a lightweight customer.
+                $this->customer = new Customer($this->record->customerid, true);
+            }
+
+            if (!empty($this->record->catalogitemid)) {
+                // Get a lightweight catalog item.
+                $this->catalogitem = new CatalogItem($this->record->catalogitemid, true);
+            }
+
+            if (!empty($this->record->initialbillitemid)) {
+                $this->initialbillitem = new CatalogItem($this->record->initialbillitemid);
+                $this->hasbill = true;
+            }
+
+            if (!empty($this->record->currentbillitemid)) {
+                if ($this->record->currentbillitemid == $this->record->initialbillitemid) {
+                    // Use a memory ref on initial instance.
+                    $this->currentbillitem = $this->initialbillitem;
+                } else {
+                    $this->currentbillitem = new CatalogItem($this->record->currentbillitemid);
+                }
+                $this->hasbill = true;
+            }
+
         } else {
             // Initiate empty fields.
             $this->record->id = 0;

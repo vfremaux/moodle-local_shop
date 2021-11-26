@@ -251,6 +251,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $customer = $DB->get_record('local_shop_customer', array('id' => $customerid));
         $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
 
+        // Create customer self group. (ordering related group)
         $groupname = 'customer_'.$customeruser->username;
 
         if (!$group = $DB->get_record('groups', array('courseid' => $course->id, 'name' => $groupname))) {
@@ -274,12 +275,13 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         if (!empty($data->actionparams['groupname'])) {
             // Check if group exists and add it elsewhere.
-            $params= array('courseid' => $course->id, 'name' => $data->actionparams['groupname']);
+            $params = array('courseid' => $course->id, 'name' => $data->actionparams['groupname']);
             if (!$group = $DB->get_record('groups', $params)) {
+                shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay : Creating Origin Shop Group");
                 $group = new StdClass();
                 $group->courseid = $course->id;
                 $group->idnumber = '';
-                $group->name = $groupname;
+                $group->name = $data->actionparams['groupname'];
                 $group->description = get_string('providedbymoodleshop', 'local_shop');
                 $group->descriptionformat = 1;
                 $group->enrolmentkey = 0;
@@ -288,6 +290,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
                 $group->id = $DB->insert_record('groups', $group);
             }
 
+            shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay : Registering in Origin Shop Group");
             groups_add_member($group->id, $userid);
         }
 

@@ -55,6 +55,7 @@ $string['noproductinbundle'] = 'Pas de produit dans le lot';
 $string['noproductincategory'] = 'Pas de produits dans cette catégorie pour ce mode d\'accès';
 $string['noproductinset'] = 'Pas de produit dans l\'assemblage';
 $string['noproducts'] = 'Aucun produits';
+$string['nounits'] = 'Pas d\'unités produits';
 $string['nocatsslave'] = 'Vous ne pouvez pas modifier les catégories (catalogue lié).';
 $string['producteulas'] = 'Termes de licence spécifique';
 $string['productiondata'] = 'Métadonnées de production';

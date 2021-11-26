@@ -503,13 +503,16 @@ class shop_paymode_systempay extends shop_paymode {
      */
     public function generate_online_id() {
         $now = time();
+        /*
         $midnight = mktime (0, 0, 0, date('n', $now), date('j', $now), date('Y', $now));
-        if ($midnight > 0 + @$this->_config->systempay_lastmidnight) {
+        if ($midnight > 0 + @$this->_config->systempay_lastmid {night) {
             set_config('systempay_idseq', 1, 'local_shop');
             set_config('systempay_lastmidnight', $midnight, 'local_shop');
         }
-
-        $onlinetxid = sprintf('%06d', ++$this->_config->systempay_idseq);
+        */
+        // rotate on 1000000.
+        $this->_config->systempay_idseq = ($this->_config->systempay_idseq + 1) % 1000000;
+        $onlinetxid = sprintf('%06d', $this->_config->systempay_idseq);
         set_config('systempay_idseq', $this->_config->systempay_idseq, 'local_shop');
 
         return $onlinetxid;

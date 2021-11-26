@@ -175,8 +175,10 @@ function xmldb_local_shop_install() {
     $catalog->name = get_string('defaultcatalogname', 'local_shop');
     $catalog->description = get_string('defaultcatalogdescription', 'local_shop');
     $catalog->descriptionformat = FORMAT_HTML;
+/*
     $catalog->salesconditions = '';
     $catalog->salesconditionsformat = FORMAT_HTML;
+*/
     $catalog->groupid = 0;
     $catalog->countryrestrictions = '';
     $catalog->id = $DB->insert_record('local_shop_catalog', $catalog);

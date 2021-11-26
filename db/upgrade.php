@@ -409,5 +409,29 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2020111500, 'local', 'shop');
     }
 
+    if ($oldversion < 2021071600) {
+        $table = new xmldb_table('local_shop_customer');
+
+        $field = new xmldb_field('shopid');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '4', null, null, null, 0, 'id');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Defaults all exisitng customers on shop 1.
+        $sql = "
+            UPDATE
+                {local_shop_customer}
+            SET
+                shopid = 1
+            WHERE
+                1 = 1
+        ";
+        $DB->execute($sql);
+
+        // New version in version.php.
+        upgrade_plugin_savepoint(true, 2021071600, 'local', 'shop');
+    }
+
     return $result;
 }

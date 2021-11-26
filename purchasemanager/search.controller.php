@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * controller for searching in products
  *
  * @package     local_shop
  * @categroy    local
@@ -46,18 +46,17 @@ class search_controller {
         if ($cmd == 'search') {
             $error = false;
             $by = optional_param('by', '', PARAM_TEXT);
-            $billid = optional_param('billid', '', PARAM_INT);
-            $billkey = optional_param('billkey', '', PARAM_TEXT);
+            $unitid = optional_param('unitid', '', PARAM_INT);
+            $reference = optional_param('reference', '', PARAM_TEXT);
             $customername = optional_param('customername', '', PARAM_TEXT);
             $datefromparam = optional_param('datefrom', '', PARAM_TEXT);
             $datefrom = strtotime($datefromparam);
-            $during = optional_param('during', '', PARAM_INT);
 
             switch ($by) {
                 case 'id':
-                    $whereclause = " b.id = ? ";
-                    $this->criteria = "Bill ID = $billid ";
-                    $params[] = $billid;
+                    $whereclause = " p.id = ? ";
+                    $this->criteria = "Product ID = $unitid ";
+                    $params[] = $unitid;
                     break;
                 case "name":
                     $whereclause = " UPPER(c.lastname) LIKE UPPER(?) OR UPPER(username) LIKE UPPER(?)";
@@ -65,22 +64,15 @@ class search_controller {
                     $params[] = $customername.'%';
                     $params[] = $customername.'%';
                     break;
-                case "key":
-                    $whereclause = " UPPER(transactionid) LIKE UPPER(?) ";
-                    $this->criteria = "Transaction id name starts with $billkey ";
-                    $params[] = $billkey.'%';
+                case "reference":
+                    $whereclause = " UPPER(reference) LIKE UPPER(?) ";
+                    $this->criteria = "Product unit reference contains $reference ";
+                    $params[] = '%'.$reference.'%';
                     break;
                 case "date":
-                    $whereclause = " emissiondate > ? ";
-                    $this->criteria = "emission date > $datefrom";
+                    $whereclause = " startdate >= ? ";
+                    $this->criteria = "Start date > $datefrom";
                     $params[] = $datefrom;
-
-                    if (!empty($during)) {
-                        $dateto = $datefrom + HOURSECS * $during;
-                        $whereclause .= " AND emissiondate < ? ";
-                        $this->criteria = "emission date > $datefrom and emission date < $dateto";
-                        $params[] = $dateto;
-                    }
                     break;
                 default:
                     $error = true;
@@ -93,27 +85,19 @@ class search_controller {
                       c.lastname,
                       u.username
                    FROM
-                      {local_shop_bill} as b,
+                      {local_shop_product} as p,
                       {local_shop_customer} as c
                    LEFT JOIN
                       {user} as u
                    ON
                        u.id = c.hasaccount
                    WHERE
-                      b.customerid = c.id AND
+                      p.customerid = c.id AND
                       $whereclause
                 ";
 
-                if ($bills = $DB->get_records_sql($sql, $params)) {
-
-                    if (count($bills) == 1) {
-                        $billrecord = array_pop($bills);
-                        $billid = $billrecord->id;
-                        // One only result. Switch directly to intranet/bills/viewBill with adequate Id.
-                        $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $billid);
-                        redirect(new moodle_url('/local/shop/bills/view.php', $params));
-                    }
-                    return $bills;
+                if ($units = $DB->get_records_sql($sql, $params)) {
+                    return $units;
                 }
             }
         }

@@ -28,6 +28,7 @@ namespace local_shop;
 use StdClass;
 use context_system;
 use Exception;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -111,6 +112,8 @@ class Bill extends ShopObject {
     public $customer;
     public $customeruser;
 
+    public $url;
+
     // Build a full bill plus billitems.
     public function __construct($idorrecord, $light = false, &$theshop = null, &$thecatalogue = null, &$theblock = null) {
         global $DB;
@@ -169,6 +172,8 @@ class Bill extends ShopObject {
                 mtrace("Taxed total: ".$this->record->amount);
                 mtrace("Taxes: ".$this->record->taxes);
             }
+
+            $this->url = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewBill', 'id' => $this->id]);
 
         } else {
             if (empty($theshop)) {
