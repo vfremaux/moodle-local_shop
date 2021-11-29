@@ -162,29 +162,6 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/purchaselist', $template);
     }
 
-    public function filters($ownermenu, $customermenu) {
-        global $OUTPUT;
-
-        $template = new StdClass;
-        $template->ownermenu = $ownermenu;
-        $template->customermenu = $customermenu;
-
-        return $this->output->render_from_template('local_shop/purchasemanager_filters', $template);
-    }
-
-    public function add_instance_button() {
-        global $OUTPUT;
-
-        $customerid = optional_param('customer', 0, PARAM_INT);
-        $params = array('customer' => $customerid);
-        $buttonurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
-        $str = $OUTPUT->box_start('shop-add-instance');
-        $str .= $OUTPUT->single_button($buttonurl, get_string('addproductinstance', 'local_shop'));
-        $str .= $OUTPUT->box_end();
-
-        return $str;
-    }
-
     /**
      * Extracts some extra metadata if config requires.
      */
@@ -217,11 +194,13 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
      * Print all search options in product instances.
      * @param object $mainrenderer the shop main renderer for global functions
      */
-    public function productinstances_options($mainrenderer, $fullview) {
+    public function productinstances_options($mainrenderer) {
         global $SESSION;
 
+        $dir = optional_param('dir', 'ASC', PARAM_TEXT);
+        $sortorder = optional_param('sortorder', 'id', PARAM_TEXT);
         $customerid = optional_param('customerid', 0, PARAM_INT);
-        $producttype = optional_param('producttype', '*', PARAM_TEXT);
+        $contexttype = optional_param('contexttype', '*', PARAM_TEXT);
         $shopid = optional_param('shopid', 0, PARAM_INT);
 
         $template = new StdClass;
@@ -230,7 +209,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             'view' => 'viewAllProductInstances',
             'dir' => $dir,
             'order' => $sortorder,
-            'producttype' => $producttype,
+            'contexttype' => $contexttype,
             'customerid' => $customerid,
             'shopid' => $shopid,
         );
@@ -245,29 +224,32 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
         $url = new moodle_url('/local/shop/purchasemanager/view.php', $params);
         $url->remove_params('producttype');
-        $template->customerselect = $this->contexttypes($producttype, $url, true);
+        $template->contextselect = $this->contexttypes($contexttype, $url, true);
 
         $params = array('view' => 'search');
         $template->searchurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-        $template->searchinproductsstr = get_string('searchinproductinstances', 'local_shop');
 
         return $this->output->render_from_template('local_shop/productinstances_options', $template);
     }
 
-    protected function contexttypes($activetype, $url) {
+    protected function contexttypes($current, $url) {
         global $OUTPUT, $DB;
 
         $sql = "
             SELECT DISTINCT
                 contexttype
             FROM
-                local_shop_product
+                {local_shop_product}
         ";
-        $types = $DB->get_records_sql($sql);
+        $typesarr = $DB->get_records_sql($sql);
 
         $str = '';
 
-        $types = array('' => get_string('alltypes', 'local_shop')) + array_combine(array_keys($types), array_keys($types));
+        $types = array('' => get_string('alltypes', 'local_shop'));
+        foreach (array_keys($typesarr) as $type) {
+            $types[$type] = get_string($type, 'local_shop');
+        }
+
         $attrs['label'] = get_string('contexttype', 'local_shop').': ';
         $str .= $OUTPUT->single_select($url, 'contexttype', $types, $current, null, null, $attrs);
 
@@ -291,14 +273,53 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
     public function search_results($results, $theshop) {
         $template = new StdClass;
         $odd = 0;
-        foreach ($result as $unit) {
-            $unitobj = Product::instance_by_reference($unit->reference);
-            $bill->lineclass = ($odd) ? 'r0' : 'r1';
+        foreach ($results as $unit) {
+            $unittpl = new StdClass;
+            $product = Product::instance_by_reference($unit->reference, false);
+            $unittpl->lineclass = ($odd) ? 'r0' : 'r1';
             $odd = ($odd + 1) % 2;
 
-            $template->units[] = $unitobj;
+            $unittpl->reference = $product->reference;
+            $unittpl->startdate = ($product->startdate) ? userdate($product->startdate) : 'N.C.';
+            $unittpl->enddate = ($product->enddate) ? userdate($product->enddate) : 'N.C.';
+            $unittpl->contexttype = $product->contexttype;
+
+            // Note : as internal record values are protected. We must pass them to a public object.
+            $unittpl->c = new StdClass;
+            $unittpl->c->url = $product->customer->url;
+            $unittpl->c->firstname = $product->customer->firstname;
+            $unittpl->c->lastname = $product->customer->lastname;
+            $unittpl->c->organisation = $product->customer->organisation;
+            $params = ['view' => 'showAllProductInstances', 'customerid' => $product->customer->id];
+            $unittpl->c->unitsurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+
+            $unittpl->ci = new StdClass;
+            $unittpl->ci->url = $product->catalogitem->url;
+            $unittpl->ci->name = format_string($product->catalogitem->name);
+            $unittpl->ci->shortname = $product->catalogitem->shortname;
+
+            $unittpl->hasbill = $product->hasbill;
+            if ($unittpl->hasbill) {
+                $unittpl->b = new StdClass;
+                $unittpl->b->url = $product->currentbillitem->bill->url;
+                $unittpl->b->id = $product->currentbillitem->bill->id;
+            }
+
+            $template->units[] = $unittpl;
         }
 
-        return $this->output->render_from_template('local_shop/productinstances_search_result', $template);
+        return $this->output->render_from_template('local_shop/productinstances_search_results', $template);
+    }
+
+    public function add_instance_button($theshop, $shopowner = 0, $customerid = 0) {
+        global $USER, $OUTPUT;
+
+        $contextsystem = context_system::instance();
+
+        if (($shopowner == $USER->id) || has_capability('local/shop:accessallowners', $contextsystem)) {
+            $params = ['shopid' => $theshop->id, 'customerid' => $customerid, 'instanceid' => 0];
+            $addurl = new moodle_url('local/shop/pro/purchasemanager/edit_instance.php', $params);
+            return $OUTPUT->single_button($addurl, get_string('newproduct', 'local_shop'));
+        }
     }
 }

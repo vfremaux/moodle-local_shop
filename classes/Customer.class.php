@@ -46,7 +46,7 @@ class Customer extends ShopObject {
 
         if ($idorrecord) {
 
-            $this->url = new moodle_url('local/shop/customer/view?php', ['view' => 'viewCustomer', 'id' => &this->record->id]);
+            $this->url = new moodle_url('local/shop/customer/view?php', ['view' => 'viewCustomer', 'id' => $this->record->id]);
 
             if ($light) {
                 // This builds a lightweight proxy of the Bill, without items.

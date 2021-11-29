@@ -1,13 +1,12 @@
 
 
-<!-- local_shop/bills_search_form -->
+<!-- local_shop/productinstances_search_form -->
 
-{{nobillsnotification}}
+{{nounitsnotification}}
 
-{{^nobillsnotification}}
+{{^nounitsnotification}}
 
 <form name="search" action="#" method="get">
-<input type="hidden" name="id" value="{{blocksid}}">
 <input type="hidden" name="by" value="">
 <input type="hidden" name="view" value="search">
 <input type="hidden" name="sesskey" value="{{sesskey}}">
@@ -16,24 +15,35 @@
 <h2>{{#str}}searchby, local_shop{{/str}}</h2>
 
 <fieldset>
-<legend>{{#str}}billid, local_shop{{/str}}</legend>
+<legend>{{#str}}unitid, local_shop{{/str}}</legend>
 <div class="pull-right">
 <input type="button" onclick="Javascript:searchby('id');" value="{{#str}}search{{/str}}" />
 </div>
 <div class="">
-<input type="text" name="billid"><br/>
+<input type="text" name="unitid"><br/>
 <p class="smalltext">{{#str}}searchforanidinstructions, local_shop{{/str}}</p>
 </div>
 </fieldset>
 
 <fieldset>
-<legend>{{#str}}transactioncode, local_shop{{/str}}</legend>
+<legend>{{#str}}reference, local_shop{{/str}}</legend>
 <div class="pull-right">
-<input type="button" onclick="Javascript:searchby('key');" value="{{#str}}search{{/str}}" />
+<input type="button" onclick="Javascript:searchby('reference');" value="{{#str}}search{{/str}}" />
 </div>
 <div class="">
-<input type="text" name="billkey"><br/>
-<p class="smalltext">{{#str}}searchforakeyinstructions, local_shop{{/str}}</p>
+<input type="text" name="reference"><br/>
+<p class="smalltext">{{#str}}searchforareferenceinstructions, local_shop{{/str}}</p>
+</div>
+</fieldset>
+
+<fieldset>
+<legend>{{#str}}productcode, local_shop{{/str}}</legend>
+<div class="pull-right">
+<input type="button" onclick="Javascript:searchby('code');" value="{{#str}}search{{/str}}" />
+</div>
+<div class="">
+<input type="text" name="code"><br/>
+<p class="smalltext">{{#str}}searchforacodeinstructions, local_shop{{/str}}</p>
 </div>
 </fieldset>
 
@@ -49,28 +59,33 @@
 </fieldset>
 
 <fieldset>
-<legend>{{#str}}emissiondate, local_shop{{/str}}</legend>
+<legend>{{#str}}unitstartdate, local_shop{{/str}}</legend>
 <div class="pull-right">
 <input type="button" onclick="Javascript:searchby('date');" value="{{#str}}search{{/str}}" />
 </div>
 <div class="">
-{{#str}}fromdate, local_shop{{/str}} <input type="text" name="datefrom" width="10" maxlength="10">
-{{#str}}todate, local_shop{{/str}} <input type="text" name="dateto" width="10" maxlength="10">
-
-<select name="during">
-<option value="1">{{#str}}onehour, local_shop{{/str}}</option>
-<option value="24">{{#str}}oneday, local_shop{{/str}}</option>
-<option value="240" SELECTED >{{#str}}tendays, local_shop{{/str}}</option>
-<option value="720">{{#str}}onemonth, local_shop{{/str}}</option>
-<option value="2160">{{#str}}threemonths, local_shop{{/str}}</option>
-</select> {{#str}}after, local_shop{{/str}}
+{{#str}}fromdate, local_shop{{/str}} <input type="text" name="startdatefrom" width="10" maxlength="10">
+{{#str}}todate, local_shop{{/str}} <input type="text" name="startdateto" width="10" maxlength="10">
 <br/>
+<p class="smalltext">{{#str}}searchtimerange, local_shop{{/str}};
+</div>
+</fieldset>
 
+<fieldset>
+<legend>{{#str}}unitenddate, local_shop{{/str}}</legend>
+<div class="pull-right">
+<input type="button" onclick="Javascript:searchby('date');" value="{{#str}}search{{/str}}" />
+</div>
+<div class="">
+{{#str}}fromdate, local_shop{{/str}} <input type="text" name="enddatefrom" width="10" maxlength="10">
+{{#str}}todate, local_shop{{/str}} <input type="text" name="enddateto" width="10" maxlength="10">
+{{#str}}notending, local_shop{{/str}} <input type="checkbox" name="withoutend" value="1">
+<br/>
 <p class="smalltext">{{#str}}searchtimerange, local_shop{{/str}};
 </div>
 </fieldset>
 
 </form>
 
-{{/nobillsnotification}}
-<!-- /local_shop/bills_search_form -->
+{{/nounitsnotification}}
+<!-- /local_shop/productinstances_search_form -->

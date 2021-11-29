@@ -91,7 +91,7 @@ class Product extends ShopObject {
             }
 
             if (!empty($this->record->initialbillitemid)) {
-                $this->initialbillitem = new CatalogItem($this->record->initialbillitemid);
+                $this->initialbillitem = new BillItem($this->record->initialbillitemid);
                 $this->hasbill = true;
             }
 
@@ -100,7 +100,7 @@ class Product extends ShopObject {
                     // Use a memory ref on initial instance.
                     $this->currentbillitem = $this->initialbillitem;
                 } else {
-                    $this->currentbillitem = new CatalogItem($this->record->currentbillitemid);
+                    $this->currentbillitem = new BillItem($this->record->currentbillitemid);
                 }
                 $this->hasbill = true;
             }
@@ -271,6 +271,10 @@ class Product extends ShopObject {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    /**
+     * Get a filtered set of product instances, using filters on local_shop_cataolgitem, local_shop_product, local_shop_billitem
+     * (optional).
+     */
     public static function get_instances_on_context($filter, $order = '', $limitfrom = 0, $limitnum = '') {
         global $DB;
 
@@ -293,6 +297,8 @@ class Product extends ShopObject {
             SELECT
                 p.*
             FROM
+                {local_shop} s,
+                {local_shop_catalog} c,
                 {local_shop_catalogitem} ci,
                 {local_shop_product} p
             LEFT JOIN
@@ -304,7 +310,9 @@ class Product extends ShopObject {
             ON
                 p.currentbillitemid = cbi.id
             WHERE
-                p.catalogitemid = ci.id
+                p.catalogitemid = ci.id AND
+                ci.catalogid = c.id AND
+                s.catalogid = c.id
                 '.$filterclause.'
             '.$orderclause.'
         ';

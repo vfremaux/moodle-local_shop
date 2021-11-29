@@ -18,7 +18,7 @@
  * Screen for searching in product instances
  *
  * @package     local_shop
- * @categroy    local
+ * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
-    include_once($CFG->dirroot.'/local/shop/productinstances/search.controller.php');
+    include_once($CFG->dirroot.'/local/shop/purchasemanager/search.controller.php');
     $controller = new \local_shop\productinstances\search_controller($theshop);
     $productinstances = $controller->process($action);
 }
@@ -37,14 +37,14 @@ $PAGE->requires->js('/local/shop/js/search.js');
 
 echo $out;
 
-echo $OUTPUT->heading(get_string('productunitsearch', 'local_shop'), 3);
+echo $OUTPUT->heading(get_string('unitsearch', 'local_shop'), 3);
 
 if (!empty($controller) && !empty($controller->criteria)) {
     $class = (empty($productinstances)) ? 'error' : 'success';
     echo $OUTPUT->notification($controller->criteria, $class);
 }
 
-if (empty($products)) {
+if (empty($productinstances)) {
     print_string('nounits', 'local_shop');
 } else {
     echo $OUTPUT->heading(get_string('results', 'local_shop'), 2);
@@ -54,5 +54,11 @@ if (empty($products)) {
     echo $renderer->search_results($productinstances, $theshop);
 }
 
-$productinstancescount = $DB->count_records('local_shop_products');
+$productinstancescount = $DB->count_records('local_shop_product');
 echo $renderer->search_form($theshop, $productinstancescount);
+
+echo "<center>";
+$params = ['view' => 'viewAllProductInstances', 'shopid' => $theshop->id, 'customerid' => 0];
+$returnurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+echo $OUTPUT->single_button($returnurl, get_string('backtounits', 'local_shop'));
+echo "</center>";

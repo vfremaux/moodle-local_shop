@@ -236,7 +236,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template->thumburl = $set->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = $OUTPUT->pix_url('productset', 'local_shop');
+            $template->thumburl = local_shop_pix_url('productset', 'local_shop');
         }
         $template->code = $set->code;
         $template->shortname = $set->shortname;

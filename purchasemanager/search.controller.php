@@ -24,7 +24,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_shop\bills;
+namespace local_shop\productinstances;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -80,25 +80,18 @@ class search_controller {
             if (!$error) {
                 $sql = "
                    SELECT
-                      b.*,
-                      c.firstname,
-                      c.lastname,
-                      u.username
+                      p.*
                    FROM
-                      {local_shop_product} as p,
-                      {local_shop_customer} as c
-                   LEFT JOIN
-                      {user} as u
-                   ON
-                       u.id = c.hasaccount
+                      {local_shop_product} as p
                    WHERE
-                      p.customerid = c.id AND
                       $whereclause
                 ";
 
                 if ($units = $DB->get_records_sql($sql, $params)) {
                     return $units;
                 }
+
+                return [];
             }
         }
     }
