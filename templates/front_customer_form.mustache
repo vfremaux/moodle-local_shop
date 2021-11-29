@@ -23,102 +23,129 @@
 }}
 <!-- local_shop/front_customer_form -->
 <div id="shop-customerdata">
-    <table cellspacing="3" width="100%">
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+    <fieldset class="quickform-fieldset clearfix">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_lastname">{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_lastname"
                        name="customerinfo::lastname"
                        size="20"
+                       maxlength="40"
                        onchange="setupper(this)" value="{{{lastname}}}" />
-            </td>
-        </tr>
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+            </div>
+        </div>
+
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_firstname">{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_firstname"
                        name="customerinfo::firstname"
                        size="20"
+                       maxlength="40"
                        onchange="capitalizewords(this)" value="{{{firstname}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
         {{#customerorganisationrequired}}
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}organisation, local_shop{{/str}}:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_organisation">{{#str}}organisation, local_shop{{/str}}:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_organisation"
                        name="customerinfo::organisation"
                        size="26"
                        maxlength="64"
                        value="{{{organisation}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
         {{/customerorganisationrequired}}
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}address{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_address">{{#str}}address{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_address"
                        name="customerinfo::address"
                        size="26"
+                       maxlength="255"
                        onchange="setupper(this)" value="{{{address}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}city{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_city">{{#str}}city{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_city"
                        name="customerinfo::city"
                        size="26"
+                       maxlength="40"
                        onchange="setupper(this)" value="{{{city}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}zip, local_shop{{/str}}<sup style="color : red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_zip">{{#str}}zip, local_shop{{/str}}<sup style="color : red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_zip"
                        name="customerinfo::zip"
                        size="6"
+                       maxlength="6"
                        value="{{zip}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}country{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_country">{{#str}}country{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement fselect">
                 {{{countryselect}}}
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}email, local_shop{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_email">{{#str}}email, local_shop{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
+                {{#mailislocked}}
                 <input type="text"
+                       id="id_email"
+                       name="customerinfo::email_disabled"
+                       size="30"
+                       maxlength="80"
+                       value="{{{email}}}" disabled="disabled" />
+                <input type="hidden" name="customerinfo::email" value="{{{email}}}" />
+                {{#notsamemail}}
+                <br/><div class="shop-warning">{{#str}}notsameaccountmail, local_shop, {{givenmail}} {{/str}}</div>
+                {{/notsamemail}}
+                {{/mailislocked}}
+                {{^mailislocked}}
+                <input type="text"
+                       id="id_email"
                        name="customerinfo::email"
                        size="30"
-                       onchange="checkemail(this)" value="{{{email}}}" />';
-            </td>
-        </tr>
-    </table>
-
+                       maxlength="80"
+                       onchange="checkemail(this)" value="{{{email}}}" />
+                {{/mailislocked}}
+            </div>
+        </div>
+    </fieldset>
 </div>
 <!-- /local_shop/front_customer_form -->

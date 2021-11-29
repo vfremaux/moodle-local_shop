@@ -1,29 +1,29 @@
-body{
-    font-family:Garamond,serif;
+body {
+    font-family: "Garamond",serif;
 }
 
-img{
+img {
     filter: none;
 }
 
 /* order preview */
-.order-preview-seller-address{
-    border:1px solid #606060;
+.order-preview-seller-address {
+    border: 1px solid #606060;
 }
 
-.order-preview-order-list > tbody > tr.odd > td{
-    background-color:#F0F0F0;
+.order-preview-order-list > tbody > tr.odd > td {
+    background-color: #f0f0f0;
 }
 
-.order-preview-order-list > tbody > tr.even > td{
-    background-color:#F8F8F8;
+.order-preview-order-list > tbody > tr.even > td {
+    background-color: #f8f8f8;
 }
 
-.order-preview-order-totals{
-    border:3px solid #606060;
+.order-preview-order-totals {
+    border: 3px solid #606060;
 }
 
-.topay{
-    background-color:#F0F0F0;
-    font-weight:bolder;
+.topay {
+    background-color: #f0f0f0;
+    font-weight: bolder;
 }

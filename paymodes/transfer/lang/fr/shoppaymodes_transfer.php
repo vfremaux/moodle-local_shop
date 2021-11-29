@@ -21,10 +21,13 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['enabletransfer'] = 'Réglement par transfert bancaire';
-$string['enabletransfer2'] = 'Réglement par transfert bancaire';
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Transfer ne détient directement aucune donnée relative aux utilisateurs.';
+
+$string['enabletransfer'] = 'Réglement par virement bancaire';
+$string['enabletransfer2'] = 'Réglement par virement bancaire';
 $string['enabletransfer3'] = 'Vous avez choisi de régler par virement bancaire...';
-$string['transfer'] = 'Transfert bancaire';
+$string['transfer'] = 'Virement bancaire';
 $string['pluginname'] = 'Moyen de paiement Virement Bancaire';
 
 $string['pay_instructions_tpl'] = '
@@ -179,7 +182,9 @@ $string['print_procedure_text_invoice_tpl'] = '
 ';
 
 $string['success_followup_text_tpl'] = '
-<p>Votre paiement a été confirmé par le gestionnaire de votre compte. Nous avons prcoédé à la mise en oeuvre de vos produits.</p>
+<p>Votre paiement a été confirmé par le gestionnaire de votre compte. Nous avons procédé à la mise en oeuvre de vos produits.</p>
+<p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne trouvez pas de courriel dans votre boite de réception, 
+pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
 <p>Si vous éprouvez des difficultés d\'accès, n\'hésitez
 pas à contacter notre service commercial <%%SUPPORT%%>.</p>
 ';

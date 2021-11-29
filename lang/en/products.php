@@ -24,7 +24,9 @@ $string['addproduct'] = 'Add product';
 $string['addoverride'] = 'Override master definition';
 $string['addset'] = 'Add set';
 $string['allcategories'] = 'All categories';
+$string['alltypes'] = 'All context types';
 $string['automation'] = 'Automation';
+$string['backtounits'] = 'Back to all units';
 $string['behaviour'] = 'Behaviour';
 $string['billorderingnumber'] = 'Invoice ordering number';
 $string['categories'] = 'Categories';
@@ -41,7 +43,10 @@ $string['editproductvariant'] = 'Update product (slave override)';
 $string['editset'] = 'Update set';
 $string['financials'] = 'Financial aspects';
 $string['handlerparams'] = 'Handler parameters';
+$string['helpcode'] = 'Product Code';
+$string['helpshortname'] = 'Product Shortname';
 $string['hashandlers'] = 'This product has action handlers';
+$string['idnumber'] = 'Id number';
 $string['maxquant'] = 'Q max';
 $string['newbundle'] = 'New bundle';
 $string['newcategory'] = 'New category';
@@ -52,31 +57,40 @@ $string['noproductinbundle'] = 'Bundle is empty';
 $string['noproductincategory'] = 'Category is empty';
 $string['noproductinset'] = 'Set is empty';
 $string['noproducts'] = 'No products';
+$string['nounits'] = 'No product units';
+$string['unitref'] = 'Product unit';
+$string['billref'] = 'Bill';
+$string['unitstart'] = 'Product start validity';
+$string['unitend'] = 'Product end validity';
+$string['unitsearch'] = 'Search in product instances';
 $string['nocatsslave'] = 'This is a slave catalog. No categories can be edited.';
 $string['parentcategory'] = 'Parent category';
 $string['rootcategory'] = '-- Root category --';
 $string['producteulas'] = 'Product Terms of Use';
 $string['productiondata'] = 'Production data';
 $string['productpassword'] = 'Product password';
-$string['removealllinkedproducts'] = 'Remove all linked products';
-$string['removeproductfrombundle'] = 'Remove from bundle';
 $string['removeproductfromcatalogue'] = 'Remove product from catalog';
-$string['removeproductfromset'] = 'Remove from set';
-$string['removeproductinset'] = 'Remove product from set';
 $string['removeset'] = 'Remove all set';
 $string['renewable'] = 'Can renew';
 $string['requiredformatsuccess'] = 'Required data JSON format is ok';
 $string['requireddata'] = 'Specific data to pull from customer';
 $string['requireddatacaption'] = 'Some of your products will need some configuration to be produced correctly. Please enter the required information in each product instance in the following form before continuing purchase sequence.';
+$string['shortname'] = 'Short web name';
 $string['toset'] = 'Convert to set';
 $string['tobundle'] = 'Convert to bundle';
 $string['toproduct'] = 'Convert back to product';
 $string['unlinkproduct'] = 'Unlink product';
 $string['unlinkcontent'] = 'Unlink all subproducts';
+$string['unitid'] = 'A Product instance internal id';
+$string['unitstartdate'] = 'A Product instance start of activity date';
+$string['unitenddate'] = 'A Product instance end of validity date';
+$string['notending'] = 'Indefinite validity products';
 $string['user_enrolment'] = 'User enrol';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Customer support course defaults to settings';
 $string['warningnocustomersupportcourse'] = 'No customer support area defined';
 $string['errornocustomersupportcourse'] = 'Customer support course {$a} does not exist';
+$string['searchforareferenceinstructions'] = 'A product instance reference, or a part of it';
+$string['searchforacodeinstructions'] = 'A catalog product code';
 
 $string['handlerparams_help'] = '
 ## Moodle integrated shop
@@ -224,4 +238,7 @@ appropriate syntax.
 $string['productiondata_help'] = 'Some additional data that will be used in the production cycle and that the product handlers or processing will need.
 Some data may affect additional optional shop processings such as license key verification (based on a "component" identification. See detailed doc)
 Enter a json encoded array of mapped values.';
+
+$string['helpcode_help'] = 'Product code usually match the product codification that may exist in other external applications.';
+$string['helpshortname_help'] = 'Product shortname is a shortcode compatible with Web, Urls, Html and Javascript. It is deduced from code after some transforms.';
 

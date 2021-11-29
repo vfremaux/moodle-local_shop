@@ -1,0 +1,40 @@
+
+
+<!-- local_shop/catalogadminline -->
+<tr class="{{class}}" valign="top">
+    <td>
+
+        {{#isslave}}
+        {{{linkicon}}}
+        {{/isslave}}
+
+        <a href="{{catalogurl}}">{{{name}}}</a>
+    </td>
+    <td>
+        {{{description}}}
+    </td>
+
+    <td>
+        {{^isslave}}
+            {{{categories}}}
+        {{/isslave}}
+    </td>
+
+    <td>
+        {{{items}}}
+    </td>
+
+    <td>
+        <div class="shop-line-commands">
+            <a href="{{{editurl}}}">{{#pix}}t/edit, core{{/pix}}</a>
+            {{#isnotused}}
+            <a href="{{{deleteurl}}}" title="{{#str}}delete{{/str}}">{{#pix}}t/delete, core{{/pix}}</a>
+            {{/isnotused}}
+            {{^isnotused}}
+            <span class="shadow" title="{{#str}}usedcatalogcannotdelete, local_shop{{/str}}">{{#pix}}t/delete, core{{/pix}}</span>
+            {{/isnotused}}
+
+        </div>
+    </td>
+</tr>
+<!-- /local_shop/catalogadminline -->

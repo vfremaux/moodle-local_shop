@@ -116,6 +116,12 @@ class Shop extends ShopObject {
      *
      */
     public function get_catalogue() {
+        if (empty($this->thecatalogue)) {
+            // Lazy loading if not preloaded.
+            if (!empty($this->record->catalogid)) {
+                $this->thecatalogue = new Catalog($this->record->catalogid);
+            }
+        }
         return $this->thecatalogue;
     }
 
@@ -195,9 +201,14 @@ class Shop extends ShopObject {
         return Bill::get_instances(array('shopid' => $this->id));
     }
 
+    /**
+     * Deleting shop will not necesarily delete the attached catalogue
+     * as some other shop instances may use it.
+     */
     public function delete() {
         global $DB;
 
+        // Delete all attached bills.
         if ($bills = $this->get_bills()) {
             foreach ($bills as $b) {
                 $b->delete();
@@ -213,6 +224,7 @@ class Shop extends ShopObject {
         return $shopurl;
     }
 
+    /*
     public function calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
         global $USER;
 
@@ -247,6 +259,7 @@ class Shop extends ShopObject {
 
         return $discountrate;
     }
+    */
 
     /**
      * Exports the shop into a YML string.
@@ -263,6 +276,22 @@ class Shop extends ShopObject {
         if (!empty($this->thecatalogue)) {
             $yml .= $this->thecatalogue->export();
         }
+    }
+
+    public function export_to_ws() {
+
+        $export = new \StdClass;
+
+        $export->id = $this->record->id;
+        $export->name = format_string($this->record->name);
+        $export->catalogid = $this->record->catalogid;
+        $export->description = format_text($this->record->description, $this->record->descriptionformat);
+        $export->allowtax = $this->record->allowtax;
+        $export->eulas = format_text($this->record->eulas, $this->record->eulaformat);
+        $export->paymodes = $this->record->paymodes;
+        $export->defaultpaymode = $this->record->defaultpaymode;
+
+        return $export;
     }
 
     public static function count($filter) {

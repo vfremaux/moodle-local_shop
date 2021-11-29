@@ -29,6 +29,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 use local_shop\Catalog;
 
+$SESSION->shop = null;
+
 // Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
@@ -42,7 +44,7 @@ $PAGE->set_context($context);
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-if (preg_match('/viewAllProducts|search/', $view)) {
+if (!preg_match('/viewAllProducts|search/', $view)) {
     $view = 'viewAllProducts';
 }
 

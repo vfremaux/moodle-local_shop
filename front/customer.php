@@ -32,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
 
@@ -42,10 +43,20 @@ if (!isset($SESSION->shoppingcart) || empty($SESSION->shoppingcart->order)) {
 
 $action = optional_param('what', '', PARAM_TEXT);
 
+$data = null;
+if (local_shop_supports_feature('shop/partners')) {
+    // Resolve pre_auth.
+    if (!empty($SESSION->shoppingcart->partner)) {
+        include_once($CFG->dirroot.'/local/shop/pro/classes/Partner.class.php');
+        $checked = \local_shop\Partner::checkauth($SESSION->shoppingcart->partner);
+        list($action, $data) = \local_shop\Partner::resolve_customer_action($checked, $action);
+    }
+}
+
 if ($action) {
-    include($CFG->dirroot.'/local/shop/front/customer.controller.php');
+    include_once($CFG->dirroot.'/local/shop/front/customer.controller.php');
     $controller = new \local_shop\front\customer_controller($theshop, $thecatalog, $theblock);
-    $controller->receive($action);
+    $controller->receive($action, $data);
     $resulturl = $controller->process($action);
     if (!empty($resulturl)) {
         redirect($resulturl);
@@ -54,9 +65,9 @@ if ($action) {
 
 echo $out;
 
-echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
-
 echo $renderer->progress('CUSTOMER');
+
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $renderer->admin_options();
 
@@ -67,62 +78,36 @@ echo $renderer->cart_summary();
 echo '</div>';
 */
 
-echo '<div id="shop-customer-info" class="shop-data">';
+$template = new StdClass;
 
-$shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theshop->id));
+$template->shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theshop->id));
+$template->canlogin = (!isloggedin() || isguestuser());
+$template->oldaccount = (isloggedin() && !isguestuser() && \local_shop\Customer::has_account());
+$template->shopid = $theshop->id;
 
-if (!isloggedin() || isguestuser()) {
-    $loginurl = new moodle_url('/login/index.php');
-    echo '<form name="loginform" action="'.$loginurl.'" method="post">';
-    echo '<input type="hidden" name="wantsurl" value"'.$shopurl.'">';
-    echo '<input type="hidden" name="id" value="'.$theshop->id.'" />';
-    echo '<fieldset>';
-    echo '<legend>'.get_string('login', 'local_shop').'</legend>';
-    echo '<table width="100%" class="generaltable"><tr valign="top">';
-    echo '<td>';
-    echo $renderer->login_form();
-    echo '</td>';
-    echo '</tr>';
-    echo '</table>';
-    echo '</fieldset>';
-    echo '</form>';
-}
+$template->loginform = $renderer->login_form();
 
-echo '<form name="driverform" action="'.$shopurl.'" method="post">';
-
-echo '<fieldset>';
-if (isloggedin() && !isguestuser()) {
-    echo '<legend>'.get_string('customerinfo', 'local_shop').'</legend>';
-} else {
-    echo '<legend>'.get_string('newaccountinfo', 'local_shop').'</legend>';
-}
-echo '<table width="100%" class="generaltable"><tr valign="top">';
-echo '<td>';
 if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
-    echo $OUTPUT->box_start('shop-error-notice');
-    echo implode('<br/>', array_values($SESSION->shoppingcart->errors->customerinfo));
-    echo $OUTPUT->box_end();
+    $str = $OUTPUT->box_start('shop-error-notice');
+    $str .= implode('<br/>', array_values($SESSION->shoppingcart->errors->customerinfo));
+    $str .= $OUTPUT->box_end();
+    $template->customerinfoerrors = $str;
 }
-echo $renderer->customer_info_form();
-echo '</td>';
-echo '</tr>';
-echo '<tr>';
-$invoiceinfostyle = (empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) ? 'display:none' : '';
-echo '<td style="'.$invoiceinfostyle.'" id="shop-invoiceinfo-wrapper" >';
+$template->customerinfoform = $renderer->customer_info_form();
+
+$template->invoiceinfostyle = (empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) ? 'display:none' : '';
+
 if (!empty($SESSION->shoppingcart->errors->invoiceinfo)) {
-    echo $OUTPUT->box_start('shop-error-notice');
-    echo implode('<br/>', array_values($SESSION->shoppingcart->errors->invoiceinfo));
-    echo $OUTPUT->box_end();
+    $str = $OUTPUT->box_start('shop-error-notice');
+    $str .= implode('<br/>', array_values($SESSION->shoppingcart->errors->invoiceinfo));
+    $str .= $OUTPUT->box_end();
+    $template->invoiceinfoerrors = $str;
 }
-echo $renderer->invoicing_info_form();
-echo '</td>';
-echo '</tr></table>';
-echo '</fieldset>';
+$template->invoiceinfoform = $renderer->invoicing_info_form();
 
 $options = array();
 $options['inform'] = true;
 
-echo $renderer->action_form('customer', $options);
+$template->actionform = $renderer->action_form('customer', $options);
 
-echo '</form>';
-echo '</div>';
+echo $OUTPUT->render_from_template('local_shop/front_customer', $template);

@@ -55,7 +55,7 @@ class search_controller {
 
             switch ($by) {
                 case 'id':
-                    $whereclause = " id = ? ";
+                    $whereclause = " b.id = ? ";
                     $this->criteria = "Bill ID = $billid ";
                     $params[] = $billid;
                     break;

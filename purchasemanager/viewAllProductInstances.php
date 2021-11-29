@@ -31,10 +31,12 @@ use local_shop\Product;
 $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
 $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
-$customerid = optional_param('customer', 0, PARAM_INT);
+$customerid = optional_param('customerid', 0, PARAM_INT);
+$contexttype = optional_param('contexttype', '', PARAM_TEXT);
+$shopid = optional_param('shopid', 0, PARAM_INT);
 $shopownerid = optional_param('shopowner', 0, PARAM_INT);
 
-$viewparams = array('view' => $view, 'customer' => $customerid, 'order' => $order, 'dir' => $dir, 'shopowner' => $shopownerid);
+$viewparams = array('view' => $view, 'customerid' => $customerid, 'order' => $order, 'dir' => $dir, 'shopowner' => $shopownerid, 'shopid' => $shopid);
 
 $ownermenu = '';
 
@@ -56,7 +58,8 @@ if ($action != '') {
     redirect(new moodle_url('/local/shop/purchasemanager/view.php', $viewparams));
 }
 
-$select = " hasaccount > 0 ";
+// $select = " hasaccount > 0 ";
+$select = " 1 = 1 ";
 $join = '';
 $params = array();
 if ($shopownerid) {
@@ -70,34 +73,18 @@ if ($shopownerid) {
     ";
 }
 
-$sql = "
-    SELECT
-        c.id,
-        c.firstname,
-        c.lastname,
-        c.city,
-        c.country,
-        c.hasaccount
-    FROM
-        {local_shop_customer} c
-    $join
-    WHERE
-        $select
-    ORDER BY
-        c.lastname,
-        c.firstname
-";
-$customers = $DB->get_records_sql($sql, $params);
-
-if (!$customerid) {
-    // Take the first one as default.
-    $ckeys = array_keys($customers);
-    $customerid = array_pop($ckeys);
+$filter = [];
+if (!empty($shopid)) {
+    $filter['s.id'] = $shopid;
+} 
+if (!empty($customerid)) {
+    $filter['p.customerid'] = $customerid;
+}
+if (!empty($contexttype)) {
+    $filter['p.contexttype'] = $contexttype;
 }
 
-$customermenu = $shoprenderer->print_customer_menu($url, $customers, $customerid);
-
-$productinstances = Product::get_instances_on_context(array('ci.userid' => $shopownerid, 'p.customerid' => $customerid));
+$productinstances = Product::get_instances_on_context($filter);
 
 echo $out;
 
@@ -106,7 +93,7 @@ $viewurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
 echo $OUTPUT->heading(get_string('productinstances', 'local_shop'));
 
-echo $renderer->filters($ownermenu, $customermenu);
+echo $renderer->productinstances_options($mainrenderer);
 
 if (count(array_keys($productinstances)) == 0) {
     echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
@@ -117,5 +104,5 @@ if (count(array_keys($productinstances)) == 0) {
 echo '<br/>';
 
 if (local_shop_supports_feature('products/editable') && has_capability('local/shop:salesadmin', $context)) {
-    echo $renderer->add_instance_button($shopowner);
+    echo $renderer->add_instance_button($theshop, $shopowner, $customerid);
 }

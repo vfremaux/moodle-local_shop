@@ -25,6 +25,8 @@
  */
 namespace local_shop;
 
+use \StdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
@@ -50,6 +52,7 @@ class CatalogItem extends ShopObject {
     // Fasten a 'by code' reference.
     public $elementsbycode;
 
+    // Tax object representing the associated tax.
     protected $tax;
 
     public $available;
@@ -119,8 +122,9 @@ class CatalogItem extends ShopObject {
     }
 
     /**
-     * get the accurate price against quantity ranges
+     * get the accurate unit price (untaxed) against quantity ranges
      * @param int $q the quantity
+     * @return number (untaxed price)
      */
     public function get_price($q) {
         if (@$this->record->range1) {
@@ -162,11 +166,85 @@ class CatalogItem extends ShopObject {
         }
     }
 
+    /**
+     * Searches a catalogitem instance that matches a idnumber 
+     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
+     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     */
+    public static function instance_by_idnumber($idnumber) {
+        global $DB;
+
+        if (empty($idnumber)) {
+            return null;
+        }
+
+        $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['idnumber' => $idnumber]);
+        if (!$intanceid) {
+            return null;
+        }
+
+        return new CatalogItem($intanceid);
+    }
+
+    /**
+     * Searches a catalogitem instance that matches a idnumber 
+     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
+     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     */
+    public static function instance_by_code($code) {
+        global $DB;
+
+        if (empty($code)) {
+            return null;
+        }
+
+        $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['code' => $code]);
+        if (!$intanceid) {
+            return null;
+        }
+
+        return new CatalogItem($intanceid);
+    }
+
+    /**
+     * Searches a catalogitem instance that matches a idnumber 
+     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
+     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     * @return an array of CatalogItems objects.
+     */
+    public static function instances_by_idnumber($idnumberpattern) {
+        global $DB;
+
+        if (empty($idnumberpattern)) {
+            return null;
+        }
+
+        $select = $DB->sql_like('idnumber', ':idnumberpattern');
+        $params = ['idnumberpattern' => $idnumberpattern.'%'];
+        $instancerecs = $DB->get_records_select('local_shop_catalogitem', $select, $params, 'shortname', 'id,code');
+        if (!$instancerecs) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($instancerecs as $instancerecid => $instance) {
+            $item = new \local_shop\CatalogItem($instancerecid);
+            $items[$instance->code] = $item;
+        }
+
+        return $items;
+    }
+
     public function get_serialized_handlerparams() {
         return json_encode(@$this->handlerparams);
     }
 
-    public function get_tax($q) {
+    /**
+     * The unit tax amount for this quantity of products.
+     * @param int $q
+     * @return number (tax amount)
+     */
+    public function get_tax($q = 1) {
         if ($this->taxcode && $this->tax) {
             return $this->tax;
         }
@@ -207,7 +285,12 @@ class CatalogItem extends ShopObject {
         return $prices;
     }
 
-    public function get_taxed_price($q, $taxid = 0) {
+    /**
+     * Gives the unit taxed price (may depend on quantity, if ranged princing)
+     * @param int $q the ordered quantity
+     * @param int $taxid taxid, if not set evaluates with the internal taxcode value.
+     */
+    public function get_taxed_price($q = 1, $taxid = 0) {
         global $DB;
         static $taxcache;
 
@@ -347,6 +430,88 @@ class CatalogItem extends ShopObject {
     }
 
     /**
+     * Gets back some information about handler and callable method for post prod operations
+     * @param string $method the product method name
+     * @return an array with an handler object instance and a callable method name
+     */
+    public function get_handler_info($method, $type = 'postprod') {
+        global $CFG;
+
+        if (!empty($this->isset)) {
+            // Bundle or set.
+            return [null,null];
+        }
+
+        $handler = null;
+        $methodname = null;
+
+        if ($type == 'postprod') {
+            $productinfo = $this->extract_production_data();
+
+            if (empty($productinfo->handler)) {
+                return [null, null];
+            }
+
+            $h = $productinfo->handler;
+
+            if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
+                print_error('errorbadhandler', 'local_shop', $h);
+            }
+
+            include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
+
+            $classname = 'shop_handler_'.$productinfo->handler;
+            $handler = new $classname('');
+        } else {
+            $handler = $this->get_handler();
+            if (is_object($handler)) {
+                $classname = get_class($handler);
+            } else {
+                return [null, null];
+            }
+        }
+
+        if (!empty($method)) {
+            $methodname = $method;
+            if (!empty($type)) {
+                // Extend possible queries, Keep the alternative for older compatibility.
+                $methodname = $type.'_'.$method;
+            }
+            if (!method_exists($classname, $methodname)) {
+                if ($type == 'postprod') {
+                    print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
+                } else {
+                    return [null, null];
+                }
+            }
+        }
+
+        return array($handler, $methodname);
+    }
+
+    /**
+     * get info out of production data (in product)
+     * @return an object
+     */
+    public function extract_production_data() {
+
+        $info = new \StdClass();
+
+        $productiondata = $this->productiondata;
+
+        if (!empty($productiondata)) {
+            if ($pairs = explode('&', $this->productiondata)) {
+                foreach ($pairs as $pair) {
+                    list($key, $value) = explode('=', $pair);
+                    $info->$key = $value;
+                }
+            }
+        }
+
+        return $info;
+    }
+
+    /**
      * Gets a suitable handler object for this catalog item
      */
     public function get_handler() {
@@ -423,7 +588,17 @@ class CatalogItem extends ShopObject {
     public function unlink() {
         global $DB;
 
-        $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
+        if (!$this->isset) {
+            // Unlink self from set or bundle.
+            $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
+        } else {
+            // Unlink all linked elements.
+            if (!empty($this->elements)) {
+                foreach ($this->elements as $ci) {
+                    $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $ci->id));
+                }
+            }
+        }
     }
 
     public function has_leaflet() {
@@ -434,6 +609,9 @@ class CatalogItem extends ShopObject {
         return !$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id);
     }
 
+    /**
+     * Checks availability against handler rules.
+     */
     public function check_availability() {
 
         $config = get_config('local_shop');
@@ -453,12 +631,15 @@ class CatalogItem extends ShopObject {
                 }
             }
         }
+        return true;
     }
 
     public function get_leaflet_url() {
         global $OUTPUT;
 
         $context = \context_system::instance();
+
+        $url = null;
 
         $fs = get_file_storage();
         if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $this->id, /* $ignoredirs */ true)) {
@@ -467,8 +648,6 @@ class CatalogItem extends ShopObject {
             $url = \moodle_url::make_pluginfile_url($leafletfile->get_contextid(), $leafletfile->get_component(),
                                                     $leafletfile->get_filearea(), $leafletfile->get_itemid(),
                                                     $leafletfile->get_filepath(), $leafletfile->get_filename());
-        } else {
-            $url = $OUTPUT->image_url('defaultproduct', 'local_shop');
         }
         return $url;
     }
@@ -580,7 +759,11 @@ class CatalogItem extends ShopObject {
         $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
         while ($DB->record_exists('local_shop_catalogitem', $params)) {
             $this->record->code .= '1';
+            $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
         }
+
+        $this->record->shortname = strtolower($this->record->code);
+        $this->record->shortname = str_replace(' ', '', $this->record->shortname);
 
         $this->save();
 
@@ -593,7 +776,7 @@ class CatalogItem extends ShopObject {
                 continue; // Discard directories.
             }
             $oldfile = $fs->get_file_instance($f);
-            $newfile = new \StdClass;
+            $newfile = new StdClass;
             $newfile->contextid = $context->id;
             $newfile->component = 'local_shop';
             $newfile->filearea = $f->filearea;
@@ -602,6 +785,43 @@ class CatalogItem extends ShopObject {
             $newfile->filename = $f->filename;
             $fs->create_file_from_storedfile($newfile, $oldfile);
         }
+    }
+
+    public function export_to_ws($q, $withsubs) {
+        $export = new StdClass;
+
+        $export->id = $this->record->id;
+        $export->catalogid = $this->record->catalogid;
+        $export->categoryid = $this->record->categoryid;
+        $export->code = $this->record->code;
+        $export->shortname = $this->record->shortname;
+        $export->name = format_string($this->record->name);
+        $export->description = format_text($this->record->description, $this->record->descriptionformat);
+        $export->eulas = format_text($this->record->eulas, $this->record->eulasformat);
+        $export->notes = format_text($this->record->notes, $this->record->notesformat);
+        switch ($this->record->isset) {
+            case PRODUCT_STANDALONE:
+                $export->type = 'plain';
+                break;
+
+            case PRODUCT_SET:
+                $export->type = 'set';
+                break;
+
+            case PRODUCT_BUNDLE:
+                $export->type = 'bundle';
+                break;
+        }
+
+        $export->status = $this->status;
+        $export->unitcost = $this->get_price($q);
+        $export->tax = $this->get_tax($q);
+        $export->requireddata = $this->record->requireddata;
+        $export->leafleturl = ''.$this->get_leaflet_url();
+        $export->thumburl = ''.$this->get_thumb_url();
+        $export->imageurl = ''.$this->get_image_url();
+
+        return $export;
     }
 
     public static function count($filter) {

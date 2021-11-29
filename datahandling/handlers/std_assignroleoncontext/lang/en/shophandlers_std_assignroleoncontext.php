@@ -16,6 +16,9 @@
 
 global $CFG;
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shophandler Std AssignRoleOnContext does not directly store any personal data about any user.';
+
 $string['handlername'] = 'Single role assign';
 $string['pluginname'] = 'Single role assign';
 
@@ -41,12 +44,9 @@ validate your purchase on payment confirmation.</p>
 
 $string['productiondata_private'] = '
 <p>Your user account has been setup on this site.</p>
-<p>Your login will be:<br/>
-<pre>
-Login:      {$a}<br/>
-</pre>
-<p>You will receive your password in a next to come mail.</p>
-<p><b>Please note this information in a safe place before you continue...</b></p>
+<p>Your  credentials are:<br/>
+Login: {$a->username}<br/>
+<p>Your password has been sent to you in a separate mail. <b>Please store them in a safe place before pursuing...</b></p>
 <p>If you made an online payment, your purchased products will be processed on automatic return of your payment order.
 You will be able to connect at once and get to your training volumes. On the other hand will our commercial service
 validate your purchase on payment confirmation.</p>
@@ -54,24 +54,25 @@ validate your purchase on payment confirmation.</p>
 ';
 
 $string['productiondata_sales'] = '
+<p><b>TXID: {$a->txid}</b></p>
 <p>A user account has been created.</p>
-<p>Login: {$a}<br/>
+<p>Login: {$a->username}<br/>
 ';
 
-$string['productiondata_assign_public'] = '
-<p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. Your access permissions have been updated consequently. You can access directly your training
-products after proper authenticaton.</p>
-';
-
-$string['productiondata_assign_private'] = '
+$string['productiondata_post_public'] = '
 <p><b>Your payment has been received</b></p>
 <p>Your payment has been validated. Your access permissions have been updated consequently. You can access directly your training
 products after proper authentication.</p>
-<p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a}">Direct access to your training</a></p>
 ';
 
-$string['productiondata_assign_sales'] = '
-<p><b>Payement has been received</b></p>
-<p>Your role have been changed. this opens you new permissions</p>
+$string['productiondata_post_private'] = '
+<p><b>Your payment has been received</b></p>
+<p>Your payment has been validated. Your access permissions have been updated consequently. You can access directly your training
+products after proper authentication.</p>
+<p><a href="'.$CFG->wwwroot.'/my/index.php">Direct access to your training</a></p>
+';
+
+$string['productiondata_post_sales'] = '
+<p><b>TXID: {$a->txid}</b></p>
+<p>Role of user {$a->username} have been changed with role {$a->role} in context {$a->instancename}. This opens new permissions</p>
 ';

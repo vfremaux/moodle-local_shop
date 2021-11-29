@@ -16,6 +16,9 @@
 
 global $CFG;
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat EnroloneCourse ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['handlername'] = 'Inscription à un cours';
 $string['pluginname'] = 'Inscription à un cours';
 
@@ -23,10 +26,11 @@ $string['errornocourse'] = 'cours cible non défini';
 $string['errorcoursenotexists'] = 'Cours cible {$a} non existant';
 $string['errorrole'] = 'Rôle {$a} non existant';
 $string['warningroledefaultstoteacher'] = 'Le rôle n\'est pas précisé. "Etudiant" utilisé par défaut.';
+$string['warninggrouptobecreated'] = 'Le groupe {$a} n\'existe pas dans le cours et sera créé lors de la première transaction.';
 
 $string['productiondata_public'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme. Un courriel vous a été envoyé
-pour vous communiquer vos indicatifs d\'accès.</p>
+pour vous communiquer votre mot de passe.</p>
 <p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront initialisés dès la confirmation automatique
 de votre règlement. Vous pourrez alors vous connecter et bénéficier de vos accès de formation. Dans le cas contraire vos accès
 seront validés dès réception de votre paiement.</p>
@@ -35,18 +39,18 @@ seront validés dès réception de votre paiement.</p>
 
 $string['productiondata_private'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme.</p>
-<p>Votre identifiant: {$a}</p>
-<p>Un mot de passe vous automatiquement sera envoyé dans un prochain courriel dans quelques minutes.</p>
-<p><b>Veuillez les noter quelque part où vous pouvez les retrouver avant de continuer...</b></p>
-<p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront été initialisés dès la confirmation automatique
-de votre règlement. Vous pourrez vous connecter
-et bénéficier de vos accès de formation. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p>
+<p>Votre identifiant: {$a->username}</p>
+<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous pouvez
+les retrouver avant de continuer...</b></p>
+<p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront initialisés dès la confirmation automatique
+de votre règlement. Vous pourrez vous connecter et bénéficier de vos accès de formation. Dans le cas contraire vos accès seront validés
+dès réception de votre paiement.</p>
 <p><a href="'.$CFG->wwwroot.'/login/index.php">Accéder à la plate-forme de formation</a></p>
 ';
 
 $string['productiondata_sales'] = '
 <p>Le compte utilisateur client a été ouvert sur la plate-forme.</p>
-Identifiant : {$a}<br/>
+Identifiant : {$a->username}<br/>
 ';
 
 $string['productiondata_assign_public'] = '

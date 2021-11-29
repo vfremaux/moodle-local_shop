@@ -21,6 +21,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Test does not directly store any personal data about any user.';
+
 $string['enabletest'] = 'Test payment';
 $string['enabletest2'] = 'Test payment';
 $string['enabletest3'] = 'You choosed using shop test payment...';

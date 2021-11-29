@@ -23,140 +23,156 @@
 }}
 <!-- local_shop/front_invoice_form -->
 <div id="shop-organisationdata">
-    <table cellspacing="3" width="100%">
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}organisation, local_shop{{/str}}:</b>
-            </td>
-            <td align="left">
+    <fieldset class="quickform-fieldset clearfix">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_organisation">{{#str}}organisation, local_shop{{/str}}:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_organisation"
                        name="invoiceinfo::organisation"
                        size="26"
                        maxlength="64"
                        value="{{{institution}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}department{{/str}}:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_department">{{#str}}department{{/str}}:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_department"
                        name="invoiceinfo::department"
                        size="26"
                        maxlength="64"
                        value="{{{department}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_invoice_lastname">{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_invoice_lastname"
                        name="invoiceinfo::lastname"
                        size="20"
+                       maxlength="40"
                        onchange="setupper(this)"
                        value="{{{lastname}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_invoice_firstname">{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_invoice_firstname"
                        name="invoiceinfo::firstname"
                        size="20"
+                       maxlength="40"
                        onchange="capitalizewords(this)"
                        value="{{{firstname}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}email{{/str}}:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_invoice_email">{{#str}}email{{/str}}:</b>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_invoice_email"
                        name="invoiceinfo::email"
                        size="50"
+                       maxlength="80"
                        onchange="checkemail(this)"
                        value="{{{email}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}address{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_invoice_address">{{#str}}address{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_invoice_address"
                        name="invoiceinfo::address"
-                       size="26"
+                       size="50"
+                       maxlength="255"
                        onchange="setupper(this)"
                        value="{{{address}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}city{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_invoice_city">{{#str}}city{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_invoice_city"
                        name="invoiceinfo::city"
                        size="26"
+                       maxlength="40"
                        onchange="setupper(this)"
                        value="{{{city}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}zip, local_shop{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_invoice_zip">{{#str}}zip, local_shop{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_invoice_zip"
                        name="invoiceinfo::zip"
                        size="6"
+                       maxlength="6"
                        value="{{{zip}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}country{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left">
-                {{{countriesselect}}}
-            </td>
-        </tr>
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_invoice_country">{{#str}}country{{/str}}<sup style="color: red">*</sup>:</label>
+            </div>
+            <div class="felement fselect">
+                {{{countryselect}}}
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-                <b>{{#str}}vatcode, local_shop{{/str}}:</b>
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label for="id_vatcode">{{#str}}vatcode, local_shop{{/str}}:</label>
+            </div>
+            <div class="felement ftext">
                 <input type="text"
+                       id="id_vatcode"
                        name="invoiceinfo::vatcode"
                        size="15"
+                       maxlength="20"
                        value="{{{vatcode}}}" />
-            </td>
-        </tr>
+            </div>
+        </div>
 
-        <tr valign="top">
-            <td align="right">
-            </td>
-            <td align="left">
+        <div class="fcontainer clearfix">
+            <div class="fitemtitle">
+                <label></label>
+            <div class="felement fhidden">
                 <input type="hidden"
                        name="invoiceinfo::plantcode"
                        value="" />
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </fieldset>
 </div>
 <!-- local_shop/front_invoice_form -->

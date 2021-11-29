@@ -32,20 +32,24 @@
         <td class="shop-ordercell">
 
             {{#isshopview}}
-            <a title="'{{#str}}clearall, local_shop{{/str}}" href="{{{clearjshandler}}}">{{#pix}}t/delete, core{{/pix}}</a>
+            <a title="{{#str}}clearall, local_shop{{/str}}"
+               class="local-shop-detail-delete"
+               data-product="{{shortname}}"
+               data-maxquant="{{maxdeliveryquant}}">{{#pix}}t/delete, core{{/pix}}</a>
             {{/isshopview}}
 
             <input type="text"
-                class="order-detail"
+                class="local-shop-order-detail"
                 id="id_{{shortname}}"
                 name="{{shortname}}"
                 value="{{preset}}"
                 size="3"
-                style="width:40px"
-                onChange="{{{jshandler}}}" {{{disabled}}} >
+                maxlength="3"
+                style="width:20px"
+                data-product="{{shortname}}" {{{disabled}}} >
         </td>
         <td class="shop-ordercell">
-            {{ttcprice}}&nbsp;{{{currency}}} :
+            {{{code}}}  {{ttcprice}}&nbsp;{{{currency}}} :
         </td>
         <td class="shop-ordercell">
             <input type="text"

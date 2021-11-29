@@ -25,6 +25,11 @@
  */
 namespace local_shop;
 
+use StdClass;
+use context_system;
+use Exception;
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/locallib.php');
@@ -82,11 +87,6 @@ class Bill extends ShopObject {
     protected $finaluntaxedtotal;
 
     /**
-     * The overal discount amount (ti)
-     */
-    protected $discount;
-
-    /**
      * tells something has changed and recalculation is needed bifore any display or
      * use.
      */
@@ -98,7 +98,7 @@ class Bill extends ShopObject {
     protected $shipping;
 
     /**
-     * An array with all tax lines for individual products
+     * An array with all tax lines for each taxcode.
      */
     public $taxlines;
 
@@ -112,6 +112,8 @@ class Bill extends ShopObject {
     public $customer;
     public $customeruser;
 
+    public $url;
+
     // Build a full bill plus billitems.
     public function __construct($idorrecord, $light = false, &$theshop = null, &$thecatalogue = null, &$theblock = null) {
         global $DB;
@@ -122,13 +124,13 @@ class Bill extends ShopObject {
         $this->theshop = $theshop;
         $this->theblock = $theblock;
 
-        $this->context = \context_system::instance();
+        $this->context = context_system::instance();
 
         parent::__construct($idorrecord, self::$table);
 
         $this->shipping = 0;
         $this->discount = 0;
-        $this->taxlines = array();
+        $this->taxlines = [];
 
         if ($idorrecord) {
 
@@ -153,6 +155,9 @@ class Bill extends ShopObject {
                 }
             }
 
+            $refs['bill'] = $this;
+            $this->items = BillItem::get_instances(['billid' => $this->record->id], 'ordering', '*', 0, '', true, $refs);
+
             $this->recalculate();
 
             if ($this->customer = $DB->get_record('local_shop_customer', array('id' => $this->record->customerid))) {
@@ -168,13 +173,15 @@ class Bill extends ShopObject {
                 mtrace("Taxes: ".$this->record->taxes);
             }
 
+            $this->url = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewBill', 'id' => $this->id]);
+
         } else {
             if (empty($theshop)) {
-                throw new \Exception('Null Shop not allowed when creating bill');
+                throw new Exception('Null Shop not allowed when creating bill');
             }
 
             if (empty($thecatalogue)) {
-                throw new \Exception('Null Shop not allowed when creating bill');
+                throw new Exception('Null Shop not allowed when creating bill');
             }
 
             $lastordering = $DB->get_field('local_shop_bill', 'MAX(ordering)', array());
@@ -191,6 +198,7 @@ class Bill extends ShopObject {
             $this->record->worktype = 'PROD';
             $this->record->status = SHOP_BILL_WORKING;
             $this->record->remotestatus = '';
+            $this->record->invoiceinfo = '';
             $this->record->emissiondate = time();
             $this->record->lastactiondate = time();
             $this->record->assignedto = 0;
@@ -209,8 +217,10 @@ class Bill extends ShopObject {
             $this->record->paymentfee = 0;
             $this->record->productionfeedback = '';
             $this->record->test = $config->test;
+            $this->record->partnerid = 0;
+            $this->record->partnertag = '';
 
-            $this->items = array();
+            $this->items = [];
 
             $this->dirty = true;
 
@@ -236,7 +246,8 @@ class Bill extends ShopObject {
      * have accurate amount of the original order
      */
     public function add_item(BillItem $bi) {
-        $this->items[] = $bi;
+        shop_trace("[{$this->transactionid}] Add item. ".$bi->itemcode.' * '.$bi->quantity);
+        $this->items[$bi->id] = $bi;
         $this->orderuntaxedamount += $bi->totalprice;
         $this->ordertaxes += $bi->get_totaltax();
         $this->orderamount += $bi->get_totaltaxed();
@@ -244,16 +255,25 @@ class Bill extends ShopObject {
     }
 
     /**
-     * Adds an item from a DB record makin a BillItem instance
+     * Adds an item from a DB record making a BillItem instance
      * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
      */
     public function add_item_data($birec, $ordering = -1) {
-        $billitem = new BillItem($birec, false, $this, $ordering);
-        $this->items[] = $billitem;
+        static $statictempid = 999999000;
+
+        shop_trace("[{$this->transactionid}] Bill.Add item data. ".$birec->itemcode.' * '.$birec->quantity);
+        $billitem = new BillItem($birec, false, ['bill' => $this], $ordering);
+        if (empty($billitem->id)) {
+            // For new items never recorded in DB.
+            $billitem->id = $statictempid;
+            $statictempid++;
+        }
+        $this->items[$billitem->id] = $billitem;
         $this->orderuntaxedamount += $billitem->totalprice;
         $this->ordertaxes += $billitem->get_totaltax();
         $this->orderamount += $billitem->get_totaltaxed();
+        $this->itemcount++;
         $this->dirty = true;
     }
 
@@ -285,6 +305,11 @@ class Bill extends ShopObject {
         }
     }
 
+    /**
+     * Checks discount conditions and setup discount as a special bill item.
+     * OBDSOLETE: should be removed
+     */
+    /*
     public function check_discount() {
         global $DB;
 
@@ -302,19 +327,19 @@ class Bill extends ShopObject {
             $this->discount = 0;
             $DB->delete_records('local_shop_billitem', array('billid' => $this->id, 'type' => 'DISCOUNT'));
 
-            foreach ($this->items as $bi) {
-                $birec = new \StdClass();
+            foreach ($this->items as $biid => $bi) {
+                $birec = new StdClass;
                 $birec->type = 'DISCOUNT';
                 $birec->itemcode = $bi->itemcode;
                 $birec->catalogitem = $bi->catalogitem;
                 $birec->unitcost = - $bi->unitcost * $discountrate / 100;
                 $birec->quantity = $bi->quantity;
-                $birec->abtract = 'Product discount';
+                $birec->abstract = 'Product discount';
                 $birec->totalprice = - $bi->unitcost * $discountrate / 100 * $bi->quantity;
                 $taxamount = - $bi->get_tax_amount() * $discountrate / 100;
                 $birec->productiondata = '';
                 $birec->customerdata = '';
-                $billitem = new BillItem($birec, false, $this);
+                $billitem = new BillItem($birec, false, ['bill' => $this]);
                 $this->items[] = $billitem;
 
                 /*
@@ -324,7 +349,7 @@ class Bill extends ShopObject {
                  * echo 'DUt '.$taxamount.'<br/>';
                  * echo 'DUT '.$birec->totalprice.'<br/><br/>';
                  */
-
+                /*
                 $this->discount += $birec->totalprice;
                 $this->discounttaxes += $taxamount;
                 if (array_key_exists($billitem->taxcode, $this->taxlines)) {
@@ -336,13 +361,20 @@ class Bill extends ShopObject {
             }
         }
     }
+    */
 
     public function save($stateonly = false) {
+        static $pass = 0;
 
         if ($this->dirty) {
+            shop_trace("[{$this->transactionid}] Bill.save : Dirty state. Pass ".$pass);
+            // Recalculate Bill record totalizers from internal items.
             $this->recalculate();
         }
 
+        $pass++.
+
+        shop_trace("[{$this->transactionid}] Bill.save Saving state and record. Pass ".$pass);
         $billid = parent::save(); // Parent has recorded id into our record.
 
         // Performance optimisation when no change in Bill construction.
@@ -351,8 +383,12 @@ class Bill extends ShopObject {
         }
 
         if (!empty($this->items)) {
-            foreach ($this->items as $bi) {
+            foreach ($this->items as $biid => $bi) {
+                shop_trace("[{$this->transactionid}] Bill.save Saving Items {$bi->type}/{$bi->itemcode}");
                 $bi->save();
+                // Reindex in new saved ID.
+                $this->items[$bi->record->id] = $bi;
+                unset($this->items[$biid]);
             }
         }
         return $billid;
@@ -364,18 +400,17 @@ class Bill extends ShopObject {
     public function reset_taxlines() {
 
         if (empty($this->items)) {
-            $this->taxlines = array();
+            $this->taxlines = [];
         }
     }
 
     /**
-     * get bill content (elements) and calculate
-     * bill totalizers
+     * get bill content (elements) and calculate in-memory
+     * bill totalizers. This will update Bill states and sumators
+     * for recording in DB.
      */
     public function recalculate() {
-        global $DB;
-
-        $itemrecs = $DB->get_records('local_shop_billitem', array('billid' => $this->id));
+        global $DB, $CFG;
 
         $this->orderuntaxed = 0;
         $this->ordertaxes = 0;
@@ -383,74 +418,90 @@ class Bill extends ShopObject {
         $this->finaluntaxedtotal = 0;
         $this->finaltaxestotal = 0;
         $this->finaltaxedtotal = 0;
+        $this->finalshippedtaxedtotal = 0;
+        $this->discount = 0;
+        $this->discounttaxes = 0;
+        $this->untaxeddiscount = 0;
         $this->itemcount = 0;
         $this->taxlines = array();
 
-        foreach ($itemrecs as $itemrec) {
+        $discounts = [];
 
-            $billitem = new BillItem($itemrec, false, $this);
+        if (!empty($this->items)) {
+            foreach ($this->items as $bi) {
 
-            // Deroute some special types.
-            if ($billitem->type == 'SHIPPING') {
-                $this->shipping = $itemrec->totalprice; // Taxed.
-                continue;
+                // Deroute some special types.
+                if ($bi->type == 'SHIPPING') {
+                    $this->shipping = $bi->totalprice; // Taxed.
+                    continue;
+                }
+
+                if ($bi->type == 'DISCOUNT') {
+                    // Collect discount items for discount recalculation.
+                    $discounts[] = $bi;
+                    continue;
+                }
+
+                // If standard BILLING line, aggregate to ordetotals.
+                $this->orderuntaxed += $bi->unitcost * $bi->quantity; // Not stored in record.
+                $this->ordertaxed += $bi->get_taxed_price() * $bi->quantity; // Not stored in record.
+                $taxamount = $bi->get_tax_amount() * $bi->quantity;
+                $this->ordertaxes += $taxamount; // Not stored in record.
+                $this->itemcount += $bi->quantity; // Not stored in record.
+
+                // Register tax by taxcode.
+                if (array_key_exists($bi->taxcode, $this->taxlines)) {
+                    $this->taxlines[$bi->taxcode] += $taxamount;
+                } else {
+                    $this->taxlines[$bi->taxcode] = $taxamount;
+                }
+
+                if (($CFG->debug == DEBUG_DEVELOPER) && optional_param('control', false, PARAM_BOOL)) {
+                     echo 'UC '.($bi->unitcost * $bi->quantity).'<br/>';
+                     echo 'Ut '.$taxamount.'<br/>';
+                     echo 'UT '.($bi->get_taxed_price() * $bi->quantity).'<br/>';
+                     echo 'OTTC '.($this->ordertaxed).'<br/>';
+                     echo 'OHT '.($this->orderuntaxed).'<br/>';
+                     echo 'OT '.($this->ordertaxes).'<br/><br/>';
+                }
             }
-            if ($billitem->type == 'DISCOUNT') {
-                continue;
-            }
-
-            // If standard BILLING line, aggregate to ordetotals.
-            $this->orderuntaxed += $itemrec->unitcost * $itemrec->quantity;
-            $this->ordertaxed += $billitem->get_taxed_price() * $itemrec->quantity;
-            $taxamount = $billitem->get_tax_amount() * $itemrec->quantity;
-            $this->ordertaxes += $taxamount;
-            $this->itemcount += $itemrec->quantity;
-
-            /*
-             * echo 'UC '.($itemrec->unitcost * $itemrec->quantity).'<br/>';
-             * echo 'Ut '.$taxamount.'<br/>';
-             * echo 'UT '.($billitem->get_taxed_price() * $itemrec->quantity).'<br/><br/>';
-             */
-
-            // Register tax by taxcode.
-            if (array_key_exists($billitem->taxcode, $this->taxlines)) {
-                $this->taxlines[$billitem->taxcode] += $taxamount;
-            } else {
-                $this->taxlines[$billitem->taxcode] = $taxamount;
-            }
-
-            // Add to items stack.
-            $this->items[$itemrec->id] = $billitem;
         }
 
-        $this->check_discount();
+        if (local_shop_supports_feature('shop/discounts')) {
+            if (!empty($discounts)) {
+                include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
+                // This will reset all discount counters and recalculate all applied discounts.
+                Discount::recalculate_discounts($this);
+            }
+        }
 
         $this->finaluntaxedtotal = $this->orderuntaxed + $this->untaxeddiscount;
         $this->finaltaxestotal = $this->ordertaxes + $this->discounttaxes;
         $this->finaltaxedtotal = $this->ordertaxed + $this->discount;
 
-        /*
-         * echo 'OU '.$this->orderuntaxed.'<br/>';
-         * echo 'Ot '.$this->ordertaxes.'<br/>';
-         * echo 'OT '.$this->ordertaxed.'<br/><br/>';
-         *
-         * echo 'DU '.$this->untaxeddiscount.'<br/>';
-         * echo 'Dt '.$this->discounttaxes.'<br/>';
-         * echo 'DT '.$this->discount.'<br/><br/>';
-         *
-         * echo 'FU '.$this->finaluntaxedtotal.'<br/>';
-         * echo 'Ft '.$this->finaltaxestotal.'<br/>';
-         * echo 'FT '.$this->finaltaxedtotal.'<br/>';
-         */
+        if ($CFG->debug == DEBUG_DEVELOPER && optional_param('control', false, PARAM_BOOL)) {
+             echo 'Bill summary<br/>';
+             echo 'OU '.$this->orderuntaxed.'<br/>';
+             echo 'Ot '.$this->ordertaxes.'<br/>';
+             echo 'OT '.$this->ordertaxed.'<br/><br/>';
 
-        // Transfer to record.
+             echo 'DU '.$this->untaxeddiscount.'<br/>';
+             echo 'Dt '.$this->discounttaxes.'<br/>';
+             echo 'DT '.$this->discount.'<br/><br/>';
+
+             echo 'FU '.$this->finaluntaxedtotal.'<br/>';
+             echo 'Ft '.$this->finaltaxestotal.'<br/>';
+             echo 'FT '.$this->finaltaxedtotal.'<br/>';
+            }
+
+        // Transfer to effective DB record.
         $this->record->amount = $this->finaltaxedtotal;
         $this->record->taxes = $this->finaltaxestotal;
         $this->record->untaxedamount = $this->finaluntaxedtotal;
 
-        $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
+        $this->finalshippedtaxedtotal = $this->finaltaxedtotal + $this->shipping; // Not in record.
         $this->dirty = false;
-
+        shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated");
     }
 
     public function delete() {
@@ -508,7 +559,7 @@ class Bill extends ShopObject {
     public static function count_by_states($fullview, $filterclause) {
         global $DB;
 
-        $total = new \StdClass;
+        $total = new StdClass;
         $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $filterclause");
 
         if ($fullview) {
@@ -533,11 +584,28 @@ class Bill extends ShopObject {
         return $total;
     }
 
+    public static function count(array $filter = array()) {
+        return parent::_count(self::$table, $filter);
+    }
+
+    public static function sum($field, array $filter = array()) {
+        return parent::_sum(self::$table, $field, $filter);
+    }
+
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
     public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(emissiondate, '-', ordering, '-', idnumber)", $chooseopt);
+    }
+
+    public function toString() {
+        $printable = new StdClass;
+        $printable->record = $this->record;
+        foreach ($this->items as $bi) {
+            $printable->items[] = $bi->toString();
+        }
+        return $printable;
     }
 }

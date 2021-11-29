@@ -28,6 +28,8 @@ namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
 
+use moodle_url;
+
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
@@ -35,12 +37,17 @@ class Customer extends ShopObject {
 
     public static $table = 'local_shop_customer';
 
+    public $url;
+
     public function __construct($idorrecord, $light = false) {
         global $CFG;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
+
+            $this->url = new moodle_url('local/shop/customer/view?php', ['view' => 'viewCustomer', 'id' => $this->record->id]);
+
             if ($light) {
                 // This builds a lightweight proxy of the Bill, without items.
                 return;
@@ -121,7 +128,9 @@ class Customer extends ShopObject {
         $sql = "
             SELECT
                c.*,
-               COUNT(b.id) as billcount,
+               SUM( CASE WHEN (b.status = 'PLACED') THEN 1 ELSE 0 END) as placedcount,
+               SUM( CASE WHEN (b.status = 'PENDING') THEN 1 ELSE 0 END) as pendingscount,
+               SUM( CASE WHEN (b.status = 'SOLDOUT' OR b.status = 'COMPLETE') THEN 1 ELSE 0 END) as billcount,
                SUM(b.amount) as totalaccount
             FROM
                {local_shop_customer} as c
@@ -143,7 +152,7 @@ class Customer extends ShopObject {
                $order $dir
         ";
 
-        $offset = optional_param('offest', '', PARAM_ALPHA);
+        $offset = optional_param('offset', 0, PARAM_INT);
         $customers = $DB->get_records_sql($sql, $params, $offset, $config->maxitemsperpage);
         $customersarr = array();
         foreach ($customers as $c) {
@@ -157,7 +166,17 @@ class Customer extends ShopObject {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light);
     }
 
+    public static function count_instances($filter = array(), $limitfrom = 0, $limitnum = '') {
+        return parent::_count_instances(self::$table, $filter, $limitfrom, $limitnum);
+    }
+
     public static function get_instances_menu($filter = array(), $order = 'lastname, firstname') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(firstname, ' ', lastname)");
+    }
+
+    public static function has_account() {
+        global $USER, $DB;
+
+        return $DB->record_exists('local_shop_customer', array('hasaccount' => $USER->id));
     }
 }

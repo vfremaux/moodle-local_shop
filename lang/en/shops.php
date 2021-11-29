@@ -16,4 +16,7 @@
 
 $string['linkedblocks'] = 'Used blocks';
 $string['allshops'] = 'All shops';
+$string['addshop'] = 'Add a new shop instance';
+$string['editshop'] = 'Edit shop instance';
 $string['errorshopexists'] = 'A shop with this name exists already.';
+$string['activeshop'] = 'Active shop';

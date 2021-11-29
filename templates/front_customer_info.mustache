@@ -28,7 +28,7 @@
             <td width="60%" valign="top">
                 <b>{{#str}}orderID, local_shop{{/str}}</b> {{transid}}
             </td>
-            <td width="40%" valign="top" align="right">
+            <td width="40%" valign="top">
                 <b>{{#str}}on, local_shop{{/str}}:</b> {{{emissiondate}}}
             </td>
         </tr>
@@ -44,7 +44,7 @@
         {{#usedistinctinvoiceinfo}}
         <tr>
             <td width="60%" valign="top">
-                <b>{{#str}}department{{/str}}}}:</b> {{{department}}}
+                <b>{{#str}}department{{/str}}:</b> {{{department}}}
             </td>
             <td width="40%" valign="top">
             </td>
@@ -56,6 +56,9 @@
                 <b>{{#str}}customer, local_shop{{/str}}:</b> {{{customername}}}
             </td>
             <td width="40%" valign="top">
+                {{#haspartner}}
+                <b>{{#str}}partner, local_shop{{/str}}:</b> {{{partnername}}}
+                {{/haspartner}}
             </td>
         </tr>
 
@@ -69,7 +72,7 @@
 
         <tr>
             <td width="60%" valign="top">
-                {{#str}}country{{/str}}:</b> {{{country}}}
+                <b>{{#str}}country{{/str}}:</b> {{{country}}}
             </td>
             <td width="40%" valign="top">
             </td>

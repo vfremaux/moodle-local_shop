@@ -21,6 +21,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat FreeOrder ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['enablefreeorder'] = 'Commande gratuite';
 $string['enablefreeorder2'] = 'Commande gratuite';
 $string['enablefreeorder3'] = 'Votre commande ne contient que des produits gratuits. Aucun réglement n\'est nécessaire...';

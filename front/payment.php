@@ -48,13 +48,13 @@ if ($action) {
 
 echo $out;
 
-// Start ptinting page.
+// Start printing page.
+
+echo $renderer->progress('PAYMENT');
 
 echo $OUTPUT->box_start('', 'shop-payment');
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
-
-echo $renderer->progress('PAYMENT');
 
 echo '<center>';
 echo $OUTPUT->heading(get_string('pluginname', 'shoppaymodes_'.$SESSION->shoppingcart->paymode), 1);

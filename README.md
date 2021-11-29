@@ -40,3 +40,13 @@ Public documentations :
 ##################################################
 
 Adds support for remote product licensing servicing.
+
+2020072900 --- XX.0013
+##################################################
+
+Transfers discounts to pro zone and redraw the discount policies application.
+
+2021100700 --- XX.0017
+##################################################
+
+Adds pro caching zone

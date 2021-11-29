@@ -30,41 +30,32 @@
 <table width="100%" class="shoptable">
 
     <tr class="shop-products-caption" valign="top">
-        <th width="2%" class="header c0" rowspan="2">{{{selstr}}}</th>
-        <th class="header c1" rowspan="2">{{{imagestr}}}</th>
-        <th class="header c2">{{{codestr}}}</th>
-        <th class="header c3">{{{referencestr}}}</th>
-        <th class="header c4">{{{billstr}}}</th>
-        <th class="header c5">{{{renewablestr}}}</th>
-        <th class="header c6">{{{contexttypestr}}}</th>
-        <th class="header c7">{{{instance}}}</th>
-        <th class="header c8" align="right">{{{purchasedpricestr}}}</th>
-        <th class="header lastcol" width="30" rowspan="2"></th>
-    </tr>
-
-    <tr>
-        <th class="header c2" colspan="2">{{{designationstr}}}</th>
-        <th class="header c4" colspan="2">{{{startdatestr}}}</th>
-        <th class="header c6" colspan="2">{{{enddatestr}}}</th>
+        <th width="2%" class="header c0">{{#str}}sel, local_shop{{/str}}</th>
+        <th width="6%" class="header c1"></th>
+        <th width="20%" class="header c2">{{#str}}code, local_shop{{/str}}</th>
+        <th width="20%"class="header c3">{{#str}}reference, local_shop{{/str}}</th>
+        <th width="2%" class="header c4">{{#str}}bill, local_shop{{/str}}</th>
+        <th width="2%"class="header c5">{{#str}}renewable, local_shop{{/str}}</th>
+        <th width="8%" class="header c6">{{#str}}contexttype, local_shop{{/str}}</th>
+        <th width="4%"class="header c7">{{#str}}instance, local_shop{{/str}}</th>
+        <th width="6%" class="header c8" align="right">{{#str}}startdate, local_shop{{/str}}</th>
+        <th width="6%" class="header c9" align="right">{{#str}}enddate, local_shop{{/str}}</th>
+        <th class="header lastcol" width="5%"></th>
     </tr>
 
     {{#products}}
     <tr class="shop-productinstance-row" valign="top">
-        <td width="2%" class="cell c0 {{statusclass}}" rowspan="2" align="center">{{{selcheckbox}}}</td>
-        <td class="cell c1" align="center" rowspan="2"><img src="{{{thumburl}}}" vspace="10" height="50"></td>
-        <td class="cell c2" align="left">{{code}}</td>
-        <td class="cell c3" align="left">{{reference}}</td>
-        <td class="cell c4">{{{currentbilllink}}}</td>
-        <td class="cell c5">{{renewable}}</td>
-        <td class="cell c6">{{contexttype}}</td>
-        <td class="cell c7">{{{instancelink}}}</td>
-        <td class="amount cell c8" align="right">{{unitcost}} {{currency}}</td>
-        <td align="right" rowspan="2" class="lastcol {{statusclass}}"><div class="shop-line-commands">{{{commands}}}</div></td>
-    </tr>
-    <tr class="shop-productinstance-row" valign="top">
-        <td colspan="4" class="name cell c2" align="left">{{name}}</td>
-        <td class="cell c6">{{pstart}}</td>
-        <td class="cell c7">{{pend}}</td>
+        <td width="2%" class="cell c0 {{statusclass}}" align="center">{{{selcheckbox}}}</td>
+        <td width="6%" class="cell c1" align="center"><img src="{{{thumburl}}}" vspace="10" height="50"></td>
+        <td width="20%" class="cell c2" align="left">{{{code}}}<br/><span class="purchased-product-name">{{{designation}}}</span></td>
+        <td width="20%" class="cell c3" align="left">{{reference}}{{#extradata}}<br/><span class="purchased-product-extradata">{{{extradata}}}</span>{{/extradata}}</td>
+        <td width="2%" class="cell c4">{{{currentbilllink}}}</td>
+        <td width="2%" class="cell c5">{{renewable}}</td>
+        <td width="8%" class="cell c6">{{contexttype}}</td>
+        <td width="4%" class="cell c7">{{{instancelink}}}</td>
+        <td width="6%" class="cell c_">{{pstart}}</td>
+        <td width="6%" class="cell cç">{{pend}}</td>
+        <td align="right" class="lastcol {{statusclass}}"><div class="shop-line-commands">{{{commands}}}</div></td>
     </tr>
     {{/products}}
 </table>

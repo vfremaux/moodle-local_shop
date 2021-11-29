@@ -17,7 +17,7 @@
 /**
  * @package     local_shop
  * @category    local
- * @author      Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   (C) 2016 Valery Fremaux (http://www.mylearningfactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */

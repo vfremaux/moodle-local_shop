@@ -63,7 +63,7 @@ class payment_controller extends front_controller_base {
     }
 
     public function process($cmd) {
-        global $SESSION, $DB, $USER, $OUTPUT;
+        global $SESSION, $DB, $USER, $OUTPUT, $CFG;
 
         if (!$this->received) {
             throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
@@ -72,6 +72,7 @@ class payment_controller extends front_controller_base {
         $SESSION->shoppingcart->debug = @$this->data->debug;
 
         if ($cmd == 'place') {
+            debug_trace('Payment controller: placing', TRACE_DEBUG);
             // Convert all data in bill records.
             // Customer info.
             $customer = (object)$SESSION->shoppingcart->customerinfo;
@@ -115,7 +116,13 @@ class payment_controller extends front_controller_base {
 
             $bill->transactionid = $SESSION->shoppingcart->transid;
             $bill->blockid = 0 + @$this->theblock->id;
+
             $bill->onlinetransactionid = '';
+            if (!empty($SESSION->shoppingcart->onlinetransactionid)) {
+                // Some plugins (f.e. Stripe) can provide an early onlinetransaction ID before bill creation.
+                $bill->onlinetransactionid = $SESSION->shoppingcart->onlinetransactionid;
+            }
+
             $bill->customerid = $SESSION->shoppingcart->customerinfo['id'];
             $bill->idnumber = '';
             $formatted = format_string($this->theshop->name);
@@ -136,6 +143,14 @@ class payment_controller extends front_controller_base {
             $bill->expectedpaiement = 0;
             $bill->ignoretax = 0;
             $bill->paymentfee = 0;
+
+            $bill->partnerid = 0;
+            $bill->partnertag = '';
+            if (local_shop_supports_feature('shop/partners')) {
+                include_once($CFG->dirroot.'/local/shop/pro/classes/Partner.class.php');
+                \local_shop\Partner::register_in_bill($bill);
+            }
+
             if (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) {
                 $bill->invoiceinfo = json_encode($SESSION->shoppingcart->invoiceinfo);
             }
@@ -167,9 +182,26 @@ class payment_controller extends front_controller_base {
                 $itemrec->productiondata->id = $this->theshop->id;
                 // For further reference to some origin block parameters and defaults.
                 $itemrec->productiondata->blockid = 0 + @$this->theblock->id;
-                $itemrec->customerdata = @$SESSION->shoppingcart->customerdata[$shortname];
+                if (!empty($SESSION->shoppingcart->customerdata[$shortname])) {
+                    $itemrec->customerdata = $SESSION->shoppingcart->customerdata[$shortname];
+                } else {
+                    $itemrec->customerdata = '';
+                }
+
                 $bill->add_item_data($itemrec, $ordering++);
                 $totalitems += $quant;
+            }
+
+            if (local_shop_supports_feature('shop/discounts')) {
+                include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
+                $discounts = \local_shop\Discount::get_applicable_discounts($this->theshop->id);
+                if (!empty($discounts)) {
+                    foreach ($discounts as $d) {
+                        if ($d->check_applicability($bill)) {
+                            $d->apply_to_bill($bill);
+                        }
+                    }
+                }
             }
 
             /*

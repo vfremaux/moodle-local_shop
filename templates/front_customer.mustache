@@ -1,0 +1,56 @@
+
+
+
+<!-- local_shop/front_customer -->
+<div id="shop-customer-info" class="shop-data">
+
+    {{#canlogin}}
+        <fieldset>
+        <legend>{{#str}}login, local_shop{{/str}}</legend>
+
+        <table width="100%">
+            <tr valign="top">
+                <td>
+                    {{{loginform}}}
+                </td>
+            </tr>
+        </table>
+        </fieldset>
+    {{/canlogin}}
+
+    <form name="driverform" action="{{{shopurl}}}" method="post">
+
+    <fieldset>
+        {{#canlogin}}
+        <legend>{{#str}}newaccountinfo, local_shop{{/str}}</legend>
+        {{/canlogin}}
+        {{^canlogin}}
+        {{#oldaccount}}
+        <legend>{{#str}}customerinfo, local_shop{{/str}}</legend>
+        {{/oldaccount}}
+        {{^oldaccount}}
+        <legend>{{#str}}addcustomerinfo, local_shop{{/str}}</legend>
+        {{/oldaccount}}
+        {{/canlogin}}
+
+        <table width="100%">
+            <tr valign="top">
+                <td>
+                    {{{customerinfoerrors}}}
+                    {{{customerinfoform}}}
+                </td>
+            </tr>
+
+            <tr>
+                <td style="{{{invoiceinfostyle}}}" id="shop-invoiceinfo-wrapper">
+                    {{{invoiceinfoerrors}}}
+                    {{{invoiceinfoform}}}
+                </td>
+            </tr>
+        </table>
+        </fieldset>
+
+        {{{actionform}}}
+    </form>
+</div>
+<!-- /local_shop/frontcustomer -->

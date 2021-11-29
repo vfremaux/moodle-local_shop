@@ -22,6 +22,8 @@
  */
 namespace local_shop\front;
 
+use \StdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
@@ -36,7 +38,7 @@ class order_controller extends front_controller_base {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass;
         }
 
         switch ($cmd) {
@@ -63,11 +65,13 @@ class order_controller extends front_controller_base {
         $config = get_config('local_shop');
 
         if ($cmd == 'agreeeulas') {
-            $SESSION->eulas = 'approved';
+            $shoppingcart->eulas = 'approved';
+            return;
         }
 
         if ($cmd == 'reseteulas') {
-            $SESSION->eulas = 'required';
+            $shoppingcart->eulas = 'required';
+            return;
         }
 
         if ($cmd == 'navigate') {
@@ -104,9 +108,9 @@ class order_controller extends front_controller_base {
                               'COUNTRY' => $shoppingcart->customerinfo['country'],
                               'PAYMODE' => $shoppingcart->paymode,
                               'ITEMS' => $items,
-                              'AMOUNT' => sprintf("%.2f", round($shoppingcart->untaxedtotal, 2)),
-                              'TAXES' => sprintf("%.2f", round($shoppingcart->taxestotal, 2)),
-                              'TTC' => sprintf("%.2f", round($shoppingcart->taxedtotal, 2)));
+                              'AMOUNT' => sprintf("%.2f", round($shoppingcart->finaluntaxedtotal, 2)),
+                              'TAXES' => sprintf("%.2f", round($shoppingcart->finaltaxestotal, 2)),
+                              'TTC' => sprintf("%.2f", round($shoppingcart->finaltaxedtotal, 2)));
                 $salesnotification = shop_compile_mail_template('transaction_input', $vars, '');
 
                 if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {

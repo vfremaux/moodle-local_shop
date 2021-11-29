@@ -16,13 +16,24 @@
 <h2>{{#str}}searchby, local_shop{{/str}}</h2>
 
 <fieldset>
+<legend>{{#str}}billid, local_shop{{/str}}</legend>
+<div class="pull-right">
+<input type="button" onclick="Javascript:searchby('id');" value="{{#str}}search{{/str}}" />
+</div>
+<div class="">
+<input type="text" name="billid"><br/>
+<p class="smalltext">{{#str}}searchforanidinstructions, local_shop{{/str}}</p>
+</div>
+</fieldset>
+
+<fieldset>
 <legend>{{#str}}transactioncode, local_shop{{/str}}</legend>
 <div class="pull-right">
 <input type="button" onclick="Javascript:searchby('key');" value="{{#str}}search{{/str}}" />
 </div>
 <div class="">
 <input type="text" name="billkey"><br/>
-<p class="smalltext">{{#str}}searchforakeyinstructions, local_shop{{/str}};
+<p class="smalltext">{{#str}}searchforakeyinstructions, local_shop{{/str}}</p>
 </div>
 </fieldset>
 
@@ -33,7 +44,7 @@
 </div>
 <div class="">
 <input type="text" name="customername"><br/>
-<p class="smalltext">{{#str}}customersnameonbill, local_shop{{/str}};
+<p class="smalltext">{{#str}}customersnameonbill, local_shop{{/str}}</p>
 </div>
 </fieldset>
 

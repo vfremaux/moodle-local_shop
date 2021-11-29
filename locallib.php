@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/backup/util/includes/restore_includes.php');
 require_once($CFG->libdir.'/filestorage/tgz_packer.php');
+require_once($CFG->dirroot.'/local/shop/compatlib.php');
 
 use local_shop\Catalog;
 use local_shop\Shop;
@@ -261,10 +262,13 @@ function shop_backup_for_template($courseid, $options = array(), &$log = '') {
 
 /**
  * generates a username from given identity
- * @param object $user a user record
+ * @param object $user a user record. 
+ * @param bool $checkunique if true, generates indexed untill not found in DB.
  * @return a username
  */
-function shop_generate_username($user) {
+function shop_generate_username($user, $checkunique = false) {
+    global $DB;
+
     if (empty($user)) {
         debugging("Empty user");
         return;
@@ -279,21 +283,36 @@ function shop_generate_username($user) {
     $lastname = str_replace('\'', '', $lastname);
     $lastname = preg_replace('/\s+/', '-', $lastname);
     $username = $firstname.'.'.$lastname;
-    $username = str_replace('é', 'e', $username);
-    $username = str_replace('è', 'e', $username);
-    $username = str_replace('ê', 'e', $username);
-    $username = str_replace('ë', 'e', $username);
-    $username = str_replace('ö', 'o', $username);
-    $username = str_replace('ô', 'o', $username);
-    $username = str_replace('ü', 'u', $username);
-    $username = str_replace('û', 'u', $username);
-    $username = str_replace('ù', 'u', $username);
-    $username = str_replace('î', 'i', $username);
-    $username = str_replace('ï', 'i', $username);
-    $username = str_replace('à', 'a', $username);
-    $username = str_replace('â', 'a', $username);
-    $username = str_replace('ç', 'c', $username);
-    $username = str_replace('ñ', 'n', $username);
+    $username = str_replace('Ã©', 'e', $username);
+    $username = str_replace('Ã¨', 'e', $username);
+    $username = str_replace('Ãª', 'e', $username);
+    $username = str_replace('Ã«', 'e', $username);
+    $username = str_replace('Ã¶', 'o', $username);
+    $username = str_replace('Ã´', 'o', $username);
+    $username = str_replace('Ã¼', 'u', $username);
+    $username = str_replace('Ã»', 'u', $username);
+    $username = str_replace('Ã¹', 'u', $username);
+    $username = str_replace('Ã®', 'i', $username);
+    $username = str_replace('Ã¯', 'i', $username);
+    $username = str_replace('Ã ', 'a', $username);
+    $username = str_replace('Ã¢', 'a', $username);
+    $username = str_replace('Ã§', 'c', $username);
+    $username = str_replace('Ã±', 'n', $username);
+
+    if ($checkunique) {
+        $ix = '';
+        $usernamebase = $username;
+
+        while ($DB->record_exists('user', array('username' => $username, 'deleted' => 0))) {
+            if ($ix == '') {
+                $ix = 1;
+            } else {
+                $ix = $ix + 1;
+            }
+            $username = $usernamebase.$ix;
+        }
+    }
+
     return $username;
 }
 
@@ -497,9 +516,14 @@ function shop_close_trace($output) {
 /**
  * outputs into an open trace (ligther than debug_trace)
  * @param string $str
+ * @param string $output the destination trace (empty or 'mail')
+ * @param string $dest for mail trace, the destination user of the mail.
  */
-function shop_trace_open($str, $output) {
+function shop_trace_open($str, $output, $dest) {
     global $CFG;
+    static $iter = 0;
+
+    $iter++;
 
     $date = new DateTime();
     $u = microtime(true);
@@ -507,11 +531,16 @@ function shop_trace_open($str, $output) {
 
     if (empty($output)) {
         if (!empty($CFG->merchanttrace)) {
-            fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+            fputs($CFG->merchanttrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-  ".$str."\n");
         }
     } else if ($output == 'mail') {
         if (!empty($CFG->merchantmailtrace)) {
-            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." --  ".$str."\n");
+            fputs($CFG->merchantmailtrace, "-- ".$date->format('Y-n-d H:i:s').' '.$u." -".$iter."-\n");
+            fputs($CFG->merchantmailtrace, "MailTo: ".$dest->email."\n");
+            fputs($CFG->merchantmailtrace, "MailContent:\n");
+            fputs($CFG->merchantmailtrace, "@@@@@@@@\n");
+            fputs($CFG->merchantmailtrace, $str."\n");
+            fputs($CFG->merchantmailtrace, "@@@@@@@@\n");
         }
     }
 }
@@ -519,7 +548,7 @@ function shop_trace_open($str, $output) {
 /**
  * write to the trace
  */
-function shop_trace($str, $output = '') {
+function shop_trace($str, $output = '', $dest = null) {
     global $CFG;
 
     if (empty($output)) {
@@ -528,6 +557,9 @@ function shop_trace($str, $output = '') {
             return;
         }
     } else if ($output == 'mail') {
+        if (empty($dest)) {
+            throw new coding_exception("Shop mail trace needs the destination user to be set");
+        }
         if (!empty($CFG->merchantmailtrace)) {
             shop_trace_open($str, $output);
             return;
@@ -535,7 +567,7 @@ function shop_trace($str, $output = '') {
     }
 
     if (shop_open_trace($output)) {
-        shop_trace_open($str, $output);
+        shop_trace_open($str, $output, $dest);
         shop_close_trace($output);
     }
 }
@@ -605,12 +637,15 @@ function shop_build_context() {
 
     if (!isset($SESSION->shop)) {
         $SESSION->shop = new StdClass;
+        $SESSION->shop->shopid = 1;
     }
 
-    $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
-    if ($SESSION->shop->shopid) {
+    $shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
+
+    if ($shopid) {
         try {
-            $theshop = new Shop($SESSION->shop->shopid);
+            $theshop = new Shop($shopid);
+            $SESSION->shop = $theshop;
             $SESSION->shop->catalogid = $theshop->catalogid;
         } catch (Exception $e) {
             print_error('objecterror', 'local_shop', $e->getMessage());
@@ -620,12 +655,13 @@ function shop_build_context() {
         $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
         if ($shop = array_pop($shops)) {
             $theshop = new Shop($shop->id);
+            $SESSION->shop = $theshop;
             $SESSION->shop->catalogid = $theshop->catalogid;
         }
     }
 
     if (!$theshop) {
-        // No shops available at all. Redirect o shop management.
+        // No shops available at all. Redirect to shop management.
         redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
     }
 
@@ -662,6 +698,7 @@ function shop_build_context() {
     if (!empty($SESSION->shop->blockid)) {
         $theblock = shop_get_block_instance($SESSION->shop->blockid);
     }
+
     return array($theshop, $thecatalog, $theblock);
 }
 
@@ -824,7 +861,7 @@ function shop_get_enabled_paymodes($theshop) {
 
         if (!$instant) {
             if (!has_capability('local/shop:paycheckoverride', $systemcontext) &&
-                !has_capability('local/shop:usenoninstantpayments', $systemcontext)) {
+                !has_capability('local/shop:usenoninstantpayments', $systemcontext) && !$config->testoverride) {
                 continue;
             }
         }
@@ -918,8 +955,15 @@ function shop_get_bill_filtering() {
 
     $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
     $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
+    $customerid = optional_param('customerid', 0 + @$SESSION->shop->customerid, PARAM_INT);
     $SESSION->shop->billyear = $y;
     $SESSION->shop->billmonth = $m;
+    $SESSION->shop->customerid = $customerid;
+    if (local_shop_supports_feature('shop/partners')) {
+        $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+        $SESSION->shop->partnerid = $p;
+    }
+
     $shopid = optional_param('shopid', 0, PARAM_INT);
     $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
     $cur = optional_param('cur', 'EUR', PARAM_TEXT);
@@ -940,6 +984,9 @@ function shop_get_bill_filtering() {
     if (!empty($m)) {
         $filter['MONTH(FROM_UNIXTIME(emissiondate))'] = $m;
     }
+    if (!empty($customerid)) {
+        $filter['customerid'] = $customerid;
+    }
 
     $filterclause = '';
     $filterclause = " AND currency = '{$cur}' ";
@@ -952,8 +999,42 @@ function shop_get_bill_filtering() {
     if ($m) {
         $filterclause .= " AND MONTH(FROM_UNIXTIME(emissiondate)) = '{$m}' ";
     }
+    if ($customerid) {
+        $filterclause .= " AND customerid = '{$customerid}' ";
+    }
+
+    if (local_shop_supports_feature('shop/partners')) {
+        if (!empty($p)) {
+            $filter['partnerid'] = $p;
+            $filterclause .= " AND partnerid = '{$p}' ";
+        }
+    }
 
     $urlfilter = "y=$y&m=$m&status=$status&shopid=$shopid&cur=$cur&nopaging=$nopaging";
+    if (local_shop_supports_feature('shop/partners')) {
+        $urlfilter = "p=$p&".$urlfilter;
+    }
+
+    return array($filter, $filterclause, $urlfilter);
+}
+
+function shop_get_customer_filtering() {
+    global $SESSION;
+
+    $shopid = optional_param('shopid', 0, PARAM_INT);
+    $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
+
+    $filter = [];
+    if ($shopid) {
+        $filter['shopid'] = $shopid;
+    }
+
+    $filterclause = '';
+    if ($shopid) {
+        $filterclause .= " AND shopid = '{$shopid}' ";
+    }
+
+    $urlfilter = "shopid=$shopid&nopaging=$nopaging";
 
     return array($filter, $filterclause, $urlfilter);
 }
@@ -981,6 +1062,9 @@ function local_shop_strftimefixed($format, $timestamp=null) {
 
 function shop_load_output_class($classname) {
     global $CFG;
+
+    $parts = explode('\\', $classname);
+    $classname = array_pop($parts);
 
     $classpath = $CFG->dirroot.'/local/shop/classes/output/'.$classname.'.class.php';
     include_once($classpath);

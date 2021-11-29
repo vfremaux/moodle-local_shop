@@ -31,6 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
+use Exception;
 use local_shop\Bill;
 use local_shop\BillItem;
 
@@ -65,6 +66,15 @@ class bill_controller {
         }
 
         switch ($cmd) {
+            case 'assignpartner':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                $this->data->partnerid = required_param('partnerid', PARAM_INT);
+                break;
+
+            case 'unassignpartner':
+                $this->data->billid = required_param('billid', PARAM_INT);
+                break;
+
             case 'deletebill':
                 $this->data->billids = required_param_array('billid[]', PARAM_INT);
                 break;
@@ -129,10 +139,26 @@ class bill_controller {
         global $DB;
 
         if (!$this->received) {
-            throw new \Exception('Bill Controller triggered without data');
+            throw new Exception('Bill Controller triggered without data');
         }
 
         $null = null;
+
+        if ($cmd == 'assignpartner') {
+            if (local_shop_supports_feature('shop/partners')) {
+                $bill = new Bill($this->data->billid);
+                $bill->partnerid = $this->data->partnerid;
+                $bill->save();
+            }
+        }
+
+        if ($cmd == 'unassignpartner') {
+            if (local_shop_supports_feature('shop/partners')) {
+                $bill = new Bill($this->data->billid);
+                $bill->partnerid = 0;
+                $bill->save();
+            }
+        }
 
         // Delete a full bill ****************************** **.
         if ($cmd == 'deletebill') {
@@ -185,8 +211,9 @@ class bill_controller {
         }
 
         if ($cmd == 'recalculate') {
+            // Bill is recalculated in constructor. 
             $bill = new Bill($this->data->billid, false, $null, $null, $null); // Get a lightweight version.
-            $bill->recalculate();
+            $bill->save();
         }
 
         // Generate bill code ************************* **.

@@ -46,6 +46,8 @@ function paypal_print_test_ipn_link($transid, $shopid) {
     echo '<input type="hidden" name="custom" value="'.$custom.'" />';
     echo '<input type="hidden" name="txn_id" value="'.$txnid.'" />';
     echo '<input type="hidden" name="business" value="'.$sellerexpectedname.'" />';
+    echo '<input type="hidden" name="receiver_id" value="'.$sellerexpectedname.'" />';
+    echo '<input type="hidden" name="simulating" value="1" />';
     echo '<input type="hidden" name="payment_status" value="Completed" />';
 
     // Catch all post values that came back from Paypal.

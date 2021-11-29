@@ -136,13 +136,14 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         $productevent->datecreated = $now = time();
         $productevent->save();
 
-        $maildata->courseid = $course->id;
-        $maildata->extension = $rangeextension / DAYSECS; // Given in days.
-        $maildata->username = fullname($data->bill->user);
+        $e = new Stdclass;
+        $e->courseid = $course->id;
+        $e->extension = $rangeextension / DAYSECS; // Given in days.
+        $e->username = fullname($data->bill->user);
 
-        $productionfeedback->public = get_string('productiondata_public', 'shophandlers_STD_EXTEND_ENROL_PRERIOD', $maildata);
-        $productionfeedback->private = get_string('productiondata_private', 'shophandlers_STD_EXTEND_ENROL_PRERIOD', $maildata);
-        $productionfeedback->salesadmin = get_string('productiondata_sales', 'shophandlers_STD_EXTEND_ENROL_PRERIOD', $maildata);
+        $productionfeedback->public = get_string('productiondata_post_public', 'shophandlers_std_extendenrolperiod', $e);
+        $productionfeedback->private = get_string('productiondata_post_private', 'shophandlers_std_extendenrolperiod', $e);
+        $productionfeedback->salesadmin = get_string('productiondata_post_sales', 'shophandlers_std_extendenrolperiod', $e);
         shop_trace("[{$data->transactionid}] STD_EXTEND_ENROL_PERIOD Postpay : Complete...");
 
         return $productionfeedback;

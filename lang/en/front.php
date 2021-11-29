@@ -25,6 +25,7 @@ $string['Z6'] = 'Shipping zone OCEANIE';
 $string['accountnumber'] = 'Account number';
 $string['addparticipant'] = 'Add participant';
 $string['address'] = 'Address';
+$string['addcustomerinfo'] = 'Add my customer information';
 $string['adminoptions'] = 'Administrator options: ';
 $string['agency'] = 'Agency';
 $string['alltaxes'] = 'Total taxes ';
@@ -48,6 +49,7 @@ $string['cb'] = 'Credit card';
 $string['cbonpaypal'] = 'Credit card via Paypal';
 $string['chooseparticipant'] = 'Choose participant';
 $string['clearall'] = 'Clear all units';
+$string['close'] = 'Close';
 $string['code'] = 'Code';
 $string['configdefaultnavsteps'] = 'Some office owners may reorder the steps in the front process. Keep in mind some orders might NOT work correctly, f.e. trying to get payment before fhoc cart and customer are defined.';
 $string['configforcedownloadleaflet'] = 'Force download of leaflet';
@@ -96,6 +98,7 @@ $string['getinvoice'] = 'Get the invoice';
 $string['givetransactioncodeforallrequest'] = 'Give this identifier for any communication with us';
 $string['gotoadminlink'] = 'Go to admin screens';
 $string['gotocustomerservice'] = 'Go to your customer service area';
+$string['hasjsonerrors'] = 'This product is misconfigured with json errors. Shop administrators should review their product definition on {$a->itemname}.';
 $string['help_informations'] = 'Information about your account';
 $string['here'] = 'here.';
 $string['hideproductswhennotavailable'] = 'Hide products if not available';
@@ -107,6 +110,7 @@ $string['invoiceinformation'] = 'Invoicing';
 $string['ismorethan'] = 'For an order above';
 $string['isnotuser'] = 'Is not a {$a} user';
 $string['isuser'] = 'Is user';
+$string['isbundlepart_desc'] = 'This product is part of a bundle, it cannot be purchased alone.';
 $string['key'] = 'Key';
 $string['knownaccount'] = 'Identified User Account';
 $string['launch'] = 'Launch the order';
@@ -130,6 +134,7 @@ $string['noproductincategory'] = 'No product in category';
 $string['notallassigned'] = 'All your seats are not assigned. You may have order more units than really used. Please fix this before pursuing.';
 $string['notavailable'] = 'This product is not available for you at the moment (e.g. you may already own an active instance of it).';
 $string['notifications'] = 'Notifications';
+$string['notsameaccountmail'] = 'Your account mail is different from the mail you have given in the customer form ({$a}). Notifications will be sent to your user account mail. You may need to adjust your profile to register your new mail address.';
 $string['objects'] = 'objects';
 $string['on'] = 'On ';
 $string['oneseat'] = 'One seat per order';
@@ -154,6 +159,7 @@ $string['passwordconfirmerror'] = 'Passwords do not match!';
 $string['payment'] = 'Payment ';
 $string['paymentmethod'] = 'Pay mode';
 $string['paymode'] = 'Pay mode';
+$string['paymentservicenotification'] = '';
 $string['choosepaymentmode'] = 'Choose your pay mode';
 $string['paymodedonotpatchtoresponse'] = 'The detected paymode of the respone is different to the registered paymode in order. Error.';
 $string['payto'] = 'Thanks pay to {$a}.<br/>Print the order form and send it to ';
@@ -205,6 +211,7 @@ $string['teacher'] = 'Trainers';
 $string['testmode'] = 'Test mode';
 $string['totaldiscounted'] = 'Discounted total ';
 $string['totalpricettc'] = 'Total TI price ';
+$string['totalpriceht'] = 'Total TE price ';
 $string['totals'] = 'Totals';
 $string['totaprice'] = 'Total price';
 $string['transactionbounce'] = 'this transaction is not complete. You may confirm or cancel to finish the ordering process.';
@@ -219,6 +226,20 @@ $string['youcan'] = 'You can';
 $string['yougetdiscountof'] = 'You get discount of ';
 $string['yourorder'] = 'You order';
 $string['zipandcity'] = 'Zip and city';
+
+$string['new_password_subject_tpl'] = '%SITE%: New account registration';
+$string['new_password_message_tpl'] = '
+%TESTMODE%
+<p>Dear %FULLNAME%</p>
+
+<p>We have registered an account for you on %SITE%</p>
+<p>Login: %LOGIN%<br/>
+Password: %PASSWORD%</p>
+
+<p><a href="%URL%">Please confirm your account by login in !</a><br/>
+If something went wrong, contact our support at<br/>
+%SUPPORT%
+';
 
 $string['transaction_input_tpl'] = '
 <h3><%%SELLER%%></h3>

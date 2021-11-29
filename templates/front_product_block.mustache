@@ -36,45 +36,25 @@
     <div class="shop-front-productdef">
         <a name="{{code}}"></a>
         {{#isbundlepart}}
-            <h3 class="shop-front-partof">{{{name}}}</h3>
-            <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
-                {{{description}}}
-            </div>
-            {{#shortdescription}}
-            <div class="shop-front-description-toggle">
-                <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
-            </div>
-            {{/shortdescription}}
+            <h2 class="shop-front-partof">{{{name}}}</h2>
+            {{> local_shop/front_modal_product }}
         {{/isbundlepart}}
 
         {{^isbundlepart}}
             {{#showname}}
             {{^issetpart}}
-            <h2>{{name}}</h2>
+            <h1>{{name}}</h1>
             {{/issetpart}}
             {{#issetpart}}
-            <h4>{{name}}</h4>
+            <h2>{{name}}</h2>
             {{/issetpart}}
             {{/showname}}
             {{#showdescription}}
-            <div class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
-                {{{description}}}
-            </div>
-            {{#shortdescription}}
-            <div class="shop-front-description-toggle">
-                <img src="{{{shorthandlepixurl}}}" alt="{{readmorestr}}" title="{{readmorestr}}" id="description-toggle-{{shortname}}" class="shop-description-toggle">
-            </div>
-            {{/shortdescription}}
+            {{> local_shop/front_modal_product }}
             {{/showdescription}}
             {{#notavailable}}
-            <div class="shop-not-available">{{notavailable}}</div>
+            <div class="shop-not-available" data-reason="{{notavailablereason}}">{{{notavailablestr}}}</div>
             {{/notavailable}}
-
-            {{#hasleaflet}}
-            <div class="shop-front-leaflet">
-                <a href="{{{leafleturl}}}" target="_blank">{{leafletlinkstr}}</a>
-            </div>
-            {{/hasleaflet}}
 
             {{#canorder}}
             <div class="shop-front-refblock">
@@ -83,14 +63,14 @@
                 <div class="shop-front-pricelist">
                     {{^pricelist}}
                     <div class="shop-front-label">{{puttcstr}}</div>
-                    <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
+                    <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
                     {{/pricelist}}
                     {{#pricelist}}
 
                     <div class="shop-front-label">{{puttcstr}}</div>
                         {{#prices}}
                         <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
-                        <div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div>
+                        <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
                         {{/prices}}
                     {{/pricelist}}
                 </div>
@@ -98,16 +78,24 @@
                 {{#available}}
                 <div class="shop-front-order">
                     {{#password}}
-                    <input type="text" id="ci-pass-{{shortname}}" value="" maxlength="8" size="8"
-                                       onkeypress="check_pass_code(\'{{shortname}}\', this, event)"
-                                       title="{{needspasscodetobuystr}}" />
+                    <input type="text"
+                            id="ci-pass-{{shortname}}"
+                            data-product="{{shortname}}"
+                            value=""
+                            maxlength="8"
+                            size="8"
+                            class="local-shop-password"
+                            title="{{needspasscodetobuystr}}" />
                     <div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
 
                     {{/password}}
                     <input type="button"
                                     id="ci-{{shortname}}"
                                     value="{{buystr}}"
-                                    onclick="{{{jshandleraddunit}}}" {{{disabled}}} />
+                                    data-product="{{shortname}}"
+                                    data-maxquant="{{maxdeliveryquant}}"
+                                    class="local-shop-add-unit"
+                                    {{{disabled}}} />
 
                 </div>
                 {{/available}}

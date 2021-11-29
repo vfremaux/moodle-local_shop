@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+// Privacy.
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Card ne détient directement aucune donnée relative aux utilisateurs.';
+
 $string['pluginname'] = 'Réglement par carte bleue (générique)';
 $string['enablecard'] = 'Réglement par carte bleue';
 $string['enablecard2'] = 'Réglement par carte bleue';

@@ -23,9 +23,11 @@ $string['addoverride'] = 'Surcharger l\'élément';
 $string['addproduct'] = 'Ajouter un produit';
 $string['addset'] = 'Ajouter un assemblage';
 $string['allcategories'] = 'Toutes les catégories';
+$string['alltypes'] = 'Tous les contextes';
 $string['assets'] = 'Ressources associées';
-$string['automatoin'] = 'Automatisation';
+$string['automation'] = 'Automatisation';
 $string['behaviour'] = 'Comportement';
+$string['backtounits'] = 'Revenir aux unités produit';
 $string['billorderingnumber'] = 'Le numéro d\'ordre de la facture';
 $string['categories'] = 'Catégories';
 $string['customersnameonbill'] = 'Le nom du client mentionné sur la facture';
@@ -43,6 +45,9 @@ $string['enablehandler'] = 'Activer le traitement d\'achat&nbsp;';
 $string['eula'] = 'Texte des conditions de vente et d\'utilisation&nbsp;';
 $string['financials'] = 'Paramètres financiers';
 $string['handlerparams'] = 'Paramètres du gestionnaire&nbsp;';
+$string['helpcode'] = 'code produit';
+$string['helpshortname'] = 'nom court produit';
+$string['idnumber'] = 'Identifiant externe';
 $string['newbundle'] = 'Nouveau lot';
 $string['newcategory'] = 'Nouvelle catégorie';
 $string['newitem'] = 'Nouvel élément';
@@ -52,6 +57,7 @@ $string['noproductinbundle'] = 'Pas de produit dans le lot';
 $string['noproductincategory'] = 'Pas de produits dans cette catégorie pour ce mode d\'accès';
 $string['noproductinset'] = 'Pas de produit dans l\'assemblage';
 $string['noproducts'] = 'Aucun produits';
+$string['nounits'] = 'Pas d\'unités produits';
 $string['nocatsslave'] = 'Vous ne pouvez pas modifier les catégories (catalogue lié).';
 $string['producteulas'] = 'Termes de licence spécifique';
 $string['productiondata'] = 'Métadonnées de production';
@@ -61,23 +67,34 @@ $string['parentcategory'] = 'Parent';
 $string['quantaddressesusers'] = 'La quantité adresse des sièges&nbsp;';
 $string['renewable'] = 'Renouvelable&nbsp;';
 $string['rootcategory'] = '-- Racine --';
-$string['removeproductfrombundle'] = 'Enlever le produit du lot';
 $string['removeproductfromcatalogue'] = 'Supprimer le produit du catalogue';
-$string['removeproductfromset'] = 'Enlever le produit de l\'assemblage';
 $string['removeset'] = 'Supprimer l\'assemblage';
 $string['requiredataadvice'] = 'Votre commande nécessite des informations que vous DEVEZ FOURNIR AVANT de pouvoir soumettre.';
 $string['requireddata'] = 'Données à fournir par le client&nbsp;';
 $string['requiredformatsuccess'] = 'Le format JSON des données requises est correct.';
 $string['requireddatacaption'] = 'Certains des produits commandés nécessitent certaines données pour leur configuration. Entrez et validez les informations ci-dessous avant de continuer votre achat.';
+$string['shortname'] = 'Nom web court';
 $string['toset'] = 'Convertir en assemblage';
 $string['tobundle'] = 'Convertir en lot';
 $string['toproduct'] = 'Convertir en produit simple';
 $string['unlinkproduct'] = 'Délier le produit';
 $string['unlinkcontent'] = 'Délier les produits';
+$string['unitsearch'] = 'Chercher des unités produits';
 $string['user_enrolment'] = 'Inscription individuelle';
+$string['todate'] = ' jusqu\'au ';
+$string['unitid'] = 'Id d\'unité produit';
+$string['unitref'] = 'Unité';
+$string['billref'] = 'Facture';
+$string['unitstart'] = 'Début de validité';
+$string['unitend'] = 'Fin de validité';
+$string['unitstartdate'] = 'Début de validité du produit';
+$string['unitenddate'] = 'Fin de validité du produit';
+$string['notending'] = 'Produits sans expiration';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Le cours support client utilise la définition par défaut';
 $string['warningnocustomersupportcourse'] = 'aucun cours support client défini';
 $string['errornocustomersupportcourse'] = 'Le cours support client défini {$a} n\'existe pas';
+$string['searchforareferenceinstructions'] = 'Une référence d\'unité produit, ou une partie de la référence';
+$string['searchforacodeinstructions'] = 'Un code produit du catalogue';
 
 $string['handlerparams_help'] = '
 ## Boutique Moodle en ligne
@@ -209,3 +226,7 @@ $string['productiondata_help'] = 'Des données supplémentaires attachées au pr
 Ces données ne sont ni liées au gestionnaire, et ne sont pas des options du client, mais des données fournies à des mécanismes de boutique ou des
 customisations additionnelles. A titre d\'exemple, des données d\'identité de composant pour une vérification automatique des numéros de license.
 Entrez les données sous forme d\'une chaine JSON représentant un tableau associatif de données (simples ou complexes selon le mécanisme à alimenter).';
+
+$string['helpcode_help'] = 'Un code produit pouvant servir de jointure avec d\'autres applicatifs tiers.';
+
+$string['helpshortname_help'] = 'Le nom court du produit doit être compatible Web, Url, Html et Javascript. Il est obtenu par transforation du code produit.';

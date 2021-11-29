@@ -22,6 +22,9 @@
  */
 namespace local_shop\front;
 
+use \moodle_url;
+use \StdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
@@ -39,13 +42,19 @@ class customer_controller extends front_controller_base {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass;
         }
 
         switch ($cmd) {
-            case 'revalidate':
+            case 'login': {
                 break;
-            case 'navigate':
+            }
+
+            case 'revalidate': {
+                break;
+            }
+
+            case 'navigate': {
                 $this->data->usedistinctinvoiceinfo = optional_param('usedistinctinvoiceinfo', 0, PARAM_BOOL);
 
                 $customerinfofields = preg_grep('/customerinfo::/', array_keys($_POST));
@@ -65,6 +74,7 @@ class customer_controller extends front_controller_base {
                 $this->data->back = optional_param('back', 0, PARAM_TEXT);
 
                 break;
+            }
         }
         $this->received = true;
     }
@@ -78,7 +88,12 @@ class customer_controller extends front_controller_base {
 
         $config = get_config('local_shop');
 
-        if ($cmd == 'revalidate') {
+        if ($cmd == 'login') {
+
+            $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', ['view' => 'customer', 'shopid' => $this->theshop->id]);
+            redirect(get_login_url());
+
+        } else if ($cmd == 'revalidate') {
 
             // This comes after a customer login with a owned moodle account.
             $errors = shop_validate_customer($this->theshop);
@@ -104,59 +119,58 @@ class customer_controller extends front_controller_base {
                 $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal + $shoppingcart->shipping->value;
             } else {
                 // This is the last final payable amount.
-                $SESSION->shoppingcart->finalshippedtaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
+                $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal;
             }
 
-            if ($this->data->back) {
+            if (!empty($this->data->back)) {
                 $params = array('view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1);
-                return new \moodle_url('/local/shop/front/view.php', $params);
-            } else {
+                return new moodle_url('/local/shop/front/view.php', $params);
+            }
 
-                $shoppingcart->errors = new \StdClass;
-                $shoppingcart->errors->customerinfo = null;
-                $shoppingcart->errors->invoiceinfo = null;
-                shop_validate_customer($this->theshop);
+            $shoppingcart->errors = new StdClass;
+            $shoppingcart->errors->customerinfo = null;
+            $shoppingcart->errors->invoiceinfo = null;
+            shop_validate_customer($this->theshop);
 
-                if ($shoppingcart->usedistinctinvoiceinfo) {
-                    shop_validate_invoicing();
-                }
+            if ($shoppingcart->usedistinctinvoiceinfo) {
+                shop_validate_invoicing();
+            }
 
-                if (empty($shoppingcart->errors->customerinfo) && empty($shoppingcart->errors->invoiceinfo)) {
-                    /*
-                     * register customer in customer table now
-                     * this allows us to catch customer list, even if not going through the whole purchase
-                     * process. We will always update data for the same email.
-                     * this is not considered as reliable data, user accounts are...
-                     */
-                    $params = array('email' => $shoppingcart->customerinfo['email']);
-                    if (!$customer = $DB->get_record('local_shop_customer', $params)) {
-                        $customer = (object) $shoppingcart->customerinfo;
-                        $customer->timecreated = time();
+            if (empty($shoppingcart->errors->customerinfo) && empty($shoppingcart->errors->invoiceinfo)) {
+                /*
+                 * register customer in customer table now
+                 * this allows us to catch customer list, even if not going through the whole purchase
+                 * process. We will always update data for the same email.
+                 * this is not considered as reliable data, user accounts are...
+                 */
+                $params = array('email' => $shoppingcart->customerinfo['email']);
+                if (!$customer = $DB->get_record('local_shop_customer', $params)) {
+                    $customer = (object) $shoppingcart->customerinfo;
+                    $customer->timecreated = time();
 
-                        // This is for a new customer coming from inside out registered members. Bind it immediately.
-                        if (isloggedin() && !isguestuser()) {
-                            $customer->hasaccount = $USER->id;
-                        } else {
-                            // Keep it unassigned
-                            $customer->hasaccount = 0;
-                        }
-
-                        if (!empty($shoppingcart->usedistinctinvoiceinfo)) {
-                            // Store snapshot of current invoice info as default data for this customer.
-                            $customer->invoiceinfo = serialize($SESSION->shoppingcart->invoiceinfo);
-                        } else {
-                            $customer->invoiceinfo = '';
-                        }
-                        $shoppingcart->customerinfo['id'] = $DB->insert_record('local_shop_customer', $customer);
+                    // This is for a new customer coming from inside out registered members. Bind it immediately.
+                    if (isloggedin() && !isguestuser()) {
+                        $customer->hasaccount = $USER->id;
                     } else {
-                        $shoppingcart->customerinfo['id'] = $customer->id;
-                        $DB->update_record('local_shop_customer', $customer);
+                        // Keep it unassigned
+                        $customer->hasaccount = 0;
                     }
 
-                    $next = $this->theshop->get_next_step('customer');
-                    $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-                    return new \moodle_url('/local/shop/front/view.php', $params);
+                    if (!empty($shoppingcart->usedistinctinvoiceinfo)) {
+                        // Store snapshot of current invoice info as default data for this customer.
+                        $customer->invoiceinfo = serialize($SESSION->shoppingcart->invoiceinfo);
+                    } else {
+                        $customer->invoiceinfo = '';
+                    }
+                    $shoppingcart->customerinfo['id'] = $DB->insert_record('local_shop_customer', $customer);
+                } else {
+                    $shoppingcart->customerinfo['id'] = $customer->id;
+                    $DB->update_record('local_shop_customer', $customer);
                 }
+
+                $next = $this->theshop->get_next_step('customer');
+                $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+                return new \moodle_url('/local/shop/front/view.php', $params);
             }
         }
     }

@@ -19,7 +19,7 @@
  *
  * @package    local_shop
  * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -69,6 +69,9 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
+        $mform->addElement('hidden', 'catalogid');
+        $mform->setType('catalogid', PARAM_INT);
+
         if (!$this->is_slave()) {
             $mform->addElement('text', 'code', get_string('code', 'local_shop'), $this->attributesshort);
             $mform->setType('code', PARAM_ALPHANUMEXT);
@@ -78,6 +81,9 @@ abstract class CatalogItem_Form extends moodleform {
             $mform->addElement('hidden', 'code');
             $mform->setType('code', PARAM_ALPHANUMEXT);
         }
+
+        $mform->addElement('text', 'idnumber', get_string('idnumber', 'local_shop'), $this->attributeslong);
+        $mform->setType('idnumber', PARAM_ALPHANUMEXT);
 
         $mform->addElement('text', 'name', get_string('name', 'local_shop'), $this->attributeslong);
         $mform->setType('name', PARAM_CLEANHTML);
@@ -325,7 +331,7 @@ abstract class CatalogItem_Form extends moodleform {
 
     protected function set_name_data(&$defaults, $context) {
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogdescription', @$defaults->itemid);
+                                                 'catalogitemdescription', @$defaults->itemid);
     }
 
     protected function set_document_asset_data(&$defaults, $context) {
@@ -376,7 +382,7 @@ abstract class CatalogItem_Form extends moodleform {
         $mform = $this->_form;
 
         if (!$this->is_slave()) {
-            if ($cats = $this->_customdata['catalog']->get_categories()) {
+            if ($cats = $this->_customdata['catalog']->get_categories(true, false)) {
                 foreach ($cats as $cat) {
                     $sectionopts[$cat->id] = format_string($cat->name);
                 }
