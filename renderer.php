@@ -160,7 +160,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $shopmenu = array();
 
         if ($chooseall) {
-            $shopmenu[0] = get_string('chooseall', 'local_shop');
+            $shopmenu[0] = get_string('allshops', 'local_shop');
         }
 
         foreach ($shops as $s) {

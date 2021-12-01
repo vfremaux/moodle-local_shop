@@ -47,7 +47,7 @@ if (!$shopowner) {
     require_sesskey();
 }
 
-if (preg_match('/viewAllProductInstances|search/', $view)) {
+if (!preg_match('/viewAllProductInstances|search/', $view)) {
     $view = 'viewAllProductInstances';
 }
 
@@ -65,6 +65,7 @@ $PAGE->set_pagelayout('admin');
 
 $out = $OUTPUT->header();
 
+$mainrenderer = $PAGE->get_renderer('local_shop');
 $renderer = shop_get_renderer('purchasemanager');
 $renderer->load_context($theshop, $thecatalog, $theblock);
 

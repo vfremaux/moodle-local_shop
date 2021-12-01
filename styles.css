@@ -194,7 +194,7 @@ div.shop-bill_error {
     font-style: italic;
 }
 
-.shop-bills-options {
+.shop-entity-options {
     float: left;
 }
 
@@ -1092,8 +1092,9 @@ input.purchaseoption:checked {
     color: #080;
 }
 
-.shop-bills-tools {
+.shop-entity-tools {
     font-size: 0.8em;
+    display: flex;
 }
 
 .purchased-product-name {

@@ -62,11 +62,9 @@ $shopcount = 0 + count($shopinstances);
 if ($shopcount == 1) {
     $theshop = array_pop($shopinstances);
 
-    if (($SESSION->shop->shopid != $theshop->id)) {
+    if (($SESSION->shop->id != $theshop->id)) {
         $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'shopid' => $theshop->id];
         $redirecturl = new moodle_url('/local/shop/products/view.php', $params);
-        print_object($SESSION->shop);
-        die;
         redirect($redirecturl);
     }
     echo $out;

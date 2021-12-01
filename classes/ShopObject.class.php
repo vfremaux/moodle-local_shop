@@ -157,6 +157,7 @@ class ShopObject {
         $sql .= " FROM {{$table}} ";
         if (!empty($filter)) {
             $sql .= " WHERE ";
+            $wheres[] = ' 1 = 1 ';
             foreach ($filter as $cond => $value) {
                 if ($value == '*') {
                     continue;

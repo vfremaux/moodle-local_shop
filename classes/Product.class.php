@@ -31,10 +31,36 @@ require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 class Product extends ShopObject {
 
     protected static $table = 'local_shop_product';
+
+    /**
+     * A sub object representing the customer
+     */
+    public $customer;
+
+    /**
+     * A sub object representing the current bill item.
+     */
+    public $currentbillitem;
+
+    /**
+     * A sub object representing the first bill item that has generated this product.
+     */
+    public $initialbillitem;
+
+    /**
+     * A sub object representing the initial catalogitem of this product.
+     */
+    public $catalogitem;
+
+    /**
+     * Boolean mark if there is an associated bill.
+     */
+    public $hasbill;
 
     /**
      * Build a full product instance.
@@ -52,6 +78,33 @@ class Product extends ShopObject {
                 // This builds a lightweight proxy of the Bill, without items.
                 return;
             }
+
+            // Populate sub objects.
+            if (!empty($this->record->customerid)) {
+                // Get a lightweight customer.
+                $this->customer = new Customer($this->record->customerid, true);
+            }
+
+            if (!empty($this->record->catalogitemid)) {
+                // Get a lightweight catalog item.
+                $this->catalogitem = new CatalogItem($this->record->catalogitemid, true);
+            }
+
+            if (!empty($this->record->initialbillitemid)) {
+                $this->initialbillitem = new BillItem($this->record->initialbillitemid);
+                $this->hasbill = true;
+            }
+
+            if (!empty($this->record->currentbillitemid)) {
+                if ($this->record->currentbillitemid == $this->record->initialbillitemid) {
+                    // Use a memory ref on initial instance.
+                    $this->currentbillitem = $this->initialbillitem;
+                } else {
+                    $this->currentbillitem = new BillItem($this->record->currentbillitemid);
+                }
+                $this->hasbill = true;
+            }
+
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -218,17 +271,26 @@ class Product extends ShopObject {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    /**
+     * Get a filtered set of product instances, using filters on local_shop_cataolgitem, local_shop_product, local_shop_billitem
+     * (optional).
+     */
     public static function get_instances_on_context($filter, $order = '', $limitfrom = 0, $limitnum = '') {
         global $DB;
 
         $filterclause = '';
         $params = array();
         if (!empty($filter)) {
+            $filterstrs = [];
             foreach ($filter as $k => $v) {
-                $filterstrs[] = " $k = ? ";
-                $params[] = $v;
+                if ($v != '*' || empty($v)) {
+                    $filterstrs[] = " $k = ? ";
+                    $params[] = $v;
+                }
             }
-            $filterclause = ' AND '.implode(' AND ', $filterstrs);
+            if (!empty($filterstrs)) {
+                $filterclause = ' AND '.implode(' AND ', $filterstrs);
+            }
         }
 
         $orderclause = '';
@@ -240,6 +302,8 @@ class Product extends ShopObject {
             SELECT
                 p.*
             FROM
+                {local_shop} s,
+                {local_shop_catalog} c,
                 {local_shop_catalogitem} ci,
                 {local_shop_product} p
             LEFT JOIN
@@ -251,12 +315,20 @@ class Product extends ShopObject {
             ON
                 p.currentbillitemid = cbi.id
             WHERE
-                p.catalogitemid = ci.id
+                p.catalogitemid = ci.id AND
+                ci.catalogid = c.id AND
+                s.catalogid = c.id
                 '.$filterclause.'
             '.$orderclause.'
         ';
 
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+        /*
+        if (empty($records)) {
+            echo $sql.'<br>';
+            print_object($params);
+        }
+        */
 
         $results = array();
         if (!empty($records)) {
@@ -302,15 +374,17 @@ class Product extends ShopObject {
                 break;
 
             case 'course':
-                $course = $DB->get_record('course', array('id' => $this->instanceid));
-                $courseurl = new \moodle_url('/course/view.php', array('id' => $course->id));
-                $link = \html_writer::tag('a', format_string($enrol->fullname), array('href' => $courseurl));
+                if ($course = $DB->get_record('course', array('id' => $this->instanceid))) {
+                    $courseurl = new \moodle_url('/course/view.php', array('id' => $course->id));
+                    $link = \html_writer::tag('a', format_string($course->fullname), array('href' => $courseurl));
+                }
                 break;
 
             case 'coursecat':
-                $coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid));
-                $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
-                $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
+                if ($coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid))) {
+                    $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
+                    $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
+                }
                 break;
 
             case 'attempt':

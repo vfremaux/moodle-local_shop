@@ -926,6 +926,10 @@ class shop_bills_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * Print all search options in bills.
+     * @param object $mainrenderer the shop main renderer for global functions
+     */
     public function bill_options($mainrenderer, $fullview) {
         global $SESSION;
 

@@ -28,6 +28,8 @@ namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
 
+use moodle_url;
+
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
@@ -35,12 +37,17 @@ class Customer extends ShopObject {
 
     public static $table = 'local_shop_customer';
 
+    public $url;
+
     public function __construct($idorrecord, $light = false) {
         global $CFG;
 
         parent::__construct($idorrecord, self::$table);
 
         if ($idorrecord) {
+
+            $this->url = new moodle_url('local/shop/customer/view?php', ['view' => 'viewCustomer', 'id' => $this->record->id]);
+
             if ($light) {
                 // This builds a lightweight proxy of the Bill, without items.
                 return;
