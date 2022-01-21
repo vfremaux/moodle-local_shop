@@ -82,10 +82,13 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             }
             $product = new CatalogItem($productinstance->catalogitemid);
 
-            $expiredcount = 0;
-            $expiringcount = 0;
-            $pendingcount = 0;
-            $runningcount = 0;
+            $totals = [
+                'expired' => 0,
+                'expiring' => 0,
+                'ending' => 0,
+                'pending' => 0,
+                'running' => 0
+            ];
             $producttpl->statusclass = '';
             $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewProductDetail', 'itemid' => $product->id));
             $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
@@ -93,27 +96,17 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->reference = $productinstance->reference;
             $producttpl->extradata = $this->process_extradata($productinstance);
             $producttpl->renewable = ($product->renewable) ? get_string('yes') : '';
-            $producttpl->pend = ($productinstance->enddate) ? date('Y/m/d H:i', $productinstance->enddate) : 'N.C.';
+
+            if ($productinstance->enddate) {
+                $producttpl->pend = date('Y/m/d H:i', $productinstance->enddate);
+            } else {
+                $producttpl->pend = 'N.C.';
+            }
+
             $producttpl->pstart = date('Y/m/d H:i', $productinstance->startdate);
             $now = time();
-            if ($product->renewable) {
-                if ($productinstance->enddate && ($now > $productinstance->enddate)) {
-                    // Expired.
-                    $producttpl->statusclass = 'cs-product-expired';
-                    $expiredcount++;
-                } else if ($productinstance->enddate && $now > $productinstance->enddate - DAYSECS * 3) {
-                    // Expiring.
-                    $producttpl->statusclass = 'cs-product-expiring';
-                } else if ($now < $productinstance->startdate) {
-                    // Pending.
-                    $producttpl->statusclass = 'cs-product-pending';
-                    $pendingcount++;
-                } else {
-                    // Running.
-                    $producttpl->statusclass = 'cs-product-running';
-                    $runningcount++;
-                }
-            }
+            $statusclass = $this->get_productinstance_running_status($productinstance, $totals);
+            $producttpl->statusclass = $statusclass;
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
                 $producttpl->selcheckbox = '<input type="checkbox" id="" name="productids" value="'.$productinstance->id.'" />';
@@ -130,6 +123,40 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         }
 
         return $this->output->render_from_template('local_shop/purchaselist', $template);
+    }
+
+    protected function get_productinstance_running_status($productinstance, &$totals) {
+
+            $now = time();
+
+            if ($productinstance->enddate) {
+                if ($now > $productinstance->enddate) {
+                    // Expired.
+                    $statusclass = 'cs-product-expired';
+                    $totals['expiredcount']++;
+                } else if ($now > $productinstance->enddate - SHOP_UNIT_EXPIRATION_FORECAST_DELAY2) {
+                    // Expiring.
+                    $statusclass = 'cs-product-expiring';
+                    $totals['expiring']++;
+                } else if ($now > $productinstance->enddate - SHOP_UNIT_EXPIRATION_FORECAST_DELAY1) {
+                    // Near to Expiring.
+                    $statusclass = 'cs-product-ending';
+                    $totals['ending']++;
+                } else if ($now < $productinstance->startdate) {
+                    // Pending.
+                    $statusclass = 'cs-product-pending';
+                    $totals['pending']++;
+                } else {
+                    // Running.
+                    $statusclass = 'cs-product-running';
+                    $totals['running']++;
+                }
+            } else {
+                // Running.
+                $statusclass = 'cs-product-running';
+                $totals['running']++;
+            }
+        return $statusclass;
     }
 
     protected function get_product_commands($productinstance, $viewparams) {
@@ -289,8 +316,20 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $odd = ($odd + 1) % 2;
 
             $unittpl->reference = $product->reference;
+
             $unittpl->startdate = ($product->startdate) ? userdate($product->startdate) : 'N.C.';
             $unittpl->enddate = ($product->enddate) ? userdate($product->enddate) : 'N.C.';
+
+            $totals = [
+                'expired' => 0,
+                'expiring' => 0,
+                'ending' => 0,
+                'pending' => 0,
+                'running' => 0
+            ];
+            $statusclass = $this->get_productinstance_running_status($productinstance, $totals);
+            $producttpl->statusclass = $statusclass;
+
             $unittpl->contexttype = $product->contexttype;
 
             // Note : as internal record values are protected. We must pass them to a public object.
