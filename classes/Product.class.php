@@ -281,11 +281,16 @@ class Product extends ShopObject {
         $filterclause = '';
         $params = array();
         if (!empty($filter)) {
+            $filterstrs = [];
             foreach ($filter as $k => $v) {
-                $filterstrs[] = " $k = ? ";
-                $params[] = $v;
+                if ($v != '*' || empty($v)) {
+                    $filterstrs[] = " $k = ? ";
+                    $params[] = $v;
+                }
             }
-            $filterclause = ' AND '.implode(' AND ', $filterstrs);
+            if (!empty($filterstrs)) {
+                $filterclause = ' AND '.implode(' AND ', $filterstrs);
+            }
         }
 
         $orderclause = '';
@@ -318,6 +323,12 @@ class Product extends ShopObject {
         ';
 
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+        /*
+        if (empty($records)) {
+            echo $sql.'<br>';
+            print_object($params);
+        }
+        */
 
         $results = array();
         if (!empty($records)) {
@@ -363,15 +374,17 @@ class Product extends ShopObject {
                 break;
 
             case 'course':
-                $course = $DB->get_record('course', array('id' => $this->instanceid));
-                $courseurl = new \moodle_url('/course/view.php', array('id' => $course->id));
-                $link = \html_writer::tag('a', format_string($enrol->fullname), array('href' => $courseurl));
+                if ($course = $DB->get_record('course', array('id' => $this->instanceid))) {
+                    $courseurl = new \moodle_url('/course/view.php', array('id' => $course->id));
+                    $link = \html_writer::tag('a', format_string($course->fullname), array('href' => $courseurl));
+                }
                 break;
 
             case 'coursecat':
-                $coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid));
-                $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
-                $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
+                if ($coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid))) {
+                    $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
+                    $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
+                }
                 break;
 
             case 'attempt':

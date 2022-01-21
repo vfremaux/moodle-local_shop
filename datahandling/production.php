@@ -109,7 +109,7 @@ function product_prepay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
     $handler = $catalogitem->get_handler();
 
     if ($handler === false) {
-        // The handler exists but is disabled.
+        // The handler is disabled.
         shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
         return;
     }

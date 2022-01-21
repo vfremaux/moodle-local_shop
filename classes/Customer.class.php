@@ -162,6 +162,150 @@ class Customer extends ShopObject {
         return $customersarr;
     }
 
+    public static function get_instances_by_shop($filter, $sortorder = 'c.lastname, c.firstname', $dir = "ASC", $limitfrom = 0, $limitnum = '') {
+        global $DB;
+
+        $config = get_config('local_shop');
+
+        $params = array();
+        $shopclause = '';
+        $catalogclause = '';
+        $filterclause = '';
+        $filterclauses = [];
+
+        $theshop = null;
+        foreach ($filter as $n => $v) {
+            if ($n == 'shopid') {
+                if (!empty($filter['shopid'])) {
+                    $theshop = new Shop($filter['shopid']);
+                }
+            } else {
+                if ($v != '*' || $v == '') {
+                    $filterclauses[] = " $n = ? ";
+                    $params[] = $v;
+                }
+            }
+
+            if (!empty($filterclauses)) {
+                $filterclause = 'AND '.implode(' AND ', $filterclauses);
+            }
+        }
+
+        if (!is_null($theshop)) {
+            $shopclause = ' AND b.shopid = ? ';
+            $params[] = $theshop->id;
+
+            if ($theshop->catalogid) {
+                $catalogclause = ' AND (sh.catalogid = ? OR sh.catalogid IS NULL) ';
+                $params[] = $theshop->catalogid;
+            }
+        }
+
+        if ($sortorder == 'name') {
+            $sortorder = 'c.lastname, c.firstname';
+        }
+
+        $sql = "
+            SELECT
+               c.*,
+               SUM( CASE WHEN (b.status = 'PLACED') THEN 1 ELSE 0 END) as placedcount,
+               SUM( CASE WHEN (b.status = 'PENDING') THEN 1 ELSE 0 END) as pendingscount,
+               SUM( CASE WHEN (b.status = 'SOLDOUT' OR b.status = 'COMPLETE') THEN 1 ELSE 0 END) as billcount,
+               SUM(b.amount) as totalaccount
+            FROM
+               {local_shop_customer} as c
+            LEFT JOIN
+               {local_shop_bill} as b
+            ON
+               b.customerid = c.id
+               $shopclause
+            LEFT JOIN
+               {local_shop} sh
+            ON
+               sh.id = b.shopid
+            WHERE
+               UPPER(c.email) NOT LIKE 'TEST%'
+               $catalogclause
+               $filterclause
+            GROUP BY
+               c.id
+            ORDER BY
+               $sortorder $dir
+        ";
+
+        $customers = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+        $customersarr = array();
+        foreach ($customers as $c) {
+            $customersarr[$c->id] = new Customer($c);
+        }
+
+        return $customersarr;
+    }
+
+    public static function count_instances_by_shop($filter) {
+        global $DB;
+
+        $config = get_config('local_shop');
+
+        $params = array();
+        $shopclause = '';
+        $catalogclause = '';
+        $filterclause = '';
+        $filterclauses = [];
+
+        $theshop = null;
+        foreach ($filter as $n => $v) {
+            if ($n == 'shopid') {
+                if (!empty($filter['shopid'])) {
+                    $theshop = new Shop($filter['shopid']);
+                }
+            } else {
+                if ($v != '*' || $v == '') {
+                    $filterclauses[] = " $n = ? ";
+                    $params[] = $v;
+                }
+            }
+
+            if (!empty($filterclauses)) {
+                $filterclause = 'AND '.implode(' AND ', $filterclauses);
+            }
+        }
+
+        if (!is_null($theshop)) {
+            $shopclause = ' AND b.shopid = ? ';
+            $params[] = $theshop->id;
+
+            if ($theshop->catalogid) {
+                $catalogclause = ' AND (sh.catalogid = ? OR sh.catalogid IS NULL) ';
+                $params[] = $theshop->catalogid;
+            }
+        }
+
+        $sql = "
+            SELECT
+               COUNT(DISTINCT c.id)
+            FROM
+               {local_shop_customer} as c
+            LEFT JOIN
+               {local_shop_bill} as b
+            ON
+               b.customerid = c.id
+               $shopclause
+            LEFT JOIN
+               {local_shop} sh
+            ON
+               sh.id = b.shopid
+            WHERE
+               UPPER(c.email) NOT LIKE 'TEST%'
+               $catalogclause
+               $filterclause
+        ";
+
+        $numrecords = $DB->count_records_sql($sql, $params);
+
+        return $numrecords;
+    }
+
     public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '', $light = false) {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light);
     }

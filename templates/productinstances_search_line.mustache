@@ -14,7 +14,7 @@
         </td>
 
         <td>
-            {{startdate}} / {{enddate}}
+            {{startdate}} / <span class="{{statusclass}}">{{enddate}}</span>
         </td>
 
         <td>
@@ -26,6 +26,10 @@
             {{#hasbill}}
             <a href="{{b.url}}">{{b.id}}</a>
             {{/hasbill}}
+        </td>
+
+        <td>
+            {{{commands}}}
         </td>
     </tr>
 <!-- /local_shop/productinstances_search_line -->

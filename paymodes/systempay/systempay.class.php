@@ -511,9 +511,24 @@ class shop_paymode_systempay extends shop_paymode {
         }
         */
         // rotate on 1000000.
-        $this->_config->systempay_idseq = ($this->_config->systempay_idseq + 1) % 1000000;
-        $onlinetxid = sprintf('%06d', $this->_config->systempay_idseq);
-        set_config('systempay_idseq', $this->_config->systempay_idseq, 'local_shop');
+        global $DB;
+
+        // Avoid using potentially cached configuration. Process directly in DB.
+        $params = ['plugin' => 'local_shop', 'name' => 'systempay_idseq'];
+        try {
+            $transaction = $DB->start_delegated_transaction();
+            $systempay_idseq = $DB->get_field('config_plugins', 'value', $params);
+            $systempay_idseq = ($systempay_idseq + 1) % 1000000;
+            if ($systempay_idseq == 0) {
+                // make 000000 never available.
+                $systempay_idseq++;
+            }
+            $DB->set_field('config_plugins', 'value', $systempay_idseq, $params);
+            $transaction->allow_commit();
+        } catch (Exception $e) {
+             $transaction->rollback($e);
+        }
+        $onlinetxid = sprintf('%06d', $systempay_idseq);
 
         return $onlinetxid;
     }

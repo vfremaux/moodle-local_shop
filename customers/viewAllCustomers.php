@@ -29,12 +29,12 @@ require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Customer;
 
-$sortorder = optional_param('order', 'lastname', PARAM_TEXT);
+$sortorder = optional_param('sortorder', 'name', PARAM_TEXT);
 $dir = optional_param('dir', 'ASC', PARAM_TEXT);
 $action = optional_param('what', '', PARAM_TEXT);
 $shopid = optional_param('shopid', 0, PARAM_INT);
 $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
-$pagesize = 20;
+$pagesize = 10;
 $customerpage = optional_param('customerpage', 0, PARAM_INT);
 $offset = $customerpage * $pagesize;
 
@@ -49,7 +49,7 @@ if (!empty($action)) {
     $controller->process($action);
 }
 
-$params = array('view' => 'viewAllCustomers', 'order' => $sortorder, 'dir' => $dir);
+$params = array('view' => 'viewAllCustomers', 'sortorder' => $sortorder, 'dir' => $dir);
 $url = new moodle_url('/local/shop/customers/view.php', $params);
 
 $config = get_config('local_shop');
@@ -62,11 +62,11 @@ echo $OUTPUT->heading(get_string('customeraccounts', 'local_shop'), 1);
 
 echo $renderer->customers_options($mainrenderer);
 
-$total = Customer::count_instances($filter);
+$total = Customer::count_instances_by_shop($filter);
 if ($nopaging) {
-    $customers = Customer::get_instances($filter, $sortorder, '*');
+    $customers = Customer::get_instances_by_shop($filter, $sortorder, $dir);
 } else {
-    $customers = Customer::get_instances($filter, $sortorder, '*', $offset, $pagesize);
+    $customers = Customer::get_instances_by_shop($filter, $sortorder, $dir, $offset, $pagesize);
 }
 
 if (empty($customers)) {
@@ -81,7 +81,7 @@ if (empty($customers)) {
         echo $renderer->no_paging_switch($url, $urlfilter);
     }
 
-    echo $renderer->customers($customers);
+    echo $renderer->customers($customers, $url);
 
     if ($total > 20) {
         if ($pagingbar) {
