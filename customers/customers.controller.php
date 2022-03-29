@@ -95,6 +95,8 @@ class customers_controller {
                 $this->data->hasaccount = 0;
             }
             $this->data->timecreated = time();
+            $this->data->id = $this->data->customerid;
+            unset($this->data->customerid);
             if (empty($this->data->id)) {
                 $this->data->id = $DB->insert_record('local_shop_customer', $this->data);
             } else {

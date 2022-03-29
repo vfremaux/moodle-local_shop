@@ -44,7 +44,7 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $table = new html_table();
         $table->width = '100%';
-        $table->head = array('',
+        $table->head = array('CID',
                              "<b>$lastnamestr $firstnamestr</b>".$this->sortby($url, 'name'),
                              "<b>$emailstr</b>",
                              "<b>$placedstr</b>",
@@ -66,7 +66,11 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $row[] = $c->lastname.' '.$c->firstname;
             $email = $c->email;
             if ($c->hasaccount) {
-                $email .= '&nbsp;'.$OUTPUT->pix_icon('i/moodle_host', get_string('hasamoodleaccount', 'local_shop'));
+                $userurl = new moodle_url('/user/profile.php', ['id' => $c->hasaccount]);
+                $accountlink = '<a href="'.$userurl.'">';
+                $accountlink .= $OUTPUT->pix_icon('i/moodle_host', get_string('hasamoodleaccount', 'local_shop'));
+                $accountlink .= '</a>';
+                $email .= '&nbsp;'.$accountlink;
             }
             $row[] = $email;
             $row[] = $c->placedcount;

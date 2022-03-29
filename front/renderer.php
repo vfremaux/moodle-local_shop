@@ -862,15 +862,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $checked = (!empty($shoppingcart->usedistinctinvoiceinfo)) ? 'checked="checked"' : '';
 
-        $heading = get_string('customerinformation', 'local_shop');
-        $heading .= ' <input type="checkbox"
-                             class="local-shop-toggle-invoiceinfo"
-                             value="1"
-                             name="usedistinctinvoiceinfo"
-                            '.$checked.' />';
-        $heading .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
-        $str .= $this->output->heading($heading);
-
         $template = new StdClass;
 
         if (isloggedin() && !isguestuser()) {
@@ -941,6 +932,17 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->email = $email;
 
         $str .= $this->output->render_from_template('local_shop/front_customer_form', $template);
+
+        $postoptions = '';
+        $postoptions .= ' <input type="checkbox"
+                             class="local-shop-toggle-invoiceinfo"
+                             value="1"
+                             name="usedistinctinvoiceinfo"
+                            '.$checked.' />';
+        $postoptions .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
+        // $str .= $this->output->heading($heading);
+        $str .= $postoptions;
+
         return $str;
     }
 
@@ -966,7 +968,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-        $str .= $this->output->heading(get_string('invoiceinformation', 'local_shop'));
+        $str .= '<br/><legend>'.get_string('invoiceinformation', 'local_shop').'</legend>';
 
         $template = new StdClass;
         $template->institution = @$shoppingcart->invoiceinfo['organisation'];
@@ -1055,9 +1057,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->helper = get_string($stringkey, 'local_shop', $SESSION->shoppingcart->seats);
         $template->seats = $SESSION->shoppingcart->seats;
 
-        $template->newform = $renderer->new_participant_row($SESSION->shoppingcart->seats - count($SESSION->shoppingcart->participants));
+        $template->newform = $this->new_participant_row($SESSION->shoppingcart->seats - count($SESSION->shoppingcart->participants));
 
-        return $this->output->render_from_template('local_shop/add_participant', $template);
+        return $this->output->render_from_template('local_shop/front_add_participant', $template);
     }
 
     /**

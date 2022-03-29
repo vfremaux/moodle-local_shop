@@ -22,6 +22,7 @@ $string['privacy:metadata'] = 'Le composant Gestionaire d\'achat GenerateSeats n
 $string['handlername'] = 'Ajout de sièges non affectés';
 $string['pluginname'] = 'Ajout de sièges non affectés';
 
+$string['allcourses'] = 'Tous les cours';
 $string['assignavailableseat'] = 'Assigner un siège disponible';
 $string['assignedto'] = '<b>Attribué à :</b> {$a}';
 $string['assigninstructions'] = 'Ce siège est actuellement non assigné. vous pouvez choisir de l\'assigner à un apprenant sous votre responsablité. Si l\'apprenant est déjà inscrit dans ce cours, vous serez averti et pourrez à nouveau faire une nouvelle attribution.';
@@ -32,6 +33,12 @@ $string['enabledcourses'] = 'Modules autorisés';
 $string['errornoallowedcourses'] = 'Le produit semble mal configuré et ne semble pas avoir de cours désigné pour affecter des apprenants';
 $string['errornocustomersupportcourse'] = 'Le cours espace client {$a} n\'existe pas';
 $string['errorsupervisorrole'] = 'Le rôle superviseur {$a} n\'existe pas';
+$string['enrolinstructions'] = '
+Pour le moment, aucun apprenant n\'est encore enregistré sous votre responsabilité. Vous devez d\'abord importer des utilisateurs pour
+pouvoir les attribuer aux sièges dont vous disposez. Utilisez le (TODO) lien suivant. Vous pourrez utiliser un simple fichier texte pour donner
+les informations nécessaires. 
+';
+
 $string['incourse'] = '<b>Dans le module :</b> [{$a->shortname}] {$a->fullname}';
 $string['seatalreadyassigned'] = 'Désolé ! Il semble que {$a->user} soit déjà inscrit dans le cours {$a->course}. Vous n\'allez pas "brûler" un siège pour ça ! Choisissez une nouvelle affectation pour ce siège.';
 $string['seatassigned'] = 'Bravo et merci ! Vous avez inscrit {$a->user} au cours {$a->course}. Une confirmation va être envoyée à votre apprenant. Ce produit peut être réattribué tant que votre apprenant ne s\'est pas manifesté dans le cours. Le produit sera consommé définitivement au premier signe d\'activité de votre apprenant dans le module.';

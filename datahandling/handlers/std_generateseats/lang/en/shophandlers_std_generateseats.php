@@ -23,12 +23,17 @@ $string['handlername'] = 'Generate unassigned seats';
 $string['pluginname'] = 'Generate unassigned seats';
 
 $string['assignavailableseat'] = 'Assign an available seat';
+$string['allcourses'] = 'All courses';
 $string['assignedto'] = '<b>Assigned to:</b> {$a}';
 $string['assigninstructions'] = 'This seat is actually unassigned yet. Please choose one learner you have under your behalf and a course in which you want to add this user. If the user is already enrolled in this course, the seat will remain unassigned, you\'ll be notified and sollicitated to reassign this product.';
 $string['assignseat'] = 'Assign the seat';
 $string['assignseatlocked'] = 'Seat assignment is locked by user\'s activity';
 $string['backtocourse'] = 'Back to customer support area';
 $string['enabledcourses'] = 'Enabled courses';
+$string['enrolinstructions'] = '
+    At the moment, you have no learners registered on your behalf. You may first create accounts using the following link (TODO). You will need simple
+    CSV text file to import users.
+';
 $string['errornoallowedcourses'] = 'Product seems misconfigured and has no course allowed for assign';
 $string['errornocustomersupportcourse'] = 'Customer support course {$a} does not exist';
 $string['errorsupervisorrole'] = 'Supervisor role {$a} does not exist';

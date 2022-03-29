@@ -402,4 +402,28 @@ abstract class CatalogItem_Form extends moodleform {
     protected function is_slave() {
         return $this->_customdata['catalog']->isslave;
     }
+
+    public function validation($data, $files = []) {
+        global $DB;
+
+        $errors = [];
+
+        if (!empty($data['id'])) {
+            // Same idnumber somewhere.
+            if (!empty($data['idenumber'])) {
+                $select = ' idnumnber = ? AND id != ? ';
+                if ($DB->record_exists_select('local_shop_catalogitem', $select, [$data['idnumber'], $data['id']])) {
+                    // Some idnumber in the way. Should be unique in all moodle.
+                    $errors['idnumber'] = get_string('erroridnumberexists', 'local_shop');
+                }
+            }
+
+            // Same product code in the same catalog.
+            $select = ' code = ? AND id != ? AND catalogid = ? ';
+            if ($DB->record_exists_select('local_shop_catalogitem', $select, [$data['code'], $data['id']])) {
+                // Some product code in the way. Should be unique in the same catalog.
+                $errors['code'] = get_string('errorcodeexists', 'local_shop');
+            }
+        }
+    }
 }

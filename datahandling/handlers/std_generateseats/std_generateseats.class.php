@@ -119,7 +119,7 @@ class shop_handler_std_generateseats extends shop_handler {
         }
         */
 
-           if (!isset($data->actionparams['packsize'])) {
+        if (!isset($data->actionparams['packsize'])) {
             shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : Defaults to 1 unit pack");
             $data->actionparams['packsize'] = 1;
         }
@@ -157,7 +157,7 @@ class shop_handler_std_generateseats extends shop_handler {
         $e = new Stdclass;
         $e->txid = $data->transactionid;
         $e->username = $customeruser->username;
-        $e->seats = $data->quantity;
+        $e->seats = $data->quantity * $data->actionparams['packsize'];
 
         // Add user to customer support on real purchase.
         if (!empty($data->actionparams['customersupport'])) {
@@ -259,7 +259,6 @@ class shop_handler_std_generateseats extends shop_handler {
             $url = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $COURSE->id, 'pid' => $pid, 'method' => 'assignseat'));
             $str .= $OUTPUT->single_button($url, get_string('assignseat', 'shophandlers_std_generateseats'), 'post', $options);
         }
-        $str .= $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$COURSE->id), get_string('backtocourse', 'shophandlers_std_generateseats'));
         return $str;
     }
 
@@ -465,8 +464,25 @@ class shop_handler_std_generateseats extends shop_handler {
     }
 
     public function display_product_infos($pid, $pinfos) {
+        global $DB;
+
         foreach ($pinfos as $infokey => $info) {
             if ($infokey == 'handler') {
+                continue;
+            }
+            if ($infokey == 'enabledcourses') {
+                echo '<b>'.get_string($infokey, 'shophandlers_std_generateseats').':</b><br/>';
+                $courses = preg_split('/\\s+,/', $info);
+                $coursedescs = [];
+                foreach ($courses as $courseshort) {
+                    $fullname = $DB->get_field('course', 'fullname', ['shortname' => $courseshort]);
+                    $coursedescs[] = "[{$courseshort}] $fullname";
+                }
+                if (empty($coursedescs)) {
+                    echo get_string('allcourses', 'shophandlers_std_generateseats');
+                } else {
+                    echo implode('<br/>', $coursedescs).'<br/>';
+                }
                 continue;
             }
             echo '<b>'.get_string($infokey, 'shophandlers_std_generateseats').':</b> '.urldecode($info).'<br/>';

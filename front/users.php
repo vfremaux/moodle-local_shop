@@ -67,10 +67,10 @@ $orderbag = shop_get_orderbag($thecatalog);
 
 echo $out;
 
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
+
 echo '<center>';
 echo $renderer->progress('USERS');
-
-echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $renderer->admin_options();
 

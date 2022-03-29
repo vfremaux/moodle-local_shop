@@ -183,4 +183,8 @@ class Product_Form extends CatalogItem_Form {
         $this->set_document_asset_data($defaults, $context);
         parent::set_data($defaults);
     }
+
+    public function validation($data, $files = []) {
+        return parent::validation($data, $files);
+    }
 }

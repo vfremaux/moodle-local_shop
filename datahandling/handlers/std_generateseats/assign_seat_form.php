@@ -28,13 +28,13 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 class AssignSeatForm extends moodleform {
 
     function definition() {
-        global $USER;
+        global $USER, $OUTPUT;
 
         $mycontext = context_user::instance($USER->id);
         $mform = $this->_form;
 
         // Get users that i am behalfed on.
-        $usermenu = array();
+        $usermenu = [];
         if ($myusers = get_users_by_capability($mycontext, 'block/user_delegation:hasasbehalf', 'u.id,'.get_all_user_name_fields(true, 'u'))) {
             foreach ($myusers as $uid => $u) {
                 $usermenu[$uid] = fullname($u);
@@ -49,9 +49,15 @@ class AssignSeatForm extends moodleform {
 
         $mform->addElement('static', 'assignseatinstr', '', get_string('assigninstructions', 'shophandlers_std_generateseats'));
 
-        $mform->addElement('select', 'userid', get_string('user'), $usermenu);
-        $mform->setType('userid', PARAM_INT);
-        $coursemenu = array();
+        if (empty($usermenu)) {
+            $msg = $OUTPUT->notification(get_string('enrolinstructions', 'shophandlers_std_generateseats'));
+            $mform->addElement('static', 'nolearnersstr', '', $msg);
+        } else {
+            $mform->addElement('select', 'userid', get_string('user'), $usermenu);
+            $mform->setType('userid', PARAM_INT);
+        }
+
+        $coursemenu = [];
 
         foreach ($this->_customdata['allowedcourses'] as $cid => $c) {
             $coursemenu[$cid] = $c->shortname.' '.$c->fullname;
@@ -60,6 +66,10 @@ class AssignSeatForm extends moodleform {
         $mform->setType('courseid', PARAM_INT);
 
         $this->add_action_buttons();
+
+        if (empty($usermenu)) {
+            $mform->disabledIf('submitbutton', 'userid', 'noitemselected');
+        }
     }
 
     function validation($data, $files = array()) {
