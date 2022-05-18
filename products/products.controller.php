@@ -104,6 +104,9 @@ class product_controller {
                 $this->data->name = optional_param('name', '', PARAM_TEXT);
         }
 
+        // Get the shop id by 'id' backuped by 'shopid';
+        $this->data->shopid = optional_param('id', optional_param('shopid', 0, PARAM_INT), PARAM_INT);
+
         $this->received = true;
     }
 
@@ -284,7 +287,7 @@ class product_controller {
             case 'clone': {
                 $original = new CatalogItem($this->data->itemid);
                 $original->clone_instance();
-                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid];
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
                 redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 
@@ -296,7 +299,7 @@ class product_controller {
                 $original->handlerparams = '';
                 $original->isset = PRODUCT_SET;
                 $original->save();
-                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid];
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
                 redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 
@@ -308,14 +311,14 @@ class product_controller {
                 $original->handlerparams = '';
                 $original->isset = PRODUCT_BUNDLE;
                 $original->save();
-                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid];
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
                 redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 
             /* ****** converts a product into a set ***** */
             case 'toproduct': {
                 $original = new CatalogItem($this->data->itemid);
-                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid];
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
                 redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 

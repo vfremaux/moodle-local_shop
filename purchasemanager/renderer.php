@@ -237,6 +237,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $sortorder = optional_param('sortorder', 'id', PARAM_TEXT);
         $customerid = optional_param('customerid', 0, PARAM_INT);
         $contexttype = optional_param('contexttype', '*', PARAM_TEXT);
+        $metadatafilter = optional_param('metadatafilter', '*', PARAM_TEXT);
         $shopid = optional_param('shopid', 0, PARAM_INT);
 
         $template = new StdClass;

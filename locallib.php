@@ -643,7 +643,11 @@ function shop_build_context() {
         $SESSION->shop->shopid = 1;
     }
 
-    $shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
+    $shopid = optional_param('shopid', false, PARAM_INT);
+    if (!$shopid) {
+        // failover with 'id' if not shopid.
+        $shopid = optional_param('id', @$SESSION->shop->shopid, PARAM_INT);
+    }
 
     if ($shopid) {
         try {

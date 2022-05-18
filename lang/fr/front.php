@@ -268,4 +268,3 @@ $string['transaction_input_tpl'] = '
 <hr>
 <a href="<%%SERVER_URL%%>/login/index.php?ticket=<%%TICKET%%>">Visualiser la commande dans la gestion commerciale</a>
 ';
-

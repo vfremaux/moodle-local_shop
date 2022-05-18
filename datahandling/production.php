@@ -110,7 +110,7 @@ function product_prepay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
 
     if ($handler === false) {
         // The handler is disabled.
-        shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
+        shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled or not set for {$anitem->itemcode}");
         return;
     }
 
@@ -218,8 +218,8 @@ function product_postpay_item(&$anitem, &$catalogitem, &$afullbill, &$response) 
     $handler = $catalogitem->get_handler();
 
     if ($handler === false) {
-        // The handler exists but is disabled.
-        shop_trace("[{$afullbill->transactionid}] Postpay Production : Handler disabled for {$anitem->itemcode}");
+        // The handler is disabled.
+        shop_trace("[{$afullbill->transactionid}] Postpay Production : Handler disabled or not set for {$anitem->itemcode}");
         return;
     }
 
