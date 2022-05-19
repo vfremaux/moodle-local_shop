@@ -25,7 +25,8 @@ $string['Z6'] = 'Port dû zone OCEANIE';
 $string['accountnumber'] = 'N° de compte&ensp;';
 $string['addparticipant'] = 'Ajouter un participant';
 $string['address'] = 'Adresse&ensp;';
-$string['addcustomerinfo'] = 'Je renseigne mon compte client';
+$string['addcustomerinfo'] = '<p>Utilisez le formulaire ci-dessous pour créer votre compte.
+Vous recevrez un mail de confirmation avec vos codes d\'accès.</p>';
 $string['adminoptions'] = 'Outils administrateur&nbsp;:&ensp;';
 $string['agency'] = 'Guichet';
 $string['alltaxes'] = 'Total taxes&ensp;';

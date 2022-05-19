@@ -439,20 +439,23 @@ class CatalogItem extends ShopObject {
 
         if (!empty($this->isset)) {
             // Bundle or set.
+            debug_trace('Catalog item get handler info : Is a set or a bundle. No handler', TRACE_DEBUG);
             return [null,null];
         }
 
         $handler = null;
         $methodname = null;
 
+        // TODO : Rationalize .... there is probably only one case to process.
         if ($type == 'postprod') {
-            $productinfo = $this->extract_production_data();
 
-            if (empty($productinfo->handler)) {
+            $hashandler = $this->enablehandler;
+            if (empty($hashandler)) {
+                debug_trace('Catalog item get handler info : Has no handler declared', TRACE_DEBUG);
                 return [null, null];
             }
 
-            $h = $productinfo->handler;
+            $h = $this->enablehandler;
 
             if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
                 print_error('errorbadhandler', 'local_shop', $h);
@@ -460,13 +463,14 @@ class CatalogItem extends ShopObject {
 
             include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
 
-            $classname = 'shop_handler_'.$productinfo->handler;
+            $classname = 'shop_handler_'.$h;
             $handler = new $classname('');
         } else {
             $handler = $this->get_handler();
             if (is_object($handler)) {
                 $classname = get_class($handler);
             } else {
+                debug_trace('Catalog item get handler info : No handler found', TRACE_DEBUG);
                 return [null, null];
             }
         }
@@ -481,6 +485,7 @@ class CatalogItem extends ShopObject {
                 if ($type == 'postprod') {
                     print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
                 } else {
+                    debug_trace('Catalog item get handler info : Info type not yet supported', TRACE_DEBUG);
                     return [null, null];
                 }
             }
@@ -502,8 +507,9 @@ class CatalogItem extends ShopObject {
         if (!empty($productiondata)) {
             if ($pairs = explode('&', $this->productiondata)) {
                 foreach ($pairs as $pair) {
-                    list($key, $value) = explode('=', $pair);
-                    $info->$key = $value;
+                    // Affectation may be empty.
+                    $pair = explode('=', $pair);
+                    $info->{$pair[0]} = @$pair[1];
                 }
             }
         }

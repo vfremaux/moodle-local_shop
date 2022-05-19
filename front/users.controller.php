@@ -117,7 +117,7 @@ class users_controller extends front_controller_base {
                     $SESSION->shoppingcart->participants = array();
                 }
 
-                if ($moodleuser = $DB->get_record('user', array('lastname' => $pt->lastname, 'email' => $pt->email))) {
+                if ($moodleuser = $DB->get_record('user', ['lastname' => $pt->lastname, 'email' => $pt->email])) {
                     $pt->moodleid = $moodleuser->id;
                 }
 

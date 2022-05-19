@@ -100,14 +100,20 @@ class ShopObject {
         return true;
     }
 
-    public static function exists($id) {
+    public static function exists($id, $table = '') {
         global $DB;
 
-        if (empty(self::$table)) {
-            throw new coding_exception("Shop object exists :Internal table should have been initialized. Review coding.");
+        if (empty($table)) {
+            if (empty(self::$table)) {
+                throw new coding_exception("Shop object exists :Internal table should have been initialized. Review coding.");
+            } else {
+                $table = self::$table;
+            }
+        } else {
+            $table = 'local_shop_'.$table;
         }
 
-        return $DB->record_exists(self::$table, array('id' => $id));
+        return $DB->record_exists($table, array('id' => $id));
     }
 
     /**

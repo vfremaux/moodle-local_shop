@@ -25,7 +25,9 @@ $string['Z6'] = 'Shipping zone OCEANIE';
 $string['accountnumber'] = 'Account number';
 $string['addparticipant'] = 'Add participant';
 $string['address'] = 'Address';
-$string['addcustomerinfo'] = 'Add my customer information';
+$string['addcustomerinfo'] = '<p>Fill the form above with your customer information.
+You will receive futher instructions by mail to access your customer working place.</p>
+';
 $string['adminoptions'] = 'Administrator options: ';
 $string['agency'] = 'Agency';
 $string['alltaxes'] = 'Total taxes ';

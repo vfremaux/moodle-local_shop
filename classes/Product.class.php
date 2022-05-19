@@ -253,13 +253,38 @@ class Product extends ShopObject {
     }
 
     /**
+     * get info out of production data (in product)
+     * @return an object
+     */
+    public function extract_production_data() {
+
+        $info = new \StdClass();
+
+        $productiondata = $this->productiondata;
+
+        if (!empty($productiondata)) {
+            if ($pairs = explode('&', $this->productiondata)) {
+                foreach ($pairs as $pair) {
+                    // Affectation may be empty.
+                    $pair = explode('=', $pair);
+                    $info->{$pair[0]} = @$pair[1];
+                }
+            }
+        }
+
+        return $info;
+    }
+
+    /**
      * Defers to underlying catalogitem the request for info about handler
      */
     public function get_handler_info($method, $type = 'postprod') {
-        if (CatalogItem::exists($this->record->catalogitemid)) {
+
+        if (CatalogItem::exists($this->record->catalogitemid, 'catalogitem')) {
             $ci = new CatalogItem($this->record->catalogitemid);
             return $ci->get_handler_info($method, $type);
         }
+        debug_trace("Product get handler info : could not identify CatalogItem ", TRACE_DEBUG);
         return [null, null];
     }
 
