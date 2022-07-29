@@ -119,7 +119,7 @@ class customer_controller extends front_controller_base {
                 $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal + $shoppingcart->shipping->value;
             } else {
                 // This is the last final payable amount.
-                $SESSION->shoppingcart->finalshippedtaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
+                $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal;
             }
 
             if (!empty($this->data->back)) {

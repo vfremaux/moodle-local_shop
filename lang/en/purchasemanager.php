@@ -41,4 +41,5 @@ $string['purchasedprice'] = 'Price';
 $string['startdate'] = 'From';
 $string['testkey'] = 'Test the licence key';
 $string['testproduct'] = 'Test product';
+$string['registered_product'] = 'Registered';
 $string['unassigned'] = '--- Unassigned ---';

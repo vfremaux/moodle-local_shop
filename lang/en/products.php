@@ -44,6 +44,7 @@ $string['handlerparams'] = 'Handler parameters';
 $string['helpcode'] = 'Product Code';
 $string['helpshortname'] = 'Product Shortname';
 $string['hashandlers'] = 'This product has action handlers';
+$string['idnumber'] = 'Id number';
 $string['maxquant'] = 'Q max';
 $string['newbundle'] = 'New bundle';
 $string['newcategory'] = 'New category';

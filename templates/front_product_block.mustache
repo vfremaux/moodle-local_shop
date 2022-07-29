@@ -53,7 +53,7 @@
             {{> local_shop/front_modal_product }}
             {{/showdescription}}
             {{#notavailable}}
-            <div class="shop-not-available">{{{notavailablestr}}}</div>
+            <div class="shop-not-available" data-reason="{{notavailablereason}}">{{{notavailablestr}}}</div>
             {{/notavailable}}
 
             {{#canorder}}

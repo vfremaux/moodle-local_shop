@@ -182,7 +182,9 @@ $string['print_procedure_text_invoice_tpl'] = '
 ';
 
 $string['success_followup_text_tpl'] = '
-<p>Votre paiement a été confirmé par le gestionnaire de votre compte. Nous avons prcoédé à la mise en oeuvre de vos produits.</p>
+<p>Votre paiement a été confirmé par le gestionnaire de votre compte. Nous avons procédé à la mise en oeuvre de vos produits.</p>
+<p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne trouvez pas de courriel dans votre boite de réception, 
+pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
 <p>Si vous éprouvez des difficultés d\'accès, n\'hésitez
 pas à contacter notre service commercial <%%SUPPORT%%>.</p>
 ';

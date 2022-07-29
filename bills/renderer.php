@@ -581,7 +581,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         try {
             $outputclass = 'front_taxes';
             shop_load_output_class($outputclass);
-            $tpldata = new \local_shop\output\front_taxes($bill->taxlines, $bill->finaltaxestotal, $bill->theshop);
+            $tpldata = new \local_shop\output\front_taxes($bill->taxlines, $bill->theshop);
             $template = $tpldata->export_for_template($renderer);
             return $this->output->render_from_template('local_shop/bills_full_taxes', $template);
         } catch (Exception $e) {
@@ -614,39 +614,75 @@ class shop_bills_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/bills_bill_footer', $template);
     }
 
-    public function bill_merchant_line($portlet) {
+    public function bill_merchant_line($bill) {
+        global $CFG;
 
-        if (is_null($portlet)) {
+        if (local_shop_supports_feature('shop/discounts')) {
+            include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
+            $hasdiscounts = \local_shop\Discount::count(['shopid' => $this->theshop->id]);
+        }
+
+        if (local_shop_supports_feature('shop/partners')) {
+            $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+        }
+
+        if (is_null($bill)) {
             $template = new StdClass;
             $template->head = true;
+            $template->haspartners = !($p > 1);
+            $template->hasdiscounts = $hasdiscounts;
             return $this->output->render_from_template('local_shop/bills_merchant_line', $template);
         }
 
         $template = new StdClass;
         $template->head = false;
-        $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $portlet->id);
-        $template->billurl = new moodle_url('/local/shop/bills/view.php', $params);
-        $template->emissiondate = date('Ymd', $portlet->emissiondate);
-        $template->id = $portlet->id;
+        $template->haspartners = !($p > 1);
+        $template->hasdiscounts = $hasdiscounts;
 
-        if (!empty($portlet->customer)) {
-            $template->firstname = $portlet->customer->firstname;
-            $template->lastname = $portlet->customer->lastname;
+        if ($hasdiscounts) {
+            local_shop\Discount::export_to_bill_template($template, $bill);
         }
 
-        $params = array('transid' => $portlet->transactionid, 'shopid' => $this->theshop->id);
+        // Magic getter trap !!
+        $partnerid = $bill->partnerid;
+        if ($template->haspartners && !empty($partnerid)) {
+            include_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+            $partner = new \local_shop\Partner($bill->partnerid);
+            $template->partnerkey = $partner->partnerkey;
+            $template->partnername = $partner->name;
+        }
+
+        $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $bill->id);
+        $template->billurl = new moodle_url('/local/shop/bills/view.php', $params);
+        $template->emissiondate = date('Ymd', $bill->emissiondate);
+        $template->id = $bill->id;
+
+        if (!empty($bill->customer)) {
+            $template->firstname = $bill->customer->firstname;
+            $template->lastname = $bill->customer->lastname;
+        }
+
+        $params = array('transid' => $bill->transactionid, 'shopid' => $this->theshop->id);
         $template->scanurl = new moodle_url('/local/shop/front/scantrace.php', $params);
-        $template->transactionid = $portlet->transactionid;
-        $template->onlinetransactionid = $portlet->onlinetransactionid;
+        $template->transactionid = $bill->transactionid;
+        $template->onlinetransactionid = $bill->onlinetransactionid;
 
-        $template->emissiondatestr = strftime('%c', $portlet->emissiondate);
-        $template->idnumber = $portlet->idnumber;
-        $template->amount = sprintf("%.2f", round($portlet->amount, 2));
-        $template->currency = get_string($portlet->currency.'symb', 'local_shop');
+        $template->emissiondatestr = strftime('%c', $bill->emissiondate);
+        $template->idnumber = $bill->idnumber;
 
-        $params = array('id' => $this->theshop->id, 'view' => 'viewCustomer', 'customer' => $portlet->customer->id);
+        $untaxedamount = sprintf("%.2f", round($bill->untaxedamount, 2));
+        $template->amount1 = $untaxedamount;
+        $template->amountsource1 = 'untaxedamount';
+        if ($untaxedamount != $bill->amount) {
+            $amount = sprintf("%.2f", round($bill->amount, 2));
+            $template->amount2 = $amount;
+            $template->amountsource2 = 'amount';
+        }
+        $template->currency = get_string($bill->currency.'symb', 'local_shop');
+
+        $params = array('id' => $this->theshop->id, 'view' => 'viewCustomer', 'customer' => $bill->customer->id);
         $template->customerurl = new moodle_url('/local/shop/customers/view.php', $params);
-        $template->email = $portlet->email;
+        $template->email = $bill->email;
 
         return $this->output->render_from_template('local_shop/bills_merchant_line', $template);
     }
@@ -714,55 +750,15 @@ class shop_bills_renderer extends local_shop_base_renderer {
         global $OUTPUT;
 
         $template = new StdClass;
-        $template->heading = $OUTPUT->heading(get_string('attachements', 'local_shop'));
 
-        $fs = get_file_storage();
-
-        $contextid = context_system::instance()->id;
-        $attachments = $fs->get_area_files($contextid, 'local_shop', 'billattachments', $bill->id, true);
-        if (empty($attachments)) {
-            $template->attachment = false;
-            $template->nobillattachements = $OUTPUT->notification(get_string('nobillattachements', 'local_shop'));
+        if (!local_shop_supports_feature('bill/attachements')) {
+            $template->billnoattachementnotification = $OUTPUT->notification(get_string('billattachementsispro', 'local_shop'));
         } else {
-            $template->attachment = true;
-            foreach ($attachments as $afile) {
-                $attachedfiletpl = $this->attachement($afile, $bill);
-                $template->attachedfiles[] = $attachedfiletpl;
-            }
+            // We should already be in an a pro extended renderer.
+            $template = $this->export_attachements_template($bill);
         }
-
-        $params = array('type' => 'bill', 'billid' => $bill->id, 'id' => $this->theshop->id);
-        $attachurl = new moodle_url('/local/shop/bills/attachto.php', $params);
-        $template->attachurl = $attachurl;
 
         return $this->output->render_from_template('local_shop/bills_bill_attachments', $template);
-    }
-
-    public function attachment($file, $bill) {
-        global $OUTPUT;
-
-        $template = new StdClass;
-        $context = context_system::instance();
-
-        $pathinfo = pathinfo($file->get_filename());
-        $type = strtoupper($pathinfo['extension']);
-        $filename = $pathinfo['basename'];
-        $fileicon = $OUTPUT->image_url("/f/$type");
-        if (!file_exists($fileicon)) {
-            $template->fileicon = $OUTPUT->image_url('/f/unkonwn');
-        }
-
-        $template->filename = $file->get_filename();
-        $template->fileurl = moodle_url::make_pluginfile_url($context->id, 'local_shop', 'billattachments',
-                                                   $file->get_itemid(), '/', $filename);
-
-        $template->filesize = $file->get_filesize();
-
-        $params = array('id' => $bill->id, 'what' => 'unattach', 'type' => $portlet->attachementtype,
-                        'file' => $filename);
-        $template->linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-
-        return $template;
     }
 
     public function bill_controls($bill) {
@@ -843,10 +839,43 @@ class shop_bills_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/bills_bill_status_line', $template);
     }
 
-    public function bill_group_subtotal($subtotal, $billcurrency, $samecurrency) {
+    /**
+     * Prints subtotal row of the bill list
+     * @param number $data a data stub as an associative array giving data1, source1 data2 and source 2 values for resp. primary and secondary subtotal.
+     * @param string $billcurrency currency symbol.
+     * @param bool $smaecurrency should be set false if all bills in the list do not share the same currecy unit.
+     */
+    public function bill_group_subtotal($data, $billcurrency, $samecurrency) {
+        global $CFG;
+
+        if (local_shop_supports_feature('shop/partners')) {
+            $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+        }
+
         $template = new StdClass;
 
-        $template->subtotal = sprintf('%.2f', round($subtotal, 2));
+        // Adjust span of total row.
+        $template->span = 5;
+        if ($p) {
+            $template->span -= 1;
+        }
+
+        if (local_shop_supports_feature('shop/discounts')) {
+            include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
+            if (local_shop\Discount::count(['shopid' => $this->theshop->id])) {
+                $template->span += 1;
+            }
+        }
+
+        $template->subtotal1 = sprintf('%.2f', round($data['data1'], 2));
+        $template->source1 = $data['source1'];
+
+        if ($data['data1'] != $data['data2']) {
+            $template->hassubtotal2 = true;
+            $template->subtotal2 = sprintf('%.2f', round($data['data2'], 2));
+            $template->source2 = $data['source2'];
+        }
+
         $template->currency = get_string($billcurrency.'symb', 'local_shop');
         $template->issamecurrency = $samecurrency;
 
@@ -866,6 +895,12 @@ class shop_bills_renderer extends local_shop_base_renderer {
                         'm' => $m,
                         'shopid' => $shopid,
                         'status' => $status);
+
+        if (local_shop_supports_feature('shop/partners')) {
+            $p = optional_param('p', 0, PARAM_INT);
+            $params['p'] = $p;
+        }
+
         $excelurl = new moodle_url('/local/shop/export/export.php', $params);
         $billurl = new moodle_url('/local/shop/bills/edit_bill.php', array('shopid' => $theshop->id));
 
@@ -896,6 +931,9 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
         $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
+        if (local_shop_supports_feature('shop/partners')) {
+            $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+        }
         $shopid = optional_param('shopid', 0, PARAM_INT);
         $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
         $cur = optional_param('cur', 'EUR', PARAM_TEXT);
@@ -906,15 +944,20 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
 
-        $params = array('view' => 'viewAllBills',
-                        'dir' => $dir,
-                        'order' => $sortorder,
-                        'status' => $status,
-                        'customerid' => $customerid,
-                        'shopid' => $shopid,
-                        'cur' => $cur,
-                        'y' => $y,
-                        'm' => $m);
+        $params = array(
+            'view' => 'viewAllBills',
+            'dir' => $dir,
+            'order' => $sortorder,
+            'status' => $status,
+            'customerid' => $customerid,
+            'shopid' => $shopid,
+            'cur' => $cur,
+            'y' => $y,
+            'm' => $m
+        );
+        if (local_shop_supports_feature('shop/partners')) {
+            $params['p'] = $p;
+        }
 
         $url = new moodle_url('/local/shop/bills/view.php', $params);
         $url->remove_params('cur');
@@ -931,6 +974,16 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $url = new moodle_url('/local/shop/bills/view.php', $params);
         $url->remove_params('m');
         $template->monthselect = $mainrenderer->month_choice($m, $url, true);
+
+        $url = new moodle_url('/local/shop/bills/view.php', $params);
+        $url->remove_params('customerid');
+        $template->customerselect = $mainrenderer->customer_choice($customerid, $url, true);
+
+        if (local_shop_supports_feature('shop/partners')) {
+            $url = new moodle_url('/local/shop/bills/view.php', $params);
+            $url->remove_params('p');
+            $template->partnerselect = $mainrenderer->partner_choice($p, $url, true);
+        }
 
         $params = array('view' => 'search');
         $template->searchurl = new moodle_url('/local/shop/bills/view.php', $params);
@@ -957,5 +1010,20 @@ class shop_bills_renderer extends local_shop_base_renderer {
         }
 
         return $this->output->render_from_template('local_shop/bills_options', $template);
+    }
+
+    public function ownership($bill) {
+        global $OUTPUT;
+
+        $template = new StdClass;
+
+        if (!local_shop_supports_feature('shop/partners')) {
+            $template->billnoownershipnotification = $OUTPUT->notification(get_string('billownershipispro', 'local_shop'));
+        } else {
+            // We should already be in an a pro extended renderer.
+            $template = $this->export_ownership_template($bill);
+        }
+
+        return $this->output->render_from_template('local_shop/bills_bill_ownership', $template);
     }
 }

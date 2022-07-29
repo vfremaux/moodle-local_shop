@@ -70,10 +70,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl = new StdClass;
             $billitem = null;
             if ($productinstance->initialbillitemid) {
-                $billitem = new BillItem($productinstance->initialbillitemid, false, $this->theshop);
+                $billitem = new BillItem($productinstance->initialbillitemid, false, []);
             }
             if ($productinstance->currentbillitemid) {
-                $currentbillitem = new BillItem($productinstance->currentbillitemid, false, $this->theshop);
+                $currentbillitem = new BillItem($productinstance->currentbillitemid, false, []);
                 $pix = $OUTPUT->pix_icon('bill', '', 'local_shop');
                 $params = array('view' => 'viewBill', 'billid' => $currentbillitem->billid);
                 $linkurl = new moodle_url('/local/shop/bills/view.php', $params);

@@ -4,15 +4,18 @@
 <!-- local_shop/bills_group_subtotal -->
     <tr>
         <td colspan="1" class="groupsubtotal">
-            {{#str}}total, local_shop{{/str}}
+        <b></b>{{#str}}total, local_shop{{/str}}</b>
         </td>
 
-        <td colspan="5" class="groupsubtotal">
+        <td colspan="{{span}}" class="groupsubtotal">
         </td>
 
         <td align="right" class="groupsubtotal">
             {{#issamecurrency}}
-                <b>{{subtotal}}&nbsp;{{{currency}}}</b>
+                <div class="amount-primary" data-source="{{source1}}"><b>{{subtotal1}}&nbsp;{{{currency}}}</b></div>
+                {{#hassubtotal2}}
+                <div class="amount-secondary" data-source="{{source2}}"><b>{{subtotal2}}&nbsp;{{{currency}}}</b></div>
+                {{/hassubtotal2}}
             {{/issamecurrency}}
             {{^issamecurrency}}
                 {{#str}}nosamecurrency, local_shop{{/str}}

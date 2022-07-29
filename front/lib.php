@@ -309,19 +309,20 @@ function shop_get_payment_plugin(&$shopinstance, $pluginname = null) {
  * @param string $fieldtoreturn 'starttime' or 'endtime'
  * @param objectref &$course a reference course
  */
-function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, &$course) {
+function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 
     $starttime = (empty($handlerdata->actionparams['starttime'])) ? time() : $handlerdata->actionparams['starttime'];
-    if ($course->startdate > $starttime) {
+    if (!is_null($course) && $course->startdate > $starttime) {
         $starttime = $course->startdate;
     }
 
     switch ($fieldtoreturn) {
-        case 'starttime':
+        case 'starttime': {
             return $starttime;
             break;
+        }
 
-        case 'endtime':
+        case 'endtime': {
             if (!array_key_exists('endtime', $handlerdata->actionparams)) {
                 // Do NOT use empty here for testing as results comes from a magic __get()!
                 if ($handlerdata->catalogitem->renewable == 1) {
@@ -361,6 +362,7 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, &$course) {
             }
             return $endtime;
             break;
+        }
     }
 }
 

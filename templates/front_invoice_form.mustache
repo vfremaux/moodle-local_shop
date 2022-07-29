@@ -61,6 +61,7 @@
                        id="id_invoice_lastname"
                        name="invoiceinfo::lastname"
                        size="20"
+                       maxlength="40"
                        onchange="setupper(this)"
                        value="{{{lastname}}}" />
             </div>
@@ -75,6 +76,7 @@
                        id="id_invoice_firstname"
                        name="invoiceinfo::firstname"
                        size="20"
+                       maxlength="40"
                        onchange="capitalizewords(this)"
                        value="{{{firstname}}}" />
             </div>
@@ -89,6 +91,7 @@
                        id="id_invoice_email"
                        name="invoiceinfo::email"
                        size="50"
+                       maxlength="80"
                        onchange="checkemail(this)"
                        value="{{{email}}}" />
             </div>
@@ -102,7 +105,8 @@
                 <input type="text"
                        id="id_invoice_address"
                        name="invoiceinfo::address"
-                       size="26"
+                       size="50"
+                       maxlength="255"
                        onchange="setupper(this)"
                        value="{{{address}}}" />
             </div>
@@ -117,6 +121,7 @@
                        id="id_invoice_city"
                        name="invoiceinfo::city"
                        size="26"
+                       maxlength="40"
                        onchange="setupper(this)"
                        value="{{{city}}}" />
             </div>
@@ -131,6 +136,7 @@
                        id="id_invoice_zip"
                        name="invoiceinfo::zip"
                        size="6"
+                       maxlength="6"
                        value="{{{zip}}}" />
             </div>
         </div>
@@ -153,6 +159,7 @@
                        id="id_vatcode"
                        name="invoiceinfo::vatcode"
                        size="15"
+                       maxlength="20"
                        value="{{{vatcode}}}" />
             </div>
         </div>

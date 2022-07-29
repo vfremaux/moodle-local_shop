@@ -77,25 +77,13 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
 
     echo $renderer->invoice_header($afullbill);
 
-    echo '<table cellspacing="5" class="generaltable" width="100%">';
+    echo '<div id="online-order" style="margin-top:20px">';
 
-    echo '<div id="order" style="margin-top:20px">';
-
-    echo '<table cellspacing="5" class="generaltable" width="100%">';
-    echo $renderer->order_line(null);
-    $hasrequireddata = array();
-
-    foreach ($afullbill->items as $biid => $bi) {
-        if ($bi->type == 'BILLING') {
-            echo $renderer->order_line($bi->catalogitem->shortname, $bi->quantity);
-        } else if ($bi->type == 'SHIPPING') {
-            echo $renderer->bill_line($bi);
-        }
-    }
-    echo '</table>';
-
+    echo $renderer->order($afullbill, $theshop);
     echo $renderer->full_order_totals($afullbill, $theshop);
     echo $renderer->full_order_taxes($afullbill, $theshop);
+
+    echo '</div>';
 
     echo $OUTPUT->heading(get_string('paymode', 'local_shop'), 2, '', 'invoice-paymode');
 
@@ -104,8 +92,10 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
     $classname = 'shop_paymode_'.$afullbill->paymode;
 
     echo '<div id="shop-order-paymode">';
+
     $pm = new $classname($theshop);
     $pm->print_name();
+
     echo '</div>';
 
     // A specific report.
@@ -115,7 +105,6 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
         echo $OUTPUT->box_end();
     }
 } else {
-
     echo $OUTPUT->box_start();
     echo $config->sellername.' ';
     echo shop_compile_mail_template('post_billing_message', array(), '');

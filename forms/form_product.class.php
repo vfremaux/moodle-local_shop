@@ -97,9 +97,11 @@ class Product_Form extends CatalogItem_Form {
         $label = get_string('shownameinset', 'local_shop');
         $group[] = &$mform->createElement('advcheckbox', 'showsnameinset', '', $label);
         $mform->setDefault('showsnameinset', 1);
+
         $label = get_string('showdescriptioninset', 'local_shop');
         $group[] = &$mform->createElement('advcheckbox', 'showsdescriptioninset', '', $label);
         $mform->setDefault('showsdescriptioninset', 1);
+
         $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
 
         $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));

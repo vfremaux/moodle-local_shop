@@ -108,9 +108,9 @@ class order_controller extends front_controller_base {
                               'COUNTRY' => $shoppingcart->customerinfo['country'],
                               'PAYMODE' => $shoppingcart->paymode,
                               'ITEMS' => $items,
-                              'AMOUNT' => sprintf("%.2f", round($shoppingcart->untaxedtotal, 2)),
-                              'TAXES' => sprintf("%.2f", round($shoppingcart->taxestotal, 2)),
-                              'TTC' => sprintf("%.2f", round($shoppingcart->taxedtotal, 2)));
+                              'AMOUNT' => sprintf("%.2f", round($shoppingcart->finaluntaxedtotal, 2)),
+                              'TAXES' => sprintf("%.2f", round($shoppingcart->finaltaxestotal, 2)),
+                              'TTC' => sprintf("%.2f", round($shoppingcart->finaltaxedtotal, 2)));
                 $salesnotification = shop_compile_mail_template('transaction_input', $vars, '');
 
                 if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
