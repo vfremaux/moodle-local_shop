@@ -61,6 +61,7 @@ class product_controller {
             return;
         } else {
             $this->data = new \StdClass;
+            $this->data->categoryid = optional_param('categoryid', 0, PARAM_INT);
         }
 
         switch ($cmd) {
@@ -102,6 +103,9 @@ class product_controller {
                 $this->data->shortname = optional_param('shortname', '', PARAM_TEXT);
                 $this->data->name = optional_param('name', '', PARAM_TEXT);
         }
+
+        // Get the shop id by 'id' backuped by 'shopid';
+        $this->data->shopid = optional_param('id', optional_param('shopid', 0, PARAM_INT), PARAM_INT);
 
         $this->received = true;
     }
@@ -283,7 +287,8 @@ class product_controller {
             case 'clone': {
                 $original = new CatalogItem($this->data->itemid);
                 $original->clone_instance();
-                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
+                redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 
             /* ****** converts a product into a set ***** */
@@ -294,7 +299,8 @@ class product_controller {
                 $original->handlerparams = '';
                 $original->isset = PRODUCT_SET;
                 $original->save();
-                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
+                redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 
             /* ****** converts a product into a bundle ***** */
@@ -305,13 +311,15 @@ class product_controller {
                 $original->handlerparams = '';
                 $original->isset = PRODUCT_BUNDLE;
                 $original->save();
-                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
+                redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 
             /* ****** converts a product into a set ***** */
             case 'toproduct': {
                 $original = new CatalogItem($this->data->itemid);
-                redirect(new \moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+                $params = ['view' => 'viewAllProducts', 'categoryid' => $this->data->categoryid, 'shopid' => $this->data->shopid];
+                redirect(new \moodle_url('/local/shop/products/view.php', $params));
             }
 
             /* ***** make a local physical clone of the master product in this slave catalog ***** */

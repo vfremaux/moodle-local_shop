@@ -253,13 +253,38 @@ class Product extends ShopObject {
     }
 
     /**
+     * get info out of production data (in product)
+     * @return an object
+     */
+    public function extract_production_data() {
+
+        $info = new \StdClass();
+
+        $productiondata = $this->productiondata;
+
+        if (!empty($productiondata)) {
+            if ($pairs = explode('&', $this->productiondata)) {
+                foreach ($pairs as $pair) {
+                    // Affectation may be empty.
+                    $pair = explode('=', $pair);
+                    $info->{$pair[0]} = @$pair[1];
+                }
+            }
+        }
+
+        return $info;
+    }
+
+    /**
      * Defers to underlying catalogitem the request for info about handler
      */
     public function get_handler_info($method, $type = 'postprod') {
-        if (CatalogItem::exists($this->record->catalogitemid)) {
+
+        if (CatalogItem::exists($this->record->catalogitemid, 'catalogitem')) {
             $ci = new CatalogItem($this->record->catalogitemid);
             return $ci->get_handler_info($method, $type);
         }
+        debug_trace("Product get handler info : could not identify CatalogItem ", TRACE_DEBUG);
         return [null, null];
     }
 
@@ -281,11 +306,16 @@ class Product extends ShopObject {
         $filterclause = '';
         $params = array();
         if (!empty($filter)) {
+            $filterstrs = [];
             foreach ($filter as $k => $v) {
-                $filterstrs[] = " $k = ? ";
-                $params[] = $v;
+                if ($v != '*' || empty($v)) {
+                    $filterstrs[] = " $k = ? ";
+                    $params[] = $v;
+                }
             }
-            $filterclause = ' AND '.implode(' AND ', $filterstrs);
+            if (!empty($filterstrs)) {
+                $filterclause = ' AND '.implode(' AND ', $filterstrs);
+            }
         }
 
         $orderclause = '';
@@ -318,6 +348,12 @@ class Product extends ShopObject {
         ';
 
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+        /*
+        if (empty($records)) {
+            echo $sql.'<br>';
+            print_object($params);
+        }
+        */
 
         $results = array();
         if (!empty($records)) {
@@ -363,15 +399,17 @@ class Product extends ShopObject {
                 break;
 
             case 'course':
-                $course = $DB->get_record('course', array('id' => $this->instanceid));
-                $courseurl = new \moodle_url('/course/view.php', array('id' => $course->id));
-                $link = \html_writer::tag('a', format_string($enrol->fullname), array('href' => $courseurl));
+                if ($course = $DB->get_record('course', array('id' => $this->instanceid))) {
+                    $courseurl = new \moodle_url('/course/view.php', array('id' => $course->id));
+                    $link = \html_writer::tag('a', format_string($course->fullname), array('href' => $courseurl));
+                }
                 break;
 
             case 'coursecat':
-                $coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid));
-                $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
-                $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
+                if ($coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid))) {
+                    $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
+                    $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
+                }
                 break;
 
             case 'attempt':

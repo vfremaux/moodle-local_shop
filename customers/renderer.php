@@ -31,7 +31,7 @@ use local_shop\Shop;
 
 class shop_customers_renderer extends local_shop_base_renderer {
 
-    public function customers($customers) {
+    public function customers($customers, $url) {
         global $OUTPUT;
 
         $lastnamestr = get_string('lastname');
@@ -44,13 +44,13 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $table = new html_table();
         $table->width = '100%';
-        $table->head = array('',
-                             "<b>$lastnamestr $firstnamestr</b>",
+        $table->head = array('CID',
+                             "<b>$lastnamestr $firstnamestr</b>".$this->sortby($url, 'name'),
                              "<b>$emailstr</b>",
                              "<b>$placedstr</b>",
                              "<b>$pendingsstr</b>",
-                             "<b>$purchasesstr</b>",
-                             "<b>$totalamountstr</b>",
+                             "<b>$purchasesstr</b>".$this->sortby($url, 'billcount'),
+                             "<b>$totalamountstr</b>".$this->sortby($url, 'totalaccount'),
                              '');
         $table->align = array('center', 'left', 'left', 'left', 'center', 'center', 'right');
 
@@ -66,7 +66,11 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $row[] = $c->lastname.' '.$c->firstname;
             $email = $c->email;
             if ($c->hasaccount) {
-                $email .= '&nbsp;'.$OUTPUT->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'));
+                $userurl = new moodle_url('/user/profile.php', ['id' => $c->hasaccount]);
+                $accountlink = '<a href="'.$userurl.'">';
+                $accountlink .= $OUTPUT->pix_icon('i/moodle_host', get_string('hasamoodleaccount', 'local_shop'));
+                $accountlink .= '</a>';
+                $email .= '&nbsp;'.$accountlink;
             }
             $row[] = $email;
             $row[] = $c->placedcount;
@@ -85,6 +89,40 @@ class shop_customers_renderer extends local_shop_base_renderer {
         }
 
         return html_writer::table($table);
+    }
+
+    protected function sortby($url, $field) {
+        global $OUTPUT;
+
+        $order = optional_param('sortorder', 'name', PARAM_TEXT);
+        $dir = optional_param('dir', 'ASC', PARAM_TEXT);
+
+        if ($field == $order) {
+            // Is this field ordering active ?
+            switch ($dir) {
+                case 'ASC' : {
+                    $icon = 't/sort_asc';
+                    $nextdir = 'DESC';
+                    break;
+                }
+                case 'DESC' : {
+                    $icon = 't/sort_desc';
+                    $nextdir = 'ASC';
+                    break;
+                }
+                default : {
+                    $icon = 't/sort';
+                    $nextdir = 'ASC';
+                }
+            }
+        } else {
+            $icon = 't/sort';
+            $nextdir = 'ASC';
+        }
+        $params = ['href' => $url->out(false, ['sortorder' => $field, 'dir' => $nextdir])];
+        $link = '&nbsp;'.html_writer::tag('a', $OUTPUT->pix_icon($icon, ''), $params);
+
+        return $link;
     }
 
     /**

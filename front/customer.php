@@ -65,9 +65,9 @@ if ($action) {
 
 echo $out;
 
-echo $renderer->progress('CUSTOMER');
-
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
+
+echo $renderer->progress('CUSTOMER');
 
 echo $renderer->admin_options();
 

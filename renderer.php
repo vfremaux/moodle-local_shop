@@ -344,12 +344,31 @@ class local_shop_renderer extends local_shop_base_renderer {
 class local_shop_base_renderer extends \plugin_renderer_base {
 
     // Context references.
+    /**
+     * The initial block instance from where we got access to the shop.
+     * **DEPRECATED** : This seems not a very operable context data to use.
+     */
     protected $theblock;
 
+    /**
+     * the currently active shop, i.e. public front end that is the actual context of navigation.
+     */
     protected $theshop;
 
+    /**
+     * the currently displaying product catalog.
+     */
     protected $thecatalog;
 
+    /**
+     * The current catalog category to display, for some renderers.
+     * Captures an URL param to tell other renderers where we are.
+     */
+    protected $categoryid;
+
+    /**
+     * the generic $OUTPUT
+     */
     protected $output;
 
     /**
@@ -380,8 +399,16 @@ class local_shop_base_renderer extends \plugin_renderer_base {
             $this->theblock = new Stdclass();
             $this->theblock->id = 0;
         }
+
+        if (empty($this->categoryid)) {
+            $this->categoryid = optional_param('categoryid', 0, PARAM_INT);
+        }
     }
 
+    /**
+     * checks if context has been initialized. This is a developer utility to catch
+     * uninitialized code locations.
+     */
     public function check_context() {
         if (empty($this->theshop) || empty($this->thecatalog)) {
             throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');

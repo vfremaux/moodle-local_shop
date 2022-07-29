@@ -45,6 +45,9 @@ define('PROVIDING_LOGGEDIN_ONLY', 1);
 define('PROVIDING_BOTH', 0);
 define('PROVIDING_LOGGEDOUT_ONLY', -1);
 
+define('SHOP_UNIT_EXPIRATION_FORECAST_DELAY1', DAYSECS * 30);
+define('SHOP_UNIT_EXPIRATION_FORECAST_DELAY2', DAYSECS * 90);
+
 /*
  * what means the quantity ordered
  * SHOP_QUANT_NO_SEATS : will not ask for required seats to assign. Such product as physical
@@ -640,7 +643,11 @@ function shop_build_context() {
         $SESSION->shop->shopid = 1;
     }
 
-    $shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
+    $shopid = optional_param('shopid', false, PARAM_INT);
+    if (!$shopid) {
+        // failover with 'id' if not shopid.
+        $shopid = optional_param('id', @$SESSION->shop->shopid, PARAM_INT);
+    }
 
     if ($shopid) {
         try {

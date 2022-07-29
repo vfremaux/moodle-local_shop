@@ -57,6 +57,8 @@ echo $out;
 
 // Start ptinting page.
 
+echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
+
 if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_COMPLETE) {
     echo '<center>';
     echo $renderer->progress('BILL');
@@ -68,8 +70,6 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
 }
 
 echo $OUTPUT->box_start('', 'shop-invoice');
-
-echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 $afullbill = Bill::get_by_transaction($transid);
 

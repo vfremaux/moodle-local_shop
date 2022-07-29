@@ -82,10 +82,13 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             }
             $product = new CatalogItem($productinstance->catalogitemid);
 
-            $expiredcount = 0;
-            $expiringcount = 0;
-            $pendingcount = 0;
-            $runningcount = 0;
+            $totals = [
+                'expired' => 0,
+                'expiring' => 0,
+                'ending' => 0,
+                'pending' => 0,
+                'running' => 0
+            ];
             $producttpl->statusclass = '';
             $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewProductDetail', 'itemid' => $product->id));
             $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
@@ -93,27 +96,17 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->reference = $productinstance->reference;
             $producttpl->extradata = $this->process_extradata($productinstance);
             $producttpl->renewable = ($product->renewable) ? get_string('yes') : '';
-            $producttpl->pend = ($productinstance->enddate) ? date('Y/m/d H:i', $productinstance->enddate) : 'N.C.';
+
+            if ($productinstance->enddate) {
+                $producttpl->pend = date('Y/m/d H:i', $productinstance->enddate);
+            } else {
+                $producttpl->pend = 'N.C.';
+            }
+
             $producttpl->pstart = date('Y/m/d H:i', $productinstance->startdate);
             $now = time();
-            if ($product->renewable) {
-                if ($productinstance->enddate && ($now > $productinstance->enddate)) {
-                    // Expired.
-                    $producttpl->statusclass = 'cs-product-expired';
-                    $expiredcount++;
-                } else if ($productinstance->enddate && $now > $productinstance->enddate - DAYSECS * 3) {
-                    // Expiring.
-                    $producttpl->statusclass = 'cs-product-expiring';
-                } else if ($now < $productinstance->startdate) {
-                    // Pending.
-                    $producttpl->statusclass = 'cs-product-pending';
-                    $pendingcount++;
-                } else {
-                    // Running.
-                    $producttpl->statusclass = 'cs-product-running';
-                    $runningcount++;
-                }
-            }
+            $statusclass = $this->get_productinstance_running_status($productinstance, $totals);
+            $producttpl->statusclass = $statusclass;
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
                 $producttpl->selcheckbox = '<input type="checkbox" id="" name="productids" value="'.$productinstance->id.'" />';
@@ -124,42 +117,85 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->unitcost = ($billitem) ? $billitem->unitcost : 'N.C.';
             $producttpl->currency = $this->theshop->get_currency();
 
-            if (has_capability('local/shop:salesadmin', context_system::instance())) {
-                $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle');
-                $params = array('what' => 'delete',
-                                'productids[]' => $productinstance->id,
-                                'sesskey' => sesskey());
-                                $params = array_merge($params, $viewparams);
-                $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-                $producttpl->commands = '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
-
-                if ($productinstance->deleted) {
-                    $title = get_string('softrestore', 'local_shop');
-                    $pix = $OUTPUT->pix_icon('t/stop', $title, 'moodle');
-                } else {
-                    $title = get_string('softdelete', 'local_shop');
-                    $pix = $OUTPUT->pix_icon('t/go', $title, 'moodle');
-                }
-                $params = array('what' => 'softdelete',
-                                'productids[]' => $productinstance->id,
-                                'sesskey' => sesskey());
-                                $params = array_merge($params, $viewparams);
-                $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-                $producttpl->commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$title.'">'.$pix.'</a>';
-
-                if (local_shop_supports_feature('products/editable')) {
-                    $pix = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle');
-                    $params = array('instanceid' => $productinstance->id,
-                                    'sesskey' => sesskey());
-                    $linkurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
-                    $producttpl->commands .= '&nbsp;<a href="'.$linkurl.'">'.$pix.'</a>';
-                }
-            }
+            $producttpl->commands = $this->get_product_commands($productinstance, $viewparams);
 
             $template->products[] = $producttpl;
         }
 
         return $this->output->render_from_template('local_shop/purchaselist', $template);
+    }
+
+    protected function get_productinstance_running_status($productinstance, &$totals) {
+
+            $now = time();
+
+            if ($productinstance->enddate) {
+                if ($now > $productinstance->enddate) {
+                    // Expired.
+                    $statusclass = 'cs-product-expired';
+                    $totals['expiredcount']++;
+                } else if ($now > $productinstance->enddate - SHOP_UNIT_EXPIRATION_FORECAST_DELAY2) {
+                    // Expiring.
+                    $statusclass = 'cs-product-expiring';
+                    $totals['expiring']++;
+                } else if ($now > $productinstance->enddate - SHOP_UNIT_EXPIRATION_FORECAST_DELAY1) {
+                    // Near to Expiring.
+                    $statusclass = 'cs-product-ending';
+                    $totals['ending']++;
+                } else if ($now < $productinstance->startdate) {
+                    // Pending.
+                    $statusclass = 'cs-product-pending';
+                    $totals['pending']++;
+                } else {
+                    // Running.
+                    $statusclass = 'cs-product-running';
+                    $totals['running']++;
+                }
+            } else {
+                // Running.
+                $statusclass = 'cs-product-running';
+                $totals['running']++;
+            }
+        return $statusclass;
+    }
+
+    protected function get_product_commands($productinstance, $viewparams) {
+        global $OUTPUT;
+
+        $commands = '';
+
+        if (has_capability('local/shop:salesadmin', context_system::instance())) {
+            $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle');
+            $params = array('what' => 'delete',
+                            'productids[]' => $productinstance->id,
+                            'sesskey' => sesskey());
+                            $params = array_merge($params, $viewparams);
+            $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+            $commands .= '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
+
+            if ($productinstance->deleted) {
+                $title = get_string('softrestore', 'local_shop');
+                $pix = $OUTPUT->pix_icon('t/stop', $title, 'moodle');
+            } else {
+                $title = get_string('softdelete', 'local_shop');
+                $pix = $OUTPUT->pix_icon('t/go', $title, 'moodle');
+            }
+            $params = array('what' => 'softdelete',
+                            'productids[]' => $productinstance->id,
+                            'sesskey' => sesskey());
+                            $params = array_merge($params, $viewparams);
+            $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+            $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$title.'">'.$pix.'</a>';
+
+            if (local_shop_supports_feature('products/editable')) {
+                $pix = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle');
+                $params = array('instanceid' => $productinstance->id,
+                                'sesskey' => sesskey());
+                $linkurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
+                $commands .= '&nbsp;<a href="'.$linkurl.'">'.$pix.'</a>';
+            }
+        }
+        return $commands;
     }
 
     /**
@@ -201,6 +237,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $sortorder = optional_param('sortorder', 'id', PARAM_TEXT);
         $customerid = optional_param('customerid', 0, PARAM_INT);
         $contexttype = optional_param('contexttype', '*', PARAM_TEXT);
+        $metadatafilter = optional_param('metadatafilter', '*', PARAM_TEXT);
         $shopid = optional_param('shopid', 0, PARAM_INT);
 
         $template = new StdClass;
@@ -280,8 +317,20 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $odd = ($odd + 1) % 2;
 
             $unittpl->reference = $product->reference;
+
             $unittpl->startdate = ($product->startdate) ? userdate($product->startdate) : 'N.C.';
             $unittpl->enddate = ($product->enddate) ? userdate($product->enddate) : 'N.C.';
+
+            $totals = [
+                'expired' => 0,
+                'expiring' => 0,
+                'ending' => 0,
+                'pending' => 0,
+                'running' => 0
+            ];
+            $statusclass = $this->get_productinstance_running_status($productinstance, $totals);
+            $producttpl->statusclass = $statusclass;
+
             $unittpl->contexttype = $product->contexttype;
 
             // Note : as internal record values are protected. We must pass them to a public object.
@@ -305,6 +354,8 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                 $unittpl->b->id = $product->currentbillitem->bill->id;
             }
 
+            $unittpl->commands = $this->get_product_commands($product, []);
+
             $template->units[] = $unittpl;
         }
 
@@ -318,7 +369,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
         if (($shopowner == $USER->id) || has_capability('local/shop:accessallowners', $contextsystem)) {
             $params = ['shopid' => $theshop->id, 'customerid' => $customerid, 'instanceid' => 0];
-            $addurl = new moodle_url('local/shop/pro/purchasemanager/edit_instance.php', $params);
+            $addurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
             return $OUTPUT->single_button($addurl, get_string('newproduct', 'local_shop'));
         }
     }

@@ -46,6 +46,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
  */
 
 $itemid = optional_param('itemid', 0, PARAM_INT);
+$categoryid = optional_param('categoryid', 0, PARAM_INT);
 
 // Security.
 
@@ -56,7 +57,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $itemid));
+$url = new moodle_url('/local/shop/products/edit_product.php', ['itemid' => $itemid, 'categoryid' => $categoryid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -71,7 +72,8 @@ if ($itemid) {
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $thecatalog->id)));
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    redirect(new moodle_url('/local/shop/products/view.php', $params));
 }
 
 if ($data = $mform->get_data()) {
@@ -79,7 +81,8 @@ if ($data = $mform->get_data()) {
     $controller->receive('edit', $data, $mform);
     $controller->process('edit');
 
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $thecatalog->id)));
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    redirect(new moodle_url('/local/shop/products/view.php', $params));
 }
 
 if ($itemid) {
