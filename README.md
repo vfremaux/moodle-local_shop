@@ -29,11 +29,9 @@ Pro in preview :
 Patented distributors :
 
    - ActiveProLearn : http://www.activeprolearn.com (sales@activeprolearn.com)
-   - Edunao : http://www.edunao.com (cyril@edunao.com)
 
 Public documentations : 
 
-   - French : http://docs.edunao.com/doku.php?id=:local:shop
    - English : http://docs.activeprolearn/en/doku.php?id=:local:shop
 
 2018031100
@@ -50,3 +48,8 @@ Transfers discounts to pro zone and redraw the discount policies application.
 ##################################################
 
 Adds pro caching zone
+
+2022060700 --- XX.0018
+##################################################
+
+Add registration to report_zabbix senders.
