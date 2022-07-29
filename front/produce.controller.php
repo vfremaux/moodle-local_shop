@@ -289,7 +289,8 @@ class production_controller extends front_controller_base {
         $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
         // Complete seller with expected fields.
-        $fields = get_all_user_name_fields();
+        // M4.
+        $fields = \core_user\fields::for_name()->excluding('id')->get_required_fields();
         foreach ($fields as $f) {
             if (!isset($seller->$f)) {
                 $seller->$f = '';

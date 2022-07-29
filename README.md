@@ -32,7 +32,8 @@ Patented distributors :
 
 Public documentations : 
 
-   - English : http://docs.activeprolearn/en/doku.php?id=:local:shop
+   - French : https://docs.activeprolearn/doku.php?id=:local:shop
+   - English : https://docs.activeprolearn/en/doku.php?id=:local:shop
 
 2018031100
 ##################################################
@@ -48,8 +49,3 @@ Transfers discounts to pro zone and redraw the discount policies application.
 ##################################################
 
 Adds pro caching zone
-
-2022060700 --- XX.0018
-##################################################
-
-Add registration to report_zabbix senders.

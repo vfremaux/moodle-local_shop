@@ -124,11 +124,11 @@ class order_controller extends front_controller_base {
                     $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
                     // Add other name fields required by fullname.
-                    if ($morefields = get_all_user_name_fields()) {
-                        foreach ($morefields as $f) {
-                            if (!isset($seller->$f)) {
-                                $seller->$f = '';
-                            }
+                    // M4.
+                    $morefields = \core_user\fields::for_name()->excluding('id')->get_required_fields();
+                    foreach ($morefields as $f) {
+                        if (!isset($seller->$f)) {
+                            $seller->$f = '';
                         }
                     }
 
