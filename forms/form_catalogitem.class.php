@@ -19,7 +19,7 @@
  *
  * @package    local_shop
  * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -69,6 +69,9 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
+        $mform->addElement('hidden', 'catalogid');
+        $mform->setType('catalogid', PARAM_INT);
+
         if (!$this->is_slave()) {
             $mform->addElement('text', 'code', get_string('code', 'local_shop'), $this->attributesshort);
             $mform->setType('code', PARAM_ALPHANUMEXT);
@@ -78,6 +81,9 @@ abstract class CatalogItem_Form extends moodleform {
             $mform->addElement('hidden', 'code');
             $mform->setType('code', PARAM_ALPHANUMEXT);
         }
+
+        $mform->addElement('text', 'idnumber', get_string('idnumber', 'local_shop'), $this->attributeslong);
+        $mform->setType('idnumber', PARAM_ALPHANUMEXT);
 
         $mform->addElement('text', 'name', get_string('name', 'local_shop'), $this->attributeslong);
         $mform->setType('name', PARAM_CLEANHTML);
@@ -376,7 +382,7 @@ abstract class CatalogItem_Form extends moodleform {
         $mform = $this->_form;
 
         if (!$this->is_slave()) {
-            if ($cats = $this->_customdata['catalog']->get_categories()) {
+            if ($cats = $this->_customdata['catalog']->get_categories(true, false)) {
                 foreach ($cats as $cat) {
                     $sectionopts[$cat->id] = format_string($cat->name);
                 }
@@ -395,5 +401,29 @@ abstract class CatalogItem_Form extends moodleform {
 
     protected function is_slave() {
         return $this->_customdata['catalog']->isslave;
+    }
+
+    public function validation($data, $files = []) {
+        global $DB;
+
+        $errors = [];
+
+        if (!empty($data['id'])) {
+            // Same idnumber somewhere.
+            if (!empty($data['idenumber'])) {
+                $select = ' idnumnber = ? AND id != ? ';
+                if ($DB->record_exists_select('local_shop_catalogitem', $select, [$data['idnumber'], $data['id']])) {
+                    // Some idnumber in the way. Should be unique in all moodle.
+                    $errors['idnumber'] = get_string('erroridnumberexists', 'local_shop');
+                }
+            }
+
+            // Same product code in the same catalog.
+            $select = ' code = ? AND id != ? AND catalogid = ? ';
+            if ($DB->record_exists_select('local_shop_catalogitem', $select, [$data['code'], $data['id']])) {
+                // Some product code in the way. Should be unique in the same catalog.
+                $errors['code'] = get_string('errorcodeexists', 'local_shop');
+            }
+        }
     }
 }

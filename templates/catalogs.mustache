@@ -1,6 +1,7 @@
 
 
 <!-- local_shop/catalogs -->
+<<<<<<< HEAD
     <center>
     <table width="100%" cellspacing="10" class="generaltable">
 
@@ -40,3 +41,36 @@
         }
         $str .= '</table>';
         $str .= '</center>';
+=======
+<center>
+<table width="100%" cellspacing="10" class="generaltable">
+
+    <tr>
+        <th align="left" class="header c0">
+            {{#str}}name, local_shop{{/str}}
+        </th>
+
+        <th align="left" class="header c1">
+            {{#str}}description, local_shop{{/str}}
+        </th>
+
+        <th align="left" class="header c2">
+            {{#str}}categories, local_shop{{/str}}
+        </th>
+
+        <th align="left" class="header c2">
+            {{#str}}items, local_shop{{/str}}
+        </th>
+
+        <th align="left" class="header lastcol">
+            {{#str}}controls, local_shop{{/str}}
+        </th>
+
+    </tr>
+
+    {{#catalogs}}
+    {{> local_shop/catalog_admin_line }}
+    {{/catalogs}}
+</table>
+</center>
+>>>>>>> MOODLE_40_STABLE

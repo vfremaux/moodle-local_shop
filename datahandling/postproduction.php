@@ -17,7 +17,7 @@
 /**
  * @package    local_shop
  * @category   local
- * @author     Valery Fremaux <valery@valeisti.fr>
+ * @author     Valery Fremaux <valery@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
@@ -97,6 +97,11 @@ $PAGE->set_pagelayout('admin');
 
 $productinfo = $product->extract_production_data();
 list($handler, $methodname) = $product->get_handler_info($method);
+
+if (is_null($handler) || is_null($methodname)) {
+    print_error("Moodle shop could not find valuable information in product or catalog item. this is probably a coding issue.");
+}
+
 $productinfo->url = $url;
 
 $courseurl = new moodle_url('/course/view.php', array('id' => $id));

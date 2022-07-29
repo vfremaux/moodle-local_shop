@@ -5,6 +5,7 @@
 <div id="shop-customer-info" class="shop-data">
 
     {{#canlogin}}
+<<<<<<< HEAD
     <form name="loginform" action="{{{loginurl}}}" method="post">
     <input type="hidden" name="wantsurl" value"{{{shopurl}}}">
     <input type="hidden" name="id" value="{{shopid}}" />
@@ -13,6 +14,12 @@
         <legend>{{#str}}login, local_shop{{/str}}</legend>
 
         <table width="100%" class="generaltable">
+=======
+        <fieldset>
+        <legend>{{#str}}login, local_shop{{/str}}</legend>
+
+        <table width="100%">
+>>>>>>> MOODLE_40_STABLE
             <tr valign="top">
                 <td>
                     {{{loginform}}}
@@ -20,20 +27,39 @@
             </tr>
         </table>
         </fieldset>
+<<<<<<< HEAD
     </form>
+=======
+>>>>>>> MOODLE_40_STABLE
     {{/canlogin}}
 
     <form name="driverform" action="{{{shopurl}}}" method="post">
 
     <fieldset>
+<<<<<<< HEAD
+=======
+        {{#canlogin}}
+        <legend>{{#str}}newaccountinfo, local_shop{{/str}}</legend>
+        <p>{{#str}}addcustomerinfo, local_shop{{/str}}</p>
+        {{/canlogin}}
+        {{^canlogin}}
+>>>>>>> MOODLE_40_STABLE
         {{#oldaccount}}
         <legend>{{#str}}customerinfo, local_shop{{/str}}</legend>
         {{/oldaccount}}
         {{^oldaccount}}
+<<<<<<< HEAD
         <legend>{{#str}}newaccountinfo, local_shop{{/str}}</legend>
         {{/oldaccount}}
 
         <table width="100%" class="generaltable">
+=======
+        <legend>{{#str}}addcustomerinfo, local_shop{{/str}}</legend>
+        {{/oldaccount}}
+        {{/canlogin}}
+
+        <table width="100%">
+>>>>>>> MOODLE_40_STABLE
             <tr valign="top">
                 <td>
                     {{{customerinfoerrors}}}
@@ -44,7 +70,11 @@
             <tr>
                 <td style="{{{invoiceinfostyle}}}" id="shop-invoiceinfo-wrapper">
                     {{{invoiceinfoerrors}}}
+<<<<<<< HEAD
                     {{{invoicingform}}}
+=======
+                    {{{invoiceinfoform}}}
+>>>>>>> MOODLE_40_STABLE
                 </td>
             </tr>
         </table>

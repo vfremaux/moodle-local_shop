@@ -25,8 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Catalog;
+use local_shop\Customer;
 use local_shop\Shop;
 
 /**
@@ -107,18 +109,19 @@ class local_shop_renderer extends local_shop_base_renderer {
     public function paging_results($portlet) {
         $str = '';
         if (empty($portlet->pagesize)) {
-            $portlet->pagesize = 20;
+            $portlet->pagesize = 30;
         }
         if ($portlet->pagesize < $portlet->total) {
             $pages = ceil($portlet->total / $portlet->pagesize);
-            if ($offset = optional_param('offset', 0, PARAM_INT) > 0) {
+            $offset = optional_param('offset', 0, PARAM_INT);
+            if ($offset > 0) {
                 $pageoffset = $offset - $portlet->pageSize;
                 $str .= '<a href="'.$portlet->url.'&offset='.$pageoffset.'">&lt;</a> - ';
             }
             $str .= '<span class="paging">';
             for ($i = 1; $i <= $pages; $i++) {
                 if ($i == ($offset / $portlet->pagesize) + 1) {
-                    echo " $i - ";
+                    $str .= ' <div style="display:inline-block;color:white;background-color:#666;border-radius:10px;padding:0px 6px 2px 6px">'.$i.'</div> - ';
                 } else {
                     $pageoffset = $portlet->pagesize * ($i - 1);
                     $str .= '<a class="paging" href="'.$portlet->url.'&offset='.$pageoffset.'">'.$i.'</a> - ';
@@ -128,9 +131,11 @@ class local_shop_renderer extends local_shop_base_renderer {
             if ($offset + $portlet->pagesize < $portlet->total) {
                 $pageoffset = $offset + $portlet->pagesize;
                 $nexturl = $portlet->url.'&offset='.$pageoffset;
-                $str .= '<a href="'.$nexturl.'" ?>">&gt;</a>';
+                $str .= '<a href="'.$nexturl.'" >&gt;</a>';
             }
         }
+
+        return $str;
     }
 
     public function catalog_choice($url) {
@@ -147,7 +152,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function shop_choice($url, $chooseall = false) {
+    public function shop_choice($url, $chooseall = false, $shopid = null) {
         global $SESSION, $OUTPUT;
 
         $str = '';
@@ -155,13 +160,17 @@ class local_shop_renderer extends local_shop_base_renderer {
         $shopmenu = array();
 
         if ($chooseall) {
-            $shopmenu[0] = get_string('chooseall', 'local_shop');
+            $shopmenu[0] = get_string('allshops', 'local_shop');
         }
 
         foreach ($shops as $s) {
             $shopmenu[$s->id] = format_string($s->name);
         }
-        $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid);
+        if (is_null($shopid)) {
+            $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid, null);
+        } else {
+            $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $shopid, null);
+        }
 
         return $str;
     }
@@ -235,7 +244,9 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current);
+        $customers = array('' => get_string('allcustomers', 'local_shop')) + $customers;
+        $attrs['label'] = get_string('customer', 'local_shop').': ';
+        $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current, null, null, $attrs);
 
         return $str;
     }
@@ -249,6 +260,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $template->supportsinstances = false;
         if (local_shop_supports_feature('shop/instances')) {
             $template->supportsinstances = true;
+<<<<<<< HEAD
             $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops'));
         } else {
             $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php');
@@ -262,13 +274,37 @@ class local_shop_renderer extends local_shop_base_renderer {
         if (!empty($config->useshipping)) {
             $template->useshipping = true;
             $template->shippingurl = new moodle_url('/local/shop/shipzones/index.php');
+=======
+            $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops', 'id' => $theshop->id));
+        } else {
+            $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $theshop->id, 'shopid' => $theshop->id]);
+        }
+
+        if (local_shop_supports_feature('shop/discounts')) {
+            $template->supportsdiscounts = true;
+            $template->discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', array('view' => 'viewAllDiscounts', 'id' => $theshop->id));
+        }
+
+        $template->billsurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills', 'id' => $theshop->id));
+        $template->productsurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances', 'id' => $theshop->id));
+        $template->customersurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers', 'id' => $theshop->id));
+        $template->taxesurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes', 'id' => $theshop->id));
+
+        if (!empty($config->useshipping)) {
+            $template->useshipping = true;
+            $template->shippingurl = new moodle_url('/local/shop/shipzones/index.php', ['id' => $theshop->id]);
+>>>>>>> MOODLE_40_STABLE
         }
 
         $template->traceurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));
 
         if (has_capability('moodle/site:config', context_system::instance())) {
             $template->hassiteadmin = true;
+<<<<<<< HEAD
             $template->settingsurl = new moodle_url('/admin/settings.php', array('section' => 'local_shop'));
+=======
+            $template->settingsurl = new moodle_url('/admin/settings.php', array('section' => 'localsettingshop'));
+>>>>>>> MOODLE_40_STABLE
         }
 
         $template->reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
@@ -328,12 +364,31 @@ class local_shop_renderer extends local_shop_base_renderer {
 class local_shop_base_renderer extends \plugin_renderer_base {
 
     // Context references.
+    /**
+     * The initial block instance from where we got access to the shop.
+     * **DEPRECATED** : This seems not a very operable context data to use.
+     */
     protected $theblock;
 
+    /**
+     * the currently active shop, i.e. public front end that is the actual context of navigation.
+     */
     protected $theshop;
 
+    /**
+     * the currently displaying product catalog.
+     */
     protected $thecatalog;
 
+    /**
+     * The current catalog category to display, for some renderers.
+     * Captures an URL param to tell other renderers where we are.
+     */
+    protected $categoryid;
+
+    /**
+     * the generic $OUTPUT
+     */
     protected $output;
 
     /**
@@ -364,8 +419,16 @@ class local_shop_base_renderer extends \plugin_renderer_base {
             $this->theblock = new Stdclass();
             $this->theblock->id = 0;
         }
+
+        if (empty($this->categoryid)) {
+            $this->categoryid = optional_param('categoryid', 0, PARAM_INT);
+        }
     }
 
+    /**
+     * checks if context has been initialized. This is a developer utility to catch
+     * uninitialized code locations.
+     */
     public function check_context() {
         if (empty($this->theshop) || empty($this->thecatalog)) {
             throw new coding_exception('the renderer is not ready for use. Load a shop and a catalog before calling.');

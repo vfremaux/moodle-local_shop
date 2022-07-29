@@ -20,9 +20,14 @@ $string['abstract'] = 'Abstract';
 $string['actualstate'] = 'Current status';
 $string['allowingtax'] = 'Enable tax';
 $string['allowtax'] = 'Allow tax';
+$string['allbillsfile'] = 'All_Bills_{$a}';
 $string['assignedto'] = 'Assigned to';
+$string['assigntopartner'] = 'Assigned to partner';
+$string['unassignpartner'] = 'Unassign partner';
+$string['attachments'] = 'Files attached';
 $string['backto'] = 'Back to:';
 $string['bill'] = 'Bill:';
+$string['billid'] = 'Bill ID:';
 $string['proformabill'] = 'Online bill:';
 $string['bill_ALLs'] = 'All';
 $string['bill_CANCELLEDs'] = 'Bill cancelled';
@@ -51,15 +56,22 @@ $string['expectedpaiement'] = 'Expected payment date';
 $string['exportasxls'] = 'Export as XLS';
 $string['fullviewon'] = 'Full view';
 $string['fullviewoff'] = 'Short view';
+<<<<<<< HEAD
+=======
+$string['flowcontrol'] = 'State Control';
+>>>>>>> MOODLE_40_STABLE
 $string['generateacode'] = 'Generate a code';
 $string['goto'] = 'Go to:';
 $string['lettering'] = 'Cross-reference coding';
 $string['letteringupdated'] = 'Cross-reference code updated';
 $string['nobillattachements'] = 'No document attached.';
+$string['billattachementsispro'] = 'No attachements allowed. (This is a "pro" version option)';
+$string['billownershipispro'] = 'Bill partner and delegated ownership is a pro fezature.';
 $string['nobills'] = 'No bills';
 $string['nopaging'] = 'All pages';
 $string['nocodegenerated'] = 'No transaction code has been generated (manual bills).';
 $string['noletteringaspending'] = 'This is a pending order. <br/>Only a bill can be cross referenced.';
+$string['ownership'] = 'Ownership';
 $string['paiedamount'] = 'Amount paid';
 $string['paimentcode'] = 'Bill code:';
 $string['paymodes'] = 'Method of payment';
@@ -77,6 +89,22 @@ $string['unittex'] = 'Unit, tax not included:';
 $string['updatelettering'] = 'Update';
 $string['pickuser'] = 'Choose a customer or a user account:';
 $string['worktype'] = 'Worktype';
+$string['searchforanidinstructions'] = 'Search for a bill id (or start of id)';
+
+// Calendar.
+$string['jan'] = 'January';
+$string['feb'] = 'February';
+$string['mar'] = 'March';
+$string['apr'] = 'April';
+$string['may'] = 'May';
+$string['jun'] = 'June';
+$string['jul'] = 'July';
+$string['aug'] = 'August';
+$string['sep'] = 'September';
+$string['oct'] = 'October';
+$string['nov'] = 'November';
+$string['dec'] = 'December';
+
 
 // Calendar.
 $string['jan'] = 'January';

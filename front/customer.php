@@ -54,7 +54,7 @@ if (local_shop_supports_feature('shop/partners')) {
 }
 
 if ($action) {
-    include($CFG->dirroot.'/local/shop/front/customer.controller.php');
+    include_once($CFG->dirroot.'/local/shop/front/customer.controller.php');
     $controller = new \local_shop\front\customer_controller($theshop, $thecatalog, $theblock);
     $controller->receive($action, $data);
     $resulturl = $controller->process($action);
@@ -83,10 +83,17 @@ $template = new StdClass;
 $template->shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theshop->id));
 $template->canlogin = (!isloggedin() || isguestuser());
 $template->oldaccount = (isloggedin() && !isguestuser() && \local_shop\Customer::has_account());
+<<<<<<< HEAD
 $template->loginurl = new moodle_url('/login/index.php');
 $template->shopid = $theshop->id;
 
 $template->loginform = $renderer->login_form();
+=======
+$template->shopid = $theshop->id;
+
+$template->loginform = $renderer->login_form();
+
+>>>>>>> MOODLE_40_STABLE
 if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
     $str = $OUTPUT->box_start('shop-error-notice');
     $str .= implode('<br/>', array_values($SESSION->shoppingcart->errors->customerinfo));

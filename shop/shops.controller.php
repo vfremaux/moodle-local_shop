@@ -52,7 +52,7 @@ class shop_controller {
 
         switch ($cmd) {
             case 'delete':
-                $this->data->shopid = required_param('id', PARAM_INT);
+                $this->data->shopid = required_param('shopid', PARAM_INT);
                 break;
             case 'edit':
                 // Edit is fed by the $data attribute.

@@ -86,7 +86,11 @@ function product_prepay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
             $billrec->customerdata = ''; // TODO get effective production data for the bundle elements...
             $billrec->productiondata = $element->productiondata; // TODO get effective production data for the bundle elements...
 
+<<<<<<< HEAD
             $fakebillitem = new \local_shop\BillItem($billrec, false, $afullbill, -1, true);
+=======
+            $fakebillitem = new \local_shop\BillItem($billrec, false, ['bill' => $afullbill], -1, true);
+>>>>>>> MOODLE_40_STABLE
             $fakebillitem->id = $anitem->id; // To give to initialbillitemid and currentbillitemid.
             $fakebillitem->actionparams = $element->get_handler_params(); // TODO get effective production data for the bundle elements...
             $fakebillitem->transactionid = $anitem->transactionid;
@@ -109,8 +113,13 @@ function product_prepay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
     $handler = $catalogitem->get_handler();
 
     if ($handler === false) {
+<<<<<<< HEAD
         // The handler exists but is disabled.
         shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled for {$anitem->itemcode}");
+=======
+        // The handler is disabled.
+        shop_trace("[{$afullbill->transactionid}] Prepay Production : Handler disabled or not set for {$anitem->itemcode}");
+>>>>>>> MOODLE_40_STABLE
         return;
     }
 
@@ -207,7 +216,11 @@ function product_postpay_item(&$anitem, &$catalogitem, &$afullbill, &$response) 
             $billrec->customerdata = ''; // TODO get effective production data for the bundle elements...
             $billrec->productiondata = $element->productiondata; // TODO get effective production data for the bundle elements...
 
+<<<<<<< HEAD
             $fakebillitem = new \local_shop\BillItem($billrec, false, $afullbill, -1, true);
+=======
+            $fakebillitem = new \local_shop\BillItem($billrec, false, ['bill' => $afullbill], -1, true);
+>>>>>>> MOODLE_40_STABLE
             $fakebillitem->id = $anitem->id; // To give to initialbillitemid and currentbillitemid.
             $fakebillitem->actionparams = $element->get_handler_params(); // TODO get effective production data for the bundle elements...
             $fakebillitem->transactionid = $anitem->transactionid;
@@ -218,8 +231,13 @@ function product_postpay_item(&$anitem, &$catalogitem, &$afullbill, &$response) 
     $handler = $catalogitem->get_handler();
 
     if ($handler === false) {
+<<<<<<< HEAD
         // The handler exists but is disabled.
         shop_trace("[{$afullbill->transactionid}] Postpay Production : Handler disabled for {$anitem->itemcode}");
+=======
+        // The handler is disabled.
+        shop_trace("[{$afullbill->transactionid}] Postpay Production : Handler disabled or not set for {$anitem->itemcode}");
+>>>>>>> MOODLE_40_STABLE
         return;
     }
 

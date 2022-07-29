@@ -31,22 +31,26 @@ use local_shop\Shop;
 
 class shop_customers_renderer extends local_shop_base_renderer {
 
-    public function customers($customers) {
+    public function customers($customers, $url) {
         global $OUTPUT;
 
         $lastnamestr = get_string('lastname');
         $firstnamestr = get_string('firstname');
+        $placedstr = get_string('placed', 'local_shop');
+        $pendingsstr = get_string('pendings', 'local_shop');
         $purchasesstr = get_string('purchases', 'local_shop');
         $emailstr = get_string('email');
         $totalamountstr = get_string('totalamount', 'local_shop');
 
         $table = new html_table();
         $table->width = '100%';
-        $table->head = array('',
-                             "<b>$lastnamestr $firstnamestr</b>",
+        $table->head = array('CID',
+                             "<b>$lastnamestr $firstnamestr</b>".$this->sortby($url, 'name'),
                              "<b>$emailstr</b>",
-                             "<b>$purchasesstr</b>",
-                             "<b>$totalamountstr</b>",
+                             "<b>$placedstr</b>",
+                             "<b>$pendingsstr</b>",
+                             "<b>$purchasesstr</b>".$this->sortby($url, 'billcount'),
+                             "<b>$totalamountstr</b>".$this->sortby($url, 'totalaccount'),
                              '');
         $table->align = array('center', 'left', 'left', 'left', 'center', 'center', 'right');
 
@@ -62,9 +66,19 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $row[] = $c->lastname.' '.$c->firstname;
             $email = $c->email;
             if ($c->hasaccount) {
+<<<<<<< HEAD
                 $email .= '&nbsp;'.$OUTPUT->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'));
+=======
+                $userurl = new moodle_url('/user/profile.php', ['id' => $c->hasaccount]);
+                $accountlink = '<a href="'.$userurl.'">';
+                $accountlink .= $OUTPUT->pix_icon('i/moodle_host', get_string('hasamoodleaccount', 'local_shop'));
+                $accountlink .= '</a>';
+                $email .= '&nbsp;'.$accountlink;
+>>>>>>> MOODLE_40_STABLE
             }
             $row[] = $email;
+            $row[] = $c->placedcount;
+            $row[] = $c->pendingscount;
             $row[] = $c->billcount;
             $row[] = sprintf("%.2f", round($c->totalaccount, 2)).' '.$this->theshop->defaultcurrency;
             $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));
@@ -81,6 +95,40 @@ class shop_customers_renderer extends local_shop_base_renderer {
         return html_writer::table($table);
     }
 
+    protected function sortby($url, $field) {
+        global $OUTPUT;
+
+        $order = optional_param('sortorder', 'name', PARAM_TEXT);
+        $dir = optional_param('dir', 'ASC', PARAM_TEXT);
+
+        if ($field == $order) {
+            // Is this field ordering active ?
+            switch ($dir) {
+                case 'ASC' : {
+                    $icon = 't/sort_asc';
+                    $nextdir = 'DESC';
+                    break;
+                }
+                case 'DESC' : {
+                    $icon = 't/sort_desc';
+                    $nextdir = 'ASC';
+                    break;
+                }
+                default : {
+                    $icon = 't/sort';
+                    $nextdir = 'ASC';
+                }
+            }
+        } else {
+            $icon = 't/sort';
+            $nextdir = 'ASC';
+        }
+        $params = ['href' => $url->out(false, ['sortorder' => $field, 'dir' => $nextdir])];
+        $link = '&nbsp;'.html_writer::tag('a', $OUTPUT->pix_icon($icon, ''), $params);
+
+        return $link;
+    }
+
     /**
      * Detail information for a customer
      * @param \local_shop\Customer $customer
@@ -91,8 +139,13 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $template->email = $customer->email;
 
+<<<<<<< HEAD
         $template->hasemail = $customer->hasaccount;
         if ($template->hasemail) {
+=======
+        $template->hasaccount = $customer->hasaccount;
+        if ($template->hasaccount) {
+>>>>>>> MOODLE_40_STABLE
             $template->userurl = new moodle_url('/user/view.php', array('id' => $customer->hasaccount));
         }
 
@@ -168,6 +221,52 @@ class shop_customers_renderer extends local_shop_base_renderer {
         echo html_writer::table($table);
     }
 
+<<<<<<< HEAD
+=======
+    public function customers_options($mainrenderer) {
+        global $SESSION;
+
+        $shopid = optional_param('shopid', 0, PARAM_INT);
+        $dir = optional_param('dir', 'asc', PARAM_TEXT);
+        $sortorder = optional_param('order', 'lastname', PARAM_TEXT);
+
+        $template = new StdClass;
+
+        $params = array(
+            'view' => 'viewAllCustomers',
+            'dir' => $dir,
+            'order' => $sortorder,
+            'shopid' => $shopid,
+        );
+
+        $url = new moodle_url('/local/shop/customers/view.php', $params);
+        $url->remove_params('shopid');
+        $template->shopselect = $mainrenderer->shop_choice($url, true, $shopid);
+
+        /*
+        $params = array('view' => 'search');
+        $template->searchurl = new moodle_url('/local/shop/customers/view.php', $params);
+        $template->searchinbillsstr = get_string('searchincustomers', 'local_shop');
+        */
+
+        return $this->output->render_from_template('local_shop/customers_options', $template);
+    }
+
+    public function no_paging_switch($url, $urlfilter) {
+        $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
+        if ($nopaging) {
+            $str = '<span class="nolink">'.get_string('nopaging', 'local_shop').'</span>';
+        } else {
+            $urlfilter = str_replace('nopaging=0', 'nopaging=1', $urlfilter);
+            $urlfilter = preg_replace('/customerpage=\d+/', '', $urlfilter);
+            $urlfilter .= '&customerpage=-1';
+            $str = ' <a href="'.$url.'&'.$urlfilter.'">'.get_string('nopaging', 'local_shop').'</a>';
+        }
+
+        return $str;
+    }
+
+>>>>>>> MOODLE_40_STABLE
     public function customer_view_links() {
 
         $template = new StdClass;

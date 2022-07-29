@@ -71,7 +71,7 @@ class Catalog extends ShopObject {
             // These are fake fields to drive the editors in form.
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->billfooterformat = FORMAT_HTML;
-            $this->record->salesconditionsformat = FORMAT_HTML;
+/*            $this->record->salesconditionsformat = FORMAT_HTML; */
 
         } else {
             $this->record->name = get_string('newcatalog', 'local_shop');
@@ -79,13 +79,31 @@ class Catalog extends ShopObject {
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->isslave = 0;
             $this->record->ismaster = 0;
+/*
             $this->record->salesconditions = '';
             $this->record->salesconditionsformat = FORMAT_HTML;
+*/
             $this->record->billfooter = '';
             $this->record->billfooterformat = FORMAT_HTML;
             $this->record->groupid = 0;
             $this->record->countryrestrictions = '';
         }
+    }
+
+    /**
+     * Gets first available category in current catalog.
+     */
+    public function get_first_category() {
+        global $DB;
+
+        $params = ['catalogid' => $this->id, 'parentid' => 0];
+        $firstcategoryarr = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', '*', 0, 1);
+        if ($firstcategoryarr) {
+            $values = array_values($firstcategoryarr);
+            $fc = array_pop($values);
+            return $fc;
+        }
+        return null;
     }
 
     /**
@@ -119,7 +137,7 @@ class Catalog extends ShopObject {
     /**
      * Get catalog known categories
      */
-    public function get_categories($local = false, $visible = 1) {
+    public function get_categories($local = false, $visible = true) {
         global $DB;
 
         // Get true fetch if local are required.
@@ -128,7 +146,11 @@ class Catalog extends ShopObject {
         }
 
         // Get local categories.
-        $select = " catalogid = ? AND visible = ? ";
+        if ($visible) {
+            $select = " catalogid = ? AND visible = ? ";
+        } else {
+            $select = " catalogid = ? ";
+        }
         $params = array($this->id, $visible);
         $fields = '*,0 as masterrecord';
         if (!$localcats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'parentid,sortorder', $fields)) {
@@ -351,7 +373,7 @@ class Catalog extends ShopObject {
     public function get_all_products_for_admin(&$shopproducts) {
         global $SESSION, $DB;
 
-        $categories = $this->get_categories();
+        $categories = $this->get_categories(true, false);
 
         if (empty($categories)) {
             return array();
@@ -496,16 +518,26 @@ class Catalog extends ShopObject {
     /**
      * Queries a catalog to find a complete catalog item instance
      * @param string $shortname the shortname of the product
+     * @param boolean $mustexist if false, the function returns a "new item"
+     * empty element.
      * @return a CatalogItem object
      */
-    public function get_product_by_shortname($shortname) {
+    public function get_product_by_shortname($shortname, $mustexist = false) {
         global $DB;
 
         $params = array('catalogid' => $this->id, 'shortname' => $shortname);
         $record = $DB->get_record('local_shop_catalogitem', $params);
+<<<<<<< HEAD
         $catalogitem = new CatalogItem($record);
 
         return $catalogitem;
+=======
+        if (!$mustexist || $record) {
+            $catalogitem = new CatalogItem($record);
+            return $catalogitem;
+        }
+        return null;
+>>>>>>> MOODLE_40_STABLE
     }
 
     /**
@@ -895,7 +927,13 @@ class Catalog extends ShopObject {
         $export->id = $this->record->id;
         $export->name = format_string($this->record->name);
         $export->description = format_text($this->record->description, $this->record->descriptionformat);
+<<<<<<< HEAD
         $export->salesconditions = $this->record->salesconditions;
+=======
+/*
+        $export->salesconditions = $this->record->salesconditions;
+*/
+>>>>>>> MOODLE_40_STABLE
         $export->countryrestrictions = $this->record->countryrestrictions;
 
         $categories = $this->get_categories();

@@ -24,7 +24,9 @@ defined('MOODLE_INTERNAL') || die();
 
 use local_shop\Category;
 
-$PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
+$notassignedstr = str_replace("'", '\\\'', get_string('notallassigned', 'local_shop'));
+$myorderstr = str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'));
+$invalidemailstr = get_string('invalidemail', 'local_shop');
 
 // Check see all mode in session.
 if (isloggedin() && is_siteadmin()) {
@@ -48,10 +50,17 @@ $categories = $thecatalog->get_categories();
 
 // Choose a category.
 $category = optional_param('category', null, PARAM_INT);
+
 if (empty($category)) {
     // Explicit the category.
     $catids = array_keys($categories);
+<<<<<<< HEAD
     $firstcategory = 0;
+=======
+
+    $firstcategory = 0;
+
+>>>>>>> MOODLE_40_STABLE
     while ($cat = array_shift($catids)) {
         $category = new Category($cat);
         if ($category->is_empty()) {
@@ -63,17 +72,41 @@ if (empty($category)) {
         }
     }
 
+<<<<<<< HEAD
     if (!$firstcategory) {
         print_error("Something is wrong in this shop. No categories usable.");
         die;
     }
     $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
     redirect(new moodle_url('/local/shop/front/view.php', $params));
+=======
+    $errormessage = '';
+    if (!$firstcategory) {
+        $errormessage = "Something is wrong in this shop. No categories usable (no categories, only hidden categories, or only empty categories).<br/>";
+        $errormessage .= "Shop : {$theshop->id}<br/>";
+        $errormessage .= "Catalog : {$thecatalog->id}<br/>";
+    } else {
+        $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
+        redirect(new moodle_url('/local/shop/front/view.php', $params));
+    }
+>>>>>>> MOODLE_40_STABLE
 }
 
 $categories = $thecatalog->get_all_products($shopproducts);
-
 echo $out;
+
+if (!empty($errormessage)) {
+        echo $OUTPUT->notification($errormessage, 'error');
+
+        $systemcontext = context_system::instance();
+        if (has_capability('local/shop:salesadmin', $systemcontext)) {
+            $url = new moodle_url('/local/shop/index.php', ['id' => $theshop->id]);
+            echo $OUTPUT->single_button($url, get_string('gotobackoffice', 'local_shop'));
+        }
+
+        echo $OUTPUT->footer();
+        die;
+}
 
 $units = 0;
 if (isset($SESSION->shoppingcart->order)) {
@@ -87,7 +120,6 @@ echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 echo $OUTPUT->box(format_text($theshop->description, $theshop->descriptionformat), 'shop-description');
 
 echo $renderer->admin_options();
-echo $renderer->progress('CHOOSE');
 
 echo '<form name="caddie" action="">';
 echo '<table width="100%" cellspacing="10"><tr valign="top"><td width="*">';

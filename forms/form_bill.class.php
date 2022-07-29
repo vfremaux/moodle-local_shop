@@ -19,7 +19,7 @@
  *
  * @package    local_shop
  * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
@@ -70,11 +70,14 @@ class Bill_Form extends moodleform {
             $fullnamecustoselect[$customer->id] = $customer->lastname.' '.$customer->firstname;
         }
 
+        // M4.
+        $fields = \core_user\fields::for_name()->with_userpic()->excluding('id')->get_required_fields();
+        $fields = 'u.id,'.implode(',', $fields);
+
         // Select user whithout customer account.
         $sqluser = "
             SELECT
-                u.id,
-                ".get_all_user_name_fields(true, 'u')."
+                ".$fields."
             FROM
                 {user} AS u
             WHERE
@@ -109,7 +112,10 @@ class Bill_Form extends moodleform {
         $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
         $context = context_system::instance();
-        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', 'u.id,'.get_all_user_name_fields(true, 'u'));
+        // M4.
+        $fields = \core_user\fields::for_name()->with_userpic()->excluding('id')->get_required_fields();
+        $fields = 'u.id,'.implode(',', $fields);
+        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', $fields);
         $editoropt = array();
         if ($billeditors) {
             foreach ($billeditors as $billeditor) {

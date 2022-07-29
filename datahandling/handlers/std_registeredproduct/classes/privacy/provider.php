@@ -14,20 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package    shoppaymodes_paybox
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace shophandlers_std_unlockpdcertificate\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * Created on 22 sept. 2009
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
-$plugin = new stdclass;
-$plugin->version = 2013031900;
-$plugin->component = 'shoppaymodes_paybox';
+class provider implements \core_privacy\local\metadata\null_provider {
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}

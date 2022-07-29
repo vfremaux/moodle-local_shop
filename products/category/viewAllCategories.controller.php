@@ -156,7 +156,11 @@ class category_controller {
 
             // Process text fields from editors.
             if ($this->mform) {
+<<<<<<< HEAD
                 $options = array('subdirs' => true);
+=======
+                // $options = array('subdirs' => true);
+>>>>>>> MOODLE_40_STABLE
 
                 // We do not have form runnig tests.
                 $draftideditor = file_get_submitted_draft_itemid('description_editor');

@@ -46,6 +46,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
  */
 
 $itemid = optional_param('itemid', 0, PARAM_INT);
+$categoryid = optional_param('categoryid', 0, PARAM_INT);
 
 // Security.
 
@@ -56,7 +57,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $itemid));
+$url = new moodle_url('/local/shop/products/edit_product.php', ['itemid' => $itemid, 'categoryid' => $categoryid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -64,8 +65,28 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $itemcatalog = $item->get_catalog();
-    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $itemcatalog));
+    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
+} else {
+    $item = new CatalogItem(null);
+    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
+}
+
+if ($mform->is_cancelled()) {
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    redirect(new moodle_url('/local/shop/products/view.php', $params));
+}
+
+if ($data = $mform->get_data()) {
+    $controller = new \local_shop\backoffice\product_controller($thecatalog);
+    $controller->receive('edit', $data, $mform);
+    $controller->process('edit');
+
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    redirect(new moodle_url('/local/shop/products/view.php', $params));
+}
+
+if ($itemid) {
+    $item = new CatalogItem($itemid);
     $itemrec = $item->record;
 
     // Replicates some attributes for variants.
@@ -74,6 +95,7 @@ if ($itemid) {
     $handleropts['1'] = get_string('dedicated', 'local_shop');
     $handleropts = array_merge($handleropts, shop_get_standard_handlers_options());
 
+    $itemrec->catalogid = $thecatalog->id;
     $itemrec->codeshadow = $itemrec->code;
     $itemrec->enablehandlershadow = $handleropts[$itemrec->enablehandler];
     $itemrec->handlerparamsshadow = $itemrec->handlerparams;
@@ -86,24 +108,9 @@ if ($itemid) {
     $mform->set_data($itemrec);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
-    $itemcatalog = $thecatalog;
     $itemrec = $item->record;
     $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($itemrec);
-}
-
-if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $itemcatalog->id)));
-}
-
-if ($data = $mform->get_data()) {
-
-    $controller = new \local_shop\backoffice\product_controller($itemcatalog);
-    $controller->receive('edit', $data, $mform);
-    $controller->process('edit');
-
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts', 'catalogid' => $itemcatalog->id)));
 }
 
 echo $OUTPUT->header();

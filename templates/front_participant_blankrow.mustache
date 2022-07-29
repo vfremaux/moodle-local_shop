@@ -1,0 +1,53 @@
+
+
+<!-- local_shop/front_participant_blanckrow -->
+        <tr>
+            <td align="left">
+                <input type="text"
+                        name="lastname_foo_{{i}}"
+                        size="15"
+                        disabled="disabled"
+                        class="shop-disabled" />
+            </td>
+            <td align="left">
+                <input type="text"
+                        name="firstname_foo_{{i}}"
+                        size="15"
+                        disabled="disabled"
+                        class="shop-disabled" />
+            </td>
+            <td align="left">
+                <input type="text"
+                        name="mail_foo_{{i}}"
+                        size="20"
+                        disabled="disabled"
+                        class="shop-disabled" />
+            </td>
+            <td align="left">
+                <input type="text"
+                    name="city_foo_{{i}}"
+                    size="14"
+                    disabled="disabled"
+                    class="shop-disabled" />
+            </td>
+            {{#endusermobilephonerequired}}
+            <td align="left">
+                <input type="text"
+                        name="phone2_foo_{{i}}"
+                        size="13"
+                        disabled="disabled"
+                        class="shop-disabled" />
+            </td>
+            {{/endusermobilephonerequired}}
+
+            {{#enduserorganisationrequired}}
+            <td align="left">
+                <input type="text"
+                        name="institution_foo_{{i}}"
+                        size="13"
+                        disabled="disabled"
+                        class="shop-disabled" />
+            </td>
+            {{/enduserorganisationrequired}}
+        </tr>
+<!-- /local_shop/front_participant_blanckrow -->

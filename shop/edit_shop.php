@@ -54,17 +54,15 @@ $PAGE->set_url($url);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
-if ($shop = new Shop($shopid)) {
-    $mform = new Shop_Form($url, array('what' => 'edit'));
-    $shop->record->shopid = $shopid;
-    $shop->record->id = $id;
-    $mform->set_data($shop->record);
+if (!empty($id)) {
+    $shop = new Shop($shopid);
+    $customdata = array('what' => 'edit');
 } else {
     $shop = new Shop(null);
-    $mform = new Shop_Form($url, array('what' => 'add'));
-    $shop->record->id = $id; // The current shopid.
-    $mform->set_data($shop->record);
+    $customdata = array('what' => 'add');
 }
+
+$mform = new Shop_Form(new moodle_url('/local/shop/shop/edit_shop.php'), $customdata);
 
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/local/shop/index.php'));
@@ -77,6 +75,14 @@ if ($data = $mform->get_data()) {
     $controller->process('edit');
 
     redirect(new moodle_url('/local/shop/index.php'));
+}
+
+if (!empty($shopid)) {
+    // switch item shopid for form.
+    $formdata = $shop->record;
+    $formdata->shopid = $shop->record->id;
+    $formdata->id = $id;
+    $mform->set_data($formdata);
 }
 
 echo $OUTPUT->header();

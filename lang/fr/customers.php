@@ -29,12 +29,18 @@ $string['customerhasaccount'] = 'Le client est-il un utilisateur déclaré du si
 $string['customerlastname'] = 'Nom&nbsp;';
 $string['customermailidentifies'] = 'Le courriel du client est son identité principale';
 $string['editcustomer'] = 'Edition compte client';
+<<<<<<< HEAD
+=======
+$string['errornotanemail'] = 'Ceci n\'est pas une adresse de courriel valide';
+>>>>>>> MOODLE_40_STABLE
 $string['email'] = 'Courriel&nbsp;';
 $string['emissiondate'] = 'Date d\'émission';
 $string['from'] = 'depuis (date)';
 $string['hour'] = '(heure)';
 $string['identification'] = 'Identification ';
 $string['lastmove'] = 'Dernier mouvement';
+$string['placed'] = 'Tentatives';
+$string['pendings'] = 'En attente';
 $string['mark'] = 'Marquer';
 $string['moodleaccount'] = 'Compte Moodle';
 $string['newcustomer'] = 'Créer un nouveau compte client';
@@ -57,4 +63,9 @@ $string['transactionuniquekey'] = 'Clef unique de transaction';
 $string['unmark'] = 'Démarquer';
 $string['updatecustomeraccount'] = 'Modifier un compte client';
 $string['viewmoodleaccount'] = 'Voir le compte Moodle';
+<<<<<<< HEAD
 $string['zip'] = 'Code postal&nbsp;';
+=======
+$string['zip'] = 'Code postal&nbsp;';
+$string['hasamoodleaccount'] = 'A un compte moodle associé';
+>>>>>>> MOODLE_40_STABLE

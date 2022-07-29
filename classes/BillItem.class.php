@@ -56,10 +56,19 @@ class BillItem extends ShopObject {
 
     public $actionparams; // Parameters decoded from handler params.
 
+<<<<<<< HEAD
     public function __construct($idorrec, $light = false, &$bill = null, $ordering = -1, $nosave = false) {
         global $DB;
 
         $this->bill = $bill;
+=======
+    public function __construct($idorrec, $light = false, $internalrefs = [], $ordering = -1, $nosave = false) {
+        global $DB;
+
+        if (array_key_exists('bill', $internalrefs)) {
+            $this->bill = $internalrefs['bill'];
+        }
+>>>>>>> MOODLE_40_STABLE
         $this->nosave = $nosave;
 
         // Here we make some assertions to check the billitem integrity.
@@ -80,13 +89,16 @@ class BillItem extends ShopObject {
              * This ensures getting exact prices from the moment, event if changed in catalog inbetween.
              */
             if ($catalogitemdata = base64_decode($this->record->catalogitem)) {
+                // Very old records from older version. Will deprecate soon.
                 $catalogitemdata = str_replace('block_shop_catalogitem', 'local_shop_catalogitem', $catalogitemdata);
                 $this->catalogitem = unserialize($catalogitemdata);
             } else {
                 $this->catalogitem = '';
             }
-            $this->productiondata = unserialize(base64_decode($this->record->productiondata));
-            $this->customerdata = unserialize(base64_decode($this->record->customerdata));
+            if ($this->record->type != 'DISCOUNT') {
+                $this->productiondata = unserialize(base64_decode($this->record->productiondata));
+                $this->customerdata = unserialize(base64_decode($this->record->customerdata));
+            }
 
             if (!empty($this->productiondata->handlerparams)) {
                 if (is_string($this->productiondata->handlerparams)) {
@@ -121,9 +133,12 @@ class BillItem extends ShopObject {
 
             if ($idorrec->type != 'BILLING') {
                 // These are pseudo products.
-                $this->record->billid = $bill->id;
+                $this->record->billid = $this->bill->id;
                 $this->record->itemcode = $idorrec->itemcode;
-                if ($this->catalogitem = $bill->thecatalogue->get_product_by_code($idorrec->itemcode)) {
+                if ($idorrec->type == 'DISCOUNT') {
+                    $this->catalogitem = $this->bill->thecatalogue->get_product_by_code($idorrec->productiondata);
+                }
+                if ($this->catalogitem) {
                     $this->record->catalogitem = base64_encode(serialize($this->catalogitem));
                 } else {
                     $this->record->catalogitem = '';
@@ -135,14 +150,14 @@ class BillItem extends ShopObject {
                     $this->record->taxcode = $idorrec->taxcode;
                 }
                 $this->record->totalprice = $idorrec->unitcost * $idorrec->quantity;
-                $this->record->quantity = $idorrec->quantity;
-                $this->record->abstract = '';
-                $this->record->description = '';
-                $this->record->productiondata = '';
+                $this->record->quantity = 0 + $idorrec->quantity;
+                $this->record->abstract = ($idorrec->abstract) ? $idorrec->abstract : '';
+                $this->record->description = ($idorrec->description) ? $idorrec->description : '';
+                $this->record->productiondata = ($idorrec->productiondata) ? $idorrec->productiondata : '';
                 $this->record->customerdata = '';
             } else {
-                $this->catalogitem = $bill->thecatalogue->get_product_by_shortname($idorrec->itemcode);
-                $this->record->billid = $bill->id;
+                $this->catalogitem = $this->bill->thecatalogue->get_product_by_shortname($idorrec->itemcode);
+                $this->record->billid = $this->bill->id;
                 $this->record->itemcode = $this->catalogitem->code;
                 $this->record->unitcost = 0 + $this->catalogitem->get_price($idorrec->quantity);
                 $this->record->taxcode = $this->catalogitem->taxcode;
@@ -282,6 +297,7 @@ class BillItem extends ShopObject {
         $this->record->unitcost = 0 + $this->record->unitcost;
         $this->record->quantity = 0 + $this->record->quantity;
         parent::save();
+        $this->id = $this->record->id;
     }
 
     public function delete() {
@@ -302,11 +318,16 @@ class BillItem extends ShopObject {
         return $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $billid));
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
-        return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
+    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '', $light = false, $internalrefs = []) {
+        return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light, $internalrefs);
     }
 
     public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(billid, '-', ordering, '-', itemcode)", $chooseopt);
+    }
+
+    public function toString() {
+        $printable = $this->record;
+        return $printable;
     }
 }

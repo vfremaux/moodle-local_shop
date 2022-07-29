@@ -41,6 +41,10 @@ $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $setid = optional_param('itemid', '', PARAM_INT);
+<<<<<<< HEAD
+=======
+$categoryid = optional_param('categoryid', 0, PARAM_INT);
+>>>>>>> MOODLE_40_STABLE
 
 // Security.
 $context = context_system::instance();
@@ -65,7 +69,7 @@ if ($setid) {
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+    redirect(new moodle_url('/local/shop/products/view.php', ['view' => 'viewAllProducts', 'categoryid' => $categoryid]));
 }
 
 if ($data = $mform->get_data()) {
@@ -135,7 +139,8 @@ if ($data = $mform->get_data()) {
     $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);
 
-    redirect(new moodle_url('/local/shop/products/view.php', array('view' => 'viewAllProducts')));
+    $params = ['view' => 'viewAllProducts', 'categoryid' => $categoryid];
+    redirect(new moodle_url('/local/shop/products/view.php', $params));
 }
 
 if ($setid) {

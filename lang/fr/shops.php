@@ -16,4 +16,7 @@
 
 $string['linkedblocks'] = 'Blocs liés';
 $string['allshops'] = 'Toutes les boutiques';
+$string['addshop'] = 'Ajouter une boutique';
+$string['editshop'] = 'Modifier une boutique';
 $string['errorshopexists'] = 'Une boutique existe déjà avec ce nom.';
+$string['activeshop'] = 'Boutique active';

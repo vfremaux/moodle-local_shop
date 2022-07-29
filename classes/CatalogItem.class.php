@@ -52,6 +52,7 @@ class CatalogItem extends ShopObject {
     // Fasten a 'by code' reference.
     public $elementsbycode;
 
+    // Tax object representing the associated tax.
     protected $tax;
 
     public $available;
@@ -121,8 +122,9 @@ class CatalogItem extends ShopObject {
     }
 
     /**
-     * get the accurate price against quantity ranges
+     * get the accurate unit price (untaxed) against quantity ranges
      * @param int $q the quantity
+     * @return number (untaxed price)
      */
     public function get_price($q) {
         if (@$this->record->range1) {
@@ -164,11 +166,85 @@ class CatalogItem extends ShopObject {
         }
     }
 
+    /**
+     * Searches a catalogitem instance that matches a idnumber 
+     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
+     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     */
+    public static function instance_by_idnumber($idnumber) {
+        global $DB;
+
+        if (empty($idnumber)) {
+            return null;
+        }
+
+        $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['idnumber' => $idnumber]);
+        if (!$intanceid) {
+            return null;
+        }
+
+        return new CatalogItem($intanceid);
+    }
+
+    /**
+     * Searches a catalogitem instance that matches a idnumber 
+     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
+     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     */
+    public static function instance_by_code($code) {
+        global $DB;
+
+        if (empty($code)) {
+            return null;
+        }
+
+        $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['code' => $code]);
+        if (!$intanceid) {
+            return null;
+        }
+
+        return new CatalogItem($intanceid);
+    }
+
+    /**
+     * Searches a catalogitem instance that matches a idnumber 
+     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
+     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     * @return an array of CatalogItems objects.
+     */
+    public static function instances_by_idnumber($idnumberpattern) {
+        global $DB;
+
+        if (empty($idnumberpattern)) {
+            return null;
+        }
+
+        $select = $DB->sql_like('idnumber', ':idnumberpattern');
+        $params = ['idnumberpattern' => $idnumberpattern.'%'];
+        $instancerecs = $DB->get_records_select('local_shop_catalogitem', $select, $params, 'shortname', 'id,code');
+        if (!$instancerecs) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($instancerecs as $instancerecid => $instance) {
+            $item = new \local_shop\CatalogItem($instancerecid);
+            $items[$instance->code] = $item;
+        }
+
+        return $items;
+    }
+
     public function get_serialized_handlerparams() {
         return json_encode(@$this->handlerparams);
     }
 
-    public function get_tax($q) {
+    /**
+     * The unit tax amount for this quantity of products.
+     * @param int $q
+     * @return number (tax amount)
+     */
+    public function get_tax($q = 1) {
         if ($this->taxcode && $this->tax) {
             return $this->tax;
         }
@@ -209,7 +285,12 @@ class CatalogItem extends ShopObject {
         return $prices;
     }
 
-    public function get_taxed_price($q, $taxid = 0) {
+    /**
+     * Gives the unit taxed price (may depend on quantity, if ranged princing)
+     * @param int $q the ordered quantity
+     * @param int $taxid taxid, if not set evaluates with the internal taxcode value.
+     */
+    public function get_taxed_price($q = 1, $taxid = 0) {
         global $DB;
         static $taxcache;
 
@@ -346,6 +427,94 @@ class CatalogItem extends ShopObject {
             $url = $OUTPUT->image_url('defaultproduct', 'local_shop');
         }
         return $url;
+    }
+
+    /**
+     * Gets back some information about handler and callable method for post prod operations
+     * @param string $method the product method name
+     * @return an array with an handler object instance and a callable method name
+     */
+    public function get_handler_info($method, $type = 'postprod') {
+        global $CFG;
+
+        if (!empty($this->isset)) {
+            // Bundle or set.
+            debug_trace('Catalog item get handler info : Is a set or a bundle. No handler', TRACE_DEBUG);
+            return [null,null];
+        }
+
+        $handler = null;
+        $methodname = null;
+
+        // TODO : Rationalize .... there is probably only one case to process.
+        if ($type == 'postprod') {
+
+            $hashandler = $this->enablehandler;
+            if (empty($hashandler)) {
+                debug_trace('Catalog item get handler info : Has no handler declared', TRACE_DEBUG);
+                return [null, null];
+            }
+
+            $h = $this->enablehandler;
+
+            if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
+                print_error('errorbadhandler', 'local_shop', $h);
+            }
+
+            include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
+
+            $classname = 'shop_handler_'.$h;
+            $handler = new $classname('');
+        } else {
+            $handler = $this->get_handler();
+            if (is_object($handler)) {
+                $classname = get_class($handler);
+            } else {
+                debug_trace('Catalog item get handler info : No handler found', TRACE_DEBUG);
+                return [null, null];
+            }
+        }
+
+        if (!empty($method)) {
+            $methodname = $method;
+            if (!empty($type)) {
+                // Extend possible queries, Keep the alternative for older compatibility.
+                $methodname = $type.'_'.$method;
+            }
+            if (!method_exists($classname, $methodname)) {
+                if ($type == 'postprod') {
+                    print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
+                } else {
+                    debug_trace('Catalog item get handler info : Info type not yet supported', TRACE_DEBUG);
+                    return [null, null];
+                }
+            }
+        }
+
+        return array($handler, $methodname);
+    }
+
+    /**
+     * get info out of production data (in product)
+     * @return an object
+     */
+    public function extract_production_data() {
+
+        $info = new \StdClass();
+
+        $productiondata = $this->productiondata;
+
+        if (!empty($productiondata)) {
+            if ($pairs = explode('&', $this->productiondata)) {
+                foreach ($pairs as $pair) {
+                    // Affectation may be empty.
+                    $pair = explode('=', $pair);
+                    $info->{$pair[0]} = @$pair[1];
+                }
+            }
+        }
+
+        return $info;
     }
 
     /**
@@ -599,6 +768,9 @@ class CatalogItem extends ShopObject {
             $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
         }
 
+        $this->record->shortname = strtolower($this->record->code);
+        $this->record->shortname = str_replace(' ', '', $this->record->shortname);
+
         $this->save();
 
         // Clone all attached files.
@@ -653,11 +825,15 @@ class CatalogItem extends ShopObject {
         $export->requireddata = $this->record->requireddata;
         $export->leafleturl = ''.$this->get_leaflet_url();
         $export->thumburl = ''.$this->get_thumb_url();
+<<<<<<< HEAD
         $export->imageurl =  ''.$this->get_image_url();
 
         if ($withsubs) {
             
         }
+=======
+        $export->imageurl = ''.$this->get_image_url();
+>>>>>>> MOODLE_40_STABLE
 
         return $export;
     }

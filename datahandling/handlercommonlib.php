@@ -28,7 +28,10 @@ define('EMPTY_HANDLER', '');
 define('SPECIFIC_HANDLER', 1);
 
 /**
- * @param objectref $data a full billitem object
+ * Registers an associated customer moodle user reference.
+ * If new customer, will ask for a moodle user creation.
+ * @param object $data a full billitem object
+ * @param arrayref @$errorstatus an error reporting array.
  */
 function shop_register_customer($data, &$errorstatus) {
     global $DB, $USER;
@@ -98,9 +101,19 @@ function shop_register_customer($data, &$errorstatus) {
             $message .= " New user created {$newuser->username}.";
             shop_trace($message);
 
+<<<<<<< HEAD
             $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
             $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $newuser->username);
             $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
+=======
+            $e = clone($newuser);
+            $e->txid = $data->transactionid;
+            $fb = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext', $e);
+            $productionfeedback->public = $fb;
+            $fb = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $e);
+            $productionfeedback->private = $fb;
+            $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $e);
+>>>>>>> MOODLE_40_STABLE
             $productionfeedback->salesadmin = $fb;
         }
     }
@@ -201,6 +214,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $data->bill->customeruser = get_complete_user_data('username', $newuser->username);
 
     // Passwords will be created and sent out on cron.
+    /*
     if (!$oldrec = $DB->get_record('user_preferences', array('userid' => $newuser->id, 'name' => 'create_password'))) {
         $pref = new StdClass();
         $pref->userid = $newuser->id;
@@ -211,6 +225,9 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
         $oldrec->value = 1;
         $DB->update_record('user_preferences', $oldrec);
     }
+    */
+
+    shop_set_and_send_password($data->bill->customeruser);
 
     if (!$oldrec = $DB->get_record('user_preferences', array('userid' => $newuser->id, 'name' => 'auth_forcepasswordchange'))) {
         $pref = new StdClass();
@@ -273,9 +290,14 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     }
 
     if ($participant->id = $DB->insert_record('user', $participant)) {
+<<<<<<< HEAD
 
         // Passwords will be created and sent out on cron.
         set_user_preference('create_password', 1, $participant->id);
+=======
+        $complete = get_complete_user_data('username', $participant->username);
+        shop_set_and_send_password($complete);
+>>>>>>> MOODLE_40_STABLE
         set_user_preference('auth_forcepasswordchange', 0, $participant->id);
     }
 
@@ -296,4 +318,61 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     shop_trace("[{$data->transactionid}] GENERIC : New user created {$participant->username} with ID {$participant->id}.");
 
     return $participant;
+}
+
+/**
+ * Generates and setup a password for a user.
+ * @param object $user a User record.
+ * @param bool $nosend if true, the password will be generated and stored, but no mail goes out.
+ * @param bool $testmode if true, the password is generated but not stored. With nosend, will just return a new password.
+ */
+function shop_set_and_send_password($user, $testmode = false) {
+    global $DB, $SITE, $CFG;
+
+    $password = generate_password(8);
+
+    $hashed = hash_internal_user_password($password);
+    $config = get_config('local_shop');
+
+    if (!$testmode) {
+        $DB->set_field('user', 'password', $hashed, ['id' => $user->id]);
+    }
+
+    // Start with the default platform language.
+    $subject = new lang_string('new_password_subject_tpl', 'local_shop', $CFG->lang);
+    $subject = str_replace('%SITE%', $SITE->fullname, $subject);
+
+    $message = new lang_string('new_password_message_tpl', 'local_shop', $CFG->lang);
+    $message = str_replace('%LOGIN%', $user->username, $message);
+    $message = str_replace('%PASSWORD%', $password, $message);
+    $message = str_replace('%FULLNAME%', fullname($user), $message);
+    $loginurl = get_login_url();
+    $message = str_replace('%SITE%', $SITE->fullname, $message);
+    $message = str_replace('%URL%', $loginurl, $message);
+
+    $support = '';
+    if (!empty($config->sellermailsupport)) {
+        $support = '<a href="mailto:">'.$config->sellermailsupport.'</a>';
+    }
+    if (!empty($config->sellerphonesupport)) {
+        $support .= ' Tel: '.$config->sellerphonesupport;
+    }
+    $message = str_replace('%SUPPORT%', $support, $message);
+
+    if ($testmode) {
+        $message = str_replace('%TESTMODE%', "<p><b>This is a test message. Please do not care if you receive it, your password HAS NOT been changed.</b></p>\n", $message);
+    } else {
+        $message = str_replace('%TESTMODE%', '', $message);
+    }
+
+    $rawmessage = strip_tags($message);
+
+    // Send password to user.
+    $result = email_to_user($user, ''.@$config->sellermailsupport, $subject, $message, $rawmessage, '', '', false /* use trueadress */);
+    if ($result) {
+        $trace = $subject."\n\n".$message;
+        shop_trace($trace, 'mail', $user);
+    } else {
+        shop_trace("ERROR > Password Mail Sending Error", 'mail', $user);
+    }
 }

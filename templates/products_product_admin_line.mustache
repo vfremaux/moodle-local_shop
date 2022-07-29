@@ -15,9 +15,15 @@
         {{#str}}code, local_shop{{/str}} {{{helpcodeicon}}}
     </th>
 
+<<<<<<< HEAD
     <th class="header c1">
         {{#str}}shortname, local_shop{{/str}} {{{helpshortnameicon}}}
     </th>
+=======
+    <!-- th class="header c1">
+        {{#str}}shortname, local_shop{{/str}} {{{helpshortnameicon}}}
+    </th -->
+>>>>>>> MOODLE_40_STABLE
 
     <th class="header c2" colspan="5">
         {{#str}}designation, local_shop{{/str}}
@@ -66,7 +72,11 @@
 {{/header}}
 
 {{^header}}
+<<<<<<< HEAD
 <tr class="shop-{{statusclass}}line shop-product-row" valign="top">
+=======
+<tr class="shop-{{statusclass}}line shop-product-row" valign="top" data-product="{{shortname}}">
+>>>>>>> MOODLE_40_STABLE
     <td class="cell {{slaveclass}}"align="center" rowspan="2">
         <img src="{{{thumburl}}}" vspace="10" height="50">
     </td>
@@ -74,9 +84,15 @@
     <td class="name cell {{slaveclass}}" align="left">
         {{code}}
     </td>
+<<<<<<< HEAD
     <td class="name cell {{slaveclass}}" align="left">
         {{shortname}}
     </td>
+=======
+    <!-- td class="name cell {{slaveclass}}" align="left">
+        {{shortname}}
+    </td -->
+>>>>>>> MOODLE_40_STABLE
 
     <td class="name cell {{slaveclass}}" align="left" colspan="7">
         {{name}}

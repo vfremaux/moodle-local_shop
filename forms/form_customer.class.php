@@ -92,7 +92,8 @@ class Customer_Form extends moodleform {
 
         $errors = parent::validation($data, $files);
 
-        if ($DB->record_exists('local_shop_customer', array('email' => $data['email']))) {
+        $select = ' email = ? AND id != ? ';
+        if ($DB->record_exists_select('local_shop_customer', $select, ['id' => $data->customerid ,'email' => $data['email']])) {
             $errors['email'] = get_string('erroremailexists', 'local_shop');
         }
 

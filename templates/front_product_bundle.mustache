@@ -32,6 +32,7 @@
         {{/ispart}}
         {{^ispart}}
             <h1>{{{name}}}</h1>
+<<<<<<< HEAD
             {{#hasdescription}}
                 <h2 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
                     {{{description}}}
@@ -42,18 +43,26 @@
                 </div>
                 {{/shortdescription}}
             {{/hasdescription}}
+=======
+            {{> local_shop/front_modal_product }}
+>>>>>>> MOODLE_40_STABLE
         {{/ispart}}
 
         {{#hasleaflet}}
             <div class="shop-front-leaflet"><a href="{{{leafleturl}}}" target="_blank">{{linklabel}}</a></div>
         {{/hasleaflet}}
 
+<<<<<<< HEAD
         <div class="shop-front-refblock">
+=======
+        <div class="shop-front-bundle-content">
+>>>>>>> MOODLE_40_STABLE
 
             <div class="shop-front-bundle-elements">
                 {{#elements}}
                     {{> local_shop/front_product_block}}
                 {{/elements}}
+<<<<<<< HEAD
             </div>
 
             <div class="shop-front-pricelist">
@@ -96,7 +105,64 @@
                 <div class = "shop-order-item" id="bag_{{shortname}}">
                     {{{units}}}
                 </div>
+=======
             </div>
+
+            {{#canorder}}
+            <div class="shop-front-refblock">
+                <div class="shop-front-ref-group">
+                    <div class="shop-front-ref">{{refstr}}&nbsp;: {{{code}}}</div>
+
+                    <div class="shop-front-pricelist">
+                        {{^pricelist}}
+                        <div class="shop-front-label">{{puttcstr}}</div>
+                        <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                        {{/pricelist}}
+                        {{#pricelist}}
+
+                        <div class="shop-front-label">{{puttcstr}}</div>
+                            {{#prices}}
+                            <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                            <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                            {{/prices}}
+                        {{/pricelist}}
+                    </div>
+                </div>
+
+                <div class="shop-front-ref-group">
+                    {{#available}}
+                    <div class="shop-front-order">
+                        {{#password}}
+                        <input type="text"
+                                id="ci-pass-{{shortname}}"
+                                data-product="{{shortname}}"
+                                value=""
+                                maxlength="8"
+                                size="8"
+                                class="local-shop-password"
+                                title="{{needspasscodetobuystr}}" />
+                        <div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
+
+                        {{/password}}
+                        <input type="button"
+                                        id="ci-{{shortname}}"
+                                        value="{{buystr}}"
+                                        data-product="{{shortname}}"
+                                        data-maxquant="{{maxdeliveryquant}}"
+                                        class="local-shop-add-unit"
+                                        {{{disabled}}} />
+
+                    </div>
+                    {{/available}}
+
+                    <div class="shop-order-bag">
+                        <div class="shop-order-item" id="bag_{{shortname}}">{{{units}}}</div>
+                    </div>
+                </div>
+>>>>>>> MOODLE_40_STABLE
+            </div>
+            {{/canorder}}
+
         </div>
     </div>
 </div>

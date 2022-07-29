@@ -94,6 +94,6 @@ if (empty($SESSION->shoppingcart->customerdata['completed'])) {
     $options['nextstyle'] = 'background-color:green;background-image:none;color:white';
 }
 
+echo '<center>';
 echo $renderer->action_form('purchaserequ', $options);
-
 echo '</center>';

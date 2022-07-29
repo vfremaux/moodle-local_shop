@@ -29,6 +29,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
 use local_shop\Catalog;
 
+$SESSION->shop = null;
+
 // Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 

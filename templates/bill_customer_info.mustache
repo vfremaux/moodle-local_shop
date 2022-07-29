@@ -2,6 +2,7 @@
 
 
 <!-- local_shop/bill_customer_info -->
+<<<<<<< HEAD
 <div id="shop-customerinfo">
     <table cellspacing="4" width="100%">
 
@@ -92,5 +93,29 @@
     {{/useinvoiceinfo}}
 
 </table>
+=======
+<div id="shop-bill-customerinfo">
+    <div id="shop-bill-date">
+        <b>{{#str}}on, local_shop{{/str}}:</b>  {{emissiondate}}
+    </div>
+    <div id="shop-bill-customerdata">
+        <b>{{#str}}organisation, local_shop{{/str}}:</b> {{organisation}}<br/>
+
+        {{#useinvoiceinfo}}
+        <b>{{#str}}department{{/str}}:</b> {{department}}<br/>
+        {{/useinvoiceinfo}}
+
+        <b>{{#str}}customer, local_shop{{/str}}:</b> {{lastname}} {{firstname}}<br/>
+        <b>{{#str}}address{{/str}}: </b> {{{address}}}<br/>
+        <b>{{#str}}city{{/str}}: </b> {{zip}} {{city}}<br/>
+        <b>{{#str}}country{{/str}}:</b> {{country}}<br/>
+        <b>{{#str}}email{{/str}}:</b> {{email}}<br/>
+
+        {{#useinvoiceinfo}}
+        <br/>
+        <b>{{vatcode, local_shop{{/str}}:</b> {{vatcode}}
+        {{/useinvoiceinfo}}
+    </div>
+>>>>>>> MOODLE_40_STABLE
 </div>
 <!-- /local_shop/bill_customer_info -->

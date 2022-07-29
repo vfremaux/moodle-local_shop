@@ -62,9 +62,17 @@ $PAGE->navbar->add($thecatalog->name, new moodle_url('/local/shop/products/view.
 $PAGE->navbar->add(get_string('unittests', 'local_shop'));
 $PAGE->set_pagelayout('admin');
 
+$SESSION->shop->categoryid = optional_param('categoryid', 0 + @$SESSION->shop->categoryid, PARAM_INT);
+
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('unittests', 'local_shop'));
+
+$renderer = shop_get_renderer('products');
+$renderer->load_context($theshop, $thecatalog, $theblock);
+$params = array('id' => $theshop->id, 'catalogid' => $thecatalog->id);
+$viewurl = new moodle_url('/local/shop/unittests/index.php', $params);
+echo $renderer->category_chooser($viewurl);
 
 $warningstr = get_string('warning', 'local_shop');
 $errorstr = get_string('error', 'local_shop');
@@ -72,25 +80,25 @@ $messagestr = get_string('message', 'local_shop');
 
 echo '<center>';
 
-if ($productline = $thecatalog->get_products()) {
+$thecatalog->get_all_products_for_admin($products);
+
+if ($products) {
     $testtable = new html_table();
 
     $productcodestr = get_string('code', 'local_shop');
     $productnamestr = get_string('name', 'local_shop');
-    $productdescstr = get_string('description');
     $productparamsstr = get_string('handlerparams', 'local_shop');
     $productrequirementsstr = get_string('requiredparams', 'local_shop');
 
     $testtable->width = "100%";
-    $testtable->size = array('5%', '10%', '20%', '25%', '20%', '20%');
+    $testtable->size = array('5%', '10%', '25%', '20%', '20%');
     $testtable->head = array('',
                              "<b>$productcodestr</b>",
                              "<b>$productnamestr</b>",
-                             "<b>$productdescstr</b>",
                              "<b>$productparamsstr</b>",
                              "<b>$productrequirementsstr</b>");
 
-    foreach ($productline as $productcode => $catalogitem) {
+    foreach ($products as $productcode => $catalogitem) {
         $presel = (in_array($productcode, $selected)) ? ' checked="checked" ' : '';
         $selbox = '<input type="checkbox" name="sel[]" class="testselectors" value="'.$productcode.'" '.$presel.' >';
         $producturl = new moodle_url('/local/shop/products/edit_product.php', array('itemid' => $catalogitem->id));
@@ -98,7 +106,6 @@ if ($productline = $thecatalog->get_products()) {
         $testtable->data[] = array($selbox,
                                    $productcode,
                                    $productlink,
-                                   $catalogitem->description,
                                    '<b>'.$catalogitem->enablehandler.'</b><br/>'.$catalogitem->get_serialized_handlerparams(),
                                    $catalogitem->requireddata);
     }

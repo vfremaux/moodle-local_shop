@@ -23,7 +23,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-abstract class shop_handler{
+abstract class shop_handler {
 
     public $productlabel;
 
@@ -108,7 +108,12 @@ abstract class shop_handler{
         return;
     }
 
-    public function display_product_acions() {
+    public function display_product_actions() {
+        // Do nothing.
+        return;
+    }
+
+    public function delete() {
         // Do nothing.
         return;
     }

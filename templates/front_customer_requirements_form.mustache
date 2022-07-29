@@ -1,0 +1,114 @@
+
+
+<!-- local_shop/front_customer_requirements -->
+<form name="shop-requirements">
+<input type="hidden" name="view" value="purchaserequ">
+<input type="hidden" name="id" value="{{shopid}}">
+<input type="hidden" name="blockid" value="{{blockid}}">
+<input type="hidden" name="what" value="collect">
+<div id="shop-requirement-list">
+    <div id="shop-requirement-caption">
+        {{#str}}requireddatacaption, local_shop{{/str}}
+    </div>
+
+    {{#orderentries}}
+    <div class="shop-product-requ">
+        <div class="shop-product-name">{{{productname}}}</div>
+
+        {{#jsonerror}}
+        <div class="shop-product-error">
+        {{{jsonerrorstr}}}
+        </div>
+        {{/jsonerror}}
+
+        {{#items}}
+        <div class="shop-product-requirements">
+            <div class="shop-product-requirement">{{#str}}instance, local_shop, {{ix}}{{/str}}</div>
+
+            {{#requirements}}
+            <div class="shop-requirement">
+                {{#error}}
+                <div class="shop-requ-error">
+                {{error}}
+                </div>
+                {{/error}}
+
+                <div class="requ-label">
+                    {{label}}
+                </div>
+
+                {{#istextfield}}
+                <div class="requ-param">
+                    <input type"text"
+                        name="{{itemname}}/{{field}}{{i}}"
+                        id="id-{{ix}}"
+                        value="{{value}}"
+                        {{{attributes}}}
+                        {{{inputclass}}} />
+                    <div class="requ-desc">
+                        {{{desc}}}
+                    </div>
+                </div>
+                {{/istextfield}}
+
+                {{#istextarea}}
+                <div class="requ-param">
+                    <textarea name="{{itemname}}/{{i}}"
+                                       id="id-{{ix}}"
+                                       {{{attributes}}}
+                                       {{{inputclass}}}>{{{value}}}</textarea>
+                    <div class="requ-desc">
+                        {{{desc}}}
+                    </div>
+                </div>
+                {{/istextarea}}
+
+                {{#ischeckbox}}
+                <div class="requ-param">
+                    <input type="checkbox"
+                        name="{{itemname}}/{{i}}"
+                        id="id-{{ix}}"
+                        {{{checked}}}
+                        {{{attributes}}}
+                        {{{inputclass}}}>
+                    <div class="requ-desc">
+                        {{{desc}}}
+                    </div>
+                </div>
+                {{/ischeckbox}}
+
+                {{#isselect}}
+                <div class="requ-param">
+                    <select name="{{itemname}}/{{i}}"
+                                     id="id-{{ix}}"
+                                     {{{attributes}}}
+                                     {{{inputclass}}}>
+                        {{#options}}
+                       <option name="{{opt}}" {{{selected}}}>{{optvalue}}</option>
+                        {{/options}}
+                    </select>
+
+                    <div class="requ-desc">
+                        {{{desc}}}
+                    </div>
+                </div>
+                {{/isselect}}
+
+                {{#iserror}}
+                <div class="shop-error">
+                    {{#str}}errorrequirementfieldtype, local_shop, {{itemsignature}}{{/str}}
+                </div>
+                {{/iserror}}
+            </div>
+            {{/requirements}}
+        </div>
+        {{/items}}
+    </div>
+    {{/orderentries}}
+
+    <div id="requ-submit" class="{{extraclass}}">
+        <input type="submit" name="go_btn" value="{{#str}}saverequs, local_shop{{/str}}" style="width:200px" />
+    </div>
+</div>
+</form>
+<!-- /local_shop/front_customer_requirements -->

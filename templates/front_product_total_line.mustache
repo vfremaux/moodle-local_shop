@@ -32,17 +32,34 @@
         <td class="shop-ordercell">
 
             {{#isshopview}}
+<<<<<<< HEAD
             <a title="'{{#str}}clearall, local_shop{{/str}}" href="{{{clearjshandler}}}">{{#pix}}t/delete, core{{/pix}}</a>
             {{/isshopview}}
 
             <input type="text"
                 class="order-detail"
+=======
+            <a title="{{#str}}clearall, local_shop{{/str}}"
+               class="local-shop-detail-delete"
+               data-product="{{shortname}}"
+               data-maxquant="{{maxdeliveryquant}}">{{#pix}}t/delete, core{{/pix}}</a>
+            {{/isshopview}}
+
+            <input type="text"
+                class="local-shop-order-detail"
+>>>>>>> MOODLE_40_STABLE
                 id="id_{{shortname}}"
                 name="{{shortname}}"
                 value="{{preset}}"
                 size="3"
+<<<<<<< HEAD
                 style="width:40px"
                 onChange="{{{jshandler}}}" {{{disabled}}} >
+=======
+                maxlength="3"
+                style="width:20px"
+                data-product="{{shortname}}" {{{disabled}}} >
+>>>>>>> MOODLE_40_STABLE
         </td>
         <td class="shop-ordercell">
             {{{code}}}  {{ttcprice}}&nbsp;{{{currency}}} :

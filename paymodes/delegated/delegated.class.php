@@ -15,61 +15,52 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    shoppaymodes_paybox
+ * @package    shoppaymodes_delegated
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
-class shop_paymode_paybox extends shop_paymode {
+/**
+ * A Delegated pay mode delegates payment to the shop administrator. Payment is done
+ * and controlled via an external procedure. This is a special backoffice paymode for
+ * Web Service based transactions.
+ * It has NO need to be enabled and will be activated automatically when WS transactions
+ * are used. (e.g. : product activation for third party distributors)
+ */
+class shop_paymode_delegated extends shop_paymode {
 
-    public function __construct(&$shop) {
-        // To enable paybox in your installation, change second param to "true".
-        parent::__construct('paybox', $shop, false, true);
+    public function __construct(&$shopblockinstance) {
+        parent::__construct('transfer', $shopblockinstance);
     }
 
-    public function is_instant_payment() {
-        return true;
-    }
-
-    /**
-     * prints a payment porlet in an order form
-     */
+    // Prints a payment porlet in an order form.
     public function print_payment_portlet(&$billdata) {
-        echo '<p>Not implemeted Yet!</p> ';
     }
 
-    /**
-     * prints a payment porlet in an order form
-     */
+    // Prints a payment porlet in an order form.
     public function print_invoice_info(&$billdata = null) {
-        echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paybox', '');
     }
 
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', array());
     }
 
-    /**
-     * processes a payment return.
-     */
+    // Processes a payment return.
     public function process() {
+        // Void.
     }
 
-    /**
-     * processes a payment asynchronoous confirmation
-     */
+    // Processes a payment asynchronoous confirmation.
     public function process_ipn() {
+        // No IPN for offline payment.
     }
 
-    /**
-     * provides global settings to add to shop settings when installed
-     */
+    // Provides global settings to add to shop settings when installed.
     public function settings(&$settings) {
-        $label = get_string($this->name.'paymodeparams', 'local_shop');
-        $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, ''));
     }
 }

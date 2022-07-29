@@ -22,6 +22,9 @@
  */
 namespace local_shop\front;
 
+use \moodle_url;
+use \StdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
@@ -39,14 +42,24 @@ class customer_controller extends front_controller_base {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass;
         }
 
         switch ($cmd) {
-            case 'revalidate':
+            case 'login': {
                 break;
+            }
+
+            case 'revalidate': {
+                break;
+<<<<<<< HEAD
 
             case 'navigate':
+=======
+            }
+
+            case 'navigate': {
+>>>>>>> MOODLE_40_STABLE
                 $this->data->usedistinctinvoiceinfo = optional_param('usedistinctinvoiceinfo', 0, PARAM_BOOL);
 
                 $customerinfofields = preg_grep('/customerinfo::/', array_keys($_POST));
@@ -66,6 +79,7 @@ class customer_controller extends front_controller_base {
                 $this->data->back = optional_param('back', 0, PARAM_TEXT);
 
                 break;
+            }
         }
         $this->received = true;
     }
@@ -79,7 +93,12 @@ class customer_controller extends front_controller_base {
 
         $config = get_config('local_shop');
 
-        if ($cmd == 'revalidate') {
+        if ($cmd == 'login') {
+
+            $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', ['view' => 'customer', 'shopid' => $this->theshop->id]);
+            redirect(get_login_url());
+
+        } else if ($cmd == 'revalidate') {
 
             // This comes after a customer login with a owned moodle account.
             $errors = shop_validate_customer($this->theshop);
@@ -105,15 +124,22 @@ class customer_controller extends front_controller_base {
                 $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal + $shoppingcart->shipping->value;
             } else {
                 // This is the last final payable amount.
-                $SESSION->shoppingcart->finalshippedtaxedtotal = $SESSION->shoppingcart->finaltaxedtotal;
+                $shoppingcart->finalshippedtaxedtotal = $shoppingcart->finaltaxedtotal;
             }
 
             if (!empty($this->data->back)) {
                 $params = array('view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1);
+<<<<<<< HEAD
                 return new \moodle_url('/local/shop/front/view.php', $params);
             }
 
             $shoppingcart->errors = new \StdClass;
+=======
+                return new moodle_url('/local/shop/front/view.php', $params);
+            }
+
+            $shoppingcart->errors = new StdClass;
+>>>>>>> MOODLE_40_STABLE
             $shoppingcart->errors->customerinfo = null;
             $shoppingcart->errors->invoiceinfo = null;
             shop_validate_customer($this->theshop);

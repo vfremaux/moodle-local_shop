@@ -26,6 +26,7 @@ $string['errornocourse'] = 'No target course for product';
 $string['errorcoursenotexists'] = 'Course {$a} does not exist';
 $string['errorrole'] = 'Enrolment role {$a} does not exist';
 $string['warningroledefaultstoteacher'] = 'Enrolment role not defined. "Student" is used.';
+$string['warninggrouptobecreated'] = 'The group name {$a} does not exist in target course and will be created on first transaction.';
 
 $string['productiondata_public'] = '
 <p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate login information.</p>
@@ -38,7 +39,7 @@ validate your purchase on payment confirmation.</p>
 $string['productiondata_private'] = '
 <p>Your user account has been setup on this site.</p>
 <p>Your login is: {$a->username}</p>
-<p>A personal password will be sent in a next mail.</p>
+<p>A personal password has been sent in a separate mail.</p>
 <p><b>Please note this information in a safe place before you continue...</b></p>
 <p>If you made an online payment, your purchased products will be processed on automatic return of your payment order.
 You will be able to connect at once and get to your training volumes. On the other hand will our commercial service

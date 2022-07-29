@@ -18,9 +18,14 @@ $string['addbill'] = 'Ajouter une facture';
 $string['addbillitem'] = 'Ajouter un élément de facture';
 $string['actualstate'] = 'Etat actuel';
 $string['allowingtax'] = 'l\'activation de la taxe';
+$string['allbillsfile'] = 'Factures_{$a}';
 $string['assignedto'] = 'Assignée à ';
+$string['assigntopartner'] = 'Assigner au partenaire';
+$string['unassignpartner'] = 'Désassigner le partenaire';
+$string['attachments'] = 'Fichiers attachés';
 $string['backto'] = 'Revenir à l\'état';
 $string['bill'] = 'Facture&nbsp;:&ensp;';
+$string['billid'] = 'ID de facture';
 $string['billtitle'] = 'Titre de la facture&nbsp;:&ensp;';
 $string['bill_ALLs'] = 'Toutes';
 $string['bill_CANCELLEDs'] = 'Factures annulées';
@@ -46,17 +51,24 @@ $string['editbillitem'] = 'Modifier un élément de facture';
 $string['exportasxls'] = 'Exporter en XLS';
 $string['fullviewon'] = 'Vue complète';
 $string['fullviewoff'] = 'Vue simple';
+<<<<<<< HEAD
+=======
+$string['flowcontrol'] = 'Workflow';
+>>>>>>> MOODLE_40_STABLE
 $string['fromdate'] = 'Depuis le ';
 $string['generateacode'] = 'Générer un code';
 $string['goto'] = 'Aller à l\'état';
 $string['lettering'] = 'Lettrage';
 $string['letteringupdated'] = 'Lettrage enregistré';
 $string['nobillattachements'] = 'Aucun document attaché à cette facture.';
+$string['billattachementsispro'] = 'Les attachements de facture sont une fonctionalité de la version "pro".';
+$string['billownershipispro'] = 'Les attributions de facture sont une fonctionalité de la version "pro".';
 $string['nobills'] = 'Aucune facture dans cette catégorie.';
 $string['nocodegenerated'] = 'Le code de transaction n\'a jamais été <br>généré (factures manuelles):';
 $string['noletteringaspending'] = 'Ceci n\'est pas une facture. <br/>Seule une facture peut être lettrée.';
 $string['nopaging'] = 'Toutes les pages';
 $string['or'] = 'ou ';
+$string['ownership'] = 'Attribution';
 $string['paimentcode'] = 'Code réglement&nbsp;:&ensp;';
 $string['paymode'] = 'Mode de paiement';
 $string['providetransactioncode'] = 'Fournir ce code dans toute communication à propos de votre achat';
@@ -75,6 +87,21 @@ $string['uniqueletteringfailure'] = '<a href="{$a}">Une autre facture</a> porte 
 $string['unittex'] = 'Unitaire hors taxes&nbsp;:&ensp;';
 $string['updatelettering'] = 'Mettre à jour';
 $string['pickuser'] = 'Choisissez un compte client ou un compte utilisateur&nbsp;:&ensp;';
+$string['searchforanidinstructions'] = 'chercher par ID (ou début d\'ID)';
+
+// Calendar.
+$string['jan'] = 'Janvier';
+$string['feb'] = 'Février';
+$string['mar'] = 'Mars';
+$string['apr'] = 'Avril';
+$string['may'] = 'Mai';
+$string['jun'] = 'Juin';
+$string['jul'] = 'Juillet';
+$string['aug'] = 'Août';
+$string['sep'] = 'Septembre';
+$string['oct'] = 'Octobre';
+$string['nov'] = 'Novembre';
+$string['dec'] = 'Décembre';
 
 // Calendar.
 $string['jan'] = 'Janvier';

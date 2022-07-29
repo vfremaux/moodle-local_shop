@@ -91,6 +91,10 @@ echo $renderer->full_bill_taxes($afullbill, $theshop);
 echo $renderer->bill_footer($afullbill);
 
 echo $renderer->flow_controller($afullbill->status, $url);
+<<<<<<< HEAD
+=======
+echo $renderer->ownership($afullbill);
+>>>>>>> MOODLE_40_STABLE
 
 echo $renderer->attachments($afullbill);
 

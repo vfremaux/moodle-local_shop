@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
-    include($CFG->dirroot.'/local/shop/bills/search.controller.php');
+    include_once($CFG->dirroot.'/local/shop/bills/search.controller.php');
     $controller = new \local_shop\bills\search_controller($theshop);
     $bills = $controller->process($action);
 }

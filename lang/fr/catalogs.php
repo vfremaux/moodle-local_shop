@@ -20,4 +20,5 @@ $string['catalogs'] = 'Catalogues';
 $string['defaultcatalogname'] = 'Catalogue de vente de formations';
 $string['defaultcatalogdescription'] = 'Catalogue par défaut pour la commercialisation des cours';
 $string['billfooter'] = 'Pied de page de facture';
+$string['usedcatalogcannotdelete'] = 'Ce catalogue est associé à une boutique. Il ne peut être supprimé.';
 

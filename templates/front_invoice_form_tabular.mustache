@@ -1,0 +1,162 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_invoice_form
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_invoice_form -->
+<div id="shop-organisationdata">
+    <table cellspacing="3" width="100%" class="generaltable shoptable">
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}organisation, local_shop{{/str}}:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::organisation"
+                       size="26"
+                       maxlength="64"
+                       value="{{{institution}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}department{{/str}}:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::department"
+                       size="26"
+                       maxlength="64"
+                       value="{{{department}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::lastname"
+                       size="20"
+                       onchange="setupper(this)"
+                       value="{{{lastname}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::firstname"
+                       size="20"
+                       onchange="capitalizewords(this)"
+                       value="{{{firstname}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}email{{/str}}:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::email"
+                       size="50"
+                       onchange="checkemail(this)"
+                       value="{{{email}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}address{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::address"
+                       size="26"
+                       onchange="setupper(this)"
+                       value="{{{address}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}city{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::city"
+                       size="26"
+                       onchange="setupper(this)"
+                       value="{{{city}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}zip, local_shop{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::zip"
+                       size="6"
+                       value="{{{zip}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}country{{/str}}<sup style="color: red">*</sup>:</b>
+            </td>
+            <td align="left" class="form-input">
+                {{{countryselect}}}
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+                <b>{{#str}}vatcode, local_shop{{/str}}:</b>
+            </td>
+            <td align="left" class="form-input">
+                <input type="text"
+                       name="invoiceinfo::vatcode"
+                       size="15"
+                       value="{{{vatcode}}}" />
+            </td>
+        </tr>
+
+        <tr valign="top">
+            <td align="right" class="form-label">
+            </td>
+            <td align="left" class="form-input">
+                <input type="hidden"
+                       name="invoiceinfo::plantcode"
+                       value="" />
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- local_shop/front_invoice_form -->

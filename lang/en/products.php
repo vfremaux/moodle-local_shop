@@ -24,8 +24,12 @@ $string['addproduct'] = 'Add product';
 $string['addoverride'] = 'Override master definition';
 $string['addset'] = 'Add set';
 $string['allcategories'] = 'All categories';
+$string['alltypes'] = 'All context types';
 $string['automation'] = 'Automation';
+$string['backtounits'] = 'Back to all units';
 $string['behaviour'] = 'Behaviour';
+$string['course'] = 'Course ownership';
+$string['coursecategory'] = 'Course category ownership';
 $string['billorderingnumber'] = 'Invoice ordering number';
 $string['categories'] = 'Categories';
 $string['customersnameonbill'] = 'The customer\'s name on invoice';
@@ -44,6 +48,7 @@ $string['handlerparams'] = 'Handler parameters';
 $string['helpcode'] = 'Product Code';
 $string['helpshortname'] = 'Product Shortname';
 $string['hashandlers'] = 'This product has action handlers';
+$string['idnumber'] = 'Id number';
 $string['maxquant'] = 'Q max';
 $string['newbundle'] = 'New bundle';
 $string['newcategory'] = 'New category';
@@ -54,6 +59,12 @@ $string['noproductinbundle'] = 'Bundle is empty';
 $string['noproductincategory'] = 'Category is empty';
 $string['noproductinset'] = 'Set is empty';
 $string['noproducts'] = 'No products';
+$string['nounits'] = 'No product units';
+$string['unitref'] = 'Product unit';
+$string['billref'] = 'Bill';
+$string['unitstart'] = 'Product start validity';
+$string['unitend'] = 'Product end validity';
+$string['unitsearch'] = 'Search in product instances';
 $string['nocatsslave'] = 'This is a slave catalog. No categories can be edited.';
 $string['parentcategory'] = 'Parent category';
 $string['rootcategory'] = '-- Root category --';
@@ -72,10 +83,19 @@ $string['tobundle'] = 'Convert to bundle';
 $string['toproduct'] = 'Convert back to product';
 $string['unlinkproduct'] = 'Unlink product';
 $string['unlinkcontent'] = 'Unlink all subproducts';
+<<<<<<< HEAD
+=======
+$string['unitid'] = 'A Product instance internal id';
+$string['unitstartdate'] = 'A Product instance start of activity date';
+$string['unitenddate'] = 'A Product instance end of validity date';
+$string['notending'] = 'Indefinite validity products';
+>>>>>>> MOODLE_40_STABLE
 $string['user_enrolment'] = 'User enrol';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Customer support course defaults to settings';
 $string['warningnocustomersupportcourse'] = 'No customer support area defined';
 $string['errornocustomersupportcourse'] = 'Customer support course {$a} does not exist';
+$string['searchforareferenceinstructions'] = 'A product instance reference, or a part of it';
+$string['searchforacodeinstructions'] = 'A catalog product code';
 
 $string['handlerparams_help'] = '
 ## Moodle integrated shop

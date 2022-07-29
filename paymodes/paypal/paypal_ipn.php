@@ -36,12 +36,20 @@ require_once($CFG->dirroot.'/local/shop/front/lib.php');
 
 shop_trace('Success Controller : IPN Paypal return');
 
+$PAGE->set_context(context_system::instance());
+
 // Keep eventual intruders out.
 
 if (empty($_POST) or !empty($_GET)) {
     die("Sorry, you can not use the script that way.");
 }
 
+$simulate = optional_param('simulate', false, PARAM_BOOL);
+
 $shopinstance = null;
 $payhandler = new shop_paymode_paypal($shopinstance);
 $payhandler->process_ipn();
+
+if ($simulate) {
+    echo $OUTPUT->notification("Paypal IPN Simulation: done.", 'success');
+}

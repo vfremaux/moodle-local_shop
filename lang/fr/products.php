@@ -23,11 +23,15 @@ $string['addoverride'] = 'Surcharger l\'élément';
 $string['addproduct'] = 'Ajouter un produit';
 $string['addset'] = 'Ajouter un assemblage';
 $string['allcategories'] = 'Toutes les catégories';
+$string['alltypes'] = 'Tous les contextes';
 $string['assets'] = 'Ressources associées';
-$string['automatoin'] = 'Automatisation';
+$string['automation'] = 'Automatisation';
 $string['behaviour'] = 'Comportement';
+$string['backtounits'] = 'Revenir aux unités produit';
 $string['billorderingnumber'] = 'Le numéro d\'ordre de la facture';
 $string['categories'] = 'Catégories';
+$string['course'] = 'Cours (gérance)';
+$string['coursecategory'] = 'Catégorie de cours (gérance)';
 $string['customersnameonbill'] = 'Le nom du client mentionné sur la facture';
 $string['deletebundle'] = 'Supprimer le lot et ses produits';
 $string['deletecategory'] = 'Supprimer une catégorie de produits';
@@ -45,6 +49,10 @@ $string['financials'] = 'Paramètres financiers';
 $string['handlerparams'] = 'Paramètres du gestionnaire&nbsp;';
 $string['helpcode'] = 'code produit';
 $string['helpshortname'] = 'nom court produit';
+<<<<<<< HEAD
+=======
+$string['idnumber'] = 'Identifiant externe';
+>>>>>>> MOODLE_40_STABLE
 $string['newbundle'] = 'Nouveau lot';
 $string['newcategory'] = 'Nouvelle catégorie';
 $string['newitem'] = 'Nouvel élément';
@@ -54,6 +62,7 @@ $string['noproductinbundle'] = 'Pas de produit dans le lot';
 $string['noproductincategory'] = 'Pas de produits dans cette catégorie pour ce mode d\'accès';
 $string['noproductinset'] = 'Pas de produit dans l\'assemblage';
 $string['noproducts'] = 'Aucun produits';
+$string['nounits'] = 'Pas d\'unités produits';
 $string['nocatsslave'] = 'Vous ne pouvez pas modifier les catégories (catalogue lié).';
 $string['producteulas'] = 'Termes de licence spécifique';
 $string['productiondata'] = 'Métadonnées de production';
@@ -75,10 +84,25 @@ $string['tobundle'] = 'Convertir en lot';
 $string['toproduct'] = 'Convertir en produit simple';
 $string['unlinkproduct'] = 'Délier le produit';
 $string['unlinkcontent'] = 'Délier les produits';
+<<<<<<< HEAD
+=======
+$string['unitsearch'] = 'Chercher des unités produits';
+>>>>>>> MOODLE_40_STABLE
 $string['user_enrolment'] = 'Inscription individuelle';
+$string['todate'] = ' jusqu\'au ';
+$string['unitid'] = 'Id d\'unité produit';
+$string['unitref'] = 'Unité';
+$string['billref'] = 'Facture';
+$string['unitstart'] = 'Début de validité';
+$string['unitend'] = 'Fin de validité';
+$string['unitstartdate'] = 'Début de validité du produit';
+$string['unitenddate'] = 'Fin de validité du produit';
+$string['notending'] = 'Produits sans expiration';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Le cours support client utilise la définition par défaut';
 $string['warningnocustomersupportcourse'] = 'aucun cours support client défini';
 $string['errornocustomersupportcourse'] = 'Le cours support client défini {$a} n\'existe pas';
+$string['searchforareferenceinstructions'] = 'Une référence d\'unité produit, ou une partie de la référence';
+$string['searchforacodeinstructions'] = 'Un code produit du catalogue';
 
 $string['handlerparams_help'] = '
 ## Boutique Moodle en ligne

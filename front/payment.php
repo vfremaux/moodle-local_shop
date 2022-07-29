@@ -49,12 +49,17 @@ if ($action) {
 echo $out;
 
 // Start printing page.
+<<<<<<< HEAD
 
 echo $OUTPUT->box_start('', 'shop-payment');
+=======
+>>>>>>> MOODLE_40_STABLE
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
 echo $renderer->progress('PAYMENT');
+
+echo $OUTPUT->box_start('', 'shop-payment');
 
 echo '<center>';
 echo $OUTPUT->heading(get_string('pluginname', 'shoppaymodes_'.$SESSION->shoppingcart->paymode), 1);

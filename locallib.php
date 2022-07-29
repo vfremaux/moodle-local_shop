@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/backup/util/includes/restore_includes.php');
 require_once($CFG->libdir.'/filestorage/tgz_packer.php');
+require_once($CFG->dirroot.'/local/shop/compatlib.php');
 
 use local_shop\Catalog;
 use local_shop\Shop;
@@ -43,6 +44,9 @@ define('PROVIDING_CUSTOMER_ONLY', 2);
 define('PROVIDING_LOGGEDIN_ONLY', 1);
 define('PROVIDING_BOTH', 0);
 define('PROVIDING_LOGGEDOUT_ONLY', -1);
+
+define('SHOP_UNIT_EXPIRATION_FORECAST_DELAY1', DAYSECS * 30);
+define('SHOP_UNIT_EXPIRATION_FORECAST_DELAY2', DAYSECS * 90);
 
 /*
  * what means the quantity ordered
@@ -556,6 +560,9 @@ function shop_trace($str, $output = '', $dest = null) {
             return;
         }
     } else if ($output == 'mail') {
+        if (empty($dest)) {
+            throw new coding_exception("Shop mail trace needs the destination user to be set");
+        }
         if (!empty($CFG->merchantmailtrace)) {
             shop_trace_open($str, $output);
             return;
@@ -633,13 +640,25 @@ function shop_build_context() {
 
     if (!isset($SESSION->shop)) {
         $SESSION->shop = new StdClass;
+        $SESSION->shop->shopid = 1;
     }
 
+    $shopid = optional_param('shopid', false, PARAM_INT);
+    if (!$shopid) {
+        // failover with 'id' if not shopid.
+        $shopid = optional_param('id', @$SESSION->shop->shopid, PARAM_INT);
+    }
+
+<<<<<<< HEAD
     $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
 
     if ($SESSION->shop->shopid) {
+=======
+    if ($shopid) {
+>>>>>>> MOODLE_40_STABLE
         try {
-            $theshop = new Shop($SESSION->shop->shopid);
+            $theshop = new Shop($shopid);
+            $SESSION->shop = $theshop;
             $SESSION->shop->catalogid = $theshop->catalogid;
         } catch (Exception $e) {
             print_error('objecterror', 'local_shop', $e->getMessage());
@@ -649,6 +668,7 @@ function shop_build_context() {
         $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
         if ($shop = array_pop($shops)) {
             $theshop = new Shop($shop->id);
+            $SESSION->shop = $theshop;
             $SESSION->shop->catalogid = $theshop->catalogid;
         }
     }
@@ -948,8 +968,20 @@ function shop_get_bill_filtering() {
 
     $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
     $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
+<<<<<<< HEAD
     $SESSION->shop->billyear = $y;
     $SESSION->shop->billmonth = $m;
+=======
+    $customerid = optional_param('customerid', 0 + @$SESSION->shop->customerid, PARAM_INT);
+    $SESSION->shop->billyear = $y;
+    $SESSION->shop->billmonth = $m;
+    $SESSION->shop->customerid = $customerid;
+    if (local_shop_supports_feature('shop/partners')) {
+        $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+        $SESSION->shop->partnerid = $p;
+    }
+
+>>>>>>> MOODLE_40_STABLE
     $shopid = optional_param('shopid', 0, PARAM_INT);
     $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
     $cur = optional_param('cur', 'EUR', PARAM_TEXT);
@@ -970,6 +1002,12 @@ function shop_get_bill_filtering() {
     if (!empty($m)) {
         $filter['MONTH(FROM_UNIXTIME(emissiondate))'] = $m;
     }
+<<<<<<< HEAD
+=======
+    if (!empty($customerid)) {
+        $filter['customerid'] = $customerid;
+    }
+>>>>>>> MOODLE_40_STABLE
 
     $filterclause = '';
     $filterclause = " AND currency = '{$cur}' ";
@@ -982,8 +1020,47 @@ function shop_get_bill_filtering() {
     if ($m) {
         $filterclause .= " AND MONTH(FROM_UNIXTIME(emissiondate)) = '{$m}' ";
     }
+<<<<<<< HEAD
 
     $urlfilter = "y=$y&m=$m&status=$status&shopid=$shopid&cur=$cur&nopaging=$nopaging";
+=======
+    if ($customerid) {
+        $filterclause .= " AND customerid = '{$customerid}' ";
+    }
+
+    if (local_shop_supports_feature('shop/partners')) {
+        if (!empty($p)) {
+            $filter['partnerid'] = $p;
+            $filterclause .= " AND partnerid = '{$p}' ";
+        }
+    }
+
+    $urlfilter = "y=$y&m=$m&status=$status&shopid=$shopid&cur=$cur&nopaging=$nopaging";
+    if (local_shop_supports_feature('shop/partners')) {
+        $urlfilter = "p=$p&".$urlfilter;
+    }
+
+    return array($filter, $filterclause, $urlfilter);
+}
+
+function shop_get_customer_filtering() {
+    global $SESSION;
+
+    $shopid = optional_param('shopid', 0, PARAM_INT);
+    $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
+
+    $filter = [];
+    if ($shopid) {
+        $filter['shopid'] = $shopid;
+    }
+
+    $filterclause = '';
+    if ($shopid) {
+        $filterclause .= " AND shopid = '{$shopid}' ";
+    }
+
+    $urlfilter = "shopid=$shopid&nopaging=$nopaging";
+>>>>>>> MOODLE_40_STABLE
 
     return array($filter, $filterclause, $urlfilter);
 }
@@ -1012,6 +1089,12 @@ function local_shop_strftimefixed($format, $timestamp=null) {
 function shop_load_output_class($classname) {
     global $CFG;
 
+<<<<<<< HEAD
+=======
+    $parts = explode('\\', $classname);
+    $classname = array_pop($parts);
+
+>>>>>>> MOODLE_40_STABLE
     $classpath = $CFG->dirroot.'/local/shop/classes/output/'.$classname.'.class.php';
     include_once($classpath);
 }

@@ -4,15 +4,29 @@
 <!-- local_shop/bills_group_subtotal -->
     <tr>
         <td colspan="1" class="groupsubtotal">
+<<<<<<< HEAD
             {{#str}}total, local_shop{{/str}}
         </td>
 
         <td colspan="5" class="groupsubtotal">
+=======
+        <b></b>{{#str}}total, local_shop{{/str}}</b>
+        </td>
+
+        <td colspan="{{span}}" class="groupsubtotal">
+>>>>>>> MOODLE_40_STABLE
         </td>
 
         <td align="right" class="groupsubtotal">
             {{#issamecurrency}}
+<<<<<<< HEAD
                 <b>{{subtotal}}&nbsp;{{currency}}</b>
+=======
+                <div class="amount-primary" data-source="{{source1}}"><b>{{subtotal1}}&nbsp;{{{currency}}}</b></div>
+                {{#hassubtotal2}}
+                <div class="amount-secondary" data-source="{{source2}}"><b>{{subtotal2}}&nbsp;{{{currency}}}</b></div>
+                {{/hassubtotal2}}
+>>>>>>> MOODLE_40_STABLE
             {{/issamecurrency}}
             {{^issamecurrency}}
                 {{#str}}nosamecurrency, local_shop{{/str}}

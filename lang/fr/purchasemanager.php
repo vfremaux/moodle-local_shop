@@ -30,6 +30,7 @@ $string['startdate'] = 'Du';
 $string['validity'] = 'Validité ';
 $string['enddate'] = 'au';
 $string['enrol'] = 'Inscription';
+$string['extradata'] = 'Métadonnées supplémentaires de production';
 $string['ltiprovider'] = 'Accès distant LTI';
 $string['nc'] = 'Non défini';
 $string['productkey'] = 'Clef de license produit';
@@ -40,4 +41,5 @@ $string['hasproductinstance'] = 'A un produit enregistré';
 $string['hasnoproductinstance'] = 'N\'a PAS de produit enregistré';
 $string['testproduct'] = 'Produit test';
 $string['unassigned'] = '--- Non attribué ---';
+$string['registered_product'] = 'Produit enregistré';
 

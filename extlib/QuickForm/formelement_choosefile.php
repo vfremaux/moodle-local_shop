@@ -17,7 +17,7 @@
 /**
  * @package    local_shop
  * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
@@ -33,7 +33,7 @@ $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['choosefile'] = $quickformregister;
  * Class for an element used to choose a file from the course files folder.
  *
  *
- * @author Valery Fremaux <valery.fremaux@club-internet.fr>
+ * @author Valery Fremaux <valery.fremaux@gmail.com>
  * @access public
  */
 class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
@@ -68,7 +68,7 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
     * @param    array   Options to control the element's display
     * @param    mixed   Either a typical HTML attribute string or an associative array
     */
-    function MoodleQuickForm_choosefile($elementName = null, $elementLabel = null, $options = array(), $attributes = null) {
+    function __construct($elementName = null, $elementLabel = null, $options = array(), $attributes = null) {
         $this->HTML_QuickForm_element($elementName, $elementLabel, $attributes);
         $this->_appendName = true;
         $this->_type = 'choosefile';

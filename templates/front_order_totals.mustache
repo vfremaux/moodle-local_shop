@@ -38,12 +38,21 @@
             &nbsp;
         </td>
 
+<<<<<<< HEAD
         <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">
+=======
+        <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol" data-source="taxedtotal">
+>>>>>>> MOODLE_40_STABLE
             {{{taxedtotal}}}&nbsp;{{{currency}}}
         </td>
     </tr>
 
+<<<<<<< HEAD
     {{#discountrate}}
+=======
+    {{#hasdiscounts}}
+    {{#discounts}}
+>>>>>>> MOODLE_40_STABLE
     <tr valign="top">
         <td width="40%" class="cell c0">
             &nbsp;
@@ -51,11 +60,19 @@
         <td width="40%" class="shop-totaltitle ratio cell c1">
             {{#str}}discount, local_shop{{/str}}:
         </td>
+<<<<<<< HEAD
 
         <td width="20%" align="right" class="shop-totals ratio cell c2">
             <b>-{{discountrate}} %</b>
         </td>
     </tr>
+=======
+        <td width="20%" align="right" class="shop-totals ratio cell c2" data-source="discountrate">
+            <b>-{{discountrate}} %</b>
+        </td>
+    </tr>
+    {{/discounts}}
+>>>>>>> MOODLE_40_STABLE
 
     <tr valign="top">
         <td width="40%" class="cell c0">
@@ -65,11 +82,19 @@
         <td width="40%" class="shop-totaltitle ratio cell c1">
             {{#str}}discountamount, local_shop{{/str}}:
         </td>
+<<<<<<< HEAD
         <td width="20%" align="right" class="shop-totals ratio cell c2">
             {{{discount}}}&nbsp;{{{currency}}}</b>
         </td>
     </tr>
     {{/discountrate}}
+=======
+        <td width="20%" align="right" class="shop-totals ratio cell c2" data-source="discount">
+            {{{discount}}}&nbsp;{{{currency}}}</b>
+        </td>
+    </tr>
+    {{/hasdiscounts}}
+>>>>>>> MOODLE_40_STABLE
 
     <tr valign="top">
         <td width="40%" class="cell c0 shop-totaltitle topay">
@@ -80,7 +105,11 @@
             &nbsp;
         </td>
 
+<<<<<<< HEAD
         <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">
+=======
+        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay" data-source="finaltaxedtotal">
+>>>>>>> MOODLE_40_STABLE
             <b>{{{finaltaxedtotal}}}&nbsp;{{{currency}}}</b>
         </td>
     </tr>
@@ -93,7 +122,11 @@
         <td width="40%" class="cell c1">
             &nbsp;
         </td>
+<<<<<<< HEAD
         <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol">
+=======
+        <td width="20%" align="right" style="text-align:right" class="cell c2 lastcol" data-source="finaluntaxedtotal">
+>>>>>>> MOODLE_40_STABLE
             {{{finaluntaxedtotal}}}&nbsp;{{{currency}}}
         </td>
     </tr>
@@ -108,7 +141,11 @@
             {{#str}}shipping, local_shop{{/str}}:
         </td>
 
+<<<<<<< HEAD
         <td width="20%" align="right" style="text-align:right" class="cell c2 shop-totals">
+=======
+        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-totals" data-source="shippingtaxedvalue">
+>>>>>>> MOODLE_40_STABLE
             {{{shippingtaxedvalue}}}&nbsp;{{{currency}}}
         </td>
     </tr>
@@ -122,7 +159,11 @@
             &nbsp;
         </td>
 
+<<<<<<< HEAD
         <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay">
+=======
+        <td width="20%" align="right" style="text-align:right" class="cell c2 shop-total topay" data-source="finalshippedtaxedtotal">
+>>>>>>> MOODLE_40_STABLE
             <b>{{{finalshippedtaxedtotal}}}&nbsp;{{{currency}}}
         </td>
     </tr>

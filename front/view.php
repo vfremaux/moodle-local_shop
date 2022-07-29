@@ -37,8 +37,13 @@ use local_shop\Catalog;
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/form_protection.js.php');
 $PAGE->requires->js('/local/shop/front/js/order.js');
+<<<<<<< HEAD
+=======
+$PAGE->requires->js('/local/shop/js/bootstrap_3.4.1.js');
+>>>>>>> MOODLE_40_STABLE
 
 $PAGE->requires->css('/local/shop/stylesdyn.php');
+$PAGE->requires->css('/local/shop/css/bootstrap_3.4.1.css');
 
 $config = get_config('local_shop');
 
@@ -49,7 +54,27 @@ $category = optional_param('category', 0, PARAM_ALPHA);
 // Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
+<<<<<<< HEAD
 $params = array('shopid' => $theshop->id);
+=======
+$units = 0;
+if (isset($SESSION->shoppingcart->order)) {
+    foreach ($SESSION->shoppingcart->order as $shortname => $q) {
+        $units += $q;
+    }
+}
+
+// Calculates and updates the seat count.
+$requiredroles = $thecatalog->check_required_roles();
+$required = $thecatalog->check_required_seats();
+$assigned = shop_check_assigned_seats($requiredroles);
+
+// $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
+$params = ['shopid' => $theshop->id,
+           'units' => $units,
+           'required' => $required,
+           'assigned' => $assigned];
+>>>>>>> MOODLE_40_STABLE
 $PAGE->requires->js_call_amd('local_shop/front', 'init', array($params));
 
 $view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);
@@ -65,7 +90,7 @@ if ($view == 'shop') {
 $url = new moodle_url('/local/shop/front/view.php', array('view' => $view, 'category' => $category));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-$PAGE->set_pagelayout('standard');
+$PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('shop', 'local_shop'));

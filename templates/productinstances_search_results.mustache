@@ -1,0 +1,33 @@
+<!-- local_shop/productinstances_search_results -->
+
+<table width="100%" class="generaltable">
+    <tr class="{{lineclass}}">
+        <td>
+            <b>{{#str}}unitref, local_shop{{/str}}</b>
+        </td>
+
+        <td>
+            <b>{{#str}}customer, local_shop{{/str}}</b>
+        </td>
+
+        <td>
+            <b>{{#str}}unitstart, local_shop{{/str}} / {{#str}}unitend, local_shop{{/str}}</b>
+        </td>
+
+        <td>
+            <b>{{#str}}catalogitem, local_shop{{/str}}</b>
+        </td>
+
+        <td>
+            <b>{{#str}}billref, local_shop{{/str}}</b>
+        </td>
+        <td>
+            <!-- commands -->
+        </td>
+    </tr>
+    {{#units}}
+        {{> local_shop/productinstances_search_line}}
+    {{/units}}
+</table>
+
+<!-- /local_shop/productinstances_search_results -->

@@ -309,19 +309,20 @@ function shop_get_payment_plugin(&$shopinstance, $pluginname = null) {
  * @param string $fieldtoreturn 'starttime' or 'endtime'
  * @param objectref &$course a reference course
  */
-function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, &$course) {
+function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 
     $starttime = (empty($handlerdata->actionparams['starttime'])) ? time() : $handlerdata->actionparams['starttime'];
-    if ($course->startdate > $starttime) {
+    if (!is_null($course) && $course->startdate > $starttime) {
         $starttime = $course->startdate;
     }
 
     switch ($fieldtoreturn) {
-        case 'starttime':
+        case 'starttime': {
             return $starttime;
             break;
+        }
 
-        case 'endtime':
+        case 'endtime': {
             if (!array_key_exists('endtime', $handlerdata->actionparams)) {
                 // Do NOT use empty here for testing as results comes from a magic __get()!
                 if ($handlerdata->catalogitem->renewable == 1) {
@@ -361,6 +362,7 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, &$course) {
             }
             return $endtime;
             break;
+        }
     }
 }
 
@@ -438,4 +440,36 @@ function shop_checksum($productref) {
     $crc2 = floor($crc / $crccount) % $crccount;
     $crc1 = $crc % $crccount;
     return $crcrange[$crc1].$crcrange[$crc2];
+}
+
+/**
+ * decodes SESSION and get all info for participant form.
+ * @param int &$maxseats the max number of seats of all the order, as max number of participants to
+ * input.
+ * @return array $orderbag an array of orderentries.
+ */
+function shop_get_orderbag($thecatalog) {
+    global $SESSION;
+
+    $maxseats = 0;
+
+    foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
+        $orderentry = new StdClass;
+        $orderentry->shortname = $shortname;
+        $orderentry->catalogentry = $thecatalog->get_product_by_shortname($shortname);
+
+        switch ($orderentry->catalogentry->quantaddressesusers) {
+            case SHOP_QUANT_AS_SEATS:
+                $orderentry->seats = $quantity;
+                break;
+            case SHOP_QUANT_ONE_SEAT:
+                $orderentry->seats = 1;
+                break;
+            default:
+                continue 2;
+        }
+        $orderbag[] = $orderentry;
+    }
+
+    return $orderbag;
 }
