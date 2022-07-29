@@ -32,20 +32,12 @@ Patented distributors :
 
 Public documentations : 
 
-<<<<<<< HEAD
-   - French : http://docs.edunao.com/doku.php?id=:local:shop
-   - English : http://docs.activeprolearn/en/doku.php?id=:local:shop
-=======
    - French : https://docs.activeprolearn/doku.php?id=:local:shop
    - English : https://docs.activeprolearn/en/doku.php?id=:local:shop
->>>>>>> MOODLE_40_STABLE
 
 2018031100
 ##################################################
 
-<<<<<<< HEAD
-Adds support for remote product licensing servicing.
-=======
 Adds support for remote product licensing servicing.
 
 2020072900 --- XX.0013
@@ -57,4 +49,3 @@ Transfers discounts to pro zone and redraw the discount policies application.
 ##################################################
 
 Adds pro caching zone
->>>>>>> MOODLE_40_STABLE
