@@ -320,5 +320,11 @@ function xmldb_local_shop_install() {
         $dbman->drop_table($table);
     }
 
+    // Register zabbix indicators if installed
+    if (is_dir($CFG->dirroot.'/report/zabbix')) {
+        include_once($CFG->dirroot.'/report/zabbix/xlib.php');
+        report_zabbix_register_plugin('local', 'shop');
+    }
+
     return true;
 }

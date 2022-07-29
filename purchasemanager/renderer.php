@@ -369,7 +369,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
         if (($shopowner == $USER->id) || has_capability('local/shop:accessallowners', $contextsystem)) {
             $params = ['shopid' => $theshop->id, 'customerid' => $customerid, 'instanceid' => 0];
-            $addurl = new moodle_url('local/shop/pro/purchasemanager/edit_instance.php', $params);
+            $addurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
             return $OUTPUT->single_button($addurl, get_string('newproduct', 'local_shop'));
         }
     }
