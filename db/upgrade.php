@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param int $oldversion
  */
 function xmldb_local_shop_upgrade($oldversion = 0) {
-    global $DB;
+    global $DB, $CFG;
 
     $result = true;
 
@@ -431,6 +431,12 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
 
         // New version in version.php.
         upgrade_plugin_savepoint(true, 2021071600, 'local', 'shop');
+    }
+
+    // Register zabbix indicators if installed.
+    if (is_dir($CFG->dirroot.'/report/zabbix')) {
+        include_once($CFG->dirroot.'/report/zabbix/xlib.php');
+        report_zabbix_register_plugin('local', 'shop');
     }
 
     return $result;

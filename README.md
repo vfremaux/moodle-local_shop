@@ -49,7 +49,7 @@ Transfers discounts to pro zone and redraw the discount policies application.
 
 Adds pro caching zone
 
-2022060700 --- XX.0018
+2022090900 --- XX.0019
 ##################################################
 
 Add registration to report_zabbix senders.
