@@ -109,6 +109,10 @@ class CatalogItem extends ShopObject {
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->notes = '';
             $this->record->notesformat = FORMAT_HTML;
+            $this->record->seoalias = '';
+            $this->record->seokeywords = '';
+            $this->record->seodescription = '';
+            $this->record->seotitle = '';
             $this->record->eula = '';
             $this->record->eulaformat = FORMAT_HTML;
         }
@@ -168,8 +172,7 @@ class CatalogItem extends ShopObject {
 
     /**
      * Searches a catalogitem instance that matches a idnumber 
-     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
-     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     * @param string $idnumber The catalogitem idnumber, should be unique if defined.
      */
     public static function instance_by_idnumber($idnumber) {
         global $DB;
@@ -179,6 +182,25 @@ class CatalogItem extends ShopObject {
         }
 
         $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['idnumber' => $idnumber]);
+        if (!$intanceid) {
+            return null;
+        }
+
+        return new CatalogItem($intanceid);
+    }
+
+    /**
+     * Searches a catalogitem instance that matches a seoalias 
+     * @param string $alias The catalogitem seoalias, should be unique if defined.
+     */
+    public static function instance_by_seoalias($alias) {
+        global $DB;
+
+        if (empty($alias)) {
+            return null;
+        }
+
+        $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['seoalias' => $alias]);
         if (!$intanceid) {
             return null;
         }

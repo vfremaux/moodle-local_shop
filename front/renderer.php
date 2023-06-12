@@ -280,17 +280,23 @@ class shop_front_renderer extends local_shop_base_renderer {
      * prints tabs for js activation of the category panel
      */
     public function category_tabs(&$categories, $selected, $parent, $isactive, $isvisiblebranch, $catlevel) {
+        global $CFG;
 
         $str = '';
 
         $rows[0] = array();
         foreach ($categories as $cat) {
             if ($cat->visible) {
-                $params = array('view' => 'shop',
-                                'category' => $cat->id,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => $this->theblock->id);
-                $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
+                if (local_shop_supports_feature('products/smarturls')) {
+                    include_once($CFG->dirroot.'/local/shop/pro/lib.php');
+                    $categoryurl = get_smart_category_url($this->theshop->id, $cat, $this->theblock->id, true);
+                } else {
+                    $params = array('view' => 'shop',
+                                    'category' => $cat->id,
+                                    'shopid' => $this->theshop->id,
+                                    'blockid' => $this->theblock->id);
+                    $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
+                }
                 $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
             }
         }
@@ -349,13 +355,20 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         if ($template->withtabs) {
             $categoryid = optional_param('category', null, PARAM_INT);
+            $categoryalias = optional_param('categoryalias', null, PARAM_TEXT);
 
             // Get the tree branch up to the category starting from the top.
             if ($categoryid) {
                 $category = new Category($categoryid);
                 $branch = array_reverse($category->get_branch());
             } else {
-                $branch = array_reverse(Category::get_first_branch($this->thecatalog->id, 0));
+                if ($categoryalias) {
+                    $category = Category::instance_by_seoalias($categoryalias);
+                    $branch = array_reverse($category->get_branch());
+                    $categoryid = $category->id;
+                } else {
+                    $branch = array_reverse(Category::get_first_branch($this->thecatalog->id, 0));
+                }
             }
 
             $levelcategories = [];
@@ -391,7 +404,8 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         // Print catalog product line on the active category if tabbed.
         $catids = array_keys($categories);
-        $currentcategory = optional_param('category', $catids[0], PARAM_INT);
+        // $currentcategory = optional_param('category', $catids[0], PARAM_INT);
+        $currentcategory = $categoryid;
 
         $c = 0;
         if (!empty($levelcategories)) {
@@ -427,13 +441,13 @@ class shop_front_renderer extends local_shop_base_renderer {
                         $product->preset = 0 + @$SESSION->shoppingcart->order[$product->shortname];
                         switch ($product->isset) {
                             case PRODUCT_SET:
-                                $producttpl->product = $this->product_set($product, true);
+                                $producttpl->product = $this->product_set($product, false);
                                 break;
                             case PRODUCT_BUNDLE:
-                                $producttpl->product = $this->product_bundle($product, true);
+                                $producttpl->product = $this->product_bundle($product, false);
                                 break;
                             default:
-                                $producttpl->product = $this->product_block($product);
+                                $producttpl->product = $this->product_block($product, false);
                         }
                         $categorytpl->products[] = $producttpl;
                     }
@@ -467,7 +481,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $subelementclass = (!empty($product->ispart)) ? 'element' : 'product';
         $subelementclass .= ($product->available) ? '' : ' shadowed';
 
-        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
+        $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
         $template->subelementclass = $subelementclass;
         $template->ispart = $product->ispart;
         $template->issetpart = $product->issetpart;
@@ -477,37 +491,51 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->isbundlepart = $product->isbundlepart;
         if ($template->isbundlepart) {
             $template->itemtype = 'is-bundle-part';
+        } else {
+            if (local_shop_supports_feature('products/smarturls')) {
+                include_once($CFG->dirroot.'/local/shop/pro/lib.php');
+                if (!empty($config->usesmarturls)) {
+                    $template->smarturl = get_smart_product_url($product, $byalias = true, $fulltree = false);
+                }
+            }
         }
         $template->id = $product->id;
         $template->shortname = $product->shortname;
+        if (local_shop_supports_feature('products/smarturls')) {
+            $template->seoalias = $product->seoalias;
+        }
         $template->code = $product->code;
         $template->subelementclass = $subelementclass;
 
         // Get Handler guessed image
         list($handler, $unusedmethod) = $product->get_handler_info('get_alternative_thumbnail_url', '');
         if (!empty($handler)) {
-            $template->thumburl = $handler->get_alternative_thumbnail_url($product);
+            $url = $handler->get_alternative_thumbnail_url($product);
+            if (is_object($url)) {
+                $template->thumburl = ($url)->out();
+            } else {
+                $template->thumburl = $url;
+            }
         }
 
         // Get Shop Catalog overriding image.
         $image = $product->get_image_url();
         if ($image) {
             $template->hasimage = true;
-            $template->imageurl = $image;
+            $template->imageurl = $image->out();
         } else {
             $template->hasimage = false;
         }
         $thumburloverride = $product->get_thumb_url(!empty($template->thumburl));
         if (!empty($thumburloverride)) {
-            $template->thumburl = $thumburloverride;
+            $template->thumburl = $thumburloverride->out();
         }
         if (empty($template->thumburl)) {
             // Get the absolute default as last chance.
-            $template->thumburl = $product->get_thumb_url(false);
+            $template->thumburl = ($product->get_thumb_url(false))->out();
         }
 
         $template->name = format_string($product->name);
-        $template->shortname = $product->shortname;
         $template->puttcstr = get_string('puttc', 'local_shop');
 
         $template->showdescription = true;
@@ -550,7 +578,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         if ($product->has_leaflet()) {
             $template->hasleaflet = true;
-            $template->leafleturl = $product->get_leaflet_url();
+            $template->leafleturl = ($product->get_leaflet_url())->out();
             $template->leafletlinkstr = get_string('leafletlink', 'local_shop');
         }
 
@@ -599,7 +627,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * Prints a product set on front shop
      * @param objectref &$set
      */
-    public function product_set(&$set) {
+    public function product_set(&$set, $astemplate = false) {
         global $OUTPUT;
 
         $config = get_config('local_shop');
@@ -607,7 +635,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
 
         $template->name = format_string($set->name);
-        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
+        $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
 
         $template->hasdescription = false;
         $template->available = $set->available;
@@ -632,7 +660,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $template->image = '<img src="'.$set->get_thumb_url().'">';
         }
-        $template->thumburl = $set->get_thumb_url(false);
+        $template->thumburl = ($set->get_thumb_url(false))->out();
 
         foreach ($set->elements as $element) {
             $element->check_availability();
@@ -642,6 +670,9 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->elements[] = $this->product_block($element, true);
         }
 
+        if ($astemplate) {
+            return $template;
+        }
         return $this->output->render_from_template('local_shop/front_product_set', $template);
     }
 
@@ -649,16 +680,24 @@ class shop_front_renderer extends local_shop_base_renderer {
      * Prints a product bundle on front shop
      * @param objectref &$set
      */
-    public function product_bundle(&$bundle) {
+    public function product_bundle(&$bundle, $astemplate = false) {
         global $CFG, $OUTPUT;
 
         $config = get_config('local_shop');
 
         $template = new StdClass;
 
+        $template->id = $bundle->id;
         $template->code = $bundle->code;
         $template->shortname = $bundle->shortname;
-        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
+        if (local_shop_supports_feature('products/smarturls')) {
+            include_once($CFG->dirroot.'/local/shop/pro/lib.php');
+            $template->seoalias = $bundle->seoalias;
+            if (!empty($config->usesmarturls)) {
+                $template->smarturl = get_smart_product_url($bundle, $byalias = true, $fulltree = false);
+            }
+        }
+        $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
 
         $image = $bundle->get_image_url();
         if ($image) {
@@ -666,7 +705,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $template->image = '<img src="'.$bundle->get_thumb_url().'">';
         }
-        $template->thumburl = $bundle->get_thumb_url(false);
+        $template->thumburl = ($bundle->get_thumb_url(false))->out();
 
         $template->name = format_string($bundle->name);
 
@@ -690,7 +729,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         if ($bundle->has_leaflet()) {
             $template->hasleaflet = true;
-            $template->leafleturl = $bundle->get_leaflet_url();
+            $template->leafleturl = ($bundle->get_leaflet_url())->out();
             $template->linklabel = get_string('leafletlink', 'local_shop');
         }
 
@@ -733,9 +772,15 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
         $template->units = $this->units($bundle);
 
+        if ($astemplate) {
+            return $template;
+        }
         return $this->output->render_from_template('local_shop/front_product_bundle', $template);
     }
 
+    /**
+     * Refreshes dynamically unit list.
+     */
     public function units(&$product) {
         global $SESSION, $CFG;
 
@@ -745,6 +790,9 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template->unitimageurl = $product->get_sales_unit_url();
         $template->shortname = $product->shortname;
+        if (local_shop_supports_feature('products/smarturls')) {
+            $template->seoalias = $product->seoalias;
+        }
         $template->tenunitsimageurl = $product->get_sales_ten_units_url();
 
         $q = @$SESSION->shoppingcart->order[$product->shortname];
@@ -767,7 +815,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     /**
-     * prints order detail lines.
+     * Prints order detail lines.
      */
     public function order_detail(&$categories) {
         global $SESSION;
@@ -834,6 +882,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->shortname = $product->shortname;
         $template->code = '<span class="shop-pcode">'.$product->code.'</span>';
         $template->name = $product->name;
+        if (local_shop_supports_feature('products/smarturls')) {
+            $template->seoalias = $product->seoalias;
+        }
         $template->currency = $product->currency;
         $template->disabled = ' disabled="disabled" ';
         $template->maxdeliveryquant = $product->maxdeliveryquant;

@@ -433,6 +433,65 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2021071600, 'local', 'shop');
     }
 
+    if ($oldversion < 2023032400) {
+        $table = new xmldb_table('local_shop_catalogitem');
+
+        // Add field for product meta tags
+        $field = new xmldb_field('seoalias');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 64, null, null, null, null, 'descriptionformat');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('seodescription');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 255, null, null, null, null, 'seoalias');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('seokeywords');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 255, null, null, null, null, 'seodescription');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('seotitle');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 255, null, null, null, null, 'seokeywords');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('local_shop_catalogcategory');
+
+        // Add field for product meta tags
+        $field = new xmldb_field('seoalias');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 64, null, null, null, null, 'descriptionformat');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('seodescription');
+        $field->set_attributes(XMLDB_TYPE_TEXT, 'small', null, null, null, null, 'seoalias');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('seokeywords');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 255, null, null, null, null, 'seodescription');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('seotitle');
+        $field->set_attributes(XMLDB_TYPE_CHAR, 255, null, null, null, null, 'seokeywords');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // New version in version.php.
+        upgrade_plugin_savepoint(true, 2023032400, 'local', 'shop');
+    }
+
     // Register zabbix indicators if installed.
     if (is_dir($CFG->dirroot.'/report/zabbix')) {
         include_once($CFG->dirroot.'/report/zabbix/xlib.php');

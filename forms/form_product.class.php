@@ -59,7 +59,7 @@ class Product_Form extends CatalogItem_Form {
         $mform->setType('itemid', PARAM_INT);
 
         $attributesspecificdata = 'rows="4" style="width:80%" ';
-        $attributeshandlerparams = 'cols="50" rows="8" style="width:80%" ';
+        $attributeshandlerparams = ['cols' => 50, 'rows' => 8, 'style' => "width:80%", 'data-format' => "url", 'data-edithandle' => 'id_edithandlerparams'];
 
         // Adding title and description.
         $variant = '';
@@ -132,10 +132,12 @@ class Product_Form extends CatalogItem_Form {
             $mform->addElement('select', 'enablehandler', $label, $handleropts);
             $mform->setType('enablehandler', PARAM_TEXT);
 
-            $label = get_string('handlerparams', 'local_shop').':';
-            $mform->addElement('textarea', 'handlerparams', $label, $attributeshandlerparams);
+            $group = [];
+            $group[] = & $mform->createElement('textarea', 'handlerparams', '', $attributeshandlerparams);
             $mform->setType('handlerparams', PARAM_TEXT);
-            $mform->addHelpButton('handlerparams', 'handlerparams', 'local_shop');
+            $group[] = & $mform->createElement('button', 'edithandlerparams', get_string('edit', 'local_shop'));
+            $mform->addGroup($group, 'grphandlerparams', get_string('handlerparams', 'local_shop'), '', false);
+            $mform->addHelpButton('grphandlerparams', 'handlerparams', 'local_shop');
 
             $seatmodeoptions[SHOP_QUANT_NO_SEATS] = get_string('no');
             $seatmodeoptions[SHOP_QUANT_ONE_SEAT] = get_string('oneseat', 'local_shop');

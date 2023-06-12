@@ -44,7 +44,8 @@ $PAGE->requires->css('/local/shop/css/bootstrap_3.4.1.css');
 
 $config = get_config('local_shop');
 
-$category = optional_param('category', 0, PARAM_ALPHA);
+$categoryid = optional_param('category', 0, PARAM_ALPHA);
+$categoryalias = optional_param('categoryalias', '', PARAM_TEXT);
 
 // Get block information.
 
@@ -80,7 +81,11 @@ if ($view == 'shop') {
 }
 
 // Make page header.
-$url = new moodle_url('/local/shop/front/view.php', array('view' => $view, 'category' => $category));
+$params = ['view' => $view, 'category' => $categoryid];
+if (!empty($categoryalias)) {
+    $params['categoryalias'] = $categoryalias;
+}
+$url = new moodle_url('/local/shop/front/view.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');

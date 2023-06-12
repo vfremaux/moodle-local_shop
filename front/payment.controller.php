@@ -188,7 +188,15 @@ class payment_controller extends front_controller_base {
                     $itemrec->customerdata = '';
                 }
 
-                $bill->add_item_data($itemrec, $ordering++);
+                $billitem = $bill->add_item_data($itemrec, $ordering++);
+                if (local_shop_supports_feature('products/smarturls')) {
+                    include_once($CFG->dirroot.'/local/shop/pro/lib.php');
+                    $catalogitem = $billitem->get_catalog_item();
+                    if (get_config('local_shop', 'usesmarturls') && ($catalogitem)) {
+                        debug_trace("Firing SEO order url for {$catalogitem->shortname} ", TRACE_DEBUG);
+                        local_shop_fire_smart_order($catalogitem);
+                    }
+                }
                 $totalitems += $quant;
             }
 

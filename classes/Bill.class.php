@@ -258,6 +258,9 @@ class Bill extends ShopObject {
      * Adds an item from a DB record making a BillItem instance
      * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
+     * @param object $birec a record with bill item attributes.
+     * @param int $ordering
+     * @return a BillItem object;
      */
     public function add_item_data($birec, $ordering = -1) {
         static $statictempid = 999999000;
@@ -275,6 +278,7 @@ class Bill extends ShopObject {
         $this->orderamount += $billitem->get_totaltaxed();
         $this->itemcount++;
         $this->dirty = true;
+        return $billitem;
     }
 
     /**

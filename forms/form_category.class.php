@@ -28,6 +28,16 @@ require_once($CFG->libdir.'/formslib.php');
 class Category_Form extends moodleform {
 
     public $editoroptions;
+    protected $defaultattributes;
+    protected $attributesshort;
+    protected $attributeslong;
+
+    public function __construct($action, $data) {
+        $this->defaultattributes = 'size="50" maxlength="200"';
+        $this->attributesshort = 'size="24" maxlength="32"';
+        $this->attributeslong = 'size="80" maxlength="255"';
+        parent::__construct($action, $data);
+    }
 
     public function definition() {
         global $COURSE, $OUTPUT;
@@ -65,6 +75,28 @@ class Category_Form extends moodleform {
         // Title and description.
         $mform->addElement('editor', 'description_editor', get_string('description'), null, $this->editoroptions);
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
+
+        if (local_shop_supports_feature('products/smarturls')) {
+            $mform->addElement('text', 'seoalias', get_string('seoalias', 'local_shop'), $this->attributeslong);
+            $mform->setType('seoalias', PARAM_TEXT);
+            $mform->setAdvanced('seoalias', true);
+            $mform->addHelpButton('seoalias', 'seoalias', 'local_shop');
+
+            $mform->addElement('text', 'seokeywords', get_string('seokeywords', 'local_shop'), $this->attributeslong);
+            $mform->setType('seokeywords', PARAM_TEXT);
+            $mform->setAdvanced('seokeywords', true);
+            $mform->addHelpButton('seokeywords', 'seokeywords', 'local_shop');
+
+            $mform->addElement('text', 'seotitle', get_string('seotitle', 'local_shop'), $this->attributeslong);
+            $mform->setType('seotitle', PARAM_TEXT);
+            $mform->setAdvanced('seotitle', true);
+            $mform->addHelpButton('seotitle', 'seotitle', 'local_shop');
+
+            $mform->addElement('text', 'seodescription', get_string('seodescription', 'local_shop'), $this->attributeslong);
+            $mform->setType('seodescription', PARAM_TEXT);
+            $mform->setAdvanced('seodescription', true);
+            $mform->addHelpButton('seodescription', 'seodescription', 'local_shop');
+        }
 
         $yesnooptions = array('0' => get_string('no'), '1' => get_string('yes'));
         $mform->addElement('select', 'visible', get_string('visible'), $yesnooptions);

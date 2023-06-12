@@ -648,6 +648,11 @@ h3.shop-front-partof {
 
 .shop-front-productpix {
     display: table-cell;
+    padding-right: 25px;
+}
+
+.shop-bundle-content-head {
+    margin-bottom: 2em;
 }
 
 .shop-front-productdef {
@@ -1105,4 +1110,12 @@ input.purchaseoption:checked {
 .purchased-product-extradata {
     font-size: 0.8em;
     color: #bbb;
+}
+
+h3.product-detail {
+    font-size: 1em;
+}
+
+.local-shop-bundle-thumbnail {
+    max-width: 250px;
 }

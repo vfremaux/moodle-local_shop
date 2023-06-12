@@ -55,8 +55,8 @@ abstract class CatalogItem_Form extends moodleform {
                                      'context' => $context);
 
         $this->defaultattributes = 'size="50" maxlength="200"';
-        $this->attributesshort = 'size="24" maxlength="24"';
-        $this->attributeslong = 'size="60" maxlength="255"';
+        $this->attributesshort = 'size="24" maxlength="32"';
+        $this->attributeslong = 'size="80" maxlength="255"';
         $this->fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
         $this->attributesdescription = 'cols="50" rows="8"';
         parent::__construct($action, $data);
@@ -88,6 +88,28 @@ abstract class CatalogItem_Form extends moodleform {
         $mform->addElement('text', 'name', get_string('name', 'local_shop'), $this->attributeslong);
         $mform->setType('name', PARAM_CLEANHTML);
         $mform->addRule('name', null, 'required');
+
+        if (local_shop_supports_feature('products/smarturls')) {
+            $mform->addElement('text', 'seoalias', get_string('seoalias', 'local_shop'), $this->attributeslong);
+            $mform->setType('seoalias', PARAM_TEXT);
+            $mform->setAdvanced('seoalias', true);
+            $mform->addHelpButton('seoalias', 'seoalias', 'local_shop');
+
+            $mform->addElement('text', 'seokeywords', get_string('seokeywords', 'local_shop'), $this->attributeslong);
+            $mform->setType('seokeywords', PARAM_TEXT);
+            $mform->setAdvanced('seokeywords', true);
+            $mform->addHelpButton('seokeywords', 'seokeywords', 'local_shop');
+
+            $mform->addElement('text', 'seotitle', get_string('seotitle', 'local_shop'), $this->attributeslong);
+            $mform->setType('seotitle', PARAM_TEXT);
+            $mform->setAdvanced('seotitle', true);
+            $mform->addHelpButton('seotitle', 'seotitle', 'local_shop');
+
+            $mform->addElement('text', 'seodescription', get_string('seodescription', 'local_shop'), $this->attributeslong);
+            $mform->setType('seodescription', PARAM_TEXT);
+            $mform->setAdvanced('seodescription', true);
+            $mform->addHelpButton('seodescription', 'seodescription', 'local_shop');
+        }
 
         $mform->addElement('editor', 'description_editor', get_string('description'), null, $this->editoroptions);
         $mform->setType('description_editor', PARAM_CLEANHTML);

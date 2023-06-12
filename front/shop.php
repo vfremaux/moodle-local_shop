@@ -49,10 +49,11 @@ $categories = $thecatalog->get_categories();
 // Now we browse categories for making the catalog.
 
 // Choose a category.
-$category = optional_param('category', null, PARAM_INT);
+$categoryid = optional_param('category', null, PARAM_INT);
+$categoryalias = optional_param('categoryalias', '', PARAM_TEXT);
 
-if (empty($category)) {
-    // Explicit the category.
+if (empty($categoryid) && empty($categoryalias)) {
+    // Find a default category to show.
     $catids = array_keys($categories);
 
     $firstcategory = 0;

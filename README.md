@@ -32,7 +32,8 @@ Patented distributors :
 
 Public documentations : 
 
-   - English : http://docs.activeprolearn/en/doku.php?id=:local:shop
+   - French : https://docs.activeprolearn/doku.php?id=:local:shop
+   - English : https://docs.activeprolearn/en/doku.php?id=:local:shop
 
 2018031100
 ##################################################
@@ -53,3 +54,13 @@ Adds pro caching zone
 ##################################################
 
 Add registration to report_zabbix senders.
+
+2023032400 --- XX.0020
+##################################################
+
+Add smarturls feature (pro).
+
+2023041800 --- XX.0021
+##################################################
+
+Add product instance expiration notifications to sales admins.

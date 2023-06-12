@@ -27,7 +27,7 @@ namespace local_shop\task;
 /**
  * Scheduled task to compile completion based checks.
  */
-class cron_task extends \core\task\scheduled_task {
+class daily_notification_task extends \core\task\scheduled_task {
 
     /**
      * Get a descriptive name for this task (shown to admins).
@@ -35,7 +35,7 @@ class cron_task extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('task_cron', 'local_shop');
+        return get_string('task_daily_notification', 'local_shop');
     }
 
     /**
@@ -46,6 +46,6 @@ class cron_task extends \core\task\scheduled_task {
 
         require_once($CFG->dirroot.'/local/shop/cronlib.php');
         $manager = new \local_shop\cron\manager();
-        $manager->cron_task();
+        $manager->notify_daily_task();
     }
 }

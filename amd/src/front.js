@@ -270,6 +270,12 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
             $('#bag_' + productname).html(shopfront.waiter());
 
+            var seoalias = that.attr('data-seoalias');
+            if (seoalias) {
+                var touchurl = cfg.wwwroot + '/local/shop/pro/front/product/' + seoalias + '/add';
+                $.get(touchurl);
+            }
+
             $.post(
                 urlbase,
                 {
@@ -316,6 +322,12 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
             $('#bag_' + productname).html(shopfront.waiter());
 
+            var seoalias = that.attr('data-seoalias');
+            if (seoalias) {
+                var touchurl = cfg.wwwroot + '/local/shop/pro/front/product/' + seoalias + '/delete';
+                $.get(touchurl);
+            }
+
             $.post(
                 urlbase,
                 {
@@ -360,6 +372,12 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             var urlbase = cfg.wwwroot + '/local/shop/front/ajax/service.php';
 
             $('#bag_' + productname).html(shopfront.waiter());
+
+            var seoalias = that.attr('data-seoalias');
+            if (seoalias) {
+                var touchurl = cfg.wwwroot + '/local/shop/pro/front/product/' + seoalias + '/deleteall';
+                $.get(touchurl);
+            }
 
             $('#id_' + productname).val(0);
             $('#ci-' + productname).attr('disabled', null);

@@ -67,72 +67,72 @@ class daily_shop_indicator extends zabbix_indicator {
         switch ($submode) {
 
             case 'dailybills': {
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', ' emissiondate > ? ', [$horizon]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', ' emissiondate > ? ', [$horizon]);
                 break;
             }
             case 'dailyplaced': {
                 $select = ' emissiondate > ? and status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [$horizon, SHOP_BILL_PLACED]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [$horizon, SHOP_BILL_PLACED]);
                 break;
             }
 
             case 'dailysoldout': {
                 $select = ' emissiondate > ? and status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [$horizon, SHOP_BILL_SOLDOUT]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [$horizon, SHOP_BILL_SOLDOUT]);
                 break;
             }
 
             case 'dailycomplete': {
                 $select = ' emissiondate > ? and status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [$horizon, SHOP_BILL_COMPLETE]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [$horizon, SHOP_BILL_COMPLETE]);
                 break;
             }
 
             case 'dailypending': {
                 $select = ' emissiondate > ? and status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [$horizon, SHOP_BILL_PENDING]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [$horizon, SHOP_BILL_PENDING]);
                 break;
             }
 
             case 'dailycancelled': {
                 $select = ' emissiondate > ? and status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [$horizon, SHOP_BILL_CANCELLED]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [$horizon, SHOP_BILL_CANCELLED]);
                 break;
             }
 
             case 'bills': {
                 // Counts all bills in all shops.
-                $this->value->$submode = $DB->count_records('local_shop_bills', []);
+                $this->value->$submode = $DB->count_records('local_shop_bill', []);
                 break;
             }
 
             case 'placed': {
                 $select = ' status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [SHOP_BILL_PLACED]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [SHOP_BILL_PLACED]);
                 break;
             }
 
             case 'soldout': {
                 $select = ' status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [SHOP_BILL_SOLDOUT]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [SHOP_BILL_SOLDOUT]);
                 break;
             }
 
             case 'complete': {
                 $select = ' status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [SHOP_BILL_COMPLETE]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [SHOP_BILL_COMPLETE]);
                 break;
             }
 
             case 'cancelled': {
                 $select = ' status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [SHOP_BILL_CANCELLED]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [SHOP_BILL_CANCELLED]);
                 break;
             }
 
             case 'pending': {
                 $select = ' status = ? ';
-                $this->value->$submode = $DB->count_records_select('local_shop_bills', $select, [SHOP_BILL_PENDING]);
+                $this->value->$submode = $DB->count_records_select('local_shop_bill', $select, [SHOP_BILL_PENDING]);
                 break;
             }
 
@@ -141,16 +141,18 @@ class daily_shop_indicator extends zabbix_indicator {
                 // at least one internally available product.
                 $sql = "
                     SELECT
-                        COUNT(DISTINCT cc.id)
+                        COUNT(DISTINCT cc.id) as catcount
                     FROM
                         {local_shop_catalogcategory} cc,
                         {local_shop_catalogitem} ci
                     WHERE
-                        ci.categoryid = sc.id AND
+                        ci.categoryid = cc.id AND
                         ((cc.visible = 1 AND ci.status = 'AVAILABLE') OR
-                        (cc.visible = 0 AND ci.status = 'AVAILABLEINTERNAL')
+                        (ci.status = 'AVAILABLEINTERNAL'))
                 ";
-                $this->value->$submode = $DB->count_records_sql($sql, $inparams);
+                $catcount = $DB->count_records_sql($sql, []);
+                $this->value->$submode = 0 + $catcount;
+                break;
             }
 
             case 'activeproducts': {
@@ -159,39 +161,35 @@ class daily_shop_indicator extends zabbix_indicator {
 
                 $sql = "
                     SELECT
-                        COUNT(DISTINCT ci.id)
+                        COUNT(DISTINCT ci.id) as pcount
                     FROM
                         {local_shop_catalogitem} ci,
                         {local_shop_catalogcategory} cc
-                    LEFT JOIN
-                        {local_shop_catalogcategory} cset
-                    ON
-                        cc.setid = cset.id
                     WHERE
-                        ci.categoryid = sc.id AND
+                        ci.categoryid = cc.id AND
                         ((cc.visible = 1 AND ci.status = 'AVAILABLE') OR
-                        (cc.visible = 0 AND ci.status = 'AVAILABLEINTERNAL') AND
-                        ((ci.isset = 0 AND setid = 0) OR
-                            (ci.isset = 0 AND cset.isset = 1) OR
-                                (ci.isset = 2))
+                        (ci.status = 'AVAILABLEINTERNAL')) AND
+                        setid = 0
                 ";
-                $this->value->$submode = $DB->count_records_sql($sql, $inparams);
+                $pcount = $DB->count_records_sql($sql, []);
+                $this->value->$submode = 0 + $pcount;
                 break;
             }
 
             case 'dailyamount': {
                 list($insql, $inparams) = $DB->get_in_or_equal([SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE]);
-                $sql = '
+                $sql = "
                     SELECT
-                        sum(amount)
+                        sum(amount) as dailyamount
                     FROM
-                        {local_shop_bills}
+                        {local_shop_bill}
                     WHERE
                         status $insql AND
                         emissiondate >= ?
-                ';
+                ";
                 $inparams[] = $horizon;
-                $this->value->$submode = $DB->get_record_sql($sql, $select, $inparams);
+                $dailyamount = $DB->get_record_sql($sql, $inparams);
+                $this->value->$submode = 0 + $dailyamount->dailyamount;
                 break;
             }
 
