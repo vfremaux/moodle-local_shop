@@ -109,6 +109,7 @@ if ($itemid) {
 } else {
     $item = new CatalogItem(null);
     $itemrec = $item->record;
+    $itemrec->catalogid = $thecatalog->id;
     $itemrec->categoryid = optional_param('categoryid', 0, PARAM_INT);
     $mform->set_data($itemrec);
 }

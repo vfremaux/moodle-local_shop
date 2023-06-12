@@ -15,21 +15,22 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/front_product_block
+    @template local_shop/front_product_block_details
 
     Classes required for JS:
     * none
 
 }}
-<!-- local_shop/front_product_block -->
+<!-- local_shop/front_product_bundle_details -->
 <div class="shop-article {{subelementclass}}" data-pid="{{id}}">
 
+    <h1>{{{name}}}</h1>
     <div class="shop-front-productpix">
     {{#hasimage}}
-        <a class="fancybox" rel="group" href="{{{imageurl}}}"><img class="{{subelementclass}}" src="{{{thumburl}}}"></a>
+        <a class="fancybox" rel="group" href="{{{imageurl}}}"><img class="{{subelementclass}} local-shop-bundle-thumbnail" src="{{{thumburl}}}"></a>
     {{/hasimage}}
     {{^hasimage}}
-        <img class="{{subelementclass}}" src="{{{thumburl}}}">
+        <img class="{{subelementclass}} local-shop-bundle-thumbnail" src="{{{thumburl}}}">
     {{/hasimage}}
     </div>
 
@@ -37,29 +38,31 @@
         <a name="{{code}}"></a>
         {{#isbundlepart}}
             <h2 class="shop-front-partof">{{{name}}}</h2>
-            {{> local_shop/front_modal_product }}
+            <h3 class="shop-front-partof">{{{description}}}</h3>
+
         {{/isbundlepart}}
 
         {{^isbundlepart}}
             {{#showname}}
             {{^issetpart}}
-            {{^smarturl}}
             <h1>{{name}}</h1>
-            {{/smarturl}}
-            {{#smarturl}}
-            <a href="{{{smarturl}}}" target="_blank"><h1>{{name}}</h1></a>
-            {{/smarturl}}
             {{/issetpart}}
             {{#issetpart}}
             <h2>{{name}}</h2>
             {{/issetpart}}
             {{/showname}}
-            {{#showdescription}}
-            {{> local_shop/front_modal_product }}
-            {{/showdescription}}
             {{#notavailable}}
             <div class="shop-not-available" data-reason="{{notavailablereason}}">{{{notavailablestr}}}</div>
             {{/notavailable}}
+            <h3 class="product-detail">{{{description}}}</h3>
+
+            <h2 class="shop-bundle-content-head">{{#str}}bundlecontent, local_shop{{/str}}</h2>
+
+            <div class="bundle-content">
+            {{#elements}}
+            {{> local_shop/front_product_bundle_details }}
+            {{/elements}}
+            </div>
 
             {{#canorder}}
             <div class="shop-front-refblock">
@@ -81,38 +84,34 @@
                 </div>
 
                 {{#available}}
-                <div class="shop-front-order">
+                <div class="shop-front-order-detail">
                     {{#password}}
                     <input type="text"
-                            id="ci-pass-{{shortname}}"
-                            data-product="{{shortname}}"
-                            value=""
-                            maxlength="8"
-                            size="8"
-                            class="local-shop-password"
-                            title="{{needspasscodetobuystr}}" />
-                    <div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
+                        id="ci-pass"
+                        data-product="{{shortname}}"
+                        value=""
+                        maxlength="8"
+                        size="8"
+                        class="local-shop-password"
+                        title="{{needspasscodetobuystr}}" />
+                    <div id="ci-pass-status" class="shop-pass-state"></div>
                     {{/password}}
 
-                    <input type="button"
-                           id="ci-{{shortname}}"
-                           value="{{buystr}}"
-                           data-product="{{shortname}}"
-                           data-seoalias="{{seoalias}}"
-                           data-maxquant="{{maxdeliveryquant}}"
-                           class="local-shop-add-unit"
-                           {{{disabled}}} />
+                    <a href="{{{addtocarturl}}}"><input type="button"
+                        id="ci-add-to-bag"
+                        value="{{buystr}}"
+                        data-product="{{shortname}}"
+                        data-maxquant="{{maxdeliveryquant}}"
+                        class="local-shop-add-unit"
+                        {{#password}}disabled{{/password}} {{^password}}{{{disabled}}}{{/password}} />
+                   </a>
 
                 </div>
                 {{/available}}
-
-                <div class="shop-order-bag">
-                    <div class="shop-order-item" id="bag_{{shortname}}">{{{units}}}</div>
-                </div>
             </div>
             {{/canorder}}
 
         {{/isbundlepart}}
     </div>
 </div>
-<!-- /local_shop/front_product_block -->
+<!-- /local_shop/front_product_bundle_details -->

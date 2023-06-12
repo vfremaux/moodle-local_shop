@@ -35,6 +35,7 @@
             <a title="{{#str}}clearall, local_shop{{/str}}"
                class="local-shop-detail-delete"
                data-product="{{shortname}}"
+               data-seoalias="{{seoalias}}"
                data-maxquant="{{maxdeliveryquant}}">{{#pix}}t/delete, core{{/pix}}</a>
             {{/isshopview}}
 
@@ -46,7 +47,8 @@
                 size="3"
                 maxlength="3"
                 style="width:20px"
-                data-product="{{shortname}}" {{{disabled}}} >
+                data-product="{{shortname}}"
+                data-seoalias="{{seoalias}}" {{{disabled}}} >
         </td>
         <td class="shop-ordercell">
             {{{code}}}  {{ttcprice}}&nbsp;{{{currency}}} :

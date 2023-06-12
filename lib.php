@@ -23,6 +23,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/compatlib.php');
+
 /**
  * This is part of the dual release distribution system.
  * Tells wether a feature is supported or not. Gives back the

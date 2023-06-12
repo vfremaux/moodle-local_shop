@@ -20,7 +20,6 @@
             </div>
 
             <div class="modal-metadata">
-
                 <div class="shop-front-ref">{{refstr}}&nbsp;: {{{code}}}</div>
                 {{#hasleaflet}}
                 <div class="shop-front-leaflet">
@@ -44,12 +43,13 @@
                 {{/password}}
 
                 <input type="button"
-                                id="cimod-{{shortname}}"
-                                value="{{buystr}}"
-                                data-product="{{shortname}}"
-                                data-maxquant="{{maxdeliveryquant}}"
-                                class="local-shop-add-unit"
-                                {{{disabled}}} /><br/>
+                       id="cimod-{{shortname}}"
+                       value="{{buystr}}"
+                       data-product="{{shortname}}"
+                       data-seoalias="{{seoalias}}"
+                       data-maxquant="{{maxdeliveryquant}}"
+                       class="local-shop-add-unit"
+                       {{{disabled}}} /><br/>
 
                 <div class="shop-front-pricelist">
                     {{^pricelist}}

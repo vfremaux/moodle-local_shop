@@ -27,11 +27,56 @@
         {{{shopselect}}}
         {{{customerselect}}}
         {{{contextselect}}}
+        {{{productstate}}}
+        {{{quicksearch}}}
     </div>
 
-    <div class="shop-entity-searchlink">
+    <!-- div class="shop-entity-searchlink">
         &nbsp;&nbsp;&nbsp;<a href="{{{searchurl}}}"><input type="button" value="{{#str}}search, local_shop{{/str}}" /></a>
-    </div>
+    </div -->
 
 </div>
 <!-- /local_shop/productinstances_options -->
+
+{{#js}}
+require(['jquery'], function($) {
+    var shopsearch = {
+
+        init: function() {
+            $('#search-text').bind('change', this.filter_by_text);
+        },
+
+        /*
+         * Searches matches in product-code and product-ref and hides row if not matching.
+         */
+        filter_by_text: function(e) {
+            var searchpattern = $('#search-text').val();
+
+            console.log("searching with " + searchpattern);
+            regexp = new RegExp(searchpattern, 'g');
+
+            if (searchpattern != '') {
+                $('.shop-productinstance-row').each(function(index) {
+                    console.log("searching on " + this.id);
+                    pcode = $('.product-code', this).text();
+                    pref = $('.product-ref', this).text();
+                    console.log('pcode: ' + pcode);
+                    console.log('pref: ' + pref);
+                    console.log('match code : ' + regexp.test(pcode));
+                    console.log('match ref: ' + regexp.test(pref));
+                    if (!regexp.test(pcode) && !regexp.test(pref)) {
+                        $(this).css('display', 'none');
+                    } else {
+                        $(this).css('display', 'table-row');
+                    }
+                });
+            } else {
+                // display all. 
+                $('.shop-productinstance-row').css('display', 'table-row');
+            }
+        }
+    };
+
+    shopsearch.init();
+});
+{{/js}}

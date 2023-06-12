@@ -1,0 +1,18 @@
+<!-- local_shop/purchasemanager_quick_search -->
+<div id="quicksearch" class="d-inline-block">
+<form method="get" action="{{{url}}}" class="form-inline" style="display: inline">
+        <input type="hidden" name="view" value="viewAllProductInstances">
+        <input type="hidden" name="dir" value="ASC">
+        <label for="search-text">
+            {{#str}}quicksearch, local_shop{{/str}}
+        </label>
+        <input id="search-text" type="text"name="quicksearchfilter" size="15" value="{{current}}" title="{{#str}}quicksearchhelp, local_shop{{/str}}" />
+    <noscript>
+        <input type="submit" class="btn btn-secondary ml-1" value="Valider">
+    </noscript>
+</form>
+</div>
+<!-- /local_shop/purchasemanager_quick_search -->
+{{#js}}
+
+{{/js}}

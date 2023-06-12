@@ -22,13 +22,56 @@
  *
  * Moodle cross version compatibility function.
  */
+namespace local_shop;
+
 defined('MOODLE_INTERNAL') || die();
 
-function local_shop_get_course_list($course) {
-    return new \core_course_list_element($course);
-}
+class compat {
 
-function local_shop_pix_url($pix, $component) {
-    global $OUTPUT;
-    return $OUTPUT->image_url($pix, $component);
+    public static function get_course_list($course) {
+        return new \core_course_list_element($course);
+    }
+
+    public static function pix_url($pix, $component) {
+        global $OUTPUT;
+        return $OUTPUT->image_url($pix, $component);
+    }
+
+    public static function get_name_fields_as_array() {
+        global $CFG;
+
+        if ($CFG->branch >= 400) {
+            $fields = \core_user\fields::for_name()->with_userpic()->excluding('id')->get_required_fields();
+        } else {
+            $fields = get_all_user_name_fields();
+        }
+
+        return $fields;
+    }
+
+    public static function get_fields_for_get_cap() {
+        global $CFG;
+
+        if ($CFG->branch >= 400) {
+            $fields = \core_user\fields::for_name()->with_userpic()->excluding('id')->get_required_fields();
+            $fields = 'u.id,'.implode(',', $fields);
+        } else {
+            $fields = 'u.id,'.get_all_user_name_fields(true, 'u').',u.username, u.email, picture, mailformat';
+        }
+
+        return $fields;
+    }
+
+    public static function get_fields_for_user_recs() {
+        global $CFG;
+
+        if ($CFG->branch >= 400) {
+            $fields = \core_user\fields::for_name()->with_userpic()->get_required_fields();
+            $fields = implode(',', $fields);
+        } else {
+            $fields = get_all_user_name_fields(true);
+        }
+
+        return $fields;
+    }
 }

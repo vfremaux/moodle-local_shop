@@ -70,11 +70,13 @@ class Bill_Form extends moodleform {
             $fullnamecustoselect[$customer->id] = $customer->lastname.' '.$customer->firstname;
         }
 
+        $fields = \local_shop\compat::get_fields_for_user_recs();
+        $fields = 'u.id,'.$fields;
+
         // Select user whithout customer account.
         $sqluser = "
             SELECT
-                u.id,
-                ".get_all_user_name_fields(true, 'u')."
+                ".$fields."
             FROM
                 {user} AS u
             WHERE
@@ -109,7 +111,9 @@ class Bill_Form extends moodleform {
         $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
         $context = context_system::instance();
-        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', 'u.id,'.get_all_user_name_fields(true, 'u'));
+
+        $fields = \local_shop\compat::get_fields_for_get_cap();
+        $billeditors = get_users_by_capability($context, 'block/shop:beassigned', $fields);
         $editoropt = array();
         if ($billeditors) {
             foreach ($billeditors as $billeditor) {

@@ -44,11 +44,11 @@
     </tr>
 
     {{#products}}
-    <tr class="shop-productinstance-row" valign="top">
+    <tr class="shop-productinstance-row" valign="top" id="product-instance-{{id}}">
         <td width="2%" class="cell c0 {{statusclass}}" align="center">{{{selcheckbox}}}</td>
         <td width="6%" class="cell c1" align="center"><img src="{{{thumburl}}}" vspace="10" height="50"></td>
-        <td width="20%" class="cell c2" align="left">{{{code}}}<br/><span class="purchased-product-name">{{{designation}}}</span></td>
-        <td width="20%" class="cell c3" align="left">{{reference}}{{#extradata}}<br/><span class="purchased-product-extradata">{{{extradata}}}</span>{{/extradata}}</td>
+        <td width="20%" class="cell c2 product-code" align="left">{{{code}}}<br/><span class="purchased-product-name">{{{designation}}}</span></td>
+        <td width="20%" class="cell c3 product-ref" align="left">{{reference}}{{#extradata}}<br/><span class="purchased-product-extradata">{{{extradata}}}</span>{{/extradata}}</td>
         <td width="2%" class="cell c4">{{{currentbilllink}}}</td>
         <td width="2%" class="cell c5">{{renewable}}</td>
         <td width="8%" class="cell c6">{{contexttype}}</td>
