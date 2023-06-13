@@ -33,7 +33,17 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
 $renderer = shop_get_renderer('products');
 $renderer->load_context($theshop, $thecatalog, $theblock);
 
-$itemid = required_param('itemid', PARAM_INT);
+$itemid = optional_param('itemid', '', PARAM_INT);
+$itemalias = optional_param('itemalias', '', PARAM_TEXT);
+if (!empty($itemid)) {
+    if (!$catalogitem = new CatalogItem($itemid)) {
+        throw new moodle_exception("Unregistered product id.");
+    }
+} else {
+    if (!$catalogitem = CatalogItem::instance_by_seoalias($itemalias)) {
+        throw new moodle_exception("Unknown product alias.");
+    }
+}
 
 $context = $PAGE->context;
 if (!has_capability('local/shop:accessallowners', $context)) {
@@ -41,8 +51,6 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 } else {
     $shopowner = null;
 }
-
-$catalogitem = new CatalogItem($itemid);
 
 if (local_shop_supports_feature('products/smarturls')) {
     include_once($CFG->dirroot.'/local/shop/pro/lib.php');

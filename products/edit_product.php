@@ -37,6 +37,7 @@ $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/extlib/js.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin.js', true);
 $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
+$PAGE->requires->js_call_amd('local_shop/editmetadata', 'init');
 
 // Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
@@ -115,5 +116,6 @@ if ($itemid) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->render_from_template('local_shop/metadata_edit_modal', new StdClass());
 $mform->display();
 echo $OUTPUT->footer();
