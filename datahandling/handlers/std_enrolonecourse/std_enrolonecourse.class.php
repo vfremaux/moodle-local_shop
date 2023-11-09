@@ -337,7 +337,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
         // Thumb or viewable image.
         // Take first available image NOT TOO LARGE (800px)
-        $courseinlist = local_shop_get_course_list($course);
+        $courseinlist = \local_shop\compat::get_course_list($course);
         foreach ($courseinlist->get_course_overviewfiles() as $file) {
             if ($isimage = $file->is_valid_image()) {
                 $imageinfo = $file->get_imageinfo();

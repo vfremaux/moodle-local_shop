@@ -203,7 +203,7 @@ class shop_paymode_systempay extends shop_paymode {
         echo '<p><span class="shop-procedure-cancel">X</span> ';
         $cancelstr = get_string('cancel');
         $params = array('view' => 'shop', 'shopid' => $this->theshop->id);
-        $cancelurl = new moodle_url('/local/shop/shop/view.php', $params);
+        $cancelurl = new moodle_url('/local/shop/front/view.php', $params);
         echo '<a href="'.$cancelurl.'" class="smalltext">'.$cancelstr.'</a>';
         echo '</div>';
     }

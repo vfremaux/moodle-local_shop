@@ -32,7 +32,6 @@ use local_shop\Shop;
 class shop_customers_renderer extends local_shop_base_renderer {
 
     public function customers($customers, $url) {
-        global $OUTPUT;
 
         $lastnamestr = get_string('lastname');
         $firstnamestr = get_string('firstname');
@@ -68,7 +67,7 @@ class shop_customers_renderer extends local_shop_base_renderer {
             if ($c->hasaccount) {
                 $userurl = new moodle_url('/user/profile.php', ['id' => $c->hasaccount]);
                 $accountlink = '<a href="'.$userurl.'">';
-                $accountlink .= $OUTPUT->pix_icon('i/moodle_host', get_string('hasamoodleaccount', 'local_shop'));
+                $accountlink .= $this->output->pix_icon('i/moodle_host', get_string('hasamoodleaccount', 'local_shop'));
                 $accountlink .= '</a>';
                 $email .= '&nbsp;'.$accountlink;
             }

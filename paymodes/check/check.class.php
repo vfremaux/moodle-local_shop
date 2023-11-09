@@ -43,9 +43,15 @@ class shop_paymode_check extends shop_paymode {
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_check');
         echo '<blockquote>';
-        echo shop_compile_mail_template('print_procedure_text', array( 'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
+
         $params = ['view' => 'bill', 'id' => $afullbill->theshop->id, 'transid' => $billdata->transid];
-        $billurl = new moodle_url('local/shop/front/view.php', $params);
+        $billurl = new moodle_url('/local/shop/front/view.php', $params);
+
+        $params = [
+            'PROC_ORDER' => $proc++,
+            'BILL_URL' => $billurl
+        ];
+        echo shop_compile_mail_template('print_procedure_text', $params, 'shoppaymodes_check');
         $params = [
             'SELLER' => $this->_config->sellername,
             'ADDRESS' => $this->_config->selleraddress,
@@ -62,8 +68,12 @@ class shop_paymode_check extends shop_paymode {
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_check');
         echo '<blockquote>';
-        echo shop_compile_mail_template('print_procedure_text_invoice', array( 'PROC_ORDER' => $proc++ ), 'shoppaymodes_check');
-        $billurl = new moodle_url('local/shop/front/view.php?view=bill&id='.$afullbill->shop->id.'&transid'.$billdata->transid);
+        $billurl = new moodle_url('/local/shop/front/view.php', ['view' => 'bill', 'id' => $afullbill->shop->id, 'transid' =>$billdata->transid]);
+        $params = [
+            'PROC_ORDER' => $proc++,
+            'BILL_URL' => $billurl,
+        ];
+        echo shop_compile_mail_template('print_procedure_text_invoice', $params, 'shoppaymodes_check');
         $params = [
             'SELLER' => $this->_config->sellername,
             'ADDRESS' => $this->_config->selleraddress,

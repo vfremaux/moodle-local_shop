@@ -26,13 +26,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023041800; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2023041801; // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2020060900; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '3.9.0 (Build 2023041800)';
+$plugin->release = '3.9.0 (Build 2023041801)';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array('auth_ticket' => '2012060400');
-$plugin->supported = [39,311];
+$plugin->supported = [39, 311];
 
 // Non moodle attributes.
 $plugin->codeincrement = '3.9.0021';
@@ -48,6 +48,7 @@ $plugin->prolocations = array(
     'datahandling/handlers/std_enrolonecoursemultiple',
     'datahandling/handlers/std_setuponecoursesession',
     'datahandling/handlers/std_unlockpdcertificate',
+    'datahandling/handlers/std_registeredproduct',
     'paymodes/mercanet',
     'paymodes/sherlocks',
     'paymodes/systempay',

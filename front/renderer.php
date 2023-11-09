@@ -536,6 +536,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         $template->name = format_string($product->name);
+        $template->shortname = $product->shortname;
         $template->puttcstr = get_string('puttc', 'local_shop');
 
         $template->showdescription = true;
