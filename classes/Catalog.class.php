@@ -517,13 +517,13 @@ class Catalog extends ShopObject {
      * empty element.
      * @return a CatalogItem object
      */
-    public function get_product_by_shortname($shortname, $mustexist = false) {
+    public function get_product_by_shortname($shortname, $mustexist = false, $lightweight = false) {
         global $DB;
 
         $params = array('catalogid' => $this->id, 'shortname' => $shortname);
         $record = $DB->get_record('local_shop_catalogitem', $params);
         if (!$mustexist || $record) {
-            $catalogitem = new CatalogItem($record);
+            $catalogitem = new CatalogItem($record, $lightweight);
             return $catalogitem;
         }
         return null;

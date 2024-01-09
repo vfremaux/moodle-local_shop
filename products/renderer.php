@@ -243,7 +243,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template->thumburl = $set->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = local_shop_pix_url('productset', 'local_shop');
+            $template->thumburl = \local_shop\compat::pix_url('productset', 'local_shop');
         }
         $template->code = $set->code;
         $template->shortname = $set->shortname;
@@ -321,7 +321,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $template->engravedclass = ((@$bundle->masterrecord == 0) ? '' : 'engraved');
         $template->thumburl = $bundle->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = local_shop_pix_url('productbundle', 'local_shop');
+            $template->thumburl = \local_shop\compat::pix_url('productbundle', 'local_shop');
         }
         $template->code = $bundle->code;
         $template->shortname = $bundle->shortname;
@@ -702,10 +702,10 @@ class shop_products_renderer extends local_shop_base_renderer {
         $row[] = $DB->count_records('local_shop_catalogitem', array('categoryid' => $category->id));
 
         if ($category->visible) {
-            $pixurl = local_shop_pix_url('t/hide', 'core');
+            $pixurl = \local_shop\compat::pix_url('t/hide', 'core');
             $cmd = 'hide';
         } else {
-            $pixurl = local_shop_pix_url('t/show', 'core');
+            $pixurl = \local_shop\compat::pix_url('t/show', 'core');
             $cmd = 'show';
         }
         $commands = "<a href=\"{$url}&amp;what=$cmd&amp;categoryid={$category->id}\"><img src=\"$pixurl\" /></a>";

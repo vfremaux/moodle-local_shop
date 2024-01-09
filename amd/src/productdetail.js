@@ -34,7 +34,6 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             $.post(
                 urlbase,
                 {
-                    id: shopfront.shopid,
                     service: 'shop',
                     what: 'checkpasscode',
                     productname: productname,

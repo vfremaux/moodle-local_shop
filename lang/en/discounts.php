@@ -44,8 +44,8 @@ $string['errordiscount:notenougharguments'] = 'Error: Not enough arguments on de
 $string['multipleratios'] = 'Multiple (see attributes)';
 $string['nodiscounts'] = 'No discount defined';
 $string['newdiscountinstance'] = 'New discount instance';
-$string['itemlist'] = 'Selected item list';
-$string['fullbill'] = 'Full order range';
+$string['onitemlist'] = 'Selected item list';
+$string['onbill'] = 'Full order range';
 $string['ratio'] = 'Ratio';
 $string['enabled'] = 'Enabled';
 $string['operator'] = 'Operator';
@@ -57,7 +57,7 @@ $string['entercode'] = 'enter code here';
 $string['codeverified'] = 'Code has been verified and addresses an applicable discount';
 $string['codefailed'] = 'Code could not be verified as matching an applicable discount';
 
-$string['ratio_help'] = 'Percentage of discount over the discount scope';
+$string['ratio_help'] = 'Percentage of discount over the discount scope. In same cases (depending on algorithm choice and specific data), this rate has no effect and is delegated to more specific options of the choosen algorithm.';
 $string['applydata_help'] = '
 A discount may be applied to the full available catalog, or only a selection of products.
 Select products that will be allowed for the discount application.

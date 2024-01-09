@@ -43,6 +43,7 @@ require(['jquery'], function($) {
     var shopsearch = {
 
         init: function() {
+            $(document).ready(this.filter_by_text);
             $('#search-text').bind('change', this.filter_by_text);
         },
 
@@ -52,19 +53,19 @@ require(['jquery'], function($) {
         filter_by_text: function(e) {
             var searchpattern = $('#search-text').val();
 
-            console.log("searching with " + searchpattern);
-            regexp = new RegExp(searchpattern, 'g');
-
             if (searchpattern != '') {
+                console.log("searching with " + searchpattern);
+                regexp = new RegExp(searchpattern, 'i');
+
                 $('.shop-productinstance-row').each(function(index) {
                     console.log("searching on " + this.id);
                     pcode = $('.product-code', this).text();
                     pref = $('.product-ref', this).text();
                     console.log('pcode: ' + pcode);
                     console.log('pref: ' + pref);
-                    console.log('match code : ' + regexp.test(pcode));
-                    console.log('match ref: ' + regexp.test(pref));
-                    if (!regexp.test(pcode) && !regexp.test(pref)) {
+                    console.log('match code : ' + pcode.match(regexp));
+                    console.log('match ref: ' + pref.match(regexp));
+                    if (!pcode.match(regexp) && !pref.match(regexp)) {
                         $(this).css('display', 'none');
                     } else {
                         $(this).css('display', 'table-row');
