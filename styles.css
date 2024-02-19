@@ -488,11 +488,11 @@ div.shop-bill-abstract {
 #eulas-panel {
     background-color: #fff;
     border: solid 1px #ccc;
-    height: 60%;
+    height: 90%;
     margin-right: 30px;
     overflow-y: scroll;
     padding: 30px;
-    width: 85%;
+    width: 90%;
 }
 
 .short-order-name {
