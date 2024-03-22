@@ -40,13 +40,13 @@ $format = required_param('format', PARAM_TEXT);
 if (file_exists($CFG->dirroot.'/local/shop/export/extractors/export_'.$what.'.php')) {
     require_once($CFG->dirroot.'/local/shop/export/extractors/export_'.$what.'.php');
 } else {
-    print_error('erroremptyexport', 'local_shop');
+    throw new moodle_exception(get_string('erroremptyexport', 'local_shop'));
 }
 
 if (file_exists($CFG->dirroot.'/local/shop/export/formats/export_'.$format.'.php')) {
     require_once($CFG->dirroot.'/local/shop/export/formats/export_'.$format.'.php');
 } else {
-    print_error('errorbadformatrenderer', 'local_shop');
+    throw new moodle_exception(get_string('errorbadformatrenderer', 'local_shop'));
 }
 
 $extractorclass = "shop_export_source_$what";

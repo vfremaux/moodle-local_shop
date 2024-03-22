@@ -82,7 +82,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $productionfeedback->salesadmin = '';
 
         if (!isset($data->actionparams['coursename'])) {
-            print_error('errormissingactiondata', 'local_shop', $this->get_name());
+            throw new moodle_exception(get_string('errormissingactiondata', 'local_shop', $this->get_name()));
         }
 
         // Get course designated by handler internal params.
@@ -94,7 +94,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure :";
             $message .= " Target Course Error [{$coursename}].";
             shop_trace($message);
-            print_error(get_string('errorbadtarget', 'shophandlers_std_setuponecoursesession'));
+            throw new moodle_exception(get_string('errorbadtarget', 'shophandlers_std_setuponecoursesession'));
         }
 
         if (!isset($data->actionparams['supervisor'])) {
@@ -105,7 +105,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure :";
             $message .= " Supervisor Role Do Not Exist [{$data->actionparams['supervisor']}].";
             shop_trace($message);
-            print_error(get_string('errorsupervisorrole', 'shophandlers_std_setuponecoursesession'));
+            throw new moodle_exception(get_string('errorsupervisorrole', 'shophandlers_std_setuponecoursesession'));
         }
 
         // Compute start and end time.

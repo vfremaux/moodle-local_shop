@@ -96,7 +96,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
         // Check for params validity (internals).
 
         if (empty($data->actionparams['coursename']) && empty($data->actionparams['courseid'])) {
-            print_error('errormissingactiondata', 'local_shop', $this->get_name());
+            throw new moodle_exception(get_string('errormissingactiondata', 'local_shop', $this->get_name()));
         }
 
         $rolename = @$data->actionparams['role'];
@@ -111,19 +111,19 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             $coursename = $data->actionparams['coursename'];
             if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE_MULTIPLE PostPay : failed... Bad course name");
-                print_error("Bad target course shortname for product");
+                throw new moodle_exception("Bad target course shortname for product");
             }
         } else if (!empty($data->actionparams['courseidnumber'])) {
             $idnumber = $data->actionparams['courseidnumber'];
             if (!$course = $DB->get_record('course', array('idnumber' => $idnumber))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE_MULTIPLE PostPay : failed... Bad course idnumber");
-                print_error("Bad target course id for product");
+                throw new moodle_exception("Bad target course id for product");
             }
         } else {
             $courseid = $data->actionparams['courseid'];
             if (!$course = $DB->get_record('course', array('shortname' => $courseid))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE_MULTIPLE PostPay : failed... Bad course id");
-                print_error("Bad target course id for product");
+                throw new moodle_exception("Bad target course id for product");
             }
         }
 

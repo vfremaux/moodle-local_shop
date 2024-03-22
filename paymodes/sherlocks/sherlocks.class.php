@@ -299,7 +299,7 @@ class shop_paymode_sherlocks extends shop_paymode {
             $sherlocksapierrorstr = get_string('sherlocksapierror', 'shoppaymodes_sherlocks');
             $error = "sherlocks IPN : {$sherlocksapierrorstr} : ".$paydata['error'];
             if (!empty($config->test)) {
-                print_error($error);
+                throw new moodle_exception($error);
             }
             shop_trace($error);
             die;
@@ -350,7 +350,7 @@ class shop_paymode_sherlocks extends shop_paymode {
                     $afullbill->save(true);
                     $error = "[$transid] sherlocks IPN Payment Rejected : ".$paydata['response_code'];
                     if (!empty($config->test)) {
-                       print_error($error);
+                       throw new moodle_exception($error);
                     }
                     shop_trace($error);
                     die;
@@ -359,7 +359,7 @@ class shop_paymode_sherlocks extends shop_paymode {
                     $afullbill->save(true); // stateonly
                     $error = "[$transid] sherlocks IPN failure : ".$paydata['response_code'];
                     if (!empty($config->test)) {
-                        print_error($error);
+                        throw new moodle_exception($error);
                     }
 
                     shop_trace($error);
@@ -368,7 +368,7 @@ class shop_paymode_sherlocks extends shop_paymode {
             } else {
                 $error = "[$transid] sherlocks IPN : Inactive state ".$afullbill->status;
                 if (!empty($config->test)) {
-                    print_error($error);
+                    throw new moodle_exception($error);
                 }
                 shop_trace($error);
             }

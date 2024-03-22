@@ -42,7 +42,7 @@ if (!empty($action)) {
 try {
     $customer = new Customer($customerid);
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->message);
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->message));
 }
 
 // Dispatch bills into status boxes.

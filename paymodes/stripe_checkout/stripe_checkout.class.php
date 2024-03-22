@@ -117,7 +117,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         $afullbill = \local_shop\Bill::get_by_transaction($transid);
 
         if ($afullbill->status == SHOP_BILL_PLACED) {
-            print_error("Stripe WebHooks have failed to produce your order. this may be due to a misconfiguration of the moodle shop Stripe Payment method.");
+            throw new moodle_exception("Stripe WebHooks have failed to produce your order. this may be due to a misconfiguration of the moodle shop Stripe Payment method.");
             die;
         }
 

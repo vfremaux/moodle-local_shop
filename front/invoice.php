@@ -33,7 +33,7 @@ $transid = required_param('transid', PARAM_RAW);
 if (!$afullbill = Bill::get_by_transaction($transid)) {
     $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-    print_error('invalidtransid', 'local_shop', $viewurl);
+    throw new moodle_exception(get_string('invalidtransid', 'local_shop', $viewurl));
 }
 
 if ($action) {

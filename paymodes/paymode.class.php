@@ -156,7 +156,7 @@ abstract class shop_paymode {
                 if ($paymode != $plugin->get_name()) {
                     $transid = '';
                     $cmd = '';
-                    print_error('paymodedonotmatchtoresponse', 'local_shop');
+                    throw new moodle_exception(get_string('paymodedonotmatchtoresponse', 'local_shop'));
                 }
                 // We have valid transid and cmd and paymode, so process it in controller.
                 return $plugin;

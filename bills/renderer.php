@@ -287,7 +287,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($this->output);
             return $this->output->render_from_template('local_shop/bills_product_block', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
 
         return $this->output->render_from_template();
@@ -585,7 +585,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($renderer);
             return $this->output->render_from_template('local_shop/bills_full_taxes', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 
@@ -699,7 +699,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($renderer);
             return $this->output->render_from_template('local_shop/bills_flow_controller', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 
@@ -794,7 +794,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         try {
             $outputclass = 'search_bill_line';
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
         shop_load_output_class($outputclass);
         $tpldata = new \local_shop\output\search_bill_line($bill);
@@ -816,7 +816,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($OUTPUT);
             return $this->output->render_from_template('local_shop/bills_search_form', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 

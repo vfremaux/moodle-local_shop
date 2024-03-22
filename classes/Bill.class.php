@@ -503,9 +503,10 @@ class Bill extends ShopObject {
         $this->record->taxes = $this->finaltaxestotal;
         $this->record->untaxedamount = $this->finaluntaxedtotal;
 
+        // Discounts are applied in 'finalshippedtaxedtotal'
         $this->finalshippedtaxedtotal = $this->finaltaxedtotal + $this->shipping; // Not in record.
         $this->dirty = false;
-        shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated");
+        shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated to final amount : {$this->finalshippedtaxedtotal}");
     }
 
     public function delete() {

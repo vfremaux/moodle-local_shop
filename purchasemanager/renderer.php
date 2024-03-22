@@ -360,7 +360,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($OUTPUT);
             return $this->output->render_from_template('local_shop/productinstances_search_form', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 
