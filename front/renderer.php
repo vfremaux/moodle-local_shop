@@ -488,6 +488,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($template->issetpart) {
             $template->itemtype = 'is-set-part';
         }
+
         $template->isbundlepart = $product->isbundlepart;
         if ($template->isbundlepart) {
             $template->itemtype = 'is-bundle-part';
@@ -1283,7 +1284,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $template = $tpldata->export_for_template($this);
                 return $this->output->render_from_template('local_shop/front_order_line', $template);
             } catch (Exception $e) {
-                print_error("Missing output class $outputclass");
+                throw new moodle_exception("Missing output class $outputclass");
             }
         }
     }
@@ -1301,7 +1302,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_bill_line', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
 
     }
@@ -1338,7 +1339,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_order_totals', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 
@@ -1364,7 +1365,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_taxes', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 
@@ -1765,7 +1766,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template = $invoiceheader->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 
@@ -1792,7 +1793,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template = $invoiceheader->export_for_template($this);
             return $OUTPUT->render_from_template('local_shop/front_paymode', $template);
         } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
+            throw new moodle_exception("Missing output class $outputclass");
         }
     }
 

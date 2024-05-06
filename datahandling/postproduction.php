@@ -59,7 +59,7 @@ $method = required_param('method', PARAM_TEXT);
 try {
     $product = new Product($productid);
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->get_message());
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->get_message()));
 }
 
 $customer = new Customer($product->customerid);
@@ -67,12 +67,10 @@ $customer = new Customer($product->customerid);
 try {
     $catalogitem = new CatalogItem($product->catalogitemid);
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->get_message());
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->get_message()));
 }
 
-if (!$course = $DB->get_record('course', array('id' => $id))) {
-    print_error('coursemisconf');
-}
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 $params = array('id' => $id, 'pid' => $productid, 'method' => $method);
 $url = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
@@ -85,7 +83,7 @@ $PAGE->set_context($context);
 require_course_login($course);
 
 if ($customer->hasaccount != $USER->id && !has_capability('local/shop:salesadmin', $context)) {
-    print_error(get_string('notowner', 'local_shop'));
+    throw new moodle_exception(get_string('notowner', 'local_shop'));
 }
 
 // Page setup.
@@ -99,7 +97,7 @@ $productinfo = $product->extract_production_data();
 list($handler, $methodname) = $product->get_handler_info($method);
 
 if (is_null($handler) || is_null($methodname)) {
-    print_error("Moodle shop could not find valuable information in product or catalog item. this is probably a coding issue.");
+    throw new moodle_exception("Moodle shop could not find valuable information in product or catalog item. this is probably a coding issue.");
 }
 
 $productinfo->url = $url;

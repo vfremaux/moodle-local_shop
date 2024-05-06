@@ -101,7 +101,7 @@ if (!isloggedin()) {
 }
 
 if (empty($config->sellername)) {
-    print_error('errornoselleridentity', 'local_shop');
+    throw new moodle_exception(get_string('errornoselleridentity', 'local_shop'));
 }
 
 $out = $OUTPUT->header();
@@ -113,7 +113,7 @@ $renderer->load_context($theshop, $thecatalog, $theblock);
 if (is_readable($CFG->dirroot."/local/shop/front/{$view}.php")) {
     include($CFG->dirroot."/local/shop/front/{$view}.php");
 } else {
-    print_error('errormissingview', 'local_shop');
+    throw new moodle_exception(get_string('errormissingview', 'local_shop'));
 }
 
 if ($view == 'shop') {

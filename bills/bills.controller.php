@@ -34,6 +34,7 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 use Exception;
 use local_shop\Bill;
 use local_shop\BillItem;
+use moodle_exception;
 
 class bill_controller {
 
@@ -169,7 +170,7 @@ class bill_controller {
                         $bill = new Bill($billid);
                         $bill->delete();
                     } catch (\Exception $e) {
-                        print_error('objecterror', 'local_shop', $e->message);
+                        throw new moodle_exception(get_string('objecterror', 'local_shop', $e->message));
                     }
                 }
             }

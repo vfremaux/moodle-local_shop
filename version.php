@@ -48,6 +48,7 @@ $plugin->prolocations = array(
     'datahandling/handlers/std_enrolonecoursemultiple',
     'datahandling/handlers/std_setuponecoursesession',
     'datahandling/handlers/std_unlockpdcertificate',
+    'datahandling/handlers/std_registeredproduct',
     'paymodes/mercanet',
     'paymodes/sherlocks',
     'paymodes/systempay',

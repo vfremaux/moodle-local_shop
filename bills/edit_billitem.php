@@ -62,7 +62,7 @@ $PAGE->set_pagelayout('admin');
 try {
     $bill = new Bill($billid);
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->get_message());
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->get_message()));
 }
 
 if ($billitemid) {

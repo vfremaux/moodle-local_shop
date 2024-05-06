@@ -31,7 +31,7 @@ $customerid = required_param('customer', PARAM_INT);
 try {
     $customer = new Customer($customerid);
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->get_message());
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->get_message()));
 }
 
 // Execute controller.

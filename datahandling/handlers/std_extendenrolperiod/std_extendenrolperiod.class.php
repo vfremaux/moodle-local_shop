@@ -61,35 +61,35 @@ class shop_handler_std_extendenrolperiod extends shop_handler {
         $productionfeedback->salesadmin = '';
 
         if (empty($data->actionparams['coursename']) && empty($data->actionparams['courseid'])) {
-            print_error('errormissingactiondata', 'local_shop', $this->get_name());
+            throw new moodle_exception(get_string('errormissingactiondata', 'local_shop', $this->get_name()));
         }
 
         if (!empty($data->actionparams['coursename'])) {
             if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
                 shop_trace("[{$data->transactionid}] STD_EXTEND_ENROL_PERIOD PostPay : failed... Bad course shortname");
-                print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+                throw new moodle_exception(get_string('erroractiondatavalue', 'local_shop', $this->get_name()));
             }
         } else {
             if (!$course = $DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
                 shop_trace("[{$data->transactionid}] STD_EXTEND_ENROL_PERIOD PostPay : failed... Bad course id");
-                print_error('erroractiondatavalue', 'local_shop', $this->get_name());
+                throw new moodle_exception(get_string('erroractiondatavalue', 'local_shop', $this->get_name()));
             }
         }
 
         if (!isset($data->actionparams['enroltype'])) {
-            print_error('errormissingactiondata', 'local_shop', $this->get_name());
+            throw new moodle_exception(get_string('errormissingactiondata', 'local_shop', $this->get_name()));
         }
 
         if (!enrol_get_plugin($data->actionparams['enroltype'])) {
-            print_error('genericerror', 'local_shop', get_string('errorenrolnotinstalled', 'shophandlers_std_extendenrolperiod'));
+            throw new moodle_exception(get_string('genericerror', 'local_shop', get_string('errorenrolnotinstalled', 'shophandlers_std_extendenrolperiod')));
         }
 
         if (!is_enrol_enabled($data->actionparams['enroltype'])) {
-            print_error('genericerror', 'local_shop', get_string('errorenroldisabled', 'shophandlers_std_extendenrolperiod'));
+            throw new moodle_exception(get_string('genericerror', 'local_shop', get_string('errorenroldisabled', 'shophandlers_std_extendenrolperiod')));
         }
 
         if (!isset($data->actionparams['extension'])) {
-            print_error('errormissingactiondata', 'local_shop', get_string('extension', 'shophandlers_std_extendenrolperiod'));
+            throw new moodle_exception(get_string('errormissingactiondata', 'local_shop', get_string('extension', 'shophandlers_std_extendenrolperiod')));
         }
 
         // Quantity addresses number of elementary extension period.

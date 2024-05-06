@@ -17,8 +17,8 @@
 /**
  * Privacy Subsystem implementation for mod_forum.
  *
- * @package    mod_forum
- * @copyright  2018 Andrew Nicols <andrew@nicols.co.uk>
+ * @package    mod_shop
+ * @copyright  2018 Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

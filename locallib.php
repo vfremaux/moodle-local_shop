@@ -102,7 +102,7 @@ function shop_get_block_instance($instanceid) {
         return null;
     }
     if (!$theblock = block_instance('shop_access', $instance)) {
-        print_error('errorbadblockinstance', 'local_shop');
+        throw new moodle_exception(get_string('errorbadblockinstance', 'local_shop'));
     }
     return $theblock;
 }
@@ -655,7 +655,7 @@ function shop_build_context() {
             $SESSION->shop = $theshop;
             $SESSION->shop->catalogid = $theshop->catalogid;
         } catch (Exception $e) {
-            print_error('objecterror', 'local_shop', $e->getMessage());
+            throw new moodle_exception(get_string('objecterror', 'local_shop', $e->getMessage()));
         }
     } else {
         // Shopid is null. get lowest available shop as default.
@@ -685,7 +685,7 @@ function shop_build_context() {
                 $thecatalog = new Catalog($theshop->catalogid);
                 $SESSION->shop->catalogid = $thecatalog->id;
             } catch (Exception $e) {
-                print_error('objecterror', 'local_shop', $e->getMessage());
+                throw new moodle_exception(get_string('objecterror', 'local_shop', $e->getMessage()));
             }
         }
     }
@@ -696,7 +696,7 @@ function shop_build_context() {
             unset($SESSION->shop->catalogid);
             redirect(me());
         } else {
-            print_error('objecterror', 'local_shop', $e->getMessage());
+            throw new moodle_exception(get_string('objecterror', 'local_shop', $e->getMessage()));
         }
     }
 

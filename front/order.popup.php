@@ -47,7 +47,7 @@ try {
 } catch (Exception $e) {
     $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id));
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-    print_error('invalidbillid', 'local_shop', $viewurl);
+    throw new moodle_exception(get_string('invalidbillid', 'local_shop', $viewurl));
 }
 
 $params = array('shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id), 'transid' => $transid);

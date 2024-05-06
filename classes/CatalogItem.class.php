@@ -26,6 +26,7 @@
 namespace local_shop;
 
 use \StdClass;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -480,7 +481,7 @@ class CatalogItem extends ShopObject {
             $h = $this->enablehandler;
 
             if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
-                print_error('errorbadhandler', 'local_shop', $h);
+                throw new moodle_exception(get_string('errorbadhandler', 'local_shop', $h));
             }
 
             include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
@@ -505,7 +506,7 @@ class CatalogItem extends ShopObject {
             }
             if (!method_exists($classname, $methodname)) {
                 if ($type == 'postprod') {
-                    print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
+                    throw new moodle_exception(get_string('errorunimplementedhandlermethod', 'local_shop', $methodname));
                 } else {
                     debug_trace('Catalog item get handler info : Info type not yet supported', TRACE_DEBUG);
                     return [null, null];

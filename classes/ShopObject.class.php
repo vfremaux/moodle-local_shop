@@ -165,7 +165,7 @@ class ShopObject {
             $sql .= " WHERE ";
             $wheres[] = ' 1 = 1 ';
             foreach ($filter as $cond => $value) {
-                if ($value == '*') {
+                if ($value === '*') {
                     continue;
                 }
                 $wheres[] = "$cond = ? ";

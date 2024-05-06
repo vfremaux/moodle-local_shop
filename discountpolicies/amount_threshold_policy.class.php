@@ -5,11 +5,10 @@ namespace local_shop;
 class AmountThresholdPolicy extends DiscountPolicy {
 
     protected function get_name() {
-        return amountthreshold;
+        return 'amountthreshold';
     }
 
-    public calculate_discount(&$bill) {
-        
+    public function calculate_discount(&$bill) {
     }
 
 }

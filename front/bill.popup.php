@@ -39,14 +39,14 @@ if ($transid) {
     if (!$afullbill = Bill::get_by_transaction($transid)) {
         $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-        print_error('invalidtransid', 'local_shop', $viewurl);
+        throw new moodle_exception(get_string('invalidtransid', 'local_shop', $viewurl));
     }
 } else if ($billid) {
     require_login();
     if (!$afullbill = new Bill($billid)) {
         $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-        print_error('invalidbillid', 'local_shop', $viewurl);
+        throw new moodle_exception(get_string('invalidbillid', 'local_shop', $viewurl));
     }
 
     $systemcontext = context_system::instance();
@@ -54,7 +54,7 @@ if ($transid) {
             !has_any_capability(array('local/shop:salesadmin', 'moodle/site:config'), $systemcontext)) {
         $params = array('view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->instance->id);
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
-        print_error('errornotownedbill', 'local_shop', $viewurl);
+        throw new moodle_exception(get_string('errornotownedbill', 'local_shop', $viewurl));
     }
 
     $realized = array('SOLDOUT', 'COMPLETE', 'PARTIAL');

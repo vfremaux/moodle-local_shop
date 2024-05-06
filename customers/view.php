@@ -44,7 +44,7 @@ require_capability('local/shop:salesadmin', $context);
 
 if (!preg_match('/viewAllCustomers|viewCustomer/', $view) ||
         !file_exists($CFG->dirroot."/local/shop/customers/{$view}.php")) {
-    print_error('errorbadview', 'local_shop');
+    throw new moodle_exception(get_string('errorbadview', 'local_shop'));
 }
 
 // Make page header and navigation.
