@@ -17,6 +17,6 @@ abstract class DiscountPolicy {
             $mform->setType('policy'.$policyname.'enabled', PARAM_BOOL);
     }
 
-    abstract calculate_discount(&$bill);
+    abstract function calculate_discount(&$bill);
 
 }
