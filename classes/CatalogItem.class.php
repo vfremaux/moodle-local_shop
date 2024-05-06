@@ -26,6 +26,7 @@
 namespace local_shop;
 
 use \StdClass;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -109,6 +110,10 @@ class CatalogItem extends ShopObject {
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->notes = '';
             $this->record->notesformat = FORMAT_HTML;
+            $this->record->seoalias = '';
+            $this->record->seokeywords = '';
+            $this->record->seodescription = '';
+            $this->record->seotitle = '';
             $this->record->eula = '';
             $this->record->eulaformat = FORMAT_HTML;
         }
@@ -168,8 +173,7 @@ class CatalogItem extends ShopObject {
 
     /**
      * Searches a catalogitem instance that matches a idnumber 
-     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
-     * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
+     * @param string $idnumber The catalogitem idnumber, should be unique if defined.
      */
     public static function instance_by_idnumber($idnumber) {
         global $DB;
@@ -179,6 +183,25 @@ class CatalogItem extends ShopObject {
         }
 
         $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['idnumber' => $idnumber]);
+        if (!$intanceid) {
+            return null;
+        }
+
+        return new CatalogItem($intanceid);
+    }
+
+    /**
+     * Searches a catalogitem instance that matches a seoalias 
+     * @param string $alias The catalogitem seoalias, should be unique if defined.
+     */
+    public static function instance_by_seoalias($alias) {
+        global $DB;
+
+        if (empty($alias)) {
+            return null;
+        }
+
+        $intanceid = $DB->get_field('local_shop_catalogitem', 'id', ['seoalias' => $alias]);
         if (!$intanceid) {
             return null;
         }
@@ -458,7 +481,7 @@ class CatalogItem extends ShopObject {
             $h = $this->enablehandler;
 
             if (!file_exists($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php')) {
-                print_error('errorbadhandler', 'local_shop', $h);
+                throw new moodle_exception(get_string('errorbadhandler', 'local_shop', $h));
             }
 
             include_once($CFG->dirroot.'/local/shop/datahandling/handlers/'.$h.'/'.$h.'.class.php');
@@ -483,7 +506,7 @@ class CatalogItem extends ShopObject {
             }
             if (!method_exists($classname, $methodname)) {
                 if ($type == 'postprod') {
-                    print_error('errorunimplementedhandlermethod', 'local_shop', $methodname);
+                    throw new moodle_exception(get_string('errorunimplementedhandlermethod', 'local_shop', $methodname));
                 } else {
                     debug_trace('Catalog item get handler info : Info type not yet supported', TRACE_DEBUG);
                     return [null, null];

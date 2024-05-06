@@ -49,3 +49,21 @@ Transfers discounts to pro zone and redraw the discount policies application.
 ##################################################
 
 Adds pro caching zone
+<<<<<<< HEAD
+=======
+
+2022090900 --- XX.0019
+##################################################
+
+Add registration to report_zabbix senders.
+
+2023032400 --- XX.0020
+##################################################
+
+Add smarturls feature (pro).
+
+2023041800 --- XX.0021
+##################################################
+
+Add product instance expiration notifications to sales admins.
+>>>>>>> MOODLE_401_STABLE

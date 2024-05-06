@@ -45,6 +45,7 @@ class cron_task extends \core\task\scheduled_task {
         global $CFG;
 
         require_once($CFG->dirroot.'/local/shop/cronlib.php');
-        local_shop_cron_task();
+        $manager = new \local_shop\cron\manager();
+        $manager->cron_task();
     }
 }

@@ -114,7 +114,13 @@ function bill_transition_pending_soldout($billorid) {
     }
 }
 
-function bill_transition_failure_soldout($billid) {
+/*
+ * function bill_transition_failed_cancelled($billid) {
+ * Nothing to do but only mark it.
+ * }
+ */
+
+function bill_transition_failed_soldout($billid) {
     bill_transition_pending_soldout($billid);
 }
 

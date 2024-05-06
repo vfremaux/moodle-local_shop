@@ -695,12 +695,16 @@ div.shop-bill-abstract {
 =======
     background-color: #fff;
     border: solid 1px #ccc;
+<<<<<<< HEAD
 >>>>>>> MOODLE_40_STABLE
     height: 60%;
+=======
+    height: 90%;
+>>>>>>> MOODLE_401_STABLE
     margin-right: 30px;
     overflow-y: scroll;
     padding: 30px;
-    width: 85%;
+    width: 90%;
 }
 
 .short-order-name {
@@ -916,6 +920,11 @@ h3.shop-front-partof {
 
 .shop-front-productpix {
     display: table-cell;
+    padding-right: 25px;
+}
+
+.shop-bundle-content-head {
+    margin-bottom: 2em;
 }
 
 .shop-front-productdef {
@@ -1489,4 +1498,15 @@ input.purchaseoption:checked {
     font-size: 0.8em;
     color: #bbb;
 }
+<<<<<<< HEAD
 >>>>>>> MOODLE_40_STABLE
+=======
+
+h3.product-detail {
+    font-size: 1em;
+}
+
+.local-shop-bundle-thumbnail {
+    max-width: 250px;
+}
+>>>>>>> MOODLE_401_STABLE

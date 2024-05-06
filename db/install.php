@@ -23,7 +23,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 function xmldb_local_shop_install() {
-    global $DB;
+    global $DB, $CFG;
 
     $flowcodes = array(
         array('element' => 'order',
@@ -127,6 +127,12 @@ function xmldb_local_shop_install() {
               'tostate' => 'PENDING'),
         array('element' => 'bill',
               'fromstate' => 'REFUSED',
+              'tostate' => 'SOLDOUT'),
+        array('element' => 'bill',
+              'fromstate' => 'FAILED',
+              'tostate' => 'CANCELLED'),
+        array('element' => 'bill',
+              'fromstate' => 'FAILED',
               'tostate' => 'SOLDOUT'),
     );
 
@@ -324,5 +330,14 @@ function xmldb_local_shop_install() {
         $dbman->drop_table($table);
     }
 
+<<<<<<< HEAD
+=======
+    // Register zabbix indicators if installed.
+    if (is_dir($CFG->dirroot.'/report/zabbix')) {
+        include_once($CFG->dirroot.'/report/zabbix/xlib.php');
+        report_zabbix_register_plugin('local', 'shop');
+    }
+
+>>>>>>> MOODLE_401_STABLE
     return true;
 }

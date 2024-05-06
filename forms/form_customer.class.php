@@ -97,6 +97,9 @@ class Customer_Form extends moodleform {
             $errors['email'] = get_string('erroremailexists', 'local_shop');
         }
 
+        /**
+         * @TODO : Build a stronger mail format validation pattern.
+         */
         if (!preg_match('/.+@.+/', $data['email'])) {
             $errors['email'] = get_string('errornotanemail', 'local_shop');
         }

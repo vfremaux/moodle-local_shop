@@ -75,7 +75,7 @@ class Product extends ShopObject {
 
         if ($idorrecord) {
             if ($light) {
-                // This builds a lightweight proxy of the Bill, without items.
+                // This builds a lightweight proxy of the Product, without items.
                 return;
             }
 
@@ -91,8 +91,10 @@ class Product extends ShopObject {
             }
 
             if (!empty($this->record->initialbillitemid)) {
-                $this->initialbillitem = new BillItem($this->record->initialbillitemid);
-                $this->hasbill = true;
+                if (ShopObject::exists($this->record->initialbillitemid, 'billitem')) {
+                    $this->initialbillitem = new BillItem($this->record->initialbillitemid);
+                    $this->hasbill = true;
+                }
             }
 
             if (!empty($this->record->currentbillitemid)) {
@@ -100,9 +102,11 @@ class Product extends ShopObject {
                     // Use a memory ref on initial instance.
                     $this->currentbillitem = $this->initialbillitem;
                 } else {
-                    $this->currentbillitem = new BillItem($this->record->currentbillitemid);
+                    if (ShopObject::exists($this->record->currentbillitemid, 'billitem')) {
+                        $this->currentbillitem = new BillItem($this->record->currentbillitemid);
+                        $this->hasbill = true;
+                    }
                 }
-                $this->hasbill = true;
             }
 
         } else {
@@ -363,6 +367,44 @@ class Product extends ShopObject {
         }
 
         return $results;
+    }
+
+    public static function filter_by_state(&$instances, $state) {
+        if (empty($instances) || $state == '*') {
+            return;
+        }
+
+        $now = time();
+
+        foreach ($instances as $id => $instance) {
+
+            if ($instance->enddate) {
+                if ($now > $instance->enddate) {
+                    // Expired.
+                    $statusclass = 'cs-product-expired';
+                } else if ($now > $instance->enddate - SHOP_UNIT_EXPIRATION_FORECAST_DELAY2) {
+                    // Expiring.
+                    $statusclass = 'cs-product-expiring';
+                } else if ($now > $instance->enddate - SHOP_UNIT_EXPIRATION_FORECAST_DELAY1) {
+                    // Near to Expiring.
+                    $statusclass = 'cs-product-ending';
+                } else if ($now < $instance->startdate) {
+                    // Pending.
+                    $statusclass = 'cs-product-pending';
+                } else {
+                    // Running.
+                    $statusclass = 'cs-product-running';
+                }
+            } else {
+                // Running.
+                $statusclass = 'cs-product-running';
+            }
+
+            if ($statusclass != $state) {
+                // Filer out the set if not matching the filter.
+                unset($instances[$id]);
+            }
+        }
     }
 
     /**

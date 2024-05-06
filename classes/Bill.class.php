@@ -262,6 +262,9 @@ class Bill extends ShopObject {
      * Adds an item from a DB record making a BillItem instance
      * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
+     * @param object $birec a record with bill item attributes.
+     * @param int $ordering
+     * @return a BillItem object;
      */
     public function add_item_data($birec, $ordering = -1) {
 <<<<<<< HEAD
@@ -285,6 +288,7 @@ class Bill extends ShopObject {
         $this->orderamount += $billitem->get_totaltaxed();
         $this->itemcount++;
         $this->dirty = true;
+        return $billitem;
     }
 
     /**
@@ -562,6 +566,7 @@ class Bill extends ShopObject {
         $this->record->untaxedamount = $this->finaluntaxedtotal;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
         $this->dirty = false;
         shop_trace("[{$this->transactionid}] Bill recalculated");
@@ -570,6 +575,12 @@ class Bill extends ShopObject {
         $this->dirty = false;
         shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated");
 >>>>>>> MOODLE_40_STABLE
+=======
+        // Discounts are applied in 'finalshippedtaxedtotal'
+        $this->finalshippedtaxedtotal = $this->finaltaxedtotal + $this->shipping; // Not in record.
+        $this->dirty = false;
+        shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated to final amount : {$this->finalshippedtaxedtotal}");
+>>>>>>> MOODLE_401_STABLE
     }
 
     public function delete() {

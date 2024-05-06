@@ -43,3 +43,49 @@ $string['testkey'] = 'Test the licence key';
 $string['testproduct'] = 'Test product';
 $string['registered_product'] = 'Registered';
 $string['unassigned'] = '--- Unassigned ---';
+$string['quicksearch'] = 'Quick filter (code and ref): ';
+$string['quicksearchhelp'] = 'Change filter value and click outside the input.';
+
+$string['allstates'] = '--- All states ---';
+$string['productstate'] = 'Product state';
+$string['productexpired'] = 'Expired';
+$string['productexpiring'] = 'Expiring';
+$string['productending'] = 'Ending';
+$string['productpending'] = 'Pending to start';
+$string['productrunning'] = 'Running';
+$string['longtimeexpired'] = 'Moodle Shop {$a} : Long time (over a week) expired product instances';
+$string['longtimeexpired_mail'] = 'These product instances have expired for more than one week. 
+List of expired product instances (undeleted): 
+{$a->list}
+
+Check at {$a->url}.
+';
+$string['longtimeexpired_html'] = 'These product instances have expired for more than one week.<br/>
+List of expired product instances (undeleted):
+{$a->list}
+
+<br/>
+Check at <a href="{$a->url}">Purchase manager index</a>.
+';
+$string['neartoexpire'] = 'Moodle Shop {$a} : Will expire in one week';
+$string['neartoexpire_mail'] = 'List of product instances: 
+{$a->list}
+
+Check at {$a->url}.
+';
+$string['neartoexpire_html'] = 'List of product instances :<br/>
+{$a->list}
+<br/>
+Check at <a href="{$a->url}">Purchase manager index</a>.
+';
+$string['justexpired'] = 'Moodle Shop {$a} : Just expried product instances';
+$string['justexpired_mail'] = 'List of product instances expired up to 3 days ago: 
+{$a->list}
+
+Check at {$a->url}.
+';
+$string['justexpired_html'] = 'List of product instances expired up to 3 days ago:<br/>
+{$a->list}
+<br/>
+Check at <a href="{$a->url}">Purchase manager index</a>.
+';

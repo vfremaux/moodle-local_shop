@@ -108,12 +108,12 @@ abstract class shop_handler {
         return;
     }
 
-    public function display_product_actions() {
+    public function display_product_actions($pid, $params) {
         // Do nothing.
         return;
     }
 
-    public function delete() {
+    public function delete(&$product) {
         // Do nothing.
         return;
     }

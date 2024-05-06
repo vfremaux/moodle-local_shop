@@ -42,4 +42,50 @@ $string['hasnoproductinstance'] = 'N\'a PAS de produit enregistré';
 $string['testproduct'] = 'Produit test';
 $string['unassigned'] = '--- Non attribué ---';
 $string['registered_product'] = 'Produit enregistré';
+$string['quicksearch'] = 'Filtre rapide (code et ref) : ';
+$string['quicksearchhelp'] = 'Changez la valuer du filtre et cliquez en dehors de la boîte de saisie.';
+
+$string['allstates'] = '--- Tous les états ---';
+$string['productstate'] = 'Etat ';
+$string['productexpired'] = 'Expiré';
+$string['productexpiring'] = 'Expire bientôt';
+$string['productending'] = 'En cours de terminaison';
+$string['productpending'] = 'Pas encore en service';
+$string['productrunning'] = 'En cours de validité';
+$string['longtimeexpired'] = 'Boutique Moodle {$a} : Unités de vente expirées (plus d\'une semaine)';
+$string['longtimeexpired_mail'] = 'Ces unités de vente ont expiré il y a plus d\'une semaine et ne sont pas supprimés. 
+Liste des unités de vente : 
+{$a->list}
+
+Gérer à l\'adresse {$a->url}.
+';
+$string['longtimeexpired_html'] = 'Ces unités de vente ont expiré il y a plus d\'une semaine et ne sont pas supprimés.<br/>
+Liste des unités de vente : 
+{$a->list}
+
+<br/>
+Gérer dans le <a href="{$a->url}">gestionnaire des unités de vente</a>.
+';
+$string['neartoexpire'] = 'Boutique Moodle {$a} : Vont expirer dans la semaine';
+$string['neartoexpire_mail'] = 'Liste des unités de vente :
+{$a->list}
+
+Gérer à l\'url {$a->url}.
+';
+$string['neartoexpire_html'] = 'Liste des instances :<br/>
+{$a->list}
+<br/>
+Gérer dans le <a href="{$a->url}">gestionnaire des unités de vente</a>.
+';
+$string['justexpired'] = 'Boutique Moodle {$a} : Viennent d\'expirer (3 jours)';
+$string['justexpired_mail'] = 'Liste des unités de vente expirées dans les 3 derniers jours : 
+{$a->list}
+
+Check at {$a->url}.
+';
+$string['justexpired_html'] = 'Liste des unités de vente expirées dans les 3 derniers jours :<br/>
+{$a->list}
+<br/>
+Gérer dans le <a href="{$a->url}">gestionnaire des unités de vente</a>.
+';
 

@@ -47,7 +47,8 @@ $PAGE->requires->css('/local/shop/css/bootstrap_3.4.1.css');
 
 $config = get_config('local_shop');
 
-$category = optional_param('category', 0, PARAM_ALPHA);
+$categoryid = optional_param('category', 0, PARAM_ALPHA);
+$categoryalias = optional_param('categoryalias', '', PARAM_TEXT);
 
 // Get block information.
 
@@ -87,7 +88,11 @@ if ($view == 'shop') {
 }
 
 // Make page header.
-$url = new moodle_url('/local/shop/front/view.php', array('view' => $view, 'category' => $category));
+$params = ['view' => $view, 'category' => $categoryid];
+if (!empty($categoryalias)) {
+    $params['categoryalias'] = $categoryalias;
+}
+$url = new moodle_url('/local/shop/front/view.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
@@ -103,7 +108,7 @@ if (!isloggedin()) {
 }
 
 if (empty($config->sellername)) {
-    print_error('errornoselleridentity', 'local_shop');
+    throw new moodle_exception(get_string('errornoselleridentity', 'local_shop'));
 }
 
 $out = $OUTPUT->header();
@@ -115,7 +120,7 @@ $renderer->load_context($theshop, $thecatalog, $theblock);
 if (is_readable($CFG->dirroot."/local/shop/front/{$view}.php")) {
     include($CFG->dirroot."/local/shop/front/{$view}.php");
 } else {
-    print_error('errormissingview', 'local_shop');
+    throw new moodle_exception(get_string('errormissingview', 'local_shop'));
 }
 
 if ($view == 'shop') {

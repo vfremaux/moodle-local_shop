@@ -25,6 +25,7 @@
  */
 
 require('../../../config.php');
+
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
@@ -50,13 +51,13 @@ try {
         $catalogid = $thecatalog->groupid;
     }
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->message);
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->message));
 }
 
 try {
     $catalogitem = new CatalogItem($catalogitemid);
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->message);
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->message));
 }
 
 $renderer = shop_get_renderer('shipzones');

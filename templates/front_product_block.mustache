@@ -22,7 +22,7 @@
 
 }}
 <!-- local_shop/front_product_block -->
-<div class="shop-article {{subelementclass}}">
+<div class="shop-article {{subelementclass}}" data-pid="{{id}}">
 
     <div class="shop-front-productpix">
     {{#hasimage}}
@@ -54,7 +54,12 @@
         {{^isbundlepart}}
             {{#showname}}
             {{^issetpart}}
+            {{^smarturl}}
             <h1>{{name}}</h1>
+            {{/smarturl}}
+            {{#smarturl}}
+            <a href="{{{smarturl}}}" target="_blank"><h1>{{name}}</h1></a>
+            {{/smarturl}}
             {{/issetpart}}
             {{#issetpart}}
             <h2>{{name}}</h2>
@@ -117,9 +122,10 @@
                             class="local-shop-password"
                             title="{{needspasscodetobuystr}}" />
                     <div id="ci-pass-status-{{shortname}}" class="shop-pass-state"></div>
-
                     {{/password}}
+
                     <input type="button"
+<<<<<<< HEAD
                                     id="ci-{{shortname}}"
                                     value="{{buystr}}"
 <<<<<<< HEAD
@@ -130,6 +136,15 @@
                                     class="local-shop-add-unit"
                                     {{{disabled}}} />
 >>>>>>> MOODLE_40_STABLE
+=======
+                           id="ci-{{shortname}}"
+                           value="{{buystr}}"
+                           data-product="{{shortname}}"
+                           data-seoalias="{{seoalias}}"
+                           data-maxquant="{{maxdeliveryquant}}"
+                           class="local-shop-add-unit"
+                           {{{disabled}}} />
+>>>>>>> MOODLE_401_STABLE
 
                 </div>
                 {{/available}}

@@ -42,6 +42,7 @@ $string['banktransfer'] = 'Banck wired transfer';
 $string['bill'] = 'Bill';
 $string['billing'] = 'Billing';
 $string['both'] = 'All users';
+$string['bundlecontent'] = 'Bundle content';
 $string['buy'] = 'Buy';
 $string['byemailat'] = ' by mail at ';
 $string['byphoneat'] = ' by phone at ';

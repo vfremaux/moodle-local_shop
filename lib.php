@@ -23,6 +23,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/compatlib.php');
+
 /**
  * This is part of the dual release distribution system.
  * Tells wether a feature is supported or not. Gives back the
@@ -50,7 +52,7 @@ function local_shop_supports_feature($feature = null) {
                 'api' => array('ws'),
 =======
                 'shop' => array('instances', 'partners', 'discounts'),
-                'products' => array('editable'),
+                'products' => array('editable', 'smarturls'),
                 'docgen' => array('pdf'),
                 'api' => array('ws'),
                 'bill' => array('attachements', 'lettering'),

@@ -41,13 +41,13 @@ $format = required_param('format', PARAM_TEXT);
 if (file_exists($CFG->dirroot.'/local/shop/export/importers/import_'.$what.'.php')) {
     require_once($CFG->dirroot.'/local/shop/export/importers/import_'.$what.'.php');
 } else {
-    print_error('erroremptyimport', 'local_shop');
+    throw new moodle_exception(get_string('erroremptyimport', 'local_shop'));
 }
 
 if (file_exists($CFG->dirroot.'/local/shop/export/formats/import_'.$format.'.php')) {
     require_once($CFG->dirroot.'/local/shop/export/formats/import_'.$format.'.php');
 } else {
-    print_error('errorbadformatrenderer', 'local_shop');
+    throw new moodle_exception(get_string('errorbadformatrenderer', 'local_shop'));
 }
 
 $parserclass = "shop_import_source_$what";

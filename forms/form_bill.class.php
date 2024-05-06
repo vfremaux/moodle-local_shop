@@ -70,9 +70,14 @@ class Bill_Form extends moodleform {
             $fullnamecustoselect[$customer->id] = $customer->lastname.' '.$customer->firstname;
         }
 
+<<<<<<< HEAD
         // M4.
         $fields = \core_user\fields::for_name()->with_userpic()->excluding('id')->get_required_fields();
         $fields = 'u.id,'.implode(',', $fields);
+=======
+        $fields = \local_shop\compat::get_fields_for_user_recs();
+        $fields = 'u.id,'.$fields;
+>>>>>>> MOODLE_401_STABLE
 
         // Select user whithout customer account.
         $sqluser = "
@@ -112,9 +117,14 @@ class Bill_Form extends moodleform {
         $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
         $context = context_system::instance();
+<<<<<<< HEAD
         // M4.
         $fields = \core_user\fields::for_name()->with_userpic()->excluding('id')->get_required_fields();
         $fields = 'u.id,'.implode(',', $fields);
+=======
+
+        $fields = \local_shop\compat::get_fields_for_get_cap();
+>>>>>>> MOODLE_401_STABLE
         $billeditors = get_users_by_capability($context, 'block/shop:beassigned', $fields);
         $editoropt = array();
         if ($billeditors) {

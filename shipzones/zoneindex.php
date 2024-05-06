@@ -50,7 +50,7 @@ require_capability('local/shop:salesadmin', $context);
 try {
     $zone = new CatalogShipZone($zoneid);
 } catch (Exception $e) {
-    print_error('objecterror', 'local_shop', $e->message);
+    throw new moodle_exception(get_string('objecterror', 'local_shop', $e->message));
 }
 
 // Execute controller.

@@ -289,8 +289,12 @@ class production_controller extends front_controller_base {
         $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
         // Complete seller with expected fields.
+<<<<<<< HEAD
         // M4.
         $fields = \core_user\fields::for_name()->excluding('id')->get_required_fields();
+=======
+        $fields = \local_shop\compat::get_name_fields_as_array();
+>>>>>>> MOODLE_401_STABLE
         foreach ($fields as $f) {
             if (!isset($seller->$f)) {
                 $seller->$f = '';

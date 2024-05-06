@@ -176,6 +176,25 @@ class Category extends ShopObject {
         return parent::_get_instances_menu(self::$table, $filter, $order, "name");
     }
 
+    /**
+     * Searches a catalogitem instance that matches a seoalias 
+     * @param string $alias The catalogitem seoalias, should be unique if defined.
+     */
+    public static function instance_by_seoalias($alias) {
+        global $DB;
+
+        if (empty($alias)) {
+            return null;
+        }
+
+        $intanceid = $DB->get_field('local_shop_catalogcategory', 'id', ['seoalias' => $alias]);
+        if (!$intanceid) {
+            return null;
+        }
+
+        return new Category($intanceid);
+    }
+
     public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_count_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }

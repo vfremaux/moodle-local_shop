@@ -71,7 +71,6 @@ class Catalog extends ShopObject {
             // These are fake fields to drive the editors in form.
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->billfooterformat = FORMAT_HTML;
-/*            $this->record->salesconditionsformat = FORMAT_HTML; */
 
         } else {
             $this->record->name = get_string('newcatalog', 'local_shop');
@@ -79,10 +78,6 @@ class Catalog extends ShopObject {
             $this->record->descriptionformat = FORMAT_HTML;
             $this->record->isslave = 0;
             $this->record->ismaster = 0;
-/*
-            $this->record->salesconditions = '';
-            $this->record->salesconditionsformat = FORMAT_HTML;
-*/
             $this->record->billfooter = '';
             $this->record->billfooterformat = FORMAT_HTML;
             $this->record->groupid = 0;
@@ -264,7 +259,6 @@ class Catalog extends ShopObject {
                 $categoryclause = '';
             } else {
                 $categoryclause = " ci.categoryid = ? AND ";
-
             }
 
             // Override with slave versions.
@@ -298,6 +292,7 @@ class Catalog extends ShopObject {
                         $categories[$original->categoryid]->products[$ci->code] = $ci;
                     } else {
                         $categories[$key]->products[$ci->code] = $ci;
+                        $shopproducts[$ci->code] = $ci;
                     }
                 }
             }
@@ -522,7 +517,7 @@ class Catalog extends ShopObject {
      * empty element.
      * @return a CatalogItem object
      */
-    public function get_product_by_shortname($shortname, $mustexist = false) {
+    public function get_product_by_shortname($shortname, $mustexist = false, $lightweight = false) {
         global $DB;
 
         $params = array('catalogid' => $this->id, 'shortname' => $shortname);
@@ -533,7 +528,7 @@ class Catalog extends ShopObject {
         return $catalogitem;
 =======
         if (!$mustexist || $record) {
-            $catalogitem = new CatalogItem($record);
+            $catalogitem = new CatalogItem($record, $lightweight);
             return $catalogitem;
         }
         return null;

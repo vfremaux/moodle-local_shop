@@ -34,6 +34,9 @@ if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinf
 }
 
 $paymentplugin = shop_get_payment_plugin($theshop); // Finds in session the paymode.
+if ($SESSION->shoppingcart->finalshippedtaxedtotal == 0) {
+    $paymentplugin = 'freeorder';
+}
 
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action) {
@@ -74,6 +77,7 @@ if (!empty($config->test) && empty($config->testoverride) &&
     echo $OUTPUT->notification(get_string('testmodeactive', 'local_shop'));
 } else {
     $renderer->field_start(get_string('procedure', 'local_shop'), 'shop-information-area');
+    shop_trace("[{$SESSION->shoppingcart->transid}] ".'Order placed : '.count($SESSION->shoppingcart->order).' product types for '.$SESSION->shoppingcart->finalshippedtaxedtotal);
     echo $paymentplugin->print_payment_portlet($SESSION->shoppingcart);
     $renderer->field_end();
 }

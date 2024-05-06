@@ -183,7 +183,7 @@ class shop_export_excel extends shop_export {
     public function setup_xls_formats() {
 
         if (!$this->workbook) {
-            print_error('errorexcelcreation', 'local_shop');
+            throw new moodle_exception(get_string('errorexcelcreation', 'local_shop'));
         }
 
         $formats = array();

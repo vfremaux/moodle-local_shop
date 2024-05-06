@@ -22,7 +22,7 @@
 
 }}
 <!-- frontproductbundle -->
-<div class="shop-article bundle">
+<div class="shop-article bundle" data-pid="{{id}}">
 
     <div class="shop-front-productpix">{{{image}}}</div>
 
@@ -31,7 +31,9 @@
             <div class="shop-front-partof">{{{name}}}</div>
         {{/ispart}}
         {{^ispart}}
+            {{^smarturl}}
             <h1>{{{name}}}</h1>
+<<<<<<< HEAD
 <<<<<<< HEAD
             {{#hasdescription}}
                 <h2 class="shop-front-description {{#shortdescription}}shop-desc-gradient{{/shortdescription}}">
@@ -44,6 +46,12 @@
                 {{/shortdescription}}
             {{/hasdescription}}
 =======
+=======
+            {{/smarturl}}
+            {{#smarturl}}
+            <a href="{{{smarturl}}}" target="_blank"><h1>{{name}}</h1></a>
+            {{/smarturl}}
+>>>>>>> MOODLE_401_STABLE
             {{> local_shop/front_modal_product }}
 >>>>>>> MOODLE_40_STABLE
         {{/ispart}}
@@ -147,6 +155,7 @@
                         <input type="button"
                                         id="ci-{{shortname}}"
                                         value="{{buystr}}"
+                                        data-seoalias="{{seoalias}}"
                                         data-product="{{shortname}}"
                                         data-maxquant="{{maxdeliveryquant}}"
                                         class="local-shop-add-unit"

@@ -31,6 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 
 use local_shop\Product;
+use moodle_exception;
 
 class productinstances_controller {
 
@@ -77,7 +78,7 @@ class productinstances_controller {
                         $product = new Product($pid);
                         $product->delete();
                     } catch (\Exception $e) {
-                        print_error('objecterror', 'local_shop', $e->getMessage());
+                        throw new moodle_exception(get_string('objecterror', 'local_shop', $e->getMessage()));
                     }
                 }
             }
@@ -93,7 +94,7 @@ class productinstances_controller {
                         $product = new Product($pid);
                         $product->soft_delete();
                     } catch (\Exception $e) {
-                        print_error('objecterror', 'local_shop', $e->getMessage());
+                        throw new moodle_exception(get_string('objecterror', 'local_shop', $e->getMessage()));
                     }
                 }
             }
@@ -109,7 +110,7 @@ class productinstances_controller {
                         $product = new Product($pid);
                         $product->soft_restore();
                     } catch (\Exception $e) {
-                        print_error('objecterror', 'local_shop', $e->getMessage());
+                        throw new moodle_exception(get_string('objecterror', 'local_shop', $e->getMessage()));
                     }
                 }
             }

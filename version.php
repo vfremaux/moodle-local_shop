@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 $plugin->version   = 2019050301; // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2019111200; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
@@ -41,12 +42,23 @@ $plugin->version   = 2022072900; // The current plugin version (Date: YYYYMMDDXX
 $plugin->requires  = 2022041900; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
 $plugin->release = '4.0.0 (Build 2021100700)';
+=======
+$plugin->version   = 2023041803; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2022112801; // Requires this Moodle version.
+$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
+$plugin->release = '4.1.0 (Build 2023041803)';
+>>>>>>> MOODLE_401_STABLE
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array('auth_ticket' => '2012060400');
+$plugin->supported = [401, 402];
 
 // Non moodle attributes.
+<<<<<<< HEAD
 $plugin->codeincrement = '4.0.0017';
 >>>>>>> MOODLE_40_STABLE
+=======
+$plugin->codeincrement = '4.1.0021';
+>>>>>>> MOODLE_401_STABLE
 $plugin->privacy = 'dualrelease';
 $plugin->prolocations = array(
     'datahandling/handlers/std_addtrainingcredits',
@@ -59,6 +71,7 @@ $plugin->prolocations = array(
     'datahandling/handlers/std_enrolonecoursemultiple',
     'datahandling/handlers/std_setuponecoursesession',
     'datahandling/handlers/std_unlockpdcertificate',
+    'datahandling/handlers/std_registeredproduct',
     'paymodes/mercanet',
     'paymodes/sherlocks',
     'paymodes/systempay',

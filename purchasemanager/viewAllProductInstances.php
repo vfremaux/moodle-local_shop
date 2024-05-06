@@ -28,6 +28,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 
 use local_shop\Product;
 
+raise_memory_limit(MEMORY_HUGE);
+
 $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
 $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
@@ -35,6 +37,8 @@ $customerid = optional_param('customerid', 0, PARAM_INT);
 $contexttype = optional_param('contexttype', '', PARAM_TEXT);
 $shopid = optional_param('shopid', 0, PARAM_INT);
 $shopownerid = optional_param('shopowner', 0, PARAM_INT);
+$productstate = optional_param('productstate', '*', PARAM_TEXT);
+$producttext = optional_param('producttext', '', PARAM_TEXT);
 
 $viewparams = array('view' => $view, 'customerid' => $customerid, 'order' => $order, 'dir' => $dir, 'shopowner' => $shopownerid, 'shopid' => $shopid);
 
@@ -85,6 +89,7 @@ if (!empty($contexttype)) {
 }
 
 $productinstances = Product::get_instances_on_context($filter);
+Product::filter_by_state($productinstances, $productstate);
 
 echo $out;
 

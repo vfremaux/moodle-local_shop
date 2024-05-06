@@ -28,24 +28,44 @@ require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 
 use local_shop\CatalogItem;
 
-$itemid = required_param('itemid', PARAM_INT);
+// Do NOT rely on the caller script, as it might reside in Pro zone.
+list($theshop, $thecatalog, $theblock) = shop_build_context();
+$renderer = shop_get_renderer('products');
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
+$itemid = optional_param('itemid', '', PARAM_INT);
+$itemalias = optional_param('itemalias', '', PARAM_TEXT);
+if (!empty($itemid)) {
+    if (!$catalogitem = new CatalogItem($itemid)) {
+        throw new moodle_exception("Unregistered product id.");
+    }
+} else {
+    if (!$catalogitem = CatalogItem::instance_by_seoalias($itemalias)) {
+        throw new moodle_exception("Unknown product alias.");
+    }
+}
+
+$context = $PAGE->context;
 if (!has_capability('local/shop:accessallowners', $context)) {
     $shopowner = $USER->id;
 } else {
     $shopowner = null;
 }
 
-$catalogitem = new CatalogItem($itemid);
+if (local_shop_supports_feature('products/smarturls')) {
+    include_once($CFG->dirroot.'/local/shop/pro/lib.php');
+    local_shop_setup_seo_overrides($catalogitem);
+}
 
+$PAGE->requires->js_call_amd('local_shop/productdetail', 'init');
+
+$out = $OUTPUT->header();
 echo $out;
 
 echo $OUTPUT->heading(get_string('catalogitem', 'local_shop'));
 
-$params = array('view' => 'viewProductDetail', 'id' => $theshop->id, 'catalogid' => $thecatalog->id, 'itemid' => $itemid);
-$viewurl = new moodle_url('/local/shop/products/view.php', $params);
-echo $renderer->category_chooser($viewurl);
-
-echo $OUTPUT->heading(get_string('products', 'local_shop'));
+// $params = array('view' => 'viewProductDetail', 'id' => $theshop->id, 'catalogid' => $thecatalog->id, 'itemid' => $itemid);
+// $viewurl = new moodle_url('/local/shop/products/view.php', $params);
+// echo $renderer->category_chooser($viewurl);
 
 echo $renderer->catalogitem_details($catalogitem);

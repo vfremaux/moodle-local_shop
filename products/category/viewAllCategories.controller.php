@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
 use local_shop\Category;
+use moodle_exception;
 
 class category_controller {
 
@@ -128,7 +129,7 @@ class category_controller {
                 $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
                 $category->sortorder = $maxorder + 1;
                 if (!$category->id = $DB->insert_record('local_shop_catalogcategory', $category)) {
-                    print_error('erroraddcategory', 'local_shop');
+                    throw new moodle_exception(get_string('erroraddcategory', 'local_shop'));
                 }
                 // We have items in the set. update relevant products.
                 $productsinset = optional_param('productsinset', array(), PARAM_INT);

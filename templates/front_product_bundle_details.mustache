@@ -1,0 +1,117 @@
+{{!
+    This file is part of The Local Shop Plugin
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shop/front_product_block_details
+
+    Classes required for JS:
+    * none
+
+}}
+<!-- local_shop/front_product_bundle_details -->
+<div class="shop-article {{subelementclass}}" data-pid="{{id}}">
+
+    <h1>{{{name}}}</h1>
+    <div class="shop-front-productpix">
+    {{#hasimage}}
+        <a class="fancybox" rel="group" href="{{{imageurl}}}"><img class="{{subelementclass}} local-shop-bundle-thumbnail" src="{{{thumburl}}}"></a>
+    {{/hasimage}}
+    {{^hasimage}}
+        <img class="{{subelementclass}} local-shop-bundle-thumbnail" src="{{{thumburl}}}">
+    {{/hasimage}}
+    </div>
+
+    <div class="shop-front-productdef">
+        <a name="{{code}}"></a>
+        {{#isbundlepart}}
+            <h2 class="shop-front-partof">{{{name}}}</h2>
+            <h3 class="shop-front-partof">{{{description}}}</h3>
+
+        {{/isbundlepart}}
+
+        {{^isbundlepart}}
+            {{#showname}}
+            {{^issetpart}}
+            <h1>{{name}}</h1>
+            {{/issetpart}}
+            {{#issetpart}}
+            <h2>{{name}}</h2>
+            {{/issetpart}}
+            {{/showname}}
+            {{#notavailable}}
+            <div class="shop-not-available" data-reason="{{notavailablereason}}">{{{notavailablestr}}}</div>
+            {{/notavailable}}
+            <h3 class="product-detail">{{{description}}}</h3>
+
+            <h2 class="shop-bundle-content-head">{{#str}}bundlecontent, local_shop{{/str}}</h2>
+
+            <div class="bundle-content">
+            {{#elements}}
+            {{> local_shop/front_product_bundle_details }}
+            {{/elements}}
+            </div>
+
+            {{#canorder}}
+            <div class="shop-front-refblock">
+                <div class="shop-front-ref">{{refstr}}&nbsp;: {{{code}}}</div>
+
+                <div class="shop-front-pricelist">
+                    {{^pricelist}}
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                    <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                    {{/pricelist}}
+                    {{#pricelist}}
+
+                    <div class="shop-front-label">{{puttcstr}}</div>
+                        {{#prices}}
+                        <div class="shop-front-pricerange">{{range}}&nbsp;: </div>
+                        <div class="shop-front-price-container"><div class="shop-front-price">{{price}}&nbsp;{{{currencystr}}}</div></div>
+                        {{/prices}}
+                    {{/pricelist}}
+                </div>
+
+                {{#available}}
+                <div class="shop-front-order-detail">
+                    {{#password}}
+                    <input type="text"
+                        id="ci-pass"
+                        data-product="{{shortname}}"
+                        value=""
+                        maxlength="8"
+                        size="8"
+                        class="local-shop-password"
+                        title="{{needspasscodetobuystr}}" />
+                    <div id="ci-pass-status" class="shop-pass-state"></div>
+                    {{/password}}
+
+                    <a href="{{{addtocarturl}}}"><input type="button"
+                        id="ci-add-to-bag"
+                        value="{{buystr}}"
+                        data-product="{{shortname}}"
+                        data-maxquant="{{maxdeliveryquant}}"
+                        class="local-shop-add-unit"
+                        {{#password}}disabled{{/password}} {{^password}}{{{disabled}}}{{/password}} />
+                   </a>
+
+                </div>
+                {{/available}}
+            </div>
+            {{/canorder}}
+
+        {{/isbundlepart}}
+    </div>
+</div>
+<!-- /local_shop/front_product_bundle_details -->

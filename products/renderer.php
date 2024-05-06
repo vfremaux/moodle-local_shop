@@ -288,7 +288,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template->thumburl = $set->get_thumb_url(true);
         if (empty($template->thumburl)) {
-            $template->thumburl = local_shop_pix_url('productset', 'local_shop');
+            $template->thumburl = \local_shop\compat::pix_url('productset', 'local_shop');
         }
         $template->code = $set->code;
         $template->shortname = $set->shortname;
@@ -378,10 +378,14 @@ class shop_products_renderer extends local_shop_base_renderer {
         $template->thumburl = $bundle->get_thumb_url(true);
         if (empty($template->thumburl)) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             $template->thumburl = $OUTPUT->pix_url('productbundle', 'local_shop');
 =======
             $template->thumburl = local_shop_pix_url('productbundle', 'local_shop');
 >>>>>>> MOODLE_40_STABLE
+=======
+            $template->thumburl = \local_shop\compat::pix_url('productbundle', 'local_shop');
+>>>>>>> MOODLE_401_STABLE
         }
         $template->code = $bundle->code;
         $template->shortname = $bundle->shortname;
@@ -780,7 +784,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $row = array();
 
-        $class = ($category->visible) ? 'shop-shadow' : '';
+        $class = (!$category->visible) ? 'shop-shadow' : '';
         $row[] = $indent.'<span class="'.$class.'">'.format_string($category->name).'</span>';
 
         $row[] = $category->get_parent_name();
@@ -794,6 +798,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         if ($category->visible) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             $pixurl = $OUTPUT->pix_url('t/hide');
             $cmd = 'hide';
         } else {
@@ -804,6 +809,12 @@ class shop_products_renderer extends local_shop_base_renderer {
         } else {
             $pixurl = local_shop_pix_url('t/show', 'core');
 >>>>>>> MOODLE_40_STABLE
+=======
+            $pixurl = \local_shop\compat::pix_url('t/hide', 'core');
+            $cmd = 'hide';
+        } else {
+            $pixurl = \local_shop\compat::pix_url('t/show', 'core');
+>>>>>>> MOODLE_401_STABLE
             $cmd = 'show';
         }
         $commands = "<a href=\"{$url}&amp;what=$cmd&amp;categoryid={$category->id}\"><img src=\"$pixurl\" /></a>";
@@ -866,7 +877,42 @@ class shop_products_renderer extends local_shop_base_renderer {
         return $table;
     }
 
-    public function catalogitem_details($catalogitemid) {
-        return 'to be written ';
+    /**
+     * Prints detail of a product.
+     */
+    public function catalogitem_details($catalogitem) {
+
+        $frontrenderer = shop_get_renderer('front');
+        $frontrenderer->load_context($this->theshop, $this->thecatalog, $this->theblock);
+
+        $catalogitem->check_availability();
+        $catalogitem->currency = $this->theshop->get_currency('symbol');
+        $catalogitem->salesunit = $catalogitem->get_sales_unit_url();
+        $catalogitem->preset = 0 + @$SESSION->shoppingcart->order[$catalogitem->shortname];
+        switch ($catalogitem->isset) {
+            case PRODUCT_SET:
+                $template = $frontrenderer->product_set($catalogitem, true);
+                $tplfile = 'local_shop/front_product_block_details';
+                break;
+            case PRODUCT_BUNDLE:
+                $template = $frontrenderer->product_bundle($catalogitem, true);
+                $tplfile = 'local_shop/front_product_bundle_details';
+                break;
+            default:
+                $template = $frontrenderer->product_block($catalogitem, true);
+                $tplfile = 'local_shop/front_product_block_details';
+        }
+
+        $params = [];
+        $params['view'] = 'shop';
+        $params['category'] = $catalogitem->categoryid;
+        $params['productname'] = $catalogitem->shortname;
+        $params['what'] = 'addunit';
+        $params['shopid'] = $this->theshop->id;
+        $params['redirect'] = 1;
+        $template->addtocarturl = (new moodle_url('/local/shop/front/view.php', $params))->out();
+
+        // Temporary approach. Then we will specialize the template.
+        return $this->output->render_from_template($tplfile, $template);
     }
 }

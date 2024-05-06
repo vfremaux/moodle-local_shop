@@ -42,6 +42,7 @@ $string['bill'] = 'Facture';
 $string['proformabill'] = 'Facture Proforma';
 $string['billing'] = 'Facturation';
 $string['both'] = 'indifférent';
+$string['bundlecontent'] = 'Contenu du pack';
 $string['buy'] = 'Acheter';
 $string['bycreditcards'] = 'Carte bancaire';
 $string['byemailat'] = ' par courriel à&ensp;';
