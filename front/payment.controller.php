@@ -72,7 +72,7 @@ class payment_controller extends front_controller_base {
         $SESSION->shoppingcart->debug = @$this->data->debug;
 
         if ($cmd == 'place') {
-            debug_trace('Payment controller: placing', TRACE_DEBUG);
+            shop_debug_trace('Payment controller: placing', SHOP_TRACE_DEBUG);
             // Convert all data in bill records.
             // Customer info.
             $customer = (object)$SESSION->shoppingcart->customerinfo;
@@ -193,7 +193,7 @@ class payment_controller extends front_controller_base {
                     include_once($CFG->dirroot.'/local/shop/pro/lib.php');
                     $catalogitem = $billitem->get_catalog_item();
                     if (get_config('local_shop', 'usesmarturls') && ($catalogitem)) {
-                        debug_trace("Firing SEO order url for {$catalogitem->shortname} ", TRACE_DEBUG);
+                        shop_debug_trace("Firing SEO order url for {$catalogitem->shortname} ", SHOP_TRACE_DEBUG);
                         local_shop_fire_smart_order($catalogitem);
                     }
                 }

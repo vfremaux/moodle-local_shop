@@ -1,0 +1,49 @@
+
+
+
+
+<!-- local_shop/purchasemanager_selection_tools -->
+<select id="purchase-selection-tools">
+    <option name="alignstartdate" value="{{#str}}alignstartdate, local_shop{{/str}}" />
+    <option name="alignenddate" value="{{#str}}alignenddate, local_shop{{/str}}" />
+    <option name="alignenddate" value="{{#str}}alignenddate, local_shop{{/str}}" />
+    <option name="alignhost" value="{{#str}}alignhost, local_shop{{/str}}" />
+    <option name="alignotherhosts" value="{{#str}}alignotherhosts, local_shop{{/str}}" />
+    <option name="alignmetadata" value="{{#str}}alignmetadata, local_shop{{/str}}" />
+</select>
+<!-- /local_shop/purchasemanager_selection_tools -->
+{{#js}}
+require(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
+    var purchasemanager_selection = {
+        init: function() {
+            ${'#purchase-selection-tools'}.bind('change', this.launch);
+            log.debug('purchasemanager_selection in-template initialized');
+        },
+        launch: function(e) {
+
+            var that = $(this);
+            var customerid = that.attr('data-customerid');
+            var set = Array;
+
+            // Collect checked selectors
+            var jqset = $('.purchase-selects:checked');
+            jqset.each(function () {
+                set.push($(this).val());
+            });
+
+            var url = cfg.wwwroot + '/local/shop/pro/purchase_action.php';
+            url += '?view=viewAllProductInstances';
+            url += '&customer=' + customerid;
+            url += '&filter=' + quicksearchfilter;
+            url += '&what=' + that.val();
+            url += '&set=' + set.join(',');
+
+            window.location.href = url;
+        }
+    };
+
+    purchasemanager_selection.init();
+});
+{{/js}}
+
+

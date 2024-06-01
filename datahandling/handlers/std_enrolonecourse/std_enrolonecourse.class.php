@@ -150,18 +150,24 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $coursename = $data->actionparams['coursename'];
             if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course name");
+                // Those hard error cases may stop a full postpay processing.
+                // TODO : change reaction by reporting error and let through.
                 throw new moodle_exception("Bad target course shortname for product");
             }
         } else if (!empty($data->actionparams['courseidnumber'])) {
             $idnumber = $data->actionparams['courseidnumber'];
             if (!$course = $DB->get_record('course', array('idnumber' => $idnumber))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course idnumber");
+                // Those hard error cases may stop a full postpay processing.
+                // TODO : change reaction by reporting error and let through.
                 throw new moodle_exception("Bad target course id for product");
             }
         } else {
             $courseid = $data->actionparams['courseid'];
             if (!$course = $DB->get_record('course', array('shortname' => $courseid))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course id");
+                // Those hard error cases may stop a full postpay processing.
+                // TODO : change reaction by reporting error and let through.
                 throw new moodle_exception("Bad target course id for product");
             }
         }

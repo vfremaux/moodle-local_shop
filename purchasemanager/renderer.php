@@ -113,7 +113,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->statusclass = $statusclass;
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
-                $producttpl->selcheckbox = '<input type="checkbox" id="" name="productids" value="'.$productinstance->id.'" />';
+                $producttpl->selcheckbox = '<input type="checkbox" id="purchase-select-'.$productinstance->id.'" class="purchase-selects" name="productids" value="'.$productinstance->id.'" />';
             }
             $producttpl->id = $productinstance->id;
             $producttpl->thumburl = $product->get_thumb_url();
@@ -429,5 +429,11 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $addurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
             return $this->output->single_button($addurl, get_string('newproduct', 'local_shop'));
         }
+    }
+
+    public function selection_tools() {
+        $template = new StdClass;
+
+        return $this->output->render_from_template('local_shop/purchasemanager_selection_tools', $template);
     }
 }

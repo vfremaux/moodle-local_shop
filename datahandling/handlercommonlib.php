@@ -117,8 +117,8 @@ function shop_register_customer($data, &$errorstatus) {
 
 /**
  * This enrols a customer user account into the designated customer support course as a student.
+ * @param int $supportcoursename the Moodle shortname of the course used for customer support
  * @param object $customer a customer record
- * @param int $courseid the Moodle id of the course used for customer support
  * @param string $transactionid the unique id of the transaction (for tracing puropse)
  */
 function shop_register_customer_support($supportcoursename, $customeruser, $transactionid) {
@@ -158,6 +158,49 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
         shop_trace("[{$transactionid}] Production Process : Customer support enrolled.");
     } catch (Exception $exc) {
         shop_trace("[{$transactionid}] Production Process Error : Customer support enrol failed.");
+        return false;
+    }
+    return true;
+}
+
+/**
+ * This enrols a user account into the designated extra support courses as a student for the 
+ * product validity time range.
+ * @param int $supportcoursename the Moodle shortname of the course used for extra support
+ * @param object $customer a customer record
+ * @param string $transactionid the unique id of the transaction (for tracing puropse)
+ * @param string $enrolendtime a unix timestamp for ending enrolment.
+ */
+function shop_register_extra_support($supportcoursename, $customeruser, $transactionid, $enrolendtime) {
+    global $DB;
+
+    $role = $DB->get_record('role', array('shortname' => 'student'));
+
+    if (empty($role)) {
+        throw new moodle_exception('Legacy Role student may have been deleted from this moodle. This should not happen.');
+    }
+
+    $now = time();
+
+    if (!$course = $DB->get_record('course', array('shortname' => $supportcoursename))) {
+        shop_trace("[{$transactionid}] Production Process Error : Extra support course does not exist.");
+        return false;
+    }
+
+    $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+    if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
+        $enrol = reset($enrols);
+        $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
+    } else {
+        shop_trace("[{$transactionid}] Production Process Error : Extra support enrol failed // no enrol plugin.");
+        return false;
+    }
+
+    try {
+        $enrolplugin->enrol_user($enrol, $customeruser->id, $role->id, $now, $enrolendtime, ENROL_USER_ACTIVE);
+        shop_trace("[{$transactionid}] Production Process : Extra support enrolled.");
+    } catch (Exception $exc) {
+        shop_trace("[{$transactionid}] Production Process Error : Extra support enrol failed.");
         return false;
     }
     return true;

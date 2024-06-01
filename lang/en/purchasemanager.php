@@ -15,6 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addproductinstance'] = 'Add product instance';
+$string['alignstartdate'] = 'Align start date';
+$string['alignenddate'] = 'Align end date';
+$string['alignhost'] = 'Align host';
+$string['alignotherhosts'] = 'Align other hosts';
+$string['alignmetadata'] = 'Align other metadata';
 $string['catalogitem'] = 'Catalog entry';
 $string['contexttype'] = 'Type';
 $string['currentbill'] = 'Order';
@@ -25,6 +30,9 @@ $string['validity'] = 'Validity';
 $string['enddate'] = 'to';
 $string['enrol'] = 'Enrolment';
 $string['extradata'] = 'Production extra metadata';
+$string['sel'] = 'Select ';
+$string['selall'] = 'all';
+$string['selnone'] = 'none';
 $string['generatereference'] = 'Generate a reference';
 $string['hasnoproductinstance'] = 'Has NO registered product instance';
 $string['hasproductinstance'] = 'Has a registered product instance';
@@ -45,6 +53,7 @@ $string['registered_product'] = 'Registered';
 $string['unassigned'] = '--- Unassigned ---';
 $string['quicksearch'] = 'Quick filter (code and ref): ';
 $string['quicksearchhelp'] = 'Change filter value and click outside the input.';
+$string['withselection'] = 'With the checked items: ';
 
 $string['allstates'] = '--- All states ---';
 $string['productstate'] = 'Product state';

@@ -288,7 +288,7 @@ class Product extends ShopObject {
             $ci = new CatalogItem($this->record->catalogitemid);
             return $ci->get_handler_info($method, $type);
         }
-        debug_trace("Product get handler info : could not identify CatalogItem ", TRACE_DEBUG);
+        shop_debug_trace("Product get handler info : could not identify CatalogItem ", SHOP_TRACE_DEBUG);
         return [null, null];
     }
 

@@ -107,9 +107,9 @@ if (!is_file($path_bin) || !is_executable($path_bin)) {
  */
 $parmstring = escapeshellcmd(implode(' ', $parms));
 $cmd = "{$path_bin} {$parmstring}";
-debug_trace($cmd);
+shop_debug_trace($cmd);
 $result = exec("{$path_bin} $parmstring");
-debug_trace("Result : $result");
+shop_debug_trace("Result : $result");
 
 
 /*

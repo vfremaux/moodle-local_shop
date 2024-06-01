@@ -35,6 +35,7 @@ $string['shop:usenoninstantpayments'] = 'Can use non instant payment methods';
 $string['ABANDONNED'] = 'Exhausted';
 $string['AVAILABLE'] = 'Available';
 $string['AVAILABLEINTERNAL'] = 'Avail. (internal)';
+$string['ASCOMPLEMENT'] = 'Avail. (existing product complement)';
 $string['CANCELLED'] = 'Cancelled';
 $string['COMPLETE'] = 'Complete (processed)';
 $string['DELAYED'] = 'Confirmed paiment in progress';
