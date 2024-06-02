@@ -3,20 +3,21 @@
 
 
 <!-- local_shop/purchasemanager_selection_tools -->
-<select id="purchase-selection-tools">
-    <option name="alignstartdate" value="{{#str}}alignstartdate, local_shop{{/str}}" />
-    <option name="alignenddate" value="{{#str}}alignenddate, local_shop{{/str}}" />
-    <option name="alignenddate" value="{{#str}}alignenddate, local_shop{{/str}}" />
-    <option name="alignhost" value="{{#str}}alignhost, local_shop{{/str}}" />
-    <option name="alignotherhosts" value="{{#str}}alignotherhosts, local_shop{{/str}}" />
-    <option name="alignmetadata" value="{{#str}}alignmetadata, local_shop{{/str}}" />
+<select id="purchase-selection-tools" disabled="disabled">
+    <option value="alignstartdate" >{{#str}}alignstartdate, local_shop{{/str}}</option>
+    <option value="alignenddate" >{{#str}}alignenddate, local_shop{{/str}}</option>
+    <option value="alignenddate" value="{{#str}}alignenddate, local_shop{{/str}}</option>
+    <option value="alignhost" >{{#str}}alignhost, local_shop{{/str}}</option>
+    <option value="alignotherhosts" >{{#str}}alignotherhosts, local_shop{{/str}}</option>
+    <option value="alignmetadata" >{{#str}}alignmetadata, local_shop{{/str}}</option>
+    <option value="softdelete" >{{#str}}softdelete, local_shop{{/str}}</option>
 </select>
 <!-- /local_shop/purchasemanager_selection_tools -->
 {{#js}}
 require(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
     var purchasemanager_selection = {
         init: function() {
-            ${'#purchase-selection-tools'}.bind('change', this.launch);
+            $('#purchase-selection-tools').bind('change', this.launch);
             log.debug('purchasemanager_selection in-template initialized');
         },
         launch: function(e) {
@@ -31,7 +32,7 @@ require(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
                 set.push($(this).val());
             });
 
-            var url = cfg.wwwroot + '/local/shop/pro/purchase_action.php';
+            var url = cfg.wwwroot + '/local/shop/pro/purchasemanager/purchase_actions.php';
             url += '?view=viewAllProductInstances';
             url += '&customer=' + customerid;
             url += '&filter=' + quicksearchfilter;

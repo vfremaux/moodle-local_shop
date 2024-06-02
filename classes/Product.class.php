@@ -300,6 +300,10 @@ class Product extends ShopObject {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    public static function get_instances_list($field, array $values, $order = '', $fields = '*') {
+        return parent::_get_instances_list(self::$table, $field, $values, $order, $fields);
+    }
+
     /**
      * Get a filtered set of product instances, using filters on local_shop_cataolgitem, local_shop_product, local_shop_billitem
      * (optional).
