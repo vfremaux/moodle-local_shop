@@ -53,6 +53,8 @@ $string['sel'] = 'Selectionner ';
 $string['selall'] = 'tout';
 $string['selnone'] = 'aucun';
 $string['withselection'] = 'Avec la sélection : ';
+$string['instances'] = 'Sélection : ';
+$string['purchaseaction'] = 'Opération sur les unités de vente';
 
 $string['allstates'] = '--- Tous les états ---';
 $string['productstate'] = 'Etat ';

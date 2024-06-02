@@ -54,6 +54,8 @@ $string['unassigned'] = '--- Unassigned ---';
 $string['quicksearch'] = 'Quick filter (code and ref): ';
 $string['quicksearchhelp'] = 'Change filter value and click outside the input.';
 $string['withselection'] = 'With the checked items: ';
+$string['instances'] = 'Selection: ';
+$string['purchaseaction'] = 'Purchase list action';
 
 $string['allstates'] = '--- All states ---';
 $string['productstate'] = 'Product state';
