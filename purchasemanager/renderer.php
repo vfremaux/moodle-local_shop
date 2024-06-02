@@ -431,8 +431,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         }
     }
 
-    public function selection_tools() {
+    public function selection_tools($customerid) {
         $template = new StdClass;
+        $template->customerid = $customerid;
+        $template->quicksearchfilter = optional_param('quicksearchfilter', '', PARAM_TEXT);
 
         return $this->output->render_from_template('local_shop/purchasemanager_selection_tools', $template);
     }
