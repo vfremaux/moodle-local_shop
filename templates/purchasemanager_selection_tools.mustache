@@ -36,8 +36,8 @@ require(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
             var url = cfg.wwwroot + '/local/shop/pro/purchasemanager/purchase_actions.php';
             url += '?view=viewAllProductInstances';
-            url += '&customer=' + customerid;
-            url += '&filter=' + quicksearchfilter;
+            url += '&customerid=' + customerid;
+            url += '&quicksearchfilter=' + quicksearchfilter;
             url += '&what=' + that.val();
             url += '&set=' + idset.join(',');
 
