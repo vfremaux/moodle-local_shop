@@ -14,18 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace shophandlers_std_registeredproduct\privacy;
-
+/**
+ * @package   local_shop
+ * @category  local
+ * @subpackage shophandlers
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 
-class provider implements \core_privacy\local\metadata\null_provider {
-    /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
-     *
-     * @return  string
-     */
-    public static function get_reason() : string {
-        return 'privacy:metadata';
-    }
-}
+$plugin = new stdclass;
+$plugin->version = 2020111600;
+$plugin->requires = 2014050800;
+$plugin->component = 'shophandlers_std_prorogate';
+$plugin->dependencies = array('local_shop' => 2016022500);

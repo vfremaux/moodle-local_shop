@@ -1,0 +1,57 @@
+
+
+
+
+<!-- local_shop/purchasemanager_selection_tools -->
+<select id="purchase-selection-tools" disabled="disabled" data-customerid="{{customerid}}" data-quicksearchfilter="{{quicksearchfilter}}">
+    <option value="" selected>{{#str}}choosedots{{/str}}</option>
+    <option value="alignstartdate" >{{#str}}alignstartdate, local_shop{{/str}}</option>
+    <option value="alignenddate" >{{#str}}alignenddate, local_shop{{/str}}</option>
+    <option value="alignhost" >{{#str}}alignhost, local_shop{{/str}}</option>
+    <option value="alignotherhosts" >{{#str}}alignotherhosts, local_shop{{/str}}</option>
+    <option value="alignmetadata" >{{#str}}alignmetadata, local_shop{{/str}}</option>
+    <option value="softdelete" >{{#str}}softdelete, local_shop{{/str}}</option>
+</select>
+<!-- /local_shop/purchasemanager_selection_tools -->
+{{#js}}
+require(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
+    var purchasemanager_selection = {
+        init: function() {
+            $('#purchase-selection-tools').bind('change', this.launch);
+            log.debug('purchasemanager_selection in-template initialized');
+        },
+        launch: function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var that = $(this);
+
+            if (!that.val()) {
+               return;
+            }
+
+            var customerid = that.attr('data-customerid');
+            var quicksearchfilter = that.attr('data-quicksearchfilter');
+            var idset = [];
+
+            // Collect checked selectors
+            var jqset = $('.purchase-selects:checked');
+            jqset.each(function () {
+                idset.push($(this).val());
+            });
+
+            var url = cfg.wwwroot + '/local/shop/pro/purchasemanager/purchase_actions.php';
+            url += '?view=viewAllProductInstances';
+            url += '&customerid=' + customerid;
+            url += '&quicksearchfilter=' + quicksearchfilter;
+            url += '&what=' + that.val();
+            url += '&set=' + idset.join(',');
+
+            window.location.href = url;
+        }
+    };
+
+    purchasemanager_selection.init();
+});
+{{/js}}
+
+

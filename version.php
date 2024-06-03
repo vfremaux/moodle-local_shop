@@ -26,16 +26,20 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023041801; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2024053103; // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2020060900; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '3.9.0 (Build 2023041801)';
+$plugin->release = '3.9.0 (Build 2024053103)';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array('auth_ticket' => '2012060400');
+if (function_exists('local_shop_supports_feature') && local_shop_supports_feature() === 'pro') {
+    $plugin->dependencies = array('auth_ticket' => '2012060400', 'local_vfcore' => 2024053100);
+} else {
+    $plugin->dependencies = array('auth_ticket' => '2012060400');
+}
 $plugin->supported = [39, 311];
 
 // Non moodle attributes.
-$plugin->codeincrement = '3.9.0021';
+$plugin->codeincrement = '3.9.0023';
 $plugin->privacy = 'dualrelease';
 $plugin->prolocations = array(
     'datahandling/handlers/std_addtrainingcredits',
@@ -49,6 +53,7 @@ $plugin->prolocations = array(
     'datahandling/handlers/std_setuponecoursesession',
     'datahandling/handlers/std_unlockpdcertificate',
     'datahandling/handlers/std_registeredproduct',
+    'datahandling/handlers/std_prorogate',
     'paymodes/mercanet',
     'paymodes/sherlocks',
     'paymodes/systempay',

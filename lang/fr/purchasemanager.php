@@ -15,6 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['addproductinstance'] = 'Ajouter un produit';
+$string['alignstartdate'] = 'Aligner les dates de début';
+$string['alignenddate'] = 'Aligner les dates de fin';
+$string['alignhost'] = 'Aligner le domaine';
+$string['alignotherhosts'] = 'Aligner les domaines supplémentaires';
+$string['alignmetadata'] = 'Aligner une métadonnée (autres cas)';
 $string['catalogitem'] = 'Entrée de catalogue';
 $string['contexttype'] = 'Type';
 $string['currentbill'] = 'Commande';
@@ -44,6 +49,14 @@ $string['unassigned'] = '--- Non attribué ---';
 $string['registered_product'] = 'Produit enregistré';
 $string['quicksearch'] = 'Filtre rapide (code et ref) : ';
 $string['quicksearchhelp'] = 'Changez la valuer du filtre et cliquez en dehors de la boîte de saisie.';
+$string['sel'] = 'Selectionner ';
+$string['selall'] = 'tout';
+$string['selnone'] = 'aucun';
+$string['withselection'] = 'Avec la sélection : ';
+$string['instances'] = 'Sélection : ';
+$string['purchaseaction'] = 'Opération sur les unités de vente';
+$string['otherhosts'] = 'Domaines supplémentaires';
+$string['host'] = 'Domaine principal';
 
 $string['allstates'] = '--- Tous les états ---';
 $string['productstate'] = 'Etat ';

@@ -32,7 +32,7 @@ function xmldb_local_shop_uninstall() {
     // Remap all teacherowner assignments to editingteacher.
     $sql = "
         UPDATE
-            {role_assignment}
+            {role_assignments}
         SET
             roleid = $editingteacherid
         WHERE
@@ -43,7 +43,7 @@ function xmldb_local_shop_uninstall() {
     // Remap all categoryowner assignments to coursecreator.
     $sql = "
         UPDATE
-            {role_assignment}
+            {role_assignments}
         SET
             roleid = $coursecreatorid
         WHERE

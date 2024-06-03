@@ -150,18 +150,24 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             $coursename = $data->actionparams['coursename'];
             if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course name");
+                // Those hard error cases may stop a full postpay processing.
+                // TODO : change reaction by reporting error and let through.
                 throw new moodle_exception("Bad target course shortname for product");
             }
         } else if (!empty($data->actionparams['courseidnumber'])) {
             $idnumber = $data->actionparams['courseidnumber'];
             if (!$course = $DB->get_record('course', array('idnumber' => $idnumber))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course idnumber");
+                // Those hard error cases may stop a full postpay processing.
+                // TODO : change reaction by reporting error and let through.
                 throw new moodle_exception("Bad target course id for product");
             }
         } else {
             $courseid = $data->actionparams['courseid'];
             if (!$course = $DB->get_record('course', array('shortname' => $courseid))) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE PostPay : failed... Bad course id");
+                // Those hard error cases may stop a full postpay processing.
+                // TODO : change reaction by reporting error and let through.
                 throw new moodle_exception("Bad target course id for product");
             }
         }
@@ -366,7 +372,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * @param string $contexttype type of context to dismount
      * @param integer/string $instanceid identifier of the instance
      */
-    public function delete(&$product) {
+    public function delete($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
@@ -379,7 +385,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
     }
 
-    public function soft_delete(&$product) {
+    public function soft_delete($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
@@ -390,7 +396,25 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
     }
 
-    public function soft_restore(&$product) {
+    /**
+     * Update essentially updates enrolment period against product date changes.
+     * @param local_shop\Product $product
+     */
+    public function update($product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $ue->timestart = $product->startdate;
+                if (!empty($product->enddate)) {
+                    $ue->timeend = $product->enddate;
+                }
+                $DB->update_record('user_enrolments', $ue);
+            }
+        }
+    }
+
+    public function soft_restore($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {

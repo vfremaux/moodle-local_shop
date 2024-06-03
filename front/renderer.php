@@ -488,6 +488,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($template->issetpart) {
             $template->itemtype = 'is-set-part';
         }
+
         $template->isbundlepart = $product->isbundlepart;
         if ($template->isbundlepart) {
             $template->itemtype = 'is-bundle-part';

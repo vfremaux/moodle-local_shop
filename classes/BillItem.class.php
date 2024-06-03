@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A bill item is a single order line.
+ * A bill item is a single order line of a bill/order record.
  *
  * @package     local_shop
  * @category    local
@@ -41,12 +41,29 @@ class BillItem extends ShopObject {
 
     protected static $table = 'local_shop_billitem';
 
+    /**
+     * the BillItem usually belongs to a Bill (or order).
+     * The $bill variable is populated with a full bill reference, or 
+     * a partially rehydrated object.
+     */
     public $bill;
 
+    /**
+     * the BillItem is usually representing a purchase operation related to an 
+     * Item in the shop's Catalog
+     */
     public $catalogitem;
 
+    /**
+     * Production data is a data array coming from internal dynamic calculation
+     * in moodle, before production is performed.
+     */
     protected $productiondata;
 
+    /**
+     * Customer data comes from customer input when activating the purchase workflow.
+     * Some catalogitems may ask the customer to input his own information at purchase time.
+     */
     protected $customerdata;
 
     /**
@@ -54,7 +71,10 @@ class BillItem extends ShopObject {
      */
     protected $nosave;
 
-    public $actionparams; // Parameters decoded from handler params.
+    /**
+     * Action params come from the handler's parameter in the catalogitem definition.
+     */
+    public $actionparams;
 
     public function __construct($idorrec, $light = false, $internalrefs = [], $ordering = -1, $nosave = false) {
         global $DB;
@@ -193,6 +213,12 @@ class BillItem extends ShopObject {
         }
     }
 
+	/**
+	 * List control. Moves a bill item in ordering.
+	 * @param $dir the ordering shift
+	 * @param $z the starting point.
+	 * @TODO seems a bit simplist. Review using treelib.
+	 */
     public function move($dir, $z) {
         global $DB;
 
@@ -200,18 +226,21 @@ class BillItem extends ShopObject {
             UPDATE
                 {local_shop_billitem}
             SET
-                ordering = ordering + $dir
+                ordering = ordering + ?
             WHERE
                 ordering = ? AND
                 billid = ?
         ";
-        $DB->execute($sql, array($z, $this->id));
+        $DB->execute($sql, [$dir, $z, $this->id]);
     }
 
     public function get_catalog_item() {
         return $this->catalogitem;
     }
 
+	/**
+	 * Get the quantity indexed unit price.
+	 */
     public function get_price() {
         if (!empty($this->catalogitem)) {
             return $this->catalogitem->get_price($this->record->quantity);
@@ -220,6 +249,9 @@ class BillItem extends ShopObject {
         }
     }
 
+	/**
+	 * Get the quantity indexed unit price with tax applied.
+	 */
     public function get_taxed_price() {
         global $DB;
         static $taxcache;
@@ -259,12 +291,18 @@ class BillItem extends ShopObject {
         }
     }
 
+	/**
+	 * Get tax amount on unit product.
+	 */
     public function get_tax_amount() {
         $taxed = $this->get_taxed_price();
         $untaxed = $this->get_price();
         return $taxed - $untaxed;
     }
 
+	/**
+	 * Get tax amount on order with quantity factor.
+	 */
     public function get_totaltax() {
         return $this->get_tax_amount() * $this->record->quantity;
     }

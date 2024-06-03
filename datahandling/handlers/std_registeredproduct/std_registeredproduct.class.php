@@ -118,6 +118,15 @@ class shop_handler_std_registeredproduct extends shop_handler {
             shop_register_customer_support($data->actionparams['customersupport'], $data->customeruser, $data->transactionid);
         }
 
+        // Add user to extra support courses on real purchase.
+        if (!empty($data->actionparams['extrasupport'])) {
+            shop_trace("[{$data->transactionid}] STD_REGISTERED_PRODUCT Postpay : Registering Extra Support");
+            $courses = explode(',', $data->actionparams['extrasupport']);
+            foreach($courses as $cshort) {
+                shop_register_extra_support($cshort, $data->customeruser, $data->transactionid);
+            }
+        }
+
         $e = new StdClass;
         $e->username = $data->bill->customeruser->username;
         $e->fullname = '';
@@ -138,6 +147,22 @@ class shop_handler_std_registeredproduct extends shop_handler {
     public function is_available(&$catalogitem) {
         global $USER, $DB;
         return true;
+    }
+
+    public function delete($product) {
+        // @TODO : Remove enrols to extrasupport;
+    }
+
+    public function soft_delete($product) {
+        // @TODO : Disable enrols to extrasupport;
+    }
+
+    public function soft_restore($product) {
+        // @TODO : Disable enrols to extrasupport;
+    }
+
+    public function update($product) {
+        // @TODO : Realign enrol dates to extrasupport;
     }
 
     function unit_test($data, &$errors, &$warnings, &$messages) {

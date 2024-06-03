@@ -128,6 +128,12 @@ function xmldb_local_shop_install() {
         array('element' => 'bill',
               'fromstate' => 'REFUSED',
               'tostate' => 'SOLDOUT'),
+        array('element' => 'bill',
+              'fromstate' => 'FAILED',
+              'tostate' => 'CANCELLED'),
+        array('element' => 'bill',
+              'fromstate' => 'FAILED',
+              'tostate' => 'SOLDOUT'),
     );
 
     foreach ($flowcodes as $fc) {

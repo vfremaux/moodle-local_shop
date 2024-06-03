@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace shophandlers_std_registeredproduct\privacy;
+namespace shophandlers_std_prorogate\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 

@@ -203,11 +203,11 @@ class shop_handler_std_addquizattempts extends shop_handler {
 
         // Add user attempts to quiz.
         $quiznames = [];
-        debug_trace($quizzes, TRACE_DEBUG_FINE);
+        shop_debug_trace($quizzes, SHOP_TRACE_DEBUG_FINE);
         if (!empty($quizzes)) {
             foreach ($quizzes as $q) {
                 // Loggedin user id is assuming purchasing for himself.
-                debug_trace($data->actionparams);
+                shop_debug_trace($data->actionparams);
                 require(\accessrule_usernumattempts\xapi::add_attempts($USER->id, $q->id, $data->actionparams['attemptsamount']));
             }
         }
