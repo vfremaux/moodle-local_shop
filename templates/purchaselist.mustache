@@ -74,9 +74,11 @@ require(['jquery', 'core/log'], function($, log) {
         },
         select_all: function() {
             $('.purchase-selects').prop('checked', true);
+            purchasemanager_purchaselist.check_list_state();
         },
         select_none: function() {
             $('.purchase-selects').prop('checked', null);
+            purchasemanager_purchaselist.check_list_state();
         },
         check_list_state: function() {
             var selchecked = $('.purchase-selects:checked');

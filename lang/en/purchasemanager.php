@@ -56,6 +56,8 @@ $string['quicksearchhelp'] = 'Change filter value and click outside the input.';
 $string['withselection'] = 'With the checked items: ';
 $string['instances'] = 'Selection: ';
 $string['purchaseaction'] = 'Purchase list action';
+$string['otherhosts'] = 'Other hosts';
+$string['host'] = 'Main host';
 
 $string['allstates'] = '--- All states ---';
 $string['productstate'] = 'Product state';

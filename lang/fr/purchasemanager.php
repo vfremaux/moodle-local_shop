@@ -55,6 +55,8 @@ $string['selnone'] = 'aucun';
 $string['withselection'] = 'Avec la sélection : ';
 $string['instances'] = 'Sélection : ';
 $string['purchaseaction'] = 'Opération sur les unités de vente';
+$string['otherhosts'] = 'Domaines supplémentaires';
+$string['host'] = 'Domaine principal';
 
 $string['allstates'] = '--- Tous les états ---';
 $string['productstate'] = 'Etat ';

@@ -277,14 +277,29 @@ class ShopObject {
     /**
      * Get instances of the object. If some filtering is needed, override
      * this method providing a filter as input.
-     * @param array $filter an array of specialized field filters
-     * @return array of object instances keyed by primary id.
+     * @param string $table the effective class db table
+     * @param string $field the list driving field
+     * @param array $values an array of values the filed must match
+     * @param string $order order clause
+     * @param string $fields fields to extract
+     * @param bool $light do we want lightweight instances
+     * @param array $internarefs
+     * @return array of key/name pairs by primary id.
      */
-    static protected function _get_instances_list($table, $field, array $values, $order = '', $fields = '*') {
+    static protected function _get_instances_list($table, $field, array $values, $order = '', $fields = '*',
+                                                                            $light = false, $internalrefs = []) {
         global $DB;
 
         $listrecords = $DB->get_records_list($table, $field, $values, $order, $fields);
-        return $listrecords;
+
+        $instances = [];
+        if ($listrecords) {
+            $class = get_called_class();
+            foreach ($listrecords as $rec) {
+                $instances[$rec->id] = new $class($rec, $light, $internalrefs);
+            }
+        }
+        return $instances;
     }
 
     protected function export($level = 0) {

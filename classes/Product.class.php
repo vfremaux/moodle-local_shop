@@ -161,6 +161,10 @@ class Product extends ShopObject {
         parent::delete();
     }
 
+    /**
+     * Logically deletes the product instance by disabling its effects. But no data is
+     * removed so it can be revived easily.
+     */
     public function soft_delete() {
         $this->record->deleted = 1;
         $this->save(true);
@@ -174,13 +178,16 @@ class Product extends ShopObject {
 
         // Record an event.
         $productevent = new ProductEvent(null);
-        $productevent->productid = $product->id;
-        $productevent->billitemid = 0;
+        $productevent->productid = $this->id;
+        $productevent->billitemid = $this->currentbillitemid;
         $productevent->datecreated = $now = time();
         $productevent->eventtype = 'delete';
         $productevent->save();
     }
 
+    /**
+     * Logically restores the product instance's behaviour.
+     */
     public function soft_restore() {
         $this->record->deleted = 0;
         $this->save(true);
@@ -194,10 +201,32 @@ class Product extends ShopObject {
 
         // Record an event.
         $productevent = new ProductEvent(null);
-        $productevent->productid = $product->id;
-        $productevent->billitemid = 0;
+        $productevent->productid = $this->id;
+        $productevent->billitemid = $this->currentbillitemid;
         $productevent->datecreated = $now = time();
         $productevent->eventtype = 'restore';
+        $productevent->save();
+    }
+
+    /**
+     * Saves the state, and operates anything that needs to be done when some data of the product changes.
+     */
+    public function update() {
+        $this->save(true);
+
+        // Restores product effect in Moodle using soft_restore method of the attached product handler.
+        list($handler, $method) = $this->get_handler_info(null);
+
+        if (!is_null($handler)) {
+            $handler->update($this);
+        }
+
+        // Record an event.
+        $productevent = new ProductEvent(null);
+        $productevent->productid = $this->id;
+        $productevent->billitemid = $this->currentbillitemid;
+        $productevent->datecreated = $now = time();
+        $productevent->eventtype = 'update';
         $productevent->save();
     }
 

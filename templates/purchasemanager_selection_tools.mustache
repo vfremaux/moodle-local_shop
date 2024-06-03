@@ -4,9 +4,9 @@
 
 <!-- local_shop/purchasemanager_selection_tools -->
 <select id="purchase-selection-tools" disabled="disabled" data-customerid="{{customerid}}" data-quicksearchfilter="{{quicksearchfilter}}">
+    <option value="" selected>{{#str}}choosedots{{/str}}</option>
     <option value="alignstartdate" >{{#str}}alignstartdate, local_shop{{/str}}</option>
     <option value="alignenddate" >{{#str}}alignenddate, local_shop{{/str}}</option>
-    <option value="alignenddate" value="{{#str}}alignenddate, local_shop{{/str}}</option>
     <option value="alignhost" >{{#str}}alignhost, local_shop{{/str}}</option>
     <option value="alignotherhosts" >{{#str}}alignotherhosts, local_shop{{/str}}</option>
     <option value="alignmetadata" >{{#str}}alignmetadata, local_shop{{/str}}</option>
@@ -24,6 +24,11 @@ require(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
             e.preventDefault();
             e.stopPropagation();
             var that = $(this);
+
+            if (!that.val()) {
+               return;
+            }
+
             var customerid = that.attr('data-customerid');
             var quicksearchfilter = that.attr('data-quicksearchfilter');
             var idset = [];

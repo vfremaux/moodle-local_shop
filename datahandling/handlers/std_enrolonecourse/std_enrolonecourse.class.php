@@ -372,7 +372,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * @param string $contexttype type of context to dismount
      * @param integer/string $instanceid identifier of the instance
      */
-    public function delete(&$product) {
+    public function delete($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
@@ -385,7 +385,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
     }
 
-    public function soft_delete(&$product) {
+    public function soft_delete($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
@@ -396,7 +396,25 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         }
     }
 
-    public function soft_restore(&$product) {
+    /**
+     * Update essentially updates enrolment period against product date changes.
+     * @param local_shop\Product $product
+     */
+    public function update($product) {
+        global $DB;
+
+        if ($product->contexttype == 'userenrol') {
+            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                $ue->timestart = $product->startdate;
+                if (!empty($product->enddate)) {
+                    $ue->timeend = $product->enddate;
+                }
+                $DB->update_record('user_enrolments', $ue);
+            }
+        }
+    }
+
+    public function soft_restore($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {

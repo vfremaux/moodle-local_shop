@@ -331,7 +331,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
      * @param string $contexttype type of context to dismount
      * @param integer/string $instanceid identifier of the instance
      */
-    public function delete(&$product) {
+    public function delete($product) {
         global $DB;
 
         // Get all products of type userenrol in the same instanceid context.
@@ -360,7 +360,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
         }
     }
 
-    public function soft_delete(&$product) {
+    public function soft_delete($product) {
         global $DB;
 
         // Get all products of type userenrol in the same instanceid context.
@@ -386,7 +386,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
     }
 
-    public function soft_restore(&$product) {
+    public function soft_restore($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {

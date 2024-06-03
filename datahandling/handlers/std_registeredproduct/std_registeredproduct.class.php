@@ -149,6 +149,22 @@ class shop_handler_std_registeredproduct extends shop_handler {
         return true;
     }
 
+    public function delete($product) {
+        // @TODO : Remove enrols to extrasupport;
+    }
+
+    public function soft_delete($product) {
+        // @TODO : Disable enrols to extrasupport;
+    }
+
+    public function soft_restore($product) {
+        // @TODO : Disable enrols to extrasupport;
+    }
+
+    public function update($product) {
+        // @TODO : Realign enrol dates to extrasupport;
+    }
+
     function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 

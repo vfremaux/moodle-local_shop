@@ -185,6 +185,16 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         return true;
     }
 
+    public function soft_delete($product) {
+        // @TODO : Relock issue instance;
+    }
+
+    public function soft_restore($product) {
+        // @TODO : Unlock issu instance back;
+    }
+
+    // No updaate.
+
     function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
