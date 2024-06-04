@@ -21,7 +21,7 @@
     * none
 
 }}
-<!-- purchaselist -->
+<!-- local_shop/purchaselist -->
 <form name="selection" action="{{{formurl}}}" method="get">
 <input type="hidden" name="view" value="viewAllProductInstances" />
 <input type="hidden" name="what" value="" />
@@ -30,7 +30,7 @@
 <table width="100%" class="shoptable">
 
     <tr class="shop-products-caption" valign="top">
-        <th width="2%" class="header c0">{{#str}}sel, local_shop{{/str}}</th>
+        <th width="2%" class="header c0">{{#str}}sel, local_shop{{/str}} <span id="purchase-select-all">{{#str}}selall, local_shop{{/str}} </span><span id="purchase-select-none">{{#str}}selnone, local_shop{{/str}}</span></th>
         <th width="6%" class="header c1"></th>
         <th width="20%" class="header c2">{{#str}}code, local_shop{{/str}}</th>
         <th width="20%"class="header c3">{{#str}}reference, local_shop{{/str}}</th>
@@ -60,4 +60,35 @@
     {{/products}}
 </table>
 </form>
-<!-- /purchaselist -->
+<!-- /local_shop/purchaselist -->
+
+{{#js}}
+require(['jquery', 'core/log'], function($, log) {
+    var purchasemanager_purchaselist = {
+        init: function() {
+            $('#purchase-select-all').bind('click', this.select_all);
+            $('#purchase-select-none').bind('click', this.select_none);
+            $('.purchase-selects').bind('click', this.check_list_state);
+            this.check_list_state();
+            log.debug('purchaselist in-template initialized');
+        },
+        select_all: function() {
+            $('.purchase-selects').prop('checked', true);
+            purchasemanager_purchaselist.check_list_state();
+        },
+        select_none: function() {
+            $('.purchase-selects').prop('checked', null);
+            purchasemanager_purchaselist.check_list_state();
+        },
+        check_list_state: function() {
+            var selchecked = $('.purchase-selects:checked');
+            if (selchecked.length > 0) {
+                $('#purchase-selection-tools').prop('disabled', null);
+            } else {
+                $('#purchase-selection-tools').prop('disabled', 'disabled');
+            }
+        }
+    };
+    purchasemanager_purchaselist.init();
+});
+{{/js}}

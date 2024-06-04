@@ -42,7 +42,6 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
      * @param array $viewparams contextual query params from the view.
      */
     public function productinstance_admin_form(&$productinstances, $viewparams = array(), $customerid, $shopowner) {
-        global $OUTPUT, $CFG;
 
         $this->check_context();
 
@@ -77,10 +76,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             if ($productinstance->currentbillitemid) {
                 if (\local_shop\ShopObject::exists($productinstance->currentbillitemid, 'billitem')) {
                     $currentbillitem = new BillItem($productinstance->currentbillitemid, false, []);
-                    $pix = $OUTPUT->pix_icon('bill', '', 'local_shop');
-                    $params = array('view' => 'viewBill', 'billid' => $currentbillitem->billid);
+                    $pix = $this->output->pix_icon('bill', '', 'local_shop');
+                    $params = ['view' => 'viewBill', 'billid' => $currentbillitem->billid];
                     $linkurl = new moodle_url('/local/shop/bills/view.php', $params);
-                    $attrs = array('target' => 'blank');
+                    $attrs = ['target' => 'blank'];
                     $producttpl->currentbilllink = html_writer::link($linkurl, $pix, $attrs);
                 }
             }
@@ -94,7 +93,8 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                 'running' => 0
             ];
             $producttpl->statusclass = '';
-            $producturl = new moodle_url('/local/shop/products/view.php', array('view' => 'viewProductDetail', 'itemid' => $product->id));
+            $params = ['view' => 'viewProductDetail', 'itemid' => $product->id];
+            $producturl = new moodle_url('/local/shop/products/view.php', $params);
             $producttpl->code = '<a href="'.$producturl.'">'.$product->code.'</a>';
             $producttpl->designation = format_string($product->name);
             $producttpl->reference = $productinstance->reference;
@@ -113,7 +113,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->statusclass = $statusclass;
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
-                $producttpl->selcheckbox = '<input type="checkbox" id="" name="productids" value="'.$productinstance->id.'" />';
+                $producttpl->selcheckbox = '<input type="checkbox" id="purchase-select-'.$productinstance->id.'" class="purchase-selects" name="productids" value="'.$productinstance->id.'" />';
             }
             $producttpl->id = $productinstance->id;
             $producttpl->thumburl = $product->get_thumb_url();
@@ -167,38 +167,45 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         return $statusclass;
     }
 
+    /**
+     * Builds the command set.
+     * @param object $productinstance
+     * @param array $viewparams
+     */
     protected function get_product_commands($productinstance, $viewparams) {
-        global $OUTPUT;
 
         $commands = '';
 
         if (has_capability('local/shop:salesadmin', context_system::instance())) {
-            $pix = $OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle');
-            $params = array('what' => 'delete',
-                            'productids[]' => $productinstance->id,
-                            'sesskey' => sesskey());
-                            $params = array_merge($params, $viewparams);
-            $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-            $commands .= '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
+            if ($productinstance->deleted) {
+                // Only delete soft deleted products.
+                $pix = $this->output->pix_icon('t/delete', get_string('delete'), 'moodle');
+                $params = ['what' => 'delete',
+                           'set[]' => $productinstance->id,
+                           'sesskey' => sesskey()];
+                           $params = array_merge($params, $viewparams);
+                $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+                $commands .= '<a href="'.$deleteurl.'" title="'.get_string('delete').'">'.$pix.'</a>';
+            }
 
             if ($productinstance->deleted) {
                 $title = get_string('softrestore', 'local_shop');
-                $pix = $OUTPUT->pix_icon('t/stop', $title, 'moodle');
+                $pix = $this->output->pix_icon('t/go', $title, 'moodle');
             } else {
                 $title = get_string('softdelete', 'local_shop');
-                $pix = $OUTPUT->pix_icon('t/go', $title, 'moodle');
+                $pix = $this->output->pix_icon('t/stop', $title, 'moodle');
             }
-            $params = array('what' => 'softdelete',
-                            'productids[]' => $productinstance->id,
-                            'sesskey' => sesskey());
+            $params = ['what' => 'softdelete',
+                            'set[]' => $productinstance->id,
+                            'sesskey' => sesskey()];
                             $params = array_merge($params, $viewparams);
             $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
             $commands .= '&nbsp;<a href="'.$deleteurl.'" title="'.$title.'">'.$pix.'</a>';
 
             if (local_shop_supports_feature('products/editable')) {
-                $pix = $OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle');
-                $params = array('instanceid' => $productinstance->id,
-                                'sesskey' => sesskey());
+                $pix = $this->output->pix_icon('t/edit', get_string('edit'), 'moodle');
+                $params = ['instanceid' => $productinstance->id,
+                                'sesskey' => sesskey()];
                 $linkurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
                 $commands .= '&nbsp;<a href="'.$linkurl.'">'.$pix.'</a>';
             }
@@ -251,7 +258,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
 
-        $params = array(
+        $params = [
             'view' => 'viewAllProductInstances',
             'dir' => $dir,
             'order' => $sortorder,
@@ -259,7 +266,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             'customerid' => $customerid,
             'shopid' => $shopid,
             'quicksearchfilter' => $quicksearchfilter
-        );
+        ];
 
         $url = new moodle_url('/local/shop/purchasemanager/view.php', $params);
         $url->remove_params('shopid');
@@ -291,7 +298,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
      * Provides a selector for filtering context types
      */
     protected function contexttypes($current, $url) {
-        global $OUTPUT, $DB;
+        global $DB;
 
         $sql = "
             SELECT DISTINCT
@@ -303,13 +310,13 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        $types = array('' => get_string('alltypes', 'local_shop'));
+        $types = ['' => get_string('alltypes', 'local_shop')];
         foreach (array_keys($typesarr) as $type) {
             $types[$type] = get_string($type, 'local_shop');
         }
 
         $attrs['label'] = get_string('contexttype', 'local_shop').': ';
-        $str .= $OUTPUT->single_select($url, 'contexttype', $types, $current, null, null, $attrs);
+        $str .= $this->output->single_select($url, 'contexttype', $types, $current, null, null, $attrs);
 
         return $str;
     }
@@ -351,13 +358,12 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
      *
      */
     public function search_form($blockinstance, $unitcount) {
-        global $OUTPUT;
 
         try {
             $outputclass = 'productinstances_search_form';
             shop_load_output_class($outputclass);
             $tpldata = new \local_shop\output\productinstances_search_form($blockinstance, $unitcount);
-            $template = $tpldata->export_for_template($OUTPUT);
+            $template = $tpldata->export_for_template($this->output);
             return $this->output->render_from_template('local_shop/productinstances_search_form', $template);
         } catch (Exception $e) {
             throw new moodle_exception("Missing output class $outputclass");
@@ -429,5 +435,13 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $addurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
             return $this->output->single_button($addurl, get_string('newproduct', 'local_shop'));
         }
+    }
+
+    public function selection_tools($customerid) {
+        $template = new StdClass;
+        $template->customerid = $customerid;
+        $template->quicksearchfilter = optional_param('quicksearchfilter', '', PARAM_TEXT);
+
+        return $this->output->render_from_template('local_shop/purchasemanager_selection_tools', $template);
     }
 }

@@ -104,6 +104,8 @@ if (count(array_keys($productinstances)) == 0) {
     echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
 } else {
     echo $renderer->productinstance_admin_form($productinstances, $viewparams, $customerid, $shopowner);
+    echo get_string('withselection', 'local_shop');
+    echo $renderer->selection_tools($customerid);
 }
 
 echo '<br/>';
