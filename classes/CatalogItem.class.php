@@ -82,7 +82,7 @@ class CatalogItem extends ShopObject {
 
             $this->thecatalog = new Catalog($this->catalogid, false);
             if ($this->isset) {
-                $this->elements = self::get_instances(array('catalogid' => $this->catalogid, 'setid' => $this->id), 'code');
+                $this->elements = self::get_instances(['catalogid' => $this->catalogid, 'setid' => $this->id], 'code');
                 if (!empty($this->elements)) {
                     foreach ($this->elements as $elmid => $elm) {
                         $this->elements[$elmid]->catalog = $this->thecatalog;
@@ -231,7 +231,7 @@ class CatalogItem extends ShopObject {
 
     /**
      * Searches a catalogitem instance that matches a idnumber 
-     * @param string $idnumber The catalogiutem idnumber, should be unique if defined.
+     * @param string $idnumber The catalogitem idnumber, should be unique if defined. Matches as prefix.
      * @param bool $equals If true, idnumber must equal the input, elsewhere, admits containing the input.
      * @return an array of CatalogItems objects.
      */
@@ -462,7 +462,7 @@ class CatalogItem extends ShopObject {
 
         if (!empty($this->isset)) {
             // Bundle or set.
-            debug_trace('Catalog item get handler info : Is a set or a bundle. No handler', TRACE_DEBUG);
+            shop_debug_trace('Catalog item get handler info : Is a set or a bundle. No handler', SHOP_TRACE_DEBUG);
             return [null,null];
         }
 
@@ -474,7 +474,7 @@ class CatalogItem extends ShopObject {
 
             $hashandler = $this->enablehandler;
             if (empty($hashandler)) {
-                debug_trace('Catalog item get handler info : Has no handler declared', TRACE_DEBUG);
+                shop_debug_trace('Catalog item get handler info : Has no handler declared', SHOP_TRACE_DEBUG);
                 return [null, null];
             }
 
@@ -493,7 +493,7 @@ class CatalogItem extends ShopObject {
             if (is_object($handler)) {
                 $classname = get_class($handler);
             } else {
-                debug_trace('Catalog item get handler info : No handler found', TRACE_DEBUG);
+                shop_debug_trace('Catalog item get handler info : No handler found', SHOP_TRACE_DEBUG);
                 return [null, null];
             }
         }
@@ -508,7 +508,7 @@ class CatalogItem extends ShopObject {
                 if ($type == 'postprod') {
                     throw new moodle_exception(get_string('errorunimplementedhandlermethod', 'local_shop', $methodname));
                 } else {
-                    debug_trace('Catalog item get handler info : Info type not yet supported', TRACE_DEBUG);
+                    shop_debug_trace('Catalog item get handler info : Info type not yet supported', SHOP_TRACE_DEBUG);
                     return [null, null];
                 }
             }
@@ -619,12 +619,12 @@ class CatalogItem extends ShopObject {
 
         if (!$this->isset) {
             // Unlink self from set or bundle.
-            $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $this->id));
+            $DB->set_field('local_shop_catalogitem', 'setid', 0, ['id' => $this->id]);
         } else {
             // Unlink all linked elements.
             if (!empty($this->elements)) {
                 foreach ($this->elements as $ci) {
-                    $DB->set_field('local_shop_catalogitem', 'setid', 0, array('id' => $ci->id));
+                    $DB->set_field('local_shop_catalogitem', 'setid', 0, ['id' => $ci->id]);
                 }
             }
         }
@@ -785,10 +785,10 @@ class CatalogItem extends ShopObject {
             $this->record->setid = $inset; // Should give the new set.
         }
 
-        $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
+        $params = ['catalogid' => $this->catalogid, 'code' => $this->record->code];
         while ($DB->record_exists('local_shop_catalogitem', $params)) {
             $this->record->code .= '1';
-            $params = array('catalogid' => $this->catalogid, 'code' => $this->record->code);
+            $params = ['catalogid' => $this->catalogid, 'code' => $this->record->code];
         }
 
         $this->record->shortname = strtolower($this->record->code);
@@ -799,7 +799,7 @@ class CatalogItem extends ShopObject {
         // Clone all attached files.
         $fs = get_file_storage();
         $context = \context_system::instance();
-        $files = $DB->get_records('files', array('contextid' => $context->id, 'component' => 'local_shop', 'itemid' => $oldid));
+        $files = $DB->get_records('files', ['contextid' => $context->id, 'component' => 'local_shop', 'itemid' => $oldid]);
         foreach ($files as $f) {
             if ($f->filename == '.') {
                 continue; // Discard directories.
@@ -865,11 +865,11 @@ class CatalogItem extends ShopObject {
         return parent::_count(self::$table, $filter);
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    public static function get_instances_menu($filter = array(), $order = '') {
+    public static function get_instances_menu($filter = [], $order = '') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(code, ' ', name)");
     }
 

@@ -113,7 +113,25 @@ abstract class shop_handler {
         return;
     }
 
-    public function delete(&$product) {
+    public function delete($product) {
+        // Do nothing.
+        return;
+    }
+
+    public function soft_delete($product) {
+        // Do nothing.
+        return;
+    }
+
+    public function soft_restore($product) {
+        // Do nothing.
+        return;
+    }
+
+    /**
+     * what should happen when product instance record is updated.
+     */
+    public function update($product) {
         // Do nothing.
         return;
     }

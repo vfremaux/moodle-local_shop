@@ -35,6 +35,7 @@ $string['shop:usenoninstantpayments'] = 'Peut utiliser des méthodes non interac
 $string['ABANDONNED'] = 'Epuisé';
 $string['AVAILABLE'] = 'Disponible';
 $string['AVAILABLEINTERNAL'] = 'Dispo (interne)';
+$string['ASCOMPLEMENT'] = 'Dispo (complément de prduit existant)';
 $string['CANCELLED'] = 'Annulée';
 $string['COMPLETE'] = 'Réalisée';
 $string['DELAYED'] = 'Confirmée paiement attendu';

@@ -36,6 +36,12 @@ use local_shop\Shop;
 use local_shop\Bill;
 use local_shop\CatalogItem;
 
+define('SHOP_TRACE_ERRORS', 1); // Errors should be always traced when trace is on.
+define('SHOP_TRACE_NOTICE', 3); // Notices are important notices in normal execution.
+define('SHOP_TRACE_DEBUG', 5); // Debug are debug time notices that should be burried in debug_fine level when debug is ok.
+define('SHOP_TRACE_DATA', 8); // Data level is when requiring to see data structures content.
+define('SHOP_TRACE_DEBUG_FINE', 10); // Debug fine are control points we want to keep when code is refactored and debug needs to be reactivated.
+
 define('PRODUCT_STANDALONE', 0);
 define('PRODUCT_SET', 1);
 define('PRODUCT_BUNDLE', 2);
@@ -80,14 +86,15 @@ define('SHOP_BILL_CANCELLED', 'CANCELLED'); // An order has been cancelled after
  * gives all product status
  */
 function shop_get_status() {
-    $status = array(
+    $status = [
                 'PREVIEW' => get_string('PREVIEW', 'local_shop'),
                 'AVAILABLE' => get_string('AVAILABLE', 'local_shop'),
                 'AVAILABLEINTERNAL' => get_string('AVAILABLEINTERNAL', 'local_shop'),
+                'ASCOMPLEMENT' => get_string('ASCOMPLEMENT', 'local_shop'),
                 'SUSPENDED' => get_string('SUSPENDED', 'local_shop'),
                 'PROVIDING' => get_string('PROVIDING', 'local_shop'),
                 'ABANDONNED' => get_string('ABANDONNED', 'local_shop')
-    );
+    ];
     return $status;
 }
 
@@ -97,7 +104,7 @@ function shop_get_status() {
 function shop_get_block_instance($instanceid) {
     global $DB;
 
-    if (!$instance = $DB->get_record('block_instances', array('id' => $instanceid))) {
+    if (!$instance = $DB->get_record('block_instances', ['id' => $instanceid])) {
         // Silently forget the block.
         return null;
     }
@@ -136,7 +143,7 @@ function shop_get_standard_handlers_options() {
 function shop_decode_params($catalogitemcode) {
     global $DB;
 
-    $paramstring = $DB->get_field('local_shop_catalogitem', 'handlerparams', array('code' => "$catalogitemcode"));
+    $paramstring = $DB->get_field('local_shop_catalogitem', 'handlerparams', ['code' => "$catalogitemcode"]);
     if (empty($paramstring)) {
         return null;
     }
@@ -179,7 +186,7 @@ function shop_delivery_check_available_backup($courseid) {
  * Make a course backup without user data and stores it in the course
  * backup area.
  */
-function shop_backup_for_template($courseid, $options = array(), &$log = '') {
+function shop_backup_for_template($courseid, $options = [], &$log = '') {
     global $CFG, $USER;
 
     $user = get_admin();
@@ -203,7 +210,7 @@ function shop_backup_for_template($courseid, $options = array(), &$log = '') {
         $users = $bc->get_plan()->get_setting('users')->get_value();
         $anonymised = $bc->get_plan()->get_setting('anonymize')->get_value();
 
-        $settings = array(
+        $settings = [
             'users' => 0,
             'role_assignments' => 0,
             'user_files' => 0,
@@ -215,7 +222,7 @@ function shop_backup_for_template($courseid, $options = array(), &$log = '') {
             'logs' => 0,
             'histories' => 0,
             'filename' => backup_plan_dbops::get_default_backup_filename($format, $type, $id, $users, $anonymised)
-        );
+        ];
 
         foreach ($settings as $setting => $configsetting) {
             if ($bc->get_plan()->setting_exists($setting)) {
@@ -401,7 +408,7 @@ function shop_restore_template($archivefile, $data) {
     $transaction->allow_commit();
 
     // Update names.
-    if ($newcourse = $DB->get_record('course', array('id' => $newcourseid))) {
+    if ($newcourse = $DB->get_record('course', ['id' => $newcourseid])) {
         $newcourse->fullname = $data->fullname;
         $newcourse->shortname = $data->shortname;
         $newcourse->idnumber = $data->idnumber;
@@ -425,7 +432,7 @@ function shop_fast_make_category($catname, $description = '', $catparent = 0) {
     if ($cat = $DB->get_field_select('course_categories', 'id', " name = '$cname' AND parent = $catparent ")) {
         return false;
     } else {
-        if (!$parent = $DB->get_record('course_categories', array('id' => $catparent))) {
+        if (!$parent = $DB->get_record('course_categories', ['id' => $catparent])) {
             $parent->path = '';
             $parent->depth = 0;
             $catparent = 0;
@@ -468,6 +475,17 @@ function shop_switch_style($reset = 0) {
     }
     return $style;
 }
+
+/**
+ * A centralized wrapper allowing to keep all debug trace calls in place in code.
+ *
+ */
+function shop_debug_trace($message, $level = 0, $label = '', $backtracelevel = 1) {
+    if (function_exists('debug_trace')) {
+        debug_trace($message, $level, $label, $backtracelevel);
+    }
+}
+
 
 /**
  * opens a trace file
@@ -513,7 +531,6 @@ function shop_close_trace($output) {
             $CFG->merchantmailtrace = null;
         }
     }
-
 }
 
 /**
@@ -586,7 +603,7 @@ function shop_calculate_taxed($htprice, $taxid) {
         $taxcache = array();
     }
     if (!array_key_exists($taxid, $taxcache)) {
-        if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+        if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', ['id' => $taxid])) {
             if (empty($taxcache[$taxid]->formula)) {
                 $taxcache[$taxid]->formula = '$ttc = $ht';
             }
@@ -665,7 +682,7 @@ function shop_build_context() {
         }
     } else {
         // Shopid is null. get lowest available shop as default.
-        $shops = $DB->get_records('local_shop', array(), 'id', '*', 0, 1);
+        $shops = $DB->get_records('local_shop', [], 'id', '*', 0, 1);
         if ($shop = array_pop($shops)) {
             $theshop = new Shop($shop->id);
             $SESSION->shop = $theshop;
@@ -675,7 +692,7 @@ function shop_build_context() {
 
     if (!$theshop) {
         // No shops available at all. Redirect to shop management.
-        redirect(new moodle_url('/local/shop/shop/view.php', array('view' => 'viewAllShops')));
+        redirect(new moodle_url('/local/shop/shop/view.php', ['view' => 'viewAllShops']));
     }
 
     /*
@@ -683,7 +700,7 @@ function shop_build_context() {
      * Defaults to the current shop bound catalog.
      */
     $SESSION->shop->catalogid = optional_param('catalogid', @$SESSION->shop->catalogid, PARAM_INT);
-    if (empty($SESSION->shop->catalogid) || !$DB->record_exists('local_shop_catalog', array('id' => $SESSION->shop->catalogid))) {
+    if (empty($SESSION->shop->catalogid) || !$DB->record_exists('local_shop_catalog', ['id' => $SESSION->shop->catalogid])) {
         // If no catalog defined in session or catalog is missing after deletion.
         if ($theshop->id) {
             // ... If we have a shop take the catalog of this shop ...
@@ -723,7 +740,7 @@ function shop_build_context() {
 function shop_get_sales_managers($blockid) {
     global $DB;
 
-    $salesrole = $DB->get_record('role', array('shortname' => 'sales'));
+    $salesrole = $DB->get_record('role', ['shortname' => 'sales']);
     $blockcontext = context_block::instance($blockid);
     $sql = "
         SELECT DISTINCT
@@ -759,15 +776,15 @@ function shop_get_bill_states() {
     static $status;
 
     if (!isset($status)) {
-        $status = array ('PLACED' => 'PLACED',
-                         'PENDING' => 'PENDING',
-                         'PAYBACK' => 'PAYBACK',
-                         'PARTIAL' => 'PARTIAL',
-                         'SOLDOUT' => 'SOLDOUT',
-                         'RECOVERING' => 'RECOVERING',
-                         'CANCELLED' => 'CANCELLED',
-                         'COMPLETE' => 'COMPLETE',
-                         'WORKING' => 'WORKING');
+        $status = ['PLACED' => 'PLACED',
+                   'PENDING' => 'PENDING',
+                   'PAYBACK' => 'PAYBACK',
+                   'PARTIAL' => 'PARTIAL',
+                   'SOLDOUT' => 'SOLDOUT',
+                   'RECOVERING' => 'RECOVERING',
+                   'CANCELLED' => 'CANCELLED',
+                   'COMPLETE' => 'COMPLETE',
+                   'WORKING' => 'WORKING'];
     }
     return $status;
 }
@@ -780,9 +797,9 @@ function shop_get_bill_worktypes() {
     static $worktypes;
 
     if (!isset($worktypes)) {
-        $worktypes = array ( 'PROD' => 'PROD',
-                            'PACK' => 'PACK',
-                            'OTHER' => 'OTHER' );
+        $worktypes = ['PROD' => 'PROD',
+                      'PACK' => 'PACK',
+                      'OTHER' => 'OTHER'];
     }
     return $worktypes;
 }
@@ -798,7 +815,7 @@ function shop_get_transid() {
     $seed = crypt($timemark, 'MOODLE_SHOP');
     $seedstr = base64_encode($seed);
     $transid = strtoupper(substr($seedstr, 0, 30));
-    while ($DB->record_exists('local_shop_bill', array('transactionid' => $transid))) {
+    while ($DB->record_exists('local_shop_bill', ['transactionid' => $transid])) {
         $transid = strtoupper(substr(base64_encode(crypt(microtime() + rand(0, 32), 'MOODLE_SHOP')), 0, 30));
     }
     return $transid;
@@ -811,7 +828,7 @@ function shop_get_transid() {
 function shop_list_up($selectcontext, $itemid, $table) {
     global $DB;
 
-    $item = $DB->get_record($table, array('id' => $itemid));
+    $item = $DB->get_record($table, ['id' => $itemid]);
     $selectcontext['sortorder'] = $item->sortorder + 1;
     if (!$nextitem = $DB->get_record($table, $selectcontext)) {
         // Cannot go up. Last one.
@@ -826,7 +843,7 @@ function shop_list_up($selectcontext, $itemid, $table) {
 function shop_list_down($selectcontext, $itemid, $table) {
     global $DB;
 
-    $item = $DB->get_record($table, array('id' => $itemid));
+    $item = $DB->get_record($table, ['id' => $itemid]);
     if ($item->sortorder <= 1) {
         // Cannot go down. First one.
         return;
@@ -918,7 +935,7 @@ function shop_get_bill_tabs($total, $fullview) {
 
     $view = optional_param('view', '', PARAM_TEXT);
     $cur = optional_param('cur', 'EUR', PARAM_TEXT);
-    $url = new moodle_url('/local/shop/bills/view.php', array('view' => $view));
+    $url = new moodle_url('/local/shop/bills/view.php', ['view' => $view]);
     $nopaging = optional_param('nopaging', '0', PARAM_BOOL);
 
     $rows = array();
@@ -1068,7 +1085,7 @@ function shop_get_customer_filtering() {
 /**
  * to fix some windows issues with strftime.
  */
-function local_shop_strftimefixed($format, $timestamp=null) {
+function local_shop_strftimefixed($format, $timestamp = null) {
     global $CFG;
 
     if ($timestamp === null) $timestamp = time();

@@ -280,32 +280,29 @@ class ShopObject {
     /**
      * Get instances of the object. If some filtering is needed, override
      * this method providing a filter as input.
+     * @param string $table the effective class db table
      * @param string $field the list driving field
-     * @param array $valueset an array of values the filed must match
+     * @param array $values an array of values the filed must match
      * @param string $order order clause
-     * @param string $namefield SQL column expression for the name
-     * @param string $chooseopt if empty, no "choose item" option
+     * @param string $fields fields to extract
+     * @param bool $light do we want lightweight instances
+     * @param array $internarefs
      * @return array of key/name pairs by primary id.
      */
-    static protected function _get_instances_list($table, $field, $valueset, $order = '', $namefield = 'name', $chooseopt = 'choosedots') {
+    static protected function _get_instances_list($table, $field, array $values, $order = '', $fields = '*',
+                                                                            $light = false, $internalrefs = []) {
         global $DB;
 
-        $menurecords = $DB->get_records_list($table, $field, $valueset, $order, 'id,'.$namefield. ' as name');
-        if (empty($chooseopt)) {
-            $instancemenu = array();
-        } else {
-            if ($chooseopt == 'choosedots') {
-                $instancemenu = array(0 => get_string('choosedots'));
-            } else {
-                $instancemenu = array(0 => get_string($chooseopt, 'local_shop'));
+        $listrecords = $DB->get_records_list($table, $field, $values, $order, $fields);
+
+        $instances = [];
+        if ($listrecords) {
+            $class = get_called_class();
+            foreach ($listrecords as $rec) {
+                $instances[$rec->id] = new $class($rec, $light, $internalrefs);
             }
         }
-        if ($menurecords) {
-            foreach ($menurecords as $id => $record) {
-                $instancemenu[$id] = format_string($record->name);
-            }
-        }
-        return $instancemenu;
+        return $instances;
     }
 
     protected function export($level = 0) {
