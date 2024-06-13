@@ -96,3 +96,9 @@ Scénario 2 : Prorogation
 - le distributeur/propriétaire réactive le process distributeur dans l'interface du plugin
 - Seul le produit de prorogation lui est proposé (l'autre est filtré par la présence d'un licensekey non nul)
 - En activant l'option d'achat (et en transmettant sa licensekey) l'unité de vente enregsitrée existante, correspondant à cette clef, est prorogé de la durée définie dans le produit boutique. 
+
+2024060300 --- XX.023
+##################################################
+
+Ajout des outils d'alignement du gestionnaire d'unités de vente.
+Consolidation des workflows
