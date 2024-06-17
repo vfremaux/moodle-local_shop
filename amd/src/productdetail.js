@@ -8,6 +8,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
     var shopproductdetail = {
 
         init: function() {
+            // Binds response to product pass code when defined.
             $('#ci-pass').bind('change', this.check_pass_code);
         },
 

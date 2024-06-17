@@ -67,13 +67,19 @@ require(['jquery'], function($) {
                     console.log('match ref: ' + pref.match(regexp));
                     if (!pcode.match(regexp) && !pref.match(regexp)) {
                         $(this).css('display', 'none');
+                        $('.purchase-selects', $(this)).addClass('filtered');
+                        $('.purchase-selects', $(this)).removeClass('unfiltered');
                     } else {
                         $(this).css('display', 'table-row');
+                        $('.purchase-selects', $(this)).addClass('unfiltered');
+                        $('.purchase-selects', $(this)).removeClass('filtered');
                     }
                 });
             } else {
                 // display all. 
                 $('.shop-productinstance-row').css('display', 'table-row');
+                $('.shop-productinstance-row .purchase-selects').addClass('unfiltered');
+                $('.shop-productinstance-row .purchase-selects').removeClass('filtered');
             }
         }
     };
