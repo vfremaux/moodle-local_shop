@@ -204,8 +204,11 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
             if (local_shop_supports_feature('products/editable')) {
                 $pix = $this->output->pix_icon('t/edit', get_string('edit'), 'moodle');
-                $params = ['instanceid' => $productinstance->id,
-                                'sesskey' => sesskey()];
+                $params = [
+                    'instanceid' => $productinstance->id,
+                    'quicksearchfilter' => optional_param('quicksearchfilter', '', PARAM_TEXT),
+                    'sesskey' => sesskey()
+                ];
                 $linkurl = new moodle_url('/local/shop/pro/purchasemanager/edit_instance.php', $params);
                 $commands .= '&nbsp;<a href="'.$linkurl.'">'.$pix.'</a>';
             }
