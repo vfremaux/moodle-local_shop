@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Daily collected indicators for the shop
+ *
+ * @package local_shop
  * @author Valery Fremaux valery.fremaux@gmail.com
+ * @copyright Valery Fremaux valery.fremaux@gmail.com (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package report_zabbix
- * @category report
  */
 namespace report_zabbix\indicators;
 
@@ -29,10 +31,17 @@ use StdClass;
 require_once($CFG->dirroot.'/report/zabbix/classes/indicator.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
+/**
+ * Defines some daily collected indicators
+ */
 class daily_shop_indicator extends zabbix_indicator {
 
-    static $submodes = 'dailybills,dailyplaced,dailysoldout,dailycomplete,dailycancelled,dailypending,bills,placed,soldout,complete,cancelled,pending,categories,activeproducts,dailyamount';
+    static $submodes = 'dailybills,dailyplaced,dailysoldout,dailycomplete,dailycancelled,dailypending'.
+        ',bills,placed,soldout,complete,cancelled,pending,categories,activeproducts,dailyamount';
 
+    /**
+     *  Base constructor
+     */
     public function __construct() {
         parent::__construct();
         $this->key = 'moodle.shop';
