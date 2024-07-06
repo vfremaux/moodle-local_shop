@@ -16,21 +16,21 @@
 
 /**
  * @package   local_shop
- * @category  task
- * @copyright 2014 Dan Poltawski <dan@moodle.com>
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   20217 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => 'local_shop\task\cron_task',
         'blocking' => 0,
         'minute' => '10',
         'hour' => '*',
         'day' => '*',
         'month' => '*',
-        'dayofweek' => '*'
-    )
-);
+        'dayofweek' => '*',
+    ],
+];
