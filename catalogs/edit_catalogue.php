@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../../config.php');
@@ -49,7 +48,7 @@ $catalogid = optional_param('catalogid', 0, PARAM_INT);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/catalogs/edit_catalog.php', array('catalogid' => $catalogid));
+$url = new moodle_url('/local/shop/catalogs/edit_catalog.php', ['catalogid' => $catalogid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -72,10 +71,10 @@ if ($catalogid) {
     }
     $formdata->blockid = 0 + @$theblock->instance->id;
 
-    $mform = new Catalog_Form('', array('what' => 'edit'));
+    $mform = new Catalog_Form('', ['what' => 'edit']);
     $mform->set_data($formdata);
 } else {
-    $mform = new Catalog_Form('', array('what' => 'add'));
+    $mform = new Catalog_Form('', ['what' => 'add']);
 }
 
 if ($mform->is_cancelled()) {
