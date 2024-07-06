@@ -15,31 +15,46 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * An action controller for the search engine.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_shop\bills;
 
-defined('MOODLE_INTERNAL') || die;
+use moodle_url;
 
-use \moodle_url;
-
+/**
+ * A simple controller for search operations.
+ * @TODO : redraw the controller to match shop base controller architecture (receive/process).
+ */
 class search_controller {
 
+    /**
+     * the current shop instance
+     */
     protected $theshop;
 
+    /**
+     * The search criteria
+     */
     public $criteria;
 
+    /**
+     * Base constructor
+     * @param object $theshop
+     */
     public function __construct($theshop) {
         $this->theshop = $theshop;
     }
 
+    /**
+     * Process action.
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $DB;
 
@@ -110,7 +125,7 @@ class search_controller {
                         $billrecord = array_pop($bills);
                         $billid = $billrecord->id;
                         // One only result. Switch directly to intranet/bills/viewBill with adequate Id.
-                        $params = array('view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $billid);
+                        $params = ['view' => 'viewBill', 'id' => $this->theshop->id, 'billid' => $billid];
                         redirect(new moodle_url('/local/shop/bills/view.php', $params));
                     }
                     return $bills;

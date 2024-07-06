@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * An action controller to reset shop parts.
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\backoffice;
@@ -31,8 +32,14 @@ use local_shop\Shop;
 
 class reset_controller {
 
+    /**
+     * Action data context
+     */
     protected $data;
 
+    /**
+     * Marks data has been loaded for action.
+     */
     protected $received;
 
     /**
@@ -41,7 +48,7 @@ class reset_controller {
      * @param array $data incoming parameters from form when directly available, otherwise the
      * function shoudl get them from request
      */
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
 
         if (!empty($data)) {
             // Data is fed from outside.
@@ -53,12 +60,13 @@ class reset_controller {
         }
 
         switch ($cmd) {
-            case 'reset':
+            case 'reset': {
                 $this->data->shopid = required_param('shopid', PARAM_INT);
                 $this->data->bills = required_param('bills', PARAM_BOOL);
                 $this->data->customers = required_param('customers', PARAM_BOOL);
                 $this->data->catalogs = required_param('catalogs', PARAM_BOOL);
                 break;
+            }
         }
 
         $this->received = true;
@@ -82,7 +90,7 @@ class reset_controller {
 
             $params = array();
             if (!empty($this->data->shopid)) {
-                $params = array('shopid' => $this->data->shopid);
+                $params = ['shopid' => $this->data->shopid];
 
                 $deletedbills = $DB->get_records('local_shop_bill', $params, 'id', 'id,id');
                 $out .= "Deleting bill records...\n";
@@ -94,7 +102,7 @@ class reset_controller {
                 if ($deletedbills) {
                     $out .= "Deleting bill item records...\n";
                     foreach (array_keys($deletedbills) as $bid) {
-                        $DB->delete_records('local_shop_billitem', array('billid' => $bid));
+                        $DB->delete_records('local_shop_billitem', ['billid' => $bid]);
                     }
                 }
 
@@ -103,18 +111,17 @@ class reset_controller {
                     $out = "Deleting product records...\n";
                     foreach (array_keys($deletedbillitems) as $biid) {
                         $select = 'currentbillitemid = ? OR initialbillitemid = ?';
-                        $deletedproducts = $DB->get_records_select('local_shop_product', $select, array($biid, $biid), 'id', 'id,id');
-                        $DB->delete_records_select('local_shop_product', $select, array($biid, $biid));
+                        $deletedproducts = $DB->get_records_select('local_shop_product', $select, [$biid, $biid], 'id', 'id,id');
+                        $DB->delete_records_select('local_shop_product', $select, [$biid, $biid]);
 
                         if ($deletedproducts) {
                             $out = "Deleting product event records...\n";
                             foreach (array_keys($deletedproducts) as $pid) {
-                                $DB->delete_records('local_shop_productevent', array('productid' => $pid));
+                                $DB->delete_records('local_shop_productevent', ['productid' => $pid]);
                             }
                         }
                     }
                 }
-
             } else {
                 // Delete all data.
                 $DB->delete_records('local_shop_bill', null);
@@ -139,11 +146,11 @@ class reset_controller {
         if (!empty($this->data->catalogs)) {
             if (!empty($this->data->shopid)) {
                 $theshop = new Shop($this->data->shopid);
-                $DB->delete_records('local_shop_catalogitem', array('catalogid' => $theshop->config->catalogid));
+                $DB->delete_records('local_shop_catalogitem', ['catalogid' => $theshop->config->catalogid]);
                 $DB->delete_records('local_shop_catalog', array('id' => $this->theshop->config->catalogid));
             } else {
-                $DB->delete_records('local_shop_catalogitem', array());
-                $DB->delete_records('local_shop_catalog', array());
+                $DB->delete_records('local_shop_catalogitem', []);
+                $DB->delete_records('local_shop_catalog', []);
             }
             $out .= $OUTPUT->notification(get_string('catalogsdeleted', 'local_shop'), 'success');
         }

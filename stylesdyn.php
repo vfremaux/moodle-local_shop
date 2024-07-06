@@ -15,8 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Loads dynamically some style elements
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,7 +26,7 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-use \local_shop\Shop;
+use local_shop\Shop;
 
 header("Content-Type: text/css\n\n");
 

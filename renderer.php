@@ -16,7 +16,6 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -40,6 +39,8 @@ class local_shop_renderer extends local_shop_base_renderer {
 
     /**
      * prints an owner menu and changes currently viewed owner if required
+     * @param string $urlroot
+     * @param string $activeowner
      */
     public function print_owner_menu($urlroot, $activeowner) {
         global $OUTPUT, $DB;
@@ -77,6 +78,9 @@ class local_shop_renderer extends local_shop_base_renderer {
 
     /**
      * prints a customer menu and changes currently viewed owner if required
+     * @param string $urlroot
+     * @param arrayref &$customers
+     * @param int $activecustomerid
      */
     public function print_customer_menu($urlroot, &$customers, $activecustomerid) {
         global $OUTPUT, $DB;
@@ -106,6 +110,11 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $output;
     }
 
+    /**
+     * Renders a custom pager
+     * @TODO : maybe could be replaced with moodle standard pager.
+     * @param object $portlet an object with all data for pager
+     */
     public function paging_results($portlet) {
         $str = '';
         if (empty($portlet->pagesize)) {
@@ -121,7 +130,7 @@ class local_shop_renderer extends local_shop_base_renderer {
             $str .= '<span class="paging">';
             for ($i = 1; $i <= $pages; $i++) {
                 if ($i == ($offset / $portlet->pagesize) + 1) {
-                    $str .= ' <div style="display:inline-block;color:white;background-color:#666;border-radius:10px;padding:0px 6px 2px 6px">'.$i.'</div> - ';
+                    $str .= ' <div class="shop-paging">'.$i.'</div> - ';
                 } else {
                     $pageoffset = $portlet->pagesize * ($i - 1);
                     $str .= '<a class="paging" href="'.$portlet->url.'&offset='.$pageoffset.'">'.$i.'</a> - ';
@@ -138,6 +147,10 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * A widget showing links to available catalogs
+     * @param mixed $url a string or a moodle_url as base url.
+     */
     public function catalog_choice($url) {
         global $SESSION, $OUTPUT;
 
@@ -152,6 +165,12 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * A chooser for switching shops
+     * @param moodle_url $url base url
+     * @param bool $chooseall if true, adds a choose all shops possibility
+     * @param int $shopid the preselected shop. If null, taken from $SESSION
+     */
     public function shop_choice($url, $chooseall = false, $shopid = null) {
         global $SESSION, $OUTPUT;
 
@@ -175,6 +194,11 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /** 
+     * A selector to change current currency
+     * @param string $current current currency
+     * @param moodle_url $url the base url
+     */
     public function currency_choice($current, $url) {
         global $OUTPUT;
 
@@ -187,6 +211,11 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /** 
+     * A selector to change current year time scope
+     * @param int $current the current year
+     * @param moodle_url $url the base url
+     */
     public function year_choice($current, $url) {
         global $OUTPUT, $DB, $SESSION;
 
@@ -216,6 +245,11 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /** 
+     * A selector to change current month time scope
+     * @param int $current the current month
+     * @param moodle_url $url the base url
+     */ 
     public function month_choice($current, $url) {
         global $OUTPUT, $DB, $SESSION;
 
@@ -224,7 +258,7 @@ class local_shop_renderer extends local_shop_base_renderer {
             $SESSION->shop->billmonth = $current;
         }
 
-        $monthnames = array('jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec');
+        $monthnames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
         for ($i = 1; $i <= 12; $i++) {
             $months[$i] = get_string($monthnames[$i - 1], 'local_shop');
@@ -237,20 +271,29 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /** 
+     * A selector to change current customer in context
+     * @param int $current the current customer id
+     * @param moodle_url $url the base url
+     */ 
     public function customer_choice($current, $url) {
         global $OUTPUT;
 
-        $customers = Customer::get_instances_menu(array(), 'CONCAT(lastname, \' \', firstname)', 'lastname, firstname');
+        $customers = Customer::get_instances_menu([], 'lastname, firstname');
 
         $str = '';
 
-        $customers = array('' => get_string('allcustomers', 'local_shop')) + $customers;
+        $customers = ['' => get_string('allcustomers', 'local_shop')] + $customers;
         $attrs['label'] = get_string('customer', 'local_shop').': ';
         $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current, null, null, $attrs);
 
         return $str;
     }
 
+    /**
+     * Main menu in shop index.
+     * @param object $theshop the currently selected shop
+     */
     public function main_menu($theshop) {
 
         $config = get_config('local_shop');
@@ -260,20 +303,27 @@ class local_shop_renderer extends local_shop_base_renderer {
         $template->supportsinstances = false;
         if (local_shop_supports_feature('shop/instances')) {
             $template->supportsinstances = true;
-            $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', array('view' => 'viewAllShops', 'id' => $theshop->id));
+            $params = ['view' => 'viewAllShops', 'id' => $theshop->id];
+            $template->allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', $params);
         } else {
-            $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $theshop->id, 'shopid' => $theshop->id]);
+            $params = ['id' => $theshop->id, 'shopid' => $theshop->id];
+            $template->shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php', $params);
         }
 
         if (local_shop_supports_feature('shop/discounts')) {
             $template->supportsdiscounts = true;
-            $template->discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', array('view' => 'viewAllDiscounts', 'id' => $theshop->id));
+            $params = ['view' => 'viewAllDiscounts', 'id' => $theshop->id];
+            $template->discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', $params);
         }
 
-        $template->billsurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills', 'id' => $theshop->id));
-        $template->productsurl = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances', 'id' => $theshop->id));
-        $template->customersurl = new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers', 'id' => $theshop->id));
-        $template->taxesurl = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes', 'id' => $theshop->id));
+        $params = ['view' => 'viewAllBills', 'id' => $theshop->id];
+        $template->billsurl = new moodle_url('/local/shop/bills/view.php', $params);
+        $params = ['view' => 'viewAllProductInstances', 'id' => $theshop->id];
+        $template->productsurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
+        $params = ['view' => 'viewAllCustomers', 'id' => $theshop->id];
+        $template->customersurl = new moodle_url('/local/shop/customers/view.php', $params);
+        $params = ['view' => 'viewAllTaxes', 'id' => $theshop->id];
+        $template->taxesurl = new moodle_url('/local/shop/taxes/view.php', $params);
 
         if (!empty($config->useshipping)) {
             $template->useshipping = true;
@@ -284,20 +334,23 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         if (has_capability('moodle/site:config', context_system::instance())) {
             $template->hassiteadmin = true;
-            $template->settingsurl = new moodle_url('/admin/settings.php', array('section' => 'localsettingshop'));
+            $template->settingsurl = new moodle_url('/admin/settings.php', ['section' => 'localsettingshop']);
         }
 
-        $template->reseturl = new moodle_url('/local/shop/reset.php', array('id' => $theshop->id));
+        $template->reseturl = new moodle_url('/local/shop/reset.php', ['id' => $theshop->id]);
 
         if (local_shop_supports_feature('shop/partners')) {
             $template->supportspartners = true;
-            $params = array('id' => $theshop->id, 'view' => 'viewAllPartners');
+            $params = ['id' => $theshop->id, 'view' => 'viewAllPartners'];
             $template->partnersurl = new moodle_url('/local/shop/pro/partners/view.php', $params);
         }
 
         return $this->output->render_from_template('local_shop/main_menu', $template);
     }
 
+    /**
+     * Generates a back button for the purchase process.
+     */
     public function back_buttons() {
         global $OUTPUT;
 
@@ -313,6 +366,11 @@ class local_shop_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * A chooser for the transaction backtrace
+     * @TODO : shift to template
+     * @param string $transid the currently selected transaction id
+     */
     public function transaction_chooser($transid) {
         global $DB;
 
@@ -384,6 +442,9 @@ class local_shop_base_renderer extends \plugin_renderer_base {
     /**
      * Loads the renderer with contextual objects. Most of the renderer function need
      * at least a shop instance.
+     * @param objectref &$theshop
+     * @param arrayref &$thecatalog
+     * @param objectref &$theblock
      */
     public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
 
@@ -415,6 +476,9 @@ class local_shop_base_renderer extends \plugin_renderer_base {
         }
     }
 
+    /**
+     * Prints the reference time relative to UTC time.
+     */
     public function reference_time() {
         $str = '';
 
@@ -427,6 +491,9 @@ class local_shop_base_renderer extends \plugin_renderer_base {
         return $str;
     }
 
+    /**
+     *
+     */
     public function print_screen_button() {
         $template = new StdClass();
         return $this->output->render_from_template('local_shop/commons_print_screen_button', $template);
@@ -438,7 +505,7 @@ class local_shop_base_renderer extends \plugin_renderer_base {
      * The provided data needs to be array/stdClass made up of only simple types.
      * Simple types are array,stdClass,bool,int,float,string
      *
-     * @since 2.9
+     * @param string $templatestring a mustache template from a string variable.
      * @param array|stdClass $context Context containing data for the template.
      * @return string|boolean
      */
@@ -456,16 +523,20 @@ class local_shop_base_renderer extends \plugin_renderer_base {
             $uniqidhelper = null;
         }
 
-        // Provide 1 random value that will not change within a template
-        // but will be different from template to template. This is useful for
-        // e.g. aria attributes that only work with id attributes and must be
-        // unique in a page.
+        /*
+         * Provide 1 random value that will not change within a template
+         * but will be different from template to template. This is useful for
+         * e.g. aria attributes that only work with id attributes and must be
+         * unique in a page.
+         */
         $mustache->addHelper('uniqid', new \core\output\mustache_uniqid_helper());
 
         $renderedtemplate = $mustache->render($templatestring, $context);
 
-        // If we had an existing uniqid helper then we need to restore it to allow
-        // handle nested calls of render_from_template.
+        /*
+         * If we had an existing uniqid helper then we need to restore it to allow
+         * handle nested calls of render_from_template.
+         */
         if ($uniqidhelper) {
             $mustache->addHelper('uniqid', $uniqidhelper);
         }
@@ -473,6 +544,10 @@ class local_shop_base_renderer extends \plugin_renderer_base {
         return $renderedtemplate;
     }
 
+    /**
+     * Set the current page for pagers
+     * @param int $page
+     */
     public function set_page($page) {
         $this->page = $page;
     }

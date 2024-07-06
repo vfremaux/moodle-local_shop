@@ -113,7 +113,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $producttpl->statusclass = $statusclass;
 
             if (has_capability('local/shop:salesadmin', context_system::instance())) {
-                $producttpl->selcheckbox = '<input type="checkbox" id="purchase-select-'.$productinstance->id.'" class="purchase-selects" name="productids" value="'.$productinstance->id.'" />';
+                $producttpl->selcheckbox = '<input type="checkbox" id="purchase-select-'.$productinstance->id.'" class="purchase-selects unfiltered" name="productids" value="'.$productinstance->id.'" />';
             }
             $producttpl->id = $productinstance->id;
             $producttpl->thumburl = $product->get_thumb_url();

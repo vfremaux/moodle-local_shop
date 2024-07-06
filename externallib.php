@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   2016 Valery Fremaux (http://www.mylearningfactory.com)
+ * @copyright   2016 Valery Fremaux (http://www.activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,9 +28,9 @@ require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
-use \local_shop\Shop;
-use \local_shop\Catalog;
-use \local_shop\Catalogitem;
+use local_shop\Shop;
+use local_shop\Catalog;
+use local_shop\Catalogitem;
 
 class local_shop_external extends external_api {
 
@@ -75,9 +74,9 @@ class local_shop_external extends external_api {
     public static function get_shop_parameters() {
         $desc = 'Id of the shop';
         return new external_function_parameters(
-            array(
+            [
                 'shopid' => new external_value(PARAM_INT, $desc),
-            )
+            ]
         );
     }
 
@@ -89,9 +88,9 @@ class local_shop_external extends external_api {
     public static function get_catalog_parameters() {
         $desc = 'Id of the catalog';
         return new external_function_parameters(
-            array(
+            [
                 'catalogid' => new external_value(PARAM_INT, 'Catalog id'),
-            )
+            ]
         );
     }
 
@@ -103,9 +102,9 @@ class local_shop_external extends external_api {
     public static function get_catalogcategory_parameters() {
         $desc = 'Id of the category';
         return new external_function_parameters(
-            array(
+            [
                 'categoryid' => new external_value(PARAM_INT, 'Category id'),
-            )
+            ]
         );
     }
 
@@ -120,12 +119,11 @@ class local_shop_external extends external_api {
         $desc3 = 'Quantity required for pricing';
         $desc4 = 'Output subrecords';
         return new external_function_parameters(
-            array(
+            [
                 'itemidsource' => new external_value(PARAM_ALPHA, $desc1),
                 'itemid' => new external_value(PARAM_TEXT, $desc2),
-                'q' => new external_value(PARAM_INT, $desc3) /*,
-                'withsubs' => new external_value(PARAM_INT, $desc4), */
-            )
+                'q' => new external_value(PARAM_INT, $desc3),
+            ]
         );
     }
 
@@ -142,14 +140,13 @@ class local_shop_external extends external_api {
         $desc5 = 'Quantity required for pricing';
         $desc6 = 'Output subrecords';
         return new external_function_parameters(
-            array(
+            [
                 'catalogid' => new external_value(PARAM_INT, $desc1),
                 'categoryid' => new external_value(PARAM_INT, $desc2),
                 'status' => new external_value(PARAM_TEXT, $desc3),
                 'type' => new external_value(PARAM_TEXT, $desc4),
-                'q' => new external_value(PARAM_INT, $desc5)/* ,
-                'withsubs' => new external_value(PARAM_INT, $desc6), */
-            )
+                'q' => new external_value(PARAM_INT, $desc5), 
+            ]
         );
     }
 
@@ -253,7 +250,7 @@ class local_shop_external extends external_api {
      */
     public static function get_shop_returns() {
         return new external_single_structure(
-            array(
+             [
                 'id' => new external_value(PARAM_INT, 'Shop id'),
                 'name' => new external_value(PARAM_TEXT, 'Shop name'),
                 'catalogid' => new external_value(PARAM_TEXT, 'Master shop catalog'),
@@ -262,7 +259,7 @@ class local_shop_external extends external_api {
                 'eulas' => new external_value(PARAM_TEXT, 'Shop eulas'),
                 'paymodes' => new external_value(PARAM_TEXT, 'Enabled paymodes'),
                 'defaultpaymode' => new external_value(PARAM_TEXT, 'Default paymode'),
-            )
+            ]
         );
     }
 
@@ -273,7 +270,7 @@ class local_shop_external extends external_api {
      */
     public static function get_catalog_returns() {
         return new external_single_structure(
-            array(
+            [
                 'id' => new external_value(PARAM_INT, 'Catalog id'),
                 'name' => new external_value(PARAM_TEXT, 'Catalog name'),
                 'description' => new external_value(PARAM_TEXT, 'Catalog description'),
@@ -281,13 +278,13 @@ class local_shop_external extends external_api {
                 'countryrestrictions' => new external_value(PARAM_TEXT, 'Countries deserved'),
                 'categories' => new external_multiple_structure(
                     new external_single_structure(
-                        array(
+                        [
                             'id' => new external_value(PARAM_INT, 'Category id'),
                             'name' => new external_value(PARAM_TEXT, 'Category name'),
-                        )
+                        ]
                     )
                 ),
-            )
+            ]
         );
     }
 
@@ -298,13 +295,13 @@ class local_shop_external extends external_api {
      */
     public static function get_catalogcategory_returns() {
         return new external_single_structure(
-            array(
+            [
                 'id' => new external_value(PARAM_INT, 'Category id'),
                 'catalogid' => new external_value(PARAM_INT, 'Catalog id'),
                 'name' => new external_value(PARAM_TEXT, 'Category name'),
                 'description' => new external_value(PARAM_TEXT, 'Category description'),
                 'visible' => new external_value(PARAM_INT, 'Is category visible'),
-            )
+            ]
         );
     }
 
@@ -315,7 +312,7 @@ class local_shop_external extends external_api {
      */
     public static function get_catalogitem_returns() {
         return new external_single_structure(
-            array(
+            [
                 'id' => new external_value(PARAM_INT, 'Item id'),
                 'catalogid' => new external_value(PARAM_INT, 'Catalog id'),
                 'categoryid' => new external_value(PARAM_INT, 'Item category id'),
@@ -333,7 +330,7 @@ class local_shop_external extends external_api {
                 'leafleturl' => new external_value(PARAM_TEXT, 'Leaflet url'),
                 'thumburl' => new external_value(PARAM_TEXT, 'Thumb url'),
                 'imageurl' => new external_value(PARAM_TEXT, 'Image url'),
-            )
+            ]
         );
     }
 
@@ -345,7 +342,7 @@ class local_shop_external extends external_api {
     public static function get_catalogitems_returns() {
         return new external_multiple_structure(
             new external_single_structure(
-                array(
+                [
                     'id' => new external_value(PARAM_INT, 'Item id'),
                     'catalogid' => new external_value(PARAM_INT, 'Item catalog id'),
                     'categoryid' => new external_value(PARAM_INT, 'Item category id'),
@@ -363,9 +360,9 @@ class local_shop_external extends external_api {
                     'leafleturl' => new external_value(PARAM_TEXT, 'Leaflet url'),
                     'thumburl' => new external_value(PARAM_TEXT, 'Thumb url'),
                     'imageurl' => new external_value(PARAM_TEXT, 'Image url'),
-                )
+                ]
             )
         );
     }
-
 }
+

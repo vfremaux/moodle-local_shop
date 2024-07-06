@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * View all available bills (filtered).
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -58,8 +57,8 @@ if ($action != '') {
 }
 
 $fullview = get_user_preferences('local_shop_bills_fullview', false);
-if (!$fullview && !in_array($status, array('SOLDOUT', 'COMPLETE'))) {
-    $params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => 'COMPLETE', 'customerid' => $customerid);
+if (!$fullview && !in_array($status, ['SOLDOUT', 'COMPLETE'])) {
+    $params = ['view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => 'COMPLETE', 'customerid' => $customerid];
     redirect(new moodle_url('/local/shop/bills/view.php', $params));
 }
 
@@ -85,13 +84,6 @@ if ($bills) {
         }
         // TODO : Make more efficent filter directly in SQL.
         // Redraw ShopObject to accept filter on calculated columns.
-        /*
-        if ($y) {
-            if (date('Y', $bill->emissiondate) != $y) {
-                unset($bills[$billid]);
-            }
-        }
-        */
         $billsbystate[$bill->status][$bill->id] = $bill;
     }
 } else {
@@ -157,4 +149,3 @@ if ($pagingbar) {
     echo $pagingbar;
     echo $renderer->no_paging_switch($url, $urlfilter);
 }
-

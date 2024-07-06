@@ -16,15 +16,13 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright      Valery Fremaux (valery.fremaux@gmail.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * Moodle cross version compatibility function.
  */
 namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
 
 class compat {
 

@@ -21,6 +21,7 @@ $string['address2'] = 'Adresse2&nbsp;';
 $string['after'] = 'après';
 $string['city'] = 'Ville&nbsp;:&ensp;';
 $string['customer'] = 'Client';
+$string['customers'] = 'Clients&nbsp;';
 $string['customeraccount'] = 'Compte client';
 $string['customeraccounts'] = 'Comptes clients';
 $string['customercountry'] = 'Pays';

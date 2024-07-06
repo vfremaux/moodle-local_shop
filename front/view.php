@@ -104,17 +104,17 @@ if (empty($config->sellername)) {
     throw new moodle_exception(get_string('errornoselleridentity', 'local_shop'));
 }
 
-$out = $OUTPUT->header();
-
-$renderer = shop_get_renderer('front');
-$renderer->load_context($theshop, $thecatalog, $theblock);
-
 // Fetch view.
 if (is_readable($CFG->dirroot."/local/shop/front/{$view}.php")) {
     include($CFG->dirroot."/local/shop/front/{$view}.php");
 } else {
     throw new moodle_exception(get_string('errormissingview', 'local_shop'));
 }
+
+$out = $OUTPUT->header();
+
+$renderer = shop_get_renderer('front');
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 if ($view == 'shop') {
     echo '

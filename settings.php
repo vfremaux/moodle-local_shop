@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Standard settings for local shop.
+ *
  * @package   local_shop
- * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -31,7 +33,8 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', $settings);
 
     $gotobackofficestr = get_string('gotobackoffice', 'local_shop');
-    $content = "<a href=\"{$CFG->wwwroot}/local/shop/index.php\">$gotobackofficestr</a>";
+    $shopurl = new moodle_url('/local/shop/index.php');
+    $content = "<a href=\"".$shopurl."\">$gotobackofficestr</a>";
     $settings->add(new admin_setting_heading('backoffice', get_string('backoffice', 'local_shop'), $content));
 
     $settings->add(new admin_setting_heading('globalsettings', get_string('globalsettings', 'local_shop'), ''));

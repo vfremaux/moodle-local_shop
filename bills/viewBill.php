@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * View a single bill.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -29,14 +28,14 @@ require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
-use \local_shop\Bill;
-use \local_shop\BillItem;
+use local_shop\Bill;
+use local_shop\BillItem;
 
 // We needs them later in this script.
 $relocated = optional_param('relocated', '', PARAM_TEXT);
 $z = optional_param('z', '', PARAM_TEXT);
 
-/* perform local commands on orderitems */
+// Perform local commands on orderitems.
 $action = optional_param('what', '', PARAM_TEXT);
 if ($action != '') {
     include_once($CFG->dirroot.'/local/shop/bills/bills.controller.php');
@@ -51,13 +50,6 @@ $PAGE->requires->js_call_amd('local_shop/bills', 'init');
 
 echo $out;
 echo $OUTPUT->box_start('', 'billpanel');
-
-/*
-echo '<form name="selection" action="'.$url.'" method="get">';
-echo '<input type="hidden" name="what" value="" />';
-echo '<input type="hidden" name="items" value="" />';
-echo '</form>';
-*/
 
 echo $renderer->bill_header($afullbill, $url);
 

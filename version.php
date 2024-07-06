@@ -18,9 +18,8 @@
  * Version details.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   2016 onwards Valery Fremaux (http://www.mylearningfactory.com)
+ * @copyright   2016 onwards Valery Fremaux (http://www.activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +38,7 @@ if (function_exists('local_shop_supports_feature') && local_shop_supports_featur
 $plugin->supported = [401, 402];
 
 // Non moodle attributes.
-$plugin->codeincrement = '4.1.0023';
+$plugin->codeincrement = '4.1.0024';
 $plugin->privacy = 'dualrelease';
 $plugin->prolocations = array(
     'datahandling/handlers/std_addtrainingcredits',

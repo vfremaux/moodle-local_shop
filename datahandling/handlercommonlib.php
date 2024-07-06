@@ -118,7 +118,7 @@ function shop_register_customer($data, &$errorstatus) {
 /**
  * This enrols a customer user account into the designated customer support course as a student.
  * @param int $supportcoursename the Moodle shortname of the course used for customer support
- * @param object $customer a customer record
+ * @param object $customeruser a customer record
  * @param string $transactionid the unique id of the transaction (for tracing puropse)
  */
 function shop_register_customer_support($supportcoursename, $customeruser, $transactionid) {

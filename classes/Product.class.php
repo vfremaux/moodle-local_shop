@@ -334,6 +334,56 @@ class Product extends ShopObject {
     }
 
     /**
+     * Counts available product instances, using filters on local_shop_catalogitem, local_shop_product, local_shop_billitem
+     * (optional).
+     */
+    public static function count_instances_on_context($filter) {
+        global $DB;
+
+        $filterclause = '';
+        $params = [];
+        if (!empty($filter)) {
+            $filterstrs = [];
+            foreach ($filter as $k => $v) {
+                if ($v != '*' || empty($v)) {
+                    $filterstrs[] = " $k = ? ";
+                    $params[] = $v;
+                }
+            }
+            if (!empty($filterstrs)) {
+                $filterclause = ' AND '.implode(' AND ', $filterstrs);
+            }
+        }
+
+        $sql = '
+            SELECT
+                COUNT(*)
+            FROM
+                {local_shop} s,
+                {local_shop_catalog} c,
+                {local_shop_catalogitem} ci,
+                {local_shop_product} p
+            LEFT JOIN
+                {local_shop_billitem} ibi
+            ON
+                p.initialbillitemid = ibi.id
+            LEFT JOIN
+                {local_shop_billitem} cbi
+            ON
+                p.currentbillitemid = cbi.id
+            WHERE
+                p.catalogitemid = ci.id AND
+                ci.catalogid = c.id AND
+                s.catalogid = c.id
+                '.$filterclause.'
+        ';
+
+        $numrecords = $DB->count_records_sql($sql, $params);
+
+        return $numrecords;
+    }
+
+    /**
      * Get a filtered set of product instances, using filters on local_shop_cataolgitem, local_shop_product, local_shop_billitem
      * (optional).
      */

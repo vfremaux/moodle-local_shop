@@ -75,7 +75,7 @@ class shop_handler_std_prorogate extends shop_handler {
 
     /*
      * Postpay prorogates
-     * $data must contain a productiondata->reference product reference.
+     * $data (full bill data) must contain a productiondata->reference product reference.
      */
     public function produce_postpay(&$data) {
         global $CFG, $DB;

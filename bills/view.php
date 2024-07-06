@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * Ganaral view entry point for all bills view modes.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -51,24 +50,30 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/bills/view.php', array('view' => $view));
+$url = new moodle_url('/local/shop/bills/view.php', ['view' => $view]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
-$viewurl = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills'));
+$viewurl = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewAllBills']);
 $PAGE->navbar->add(get_string('bills', 'local_shop'), $viewurl);
-$PAGE->set_pagelayout('admin');
+$PAGE->set_pagelayout('standard');
+
+// Add the shop admin secondary nav.
+$nav = shop_get_admin_navigation($theshop);
+$PAGE->set_secondarynav($nav);
+$PAGE->set_secondary_navigation(true);
+$PAGE->set_secondary_active_tab('bills');
 
 if ($view == 'viewBill') {
     $billidnumber = $billid;
-    if ($idnumber = $DB->get_field('local_shop_bill', 'idnumber', array('id' => $billid))) {
+    if ($idnumber = $DB->get_field('local_shop_bill', 'idnumber', ['id' => $billid])) {
         $billidnumber .= " {$idnumber}";
     }
     $PAGE->navbar->add(get_string('bill', 'local_shop', $billidnumber));
 
-    $url = new moodle_url('/local/shop/bills/view.php', array('id' => $theshop->id, 'view' => 'viewBill', 'billid' => $billid));
+    $url = new moodle_url('/local/shop/bills/view.php', ['id' => $theshop->id, 'view' => 'viewBill', 'billid' => $billid]);
 } else {
-    $url = new moodle_url('/local/shop/bills/view.php', array('id' => $theshop->id, 'view' => $view));
+    $url = new moodle_url('/local/shop/bills/view.php', ['id' => $theshop->id, 'view' => $view]);
 }
 
 $PAGE->set_title(get_string('pluginname', 'local_shop'));

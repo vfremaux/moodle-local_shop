@@ -39,6 +39,8 @@ $shopid = optional_param('shopid', 0, PARAM_INT);
 $shopownerid = optional_param('shopowner', 0, PARAM_INT);
 $productstate = optional_param('productstate', '*', PARAM_TEXT);
 $producttext = optional_param('producttext', '', PARAM_TEXT);
+$page = optional_param('page', 0, PARAM_INT);
+$perpage = 50;
 
 $viewparams = array('view' => $view, 'customerid' => $customerid, 'order' => $order, 'dir' => $dir, 'shopowner' => $shopownerid, 'shopid' => $shopid);
 
@@ -80,7 +82,7 @@ if ($shopownerid) {
 $filter = [];
 if (!empty($shopid)) {
     $filter['s.id'] = $shopid;
-} 
+}
 if (!empty($customerid)) {
     $filter['p.customerid'] = $customerid;
 }
@@ -88,12 +90,13 @@ if (!empty($contexttype)) {
     $filter['p.contexttype'] = $contexttype;
 }
 
-$productinstances = Product::get_instances_on_context($filter);
+$productinstancesnum = Product::count_instances_on_context($filter);
+$productinstances = Product::get_instances_on_context($filter, 'ci.shortname', $from, $perpage);
 Product::filter_by_state($productinstances, $productstate);
 
 echo $out;
 
-$params = array('view' => 'viewAllProductInstances', 'customerid' => $customerid, 'shopowner' => $shopowner);
+$params = ['view' => 'viewAllProductInstances', 'customerid' => $customerid, 'shopowner' => $shopowner];
 $viewurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
 echo $OUTPUT->heading(get_string('productinstances', 'local_shop'));
@@ -103,6 +106,19 @@ echo $renderer->productinstances_options($mainrenderer);
 if (count(array_keys($productinstances)) == 0) {
     echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
 } else {
+    $pageurl = clone($url);
+    $params = [
+        'quicksearchfilter' => optional_param('quicksearchfilter', '', PARAM_TEXT),
+        'productstate' => $productstate,
+        'customerid' => $customerid,
+        'shopowner' => $shopownerid,
+        'dir' => $dir,
+        'contexttype' => $contexttype,
+        'order' => $order,
+        'shop' => $shopid
+    ];
+    $pageurl->params($params);
+    echo $OUTPUT->paging_bar($productinstancesnum, $page, $perpage, $pageurl);
     echo $renderer->productinstance_admin_form($productinstances, $viewparams, $customerid, $shopowner);
     echo get_string('withselection', 'local_shop');
     echo $renderer->selection_tools($customerid);

@@ -122,8 +122,8 @@ class shop_handler_std_registeredproduct extends shop_handler {
         if (!empty($data->actionparams['extrasupport'])) {
             shop_trace("[{$data->transactionid}] STD_REGISTERED_PRODUCT Postpay : Registering Extra Support");
             $courses = explode(',', $data->actionparams['extrasupport']);
-            foreach($courses as $cshort) {
-                shop_register_extra_support($cshort, $data->customeruser, $data->transactionid);
+            foreach ($courses as $cshort) {
+                shop_register_extra_support($cshort, $data->customeruser, $data->transactionid, $endtime);
             }
         }
 

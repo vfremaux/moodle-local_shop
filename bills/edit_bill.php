@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edits/updates a bill
+ * 
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -60,7 +61,7 @@ if ($billid) {
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewAllBills')));
+    redirect(new moodle_url('/local/shop/bills/view.php', ['view' => 'viewAllBills']));
 }
 
 if ($billrec = $mform->get_data()) {
@@ -70,7 +71,7 @@ if ($billrec = $mform->get_data()) {
     $controller->receive('edit', $billrec, $mform);
     $bill = $controller->process('edit');
 
-    $params = array('shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id);
+    $params = ['shopid' => $theshop->id, 'view' => 'viewBill', 'billid' => $bill->id];
     redirect(new moodle_url('/local/shop/bills/view.php', $params));
 } else {
     if ($billid) {

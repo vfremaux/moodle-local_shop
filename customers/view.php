@@ -56,6 +56,13 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
 $PAGE->navbar->add(get_string('customers', 'local_shop'));
+$PAGE->set_pagelayout('standard');
+
+// Add the shop admin secondary nav.
+$nav = shop_get_admin_navigation($theshop);
+$PAGE->set_secondarynav($nav);
+$PAGE->set_secondary_navigation(true);
+$PAGE->set_secondary_active_tab('customers');
 
 if ($view == 'viewCustomer') {
     $PAGE->navbar->add(get_string('customer', 'local_shop'));

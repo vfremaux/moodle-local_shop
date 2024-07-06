@@ -73,14 +73,15 @@ require(['jquery', 'core/log'], function($, log) {
             log.debug('purchaselist in-template initialized');
         },
         select_all: function() {
-            $('.purchase-selects').prop('checked', true);
+            $('.purchase-selects.unfiltered').prop('checked', true);
             purchasemanager_purchaselist.check_list_state();
         },
         select_none: function() {
-            $('.purchase-selects').prop('checked', null);
+            $('.purchase-selects.unfiltered').prop('checked', null);
             purchasemanager_purchaselist.check_list_state();
         },
         check_list_state: function() {
+            $('.purchase-selects.filtered').prop('checked', null); // Ensure filtered items are not uin the way.
             var selchecked = $('.purchase-selects:checked');
             if (selchecked.length > 0) {
                 $('#purchase-selection-tools').prop('disabled', null);

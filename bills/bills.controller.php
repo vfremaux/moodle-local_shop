@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * General controller for bill operations.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,24 +37,56 @@ use moodle_exception;
 
 class bill_controller {
 
+    /**
+     * Action data
+     */
     protected $data;
 
+    /**
+     * Marks data has been received
+     */
     protected $received;
 
+    /**
+     * The current shop instance
+     */
     protected $theshop;
 
+    /**
+     * The current product catalog
+     */
     protected $thecatalog;
 
+    /**
+     * The current access block having been used. May be unknown.
+     */
     protected $theblock;
 
+    /**
+     * May be unused.
+     * @TODO : clean it out
+     */
     protected $mform;
 
+    /**
+     * constructor
+     * @param objectref &$theshop
+     * @param objectref &$thecatalog
+     * @param object $theblock
+     * @TODO : type the signature
+     */
     public function __construct(&$theshop, &$thecatalog, $theblock) {
         $this->theshop = $theshop;
         $this->thecatalog = $thecatalog;
         $this->theblock = $theblock;
     }
 
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
     public function receive($cmd, $data = array()) {
         if (!empty($data)) {
             // Data is fed from outside.
@@ -136,6 +167,10 @@ class bill_controller {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $DB;
 
@@ -331,9 +366,9 @@ class bill_controller {
 
         // Registers accountance lettering **************************************.
         if ($cmd == 'reclettering') {
-            if ($billrec = $DB->get_record('local_shop_bill', array('idnumber' => $this->data->lettering))) {
+            if ($billrec = $DB->get_record('local_shop_bill', ['idnumber' => $this->data->lettering])) {
                 if ($billrec->id != $this->data->billid) {
-                    $params = array('view' => 'viewBill', 'billid' => $billrec->id);
+                    $params = ['view' => 'viewBill', 'billid' => $billrec->id];
                     $badbillurl = new \moodle_url('/local/shop/bills/view.php', $params);
                     $errorline = get_string('uniqueletteringfailure', 'local_shop', $badbillurl);
                     return '<div class="bill_error">'.$errorline.'</div>';
@@ -385,8 +420,8 @@ class bill_controller {
 
             // Creating a customer account for a user if missing.
             if ($billrec->useraccountid != 0) {
-                $user = $DB->get_record('user', array('id' => $billrec->useraccountid));
-                if (!$potcustomers = $DB->get_records('local_shop_customer', array('hasaccount' => $user->id))) {
+                $user = $DB->get_record('user', ['id' => $billrec->useraccountid]);
+                if (!$potcustomers = $DB->get_records('local_shop_customer', ['hasaccount' => $user->id])) {
                     $customer = new Customer(null);
                     $customer->firstname = $user->firstname;
                     $customer->lastname = $user->lastname;
