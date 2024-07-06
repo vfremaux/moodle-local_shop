@@ -26,56 +26,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-$plugin->version   = 2019050301; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2019111200; // Requires this Moodle version.
-$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '3.8.0 (Build 2019050301)';
-$plugin->maturity = MATURITY_RC;
-$plugin->dependencies = array('auth_ticket' => '2012060400');
-
-// Non moodle attributes.
-$plugin->codeincrement = '3.8.0010';
-=======
-$plugin->version   = 2022072900; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022041900; // Requires this Moodle version.
-$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '4.0.0 (Build 2021100700)';
-=======
-$plugin->version   = 2023041803; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2022112801; // Requires this Moodle version.
-$plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '4.1.0 (Build 2023041803)';
->>>>>>> MOODLE_401_STABLE
-=======
 $plugin->version   = 2024053103; // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112801; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
 $plugin->release = '4.1.0 (Build 2024053103)';
->>>>>>> MOODLE_401_STABLE
 $plugin->maturity = MATURITY_STABLE;
 if (function_exists('local_shop_supports_feature') && local_shop_supports_feature() === 'pro') {
-    $plugin->dependencies = array('auth_ticket' => '2012060400', 'local_vfcore' => 2024053100);
+    $plugin->dependencies = ['auth_ticket' => '2012060400', 'local_vfcore' => 2024053100];
 } else {
-    $plugin->dependencies = array('auth_ticket' => '2012060400');
+    $plugin->dependencies = ['auth_ticket' => '2012060400'];
 }
 $plugin->supported = [401, 402];
 
 // Non moodle attributes.
-<<<<<<< HEAD
-<<<<<<< HEAD
-$plugin->codeincrement = '4.0.0017';
->>>>>>> MOODLE_40_STABLE
-=======
-$plugin->codeincrement = '4.1.0021';
->>>>>>> MOODLE_401_STABLE
-=======
 $plugin->codeincrement = '4.1.0023';
->>>>>>> MOODLE_401_STABLE
 $plugin->privacy = 'dualrelease';
-$plugin->prolocations = array(
+$plugin->prolocations = [
     'datahandling/handlers/std_addtrainingcredits',
     'datahandling/handlers/std_addquizattempts',
     'datahandling/handlers/std_createcategory',
@@ -96,4 +62,4 @@ $plugin->prolocations = array(
     'paymodes/paybox',
     'paymodes/publicmandate',
     'paymodes/stripe_checkout',
-);
+];
