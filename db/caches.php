@@ -16,15 +16,15 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @copyright 2006 Valery Fremaux
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$definitions = array(
-    'pro' => array(
-        'mode' => cache_store::MODE_APPLICATION
-    )
-);
+$definitions = [
+    'pro' => [
+        'mode' => cache_store::MODE_APPLICATION,
+    ]
+];
