@@ -74,12 +74,6 @@ class shop_export_source_allbills {
             array('name' => 'items',
                   'width' => 60,
                   'format' => 'smalltext'),
-<<<<<<< HEAD
-            array('name' => 'shortnames',
-                  'width' => 60,
-                  'format' => 'smalltext'),
-=======
->>>>>>> MOODLE_40_STABLE
             array('name' => 'itemnames',
                   'width' => 60,
                   'format' => 'smalltext'),
@@ -209,76 +203,6 @@ class shop_export_source_allbills {
             ";
         }
 
-<<<<<<< HEAD
-        $sqlparams = array($params->catalogid);
-
-        $yearclause = '';
-        $monthclause = '';
-        $statusclause = '';
-        if (!empty($params->y)) {
-            $yearclause = ' AND YEAR(FROM_UNIXTIME(b.emissiondate)) = ? ';
-            $sqlparams[] = $params->y;
-        }
-
-        if (!empty($params->m)) {
-            $monthclause = ' AND MONTH(FROM_UNIXTIME(b.emissiondate)) = ? ';
-            $sqlparams[] = $params->m;
-        }
-
-        if (!empty($params->status)) {
-            $statusclause = ' AND b.status = ? ';
-            $sqlparams[] = $params->status;
-        }
-
-        $sql = "
-            SELECT
-                b.transactionid,
-                b.onlinetransactionid,
-                b.idnumber,
-                b.title,
-                b.worktype,
-                b.status,
-                b.emissiondate,
-                b.lastactiondate,
-                b.untaxedamount,
-                b.taxes,
-                b.amount,
-                GROUP_CONCAT(bi.itemcode ORDER BY bi.ordering SEPARATOR ',') as items,
-                GROUP_CONCAT(ci.shortname ORDER BY bi.ordering SEPARATOR ',') as shortnames,
-                GROUP_CONCAT(ci.name ORDER BY bi.ordering SEPARATOR ', ') as itemnames,
-                c.firstname,
-                c.lastname,
-                c.address,
-                c.city,
-                c.zip,
-                c.country,
-                c.email,
-                c.hasaccount,
-                u.username
-            FROM
-                {local_shop_bill} b,
-                {local_shop_billitem} bi,
-                {local_shop_catalogitem} ci,
-                {local_shop_customer} c
-            LEFT JOIN
-                {user} u
-            ON
-                c.hasaccount = u.id
-            WHERE
-                bi.billid = b.id AND
-                b.customerid = c.id AND
-                ci.code = bi.itemcode AND
-                ci.catalogid = ?
-                {$yearclause}
-                {$monthclause}
-                {$statusclause}
-            GROUP BY
-                b.id
-            ORDER BY
-                b.ordering
-        ";
-=======
->>>>>>> MOODLE_40_STABLE
         $data = $DB->get_records_sql($sql, $sqlparams);
 
         return array($data);

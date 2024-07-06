@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edit a single bill item when editing a bill
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -52,7 +53,7 @@ $billitemid = optional_param('billitemid', 0, PARAM_INT);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/bills/edit_billitem.php', array('billid' => $billid));
+$url = new moodle_url('/local/shop/bills/edit_billitem.php', ['billid' => $billid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -68,17 +69,17 @@ try {
 if ($billitemid) {
     $billitem = new BillItem($billitemid);
     $billitemrec = $billitem->record;
-    $mform = new BillItem_Form('', array('what' => 'edit', 'bill' => $bill, 'catalog' => $thecatalog));
+    $mform = new BillItem_Form('', ['what' => 'edit', 'bill' => $bill, 'catalog' => $thecatalog]);
     $mform->set_data($billitemrec);
 } else {
-    $mform = new BillItem_Form('', array('what' => 'add', 'bill' => $bill, 'catalog' => $thecatalog));
+    $mform = new BillItem_Form('', ['what' => 'add', 'bill' => $bill, 'catalog' => $thecatalog]);
     $formdata = new StdClass;
     $formdata->billid = $bill->id;
     $mform->set_data($formdata);
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $billid)));
+    redirect(new moodle_url('/local/shop/bills/view.php', ['view' => 'viewBill', 'billid' => $billid]));
 }
 
 if ($billitem = $mform->get_data()) {
@@ -88,7 +89,7 @@ if ($billitem = $mform->get_data()) {
     $controller->receive('edititem', $billitem);
     $controller->process('edititem');
 
-    redirect(new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $billitem->billid)));
+    redirect(new moodle_url('/local/shop/bills/view.php', ['view' => 'viewBill', 'billid' => $billitem->billid]));
 }
 
 echo $OUTPUT->header();

@@ -55,13 +55,9 @@ $categoryalias = optional_param('categoryalias', '', PARAM_TEXT);
 if (empty($categoryid) && empty($categoryalias)) {
     // Find a default category to show.
     $catids = array_keys($categories);
-<<<<<<< HEAD
-    $firstcategory = 0;
-=======
 
     $firstcategory = 0;
 
->>>>>>> MOODLE_40_STABLE
     while ($cat = array_shift($catids)) {
         $category = new Category($cat);
         if ($category->is_empty()) {
@@ -73,14 +69,6 @@ if (empty($categoryid) && empty($categoryalias)) {
         }
     }
 
-<<<<<<< HEAD
-    if (!$firstcategory) {
-        print_error("Something is wrong in this shop. No categories usable.");
-        die;
-    }
-    $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
-    redirect(new moodle_url('/local/shop/front/view.php', $params));
-=======
     $errormessage = '';
     if (!$firstcategory) {
         $errormessage = "Something is wrong in this shop. No categories usable (no categories, only hidden categories, or only empty categories).<br/>";
@@ -90,7 +78,6 @@ if (empty($categoryid) && empty($categoryalias)) {
         $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
         redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
->>>>>>> MOODLE_40_STABLE
 }
 
 $categories = $thecatalog->get_all_products($shopproducts);

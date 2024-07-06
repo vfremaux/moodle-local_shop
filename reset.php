@@ -18,9 +18,8 @@
  * Resets all or parts of the shop data.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +38,7 @@ require_capability('local/shop:salesadmin', context_system::instance());
 
 // Prepare page.
 
-$url = new moodle_url('/local/shop/reset.php', array('shopid' => $theshop->id));
+$url = new moodle_url('/local/shop/reset.php', ['shopid' => $theshop->id]);
 $PAGE->set_url($url);
 
 $context = context_system::instance();
@@ -47,11 +46,18 @@ $PAGE->set_context($context);
 
 $PAGE->set_title('shop');
 $PAGE->set_heading('shop');
-$salesurl = new moodle_url('/local/shop/index.php', array('shopid' => $theshop->id));
+$salesurl = new moodle_url('/local/shop/index.php', ['shopid' => $theshop->id]);
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), $salesurl);
 $PAGE->navbar->add(get_string('reset', 'local_shop'));
 $PAGE->set_focuscontrol('');
 $PAGE->set_cacheable('');
+$PAGE->set_pagelayout('standard');
+
+// Add the shop admin secondary nav.
+$nav = shop_get_admin_navigation($theshop);
+$PAGE->set_secondarynav($nav);
+$PAGE->set_secondary_navigation(true);
+$PAGE->set_secondary_active_tab('reset');
 
 $out = '';
 

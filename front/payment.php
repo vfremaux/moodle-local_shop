@@ -52,11 +52,6 @@ if ($action) {
 echo $out;
 
 // Start printing page.
-<<<<<<< HEAD
-
-echo $OUTPUT->box_start('', 'shop-payment');
-=======
->>>>>>> MOODLE_40_STABLE
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 

@@ -18,69 +18,71 @@
  * Forum external functions and service definitions.
  *
  * @package    local_shop
- * @copyright  2017 Valery Fremaux (valery.fremaux@gmail.com)
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
+$functions = [
 
-    'local_shop_get_shop' => array(
+    'local_shop_get_shop' => [
         'classname' => 'local_shop_external',
         'methodname' => 'get_shop',
         'classpath' => 'local/shop/externallib.php',
         'description' => 'Get a shop instance description',
         'type' => 'read',
-        'capabilities' => 'local/shop:export'
-    ),
+        'capabilities' => 'local/shop:export',
+    ],
 
-    'local_shop_get_catalog' => array(
+    'local_shop_get_catalog' => [
         'classname' => 'local_shop_external',
         'methodname' => 'get_catalog',
         'classpath' => 'local/shop/externallib.php',
         'description' => 'Get a catalog instance description',
         'type' => 'read',
-        'capabilities' => 'local/shop:export'
-    ),
+        'capabilities' => 'local/shop:export',
+    ],
 
-    'local_shop_get_catalogcategory' => array(
+    'local_shop_get_catalogcategory' => [
         'classname' => 'local_shop_external',
         'methodname' => 'get_catalogcategory',
         'classpath' => 'local/shop/externallib.php',
         'description' => 'Get a catalog category instance description',
         'type' => 'read',
-        'capabilities' => 'local/shop:export'
-    ),
+        'capabilities' => 'local/shop:export',
+    ],
 
-    'local_shop_get_catalogitem' => array(
+    'local_shop_get_catalogitem' => [
         'classname' => 'local_shop_external',
         'methodname' => 'get_catalogitem',
         'classpath' => 'local/shop/externallib.php',
         'description' => 'Get a catalog item description',
         'type' => 'read',
-        'capabilities' => 'local/shop:export'
-    ),
+        'capabilities' => 'local/shop:export',
+    ],
 
-    'local_shop_get_catalogitems' => array(
+    'local_shop_get_catalogitems' => [
         'classname' => 'local_shop_external',
         'methodname' => 'get_catalogitems',
         'classpath' => 'local/shop/externallib.php',
         'description' => 'Get catalog item list',
         'type' => 'read',
-        'capabilities' => 'local/shop:export'
-    ),
+        'capabilities' => 'local/shop:export',
+    ],
+];
 
-);
-
-$services = array(
-    'Moodle Shop Definition Access API' => array(
-        'functions' => array ('local_shop_get_shop',
-                              'local_shop_get_catalog',
-                              'local_shop_get_catalogcategory',
-                              'local_shop_get_catalogitem',
-                              'local_shop_get_catalogitems'), // Web service function names.
+$services = [
+    'Moodle Shop Definition Access API' => [
+        'functions' => [
+            'local_shop_get_shop',
+            'local_shop_get_catalog',
+            'local_shop_get_catalogcategory',
+            'local_shop_get_catalogitem',
+            'local_shop_get_catalogitems',
+        ], // Web service function names.
         'requiredcapability' => 'local/shop:export',
         'restrictedusers' => 1,
         'enabled' => 0, // Used only when installing the services.
-    )
-);
+    ],
+];

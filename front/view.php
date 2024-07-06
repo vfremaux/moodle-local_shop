@@ -37,10 +37,7 @@ use local_shop\Catalog;
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/form_protection.js.php');
 $PAGE->requires->js('/local/shop/front/js/order.js');
-<<<<<<< HEAD
-=======
 $PAGE->requires->js('/local/shop/js/bootstrap_3.4.1.js');
->>>>>>> MOODLE_40_STABLE
 
 $PAGE->requires->css('/local/shop/stylesdyn.php');
 $PAGE->requires->css('/local/shop/css/bootstrap_3.4.1.css');
@@ -55,9 +52,6 @@ $categoryalias = optional_param('categoryalias', '', PARAM_TEXT);
 // Get the block reference and key context.
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
-<<<<<<< HEAD
-$params = array('shopid' => $theshop->id);
-=======
 $units = 0;
 if (isset($SESSION->shoppingcart->order)) {
     foreach ($SESSION->shoppingcart->order as $shortname => $q) {
@@ -75,7 +69,6 @@ $params = ['shopid' => $theshop->id,
            'units' => $units,
            'required' => $required,
            'assigned' => $assigned];
->>>>>>> MOODLE_40_STABLE
 $PAGE->requires->js_call_amd('local_shop/front', 'init', array($params));
 
 $view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);
@@ -111,17 +104,17 @@ if (empty($config->sellername)) {
     throw new moodle_exception(get_string('errornoselleridentity', 'local_shop'));
 }
 
-$out = $OUTPUT->header();
-
-$renderer = shop_get_renderer('front');
-$renderer->load_context($theshop, $thecatalog, $theblock);
-
 // Fetch view.
 if (is_readable($CFG->dirroot."/local/shop/front/{$view}.php")) {
     include($CFG->dirroot."/local/shop/front/{$view}.php");
 } else {
     throw new moodle_exception(get_string('errormissingview', 'local_shop'));
 }
+
+$out = $OUTPUT->header();
+
+$renderer = shop_get_renderer('front');
+$renderer->load_context($theshop, $thecatalog, $theblock);
 
 if ($view == 'shop') {
     echo '

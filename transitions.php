@@ -15,8 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A catalog of bill transitions handling functions
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,6 +32,7 @@ use local_shop\Bill;
 
 /*
  * perform a transition from state to state for a workflowed object
+ * @param mixed $billorid
  */
 function bill_transition_pending_soldout($billorid) {
     global $CFG, $SITE, $USER, $DB, $OUTPUT;
@@ -59,9 +61,9 @@ function bill_transition_pending_soldout($billorid) {
         $bill->save(true);
 
         include_once($CFG->dirroot.'/local/shop/datahandling/production.php');
-        $bill->customer = $DB->get_record('local_shop_customer', array('id' => $bill->customerid));
+        $bill->customer = $DB->get_record('local_shop_customer', ['id' => $bill->customerid]);
         $bill->foruser = $bill->customer->hasaccount;
-        $bill->user = $DB->get_record('user', array('id' => $bill->customer->hasaccount));
+        $bill->user = $DB->get_record('user', ['id' => $bill->customer->hasaccount]);
 
         $productiondata = produce_postpay($bill);
 
@@ -78,27 +80,31 @@ function bill_transition_pending_soldout($billorid) {
             shop_trace($message);
             // Notify end user.
             // Feedback customer with mail confirmation.
-            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $bill->id, 'transid' => $bill->transactionid));
-            $customeruser = $DB->get_record('user', array('id' => $bill->customer->hasaccount));
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', ['billid' => $bill->id, 'transid' => $bill->transactionid]);
+            $customeruser = $DB->get_record('user', ['id' => $bill->customer->hasaccount]);
             $ticket = ticket_generate($customeruser, 'delegated access', $billurl);
 
-            $vars = array('SERVER' => $SITE->shortname,
-                          'SERVER_URL' => $CFG->wwwroot,
-                          'SELLER' => $config->sellername,
-                          'FIRSTNAME' => $bill->customer->firstname,
-                          'LASTNAME' => $bill->customer->lastname,
-                          'MAIL' => $bill->customer->email,
-                          'CITY' => $bill->customer->city,
-                          'COUNTRY' => $bill->customer->country,
-                          'ITEMS' => count($bill->itemcount),
-                          'PAYMODE' => get_string($bill->paymode, 'local_shop'),
-                          'AMOUNT' => $bill->amount,
-                          'TICKET' => $ticket);
+            $vars = [
+                'SERVER' => $SITE->shortname,
+                'SERVER_URL' => $CFG->wwwroot,
+                'SELLER' => $config->sellername,
+                'FIRSTNAME' => $bill->customer->firstname,
+                'LASTNAME' => $bill->customer->lastname,
+                'MAIL' => $bill->customer->email,
+                'CITY' => $bill->customer->city,
+                'COUNTRY' => $bill->customer->country,
+                'ITEMS' => count($bill->itemcount),
+                'PAYMODE' => get_string($bill->paymode, 'local_shop'),
+                'AMOUNT' => $bill->amount,
+                'TICKET' => $ticket,
+            ];
             $notification  = shop_compile_mail_template('sales_feedback', $vars, '');
-            $params = array('shopid' => $bill->shopid,
-                            'view' => 'bill',
-                            'billid' => $bill->id,
-                            'transid' => $bill->transactionid);
+            $params = [
+                'shopid' => $bill->shopid,
+                'view' => 'bill',
+                'billid' => $bill->id,
+                'transid' => $bill->transactionid,
+            ];
             $customerbillviewurl = new moodle_url('/local/shop/front/view.php', $params);
             $seller = new StdClass;
             $seller->firstname = $config->sellername;
@@ -115,11 +121,17 @@ function bill_transition_pending_soldout($billorid) {
 }
 
 /*
- * function bill_transition_failed_cancelled($billid) {
+ * function bill_transition_failed_cancelled
  * Nothing to do but only mark it.
- * }
+ * @param mixed $billorid
  */
 
+/**
+ * perform a transition from state to state for a workflowed object
+ * When a bill is in fail state, but the seller could get payment by anotherway
+ * will trigger the SOLDOUT state and the production handlers.
+ * @param mixed $billorid
+ */
 function bill_transition_failed_soldout($billid) {
     bill_transition_pending_soldout($billid);
 }
@@ -129,6 +141,7 @@ function bill_transition_failed_soldout($billid) {
  * When a bill gets pending, it waits for a payement that accomplishes the SOLDOUT state.
  * a PLACED to PENDING should try to recover pre_payment production if performed
  * manually
+ * @param mixed $billorid
  */
 function bill_transition_placed_pending($billorid) {
     global $CFG, $SITE, $USER, $DB, $OUTPUT;
@@ -162,25 +175,28 @@ function bill_transition_placed_pending($billorid) {
         if (!empty($productiondata->private)) {
 
             // Notify end user.
-            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $bill->id, 'transid' => $bill->transactionid));
-            $customeruser = $DB->get_record('user', array('id' => $bill->customer->hasaccount));
+            $params = ['billid' => $bill->id, 'transid' => $bill->transactionid];
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', $params);
+            $customeruser = $DB->get_record('user', ['id' => $bill->customer->hasaccount]);
             $ticket = ticket_generate($customeruser, 'delegated access', $billurl);
 
             // Feedback customer with mail confirmation.
-            $vars = array('SERVER' => $SITE->shortname,
-                          'SERVER_URL' => $CFG->wwwroot,
-                          'SELLER' => $config->sellername,
-                          'FIRSTNAME' => $bill->customer->firstname,
-                          'LASTNAME' => $bill->customer->lastname,
-                          'MAIL' => $bill->customer->email,
-                          'CITY' => $bill->customer->city,
-                          'COUNTRY' => $bill->customer->country,
-                          'ITEMS' => count($bill->billItems),
-                          'PAYMODE' => get_string($bill->paymode, 'local_shop'),
-                          'AMOUNT' => $bill->amount,
-                          'TICKET' => $ticket);
+            $vars = [
+                'SERVER' => $SITE->shortname,
+                'SERVER_URL' => $CFG->wwwroot,
+                'SELLER' => $config->sellername,
+                'FIRSTNAME' => $bill->customer->firstname,
+                'LASTNAME' => $bill->customer->lastname,
+                'MAIL' => $bill->customer->email,
+                'CITY' => $bill->customer->city,
+                'COUNTRY' => $bill->customer->country,
+                'ITEMS' => count($bill->billItems),
+                'PAYMODE' => get_string($bill->paymode, 'local_shop'),
+                'AMOUNT' => $bill->amount,
+                'TICKET' => $ticket
+            ];
             $notification  = shop_compile_mail_template('sales_feedback', $vars, '');
-            $params = array('shopid' => $bill->shopid, 'view' => 'bill', 'billid' => $bill->id, 'transid' => $bill->transactionid);
+            $params = ['shopid' => $bill->shopid, 'view' => 'bill', 'billid' => $bill->id, 'transid' => $bill->transactionid];
             $customerbillviewurl = new moodle_url('/local/shop/front/view.php', $params);
             $seller = new StdClass;
             $seller->firstname = $config->sellername;
@@ -205,12 +221,19 @@ function bill_transition_placed_pending($billorid) {
 /*
  * perform a transition from state to state for a workflowed object
  * Placed
+ * @param mixed $billorid
  */
 function bill_transition_placed_soldout($billorid) {
     bill_transition_placed_pending($billorid);
     bill_transition_pending_soldout($billorid);
 }
 
+/*
+ * perform a transition from state to state for a workflowed object
+ * When a bill is marked as SOLDOUT, but there were some manual offline actions
+ * to perform to complete the delivery.
+ * @param mixed $billorid
+ */
 function bill_transition_soldout_complete($billorid) {
     global $CFG, $SITE, $USER, $DB;
 

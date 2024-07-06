@@ -65,15 +65,11 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $row[] = $c->lastname.' '.$c->firstname;
             $email = $c->email;
             if ($c->hasaccount) {
-<<<<<<< HEAD
-                $email .= '&nbsp;'.$OUTPUT->pix_icon('i/moodle_host', get_string('isuser', 'local_shop'));
-=======
                 $userurl = new moodle_url('/user/profile.php', ['id' => $c->hasaccount]);
                 $accountlink = '<a href="'.$userurl.'">';
                 $accountlink .= $this->output->pix_icon('i/moodle_host', get_string('hasamoodleaccount', 'local_shop'));
                 $accountlink .= '</a>';
                 $email .= '&nbsp;'.$accountlink;
->>>>>>> MOODLE_40_STABLE
             }
             $row[] = $email;
             $row[] = $c->placedcount;
@@ -138,13 +134,8 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $template->email = $customer->email;
 
-<<<<<<< HEAD
-        $template->hasemail = $customer->hasaccount;
-        if ($template->hasemail) {
-=======
         $template->hasaccount = $customer->hasaccount;
         if ($template->hasaccount) {
->>>>>>> MOODLE_40_STABLE
             $template->userurl = new moodle_url('/user/view.php', array('id' => $customer->hasaccount));
         }
 
@@ -220,8 +211,6 @@ class shop_customers_renderer extends local_shop_base_renderer {
         echo html_writer::table($table);
     }
 
-<<<<<<< HEAD
-=======
     public function customers_options($mainrenderer) {
         global $SESSION;
 
@@ -265,7 +254,6 @@ class shop_customers_renderer extends local_shop_base_renderer {
         return $str;
     }
 
->>>>>>> MOODLE_40_STABLE
     public function customer_view_links() {
 
         $template = new StdClass;

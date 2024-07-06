@@ -91,13 +91,4 @@ if (empty($customers)) {
     }
 }
 
-<<<<<<< HEAD
-$portlet = new StdClass();
-$portlet->url = $url;
-$portlet->total = $customerscount;
-$portlet->pagesize = $config->maxitemsperpage;
-echo $mainrenderer->paging_results($portlet);
-
-=======
->>>>>>> MOODLE_40_STABLE
 echo $renderer->customer_view_links();

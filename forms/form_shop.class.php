@@ -111,14 +111,9 @@ class Shop_Form extends moodleform {
             $mform->addRule('currency', '', 'required', null, 'client');
             $mform->setDefault('currency', $config->defaultcurrency);
 
-<<<<<<< HEAD
-            // Discount application.
-            $mform->addElement('header', 'heading_discounts', get_string('discountpolicies', 'local_shop'));
-=======
             /*
             // Discount application. OBSOLETE
             $mform->addElement('header', 'heading_discounts', get_string('discounts', 'local_shop'));
->>>>>>> MOODLE_40_STABLE
 
             $mform->addElement('text', 'discountthreshold', get_string('discountthreshold', 'local_shop'), 0);
             $mform->addHelpButton('discountthreshold', 'discountthreshold', 'local_shop');
@@ -136,11 +131,8 @@ class Shop_Form extends moodleform {
             $mform->addHelpButton('discountrate3', 'discountrate3', 'local_shop');
             $mform->setType('discountrate3', PARAM_INT);
 
-<<<<<<< HEAD
-=======
             */
 
->>>>>>> MOODLE_40_STABLE
             // Choosing valid paymodes for this shop instance.
             $mform->addElement('header', 'heading_paymodes', get_string('paymentmethods', 'local_shop'));
             $mform->addElement('html', get_string('carefullchoice', 'local_shop'));

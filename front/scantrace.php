@@ -51,6 +51,13 @@ $PAGE->set_context($context);
 $PAGE->set_title(get_string('scantrace', 'local_shop'));
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
+$PAGE->set_pagelayout('standard');
+
+// Add the shop admin secondary nav.
+$nav = shop_get_admin_navigation($theshop);
+$PAGE->set_secondarynav($nav);
+$PAGE->set_secondary_navigation(true);
+$PAGE->set_secondary_active_tab('trace');
 
 $renderer = $PAGE->get_renderer('local_shop');
 $renderer->load_context($theshop, $thecatalog, $theblock);

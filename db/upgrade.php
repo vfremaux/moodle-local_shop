@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -322,8 +322,6 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2019050301, 'local', 'shop');
     }
 
-<<<<<<< HEAD
-=======
     if ($oldversion < 2020072900) {
         // New version in version.php.
 
@@ -435,9 +433,6 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2021071600, 'local', 'shop');
     }
 
-<<<<<<< HEAD
->>>>>>> MOODLE_40_STABLE
-=======
     if ($oldversion < 2023032400) {
         $table = new xmldb_table('local_shop_catalogitem');
 
@@ -503,6 +498,5 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         report_zabbix_register_plugin('local', 'shop');
     }
 
->>>>>>> MOODLE_401_STABLE
     return $result;
 }

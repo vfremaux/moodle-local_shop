@@ -41,10 +41,7 @@ $PAGE->requires->js('/local/shop/js/shopadmin_late.js', false);
 list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $setid = optional_param('itemid', '', PARAM_INT);
-<<<<<<< HEAD
-=======
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
->>>>>>> MOODLE_40_STABLE
 
 // Security.
 $context = context_system::instance();

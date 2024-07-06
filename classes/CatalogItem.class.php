@@ -848,15 +848,7 @@ class CatalogItem extends ShopObject {
         $export->requireddata = $this->record->requireddata;
         $export->leafleturl = ''.$this->get_leaflet_url();
         $export->thumburl = ''.$this->get_thumb_url();
-<<<<<<< HEAD
-        $export->imageurl =  ''.$this->get_image_url();
-
-        if ($withsubs) {
-            
-        }
-=======
         $export->imageurl = ''.$this->get_image_url();
->>>>>>> MOODLE_40_STABLE
 
         return $export;
     }

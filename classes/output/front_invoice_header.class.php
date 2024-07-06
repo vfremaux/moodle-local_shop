@@ -1,6 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
->>>>>>> MOODLE_40_STABLE
 
 namespace local_shop\output;
 
@@ -68,10 +65,7 @@ class front_invoice_header implements \Templatable {
         }
 
         $template->headingstr = $OUTPUT->heading($headerstring, 1);
-<<<<<<< HEAD
-=======
         $template->headingstringstr = $headerstring; // Unformated version.
->>>>>>> MOODLE_40_STABLE
 
         $template->sellername = $config->sellername;
         $template->selleraddress = $config->selleraddress;

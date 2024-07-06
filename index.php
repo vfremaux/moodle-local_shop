@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,9 +27,9 @@ require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/catalogs/catalogs.controller.php');
 
-use \local_shop\Shop;
-use \local_shop\Catalog;
-use \local_shop\catalogs\catalog_controller;
+use local_shop\Shop;
+use local_shop\Catalog;
+use local_shop\catalogs\catalog_controller;
 
 // Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();

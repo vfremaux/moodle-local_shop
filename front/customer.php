@@ -83,17 +83,10 @@ $template = new StdClass;
 $template->shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theshop->id));
 $template->canlogin = (!isloggedin() || isguestuser());
 $template->oldaccount = (isloggedin() && !isguestuser() && \local_shop\Customer::has_account());
-<<<<<<< HEAD
-$template->loginurl = new moodle_url('/login/index.php');
-$template->shopid = $theshop->id;
-
-$template->loginform = $renderer->login_form();
-=======
 $template->shopid = $theshop->id;
 
 $template->loginform = $renderer->login_form();
 
->>>>>>> MOODLE_40_STABLE
 if (!empty($SESSION->shoppingcart->errors->customerinfo)) {
     $str = $OUTPUT->box_start('shop-error-notice');
     $str .= implode('<br/>', array_values($SESSION->shoppingcart->errors->customerinfo));

@@ -125,13 +125,6 @@ class order_controller extends front_controller_base {
                     $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
 
                     // Add other name fields required by fullname.
-<<<<<<< HEAD
-                    // M4.
-                    $morefields = \core_user\fields::for_name()->excluding('id')->get_required_fields();
-                    foreach ($morefields as $f) {
-                        if (!isset($seller->$f)) {
-                            $seller->$f = '';
-=======
                     $morefields = \local_shop\compat::get_name_fields_as_array();
 
                     if (!empty($morefields)) {
@@ -139,7 +132,6 @@ class order_controller extends front_controller_base {
                             if (!isset($seller->$f)) {
                                 $seller->$f = '';
                             }
->>>>>>> MOODLE_401_STABLE
                         }
                     }
 

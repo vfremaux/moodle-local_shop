@@ -6,40 +6,32 @@
 }
 
 .shop-table {
-<<<<<<< HEAD
-    display: table;
-=======
     display: flex;
     flex-direction: column;
->>>>>>> MOODLE_40_STABLE
     padding: 0 !important;
     text-align: left;
     width: 100%;
 }
 
 .shop-row {
-<<<<<<< HEAD
-    display: table-row;
-}
-
-.shop-cell {
-    display: table-cell;
-=======
     display: flex;
     flex-direction: row;
 }
 
 .shop-cell {
->>>>>>> MOODLE_40_STABLE
     padding: 8px;
 }
 
+.shop-paging {
+    background-color: #666;
+    border-radius: 10px;
+    color: white;
+    display: inline-block;
+    padding: 0px 6px 2px 6px;
+}
+
 .shop-cell.param {
-<<<<<<< HEAD
-    background-color: #d0d0d0;
-=======
     background-color: #ddd;
->>>>>>> MOODLE_40_STABLE
     border-bottom: 1px solid #fefefe;
     border-top: 1px solid #fefefe;
     color: white;
@@ -47,11 +39,7 @@
 }
 
 .shop-cell.header {
-<<<<<<< HEAD
-    background-color: #a0a0a0;
-=======
     background-color: #aaa;
->>>>>>> MOODLE_40_STABLE
     border-bottom: 1px solid #fefefe;
     border-top: 1px solid #fefefe;
     color: white;
@@ -60,15 +48,9 @@
 
 .shop-cell.value {
     background-color: #fefefe;
-<<<<<<< HEAD
-    border-bottom: 1px solid #d0d0d0;
-    border-top: 1px solid #d0d0d0;
-    color: #808080;
-=======
     border-bottom: 1px solid #ccc;
     border-top: 1px solid #ccc;
     color: #888;
->>>>>>> MOODLE_40_STABLE
     font-weight: normal;
 }
 
@@ -88,31 +70,17 @@
 
 .shop-finalcount,
 .shop-finalcount * {
-<<<<<<< HEAD
-    font-size: 1.15em;
-}
-
-.shop-notification {
-    background-color: #fdfdfd;
-    border: 1px solid #f0f0f0;
-=======
     font-size: 1.1em;
 }
 
 .shop-notification {
->>>>>>> MOODLE_40_STABLE
     margin: 10px;
     padding: 30px;
 }
 
 .shop-notification-message {
-<<<<<<< HEAD
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
-=======
     border: 2px solid #ccc;
     border-radius: 8px;
->>>>>>> MOODLE_40_STABLE
     font-size: 1.4em;
     padding: 15px;
 }
@@ -124,57 +92,6 @@
 #shop-notification-message-followup {
     /* initial state */
     margin-top: 15px;
-<<<<<<< HEAD
-}
-
-#shop-notification-result {
-    background-color: #4ac1b3;
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
-    color: white;
-    font-size: 1.4em;
-    margin-bottom: 20px;
-    padding: 15px;
-}
-
-.shop-description {
-    background-color: #fdfdfd;
-    border:1px solid  #f0f0f0;
-    margin: 10px;
-    padding: 10px;
-}
-
-#shop-adminlinks {
-    background-color: #f0f0f0;
-    border:1px dashed  #e0e0e0;
-    border-radius: 7px;
-    margin: 5px;
-}
-
-#shop-orderblock {
-}
-
-#page-blocks-shop-shop-view .generaltable td .lastcol {
-    text-align: right;
-}
-
-.shop-summary {
-    margin-left: 5px;
-    margin-right: 10px;
-    padding: 5px;
-    width: 20%
-}
-
-#shop-ordertotals {
-    margin-top: 10px;
-}
-
-#shop-ordertotals table td {
-    padding: 3px;
-}
-
-#shop-paymodes {
-=======
 }
 
 #shop-notification-result {
@@ -218,7 +135,6 @@
 
 #shop-ordertotals table td {
     padding: 3px;
->>>>>>> MOODLE_40_STABLE
 }
 
 #shop-paymodes td {
@@ -232,13 +148,8 @@
 
 #shop-customerdata,
 #shop-organisationdata {
-<<<<<<< HEAD
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
-=======
     border: 2px solid #ccc;
     border-radius: 8px;
->>>>>>> MOODLE_40_STABLE
     padding: 15px;
 }
 
@@ -246,13 +157,8 @@
     padding: 3px;
 }
 
-<<<<<<< HEAD
-.shop-billstate{
-    background-color: #D0DDE3;
-=======
 .shop-billstate {
     background-color: #ddd;
->>>>>>> MOODLE_40_STABLE
     display: inline;
     padding: 2px;
     width: 120px;
@@ -263,13 +169,8 @@
     font-weight: bolder;
 }
 
-<<<<<<< HEAD
-.shop-grouphead{
-    background-color: #808090;
-=======
 .shop-grouphead {
     background-color: #888;
->>>>>>> MOODLE_40_STABLE
     color: white;
     font-size: 1.3em;
     padding: 1px;
@@ -301,11 +202,7 @@ div.shop-bill_error {
     font-style: italic;
 }
 
-<<<<<<< HEAD
-.shop-bills-options {
-=======
 .shop-entity-options {
->>>>>>> MOODLE_40_STABLE
     float: left;
 }
 
@@ -315,13 +212,8 @@ div.shop-bill_error {
 }
 
 .shop-bills-searchlink {
-<<<<<<< HEAD
-    width:150px;
-    display:inline-block;
-=======
     width: 150px;
     display: inline-block;
->>>>>>> MOODLE_40_STABLE
 }
 
 .shop-availableinternalline {
@@ -345,11 +237,7 @@ div.shop-bill_error {
 }
 
 .shop-abandonned {
-<<<<<<< HEAD
-    background-color: #B0B0B0;
-=======
     background-color: #bbb;
->>>>>>> MOODLE_40_STABLE
     border: 1px white solid;
 }
 
@@ -367,11 +255,7 @@ div.shop-bill_error {
 }
 
 .shop-billstate {
-<<<<<<< HEAD
-    border: 1px solid #606060;
-=======
     border: 1px solid #666;
->>>>>>> MOODLE_40_STABLE
     font-family: monospace;
     font-size: 1.5em;
     padding: 2px;
@@ -383,11 +267,7 @@ div.shop-bill_error {
 
 .shop-controls,
 .shop-setcontrols {
-<<<<<<< HEAD
-    border-left: 1px solid #d0d0d0;
-=======
     border-left: 1px solid #ccc;
->>>>>>> MOODLE_40_STABLE
     line-height: 20px;
     min-width: 80px;
     padding-left: 8px;
@@ -425,37 +305,23 @@ div.shop-bill_error {
 }
 
 .shop-relocate-box {
-<<<<<<< HEAD
-    border: 1px dashed #b0b0b0;
-=======
     border: 1px dashed #ccc;
 }
 
 .shop-front-leaflet {
     margin: 20px 0;
->>>>>>> MOODLE_40_STABLE
 }
 
 input.shop-error,
 select.shop-error {
-<<<<<<< HEAD
-    background-color: #fbcec6 !important;
-    background-image: url([[pix:theme|images/input_bg_error]]) !important;
-    color: black !important;
-=======
     background-color: #fbcec6;
     background-image: url([[pix:theme|images/input_bg_error]]);
     color: black;
->>>>>>> MOODLE_40_STABLE
 }
 
 .shop-bills-flowcontrol {
     background-color: #fff0f0;
-<<<<<<< HEAD
-    border: 4px #ff0000 solid;
-=======
     border: 2px #f00 solid;
->>>>>>> MOODLE_40_STABLE
     border-radius: 8px;
     margin-left: 5px;
     margin-right: 5px;
@@ -465,10 +331,6 @@ select.shop-error {
 
 #billpanel,
 #orderpanel {
-<<<<<<< HEAD
-    margin-left: 10px;
-    margin-right: 10px;
-=======
     margin-left: 40px;
     margin-right: 40px;
 }
@@ -477,23 +339,12 @@ select.shop-error {
      border: 2px solid #ccc;
      border-radius: 8px;
      padding-left: 10px;
->>>>>>> MOODLE_40_STABLE
 }
 
 .providingline {
     background-color: transparent;
     color: #000;
 }
-<<<<<<< HEAD
-.previewline {
-    background-color: transparent;
-    color: #808080;
-}
-.suspendedline {
-    background-color: #fefefe;
-    color: #a0a0a0;
-}
-=======
 
 .previewline {
     background-color: transparent;
@@ -505,7 +356,6 @@ select.shop-error {
     color: #aaa;
 }
 
->>>>>>> MOODLE_40_STABLE
 .abandonnedline {
     background-color: #600000;
     color: #a00000;
@@ -532,13 +382,8 @@ select.shop-error {
 
 .shop-role-list-container,
 .shop-information-area {
-<<<<<<< HEAD
-    border: 2px solid #a5a0cb;
-    border-radius: 15px;
-=======
     border: 2px solid #ccc;
     border-radius: 8px;
->>>>>>> MOODLE_40_STABLE
     margin: 5px;
     padding: 15px;
 }
@@ -548,25 +393,6 @@ select.shop-error {
     margin-bottom: 10px;
     margin-top: 10px;
     width: 100%;
-<<<<<<< HEAD
-}
-
-.shop-pricerange {
-    -khtml-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    background-color: #eeeeee;
-    border-radius: 6px;
-    color: #737379;
-    font-weight: bolder;
-    padding-left: 5px;
-    padding: 1px;
-}
-
-.shop-priceamount {
-    font-weight: bolder;
-    padding: 3px;
-=======
 }
 
 .shop-pricerange {
@@ -589,7 +415,6 @@ select.shop-error {
 .discount-overriden-amount {
     text-decoration: line-through;
     color: #aaa;
->>>>>>> MOODLE_40_STABLE
 }
 
 .tiny-text {
@@ -609,13 +434,8 @@ select.shop-error {
 }
 
 .shop-error-notice {
-<<<<<<< HEAD
-    background-color: #ffcccc;
-    border: 1px red solid;
-=======
     background-color: #fcc;
     border: 2px red solid;
->>>>>>> MOODLE_40_STABLE
     border-radius: 8px;
     font-size: 1.1em;
     font-weight: bold;
@@ -626,16 +446,6 @@ select.shop-error {
 
 .shop-error-result {
     color: #cc0000;
-<<<<<<< HEAD
-}
-
-.shop-warning-result {
-    color:#cc9900;
-}
-
-.shop-message-result {
-    color:#2ba501;
-=======
 }
 
 .shop-warning-result {
@@ -651,7 +461,6 @@ select.shop-error {
     background-color: #fee;
     padding: 5px;
     border-radius: 8px;
->>>>>>> MOODLE_40_STABLE
 }
 
 #addparticipant input,
@@ -669,11 +478,7 @@ select.shop-error {
 }
 
 div.shop-bill-abstract {
-<<<<<<< HEAD
-    color: #606060;
-=======
     color: #666;
->>>>>>> MOODLE_40_STABLE
     font-size: 0.8em;
 }
 
@@ -689,18 +494,9 @@ div.shop-bill-abstract {
 }
 
 #eulas-panel {
-<<<<<<< HEAD
-    background-color: #ffffff;
-    border: solid 1px #d0d0d0;
-=======
     background-color: #fff;
     border: solid 1px #ccc;
-<<<<<<< HEAD
->>>>>>> MOODLE_40_STABLE
-    height: 60%;
-=======
     height: 90%;
->>>>>>> MOODLE_401_STABLE
     margin-right: 30px;
     overflow-y: scroll;
     padding: 30px;
@@ -721,15 +517,9 @@ div.shop-bill-abstract {
 }
 
 #shop-requirement-caption {
-<<<<<<< HEAD
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    border: 1px solid #808080;
-=======
     -moz-border-radius: 8px;
     border-radius: 8px;
     border: 2px solid #ccc;
->>>>>>> MOODLE_40_STABLE
     font-size: 1.1em;
     margin-bottom: 15px;
     margin-top: 10px;
@@ -737,15 +527,9 @@ div.shop-bill-abstract {
 }
 
 .shop-product-requirements {
-<<<<<<< HEAD
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    border: 1px solid #808080;
-=======
     -moz-border-radius: 8px;
     border-radius: 8px;
     border: 2px solid #ccc;
->>>>>>> MOODLE_40_STABLE
     margin-top: 10px;
     padding: 5px;
 }
@@ -770,11 +554,7 @@ div.shop-bill-abstract {
 }
 
 .requ-desc {
-<<<<<<< HEAD
-    color: #606060;
-=======
     color: #666;
->>>>>>> MOODLE_40_STABLE
     font-size: 0.9em;
     font-style: italic;
     padding: 2px;
@@ -786,11 +566,7 @@ div.shop-bill-abstract {
 }
 
 #requ-submit.unsaved input {
-<<<<<<< HEAD
-    background-image: -webkit-linear-gradient(top, #ffeeee, #ff6666) !important;
-=======
     background-image: -webkit-linear-gradient(top, #fee, #f66) !important;
->>>>>>> MOODLE_40_STABLE
 }
 
 #requ-submit input {
@@ -798,19 +574,11 @@ div.shop-bill-abstract {
 }
 
 .shop-requ-error {
-<<<<<<< HEAD
-    -moz-border-radius: 3px;
-    background-color: #ffe0e0;
-    border-radius: 3px;
-    border: 1px solid red;
-    color: #A00000;
-=======
     -moz-border-radius: 8px;
     background-color: #ffe0e0;
     border-radius: 8px;
     border: 2px solid red;
     color: #a00000;
->>>>>>> MOODLE_40_STABLE
     font-size: 0.8em;
     margin: 4px;
     padding: 3px;
@@ -818,11 +586,7 @@ div.shop-bill-abstract {
 
 .shop-requ-input-error {
     background-color: #ffe0e0;
-<<<<<<< HEAD
-    color: #ff0000;
-=======
     color: #f00;
->>>>>>> MOODLE_40_STABLE
 }
 
 table.shop-role-assignations > tr > td {
@@ -835,11 +599,7 @@ table.shop-role-assignations > tr > td {
     padding-left: 30px;
 }
 
-<<<<<<< HEAD
-.shop-article{
-=======
 .shop-article {
->>>>>>> MOODLE_40_STABLE
     font-size: 100%;
     vertical-align: top;
     align-items: center;
@@ -884,20 +644,6 @@ table.shop-article {
 .shop-article h2 {
     margin-top: 0;
 }
-<<<<<<< HEAD
-
-h3.shop-front-partof {
-    font-size: 16px;
-    line-height: 1.2em;
-}
-
-.shop-article.bundle .shop-front-elements {
-    display: table;
-}
-
-.shop-article.bundle .shop-front-element {
-    display: table-row;
-=======
 
 h3.shop-front-partof {
     font-size: 16px;
@@ -906,16 +652,6 @@ h3.shop-front-partof {
 
 .shop-front-bundle-content {
     display: flex;
->>>>>>> MOODLE_40_STABLE
-}
-
-.shop-article.set .shop-front-elements {
-    display: flex;
-    flex-direction: row;
-}
-
-.shop-article.set .shop-front-elements > div {
-    flex-basis: 49%;
 }
 
 .shop-front-productpix {
@@ -933,31 +669,6 @@ h3.shop-front-partof {
 }
 
 .shop-front-productdef a[name]::before {
-<<<<<<< HEAD
-    content:initial !important;
-    margin:0px !important;
-    padding:0px !important;
-}
-
-
-.shop-front-refblock {
-    display: flex;
-/*    grid-template-columns: 80% 11% 9%;
-    grid-template-rows: 1fr 1fr; */
-}
-
-.shop-front-pricelist,
-.shop-front-ref,
-.shop-front-order {
-    grid-row: 1;
-}
-
-.shop-order-bag {
-    grid-row: 2;
-    text-align:right;
-    grid-column: 1 / span 3;
-    padding-top: 10px;
-=======
     content: initial !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -975,24 +686,16 @@ h3.shop-front-partof {
 .shop-order-bag {
     text-align: right;
     min-width: 80px;
->>>>>>> MOODLE_40_STABLE
 }
 
 .shop-front-bundle-elements {
     display: flex;
-<<<<<<< HEAD
-}
-
-.shop-front-bundle-elements div {
-    flex-basis: 49%;
-=======
     flex-wrap: wrap;
 }
 
 .shop-front-bundle-elements > div {
     flex-basis: 30%;
     margin: 0 20px;
->>>>>>> MOODLE_40_STABLE
 }
 
 .shop-front-pricerange, .shop-front-price, .shop-front-label {
@@ -1002,17 +705,6 @@ h3.shop-front-partof {
 .shop-front-label {
     margin-right: 15px;
 }
-<<<<<<< HEAD
-.shop-front-label:after{
-/*    content: ":"; */
-}
-
-.shop-front-price {
-    font-weight: bold;
-    margin-right: 3em;
-}
-=======
->>>>>>> MOODLE_40_STABLE
 
 .shop-order-paymode {
     background-color: #eee;
@@ -1027,23 +719,6 @@ h3.shop-front-partof {
     opacity: 0.5;
 }
 
-<<<<<<< HEAD
-.shop-desc-gradient {
-    /*
-    background: -moz-linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
-    background: -webkit-linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
-    background: linear-gradient(top, #000000 0%, #000000 50%, #ffffff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    */
-    max-height: 2.6em;
-    margin-bottom: 1.3em;
-    overflow: hidden;
-}
-
-.shop-desc-gradient:after {
-    content: "...";
-=======
 .shop-modal-header {
     display: flex;
     width: 100%;
@@ -1078,7 +753,6 @@ h3.shop-front-partof {
     height: 150px;
     margin-right: 40px;
     width: 150px;
->>>>>>> MOODLE_40_STABLE
 }
 
 .shop-main-menu td {
@@ -1147,13 +821,6 @@ h3.shop-front-partof {
 }
 
 .shop-line-commands {
-<<<<<<< HEAD
-    padding: 3px;
-    margin: 2px 2px 2px 5px;
-    border: 1px solid #d0d0d0;
-    background-color: #e8e8e8;
-    border-radius: 5px;
-=======
     padding: 5px;
     margin: 2px 2px 2px 5px;
     border: 1px solid #ccc;
@@ -1163,7 +830,6 @@ h3.shop-front-partof {
 
 #shop-loginbox {
     padding-bottom: 20px;
->>>>>>> MOODLE_40_STABLE
 }
 
 .access-code {
@@ -1173,27 +839,16 @@ h3.shop-front-partof {
 }
 
 ul.shop-test-result {
-<<<<<<< HEAD
-    padding: 4px 4px 4px 20px;
-    border-radius: 4px;
-    border: 1px solid gray;
-=======
     padding: 5px 5px 5px 20px;
     border-radius: 8px;
     border: 2px solid #ccc;
->>>>>>> MOODLE_40_STABLE
     background-color: #f0f0f0;
 }
 
 .shop-paymodes-choice {
     background-color: #f0f0f0;
-<<<<<<< HEAD
-    border: 1px solid #a0a0a0;
-    border-radius: 6px;
-=======
     border: 1px solid #ccc;
     border-radius: 8px;
->>>>>>> MOODLE_40_STABLE
     margin: 5px 0;
     padding: 10px;
 }
@@ -1217,18 +872,8 @@ ul.shop-test-result {
 }
 
 .shop-front-description-toggle {
-<<<<<<< HEAD
-    text-align:center;
-}
-
-.shop-front-description-toggle img {
-    margin-left:auto;
-    margin-right:auto;
-    margin-bottom:10px;
-=======
     text-align: left;
     margin-bottom: 20px;
->>>>>>> MOODLE_40_STABLE
 }
 
 td.right-align {
@@ -1236,13 +881,8 @@ td.right-align {
 }
 
 #shop-invoice {
-<<<<<<< HEAD
-     border: 1px solid #444;
-     border-radius: 10px;
-=======
      border: 2px solid #ccc;
      border-radius: 8px;
->>>>>>> MOODLE_40_STABLE
 }
 
 #page-local-shop-front-view  .generaltable {
@@ -1255,11 +895,7 @@ td.right-align {
 }
 
 #page-local-shop-front-view h1 {
-<<<<<<< HEAD
-     color : #000;
-=======
      color: #000;
->>>>>>> MOODLE_40_STABLE
 }
 
 #page-local-shop-front-view .customer-data {
@@ -1269,19 +905,11 @@ td.right-align {
      padding-bottom: 10px;
 }
 
-<<<<<<< HEAD
-.sectionHeader h2, h2#invoice-taxes , h2#invoice-paymode, h2#order-mailto{
-     margin-left: 20px;
-     color:#444;
-     border-bottom: 2px solid #444;
-     width:95%;
-=======
 .sectionHeader h2, h2#invoice-taxes , h2#invoice-paymode, h2#order-mailto {
      margin-left: 20px;
      color: #444;
      border-bottom: 2px solid #444;
      width: 95%;
->>>>>>> MOODLE_40_STABLE
      font-size: 1.5rem;
 }
 
@@ -1326,11 +954,7 @@ h2.shop-caption {
 }
 
 .shop-front-description {
-<<<<<<< HEAD
-    font-size: 1em;
-=======
     font-size: 1.11em;
->>>>>>> MOODLE_40_STABLE
     line-height: 1.5em;
     font-weight: normal;
 }
@@ -1353,9 +977,6 @@ h2.shop-caption {
 
 #page-local-shop-front-view #region-main {
     min-height: 600px;
-<<<<<<< HEAD
-}
-=======
 }
 
 #page-local-shop-front-view [disabled="disabled"] {
@@ -1498,9 +1119,6 @@ input.purchaseoption:checked {
     font-size: 0.8em;
     color: #bbb;
 }
-<<<<<<< HEAD
->>>>>>> MOODLE_40_STABLE
-=======
 
 h3.product-detail {
     font-size: 1em;
@@ -1509,4 +1127,3 @@ h3.product-detail {
 .local-shop-bundle-thumbnail {
     max-width: 250px;
 }
->>>>>>> MOODLE_401_STABLE

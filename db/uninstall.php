@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -25,10 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_shop_uninstall() {
     global $DB;
 
-    $editingteacherid   = $DB->get_field('role', 'id', array('shortname' => 'editingteacher'));
-    $courseownerid   = $DB->get_field('role', 'id', array('shortname' => 'courseowner'));
-    $coursecreatorid   = $DB->get_field('role', 'id', array('shortname' => 'coursecreator'));
-    $categoryownerid   = $DB->get_field('role', 'id', array('shortname' => 'categoryowner'));
+    $editingteacherid   = $DB->get_field('role', 'id', ['shortname' => 'editingteacher']);
+    $courseownerid   = $DB->get_field('role', 'id', ['shortname' => 'courseowner']);
+    $coursecreatorid   = $DB->get_field('role', 'id', ['shortname' => 'coursecreator']);
+    $categoryownerid   = $DB->get_field('role', 'id', ['shortname' => 'categoryowner']);
     // Remap all teacherowner assignments to editingteacher.
     $sql = "
         UPDATE
@@ -52,9 +52,9 @@ function xmldb_local_shop_uninstall() {
     $DB->execute($sql);
 
     // Delete the teacherowner role if absent.
-    $courseownerrole = $DB->get_record('role', array('name' => 'courseowner'));
-    $categoryownerrole = $DB->get_record('role', array('name' => 'categoryowner'));
-    $salesmanagerrole = $DB->get_record('role', array('name' => 'sales'));
+    $courseownerrole = $DB->get_record('role', ['name' => 'courseowner']);
+    $categoryownerrole = $DB->get_record('role', ['name' => 'categoryowner']);
+    $salesmanagerrole = $DB->get_record('role', ['name' => 'sales']);
     delete_role($courseownerrole->id);
     delete_role($categoryownerrole->id);
     delete_role($salesmanagerrole->id);

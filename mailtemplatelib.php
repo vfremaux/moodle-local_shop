@@ -18,18 +18,19 @@
  * Form for editing HTML block instances.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die;
 
 /**
  * useful templating functions from an older project of mine, hacked for Moodle
- * @param $template the template's file name from $CFG->sitedir
- * @param $infomap a hash containing pairs of parm => data to replace in template
- * @param $subplugin when in a subplugin, the frankenstyle name of the subplugin
+ * @param string $template the template's file name from $CFG->sitedir
+ * @param array $infomap a hash containing pairs of parm => data to replace in template
+ * @param string $subplugin when in a subplugin, the frankenstyle name of the subplugin
+ * @param string $lang 
+ * @param string $transactionid
  * @return a fully resolved template where all data has been injected
  */
 function shop_compile_mail_template($template, $infomap, $subplugin, $lang = '', $transactionid = '') {
@@ -51,9 +52,9 @@ function shop_compile_mail_template($template, $infomap, $subplugin, $lang = '',
 
 /**
  * resolves and get the content of a Mail template, acoording to the user's current language.
- * @param virtual the virtual mail template name
- * @param module the current module
- * @param lang if default language must be overriden
+ * @param string $virtual the virtual mail template name
+ * @param string $lang if default language must be overriden
+ * @param string $subplugin if default language must be overriden
  * @return string the template's content or false if no template file is available
  */
 function shop_get_mail_template($virtual, $lang, $subplugin = '') {

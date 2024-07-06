@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * View all available bills (filtered).
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,12 +40,9 @@ $offset = $billpage * $pagesize;
 
 $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
 $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
-<<<<<<< HEAD
-=======
 if (local_shop_supports_feature('shop/partners')) {
     $p = optional_param('p', 0 + @$SESSION->shop->patnerid, PARAM_INT);
 }
->>>>>>> MOODLE_40_STABLE
 $shopid = optional_param('shopid', 0, PARAM_INT);
 $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
 $cur = optional_param('cur', 'EUR', PARAM_TEXT);
@@ -61,8 +57,8 @@ if ($action != '') {
 }
 
 $fullview = get_user_preferences('local_shop_bills_fullview', false);
-if (!$fullview && !in_array($status, array('SOLDOUT', 'COMPLETE'))) {
-    $params = array('view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => 'COMPLETE', 'customerid' => $customerid);
+if (!$fullview && !in_array($status, ['SOLDOUT', 'COMPLETE'])) {
+    $params = ['view' => 'viewAllBills', 'dir' => $dir, 'order' => $sortorder, 'status' => 'COMPLETE', 'customerid' => $customerid];
     redirect(new moodle_url('/local/shop/bills/view.php', $params));
 }
 
@@ -88,13 +84,6 @@ if ($bills) {
         }
         // TODO : Make more efficent filter directly in SQL.
         // Redraw ShopObject to accept filter on calculated columns.
-        /*
-        if ($y) {
-            if (date('Y', $bill->emissiondate) != $y) {
-                unset($bills[$billid]);
-            }
-        }
-        */
         $billsbystate[$bill->status][$bill->id] = $bill;
     }
 } else {
@@ -131,15 +120,6 @@ if (empty($billsbystate)) {
     foreach (array_keys($billsbystate) as $billstate) {
         echo $renderer->bill_status_line($billstate);
 
-<<<<<<< HEAD
-        $CFG->subtotal = 0;
-        foreach ($billsbystate[$billstate] as $portlet) {
-            $subtotal += floor($portlet->amount * 100) / 100;
-            echo $renderer->bill_merchant_line($portlet);
-        }
-
-        echo $renderer->bill_group_subtotal($subtotal, $billcurrency, $samecurrency);
-=======
         $subtotal = 0;
         $untaxedsubtotal = 0;
         foreach ($billsbystate[$billstate] as $bill) {
@@ -156,7 +136,6 @@ if (empty($billsbystate)) {
         ];
 
         echo $renderer->bill_group_subtotal($data, $billcurrency, $samecurrency);
->>>>>>> MOODLE_40_STABLE
 
         $i++;
     }
@@ -170,4 +149,3 @@ if ($pagingbar) {
     echo $pagingbar;
     echo $renderer->no_paging_switch($url, $urlfilter);
 }
-

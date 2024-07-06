@@ -83,13 +83,10 @@ $string['tobundle'] = 'Convert to bundle';
 $string['toproduct'] = 'Convert back to product';
 $string['unlinkproduct'] = 'Unlink product';
 $string['unlinkcontent'] = 'Unlink all subproducts';
-<<<<<<< HEAD
-=======
 $string['unitid'] = 'A Product instance internal id';
 $string['unitstartdate'] = 'A Product instance start of activity date';
 $string['unitenddate'] = 'A Product instance end of validity date';
 $string['notending'] = 'Indefinite validity products';
->>>>>>> MOODLE_40_STABLE
 $string['user_enrolment'] = 'User enrol';
 $string['warningcustomersupportcoursedefaultstosettings'] = 'Customer support course defaults to settings';
 $string['warningnocustomersupportcourse'] = 'No customer support area defined';

@@ -163,10 +163,7 @@ class ShopObject {
         $sql .= " FROM {{$table}} ";
         if (!empty($filter)) {
             $sql .= " WHERE ";
-<<<<<<< HEAD
-=======
             $wheres[] = ' 1 = 1 ';
->>>>>>> MOODLE_40_STABLE
             foreach ($filter as $cond => $value) {
                 if ($value === '*') {
                     continue;

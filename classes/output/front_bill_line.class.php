@@ -1,6 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,22 +13,48 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
->>>>>>> MOODLE_40_STABLE
 
+/**
+ * Data for bill line in front office.
+ *
+ * @package     local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 namespace local_shop\output;
+
+use Stdclass;
+use renderer_base;
 
 class front_bill_line implements \Templatable {
 
+    /**
+     * represented bill item
+     */
     protected $billitem;
+
+    /**
+     * Rendering options
+     */
     protected $options;
 
+    /**
+     * Base constructor
+     * @param object $billitem
+     * @param array $options
+     */
     public function __construct($billitem, $options) {
         $this->billitem = $billitem;
         $this->options = $options;
     }
 
-    public function export_for_template(\renderer_base $output) {
-        $template = new \StdClass;
+    /**
+     * Exporter for template
+     * @param renderer_base $output
+     */
+    public function export_for_template(renderer_base $output) {
+        $template = new StdClass();
 
         $billitem = $this->billitem;
         $options = $this->options;

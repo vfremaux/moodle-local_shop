@@ -1,7 +1,4 @@
 <?php
-<<<<<<< HEAD
-
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -28,7 +25,6 @@
 /**
  * A test client for testing shop web services.
  */
->>>>>>> MOODLE_40_STABLE
 class test_client {
 
     protected $t; // target.

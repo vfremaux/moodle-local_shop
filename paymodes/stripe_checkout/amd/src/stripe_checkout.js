@@ -1,9 +1,13 @@
 
+// jslint no-undef:false
+// eslint no-undef:false
+/* global Stripe */
 define(['jquery', 'core/log'], function($, log) {
 
-    stripecheckout = {
+    var stripecheckout = {
 
         sid: '',
+
         pk: '',
 
         init: function(args) {
@@ -12,7 +16,7 @@ define(['jquery', 'core/log'], function($, log) {
             this.pk = params.pk;
             this.sid = params.sid;
 
-            log.debug('ADM shoppaymode strip checkout initialized with sid: ' + this.sid);
+            log.debug('ADM shoppaymode stripe checkout initialized with sid: ' + this.sid);
         },
 
         checkout: function() {

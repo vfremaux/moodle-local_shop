@@ -56,10 +56,7 @@ $string['expectedpaiement'] = 'Expected payment date';
 $string['exportasxls'] = 'Export as XLS';
 $string['fullviewon'] = 'Full view';
 $string['fullviewoff'] = 'Short view';
-<<<<<<< HEAD
-=======
 $string['flowcontrol'] = 'State Control';
->>>>>>> MOODLE_40_STABLE
 $string['generateacode'] = 'Generate a code';
 $string['goto'] = 'Go to:';
 $string['lettering'] = 'Cross-reference coding';
@@ -90,21 +87,6 @@ $string['updatelettering'] = 'Update';
 $string['pickuser'] = 'Choose a customer or a user account:';
 $string['worktype'] = 'Worktype';
 $string['searchforanidinstructions'] = 'Search for a bill id (or start of id)';
-
-// Calendar.
-$string['jan'] = 'January';
-$string['feb'] = 'February';
-$string['mar'] = 'March';
-$string['apr'] = 'April';
-$string['may'] = 'May';
-$string['jun'] = 'June';
-$string['jul'] = 'July';
-$string['aug'] = 'August';
-$string['sep'] = 'September';
-$string['oct'] = 'October';
-$string['nov'] = 'November';
-$string['dec'] = 'December';
-
 
 // Calendar.
 $string['jan'] = 'January';

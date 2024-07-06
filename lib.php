@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -40,29 +39,22 @@ function local_shop_supports_feature($feature = null) {
     }
 
     if (!isset($supports)) {
-        $supports = array(
-            'pro' => array(
-                'handlers' => array('fullstack'),
-                'paymodes' => array('fullstack'),
-                'catalog' => array('instances'),
-<<<<<<< HEAD
-                'shop' => array('instances', 'partners'),
-                'products' => array('editable'),
-                'docgen' => array('pdf'),
-                'api' => array('ws'),
-=======
-                'shop' => array('instances', 'partners', 'discounts'),
-                'products' => array('editable', 'smarturls'),
-                'docgen' => array('pdf'),
-                'api' => array('ws'),
-                'bill' => array('attachements', 'lettering'),
->>>>>>> MOODLE_40_STABLE
-            ),
-            'community' => array(
-                'handlers' => array('basic'),
-                'paymodes' => array('basic'),
-            ),
-        );
+        $supports = [
+            'pro' => [
+                'handlers' => ['fullstack'],
+                'paymodes' => ['fullstack'],
+                'catalog' => ['instances'],
+                'shop' => ['instances', 'partners', 'discounts'],
+                'products' => ['editable', 'smarturls'],
+                'docgen' => ['pdf'],
+                'api' => ['ws'],
+                'bill' => ['attachements', 'lettering'],
+            ],
+            'community' => [
+                'handlers' => ['basic'],
+                'paymodes' => ['basic'],
+            ],
+        ];
     }
 
     // Check existance of the 'pro' dir in plugin.
@@ -97,15 +89,28 @@ function local_shop_supports_feature($feature = null) {
     return $versionkey;
 }
 
+/**
+ * checks in file storage if a leaflet document exists for an item.
+ * TODO : move it to CatalogItem class
+ * @param int $itemid
+ */
 function local_shop_has_leaflet($itemid) {
-
     $fs = get_file_storage();
     $context = context_system::instance();
     return !$fs->is_area_empty($context->id, 'local_shop', 'catalogitemleaflet', $itemid);
-
 }
 
-function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forcedownload, array $options = array()) {
+/**
+ * Standard pluginfile
+ * @param object $course
+ * @param int $cmid
+ * @param object $context
+ * @param string $filearea
+ * @param array $args
+ * @param bool $forcedownload
+ * @param array $options
+ */
+function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $DB;
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {
@@ -122,7 +127,7 @@ function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forc
     $itemid = (int)array_shift($args);
 
     if ($filearea != 'shoplogo') {
-        if (!$record = $DB->get_record($areas[$filearea], array('id' => $itemid))) {
+        if (!$record = $DB->get_record($areas[$filearea], ['id' => $itemid])) {
             return false;
         }
     }
@@ -164,11 +169,10 @@ function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forc
  * item entity resides
  */
 function local_shop_get_file_areas() {
-    return array(
+    return [
         'description' => 'local_shop',
         'eula' => 'local_shop',
         'catalogdescription' => 'local_shop_catalog',
-/*        'catalogsalesconditions' => 'local_shop_catalog', */
         'catalogbillfooter' => 'local_shop_catalog',
         'catalogitemdescription' => 'local_shop_catalogitem',
         'catalogitemnotes' => 'local_shop_catalogitem',
@@ -179,7 +183,7 @@ function local_shop_get_file_areas() {
         'catalogitemleaflet' => 'local_shop_catalogitem',
         'shoplogo' => 'shoplogo',
         'categorydescription' => 'local_shop_catalogcategory',
-    );
+    ];
 }
 
 /**

@@ -49,8 +49,6 @@ Transfers discounts to pro zone and redraw the discount policies application.
 ##################################################
 
 Adds pro caching zone
-<<<<<<< HEAD
-=======
 
 2022090900 --- XX.0019
 ##################################################
@@ -66,9 +64,6 @@ Add smarturls feature (pro).
 ##################################################
 
 Add product instance expiration notifications to sales admins.
-<<<<<<< HEAD
->>>>>>> MOODLE_401_STABLE
-=======
 
 2024053100 --- XX.022
 ##################################################
@@ -101,4 +96,14 @@ Scénario 2 : Prorogation
 - le distributeur/propriétaire réactive le process distributeur dans l'interface du plugin
 - Seul le produit de prorogation lui est proposé (l'autre est filtré par la présence d'un licensekey non nul)
 - En activant l'option d'achat (et en transmettant sa licensekey) l'unité de vente enregsitrée existante, correspondant à cette clef, est prorogé de la durée définie dans le produit boutique. 
->>>>>>> MOODLE_401_STABLE
+
+2024060300 --- XX.023
+##################################################
+
+Ajout des outils d'alignement du gestionnaire d'unités de vente.
+Consolidation des workflows
+
+2024060300 --- XX.024
+##################################################
+
+Intégration des principes de navigation M40

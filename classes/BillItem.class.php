@@ -76,19 +76,12 @@ class BillItem extends ShopObject {
      */
     public $actionparams;
 
-<<<<<<< HEAD
-    public function __construct($idorrec, $light = false, &$bill = null, $ordering = -1, $nosave = false) {
-        global $DB;
-
-        $this->bill = $bill;
-=======
     public function __construct($idorrec, $light = false, $internalrefs = [], $ordering = -1, $nosave = false) {
         global $DB;
 
         if (array_key_exists('bill', $internalrefs)) {
             $this->bill = $internalrefs['bill'];
         }
->>>>>>> MOODLE_40_STABLE
         $this->nosave = $nosave;
 
         // Here we make some assertions to check the billitem integrity.

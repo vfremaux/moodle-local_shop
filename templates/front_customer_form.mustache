@@ -23,39 +23,6 @@
 }}
 <!-- local_shop/front_customer_form -->
 <div id="shop-customerdata">
-<<<<<<< HEAD
-    <table cellspacing="3" width="100%">
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}lastname{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left" class="form-input">
-                <input type="text"
-                       name="customerinfo::lastname"
-                       size="20"
-                       onchange="setupper(this)" value="{{{lastname}}}" />
-            </td>
-        </tr>
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}firstname{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left" class="form-input">
-                <input type="text"
-                       name="customerinfo::firstname"
-                       size="20"
-                       onchange="capitalizewords(this)" value="{{{firstname}}}" />
-            </td>
-        </tr>
-
-        {{#customerorganisationrequired}}
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}organisation, local_shop{{/str}}:</b>
-            </td>
-            <td align="left" class="form-input">
-                <input type="text"
-=======
     <fieldset class="quickform-fieldset clearfix">
         <div class="fcontainer clearfix">
             <div class="fitemtitle">
@@ -93,75 +60,10 @@
             <div class="felement ftext">
                 <input type="text"
                        id="id_organisation"
->>>>>>> MOODLE_40_STABLE
                        name="customerinfo::organisation"
                        size="26"
                        maxlength="64"
                        value="{{{organisation}}}" />
-<<<<<<< HEAD
-            </td>
-        </tr>
-        {{/customerorganisationrequired}}
-
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}address{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left" class="form-input">
-                <input type="text"
-                       name="customerinfo::address"
-                       size="26"
-                       onchange="setupper(this)" value="{{{address}}}" />
-            </td>
-        </tr>
-
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}city{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left" class="form-input">
-                <input type="text"
-                       name="customerinfo::city"
-                       size="26"
-                       onchange="setupper(this)" value="{{{city}}}" />
-            </td>
-        </tr>
-
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}zip, local_shop{{/str}}<sup style="color : red">*</sup>:</b>
-            </td>
-            <td align="left" class="form-input">
-                <input type="text"
-                       name="customerinfo::zip"
-                       size="6"
-                       value="{{zip}}" />
-            </td>
-        </tr>
-
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}country{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left" class="form-input">
-                {{{countryselect}}}
-            </td>
-        </tr>
-
-        <tr valign="top">
-            <td align="right" class="form-label">
-                <b>{{#str}}email, local_shop{{/str}}<sup style="color: red">*</sup>:</b>
-            </td>
-            <td align="left" class="form-input">
-                <input type="text"
-                       name="customerinfo::email"
-                       size="30"
-                       onchange="checkemail(this)" value="{{{email}}}" />
-            </td>
-        </tr>
-    </table>
-
-=======
             </div>
         </div>
         {{/customerorganisationrequired}}
@@ -245,6 +147,5 @@
             </div>
         </div>
     </fieldset>
->>>>>>> MOODLE_40_STABLE
 </div>
 <!-- /local_shop/front_customer_form -->

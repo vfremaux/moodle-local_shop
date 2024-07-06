@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    blocks
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeproelarn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -55,7 +54,7 @@ define('SHOP_UNIT_EXPIRATION_FORECAST_DELAY1', DAYSECS * 30);
 define('SHOP_UNIT_EXPIRATION_FORECAST_DELAY2', DAYSECS * 90);
 
 /*
- * what means the quantity ordered
+ * What means the quantity ordered
  * SHOP_QUANT_NO_SEATS : will not ask for required seats to assign. Such product as physical
  * goods f.e., or unassigned seat packs
  * SHOP_QUANT_ONE_SEAT : products gives one seat only whatever the quantity ordered. Usually
@@ -83,7 +82,7 @@ define('SHOP_BILL_REFUSED', 'REFUSED'); // An order could not conclude because p
 define('SHOP_BILL_CANCELLED', 'CANCELLED'); // An order has been cancelled after placement (or pending with no final resolution).
 
 /**
- * gives all product status
+ * Gives all product status.
  */
 function shop_get_status() {
     $status = [
@@ -99,7 +98,8 @@ function shop_get_status() {
 }
 
 /**
- * get a block instance for the shop
+ * Get a block instance for the shop.
+ * @param int $instanceid the shop block instance
  */
 function shop_get_block_instance($instanceid) {
     global $DB;
@@ -122,7 +122,7 @@ function shop_get_block_instance($instanceid) {
  */
 function shop_get_standard_handlers_options() {
 
-    $stdhandlers = array();
+    $stdhandlers = [];
     $handlers = get_list_of_plugins('/local/shop/datahandling/handlers');
     foreach ($handlers as $h) {
         if (!preg_match('/^std|ext/', $h)) {
@@ -147,7 +147,7 @@ function shop_decode_params($catalogitemcode) {
     if (empty($paramstring)) {
         return null;
     }
-    $params = array();
+    $params = [];
     $paramelements = explode('&', $paramstring);
     foreach ($paramelements as $elm) {
         list($key, $value) = explode('=', $elm);
@@ -185,6 +185,9 @@ function shop_delivery_check_available_backup($courseid) {
 /**
  * Make a course backup without user data and stores it in the course
  * backup area.
+ * @param int $courseid
+ * @param array $options
+ * @param stringref &$log
  */
 function shop_backup_for_template($courseid, $options = [], &$log = '') {
     global $CFG, $USER;
@@ -269,7 +272,6 @@ function shop_backup_for_template($courseid, $options = [], &$log = '') {
     }
 }
 
-
 /**
  * generates a username from given identity
  * @param object $user a user record. 
@@ -313,7 +315,7 @@ function shop_generate_username($user, $checkunique = false) {
         $ix = '';
         $usernamebase = $username;
 
-        while ($DB->record_exists('user', array('username' => $username, 'deleted' => 0))) {
+        while ($DB->record_exists('user', ['username' => $username, 'deleted' => 0])) {
             if ($ix == '') {
                 $ix = 1;
             } else {
@@ -423,6 +425,9 @@ function shop_restore_template($archivefile, $data) {
 
 /**
  * Create category with the given name and parentID returning a category ID
+ * @param string $catname
+ * @param string $description
+ * @param int $catparent
  */
 function shop_fast_make_category($catname, $description = '', $catparent = 0) {
     global $DB;
@@ -461,6 +466,7 @@ function shop_fast_make_category($catname, $description = '', $catparent = 0) {
 
 /**
  * background style switch
+ * @param bool $reset
  */
 function shop_switch_style($reset = 0) {
     static $style;
@@ -478,7 +484,10 @@ function shop_switch_style($reset = 0) {
 
 /**
  * A centralized wrapper allowing to keep all debug trace calls in place in code.
- *
+ * @param string $message
+ * @param int $level
+ * @param string $label
+ * @param int $backtracelevel
  */
 function shop_debug_trace($message, $level = 0, $label = '', $backtracelevel = 1) {
     if (function_exists('debug_trace')) {
@@ -491,6 +500,7 @@ function shop_debug_trace($message, $level = 0, $label = '', $backtracelevel = 1
  * opens a trace file
  * IMPORTANT : check very carefully the path and name of the file or it might destroy
  * some piece of code. Do NEVER use in production systems unless hot case urgent tracking
+ * @param string $output empty value or 'mail'
  */
 function shop_open_trace($output) {
     global $CFG;
@@ -516,6 +526,7 @@ function shop_open_trace($output) {
 
 /**
  * closes an open trace
+ * @param string $output empty value or 'mail'
  */
 function shop_close_trace($output) {
     global $CFG;
@@ -567,6 +578,9 @@ function shop_trace_open($str, $output, $dest) {
 
 /**
  * write to the trace
+ * @param string $str
+ * @param string $output
+ * @param string $dest
  */
 function shop_trace($str, $output = '', $dest = null) {
     global $CFG;
@@ -594,13 +608,15 @@ function shop_trace($str, $output = '', $dest = null) {
 
 /**
  * Deprectated : use class method instead
+ * @param float $htprice
+ * @param int $taxid
  */
 function shop_calculate_taxed($htprice, $taxid) {
     static $taxcache;
     global $DB, $CFG;
 
     if (!isset($taxcache)) {
-        $taxcache = array();
+        $taxcache = [];
     }
     if (!array_key_exists($taxid, $taxcache)) {
         if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', ['id' => $taxid])) {
@@ -626,21 +642,22 @@ function shop_get_supported_currencies() {
     static $currencies;
 
     if (!isset($currencies)) {
-        $currencies = array('EUR' => get_string('EUR', 'local_shop'), // Euro.
-                            'CHF' => get_string('CHF', 'local_shop'), // Swiss franc.
-                            'USD' => get_string('USD', 'local_shop'), // US dollar.
-                            'CAD' => get_string('CAD', 'local_shop'), // Canadian dollar.
-                            'AUD' => get_string('AUD', 'local_shop'), // Australian dollar.
-                            'GPB' => get_string('GPB', 'local_shop'), // English pound.
-                            'TRY' => get_string('TRY', 'local_shop'), // Turkish pound.
-                            'PLN' => get_string('PLN', 'local_shop'), // Zloty (Poland).
-                            'RON' => get_string('RON', 'local_shop'), // Roman leu.
-                            'ILS' => get_string('ILS', 'local_shop'), // Shekel.
-                            'KRW' => get_string('KRW', 'local_shop'), // Won (corea).
-                            'JPY' => get_string('JPY', 'local_shop'), // Yen (japan).
-                            'TND' => get_string('TND', 'local_shop'), // Dinar (Tunisian, internal market).
-                            'MAD' => get_string('MAD', 'local_shop'), // Dinar (Marocco, internal market).
-                      );
+        $currencies = [
+            'EUR' => get_string('EUR', 'local_shop'), // Euro.
+            'CHF' => get_string('CHF', 'local_shop'), // Swiss franc.
+            'USD' => get_string('USD', 'local_shop'), // US dollar.
+            'CAD' => get_string('CAD', 'local_shop'), // Canadian dollar.
+            'AUD' => get_string('AUD', 'local_shop'), // Australian dollar.
+            'GPB' => get_string('GPB', 'local_shop'), // English pound.
+            'TRY' => get_string('TRY', 'local_shop'), // Turkish pound.
+            'PLN' => get_string('PLN', 'local_shop'), // Zloty (Poland).
+            'RON' => get_string('RON', 'local_shop'), // Roman leu.
+            'ILS' => get_string('ILS', 'local_shop'), // Shekel.
+            'KRW' => get_string('KRW', 'local_shop'), // Won (corea).
+            'JPY' => get_string('JPY', 'local_shop'), // Yen (japan).
+            'TND' => get_string('TND', 'local_shop'), // Dinar (Tunisian, internal market).
+            'MAD' => get_string('MAD', 'local_shop'), // Dinar (Marocco, internal market).
+        ];
     }
     return $currencies;
 }
@@ -666,13 +683,7 @@ function shop_build_context() {
         $shopid = optional_param('id', @$SESSION->shop->shopid, PARAM_INT);
     }
 
-<<<<<<< HEAD
-    $SESSION->shop->shopid = optional_param('shopid', @$SESSION->shop->shopid, PARAM_INT);
-
-    if ($SESSION->shop->shopid) {
-=======
     if ($shopid) {
->>>>>>> MOODLE_40_STABLE
         try {
             $theshop = new Shop($shopid);
             $SESSION->shop = $theshop;
@@ -729,7 +740,7 @@ function shop_build_context() {
         $theblock = shop_get_block_instance($SESSION->shop->blockid);
     }
 
-    return array($theshop, $thecatalog, $theblock);
+    return [$theshop, $thecatalog, $theblock];
 }
 
 /**
@@ -776,15 +787,17 @@ function shop_get_bill_states() {
     static $status;
 
     if (!isset($status)) {
-        $status = ['PLACED' => 'PLACED',
-                   'PENDING' => 'PENDING',
-                   'PAYBACK' => 'PAYBACK',
-                   'PARTIAL' => 'PARTIAL',
-                   'SOLDOUT' => 'SOLDOUT',
-                   'RECOVERING' => 'RECOVERING',
-                   'CANCELLED' => 'CANCELLED',
-                   'COMPLETE' => 'COMPLETE',
-                   'WORKING' => 'WORKING'];
+        $status = [
+            'PLACED' => 'PLACED',
+            'PENDING' => 'PENDING',
+            'PAYBACK' => 'PAYBACK',
+            'PARTIAL' => 'PARTIAL',
+            'SOLDOUT' => 'SOLDOUT',
+            'RECOVERING' => 'RECOVERING',
+            'CANCELLED' => 'CANCELLED',
+            'COMPLETE' => 'COMPLETE',
+            'WORKING' => 'WORKING',
+        ];
     }
     return $status;
 }
@@ -797,9 +810,11 @@ function shop_get_bill_worktypes() {
     static $worktypes;
 
     if (!isset($worktypes)) {
-        $worktypes = ['PROD' => 'PROD',
-                      'PACK' => 'PACK',
-                      'OTHER' => 'OTHER'];
+        $worktypes = [
+            'PROD' => 'PROD',
+            'PACK' => 'PACK',
+            'OTHER' => 'OTHER',
+        ];
     }
     return $worktypes;
 }
@@ -822,8 +837,10 @@ function shop_get_transid() {
 }
 
 /**
- * Pursuant a table has a sortorder field, pulls down an item in a specific select context.
- * @param array $context
+ * Pursuant a table has a sortorder field, pulls up an item in a specific select context.
+ * @param array $selectcontext
+ * @param int $itemid
+ * @param string $table table name
  */
 function shop_list_up($selectcontext, $itemid, $table) {
     global $DB;
@@ -840,6 +857,12 @@ function shop_list_up($selectcontext, $itemid, $table) {
     $DB->update_record($table, $nextitem);
 }
 
+/**
+ * Pursuant a table has a sortorder field, pulls down an item in a specific select context.
+ * @param array $selectcontext
+ * @param int $itemid
+ * @param string $table table name
+ */
 function shop_list_down($selectcontext, $itemid, $table) {
     global $DB;
 
@@ -856,6 +879,11 @@ function shop_list_down($selectcontext, $itemid, $table) {
     $DB->update_record($table, $previtem);
 }
 
+/**
+ * Reorders the data in a list.
+ * @param array $selectcontext
+ * @param string $table table name
+ */
 function shop_list_reorder($selectcontext, $table) {
     global $DB;
 
@@ -870,6 +898,10 @@ function shop_list_reorder($selectcontext, $table) {
     }
 }
 
+/**
+ * Get the list of enabled pay mode plugins for a shop instance.
+ * @param object $theshop
+ */
 function shop_get_enabled_paymodes($theshop) {
     global $USER;
 
@@ -878,7 +910,7 @@ function shop_get_enabled_paymodes($theshop) {
     $paymodes = get_list_of_plugins('/local/shop/paymodes');
     $systemcontext = context_system::instance();
 
-    $availables = array();
+    $availables = [];
 
     \local_shop\Shop::expand_paymodes($theshop);
     foreach ($paymodes as $var) {
@@ -926,11 +958,21 @@ function shop_get_enabled_paymodes($theshop) {
     return $availables;
 }
 
+/**
+ * Checks if a shop instance has paymodes enabled.
+ * @param object $theshop
+ */
 function shop_has_enabled_paymodes($theshop) {
     $availables = shop_get_enabled_paymodes($theshop);
     return !empty($availables);
 }
 
+/**
+ * Returns tabs for bills
+ * @TODO : move it to appropriate location. It is here because used in several places.
+ * @param int $total
+ * @param bool $fullview
+ */
 function shop_get_bill_tabs($total, $fullview) {
 
     $view = optional_param('view', '', PARAM_TEXT);
@@ -938,7 +980,7 @@ function shop_get_bill_tabs($total, $fullview) {
     $url = new moodle_url('/local/shop/bills/view.php', ['view' => $view]);
     $nopaging = optional_param('nopaging', '0', PARAM_BOOL);
 
-    $rows = array();
+    $rows = [];
 
     if ($total->WORKING) {
         $label = get_string('bill_WORKINGs', 'local_shop');
@@ -980,15 +1022,14 @@ function shop_get_bill_tabs($total, $fullview) {
     return $rows;
 }
 
+/**
+ * Get filter for bills
+ */
 function shop_get_bill_filtering() {
     global $SESSION;
 
     $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
     $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
-<<<<<<< HEAD
-    $SESSION->shop->billyear = $y;
-    $SESSION->shop->billmonth = $m;
-=======
     $customerid = optional_param('customerid', 0 + @$SESSION->shop->customerid, PARAM_INT);
     $SESSION->shop->billyear = $y;
     $SESSION->shop->billmonth = $m;
@@ -998,7 +1039,6 @@ function shop_get_bill_filtering() {
         $SESSION->shop->partnerid = $p;
     }
 
->>>>>>> MOODLE_40_STABLE
     $shopid = optional_param('shopid', 0, PARAM_INT);
     $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
     $cur = optional_param('cur', 'EUR', PARAM_TEXT);
@@ -1019,12 +1059,9 @@ function shop_get_bill_filtering() {
     if (!empty($m)) {
         $filter['MONTH(FROM_UNIXTIME(emissiondate))'] = $m;
     }
-<<<<<<< HEAD
-=======
     if (!empty($customerid)) {
         $filter['customerid'] = $customerid;
     }
->>>>>>> MOODLE_40_STABLE
 
     $filterclause = '';
     $filterclause = " AND currency = '{$cur}' ";
@@ -1037,10 +1074,6 @@ function shop_get_bill_filtering() {
     if ($m) {
         $filterclause .= " AND MONTH(FROM_UNIXTIME(emissiondate)) = '{$m}' ";
     }
-<<<<<<< HEAD
-
-    $urlfilter = "y=$y&m=$m&status=$status&shopid=$shopid&cur=$cur&nopaging=$nopaging";
-=======
     if ($customerid) {
         $filterclause .= " AND customerid = '{$customerid}' ";
     }
@@ -1057,9 +1090,12 @@ function shop_get_bill_filtering() {
         $urlfilter = "p=$p&".$urlfilter;
     }
 
-    return array($filter, $filterclause, $urlfilter);
+    return [$filter, $filterclause, $urlfilter];
 }
 
+/**
+ * Get a filter assets for customers listing.
+ */ 
 function shop_get_customer_filtering() {
     global $SESSION;
 
@@ -1077,13 +1113,14 @@ function shop_get_customer_filtering() {
     }
 
     $urlfilter = "shopid=$shopid&nopaging=$nopaging";
->>>>>>> MOODLE_40_STABLE
 
-    return array($filter, $filterclause, $urlfilter);
+    return [$filter, $filterclause, $urlfilter];
 }
 
 /**
  * to fix some windows issues with strftime.
+ * @param string $format
+ * @param int $timestamp
  */
 function local_shop_strftimefixed($format, $timestamp = null) {
     global $CFG;
@@ -1103,15 +1140,78 @@ function local_shop_strftimefixed($format, $timestamp = null) {
     return strftime($format, $timestamp);
 }
 
+/**
+ * Chooses the appropriate renderer for context.
+ * @param string $classname
+ */
 function shop_load_output_class($classname) {
     global $CFG;
 
-<<<<<<< HEAD
-=======
     $parts = explode('\\', $classname);
     $classname = array_pop($parts);
 
->>>>>>> MOODLE_40_STABLE
     $classpath = $CFG->dirroot.'/local/shop/classes/output/'.$classname.'.class.php';
     include_once($classpath);
+}
+
+/**
+ * Builds a secondary navigation for all admin screens
+ * @see templates/main_menu and main renderer main_menu()
+ * @param object $theshop
+ */
+function shop_get_admin_navigation($theshop) {
+    global $PAGE;
+
+    $config = get_config('local_shop');
+
+    $nav = new \core\navigation\views\secondary($PAGE);
+
+    if (local_shop_supports_feature('shop/instances')) {
+        $allshopsurl = new moodle_url('/local/shop/pro/shop/view.php', ['view' => 'viewAllShops', 'id' => $theshop->id]);
+        $nav->add_node($nav::create(get_string('allshops', 'local_shop'), $allshopsurl, $nav::TYPE_CUSTOM, '', 'shops'));
+    } else {
+        $shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $theshop->id, 'shopid' => $theshop->id]);
+        $nav->add_node($nav::create(get_string('editshopsettings', 'local_shop'), $shopsettingsurl, $nav::TYPE_CUSTOM, '', 'shops'));
+    }
+
+    $billsurl = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewAllBills', 'id' => $theshop->id]);
+    $nav->add_node($nav::create(get_string('bills', 'local_shop'), $billsurl, $nav::TYPE_CUSTOM, '', 'bills'));
+
+    $productsurl = new moodle_url('/local/shop/purchasemanager/view.php', ['view' => 'viewAllProductInstances', 'id' => $theshop->id]);
+    $nav->add_node($nav::create(get_string('products', 'local_shop'), $productsurl, $nav::TYPE_CUSTOM, '', 'products'));
+
+    $customersurl = new moodle_url('/local/shop/customers/view.php', ['view' => 'viewAllCustomers', 'id' => $theshop->id]);
+    $nav->add_node($nav::create(get_string('customers', 'local_shop'), $customersurl, $nav::TYPE_CUSTOM, '', 'customers'));
+
+    if (local_shop_supports_feature('shop/partners')) {
+        $params = ['id' => $theshop->id, 'view' => 'viewAllPartners'];
+        $partnersurl = new moodle_url('/local/shop/pro/partners/view.php', $params);
+        $nav->add_node($nav::create(get_string('partners', 'local_shop'), $partnersurl, $nav::TYPE_CUSTOM, '', 'partners'));
+    }
+
+    $taxesurl = new moodle_url('/local/shop/taxes/view.php', ['view' => 'viewAllTaxes', 'id' => $theshop->id]);
+    $nav->add_node($nav::create(get_string('taxes', 'local_shop'), $taxesurl, $nav::TYPE_CUSTOM, '', 'taxes'));
+
+    if (local_shop_supports_feature('shop/discounts')) {
+        $discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', ['view' => 'viewAllDiscounts', 'id' => $theshop->id]);
+        $nav->add_node($nav::create(get_string('discounts', 'local_shop'), $discountsurl, $nav::TYPE_CUSTOM, '', 'discounts'));
+    }
+
+    if (!empty($config->useshipping)) {
+        $shippingurl = new moodle_url('/local/shop/shipzones/index.php', ['id' => $theshop->id]);
+        $nav->add_node($nav::create(get_string('shippings', 'local_shop'), $shippingurl, $nav::TYPE_CUSTOM, '', 'shippings'));
+    }
+
+    $traceurl = new moodle_url('/local/shop/front/scantrace.php', ['id' => $theshop->id]);
+    $nav->add_node($nav::create(get_string('trace', 'local_shop'), $traceurl, $nav::TYPE_CUSTOM, '', 'trace'));
+
+    if (has_capability('moodle/site:config', context_system::instance())) {
+        $settingsurl = new moodle_url('/admin/settings.php', ['section' => 'localsettingshop']);
+        $nav->add_node($nav::create(get_string('shopsettings', 'local_shop'), $settingsurl));
+    }
+
+    $reseturl = new moodle_url('/local/shop/reset.php', ['id' => $theshop->id]);
+    $nav->add_node($nav::create(get_string('reset', 'local_shop'), $reseturl, $nav::TYPE_CUSTOM, '', 'reset'));
+
+    return $nav;
 }

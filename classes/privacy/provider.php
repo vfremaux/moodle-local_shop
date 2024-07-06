@@ -162,48 +162,6 @@ class provider implements
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid) : \core_privacy\local\request\contextlist {
-<<<<<<< HEAD
-
-        $ratingsql = \core_rating\privacy\provider::get_sql_join('rat', 'mod_forum', 'post', 'p.id', $userid);
-        // Fetch all forum discussions, and forum posts.
-        $sql = "SELECT c.id
-                  FROM {context} c
-                  JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
-                  JOIN {modules} m ON m.id = cm.module AND m.name = :modname
-                  JOIN {forum} f ON f.id = cm.instance
-             LEFT JOIN {forum_discussions} d ON d.forum = f.id
-             LEFT JOIN {forum_posts} p ON p.discussion = d.id
-             LEFT JOIN {forum_digests} dig ON dig.forum = f.id AND dig.userid = :digestuserid
-             LEFT JOIN {forum_subscriptions} sub ON sub.forum = f.id AND sub.userid = :subuserid
-             LEFT JOIN {forum_track_prefs} pref ON pref.forumid = f.id AND pref.userid = :prefuserid
-             LEFT JOIN {forum_read} hasread ON hasread.forumid = f.id AND hasread.userid = :hasreaduserid
-             LEFT JOIN {forum_discussion_subs} dsub ON dsub.forum = f.id AND dsub.userid = :dsubuserid
-             {$ratingsql->join}
-                 WHERE (
-                    p.userid        = :postuserid OR
-                    d.userid        = :discussionuserid OR
-                    dig.id IS NOT NULL OR
-                    sub.id IS NOT NULL OR
-                    pref.id IS NOT NULL OR
-                    hasread.id IS NOT NULL OR
-                    dsub.id IS NOT NULL OR
-                    {$ratingsql->userwhere}
-                )
-        ";
-        $params = [
-            'modname'           => 'forum',
-            'contextlevel'      => CONTEXT_MODULE,
-            'postuserid'        => $userid,
-            'discussionuserid'  => $userid,
-            'digestuserid'      => $userid,
-            'subuserid'         => $userid,
-            'prefuserid'        => $userid,
-            'hasreaduserid'     => $userid,
-            'dsubuserid'        => $userid,
-        ];
-        $params += $ratingsql->params;
-=======
->>>>>>> MOODLE_40_STABLE
 
         $contextlist = new \core_privacy\local\request\contextlist();
         $contextlist->add_system_context();
@@ -271,15 +229,6 @@ class provider implements
         writer::with_context(context_system::instance())->export_data([$recordobj->id], (object) $recordobj);
     }
 
-<<<<<<< HEAD
-    /**
-     * Delete all data for all users in the specified context.
-     *
-     * GRDP statement on shop records : There is a superseeding legal obligation to
-     * keep track of all commercial data : France : Rec.30;Art.7(1)(c), Article L123-22 Code du commerce
-     *
-     * "Les documents comptables et les pièces justificatives sont conservés pendant dix ans."
-=======
     protected static function export_bill($user, $recordobj) {
         global $DB;
 
@@ -339,7 +288,6 @@ class provider implements
 
     /**
      * Delete all data for all users in the specified context.
->>>>>>> MOODLE_40_STABLE
      *
      * GRDP statement on shop records : There is a superseeding legal obligation to
      * keep track of all commercial data : France : Rec.30;Art.7(1)(c), Article L123-22 Code du commerce

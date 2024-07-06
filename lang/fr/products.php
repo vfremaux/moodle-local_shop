@@ -49,10 +49,7 @@ $string['financials'] = 'Paramètres financiers';
 $string['handlerparams'] = 'Paramètres du gestionnaire&nbsp;';
 $string['helpcode'] = 'code produit';
 $string['helpshortname'] = 'nom court produit';
-<<<<<<< HEAD
-=======
 $string['idnumber'] = 'Identifiant externe';
->>>>>>> MOODLE_40_STABLE
 $string['newbundle'] = 'Nouveau lot';
 $string['newcategory'] = 'Nouvelle catégorie';
 $string['newitem'] = 'Nouvel élément';
@@ -84,10 +81,7 @@ $string['tobundle'] = 'Convertir en lot';
 $string['toproduct'] = 'Convertir en produit simple';
 $string['unlinkproduct'] = 'Délier le produit';
 $string['unlinkcontent'] = 'Délier les produits';
-<<<<<<< HEAD
-=======
 $string['unitsearch'] = 'Chercher des unités produits';
->>>>>>> MOODLE_40_STABLE
 $string['user_enrolment'] = 'Inscription individuelle';
 $string['todate'] = ' jusqu\'au ';
 $string['unitid'] = 'Id d\'unité produit';

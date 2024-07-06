@@ -126,11 +126,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
 
             $stepicon = $this->output->image_url(current_language().'/'.$icon.$iconstate, 'local_shop');
-<<<<<<< HEAD
-            $str .= '<img src="'.$stepicon.'" />&nbsp;';
-=======
             $str .= '<img src="'.$stepicon.'" />';
->>>>>>> MOODLE_40_STABLE
         }
         $str .= '</center>';
         $str .= '</div>';
@@ -170,19 +166,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->amount = sprintf('%0.2f', round($amount, 2));
         $template->totalobjects = $totalobjects;
 
-<<<<<<< HEAD
-        $template->discountrate = $this->theshop->calculate_discountrate_for_user($amount, $this->context, $reason);
-        $template->reason = $reason;
-
-        if ($template->discountrate) {
-            $discounted = $amount - ($amount * $discountrate / 100);
-        } else {
-            $discounted = $amount;
-        }
-
-        $template->discounted = sprintf('%0.2f', round($discounted, 2));
-
-=======
         if (local_shop_supports_feature('shop/discounts')) {
             include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
             $discountpreview = \local_shop\Discount::preview_discount_in_session($this->theshop);
@@ -197,7 +180,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
->>>>>>> MOODLE_40_STABLE
         if (!empty($config->useshipping)) {
             $template->useshipping = true;
             $template->shipchecked = (!empty($SESSION->shoppingcart->shipping)) ? 'checked="checked"' : '';
@@ -426,57 +408,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $currentcategory = $categoryid;
 
         $c = 0;
-<<<<<<< HEAD
-        foreach ($levelcategories as $c) {
-            $cat = $categories[$c->id];
-            if ($template->withtabs && ($currentcategory != $cat->id)) {
-                continue;
-            }
-            if (!isset($firstcatid)) {
-                $firstcatid = $cat->id;
-            }
-
-            $categorytpl = new StdClass;
-            $categorytpl->id = $cat->id;
-
-            if (empty($withtabs)) {
-                $cat->level = 1;
-                $categorytpl->heading = $this->output->heading($cat->name, $cat->level);
-            }
-
-            if (!empty($cat->description)) {
-                $categorytpl->description = format_text($cat->description, FORMAT_MOODLE, array('para' => false));
-            }
-
-            if (!empty($cat->products)) {
-                $categorytpl->hasproducts = true;
-                foreach ($cat->products as $product) {
-
-                    $producttpl = new StdClass;
-                    $product->check_availability();
-                    $product->currency = $this->theshop->get_currency('symbol');
-                    $product->salesunit = $product->get_sales_unit_url();
-                    $product->preset = 0 + @$SESSION->shoppingcart->order[$product->shortname];
-                    switch ($product->isset) {
-                        case PRODUCT_SET:
-                            $producttpl->product = $this->product_set($product, true);
-                            break;
-                        case PRODUCT_BUNDLE:
-                            $producttpl->product = $this->product_bundle($product, true);
-                            break;
-                        default:
-                            $producttpl->product = $this->product_block($product);
-                    }
-                    $categorytpl->products[] = $producttpl;
-                }
-            } else {
-                $categorytpl->hasproducts = false;
-                $categorytpl->noproductincategorynotification = get_string('noproductincategory', 'local_shop');
-            }
-            $c++;
-
-            $template->categories[] = $categorytpl;
-=======
         if (!empty($levelcategories)) {
             foreach ($levelcategories as $c) {
                 $cat = $categories[$c->id];
@@ -528,7 +459,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
                 $template->categories[] = $categorytpl;
             }
->>>>>>> MOODLE_40_STABLE
         }
 
         return $this->output->render_from_template('local_shop/front_catalog', $template);
@@ -551,17 +481,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $subelementclass = (!empty($product->ispart)) ? 'element' : 'product';
         $subelementclass .= ($product->available) ? '' : ' shadowed';
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        $template->subelementclass = $subelementclass;
-        $template->ispart = $product->ispart;
-        $template->issetpart = $product->issetpart;
-        $template->isbundlepart = $product->isbundlepart;
-=======
-        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
-=======
         $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
->>>>>>> MOODLE_401_STABLE
         $template->subelementclass = $subelementclass;
         $template->ispart = $product->ispart;
         $template->issetpart = $product->issetpart;
@@ -582,13 +502,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
         $template->id = $product->id;
         $template->shortname = $product->shortname;
-<<<<<<< HEAD
->>>>>>> MOODLE_40_STABLE
-=======
         if (local_shop_supports_feature('products/smarturls')) {
             $template->seoalias = $product->seoalias;
         }
->>>>>>> MOODLE_401_STABLE
         $template->code = $product->code;
         $template->subelementclass = $subelementclass;
 
@@ -610,10 +526,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->imageurl = $image->out();
         } else {
             $template->hasimage = false;
-<<<<<<< HEAD
-        }
-        $template->thumburl = $product->get_thumb_url();
-=======
         }
         $thumburloverride = $product->get_thumb_url(!empty($template->thumburl));
         if (!empty($thumburloverride)) {
@@ -623,7 +535,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             // Get the absolute default as last chance.
             $template->thumburl = ($product->get_thumb_url(false))->out();
         }
->>>>>>> MOODLE_40_STABLE
 
         $template->name = format_string($product->name);
         $template->shortname = $product->shortname;
@@ -637,28 +548,15 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->showname = $product->showsnameinset;
         }
 
-<<<<<<< HEAD
-        $template->shortdescription = false;
-=======
         $template->hasdetails = false;
         $template->isshortdescription = false;
         $template->available = !$product->noorder && $product->available;
->>>>>>> MOODLE_40_STABLE
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
             $template->description = format_text($product->description, FORMAT_MOODLE, array('para' => false));
 
             $cutoff = $config->shortdescriptionthreshold;
-<<<<<<< HEAD
-            if ($product->issetpart) {
-                $cutoff = floor($cutoff / 2);
-            }
-            if (core_text::strlen($product->description) > $cutoff) {
-                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
-                $template->readmorestr = get_string('readmore', 'local_shop');
-                $template->shortdescription = true;
-=======
             $template->shortdescription = $this->trim_chars($template->description, $cutoff);
 
             if (($template->description != $template->shortdescription) || $product->has_leaflet()) {
@@ -668,7 +566,6 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $template->hasdetails = ($product->isbundlepart && $product->available) ||
                     ($product->issetpart && $product->available) ||
                     (!$product->ispart && $product->available);
->>>>>>> MOODLE_40_STABLE
             }
         } else {
             $template->description = '';
@@ -740,26 +637,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
 
         $template->name = format_string($set->name);
-<<<<<<< HEAD
-<<<<<<< HEAD
-        if ($set->description) {
-            $set->description = file_rewrite_pluginfile_urls($set->description, 'pluginfile.php', $this->context->id, 'local_shop',
-                                               'catalogitemdescription', $set->id);
-            $template->sethasdescription = true;
-            $template->description = format_text($set->description, FORMAT_MOODLE, array('para' => false));
-            $cutoff = $config->shortdescriptionthreshold;
-            if (core_text::strlen($set->description) > $cutoff) {
-                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
-                $template->readmorestr = get_string('readmore', 'local_shop');
-                $template->shortdescription = true;
-            }
-        } else {
-            $template->sethasdescription = false;
-=======
-        $template->pixcloseurl = $this->output->image_url('close', 'local_shop');
-=======
         $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
->>>>>>> MOODLE_401_STABLE
 
         $template->hasdescription = false;
         $template->available = $set->available;
@@ -776,7 +654,6 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $template->isshortdescription = true;
                 $template->hasdetails = $set->available;
             }
->>>>>>> MOODLE_40_STABLE
         }
 
         $image = $set->get_image_url();
@@ -785,22 +662,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         } else {
             $template->image = '<img src="'.$set->get_thumb_url().'">';
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-        foreach ($set->elements as $element) {
-            $element->check_availability();
-            $element->noorder = false; // Bundle can only be purchased as a group.
-=======
-        $template->thumburl = $set->get_thumb_url(false);
-=======
         $template->thumburl = ($set->get_thumb_url(false))->out();
->>>>>>> MOODLE_401_STABLE
 
         foreach ($set->elements as $element) {
             $element->check_availability();
             $element->noorder = false; // Set let purchase individual elements.
->>>>>>> MOODLE_40_STABLE
             $element->ispart = true; // Reduced title.
             $element->issetpart = true; // Reduced title.
             $template->elements[] = $this->product_block($element, true);
@@ -851,15 +717,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             if ($bundle->description) {
                 $template->hasdescription = true;
                 $template->description = format_text($bundle->description, FORMAT_MOODLE, array('para' => false));
-<<<<<<< HEAD
-            }
-            $cutoff = $config->shortdescriptionthreshold;
-            if (core_text::strlen($bundle->description) > $cutoff) {
-                // $template->rarrowpix = $OUTPUT->image_url('rarrow', 'local_shop');
-                $template->shorthandlepixurl = $OUTPUT->image_url('ellipsisopen', 'local_shop');
-                $template->readmorestr = get_string('readmore', 'local_shop');
-                $template->shortdescription = true;
-=======
 
                 $cutoff = $config->shortdescriptionthreshold;
                 $template->shortdescription = $this->trim_chars($template->description, $cutoff);
@@ -869,7 +726,6 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $template->isshortdescription = true;
                     $template->hasdetails = $bundle->available;
                 }
->>>>>>> MOODLE_40_STABLE
             }
         }
 
@@ -887,11 +743,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->available = false;
         foreach ($bundle->elements as $element) {
             // $elementtpl = new StdClass;
-<<<<<<< HEAD
-            $element->check_availability();
-=======
             $template->available = $template->available || $element->check_availability();
->>>>>>> MOODLE_40_STABLE
             $element->noorder = true; // Bundle can only be purchased as a group.
             $element->isbundlepart = true; // Reduced title.
             $element->ispart = true;
@@ -939,16 +791,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass;
 
         $template->unitimageurl = $product->get_sales_unit_url();
-<<<<<<< HEAD
-=======
         $template->shortname = $product->shortname;
-<<<<<<< HEAD
->>>>>>> MOODLE_40_STABLE
-=======
         if (local_shop_supports_feature('products/smarturls')) {
             $template->seoalias = $product->seoalias;
         }
->>>>>>> MOODLE_401_STABLE
         $template->tenunitsimageurl = $product->get_sales_ten_units_url();
 
         $q = @$SESSION->shoppingcart->order[$product->shortname];
@@ -965,10 +811,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         if (($i * 10 + $j) > 0) {
             $template->hashandler = true;
-<<<<<<< HEAD
-            $template->jshandler = 'Javascript:ajax_delete_unit('.$this->theshop->id.', \''.$product->shortname.'\')';
-=======
->>>>>>> MOODLE_40_STABLE
         }
 
         return $this->output->render_from_template('local_shop/front_units', $template);
@@ -1035,27 +877,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->isshopview = true;
             $template->shopurl = new moodle_url('/local/shop/front/view.php');
         }
-<<<<<<< HEAD
-
-        $ttcprice = $product->get_taxed_price($product->preset, $product->taxcode);
-        $template->preset = $product->preset;
-        $template->total = sprintf('%0.2f', round($ttcprice * $product->preset, 2));
-        $template->shortname = $product->shortname;
-        $template->code = '<span class="shop-pcode">'.$product->code.'</span>';
-        $template->name = $product->name;
-        $template->currency = $product->currency;
-        $template->disabled = ' disabled="disabled" ';
-        if ($this->view == 'shop') {
-            $template->isshopview = true;
-            $template->clearjshandler = 'Javascript:ajax_clear_product('.$this->theshop->id;
-            $template->clearjshandler .= ', '.$this->theblock->id.', \''.$product->shortname.'\')';
-            $template->disabled = '';
-        }
-        $template->jshandler = 'ajax_update_product('.$this->theshop->id;
-        $template->jshandler .= ', \''.$product->shortname.'\', this, \''.$product->maxdeliveryquant.'\')';
-        $template->ttcprice = 'x '.sprintf("%0.2f", round($ttcprice, 2));
-
-=======
 
         $ttcprice = $product->get_taxed_price($product->preset, $product->taxcode);
         $template->preset = $product->preset;
@@ -1075,7 +896,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
         $template->ttcprice = 'x '.sprintf("%0.2f", round($ttcprice, 2));
 
->>>>>>> MOODLE_40_STABLE
         return $this->output->render_from_template('local_shop/front_product_total_line', $template);
     }
 
@@ -1152,10 +972,6 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-<<<<<<< HEAD
-        $template = new StdClass;
-=======
->>>>>>> MOODLE_40_STABLE
         $template->lastname = $lastname;
         $template->firstname = $firstname;
         $template->customerorganisationrequired = $this->theshop->customerorganisationrequired;
@@ -1167,8 +983,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         $this->thecatalog->process_country_restrictions($choices);
         $template->countryselect = html_writer::select($choices, 'customerinfo::country', $country, array('' => 'choosedots'));
         $template->email = $email;
-<<<<<<< HEAD
-=======
 
         $str .= $this->output->render_from_template('local_shop/front_customer_form', $template);
 
@@ -1181,9 +995,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $postoptions .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
         // $str .= $this->output->heading($heading);
         $str .= $postoptions;
->>>>>>> MOODLE_40_STABLE
 
-        $str .= $this->output->render_from_template('local_shop/front_customer_form', $template);
         return $str;
     }
 
@@ -1209,11 +1021,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-<<<<<<< HEAD
-        $str .= $this->output->heading(get_string('invoiceinformation', 'local_shop'));
-=======
         $str .= '<br/><legend>'.get_string('invoiceinformation', 'local_shop').'</legend>';
->>>>>>> MOODLE_40_STABLE
 
         $template = new StdClass;
         $template->institution = @$shoppingcart->invoiceinfo['organisation'];
@@ -1264,14 +1072,11 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->enduserorganisationrequired = !empty($this->theshop->enduserorganisationrequired);
         }
 
-<<<<<<< HEAD
-=======
         $template->requiredroles = implode(',', $this->thecatalog->check_required_roles());
         if (!empty($SESSION->shoppingcart->order)) {
             $template->products = implode(',', array_keys($SESSION->shoppingcart->order));
         }
 
->>>>>>> MOODLE_40_STABLE
         return $this->output->render_from_template('local_shop/front_participant_row', $template);
     }
 
@@ -1319,21 +1124,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-<<<<<<< HEAD
-        $str .= '<tr>';
-        $str .= '<td align="left">';
-        $str .= @$participant->lastname;
-        $str .= '</td>';
-        $str .= '<td align="left">';
-        $str .= @$participant->firstname;
-        $str .= '</td>';
-        $str .= '<td align="right">';
-        $jshandler = 'Javascript:ajax_delete_assign(\''.$role.'\', \''.$shortname;
-        $jshandler .= '\', \''.$participant->email.'\')';
-        $str .= '<a href="'.$jshandler.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
-        $str .= '</td>';
-        $str .= '</tr>';
-=======
         $template = new StdClass;
         $template->endusermobilephonerequired = $this->theshop->endusermobilephonerequired;
         $template->enduserorganisationrequired = $this->theshop->enduserorganisationrequired;
@@ -1342,7 +1132,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         if (!empty($SESSION->shoppingcart->order)) {
             $template->products = implode(',', array_keys($SESSION->shoppingcart->order));
         }
->>>>>>> MOODLE_40_STABLE
 
         return $this->output->render_from_template('local_shop/front_new_participant_row', $template);
     }
@@ -1515,8 +1304,6 @@ class shop_front_renderer extends local_shop_base_renderer {
         } catch (Exception $e) {
             throw new moodle_exception("Missing output class $outputclass");
         }
-<<<<<<< HEAD
-=======
 
     }
 
@@ -1533,8 +1320,8 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
         $str .= '</table>';
->>>>>>> MOODLE_40_STABLE
 
+        return $str;
     }
 
     /**
@@ -1574,11 +1361,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         try {
             $outputclass = 'front_taxes';
             shop_load_output_class($outputclass);
-<<<<<<< HEAD
-            $tpldata = new \local_shop\output\front_taxes($taxes, $finaltaxestotal, $theshop);
-=======
             $tpldata = new \local_shop\output\front_taxes($taxes, $theshop);
->>>>>>> MOODLE_40_STABLE
             $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_taxes', $template);
         } catch (Exception $e) {
@@ -1705,17 +1488,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $reason = '';
 
-<<<<<<< HEAD
-        $template->discountrate = $this->theshop->calculate_discountrate_for_user($shoppingcart->taxedtotal,
-                                                                        $this->context, $reason);
-        $template->reason = $reason;
-        if ($template->discountrate) {
-            // Taxed value.
-            $template->discountedtaxed = sprintf('%0.2f', round($shoppingcart->taxedtotal * ($template->discountrate / 100), 2));
-        }
-
-=======
->>>>>>> MOODLE_40_STABLE
         if (!empty($shoppingcart->shipping)) {
             $template->hasshipping = $shoppingcart->shipping;
             $template->shippingvalue = sprintf('%0.2f', round($shoppingcart->shipping->value, 2));
@@ -1969,11 +1741,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                         'blockid' => (0 + @$this->theblock->instance->id),
                         'what' => 'login');
         $thisurl = new moodle_url('/local/shop/front/view.php', $params);
-<<<<<<< HEAD
-        $template->loginurl = new moodle_url('/login/index.php', array('wantsurl' => $thisurl));
-=======
         $template->shopurl = $thisurl;
->>>>>>> MOODLE_40_STABLE
 
         return $this->output->render_from_template('local_shop/front_login_button', $template);
     }
@@ -1998,72 +1766,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template = $invoiceheader->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
         } catch (Exception $e) {
-<<<<<<< HEAD
-            print_error("Missing output class $outputclass");
-<<<<<<< HEAD
-        }
-    }
-
-    public function sales_contact() {
-        global $OUTPUT;
-
-        $config = get_config('local_shop');
-
-        $template = new StdClass;
-
-        $template->heading = $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2, '', 'shop-sales-support');
-        $template->sellermail = $config->sellermail;
-
-        return $this->output->render_from_template('local_shop/front_sales_contact', $template);
-    }
-
-    public function paymode($afullbill) {
-        global $OUTPUT;
-
-        try {
-            $outputclass = 'front_paymode';
-            shop_load_output_class($outputclass);
-            $invoiceheader = new \local_shop\output\front_paymode($afullbill);
-            $template = $invoiceheader->export_for_template($this);
-            return $OUTPUT->render_from_template('local_shop/front_paymode', $template);
-        } catch (Exception $e) {
-            print_error("Missing output class $outputclass");
-        }
-    }
-
-    /**
-     *
-     *
-     */
-    public function printable_bill_link($billid, $transid) {
-        global $DB;
-
-        $config = get_config('local_shop');
-        $template = new StdClass;
-
-        $template->transid = $transid;
-        $template->billid = $billid;
-        if (!empty($config->pdfenabled)) {
-            $template->ispdf = true;
-            $template->actionurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', array('transid' => $transid));
-            $template->iconurl = $this->output->image_url('f/pdf-64');
-        } else {
-            $template->islogin = true;
-            $template->actionurl = new moodle_url('/local/shop/front/order.popup.php');
-            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $billid, 'transid' => $transid));
-            $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $billid));
-            if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
-                $billuser = $DB->get_record('user', array('id' => $userid));
-                $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-                $options = array('ticket' => $ticket);
-                $template->loginbutton = $this->output->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
-            }
-        }
-        return $this->output->render_from_template('local_shop/bills_link_to_bill', $template);
-=======
-=======
             throw new moodle_exception("Missing output class $outputclass");
->>>>>>> MOODLE_401_STABLE
         }
     }
 
@@ -2244,6 +1947,5 @@ class shop_front_renderer extends local_shop_base_renderer {
             echo '</pre>';
         }
         return $buf;
->>>>>>> MOODLE_40_STABLE
     }
 }

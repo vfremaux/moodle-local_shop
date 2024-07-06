@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-/*
- *
- */
-// jshint unused:false, undef:false
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -20,7 +14,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 // jshint unused: true, undef:true
->>>>>>> MOODLE_40_STABLE
 
 define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 

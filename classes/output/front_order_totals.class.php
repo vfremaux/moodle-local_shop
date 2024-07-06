@@ -1,6 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,7 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
->>>>>>> MOODLE_40_STABLE
 
 namespace local_shop\output;
 
@@ -33,18 +30,11 @@ class front_order_totals implements \Templatable {
     }
 
     public function export_for_template(\renderer_base $output) {
-<<<<<<< HEAD
-        global $SESSION;
-
-        $config = get_config('local_shop');
-
-=======
         global $SESSION, $CFG;
 
         $config = get_config('local_shop');
 
         $template = new \StdClass;
->>>>>>> MOODLE_40_STABLE
         $bill = $this->bill;
 
         $shoppingcart = @$SESSION->shoppingcart;
@@ -52,40 +42,11 @@ class front_order_totals implements \Templatable {
         $reason = '';
 
         if (!is_null($bill)) {
-<<<<<<< HEAD
-            $bill->recalculate();
-=======
             $bill->recalculate(); // Recalculate from DB with discounts.
->>>>>>> MOODLE_40_STABLE
             $taxedtotal = $bill->ordertaxed;
             $finaltaxedtotal = $bill->finaltaxedtotal;
             $finaluntaxedtotal = $bill->finaluntaxedtotal;
             $finaltaxestotal = $bill->taxes;
-<<<<<<< HEAD
-            $discount = $bill->discount;
-            $shippingtaxedvalue = 0;
-            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $bill->context, $reason);
-        } else {
-            $taxedtotal = $shoppingcart->taxedtotal;
-            $context = \context_system::instance();
-            $discountrate = $this->theshop->calculate_discountrate_for_user($taxedtotal, $context, $reason);
-            $discount = $shoppingcart->discount;
-
-            if ($discountrate) {
-                $finaltaxedtotal = $taxedtotal * (1 - ($discountrate / 100));
-                $finaluntaxedtotal = $shoppingcart->untaxedtotal * (1 - ($discountrate / 100));
-            } else {
-                $finaltaxedtotal = $shoppingcart->finaltaxedtotal;
-                $finaluntaxedtotal = $shoppingcart->finaluntaxedtotal;
-            }
-
-            $finaltaxestotal = @$shoppingcart->finaltaxestotal;
-            $shippingtaxedvalue = 0 + @$shoppingcart->shipping->taxedvalue;
-            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal;
-        }
-
-        $template = new \StdClass;
-=======
             $shippingtaxedvalue = 0;
         } else {
             $taxedtotal = $shoppingcart->taxedtotal;
@@ -113,27 +74,10 @@ class front_order_totals implements \Templatable {
                 }
             }
         }
->>>>>>> MOODLE_40_STABLE
 
         $template->taxedtotal = sprintf("%0.2f", round($taxedtotal, 2));
         $template->currency = $this->theshop->get_currency('symbol');
 
-<<<<<<< HEAD
-        $template->discountrate = $discountrate;
-        $template->discount = $discount;
-
-        $template->finaluntaxedtotal = sprintf("%0.2f", round($finaluntaxedtotal, 2));
-
-        if (!empty($config->hasshipping)) {
-            $template->finaltaxedtotal = sprintf("%0.2f", round($finaltaxedtotal + $shippingtaxedvalue, 2));
-            $template->hasshipping = $config->hasshipping;
-            $template->shippingtaxedvalue = sprintf("%0.2f", round($shippingtaxedvalue, 2));
-
-            $template->finalshippedtaxedtotal = sprintf("%0.2f", round($finalshippedtaxedtotal, 2));
-        } else {
-            $template->finaltaxedtotal = sprintf("%0.2f", round($finaltaxedtotal, 2));
-        }
-=======
         if (!empty($config->hasshipping)) {
             $finaltaxedtotal = sprintf("%0.2f", round($finaltaxedtotal + $shippingtaxedvalue, 2));
             $template->hasshipping = $config->hasshipping;
@@ -144,7 +88,6 @@ class front_order_totals implements \Templatable {
         // Finalizing and formatting.
         $template->finaltaxedtotal = sprintf("%0.2f", round($finaltaxedtotal, 2));
         $template->finaluntaxedtotal = sprintf("%0.2f", round($finaluntaxedtotal, 2));
->>>>>>> MOODLE_40_STABLE
 
         return $template;
     }

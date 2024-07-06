@@ -95,12 +95,9 @@ echo '</table>';
 
 echo $renderer->full_order_totals($bill, $theshop);
 echo $renderer->full_order_taxes($bill, $theshop);
-<<<<<<< HEAD
-=======
 
 echo '</div>';
 
->>>>>>> MOODLE_40_STABLE
 echo $renderer->payment_block();
 
 $paymentservicenotification = get_string('paymentservicenotification', 'local_shop');

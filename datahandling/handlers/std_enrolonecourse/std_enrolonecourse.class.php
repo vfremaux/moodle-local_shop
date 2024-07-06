@@ -34,10 +34,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
-<<<<<<< HEAD
-=======
 require_once($CFG->dirroot.'/local/shop/compatlib.php');
->>>>>>> MOODLE_40_STABLE
 require_once($CFG->dirroot.'/group/lib.php');
 
 use local_shop\Product;
@@ -279,8 +276,6 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         // Add all created users to group.
 
         groups_add_member($group->id, $userid);
-<<<<<<< HEAD
-=======
 
         // Manage named group request.
 
@@ -304,7 +299,6 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay : Registering in Origin Shop Group");
             groups_add_member($group->id, $userid);
         }
->>>>>>> MOODLE_40_STABLE
 
         // Add user to customer support.
 

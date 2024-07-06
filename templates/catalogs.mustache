@@ -1,47 +1,6 @@
 
 
 <!-- local_shop/catalogs -->
-<<<<<<< HEAD
-    <center>
-    <table width="100%" cellspacing="10" class="generaltable">
-
-        <tr>
-            <th align="left" class="header c0">
-                {{#str}}name, local_shop{{/str}}
-            </th>
-
-            <th align="left" class="header c1">
-                {{#str}}description, local_shop{{/str}}
-            </th>
-
-            <th align="left" class="header c2">
-                {{#str}}categories, local_shop{{/str}}
-            </th>
-
-            <th align="left" class="header c2">
-                {{#str}}items, local_shop{{/str}}
-            </th>
-
-            <th align="left" class="header lastcol">
-                {{#str}}controls, local_shop{{/str}}
-            </th>
-
-        </tr>
-
-        {{#lines}}
-        if ($catalogs) {
-            // Take the first and unique one.
-            $c = array_shift($catalogs);
-            if (empty($config->useslavecatalogs)) {
-                if ($c->ismaster || $c->isslave) {
-                    return;
-                }
-            }
-            $str .= $this->catalog_admin_line($c);
-        }
-        $str .= '</table>';
-        $str .= '</center>';
-=======
 <center>
 <table width="100%" cellspacing="10" class="generaltable">
 
@@ -73,4 +32,3 @@
     {{/catalogs}}
 </table>
 </center>
->>>>>>> MOODLE_40_STABLE

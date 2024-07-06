@@ -126,18 +126,11 @@ class shop_controller extends front_controller_base {
                         $parts = explode('_', $this->data->partner);
                         $SESSION->shoppingcart->partner->partnerkey = array_shift($parts);
                         if (!empty($parts)) {
-<<<<<<< HEAD
-                            $SESSION->shoppingcart->partner->partnertag = array_shift($parts); // May be empty.
-                        }
-                        if (!empty($parts)) {
-                            /**
-=======
                             // This is a non functionnal entry, just for tagging in backoffice.
                             $SESSION->shoppingcart->partner->partnertag = array_shift($parts); // May be empty.
                         }
                         if (!empty($parts)) {
                             /*
->>>>>>> MOODLE_40_STABLE
                              * The customer email can serve for preauth when partner is validated and a moodle user
                              * with such mail exists.
                              */

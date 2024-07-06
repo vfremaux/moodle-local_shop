@@ -35,7 +35,7 @@ $string['shop:usenoninstantpayments'] = 'Peut utiliser des méthodes non interac
 $string['ABANDONNED'] = 'Epuisé';
 $string['AVAILABLE'] = 'Disponible';
 $string['AVAILABLEINTERNAL'] = 'Dispo (interne)';
-$string['ASCOMPLEMENT'] = 'Dispo (complément de prduit existant)';
+$string['ASCOMPLEMENT'] = 'Dispo (complément de produit existant)';
 $string['CANCELLED'] = 'Annulée';
 $string['COMPLETE'] = 'Réalisée';
 $string['DELAYED'] = 'Confirmée paiement attendu';
@@ -205,10 +205,8 @@ $string['discountrate'] = 'Taux de remise';
 $string['discountrate2'] = 'Taux de remise 2';
 $string['discountrate3'] = 'Taux de remise 3';
 $string['discounts'] = 'Réglages des remises';
-$string['discountpolicies'] = 'Politiques de remise';
 $string['discountthreshold'] = 'Seuil de chiffre d\'affaire pour remise';
 $string['dispo'] = 'Dispo';
-$string['downloadpdfbill'] = 'Télécharger en PDF';
 $string['dosearch'] = 'Rechercher';
 $string['downloadpdfbill'] = 'Télécharger en PDF';
 $string['edit_categories'] = 'Edition des catégories';
@@ -246,7 +244,6 @@ $string['exporttransactionid'] = 'TxID';
 $string['exportonlinetransactionid'] = 'OnlineTxID';
 $string['exportidnumber'] = 'Lettrage';
 $string['formula'] = 'Formule';
-$string['fulldatefmt'] = '%d/%m/%Y %H:%M';
 $string['from'] = 'depuis (date)';
 $string['fulldatefmt'] = '%d/%m/%Y %H:%M';
 $string['generalsettings'] = 'Accède au formulaire de paramètres globaux dans l\'administration Moodle';
@@ -357,7 +354,7 @@ $string['productline'] = 'Catalogue Produit ';
 $string['productname'] = 'Nom de produit';
 $string['productoperation'] = 'Opération sur votre produit';
 $string['productpostprocess'] = 'Actions sur les produits (post production)';
-$string['products'] = 'Produits&nbsp;:&ensp;';
+$string['products'] = 'Produits&nbsp;';
 $string['proforma'] = 'Facture Proforma';
 $string['providedbymoodleshop'] = 'Groupe créé par la boutique moodle';
 $string['provisionalnumber'] = 'Numérotation provisoire';
@@ -383,8 +380,6 @@ $string['salesconditions'] = 'Conditions de vente&nbsp;:&ensp;';
 $string['salesmanagement'] = 'Administration des ventes';
 $string['salesrole_desc'] = 'Les personnes qui ont ce rôle peuvent contrôler les opérations de la boutique en ligne';
 $string['salesrolename'] = 'Commercial';
-$string['customerroledesc'] = 'Les personnes qui ont effectué un achat en boutique';
-$string['customerrolename'] = 'Client';
 $string['salesservice'] = 'Service commercial';
 $string['saverequs'] = 'Enregistrer votre configuration des produits';
 $string['scantrace'] = 'Scanner les traces marchandes';
@@ -432,6 +427,7 @@ $string['shippings'] = 'Règles tarifaires de livraison';
 $string['shipzone'] = 'Zone tarifaire de livraison';
 $string['shipzones'] = 'Zones de livraison';
 $string['shop'] = 'Accès à la boutique';
+$string['shopsettings'] = 'Réglages globaux';
 $string['shopcaption'] = 'Nom de la boutique ';
 $string['shopdescription'] = 'Description de la boutique ';
 $string['shopinstance'] = 'Instance de boutique';
@@ -457,7 +453,7 @@ $string['task_daily_notification'] = 'Notifications quotidiennes des unités de 
 $string['taxcode'] = 'Code Taxe&nbsp;:&ensp;';
 $string['taxcountry'] = 'Pays dans lequel la taxe est appliquée :';
 $string['taxe'] = 'Taxe';
-$string['taxes'] = 'Taxes';
+$string['taxes'] = 'Taxes&nbsp;';
 $string['taxformula'] = 'Formule permettant de calculer le prix TTC des produits';
 $string['taxname'] = 'Nom de la taxe&nbsp;:&ensp;';
 $string['taxratio'] = 'Ratio de la taxe :';
@@ -475,6 +471,7 @@ $string['totalprice'] = 'Prix Total';
 $string['totaltaxed'] = 'Total TTC';
 $string['totaltaxes'] = 'Taxes (total)';
 $string['totaluntaxed'] = 'Total H.T.';
+$string['trace'] = 'Transactions';
 $string['tracescan'] = 'Scanner';
 $string['tracescan_desc'] = 'Examine les traces et extrait les transactions';
 $string['transactionid'] = 'Code Transaction';
@@ -817,13 +814,10 @@ require($CFG->dirroot.'/local/shop/lang/fr/customers.php');
 require($CFG->dirroot.'/local/shop/lang/fr/tax.php');
 require($CFG->dirroot.'/local/shop/lang/fr/shipzones.php');
 require($CFG->dirroot.'/local/shop/lang/fr/pdf.php');
-<<<<<<< HEAD
-=======
 
 if ('pro' == local_shop_supports_feature()) {
     include($CFG->dirroot.'/local/shop/pro/lang/fr/pro.php');
 }
->>>>>>> MOODLE_40_STABLE
 
 // Currencies.
 

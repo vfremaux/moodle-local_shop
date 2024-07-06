@@ -247,11 +247,7 @@ class Bill extends ShopObject {
      */
     public function add_item(BillItem $bi) {
         shop_trace("[{$this->transactionid}] Add item. ".$bi->itemcode.' * '.$bi->quantity);
-<<<<<<< HEAD
-        $this->items[] = $bi;
-=======
         $this->items[$bi->id] = $bi;
->>>>>>> MOODLE_40_STABLE
         $this->orderuntaxedamount += $bi->totalprice;
         $this->ordertaxes += $bi->get_totaltax();
         $this->orderamount += $bi->get_totaltaxed();
@@ -267,11 +263,6 @@ class Bill extends ShopObject {
      * @return a BillItem object;
      */
     public function add_item_data($birec, $ordering = -1) {
-<<<<<<< HEAD
-        shop_trace("[{$this->transactionid}] Add item data. ".$birec->itemcode.' * '.$birec->quantity);
-        $billitem = new BillItem($birec, false, $this, $ordering);
-        $this->items[] = $billitem;
-=======
         static $statictempid = 999999000;
 
         shop_trace("[{$this->transactionid}] Bill.Add item data. ".$birec->itemcode.' * '.$birec->quantity);
@@ -282,7 +273,6 @@ class Bill extends ShopObject {
             $statictempid++;
         }
         $this->items[$billitem->id] = $billitem;
->>>>>>> MOODLE_40_STABLE
         $this->orderuntaxedamount += $billitem->totalprice;
         $this->ordertaxes += $billitem->get_totaltax();
         $this->orderamount += $billitem->get_totaltaxed();
@@ -321,13 +311,9 @@ class Bill extends ShopObject {
 
     /**
      * Checks discount conditions and setup discount as a special bill item.
-<<<<<<< HEAD
-     */
-=======
      * OBDSOLETE: should be removed
      */
     /*
->>>>>>> MOODLE_40_STABLE
     public function check_discount() {
         global $DB;
 
@@ -385,22 +371,14 @@ class Bill extends ShopObject {
         static $pass = 0;
 
         if ($this->dirty) {
-<<<<<<< HEAD
-            shop_trace("[{$this->transactionid}] Dirty state. Pass ".$pass);
-=======
             shop_trace("[{$this->transactionid}] Bill.save : Dirty state. Pass ".$pass);
             // Recalculate Bill record totalizers from internal items.
->>>>>>> MOODLE_40_STABLE
             $this->recalculate();
         }
 
         $pass++.
 
-<<<<<<< HEAD
-        shop_trace("[{$this->transactionid}] Bill Saving state and record. Pass ".$pass);
-=======
         shop_trace("[{$this->transactionid}] Bill.save Saving state and record. Pass ".$pass);
->>>>>>> MOODLE_40_STABLE
         $billid = parent::save(); // Parent has recorded id into our record.
 
         // Performance optimisation when no change in Bill construction.
@@ -408,7 +386,6 @@ class Bill extends ShopObject {
             return $billid;
         }
 
-        shop_trace("[{$this->transactionid}] Bill Full Saving");
         if (!empty($this->items)) {
             foreach ($this->items as $biid => $bi) {
                 shop_trace("[{$this->transactionid}] Bill.save Saving Items {$bi->type}/{$bi->itemcode}");
@@ -452,44 +429,6 @@ class Bill extends ShopObject {
         $this->itemcount = 0;
         $this->taxlines = array();
 
-<<<<<<< HEAD
-        if (!empty($itemrecs)) {
-            foreach ($itemrecs as $itemrec) {
-
-                $billitem = new BillItem($itemrec, false, $this);
-
-                // Deroute some special types.
-                if ($billitem->type == 'SHIPPING') {
-                    $this->shipping = $itemrec->totalprice; // Taxed.
-                    continue;
-                }
-                if ($billitem->type == 'DISCOUNT') {
-                    continue;
-                }
-
-                // If standard BILLING line, aggregate to ordetotals.
-                $this->orderuntaxed += $itemrec->unitcost * $itemrec->quantity;
-                $this->ordertaxed += $billitem->get_taxed_price() * $itemrec->quantity;
-                $taxamount = $billitem->get_tax_amount() * $itemrec->quantity;
-                $this->ordertaxes += $taxamount;
-                $this->itemcount += $itemrec->quantity;
-
-                /*
-                 * echo 'UC '.($itemrec->unitcost * $itemrec->quantity).'<br/>';
-                 * echo 'Ut '.$taxamount.'<br/>';
-                 * echo 'UT '.($billitem->get_taxed_price() * $itemrec->quantity).'<br/><br/>';
-                 */
-
-                // Register tax by taxcode.
-                if (array_key_exists($billitem->taxcode, $this->taxlines)) {
-                    $this->taxlines[$billitem->taxcode] += $taxamount;
-                } else {
-                    $this->taxlines[$billitem->taxcode] = $taxamount;
-                }
-
-                // Add to items stack.
-                $this->items[$itemrec->id] = $billitem;
-=======
         $discounts = [];
 
         if (!empty($this->items)) {
@@ -529,7 +468,6 @@ class Bill extends ShopObject {
                      echo 'OHT '.($this->orderuntaxed).'<br/>';
                      echo 'OT '.($this->ordertaxes).'<br/><br/>';
                 }
->>>>>>> MOODLE_40_STABLE
             }
         }
 
@@ -565,22 +503,10 @@ class Bill extends ShopObject {
         $this->record->taxes = $this->finaltaxestotal;
         $this->record->untaxedamount = $this->finaluntaxedtotal;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        $this->finalshippedtaxedtotal = $this->ordertaxed + $this->discount + $this->shipping;
-        $this->dirty = false;
-        shop_trace("[{$this->transactionid}] Bill recalculated");
-=======
-        $this->finalshippedtaxedtotal = $this->finaltaxedtotal + $this->shipping; // Not in record.
-        $this->dirty = false;
-        shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated");
->>>>>>> MOODLE_40_STABLE
-=======
         // Discounts are applied in 'finalshippedtaxedtotal'
         $this->finalshippedtaxedtotal = $this->finaltaxedtotal + $this->shipping; // Not in record.
         $this->dirty = false;
         shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated to final amount : {$this->finalshippedtaxedtotal}");
->>>>>>> MOODLE_401_STABLE
     }
 
     public function delete() {
@@ -638,11 +564,7 @@ class Bill extends ShopObject {
     public static function count_by_states($fullview, $filterclause) {
         global $DB;
 
-<<<<<<< HEAD
-        $total = new \StdClass;
-=======
         $total = new StdClass;
->>>>>>> MOODLE_40_STABLE
         $total->WORKING = $DB->count_records_select('local_shop_bill', " status = 'WORKING' $filterclause");
 
         if ($fullview) {

@@ -18,9 +18,8 @@
  * Local renderer for catalogs management.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -30,6 +29,7 @@ require_once($CFG->dirroot.'/local/shop/renderer.php');
 class shop_catalogs_renderer extends local_shop_base_renderer {
 
     /**
+     * Product admin line in catalog editing
      * @param object $catalog
      */
     public function catalog_admin_line($catalog) {
@@ -44,7 +44,7 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
         $template->class = (empty($catalog->items)) ? 'empty' : '';
 
         if ($catalog->isslave) {
-            $mastercatalogname = $DB->get_field('local_shop_catalog', 'name', array('id' => $catalog->groupid));
+            $mastercatalogname = $DB->get_field('local_shop_catalog', 'name', ['id' => $catalog->groupid]);
             $template->isslave = true;
             $template->linkicon = $this->output->pix_icon('link', $mastercatalogname, 'local_shop');
         }
@@ -56,10 +56,10 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
             $template->categories = $catalog->categories;
         }
         $template->items = $catalog->items;
-        $template->editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php', array('catalogid' => $catalog->id));
+        $template->editurl = new moodle_url('/local/shop/catalogs/edit_catalogue.php', ['catalogid' => $catalog->id]);
         $template->isnotused = $catalog->is_not_used();
         if ($template->isnotused) {
-            $params = array('catalogid' => $catalog->id, 'what' => 'deletecatalog');
+            $params = ['catalogid' => $catalog->id, 'what' => 'deletecatalog'];
             $template->deleteurl = new moodle_url('/local/shop/index.php', $params);
         }
 

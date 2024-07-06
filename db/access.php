@@ -16,103 +16,103 @@
 
 /**
  * @package   local_shop
- * @category  blocks
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+$capabilities = [
 
-    'local/shop:salesadmin' => array(
+    'local/shop:salesadmin' => [
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW
-        )
-    ),
+        ]
+    ],
 
-    'local/shop:beassigned' => array (
+    'local/shop:beassigned' => [
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW
-        )
-    ),
+        ]
+    ],
 
     /*
      * people having this capability will be allowed to see data from all individual shop
      * subhowners.
      */
-    'local/shop:accessallowners' => array (
+    'local/shop:accessallowners' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-        )
-    ),
+        'archetypes' => [
+        ]
+    ],
 
     /*
      * people having this capability will be get a discount
      */
-    'local/shop:discountagreed' => array (
+    'local/shop:discountagreed' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-        )
-    ),
+        'archetypes' => [
+        ]
+    ],
 
     /*
      * people having this capability will be get a second level discount
      */
-    'local/shop:seconddiscountagreed' => array (
+    'local/shop:seconddiscountagreed' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-        )
-    ),
+        'archetypes' => [
+        ]
+    ],
 
     /*
      * people having this capability will be get a third level discount
      */
-    'local/shop:thirddiscountagreed' => array (
+    'local/shop:thirddiscountagreed' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-        )
-    ),
+        'archetypes' => [
+        ]
+    ],
 
     /*
      * people having this capability can use check payment with a direct production (trusted customers)
      */
-    'local/shop:paycheckoverride' => array (
+    'local/shop:paycheckoverride' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-        )
-    ),
+        'archetypes' => [
+        ]
+    ],
 
     /*
      * people having this capability will be presented noninstantpayments methods
      */
-    'local/shop:usenoninstantpayments' => array (
+    'local/shop:usenoninstantpayments' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
+        'archetypes' => [
             'user' => CAP_ALLOW
-        )
-    ),
+        ]
+    ],
 
     /*
      * people having this capability will be presented noninstantpayments methods
      */
-    'local/shop:export' => array (
+    'local/shop:export' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW
-        )
-    ),
+        ]
+    ],
 
-);
+];

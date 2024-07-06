@@ -374,21 +374,11 @@
         <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="shopid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-<<<<<<< HEAD
-        <FIELD NAME="partnerkey" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="referer" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-=======
         <FIELD NAME="partnerkey" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false" COMMENT="Partner key is used in online requests. It may be stored"/>
         <FIELD NAME="referer" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="partnersecret" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="Partner secret is used in volatile requests"/>
-<<<<<<< HEAD
-        <FIELD NAME="customerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="If set, a shop customer associated in name of partner"/>
-        <FIELD NAME="moodleuser" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="If set, moodle account where to send notifications"/>
->>>>>>> MOODLE_40_STABLE
-=======
         <FIELD NAME="customerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="If set, a shop customer associated in name of partner"/>
         <FIELD NAME="moodleuser" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0" COMMENT="If set, moodle account where to send notifications"/>
->>>>>>> MOODLE_401_STABLE
         <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -396,8 +386,6 @@
         <KEY NAME="partner_is_unique" TYPE="unique" FIELDS="partnerkey"/>
       </KEYS>
     </TABLE>
-<<<<<<< HEAD
-=======
     <TABLE NAME="local_shop_discount" COMMENT="Discount types">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
@@ -421,6 +409,5 @@
         <KEY NAME="discount_unique_name" TYPE="unique" FIELDS="shopid,name"/>
       </KEYS>
     </TABLE>
->>>>>>> MOODLE_40_STABLE
   </TABLES>
 </XMLDB>

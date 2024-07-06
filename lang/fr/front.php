@@ -64,13 +64,8 @@ $string['continue'] = 'Continuer la commande';
 $string['customer'] = 'M./Mme/Mlle&ensp;';
 $string['customersupport'] = 'Support client';
 $string['customerisgone'] = 'Les données clientes ne sont plus disponibles. Ceci peut arriver lors de rebonds de production lors de tests.';
-<<<<<<< HEAD
-$string['customerinfo'] = 'Vos coordonnées clientes';
-$string['customerinformation'] = 'Vos informations personnelles';
-=======
 $string['customerinfo'] = 'Mes coordonnées clientes';
 $string['customerinformation'] = 'Mes informations personnelles';
->>>>>>> MOODLE_40_STABLE
 $string['defaultnavsteps'] = 'Navigation par défaut';
 $string['navsteps'] = 'Navigation boutique';
 $string['configdefaultnavsteps'] = 'certains exploitants souhaiteront modifier l\'ordre de présentation des étapes d\'achat. Attention, certaines combinaisons pourraient conduire à un non fonctionnement du processus de boutique.';

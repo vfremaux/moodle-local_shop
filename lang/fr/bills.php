@@ -51,10 +51,7 @@ $string['editbillitem'] = 'Modifier un élément de facture';
 $string['exportasxls'] = 'Exporter en XLS';
 $string['fullviewon'] = 'Vue complète';
 $string['fullviewoff'] = 'Vue simple';
-<<<<<<< HEAD
-=======
 $string['flowcontrol'] = 'Workflow';
->>>>>>> MOODLE_40_STABLE
 $string['fromdate'] = 'Depuis le ';
 $string['generateacode'] = 'Générer un code';
 $string['goto'] = 'Aller à l\'état';
@@ -88,20 +85,6 @@ $string['unittex'] = 'Unitaire hors taxes&nbsp;:&ensp;';
 $string['updatelettering'] = 'Mettre à jour';
 $string['pickuser'] = 'Choisissez un compte client ou un compte utilisateur&nbsp;:&ensp;';
 $string['searchforanidinstructions'] = 'chercher par ID (ou début d\'ID)';
-
-// Calendar.
-$string['jan'] = 'Janvier';
-$string['feb'] = 'Février';
-$string['mar'] = 'Mars';
-$string['apr'] = 'Avril';
-$string['may'] = 'Mai';
-$string['jun'] = 'Juin';
-$string['jul'] = 'Juillet';
-$string['aug'] = 'Août';
-$string['sep'] = 'Septembre';
-$string['oct'] = 'Octobre';
-$string['nov'] = 'Novembre';
-$string['dec'] = 'Décembre';
 
 // Calendar.
 $string['jan'] = 'Janvier';

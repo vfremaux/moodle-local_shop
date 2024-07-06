@@ -522,17 +522,11 @@ class Catalog extends ShopObject {
 
         $params = array('catalogid' => $this->id, 'shortname' => $shortname);
         $record = $DB->get_record('local_shop_catalogitem', $params);
-<<<<<<< HEAD
-        $catalogitem = new CatalogItem($record);
-
-        return $catalogitem;
-=======
         if (!$mustexist || $record) {
             $catalogitem = new CatalogItem($record, $lightweight);
             return $catalogitem;
         }
         return null;
->>>>>>> MOODLE_40_STABLE
     }
 
     /**
@@ -922,13 +916,9 @@ class Catalog extends ShopObject {
         $export->id = $this->record->id;
         $export->name = format_string($this->record->name);
         $export->description = format_text($this->record->description, $this->record->descriptionformat);
-<<<<<<< HEAD
-        $export->salesconditions = $this->record->salesconditions;
-=======
 /*
         $export->salesconditions = $this->record->salesconditions;
 */
->>>>>>> MOODLE_40_STABLE
         $export->countryrestrictions = $this->record->countryrestrictions;
 
         $categories = $this->get_categories();

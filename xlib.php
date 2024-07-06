@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * an Xapi for other plugins
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * Wrappers for interfadcing with other components in Moodle
@@ -49,6 +50,8 @@ function local_shop_has_shops() {
 /**
  * Searches in the shop for a product matching the shortname, or
  * having a handler that matches the shortname.
+ * @param mixed $courseorid
+ * @param int $shopid
  */
 function local_shop_related_product($courseorid, $shopid = 0) {
     global $DB;
@@ -113,6 +116,12 @@ function local_shop_related_product($courseorid, $shopid = 0) {
     return $candidateproduct;
 }
 
+/**
+ * Wrapper for calling from other plugins.
+ * @param string $message
+ * @param string $output
+ * @param string $dest
+ */
 function local_shop_trace($message, $output = '', $dest = null) {
     shop_trace($message, $output, $dest);
 }

@@ -1,11 +1,4 @@
 <?php
-<<<<<<< HEAD
-
-$string['partner'] = 'Partenaire';
-$string['partners'] = 'Partenaires';
-$string['editpartner'] = 'Modifier le partenaire';
-$string['partnerkey'] = 'Clef de partenaire';
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -33,7 +26,6 @@ $string['hasmoodleaccount'] = 'A un comte moodle associé (notifications)';
 $string['hascustomeraccount'] = 'A un compte client associé';
 $string['partnerkey'] = 'Clef de partenaire';
 $string['partnersecretkey'] = 'Clef secrète de partenaire';
->>>>>>> MOODLE_40_STABLE
 $string['managepartners'] = 'Gérer les partenaires';
 $string['addpartner'] = 'ajouter un partenaire';
 $string['newpartner'] = 'Ajouter un nouveau partenaire';
@@ -42,15 +34,6 @@ $string['partnername'] = 'Nom';
 $string['partnernameexists'] = 'Ce partenaire est déjà enregistré.';
 $string['partnerenabled'] = 'Partenariat actif';
 $string['countbills'] = 'Factures émises';
-<<<<<<< HEAD
-$string['partnerincome'] = 'Chiffre d\'affaire';
-$string['erroremptypartnername'] = 'Le nom du partenaire ne peut être vide';
-$string['referer'] = 'Referer';
-$string['referer_help'] = 'Referer a vérifier lors de l\'import de panier. Cette sécurité n\'est pas absolue, mais contribue à minimiser les abus.
-Certains clients sont susceptibles de ne pas fournir ce champ, et la procédure d\'achat complète devra être menée par l\'acheteur.';
-
-$string['managepartners_desc'] = 'Des partenaires peuvent importer des sessions d\'achat dans la boutique et les faire enregsitrer pour leur compte.';
-=======
 $string['customerid'] = 'Compte client associé';
 $string['partnerincome'] = 'Chiffre d\'affaire';
 $string['moodleuser'] = 'Utilisateur moodle';
@@ -75,4 +58,3 @@ lequel les factures généres seront émises.';
 
 $string['partnersecretkey_help'] = 'Cette clef est confidentielle et NE DOIT pas être utilisée dans des URL ou des affichages visibles.
 Elle est utilisée comme authentification d\'accès dans certaines opérations spéciales faites au nom des partenaires.';
->>>>>>> MOODLE_40_STABLE

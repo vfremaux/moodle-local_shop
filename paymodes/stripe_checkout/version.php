@@ -31,3 +31,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin = new stdclass;
 $plugin->version = 2019053100;
 $plugin->component = 'shoppaymodes_stripe_checkout';
+
+$plugin->codeincrement = 'XX.001';
+

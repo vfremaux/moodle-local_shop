@@ -18,9 +18,8 @@
  * Version details.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   2016 onwards Valery Fremaux (http://www.mylearningfactory.com)
+ * @copyright   2016 onwards Valery Fremaux (http://www.activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,16 +31,16 @@ $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnost
 $plugin->release = '4.1.0 (Build 2024053103)';
 $plugin->maturity = MATURITY_STABLE;
 if (function_exists('local_shop_supports_feature') && local_shop_supports_feature() === 'pro') {
-    $plugin->dependencies = ['auth_ticket' => '2012060400', 'local_vfcore' => 2024053100];
+    $plugin->dependencies = array('auth_ticket' => '2012060400', 'local_vfcore' => 2024053100);
 } else {
-    $plugin->dependencies = ['auth_ticket' => '2012060400'];
+    $plugin->dependencies = array('auth_ticket' => '2012060400');
 }
 $plugin->supported = [401, 402];
 
 // Non moodle attributes.
-$plugin->codeincrement = '4.1.0023';
+$plugin->codeincrement = '4.1.0024';
 $plugin->privacy = 'dualrelease';
-$plugin->prolocations = [
+$plugin->prolocations = array(
     'datahandling/handlers/std_addtrainingcredits',
     'datahandling/handlers/std_addquizattempts',
     'datahandling/handlers/std_createcategory',
@@ -62,4 +61,4 @@ $plugin->prolocations = [
     'paymodes/paybox',
     'paymodes/publicmandate',
     'paymodes/stripe_checkout',
-];
+);

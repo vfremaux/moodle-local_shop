@@ -52,14 +52,9 @@ class customer_controller extends front_controller_base {
 
             case 'revalidate': {
                 break;
-<<<<<<< HEAD
-
-            case 'navigate':
-=======
             }
 
             case 'navigate': {
->>>>>>> MOODLE_40_STABLE
                 $this->data->usedistinctinvoiceinfo = optional_param('usedistinctinvoiceinfo', 0, PARAM_BOOL);
 
                 $customerinfofields = preg_grep('/customerinfo::/', array_keys($_POST));
@@ -129,17 +124,10 @@ class customer_controller extends front_controller_base {
 
             if (!empty($this->data->back)) {
                 $params = array('view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1);
-<<<<<<< HEAD
-                return new \moodle_url('/local/shop/front/view.php', $params);
-            }
-
-            $shoppingcart->errors = new \StdClass;
-=======
                 return new moodle_url('/local/shop/front/view.php', $params);
             }
 
             $shoppingcart->errors = new StdClass;
->>>>>>> MOODLE_40_STABLE
             $shoppingcart->errors->customerinfo = null;
             $shoppingcart->errors->invoiceinfo = null;
             shop_validate_customer($this->theshop);

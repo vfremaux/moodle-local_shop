@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -25,159 +25,212 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_shop_install() {
     global $DB, $CFG;
 
-    $flowcodes = array(
-        array('element' => 'order',
-              'fromstate' => 'WORKING',
-              'tostate' => 'RECEIVED'),
-        array('element' => 'order',
-              'fromstate' => 'RECEIVED',
-              'tostate' => 'EXAMINED'),
-        array('element' => 'order',
-              'fromstate' => 'EXAMINED',
-              'tostate' => 'QUANTIFIED'),
-        array('element' => 'order',
-              'fromstate' => 'RECEIVED',
-              'tostate' => 'QUANTIFIED'),
-        array('element' => 'order',
-              'fromstate' => 'QUANTIFIED',
-              'tostate' => 'ANSWERED'),
-        array('element' => 'order',
-              'fromstate' => 'ANSWERED',
-              'tostate' => 'EXECUTING'),
-        array('element' => 'order',
-              'fromstate' => 'EXECUTING',
-              'tostate' => 'CANCELLED'),
-        array('element' => 'order',
-              'fromstate' => 'ANSWERED',
-              'tostate' => 'CANCELLED'),
-        array('element' => 'order',
-              'fromstate' => 'ANSWERED',
-              'tostate' => 'WORKING'),
-        array('element' => 'order',
-              'fromstate' => 'RECEIVED',
-              'tostate' => 'CANCELLED'),
+    $flowcodes = [
+        [
+            'element' => 'order',
+            'fromstate' => 'WORKING',
+            'tostate' => 'RECEIVED',
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'RECEIVED',
+            'tostate' => 'EXAMINED',
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'EXAMINED',
+            'tostate' => 'QUANTIFIED',
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'RECEIVED',
+            'tostate' => 'QUANTIFIED',
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'QUANTIFIED',
+            'tostate' => 'ANSWERED,'
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'ANSWERED',
+            'tostate' => 'EXECUTING',
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'EXECUTING',
+            'tostate' => 'CANCELLED',
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'ANSWERED',
+            'tostate' => 'CANCELLED',
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'ANSWERED',
+            'tostate' => 'WORKING'
+        ],
+        [
+            'element' => 'order',
+            'fromstate' => 'RECEIVED',
+            'tostate' => 'CANCELLED'
+        ],
 
         // Bills.
 
-        array('element' => 'bill',
-              'fromstate' => 'PLACED',
-              'tostate' => 'PENDING'),
-        array('element' => 'bill',
-              'fromstate' => 'PLACED',
-              'tostate' => 'PREPROD'),
-        array('element' => 'bill',
-              'fromstate' => 'PLACED',
-              'tostate' => 'SOLDOUT'),
-        array('element' => 'bill',
-              'fromstate' => 'PLACED',
-              'tostate' => 'CANCELLED'),
-
-        array('element' => 'bill',
-              'fromstate' => 'PAYBACK',
-              'tostate' => 'CANCELLED'),
-
-        array('element' => 'bill',
-              'fromstate' => 'WORKING',
-              'tostate' => 'PLACED'),
-
-        array('element' => 'bill',
-              'fromstate' => 'WORKING',
-              'tostate' => 'PENDING'),
-        array('element' => 'bill',
-              'fromstate' => 'WORKING',
-              'tostate' => 'PARTIAL'),
-        array('element' => 'bill',
-              'fromstate' => 'WORKING',
-              'tostate' => 'CANCELLED'),
-
-        array('element' => 'bill',
-              'fromstate' => 'PENDING',
-              'tostate' => 'CANCELLED'),
-        array('element' => 'bill',
-              'fromstate' => 'PENDING',
-              'tostate' => 'REFUSED'),
-        array('element' => 'bill',
-              'fromstate' => 'PENDING',
-              'tostate' => 'SOLDOUT'),
-
-        array('element' => 'bill',
-              'fromstate' => 'PREPROD',
-              'tostate' => 'COMPLETE'),
-        array('element' => 'bill',
-              'fromstate' => 'PREPROD',
-              'tostate' => 'PARTIAL'),
-
-        array('element' => 'bill',
-              'fromstate' => 'PARTIAL',
-              'tostate' => 'COMPLETE'),
-        array('element' => 'bill',
-              'fromstate' => 'PARTIAL',
-              'tostate' => 'PAYBACK'),
-
-        array('element' => 'bill',
-              'fromstate' => 'SOLDOUT',
-              'tostate' => 'COMPLETE'),
-        array('element' => 'bill',
-              'fromstate' => 'SOLDOUT',
-              'tostate' => 'PAYBACK'),
+        [
+            'element' => 'bill',
+            'fromstate' => 'PLACED',
+            'tostate' => 'PENDING',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PLACED',
+            'tostate' => 'PREPROD',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PLACED',
+            'tostate' => 'SOLDOUT',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PLACED',
+            'tostate' => 'CANCELLED',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PAYBACK',
+            'tostate' => 'CANCELLED',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'WORKING',
+            'tostate' => 'PLACED',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'WORKING',
+            'tostate' => 'PENDING',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'WORKING',
+            'tostate' => 'PARTIAL',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'WORKING',
+            'tostate' => 'CANCELLED',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PENDING',
+            'tostate' => 'CANCELLED',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PENDING',
+            'tostate' => 'REFUSED',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PENDING',
+            'tostate' => 'SOLDOUT',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PREPROD',
+            'tostate' => 'COMPLETE',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PREPROD',
+            'tostate' => 'PARTIAL',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PARTIAL',
+            'tostate' => 'COMPLETE',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'PARTIAL',
+            'tostate' => 'PAYBACK',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'SOLDOUT',
+            'tostate' => 'COMPLETE',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'SOLDOUT',
+            'tostate' => 'PAYBACK',
+        ],
 
         // Post online payment failure resolution.
-        array('element' => 'bill',
-              'fromstate' => 'REFUSED',
-              'tostate' => 'PENDING'),
-        array('element' => 'bill',
-              'fromstate' => 'REFUSED',
-              'tostate' => 'SOLDOUT'),
-        array('element' => 'bill',
-              'fromstate' => 'FAILED',
-              'tostate' => 'CANCELLED'),
-        array('element' => 'bill',
-              'fromstate' => 'FAILED',
-              'tostate' => 'SOLDOUT'),
-    );
+        [
+            'element' => 'bill',
+            'fromstate' => 'REFUSED',
+            'tostate' => 'PENDING',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'REFUSED',
+            'tostate' => 'SOLDOUT',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'FAILED',
+            'tostate' => 'CANCELLED',
+        ],
+        [
+            'element' => 'bill',
+            'fromstate' => 'FAILED',
+            'tostate' => 'SOLDOUT',
+        ],
+    ];
 
     foreach ($flowcodes as $fc) {
         $DB->insert_record('local_flowcontrol', (object)$fc);
     }
 
     // Create the teacherowner role if absent.
-    if (!$DB->record_exists('role', array('shortname' => 'courseowner'))) {
+    if (!$DB->record_exists('role', ['shortname' => 'courseowner'])) {
         $rolestr = get_string('courseowner', 'local_shop');
         $roledesc = get_string('courseowner_desc', 'local_shop');
         $courseownerid = create_role($rolestr, 'courseowner', str_replace("'", "\\'", $roledesc), 'editingteacher');
-        set_role_contextlevels($courseownerid, array(CONTEXT_COURSECAT, CONTEXT_COURSE));
-        $editingteacher   = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        set_role_contextlevels($courseownerid, [CONTEXT_COURSECAT, CONTEXT_COURSE]);
+        $editingteacher   = $DB->get_record('role', ['shortname' => 'editingteacher']);
         role_cap_duplicate($editingteacher, $courseownerid);
     }
 
     // Create the categoryowner role if absent.
-    if (!$DB->record_exists('role', array('shortname' => 'categoryowner'))) {
+    if (!$DB->record_exists('role', ['shortname' => 'categoryowner'])) {
         $rolestr = get_string('categoryowner', 'local_shop');
         $roledesc = get_string('categoryowner_desc', 'local_shop');
         $categoryownerid = create_role($rolestr, 'categoryowner', str_replace("'", "\\'", $roledesc), 'coursecreator');
-        set_role_contextlevels($categoryownerid, array(CONTEXT_COURSECAT));
-        $coursecreator   = $DB->get_record('role', array('shortname' => 'coursecreator'));
+        set_role_contextlevels($categoryownerid, [CONTEXT_COURSECAT]);
+        $coursecreator   = $DB->get_record('role', ['shortname' => 'coursecreator']);
         role_cap_duplicate($coursecreator, $categoryownerid);
     }
 
     // Create the sales manager role if absent.
-    if (!$DB->record_exists('role', array('shortname' => 'sales'))) {
+    if (!$DB->record_exists('role', ['shortname' => 'sales'])) {
         $rolestr = get_string('salesrolename', 'local_shop');
         $roledesc = get_string('salesrole_desc', 'local_shop');
         $salesroleid = create_role($rolestr, 'sales', str_replace("'", "\\'", $roledesc), '');
-        set_role_contextlevels($salesroleid, array(CONTEXT_BLOCK, CONTEXT_SYSTEM));
+        set_role_contextlevels($salesroleid, [CONTEXT_BLOCK, CONTEXT_SYSTEM]);
     }
 
     // Create the sales manager role if absent.
-    if (!$DB->record_exists('role', array('shortname' => 'customer'))) {
+    if (!$DB->record_exists('role', ['shortname' => 'customer'])) {
         $rolestr = get_string('customerrolename', 'local_shop');
-<<<<<<< HEAD
-        $roledesc = get_string('customerroledesc', 'local_shop');
-=======
         $roledesc = get_string('customerrole_desc', 'local_shop');
->>>>>>> MOODLE_40_STABLE
         $customerroleid = create_role($rolestr, 'customer', str_replace("'", "\\'", $roledesc), '');
-        set_role_contextlevels($customerroleid, array(CONTEXT_COURSE, CONTEXT_SYSTEM));
+        set_role_contextlevels($customerroleid, [CONTEXT_COURSE, CONTEXT_SYSTEM]);
     }
 
     // Create first catalog for default shop.
@@ -185,10 +238,6 @@ function xmldb_local_shop_install() {
     $catalog->name = get_string('defaultcatalogname', 'local_shop');
     $catalog->description = get_string('defaultcatalogdescription', 'local_shop');
     $catalog->descriptionformat = FORMAT_HTML;
-/*
-    $catalog->salesconditions = '';
-    $catalog->salesconditionsformat = FORMAT_HTML;
-*/
     $catalog->groupid = 0;
     $catalog->countryrestrictions = '';
     $catalog->id = $DB->insert_record('local_shop_catalog', $catalog);
@@ -321,7 +370,7 @@ function xmldb_local_shop_install() {
         $table = new xmldb_table('flowcontrol');
         if ($fcs = $DB->get_records('flowcontrol')) {
             foreach ($fcs as $fc) {
-                $params = array('element' => $fc->element, 'fromstate' => $fc->fromstate, 'tostate' => $fc->tostate);
+                $params = ['element' => $fc->element, 'fromstate' => $fc->fromstate, 'tostate' => $fc->tostate];
                 if (!$DB->record_exists('local_flowcontrol', $params)) {
                     $DB->insert_record('local_flowcontrol', $fc);
                 }
@@ -330,14 +379,11 @@ function xmldb_local_shop_install() {
         $dbman->drop_table($table);
     }
 
-<<<<<<< HEAD
-=======
     // Register zabbix indicators if installed.
     if (is_dir($CFG->dirroot.'/report/zabbix')) {
         include_once($CFG->dirroot.'/report/zabbix/xlib.php');
         report_zabbix_register_plugin('local', 'shop');
     }
 
->>>>>>> MOODLE_401_STABLE
     return true;
 }

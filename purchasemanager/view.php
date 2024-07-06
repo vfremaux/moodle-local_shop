@@ -33,6 +33,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 // We edit products within a catalog.
 $view = optional_param('view', '', PARAM_TEXT);
+// TODO : Examine consistency of this param.
 $shopowner = optional_param('owner', 0, PARAM_INT);
 
 // Security.
@@ -61,7 +62,13 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/local/shop/index.php'));
 $PAGE->navbar->add(get_string('catalog', 'local_shop'));
-$PAGE->set_pagelayout('admin');
+$PAGE->set_pagelayout('standard');
+
+// Add the shop admin secondary nav.
+$nav = shop_get_admin_navigation($theshop);
+$PAGE->set_secondarynav($nav);
+$PAGE->set_secondary_navigation(true);
+$PAGE->set_secondary_active_tab('products');
 
 $out = $OUTPUT->header();
 

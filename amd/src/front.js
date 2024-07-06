@@ -3,11 +3,7 @@
  */
 // jshint unused:false, undef:false
 
-<<<<<<< HEAD
-define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
-=======
 define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, str) {
->>>>>>> MOODLE_40_STABLE
 
     var shopfront = {
 
@@ -15,14 +11,6 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
         shopid: 0,
 
-<<<<<<< HEAD
-        init: function(params) {
-            // Get all description toggles and bind them.
-            $('.shop-description-toggle').bind('click', this.toggle_description);
-
-            if (params) {
-                shopfront.shopid = params.shopid;
-=======
         units: 0,
 
         required: 0,
@@ -71,7 +59,6 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                 shopfront.required = params.required;
                 shopfront.assigned = params.assigned;
                 shopfront.endusermobilephonerequired = params.endusermobilephonerequired;
->>>>>>> MOODLE_40_STABLE
             }
 
             log.debug('AMD Local Shop Front initialized');
@@ -92,16 +79,10 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
         },
 
         toggle_description: function() {
-<<<<<<< HEAD
-            var that = $(this);
-
-            if (that.attr('src').match(/open/)) {
-=======
 
             var that = $(this);
 
             if (that.attr('src').match('/open/')) {
->>>>>>> MOODLE_40_STABLE
                 that.attr('src', that.attr('src').replace('open', 'close'));
                 that.parent().parent().children('.shop-front-description').removeClass('shop-desc-gradient');
             } else {
@@ -110,8 +91,6 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             }
         },
 
-<<<<<<< HEAD
-=======
         toggle_invoiceinfo: function() {
 
             var elm;
@@ -131,7 +110,6 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             }
         },
 
->>>>>>> MOODLE_40_STABLE
         accept_eulas: function() {
 
             var url;
@@ -143,13 +121,6 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
                 $('#region-pre').css('display', 'block');
                 $('#region-pre').css('visibility', 'show');
 
-<<<<<<< HEAD
-                url = cfg.wwwroot + '/local/shop/front/ajax/service.php?what=agreeeulas';
-                url += '&service=order';
-                url += '&id=' + shopfront.shopid;
-            } else {
-                url = cfg.wwwroot + '/local/shop/front/ajax/service.php?what=reseteulas';
-=======
                 url = cfg.wwwroot + '/local/shop/front/ajax/service.php';
                 url += '?what=agreeeulas';
                 url += '&service=order';
@@ -157,7 +128,6 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             } else {
                 url = cfg.wwwroot + '/local/shop/front/ajax/service.php';
                 url += '?what=reseteulas';
->>>>>>> MOODLE_40_STABLE
                 url += '&service=order';
                 url += '&id=' + shopfront.shopid;
             }
@@ -168,21 +138,14 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
 
         reset_eulas: function () {
             if (shopfront.eulas == 'agreed') {
-<<<<<<< HEAD
-                var url = cfg.wwwroot + '/local/shop/front/ajax/service.php?what=reseteulas';
-=======
                 var url = cfg.wwwroot + '/local/shop/front/ajax/service.php';
                 url += '?what=reseteulas';
->>>>>>> MOODLE_40_STABLE
                 url += '&service=order';
                 url += '&id=' + shopfront.shopid;
 
                 // Switch state in session to avoid agreeing eulas again (until order changes).
                 $.get(url);
             }
-<<<<<<< HEAD
-        }
-=======
         },
 
         add_assign: function() {
@@ -773,7 +736,6 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             window.open(cfg.wwwroot + "/local/shop/popup.php?p=sales", "sales", winparams);
         }
 
->>>>>>> MOODLE_40_STABLE
     };
 
     return shopfront;

@@ -36,12 +36,6 @@
         </td>
     </tr>
 
-<<<<<<< HEAD
-    {{#discountrate}}
-    <tr>
-        <td colspan="2">
-            {{{reason}}} : <b>{{discountrate}} %</b>.<br/>
-=======
     {{#hasdiscounts}}
     <tr>
         <td colspan="2" class="shop-ordercell">
@@ -53,7 +47,6 @@
             {{#discounts}}
             {{{reason}}} : <span class="discount-rate">{{discountrate}} %</span><br/>
             {{/discounts}}
->>>>>>> MOODLE_40_STABLE
         </td>
     </tr>
 
@@ -62,20 +55,12 @@
             <b>{{#str}}orderingtotal, local_shop{{/str}}</b>
         </td>
         <td align="left" id="shop-discounted-span" class="shop-finalcount">
-<<<<<<< HEAD
-            {{{discounted}}}&nbsp;{{{currency}}}
-        </td>
-
-    </tr>
-    {{/discountrate}}
-=======
             <span class="discount-overriden-amount">{{{amount}}}&nbsp;{{{currency}}}</span>
             <span class="discounted-amount">{{{discounted}}}&nbsp;{{{currency}}}
         </td>
 
     </tr>
     {{/hasdiscounts}}
->>>>>>> MOODLE_40_STABLE
 
     {{#useshipping}}
     <tr>

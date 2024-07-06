@@ -6,13 +6,6 @@
 
     {{#head}}
     <tr>
-<<<<<<< HEAD
-
-        <th class="header c0">
-        </th>
-
-=======
->>>>>>> MOODLE_40_STABLE
         <th class="header c1">
             {{#str}}num, local_shop{{/str}}
         </th>
@@ -33,9 +26,6 @@
             {{#str}}lettering, local_shop{{/str}}
         </th>
 
-<<<<<<< HEAD
-        <th class="header lastcol">
-=======
         {{#haspartners}}
         <th class="header c3">
             {{#str}}partner, local_shop{{/str}}
@@ -49,7 +39,6 @@
         {{/hasdiscounts}}
 
         <th class="header lastcol" align="right" style="text-align: right">
->>>>>>> MOODLE_40_STABLE
             {{#str}}amount, local_shop{{/str}}
         </th>
 
@@ -59,19 +48,13 @@
 
     {{^head}}
     <tr valign="top">
-<<<<<<< HEAD
-        <td width="30" class="cell c0">
-            &nbsp;
-        </td>
-=======
->>>>>>> MOODLE_40_STABLE
 
         <td width="120" class="cell c1">
             <a class="activeLink" href="{{{billurl}}}">B-{{emissiondate}}-{{id}}</a>
         </td>
 
         <td width="*" class="cell c2">
-            <a class="activeLink" href="{{{customerurl}}}">{{firstname}} {{lastname}}</a>
+            <a class="activeLink" href="{{{customerurl}}}">{{lastname}} {{firstname}}</a>
             {{#email}}
             (<a href="mailto:{{{email}}}">{{{email}}}</a>)
             {{/email}}
@@ -92,10 +75,6 @@
             {{idnumber}}
         </td>
 
-<<<<<<< HEAD
-        <td width="100" align="right" class="cell lastcol">
-            {{amount}} {{{currency}}}
-=======
         {{#haspartners}}
         <td width="120" class="cell c2">
             {{#partnerkey}}
@@ -129,7 +108,6 @@
             {{#amount2}}
             <div class="amount-secondary" data-source="{{amountsource2}}">{{amount2}} {{{currency}}}</div>
             {{/amount2}}
->>>>>>> MOODLE_40_STABLE
         </td>
     </tr>
 

@@ -83,12 +83,7 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
     echo $renderer->full_order_totals($afullbill, $theshop);
     echo $renderer->full_order_taxes($afullbill, $theshop);
 
-<<<<<<< HEAD
-    echo $renderer->full_order_totals($afullbill, $theshop);
-    echo $renderer->full_order_taxes($afullbill, $theshop);
-=======
     echo '</div>';
->>>>>>> MOODLE_40_STABLE
 
     echo $OUTPUT->heading(get_string('paymode', 'local_shop'), 2, '', 'invoice-paymode');
 

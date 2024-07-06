@@ -1,11 +1,4 @@
 <?php
-<<<<<<< HEAD
-
-$string['partner'] = 'Partner';
-$string['partners'] = 'Partners';
-$string['editpartner'] = 'Edit partner';
-$string['partnerkey'] = 'Partner key';
-=======
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -33,7 +26,6 @@ $string['hasmoodleaccount'] = 'Has moodle account';
 $string['hascustomeraccount'] = 'Has customer account';
 $string['partnerkey'] = 'Partner key';
 $string['partnersecretkey'] = 'Partner secret key';
->>>>>>> MOODLE_40_STABLE
 $string['managepartners'] = 'Manage partners';
 $string['addpartner'] = 'Add partner';
 $string['newpartner'] = 'Add new partner';
@@ -41,16 +33,6 @@ $string['nopartner'] = 'No partners';
 $string['partnername'] = 'Partner name';
 $string['partnernameexists'] = 'This partner name already exists';
 $string['partnerenabled'] = 'Partner is enabled';
-<<<<<<< HEAD
-$string['countbills'] = 'Bills for partner';
-$string['partnerincome'] = 'Partner total income';
-$string['erroremptypartnername'] = 'Partner name cannot be empty';
-$string['referer'] = 'Referer';
-$string['referer_help'] = 'Referer to check on import. This is not an absolute protection but contributes to lowering abuses. For 
-web clients that do NOT provide referer attribute, the complete purchase sequence will have to be played.';
-
-$string['managepartners_desc'] = 'Partners can import purchase sessions into the shop and register them on their behalf.';
-=======
 $string['customerid'] = 'Associated customer';
 $string['partnercustomerid'] = 'Associated customer for partners';
 $string['countbills'] = 'Bills for partner';
@@ -75,4 +57,3 @@ to which invoices will be routed.';
 
 $string['partnersecretkey_help'] = 'This key is confidential and is NOT used in any visible URL or display. It serves in some
 soecial operations such as remote product activation process.';
->>>>>>> MOODLE_40_STABLE

@@ -101,11 +101,6 @@ function shop_register_customer($data, &$errorstatus) {
             $message .= " New user created {$newuser->username}.";
             shop_trace($message);
 
-<<<<<<< HEAD
-            $productionfeedback->public = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext');
-            $productionfeedback->private = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $newuser->username);
-            $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $newuser->username);
-=======
             $e = clone($newuser);
             $e->txid = $data->transactionid;
             $fb = get_string('productiondata_public', 'shophandlers_std_assignroleoncontext', $e);
@@ -113,7 +108,6 @@ function shop_register_customer($data, &$errorstatus) {
             $fb = get_string('productiondata_private', 'shophandlers_std_assignroleoncontext', $e);
             $productionfeedback->private = $fb;
             $fb = get_string('productiondata_sales', 'shophandlers_std_assignroleoncontext', $e);
->>>>>>> MOODLE_40_STABLE
             $productionfeedback->salesadmin = $fb;
         }
     }
@@ -124,7 +118,7 @@ function shop_register_customer($data, &$errorstatus) {
 /**
  * This enrols a customer user account into the designated customer support course as a student.
  * @param int $supportcoursename the Moodle shortname of the course used for customer support
- * @param object $customer a customer record
+ * @param object $customeruser a customer record
  * @param string $transactionid the unique id of the transaction (for tracing puropse)
  */
 function shop_register_customer_support($supportcoursename, $customeruser, $transactionid) {
@@ -333,14 +327,8 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     }
 
     if ($participant->id = $DB->insert_record('user', $participant)) {
-<<<<<<< HEAD
-
-        // Passwords will be created and sent out on cron.
-        set_user_preference('create_password', 1, $participant->id);
-=======
         $complete = get_complete_user_data('username', $participant->username);
         shop_set_and_send_password($complete);
->>>>>>> MOODLE_40_STABLE
         set_user_preference('auth_forcepasswordchange', 0, $participant->id);
     }
 
