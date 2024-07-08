@@ -34,6 +34,13 @@ require_once($CFG->dirroot.'/local/shop/products/products.controller.php');
  */
 class shophandler_std_addtrainingcredits_generator extends shophandler_generator_base {
 
+    /**
+     * Create a product
+     * @param local_shop\Catalog $thecatalog
+     * @param local_shop\Category $category
+     * @param local_shop\Tax $tax, $data 
+     * @param object $data
+     */
     public function create_product($thecatalog, $category, $tax, $data = null) {
 
         static $prodix = 1;

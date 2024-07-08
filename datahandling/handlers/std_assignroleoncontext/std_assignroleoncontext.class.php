@@ -18,9 +18,9 @@
  * Shop handler main class
  *
  * @package   local_shop
- * @category  local
  * @subpackage shophandlers
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * STD_ASSIGN_ROLE_ON_CONTEXT is a standard shop product action handler that products as result a single
@@ -133,11 +133,11 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         } else if ($contextlevel == CONTEXT_COURSE) {
             $instancename = 'Block Instance '.$context->instanceid; // TODO : Clarify in future.
         } else if ($contextlevel == CONTEXT_COURSE) {
-            $instancename = $DB->get_field('course', 'shortname', array('id' => $context->instanceid));
+            $instancename = $DB->get_field('course', 'shortname', ['id' => $context->instanceid]);
         } else if ($contextlevel == CONTEXT_COURSECAT) {
-            $instancename = $DB->get_field('course_categories', 'name', array('id' => $context->instanceid));
+            $instancename = $DB->get_field('course_categories', 'name', ['id' => $context->instanceid]);
         } else if ($contextlevel == CONTEXT_USER) {
-            $instancename = $DB->get_field('user', 'username', array('id' => $context->instanceid));
+            $instancename = $DB->get_field('user', 'username', ['id' => $context->instanceid]);
         } else if ($contextlevel == CONTEXT_SYSTEM) {
             $instancename = $SITE->shortname;
         }
@@ -150,7 +150,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             return;
         }
 
-        $role = $DB->get_record('role', array('shortname' => $rolename));
+        $role = $DB->get_record('role', ['shortname' => $rolename]);
         if (!$role) {
             $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay :";
             $message .= " failed item {$data->id} no valid role ($rolename)";
@@ -160,9 +160,9 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
         if (!empty($data->required['foruser'])) {
             $idnumber = $data->required['foruser'];
-            if (!$user = $DB->get_record('user', array('idnumber' => $idnumber))) {
+            if (!$user = $DB->get_record('user', ['idnumber' => $idnumber])) {
                 // Second chance.
-                if (!$user = $DB->get_record('user', array('username' => $idnumber))) {
+                if (!$user = $DB->get_record('user', ['username' => $idnumber])) {
                     $fb = get_string('productiondata_failure_public', 'shophandlers_std_assignroleoncontext', 'Code : BAD_USER');
                     $productionfeedback->public = $fb;
                     $fb = get_string('productiondata_failure_private', 'shophandlers_std_assignroleoncontext', $idnumber);
@@ -172,8 +172,8 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
                     return $productionfeedback;
                 }
             }
-            $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+            $customer = $DB->get_record('local_shop_customer', [('id' => $data->get_customerid()]);
+            $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
         } else {
             if ($USER->id) {
                 $customeruser = $USER;
@@ -222,7 +222,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $product->enddate = $endtime;
         $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
-        $extra = array('handler' => 'std_assignroleoncontext');
+        $extra = ['handler' => 'std_assignroleoncontext'];
         $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
         $product->id = $DB->insert_record('local_shop_product', $product);
 
@@ -273,7 +273,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         global $DB;
 
         if ($product->contexttype == 'roleassign') {
-            if ($ra = $DB->get_record('role_assignments', array('id' => $product->instanceid))) {
+            if ($ra = $DB->get_record('role_assignments', ['id' => $product->instanceid])) {
                 shop_trace('[] Deleting roleassignement on {$ra->contextid} for user {$ra->userid}');
                 role_unassign($ra->roleid, $ra->userid, $ra->contextid);
             }
@@ -305,7 +305,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $errors[$data->code][] = get_string('errormissingcontextlevel', 'shophandlers_std_assignroleoncontext');
         }
 
-        if (!in_array($data->actionparams['contextlevel'], array('course', 'module', 'category'))) {
+        if (!in_array($data->actionparams['contextlevel'], ['course', 'module', 'category'])) {
             $errors[$data->code][] = get_string('errorunsupportedcontextlevel', 'shophandlers_std_assignroleoncontext');
         }
 
@@ -313,7 +313,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $errors[$data->code][] = get_string('errormissingcontext', 'shophandlers_std_assignroleoncontext');
         }
 
-        $params = array('contextlevel' => $data->actionparams['contextlevel'], 'instance' => $data->actionparams['instance']);
+        $params = ['contextlevel' => $data->actionparams['contextlevel'], 'instance' => $data->actionparams['instance']];
         if (!$DB->get_record('context', $params)) {
             $errors[$data->code][] = get_string('errorcontext', 'shophandlers_std_assignroleoncontext');
         }
@@ -322,7 +322,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $errors[$data->code][] = get_string('errormissingrole', 'shophandlers_std_assignroleoncontext');
         }
 
-        if (!$DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
+        if (!$DB->get_record('role', ['shortname' => $data->actionparams['role']])) {
             $errors[$data->code][] = get_string('errorrole', 'shophandlers_std_assignroleoncontext', $data->actionparams['role']);
         }
     }

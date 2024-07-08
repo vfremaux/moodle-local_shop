@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
+/**s
+ * Version file
+ *
  * @package   local_shop
- * @category  local
  * @subpackage shophandlers
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,4 +28,4 @@ $plugin = new stdclass;
 $plugin->version = 2016071400;
 $plugin->requires = 2014050800;
 $plugin->component = 'shophandlers_std_createcategory';
-$plugin->dependencies = array('local_shop' => 2016022500);
+$plugin->dependencies = ['local_shop' => 2016022500];

@@ -23,6 +23,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
+global $CFG;
+
 // Privacy.
 $string['privacy:metadata'] = 'The local plugin Shophandler Std AddtrainingCredits does not directly store any personal data
  about any user.';

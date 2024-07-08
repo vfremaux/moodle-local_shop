@@ -23,6 +23,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
+global $CFG;
+
 // Privacy.
 $string['privacy:metadata'] = 'Le composant Gestionnaire d\'achat AddTrainingCredits ne détient directement aucune donnée relative
  aux utilisateurs.';
