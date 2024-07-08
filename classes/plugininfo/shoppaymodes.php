@@ -18,18 +18,22 @@
  * Subplugin info class.
  *
  * @package   local_shop
- * @category  local
- * @copyright 2014 Valery Fremaux (valery.Fremaux@gmail.com)
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\plugininfo;
 
 use core\plugininfo\base;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Subplugin definition
+ */
 class shoppaymodes extends base {
 
+    /** 
+     * Subplugins options
+     */
     public function is_uninstall_allowed() {
         return true;
     }

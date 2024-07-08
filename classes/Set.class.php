@@ -19,29 +19,35 @@
  * this is an helper class.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace local_shop;
-
-defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * A Set is a set of products that may propose variants for a single product type.
  */
 class Set extends ShopObject {
 
+    /**
+     * DB table (for ShopObject)
+     */
     protected static $table = 'local_shop_catalogitem';
 
+    /**
+     * Constructor
+     * @param mixed $idorrecord
+     * @param bool $light lightweight object (without categories) if true.
+     */
     public function __construct($recordorid, $light = false) {
         parent::__construct($recordorid, self::$table);
     }
 
-    // Get the accurate price against quantity ranges.
+    /**
+     * Get the accurate price against quantity ranges.
+     * @param int $q
+     */
     public function get_price($q) {
         if ($this->catalogitem->range1) {
             if ($q < $this->catalogitem->range1) {
@@ -82,15 +88,21 @@ class Set extends ShopObject {
         }
     }
 
+    /**
+     * Get full set taxed prince
+     * @param int $q
+     * @param int $taxid
+     */
     public function get_taxed_price($q, $taxid) {
         global $DB, $CFG;
         static $taxcache;
 
         if (!isset($taxcache)) {
-            $taxcache = array();
+            $taxcache = [];
         }
+
         if (!array_key_exists($taxid, $taxcache)) {
-            if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+            if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', ['id' => $taxid])) {
                 if (empty($taxcache[$taxid]->formula)) {
                     $taxcache[$taxid]->formula = '$ttc = $ht';
                 }

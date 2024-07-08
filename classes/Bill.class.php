@@ -18,17 +18,17 @@
  * Form for editing HTML block instances.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop;
 
 use StdClass;
 use context_system;
-use Exception;
+use moodle_exception;
 use moodle_url;
+use core_text;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,28 +37,41 @@ require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
 
+/**
+ * An order invoice. A Bill has subelements as Bill items
+ *
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ */
 class Bill extends ShopObject {
 
+    /**
+     * DB table (for ShopObject)
+     */
     protected static $table = 'local_shop_bill';
 
     /**
      * an array of BillItem objects
      */
     public $items;
+
+    /**
+     * Count of bill items.
+     */
     public $itemcount;
 
     /**
-     * the original value of the bill summating only ordered item costs
+     * The original value of the bill summating only ordered item costs
      */
     protected $orderamount;
 
     /**
-     * the original value of taxes the bill summating only ordered item costs
+     * The original value of taxes the bill summating only ordered item costs
      */
     protected $ordertaxes;
 
     /**
-     * the original untaxed value of the bill summating only ordered item costs
+     * The original untaxed value of the bill summating only ordered item costs
      */
     protected $orderuntaxedamount;
 
@@ -103,19 +116,49 @@ class Bill extends ShopObject {
     public $taxlines;
 
     /**
-     * External object references
+     * External object reference : the catalogue
      */
     public $thecatalogue;
+
+    /**
+     * External object reference : the shop
+     */
     public $theshop;
+
+    /**
+     * External object reference : the access block
+     */
     public $theblock;
+
+    /**
+     * External object reference : the working context
+     */
     public $context;
+
+    /**
+     * External object reference : the associated customer
+     */
     public $customer;
+
+    /**
+     * External object reference : the associated moodle user to the customer
+     */
     public $customeruser;
 
+    /**
+     * Viewable url of the bill
+     */
     public $url;
 
-    // Build a full bill plus billitems.
-    public function __construct($idorrecord, $light = false, &$theshop = null, &$thecatalogue = null, &$theblock = null) {
+    /**
+     * Build a full bill plus billitems.
+     * @param int $idorrecord the bill id, or bill DB record
+     * @param bool $light lightweight object if true
+     * @param object $theshop
+     * @param object $thecatalogue
+     * @param object $theblock the access block instance
+     */
+    public function __construct($idorrecord, $light = false, $theshop = null, $thecatalogue = null, $theblock = null) {
         global $DB;
 
         $config = get_config('local_shop');
@@ -160,8 +203,8 @@ class Bill extends ShopObject {
 
             $this->recalculate();
 
-            if ($this->customer = $DB->get_record('local_shop_customer', array('id' => $this->record->customerid))) {
-                $this->customeruser = $DB->get_record('user', array('id' => $this->customer->hasaccount));
+            if ($this->customer = $DB->get_record('local_shop_customer', ['id' => $this->record->customerid])) {
+                $this->customeruser = $DB->get_record('user', ['id' => $this->customer->hasaccount]);
             } else {
                 $this->customeruser = null;
             }
@@ -177,14 +220,14 @@ class Bill extends ShopObject {
 
         } else {
             if (empty($theshop)) {
-                throw new Exception('Null Shop not allowed when creating bill');
+                throw new moodle_exception('Null Shop not allowed when creating bill');
             }
 
             if (empty($thecatalogue)) {
-                throw new Exception('Null Shop not allowed when creating bill');
+                throw new moodle_exception('Null Shop not allowed when creating bill');
             }
 
-            $lastordering = $DB->get_field('local_shop_bill', 'MAX(ordering)', array());
+            $lastordering = $DB->get_field('local_shop_bill', 'MAX(ordering)', []);
             $lastordering++;
 
             // Initiate empty fields.
@@ -227,15 +270,20 @@ class Bill extends ShopObject {
         }
     }
 
+    /**
+     * Get the last ordering value in bill table.
+     * @param int $shopid 
+     */
     public static function last_ordering($shopid) {
         global $DB;
 
-        return $DB->get_field('local_shop_bill', 'MAX(ordering)', array('shopid' => $shopid));
+        return $DB->get_field('local_shop_bill', 'MAX(ordering)', ['shopid' => $shopid]);
     }
 
+    /**
+     * Generates a new unique transactionid.
+     */
     public function generate_unique_transaction() {
-        global $DB, $CFG, $SITE;
-
         $transid = shop_get_transid();
         $this->transactionid = $transid;
     }
@@ -244,6 +292,7 @@ class Bill extends ShopObject {
      * Adds a BillItem object to item list
      * Order amounts are updated in order for the discount check to
      * have accurate amount of the original order
+     * @param BillItem $bi
      */
     public function add_item(BillItem $bi) {
         shop_trace("[{$this->transactionid}] Add item. ".$bi->itemcode.' * '.$bi->quantity);
@@ -283,6 +332,7 @@ class Bill extends ShopObject {
 
     /**
      * delete an item by code
+     * @param string $itemcode
      */
     public function delete_item($itemcode) {
 
@@ -301,8 +351,8 @@ class Bill extends ShopObject {
         global $DB;
 
         if ($this->record->id) {
-            $DB->delete_records('local_shop_billitem', array('billid' => $this->record->id));
-            $this->items = array();
+            $DB->delete_records('local_shop_billitem', ['billid' => $this->record->id]);
+            $this->items = [];
             $this->orderuntaxedamount = 0;
             $this->ordertaxes = 0;
             $this->orderamount = 0;
@@ -310,63 +360,9 @@ class Bill extends ShopObject {
     }
 
     /**
-     * Checks discount conditions and setup discount as a special bill item.
-     * OBDSOLETE: should be removed
+     * Saves the bill in DB
+     * @param bool $stateonly if true, only saves the bill attributes.
      */
-    /*
-    public function check_discount() {
-        global $DB;
-
-        if (empty($this->items)) {
-            return;
-        }
-
-        $reason = '';
-        $discountrate = $this->theshop->calculate_discountrate_for_user($this->orderamount, $this->context, $reason);
-
-        // Trigger adding a DISCOUNT billitem per product if threshold is reached OR if any loggedin user condition matches.
-        if ($discountrate) {
-
-            // Reset all discount data.
-            $this->discount = 0;
-            $DB->delete_records('local_shop_billitem', array('billid' => $this->id, 'type' => 'DISCOUNT'));
-
-            foreach ($this->items as $biid => $bi) {
-                $birec = new StdClass;
-                $birec->type = 'DISCOUNT';
-                $birec->itemcode = $bi->itemcode;
-                $birec->catalogitem = $bi->catalogitem;
-                $birec->unitcost = - $bi->unitcost * $discountrate / 100;
-                $birec->quantity = $bi->quantity;
-                $birec->abstract = 'Product discount';
-                $birec->totalprice = - $bi->unitcost * $discountrate / 100 * $bi->quantity;
-                $taxamount = - $bi->get_tax_amount() * $discountrate / 100;
-                $birec->productiondata = '';
-                $birec->customerdata = '';
-                $billitem = new BillItem($birec, false, ['bill' => $this]);
-                $this->items[] = $billitem;
-
-                /*
-                 * echo 'DUuc '.($birec->unitcost).'<br/>';
-                 * echo 'DUut '.$bi->get_tax_amount().'<br/>';
-                 * echo 'DUU '.($birec->totalprice - $taxamount).'<br/>';
-                 * echo 'DUt '.$taxamount.'<br/>';
-                 * echo 'DUT '.$birec->totalprice.'<br/><br/>';
-                 */
-                /*
-                $this->discount += $birec->totalprice;
-                $this->discounttaxes += $taxamount;
-                if (array_key_exists($billitem->taxcode, $this->taxlines)) {
-                    $this->taxlines[$billitem->taxcode] += $taxamount;
-                } else {
-                    $this->taxlines[$billitem->taxcode] = $taxamount;
-                }
-                $this->untaxeddiscount = $this->discount - $this->discounttaxes;
-            }
-        }
-    }
-    */
-
     public function save($stateonly = false) {
         static $pass = 0;
 
@@ -402,7 +398,6 @@ class Bill extends ShopObject {
      * delete all taxlines
      */
     public function reset_taxlines() {
-
         if (empty($this->items)) {
             $this->taxlines = [];
         }
@@ -427,7 +422,7 @@ class Bill extends ShopObject {
         $this->discounttaxes = 0;
         $this->untaxeddiscount = 0;
         $this->itemcount = 0;
-        $this->taxlines = array();
+        $this->taxlines = [];
 
         $discounts = [];
 
@@ -509,10 +504,13 @@ class Bill extends ShopObject {
         shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated to final amount : {$this->finalshippedtaxedtotal}");
     }
 
-    public function delete() {
+    /**
+     * Deletes the bill with all content.
+     */
+    public function delete(): void {
 
         // Delete all bill items.
-        $billitems = BillItem::get_instances(array('billid' => $this->id));
+        $billitems = BillItem::get_instances(['billid' => $this->id]);
         if ($billitems) {
             foreach ($billitems as $bi) {
                 $bi->delete();
@@ -522,6 +520,10 @@ class Bill extends ShopObject {
         parent::delete();
     }
 
+    /**
+     * Operates a trasition to another state.
+     * @param string $tostatus the target state
+     */
     public function work($tostatus) {
         global $CFG;
 
@@ -531,7 +533,7 @@ class Bill extends ShopObject {
         include_once($CFG->dirroot.'/local/shop/transitions.php');
         // Lower case because Moodle validation forces all functions to be lowercase.
 
-        $transitionhandler = \core_text::strtolower("bill_transition_{$this->record->status}_{$tostatus}");
+        $transitionhandler = core_text::strtolower("bill_transition_{$this->record->status}_{$tostatus}");
         shop_trace('['.$this->transactionid.'] Internal transaction: '.$transitionhandler);
         if (function_exists($transitionhandler)) {
             $result = $transitionhandler($this);
@@ -542,16 +544,20 @@ class Bill extends ShopObject {
         }
     }
 
+    /**
+     * Get a bill object by unique transactionid
+     * @param string $transid
+     */
     public static function get_by_transaction($transid) {
         global $DB;
 
         if (empty($transid)) {
-            throw new \Exception('Empty transaction');
+            throw new moodle_exception('Empty transaction');
         }
 
-        $record = $DB->get_record('local_shop_bill', array('transactionid' => $transid));
+        $record = $DB->get_record('local_shop_bill', ['transactionid' => $transid]);
         if (!$record) {
-            throw new \Exception('Invalid Transaction Identifier');
+            throw new moodle_exception('Invalid Transaction Identifier');
         }
 
         $theshop = new Shop($record->shopid);
@@ -561,6 +567,11 @@ class Bill extends ShopObject {
         return $bill;
     }
 
+    /** 
+     * Count bills by state
+     * @param bool $fullview if true retreives total count
+     * @param string $filterclause filters records for counting (f.e. by shop)
+     */
     public static function count_by_states($fullview, $filterclause) {
         global $DB;
 
@@ -589,22 +600,49 @@ class Bill extends ShopObject {
         return $total;
     }
 
-    public static function count(array $filter = array()) {
+    /**
+     * ShopObject wrapper
+     * @param array $filter standard moodle get_records filter array.
+     */
+    public static function count(array $filter = []) {
         return parent::_count(self::$table, $filter);
     }
 
-    public static function sum($field, array $filter = array()) {
+    /**
+     * ShopObject wrapper
+     * @param string $field field to make sum on
+     * @param array $filter standard moodle get_records filter array.
+     */
+    public static function sum($field, array $filter = []) {
         return parent::_sum(self::$table, $field, $filter);
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * ShopObject wrapper
+     * @param array $filter standard moodle get_records filter array.
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
-        return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(emissiondate, '-', ordering, '-', idnumber)", $chooseopt);
+    /**
+     * ShopObject wrapper
+     * @param array $filter standard moodle get_records filter array.
+     * @param string $order
+     * @param string $choosedots
+     */
+    public static function get_instances_menu($filter = [], $order = '', $chooseopt = 'choosedots') {
+        $fields = "CONCAT(emissiondate, '-', ordering, '-', idnumber)";
+        return parent::_get_instances_menu(self::$table, $filter, $order, $fields, $chooseopt);
     }
 
+    /**
+     * Recursive stringifier.
+     */
     public function toString() {
         $printable = new StdClass;
         $printable->record = $this->record;

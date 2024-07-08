@@ -18,9 +18,8 @@
  * A category organises catalog items in a catalog.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,12 +29,26 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
+/**
+ * A catalog category has sub categories and / or catalog items.
+ */
 class Category extends ShopObject {
 
+    /**
+     * DB table (for ShopObject)
+     */
     protected static $table = 'local_shop_catalogcategory';
 
+    /**
+     * The owning Catalog
+     */
     protected $thecatalog;
 
+    /**
+     * Constructor
+     * @param mixed $idorrecord
+     * @param bool $light
+     */
     public function __construct($idorrecord, $light = false) {
 
         parent::__construct($idorrecord, self::$table);
@@ -56,15 +69,21 @@ class Category extends ShopObject {
         }
     }
 
+    /**
+     * Get the category name
+     */
     public function get_name() {
         return format_string($this->record->name);
     }
 
+    /**
+     * Get the category's parent name
+     */
     public function get_parent_name() {
         global $DB;
 
         if ($this->perentid) {
-            return format_string($DB->get_field('shop_catalog_category', 'name', array('id' => $this->parentid)));
+            return format_string($DB->get_field('shop_catalog_category', 'name', ['id' => $this->parentid]));
         }
     }
 
@@ -75,16 +94,20 @@ class Category extends ShopObject {
     public function get_branch() {
         global $DB;
 
-        $branch = array($this->id);
+        $branch = [$this->id];
         $parentid = $this->record->parentid;
         while ($parentid != 0) {
             $branch[] = $parentid;
-            $parentid = $DB->get_field('local_shop_catalogcategory', 'parentid', array('id' => $parentid));
+            $parentid = $DB->get_field('local_shop_catalogcategory', 'parentid', ['id' => $parentid]);
         }
 
         return $branch;
     }
 
+    /**
+     * Export the category in YML format
+     * @param int $level
+     */
     public function export($level = 0) {
 
         $indent = str_repeat('    ', $level);
@@ -106,9 +129,12 @@ class Category extends ShopObject {
     public function is_empty() {
         global $DB;
 
-        return !$DB->count_records('local_shop_catalogitem', array('categoryid' => $this->id));
+        return !$DB->count_records('local_shop_catalogitem', ['categoryid' => $this->id]);
     }
 
+    /**
+     * Get the first non empty subcategory
+     */
     public function get_first_non_empty_child() {
         global $DB;
 
@@ -126,7 +152,7 @@ class Category extends ShopObject {
                 cc.sortorder
         ";
 
-        if ($firstcat = $DB->get_records_sql($sql, array($this->id), 0, 1)) {
+        if ($firstcat = $DB->get_records_sql($sql, [$this->id], 0, 1)) {
             $firstcatobj = array_shift($firstcat);
             return $firstcatobj->id;
         }
@@ -134,8 +160,11 @@ class Category extends ShopObject {
         return 0;
     }
 
+    /**
+     * Export for web services
+     */
     public function export_to_ws() {
-        $export = new \Stdclass;
+        $export = new Stdclass();
 
         $export->id = $this->record->id;
         $export->catalogid = $this->record->catalogid;
@@ -155,8 +184,8 @@ class Category extends ShopObject {
     public static function get_first_branch($catalogid, $categoryid = 0) {
         global $DB;
 
-        $branch = array();
-        $params = array('parentid' => $categoryid, 'catalogid' => $catalogid);
+        $branch = [];
+        $params = ['parentid' => $categoryid, 'catalogid' => $catalogid];
         // Get the first rec in order and follow th path.
         $recs = $DB->get_records('local_shop_catalogcategory', $params, 'sortorder', 'id, parentid', 0, 1);
         if ($recs) {
@@ -168,11 +197,24 @@ class Category extends ShopObject {
         return $branch;
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * àparam int $limitnum
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
-    public static function get_instances_menu($filter = array(), $order = '') {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     */
+    public static function get_instances_menu($filter = [], $order = '') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "name");
     }
 
@@ -195,7 +237,15 @@ class Category extends ShopObject {
         return new Category($intanceid);
     }
 
-    public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
+    public static function count($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_count_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
@@ -227,7 +277,7 @@ class Category extends ShopObject {
 
             if ($c->parentid) {
                 while ($c->parentid) {
-                    $c = $DB->get_record('local_shop_catalogcategory', array('id' => $c->parentid), 'id,parentid');
+                    $c = $DB->get_record('local_shop_catalogcategory', ['id' => $c->parentid], 'id,parentid');
                     if ($c->id == $currentcatid) {
                         unset($categories[$cid]);
                         break;

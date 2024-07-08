@@ -16,19 +16,25 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
 
+use StdClass;
+
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 class Shop extends ShopObject {
+
+    /**
+     * DB table (for ShopObject)
+     */
+    protected static $table = 'local_shop';
 
     /**
      * An ref to the catalogue
@@ -40,10 +46,10 @@ class Shop extends ShopObject {
      */
     private $navorder;
 
-    protected static $table = 'local_shop';
-
     /**
-     * Build a full shop instance.
+     * Constructor
+     * @param mixed $idorrecord
+     * @param bool $light lightweight object (without categories) if true.
      */
     public function __construct($idorrecord, $light = false) {
         global $DB;
@@ -71,7 +77,7 @@ class Shop extends ShopObject {
 
             $this->_build_nav_order();
         } else {
-            $lastordering = $DB->get_field(self::$table, 'MAX(sortorder)', array());
+            $lastordering = $DB->get_field(self::$table, 'MAX(sortorder)', []);
             $lastordering++;
 
             // Initiate empty fields.
@@ -100,20 +106,31 @@ class Shop extends ShopObject {
         }
     }
 
+    /**
+     * Get the starting step of the purchase process.
+     */
     public function get_starting_step() {
         return array_keys($this->navorder['nextstep'])[0];
     }
 
+    /**
+     * Get the next step.
+     * @param string $step
+     */
     public function get_next_step($step) {
         return $this->navorder['nextstep'][$step];
     }
 
+    /**
+     * Get the previous step.
+     * @param string $step
+     */
     public function get_prev_step($step) {
         return $this->navorder['prevstep'][$step];
     }
 
     /**
-     *
+     * Get the catalogue
      */
     public function get_catalogue() {
         if (empty($this->thecatalogue)) {
@@ -127,6 +144,7 @@ class Shop extends ShopObject {
 
     /**
      * Get the current currency of the shop instance
+     * @param bool $long
      */
     public function get_currency($long = false) {
 
@@ -143,6 +161,7 @@ class Shop extends ShopObject {
     /**
      * Receives a form reponse and compactall paymodes setup into one single
      * field.
+     * @param stringref &$shoprec
      */
     public static function compact_paymodes(&$shoprec) {
 
@@ -151,14 +170,14 @@ class Shop extends ShopObject {
 
         $paymodeenablekeys = preg_grep('/^enable/', $keys);
 
-        $paymodeenable = array();
+        $paymodeenable = [];
         foreach ($paymodeenablekeys as $k) {
             $paymodekey = str_replace('enable', '', $k);
             $paymodeenable[$paymodekey] = 0 + @$shoparr[$k];
             unset($shoprec->$k);
         }
 
-        $shoprec->paymodes = base64_encode(serialize(array($paymodeenable)));
+        $shoprec->paymodes = base64_encode(serialize([$paymodeenable]));
     }
 
     /**
@@ -172,7 +191,7 @@ class Shop extends ShopObject {
             $expanded = unserialize(base64_decode($shoprec->paymodes));;
             $paymodeenable = array_shift($expanded);
         } else {
-            $paymodeenable = array();
+            $paymodeenable = [];
         }
 
         foreach ($paymodeenable as $k => $v) {
@@ -181,10 +200,13 @@ class Shop extends ShopObject {
         }
     }
 
+    /**
+     * Get the access block to this shop instance.
+     */
     public function get_blocks() {
         global $DB;
 
-        $bis = $DB->get_records('block_instances', array('blockname' => 'shop_access'));
+        $bis = $DB->get_records('block_instances', ['blockname' => 'shop_access']);
         $count = 0;
         if ($bis) {
             foreach ($bis as $bi) {
@@ -197,8 +219,11 @@ class Shop extends ShopObject {
         return $count;
     }
 
+    /**
+     * Get all bill records for the shop instance.
+     */
     public function get_bills() {
-        return Bill::get_instances(array('shopid' => $this->id));
+        return Bill::get_instances(['shopid' => $this->id]);
     }
 
     /**
@@ -216,55 +241,20 @@ class Shop extends ShopObject {
         }
 
         // Finally delete master record.
-        $DB->delete_records(self::$table, array('id' => $this->id));
+        $DB->delete_records(self::$table, ['id' => $this->id]);
     }
 
     public function url() {
-        $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $this->id));
+        $shopurl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'id' => $this->id]);
         return $shopurl;
     }
 
-    /*
-    public function calculate_discountrate_for_user($amount, &$context, &$reason, $user = null) {
-        global $USER;
-
-        if (is_null($user)) {
-            $user = $USER;
-        }
-
-        $discountrate = 0; // No discount as default.
-
-        if ($this->record->discountthreshold &&
-                $this->record->discountrate &&
-                        ($amount > $this->record->discountthreshold)) {
-            $discountrate = $this->record->discountrate;
-            $reason = get_string('ismorethan', 'local_shop');
-            $reason .= '<b>'.$this->record->discountthreshold.'&nbsp;</b><b>'.$this->get_currency('symbol').'</b>';
-        }
-
-        if (isloggedin()) {
-            if (has_capability('local/shop:discountagreed', $context, $USER->id)) {
-                $discountrate = $this->record->discountrate;
-                $reason = get_string('userdiscountagreed', 'local_shop');
-            }
-            if (has_capability('local/shop:seconddiscountagreed', $context, $USER->id)) {
-                $discountrate = $this->record->discountrate2;
-                $reason = get_string('userdiscountagreed2', 'local_shop');
-            }
-            if (has_capability('local/shop:thirddiscountagreed', $context, $USER->id)) {
-                $discountrate = $this->record->discountrate3;
-                $reason = get_string('userdiscountagreed3', 'local_shop');
-            }
-        }
-
-        return $discountrate;
-    }
-    */
-
     /**
      * Exports the shop into a YML string.
+     * @param int $level 
      */
     public function export($level = 0) {
+
         $yml = '';
 
         $yml .= "shop:\n";
@@ -278,9 +268,12 @@ class Shop extends ShopObject {
         }
     }
 
+    /**
+     * Export for Web Services
+     */
     public function export_to_ws() {
 
-        $export = new \StdClass;
+        $export = new StdClass();
 
         $export->id = $this->record->id;
         $export->name = format_string($this->record->name);
@@ -294,16 +287,33 @@ class Shop extends ShopObject {
         return $export;
     }
 
+    /**
+     * ShopObject wrapper
+     * @see local_shop\ShopObject
+     * @param array $filter
+     */
     public static function count($filter) {
         return parent::_count(self::$table, $filter);
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * ShopObject wrapper
+     * @see local_shop\ShopObject
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    /**
+     * Builds the navorder from config
+     */
     private function _build_nav_order() {
-        $this->navorder = array();
+        $this->navorder = [];
         $navsteps = explode(',', $this->navsteps);
         $navnext = explode(',', $this->navsteps);
         $navprev = explode(',', $this->navsteps);
