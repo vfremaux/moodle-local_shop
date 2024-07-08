@@ -19,11 +19,12 @@
  * the correct checksum.
  *
  * @package   local_shop
- * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../../config.php');
+
 require_once($CFG->dirroot.'/local/shop/tests/check_product_key_form.php');
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
 

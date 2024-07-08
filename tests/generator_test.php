@@ -18,10 +18,12 @@
  * local_shop generator tests
  *
  * @package    local_shop
- * @category   test
- * @copyright  2013 Valery Fremaux
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -30,9 +32,13 @@ require_once($CFG->dirroot.'/local/shop/tests/generator/lib.php');
 
 /**
  * Generator tests class for local_shop.
+ * @covers \local_shop_generator
  */
-class local_shop_generator_testcase extends advanced_testcase {
+class generator_test extends advanced_testcase {
 
+    /**
+     * Test create shop
+     */
     public function test_create_shop() {
         global $DB;
 
@@ -42,14 +48,17 @@ class local_shop_generator_testcase extends advanced_testcase {
         $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
         // There is one default shop at install time.
-        $this->assertTrue(1 == $DB->count_records('local_shop', array()));
+        $this->assertTrue(1 == $DB->count_records('local_shop', []));
         $shop = $generator->create_shop();
-        $this->assertTrue($DB->record_exists('local_shop', array('id' => $shop->id)));
+        $this->assertTrue($DB->record_exists('local_shop', ['id' => $shop->id]));
 
         $shop->delete();
-        $this->assertTrue(1 == $DB->count_records('local_shop', array()));
+        $this->assertTrue(1 == $DB->count_records('local_shop', []));
     }
 
+    /**
+     * Test create catalog
+     */
     public function test_create_catalog() {
         global $DB;
 
@@ -58,14 +67,17 @@ class local_shop_generator_testcase extends advanced_testcase {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
-        $this->assertTrue(0 == $DB->count_records('local_shop_catalog', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalog', []));
         $catalog = $generator->create_catalog();
-        $this->assertTrue($DB->record_exists('local_shop_catalog', array('id' => $catalog->id)));
+        $this->assertTrue($DB->record_exists('local_shop_catalog', ['id' => $catalog->id]));
 
         $catalog->delete();
-        $this->assertTrue(0 == $DB->count_records('local_shop_catalog', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalog', []));
     }
 
+    /**
+     * Test tax creation
+     */
     public function test_create_tax() {
         global $DB;
 
@@ -74,14 +86,17 @@ class local_shop_generator_testcase extends advanced_testcase {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('local_shop');
 
-        $this->assertTrue(0 == $DB->count_records('local_shop_tax', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_tax', []));
         $tax = $generator->create_tax();
-        $this->assertTrue($DB->record_exists('local_shop_tax', array('id' => $tax->id)));
+        $this->assertTrue($DB->record_exists('local_shop_tax', ['id' => $tax->id]));
 
         $tax->delete();
-        $this->assertTrue(0 == $DB->count_records('local_shop_tax', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_tax', []));
     }
 
+    /**
+     * Test categor creation
+     */
     public function test_create_category() {
         global $DB;
 
@@ -92,12 +107,12 @@ class local_shop_generator_testcase extends advanced_testcase {
 
         $catalog = $generator->create_catalog();
 
-        $this->assertTrue(0 == $DB->count_records('local_shop_catalogcategory', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalogcategory', []));
         $cat = $generator->create_category($catalog);
         $this->assertTrue(!empty($cat));
-        $this->assertTrue($DB->record_exists('local_shop_catalogcategory', array('id' => $cat->id)));
+        $this->assertTrue($DB->record_exists('local_shop_catalogcategory', ['id' => $cat->id]));
 
         $cat->delete();
-        $this->assertTrue(0 == $DB->count_records('local_shop_catalogcategory', array()));
+        $this->assertTrue(0 == $DB->count_records('local_shop_catalogcategory', []));
     }
 }

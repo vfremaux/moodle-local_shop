@@ -31,16 +31,16 @@ $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnost
 $plugin->release = '4.1.0 (Build 2024053103)';
 $plugin->maturity = MATURITY_STABLE;
 if (function_exists('local_shop_supports_feature') && local_shop_supports_feature() === 'pro') {
-    $plugin->dependencies = array('auth_ticket' => '2012060400', 'local_vfcore' => 2024053100);
+    $plugin->dependencies = ['auth_ticket' => '2012060400', 'local_vfcore' => 2024053100];
 } else {
-    $plugin->dependencies = array('auth_ticket' => '2012060400');
+    $plugin->dependencies = ['auth_ticket' => '2012060400'];
 }
 $plugin->supported = [401, 402];
 
 // Non moodle attributes.
 $plugin->codeincrement = '4.1.0024';
 $plugin->privacy = 'dualrelease';
-$plugin->prolocations = array(
+$plugin->prolocations = [
     'datahandling/handlers/std_addtrainingcredits',
     'datahandling/handlers/std_addquizattempts',
     'datahandling/handlers/std_createcategory',
@@ -61,4 +61,4 @@ $plugin->prolocations = array(
     'paymodes/paybox',
     'paymodes/publicmandate',
     'paymodes/stripe_checkout',
-);
+];

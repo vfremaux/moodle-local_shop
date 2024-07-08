@@ -18,7 +18,6 @@
  * Main handler class.
  *
  * @package     local_shop
- * @category    local
  * @subpackage  product_handlers
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)

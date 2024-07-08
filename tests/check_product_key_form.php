@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A form for checking product key.
+ *
  * @package   local_shop
- * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -26,6 +28,9 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 
 class check_product_key_form extends moodleform {
 
+    /**
+     * Form definition.
+     */
     public function definition() {
 
         $mform = $this->_form;
@@ -34,7 +39,5 @@ class check_product_key_form extends moodleform {
         $mform->setType('productkey', PARAM_TEXT);
 
         $mform->addElement('submit', 'go-btn', get_string('testkey', 'local_shop'));
-
     }
-
 }

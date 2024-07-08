@@ -15,15 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Controller for managing shop instances
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 class instances_controller {
 
+    /**
+     * Process action
+     * @param string $cmd
+     */
     public function process($cmd) {
 
         if ($cmd == 'delete') {

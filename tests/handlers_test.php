@@ -18,10 +18,12 @@
  * local_shop tests of product handlers
  *
  * @package    local_shop
- * @category   test
- * @copyright  2013 Valery Fremaux
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
@@ -30,13 +32,30 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/tests/generator/lib.php');
 
-use \local_shop\Catalog;
-use \local_shop\Shop;
+use local_shop\Catalog;
+use local_shop\Shop;
+use core_plugin_manager;
+use advanced_testcase;
 
 /**
  *  tests class for local_shop.
+ * @covers \shop_handler_std_addquizattempts
+ * @covers \shop_handler_std_addtrainingcredits
+ * @covers \shop_handler_std_assignroleoncontext
+ * @covers \shop_handler_std_createcategory
+ * @covers \shop_handler_std_createcourse
+ * @covers \shop_handler_std_createvinstance
+ * @covers \shop_handler_std_enrolonecourse
+ * @covers \shop_handler_std_enrolonecoursemultiple
+ * @covers \shop_handler_std_extendenrolperiod
+ * @covers \shop_handler_std_generateseats
+ * @covers \shop_handler_std_openltiaccess
+ * @covers \shop_handler_std_prorogate
+ * @covers \shop_handler_std_registeredproduct
+ * @covers \shop_handler_std_setuponecoursesession
+ * @covers \shop_handler_std_unlockpdcertificate
  */
-class local_shop_handlers_testcase extends advanced_testcase {
+class handlers_test extends advanced_testcase {
 
     /**
      * Given an initialised shop with a TEST product, will run the entire
@@ -55,10 +74,10 @@ class local_shop_handlers_testcase extends advanced_testcase {
         $course = $this->getDataGenerator()->create_course($params);
 
         // Create customersupport default course.
-        $params = array('name' => 'Test Customer Support course', 'shortname' => 'CUSTOMERSUPPORT', 'category' => $category->id);
+        $params = ['name' => 'Test Customer Support course', 'shortname' => 'CUSTOMERSUPPORT', 'category' => $category->id];
         $customersupportcourse = $this->getDataGenerator()->create_course($params);
 
-        $customer = array('firstname' => 'Test', 'lastname' => 'customer', 'email' => 'test.customer@foo.com');
+        $customer = ['firstname' => 'Test', 'lastname' => 'customer', 'email' => 'test.customer@foo.com'];
         $customer = $this->getDataGenerator()->create_user($customer);
         $this->setUser($customer);
 
@@ -76,14 +95,14 @@ class local_shop_handlers_testcase extends advanced_testcase {
         // Bind catalog to shop.
         $shop->catalogid = $catalog->id;
         $shop->save(true);
-        $this->assertTrue($catalog->id == $DB->get_field('local_shop', 'catalogid', array('id' => $shop->id)));
+        $this->assertTrue($catalog->id == $DB->get_field('local_shop', 'catalogid', ['id' => $shop->id]));
 
         $category = $generator->create_category($catalog);
         $this->assertTrue(!empty($category));
 
         // Connect with a fake customer user.
 
-        $this->assertTrue($DB->record_exists('local_shop_catalogcategory', array('id' => $category->id)));
+        $this->assertTrue($DB->record_exists('local_shop_catalogcategory', ['id' => $category->id]));
 
         // Fetch handlers.
         $pluginman = core_plugin_manager::instance();

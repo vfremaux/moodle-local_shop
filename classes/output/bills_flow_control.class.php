@@ -14,22 +14,49 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Controller for bill state machine.
+ *
+ * @package     local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 namespace local_shop\output;
 
-defined('MOODLE_INTERNAL') || die();
+use StdClass;
+use renderer_base;
 
+/**
+ * Data recollection for bill changing states
+ */
 class bills_flow_control implements \Templatable {
 
+    /**
+     * The current status
+     */
     protected $status;
 
+    /**
+     * the base URL
+     */
     protected $url;
 
+    /**
+     * Base constructor
+     * @param string $status starting status
+     * @param moodle_url $url
+     */
     public function __construct($status, $url) {
         $this->status = $status;
         $this->url = $url;
     }
 
-    public function export_for_template(\renderer_base $output) {
+    /**
+     * Exporter for renderer.
+     * @param renderer_base $output
+     */
+    public function export_for_template(renderer_base $output) {
         global $DB;
 
         $select = "
@@ -37,23 +64,23 @@ class bills_flow_control implements \Templatable {
             `tostate` = ?
             GROUP BY element,`fromstate`
         ";
-        $froms = $DB->get_records_select('local_flowcontrol', $select, array($this->status));
+        $froms = $DB->get_records_select('local_flowcontrol', $select, [$this->status]);
 
         $select = "
             element = 'bill' AND
             `fromstate` = ?
             GROUP BY element,`tostate`
         ";
-        $tos = $DB->get_records_select('local_flowcontrol', $select, array($this->status));
+        $tos = $DB->get_records_select('local_flowcontrol', $select, [$this->status]);
 
-        $template = new \StdClass;
+        $template = new StdClass();
 
         $template->statusstr = get_string($this->status, 'local_shop');
         $template->url = $this->url->out();
 
         if ($froms) {
             foreach ($froms as $from) {
-                $fromtpl = new \StdClass;
+                $fromtpl = new StdClass();
                 $fromtpl->label = get_string($from->fromstate, 'local_shop');
                 $fromtpl->fromstate = $from->fromstate;
                 $template->froms[] = $fromtpl;
@@ -62,7 +89,7 @@ class bills_flow_control implements \Templatable {
 
         if ($tos) {
             foreach ($tos as $to) {
-                $totpl = new \StdClass;
+                $totpl = new StdClass();
                 $totpl->label = get_string($to->tostate, 'local_shop');
                 $totpl->tostate = $to->tostate;
                 $template->tos[] = $totpl;

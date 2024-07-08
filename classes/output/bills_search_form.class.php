@@ -14,24 +14,46 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Data for bill search form.
+ *
+ * @package     local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 namespace local_shop\output;
 
-defined('MOODLE_INTERNAL') || die();
+use StdClass;
 
 class bills_search_form implements \Templatable {
 
+    /**
+     * Number of bills
+     */
     protected $billcount;
 
+    /**
+     * current shop instance
+     */
     protected $theshop;
 
+    /**
+     * Base constructor
+     * @param object $theshop 
+     * @param int $billcount
+     */
     public function __construct($theshop, $billcount) {
         $this->billcount = $billcount;
         $this->theshop = $theshop;
     }
 
+    /**
+     * Exporter for template
+     */
     public function export_for_template(\renderer_base $output) {
 
-        $template = new \StdClass();
+        $template = new StdClass();
         $template->shopid = $this->theshop->id;
         $template->sesskey = sesskey();
  
@@ -44,4 +66,3 @@ class bills_search_form implements \Templatable {
         return $template;
     }
 }
-
