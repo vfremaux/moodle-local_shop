@@ -26,6 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/renderer.php');
 
+/**
+ * Renderer for catalog data.
+ */
 class shop_catalogs_renderer extends local_shop_base_renderer {
 
     /**

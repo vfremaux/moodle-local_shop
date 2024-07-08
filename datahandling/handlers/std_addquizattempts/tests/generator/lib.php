@@ -34,20 +34,27 @@ require_once($CFG->dirroot.'/local/shop/products/products.controller.php');
  */
 class shophandler_std_addquizattempts_generator extends shophandler_generator_base {
 
+    /**
+     * Create a product
+     * @param local_shop\Catalog $thecatalog
+     * @param local_shop\Category $category
+     * @param local_shop\Tax $tax, $data 
+     * @param object $data
+     */
     public function create_product($thecatalog, $category, $tax, $data = null) {
 
         static $prodix = 1;
 
         if (is_null($data)) {
 
-            $data = (object) array(
+            $data = (object) [
                 'code' => 'TESTPRODQUIZATTEMPTS',
                 'name' => 'Test product adding quiz attempts',
-                'description_editor' => array(
+                'description_editor' => [
                     'text' => '<p>Product for unit testing. Single price, Automated on adding quiz attempts.</p>',
                     'format' => '1',
                     'itemid' => 0,
-                ),
+                ],
 
                 'userid' => 0,
                 'status' => 'AVAILABLE',
@@ -72,24 +79,24 @@ class shophandler_std_addquizattempts_generator extends shophandler_generator_ba
                 'showsnameinset' => 1,
                 'showsdescriptioninset' => 1,
 
-                'eula_editor' => array (
+                'eula_editor' => [
                         'text' => '<p>Sales conditions / Adding quiz attempts</p>',
                         'format' => 1,
                         'itemid' => 0,
-                ),
+                ],
 
-                'notes_editor' => array (
+                'notes_editor' => [
                     'text' => '<p>Test notes / Adding training credits</p>',
                     'format' => 1,
                     'itemid' => 0,
-                ),
+                 ],
 
                 'requireddata' => '',
                 'enablehandler' => 'std_addquizattempts',
                 'handlerparams' => 'attemptsamount=3',
                 'quantaddressesusers' => 0,
                 'renewable' => 0,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);
@@ -97,4 +104,3 @@ class shophandler_std_addquizattempts_generator extends shophandler_generator_ba
         return $controller->process('edit');
     }
 }
-

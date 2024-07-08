@@ -40,14 +40,14 @@ class shophandler_std_addtrainingcredits_generator extends shophandler_generator
 
         if (is_null($data)) {
 
-            $data = (object) array(
+            $data = (object) [
                 'code' => 'TESTPRODTRAININGCREDITS',
                 'name' => 'Test product adding training credits',
-                'description_editor' => array(
+                'description_editor' => [
                     'text' => '<p>Product for unit testing. Single price, Automated on adding training credits.</p>',
                     'format' => '1',
                     'itemid' => 0,
-                ),
+                ],
 
                 'userid' => 0,
                 'status' => 'AVAILABLE',
@@ -72,24 +72,24 @@ class shophandler_std_addtrainingcredits_generator extends shophandler_generator
                 'showsnameinset' => 1,
                 'showsdescriptioninset' => 1,
 
-                'eula_editor' => array (
+                'eula_editor' => [
                         'text' => '<p>Sales conditions / Adding training credits</p>',
                         'format' => 1,
                         'itemid' => 0,
-                ),
+                ],
 
-                'notes_editor' => array (
+                'notes_editor' => [
                     'text' => '<p>Test notes / Adding training credits</p>',
                     'format' => 1,
                     'itemid' => 0,
-                ),
+                ],
 
                 'requireddata' => '',
                 'enablehandler' => 'std_addtrainingcredits',
                 'handlerparams' => 'creditsamount=10',
                 'quantaddressesusers' => 0,
                 'renewable' => 0,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);
@@ -97,4 +97,3 @@ class shophandler_std_addtrainingcredits_generator extends shophandler_generator
         return $controller->process('edit');
     }
 }
-

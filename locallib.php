@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main library
+ *
  * @package     local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeproelarn.com)
@@ -35,11 +37,16 @@ use local_shop\Shop;
 use local_shop\Bill;
 use local_shop\CatalogItem;
 
-define('SHOP_TRACE_ERRORS', 1); // Errors should be always traced when trace is on.
-define('SHOP_TRACE_NOTICE', 3); // Notices are important notices in normal execution.
-define('SHOP_TRACE_DEBUG', 5); // Debug are debug time notices that should be burried in debug_fine level when debug is ok.
-define('SHOP_TRACE_DATA', 8); // Data level is when requiring to see data structures content.
-define('SHOP_TRACE_DEBUG_FINE', 10); // Debug fine are control points we want to keep when code is refactored and debug needs to be reactivated.
+// Errors should be always traced when trace is on.
+define('SHOP_TRACE_ERRORS', 1);
+// Notices are important notices in normal execution.
+define('SHOP_TRACE_NOTICE', 3);
+// Debug are debug time notices that should be burried in debug_fine level when debug is ok.
+ define('SHOP_TRACE_DEBUG', 5);
+// Data level is when requiring to see data structures content.
+define('SHOP_TRACE_DATA', 8);
+// Debug fine are control points we want to keep when code is refactored and debug needs to be reactivated.
+define('SHOP_TRACE_DEBUG_FINE', 10);
 
 define('PRODUCT_STANDALONE', 0);
 define('PRODUCT_SET', 1);
@@ -92,7 +99,7 @@ function shop_get_status() {
                 'ASCOMPLEMENT' => get_string('ASCOMPLEMENT', 'local_shop'),
                 'SUSPENDED' => get_string('SUSPENDED', 'local_shop'),
                 'PROVIDING' => get_string('PROVIDING', 'local_shop'),
-                'ABANDONNED' => get_string('ABANDONNED', 'local_shop')
+                'ABANDONNED' => get_string('ABANDONNED', 'local_shop'),
     ];
     return $status;
 }
@@ -189,7 +196,7 @@ function shop_delivery_check_available_backup($courseid) {
  * @param array $options
  * @param stringref &$log
  */
-function shop_backup_for_template($courseid, $options = [], &$log = '') {
+function shop_backup_for_template($courseid, $options = [], &$log = null) {
     global $CFG, $USER;
 
     $user = get_admin();
@@ -224,7 +231,7 @@ function shop_backup_for_template($courseid, $options = [], &$log = '') {
             'completion_information' => 0,
             'logs' => 0,
             'histories' => 0,
-            'filename' => backup_plan_dbops::get_default_backup_filename($format, $type, $id, $users, $anonymised)
+            'filename' => backup_plan_dbops::get_default_backup_filename($format, $type, $id, $users, $anonymised),
         ];
 
         foreach ($settings as $setting => $configsetting) {
@@ -274,7 +281,7 @@ function shop_backup_for_template($courseid, $options = [], &$log = '') {
 
 /**
  * generates a username from given identity
- * @param object $user a user record. 
+ * @param object $user a user record.
  * @param bool $checkunique if true, generates indexed untill not found in DB.
  * @return a username
  */
@@ -665,7 +672,7 @@ function shop_get_supported_currencies() {
 /**
  * Builds the full memmory context from incoming params and
  * session state.
- * @returns three object refs if they are buildable, null for other.
+ * @return three object refs if they are buildable, null for other.
  */
 function shop_build_context() {
     global $SESSION, $DB;
@@ -679,7 +686,7 @@ function shop_build_context() {
 
     $shopid = optional_param('shopid', false, PARAM_INT);
     if (!$shopid) {
-        // failover with 'id' if not shopid.
+        // Failover with 'id' if not shopid.
         $shopid = optional_param('id', @$SESSION->shop->shopid, PARAM_INT);
     }
 
@@ -969,7 +976,7 @@ function shop_has_enabled_paymodes($theshop) {
 
 /**
  * Returns tabs for bills
- * @TODO : move it to appropriate location. It is here because used in several places.
+ * @todo : move it to appropriate location. It is here because used in several places.
  * @param int $total
  * @param bool $fullview
  */
@@ -1003,7 +1010,8 @@ function shop_get_bill_tabs($total, $fullview) {
 
     if ($fullview) {
         $label = get_string('bill_CANCELLEDs', 'local_shop');
-        $rows[0][] = new tabobject('CANCELLED', "$url&status=CANCELLED&cur=$cur&nopaging=$nopaging", $label.' ('.$total->CANCELLED.')');
+        $url = "$url&status=CANCELLED&cur=$cur&nopaging=$nopaging";
+        $rows[0][] = new tabobject('CANCELLED', $url, $label.' ('.$total->CANCELLED.')');
 
         $label = get_string('bill_FAILEDs', 'local_shop');
         $rows[0][] = new tabobject('FAILED', "$url&status=FAILED&cur=$cur&nopaging=$nopaging", $label.' ('.$total->FAILED.')');
@@ -1095,7 +1103,7 @@ function shop_get_bill_filtering() {
 
 /**
  * Get a filter assets for customers listing.
- */ 
+ */
 function shop_get_customer_filtering() {
     global $SESSION;
 
@@ -1125,7 +1133,9 @@ function shop_get_customer_filtering() {
 function local_shop_strftimefixed($format, $timestamp = null) {
     global $CFG;
 
-    if ($timestamp === null) $timestamp = time();
+    if ($timestamp === null) {
+        $timestamp = time();
+    }
 
     if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
         $format = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format);
@@ -1134,7 +1144,7 @@ function local_shop_strftimefixed($format, $timestamp = null) {
         $locale = setlocale(LC_ALL, $CFG->lang);
 
         // This has been seen on some Win2012 server environments where the fr locale comes out in latin or Windows encding.
-        return utf8_encode(strftime($format, $timestamp));
+        return mb_convert_encoding(strftime($format, $timestamp), 'UTF-8');
     }
 
     return strftime($format, $timestamp);
@@ -1177,7 +1187,8 @@ function shop_get_admin_navigation($theshop) {
     $billsurl = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewAllBills', 'id' => $theshop->id]);
     $nav->add_node($nav::create(get_string('bills', 'local_shop'), $billsurl, $nav::TYPE_CUSTOM, '', 'bills'));
 
-    $productsurl = new moodle_url('/local/shop/purchasemanager/view.php', ['view' => 'viewAllProductInstances', 'id' => $theshop->id]);
+    $params = ['view' => 'viewAllProductInstances', 'id' => $theshop->id];
+    $productsurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
     $nav->add_node($nav::create(get_string('products', 'local_shop'), $productsurl, $nav::TYPE_CUSTOM, '', 'products'));
 
     $customersurl = new moodle_url('/local/shop/customers/view.php', ['view' => 'viewAllCustomers', 'id' => $theshop->id]);
@@ -1193,7 +1204,8 @@ function shop_get_admin_navigation($theshop) {
     $nav->add_node($nav::create(get_string('taxes', 'local_shop'), $taxesurl, $nav::TYPE_CUSTOM, '', 'taxes'));
 
     if (local_shop_supports_feature('shop/discounts')) {
-        $discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', ['view' => 'viewAllDiscounts', 'id' => $theshop->id]);
+        $params = ['view' => 'viewAllDiscounts', 'id' => $theshop->id];
+        $discountsurl = new moodle_url('/local/shop/pro/discounts/view.php', $params);
         $nav->add_node($nav::create(get_string('discounts', 'local_shop'), $discountsurl, $nav::TYPE_CUSTOM, '', 'discounts'));
     }
 

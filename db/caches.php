@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Caches definitions
+ *
  * @package   local_shop
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -26,5 +28,5 @@ defined('MOODLE_INTERNAL') || die();
 $definitions = [
     'pro' => [
         'mode' => cache_store::MODE_APPLICATION,
-    ]
+    ],
 ];

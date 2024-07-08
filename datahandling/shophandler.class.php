@@ -15,27 +15,43 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Base shop handler implementation
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Shop handler abstract class.
+ */
 abstract class shop_handler {
 
+    /**
+     * @var string 
+     */
     public $productlabel;
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->productlabel = $label;
     }
 
+    /**
+     * Get the handler name
+     */
     public function get_name() {
         $name = str_replace('shop_handler_', '', get_class($this));
         return $name;
     }
 
+    /**
+     * Which users it can serve
+     */
     public function supports() {
         return PROVIDING_BOTH;
     }
@@ -52,6 +68,7 @@ abstract class shop_handler {
     /**
      * What is happening after it has been actually paied out, interactively
      * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
@@ -100,6 +117,7 @@ abstract class shop_handler {
     }
 
     /**
+     * Shows product info
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
      */
@@ -108,21 +126,38 @@ abstract class shop_handler {
         return;
     }
 
+    /**
+     * Shows product possible actions
+     * @param int $pid the product instance id
+     * @param array $params production related info stored at purchase time
+     */
     public function display_product_actions($pid, $params) {
         // Do nothing.
         return;
     }
 
-    public function delete($product) {
+    /**
+     * Deletes the product instance
+     * @param local_shop\Product $product the product instance
+     */
+    public function delete(local_shop\Product $product) {
         // Do nothing.
         return;
     }
 
+    /**
+     * Inhibits the product instance in a way it can be reactivated
+     * @param local_shop\Product $product the product instance
+     */
     public function soft_delete($product) {
         // Do nothing.
         return;
     }
 
+    /**
+     * Restores the product instance to its normal effect
+     * @param local_shop\Product $product the product instance
+     */
     public function soft_restore($product) {
         // Do nothing.
         return;
@@ -130,12 +165,20 @@ abstract class shop_handler {
 
     /**
      * what should happen when product instance record is updated.
+     * @param local_shop\Product $product the product instance
      */
     public function update($product) {
         // Do nothing.
         return;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     protected function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 

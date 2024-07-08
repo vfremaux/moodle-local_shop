@@ -16,9 +16,9 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @subpackage  producthandlers
  * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux (valery.fremaux@gmail.com) (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * STD_ENROL_ONE_COURSE is a standard shop product action handler that enrols in one course setup in
@@ -39,23 +39,34 @@ use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
 
+/**
+ * Shop handler main class.
+ * this handler allows enrolling a user in several courses at a time.
+ */
 class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_enrolonecourse'; // For unit test reporting.
         parent::__construct($label);
     }
 
     /**
-     * this product should always be available, oppositely to the 
+     * this product should always be available, oppositely to the
      * enrolonecourse original product.
+     * @param object $catalogitem
      */
-    public function is_available(&$catalogitem) {
+    public function is_available($catalogitem) {
         return true;
     }
 
     /**
      * Pre pay information always comme from shopping session.
+     * @param objectref &$data the purchase info, usually a local_shop\BillItem with full info.
+     * @param objectref &$errorstatus a returned object filled with output status
      */
     public function produce_prepay(&$data, &$errorstatus) {
 
@@ -81,7 +92,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
     /**
      * Post pay information can come from session or from production data stored in delayed bills.
-     * @param objectref &$data a full filled billitem object.
+     * @param objectref &$data a full filled local_shop\BillItem object.
      */
     public function produce_postpay(&$data) {
         global $DB, $USER;
@@ -233,7 +244,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
         $groupname = 'customer_'.$customeruser->username;
 
-        if (!$group = $DB->get_record('groups', array('courseid' => $course->id, 'name' => $groupname))) {
+        if (!$group = $DB->get_record('groups', ['courseid' => $course->id, 'name' => $groupname])) {
             $group = new StdClass();
             $group->courseid = $course->id;
             $group->idnumber = $data->transactionid;
@@ -249,7 +260,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
         // Add all created users to group.
 
-        if (!$groupmember = $DB->get_record('groups_members', array('groupid' => $group->id, 'userid' => $USER->id))) {
+        if (!$groupmember = $DB->get_record('groups_members', ['groupid' => $group->id, 'userid' => $USER->id])) {
             $groupmember = new StdClass();
             $groupmember->groupid = $group->id;
             $groupmember->userid = $USER->id;
@@ -271,21 +282,22 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
     /*
      * Gets a thumbnail from course overview files as thumb.
+     * @param local_shop\CatalogItem $catalogitem
      */
     public function get_alternative_thumbnail_url($catalogitem) {
         global $DB, $CFG;
 
         $shouldexist = false;
         if (!empty($catalogitem->handlerparams['coursename'])) {
-            $params = array('shortname' => $catalogitem->handlerparams['coursename']);
+            $params = ['shortname' => $catalogitem->handlerparams['coursename']];
             $course = $DB->get_record('course', $params);
             $shouldexist = true;
         } else if (!empty($catalogitem->handlerparams['courseidnumber'])) {
-            $params = array('idnumber' => $catalogitem->handlerparams['courseidnumber']);
+            $params = ['idnumber' => $catalogitem->handlerparams['courseidnumber']];
             $course = $DB->get_record('course', $params);
             $shouldexist = true;
         } else if (!empty($catalogitem->handlerparams['courseid'])) {
-            $params = array('id' => $catalogitem->handlerparams['courseid']);
+            $params = ['id' => $catalogitem->handlerparams['courseid']];
             $course = $DB->get_record('course', $params);
             $shouldexist = true;
         }
@@ -300,7 +312,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
         }
 
         // Thumb or viewable image.
-        // Take first available image NOT TOO LARGE (800px)
+        // Take first available image NOT TOO LARGE (800px).
         $courseinlist = \local_shop\compat::get_course_list($course);
         foreach ($courseinlist->get_course_overviewfiles() as $file) {
             if ($isimage = $file->is_valid_image()) {
@@ -328,21 +340,20 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
      * in same context. It there are some, will adjust the endtime period to the last available
      * remaining product. It none, will unenrol completely the user from that context.
      *
-     * @param string $contexttype type of context to dismount
-     * @param integer/string $instanceid identifier of the instance
+     * @param local_shop\Product $product
      */
     public function delete($product) {
         global $DB;
 
         // Get all products of type userenrol in the same instanceid context.
-        $params = array('contexttype' => 'userenrol', 'instanceid' => $product->instanceid);
+        $params = ['contexttype' => 'userenrol', 'instanceid' => $product->instanceid];
         $remainings = Product::get_instances($params, 'enddate');
 
         if (!$remainings || (count($remainings) == 1)) {
             // Am i the only one ? Usually should never be false.
             if ($product->contexttype == 'userenrol') {
-                if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
-                    $enrol = $DB->get_record('enrol', array('id' => $ue->enrolid));
+                if ($ue = $DB->get_record('user_enrolments', ['id' => $product->instanceid])) {
+                    $enrol = $DB->get_record('enrol', ['id' => $ue->enrolid]);
                     $enrolplugin = enrol_get_plugin($enrol->enrol);
                     shop_trace('[] Deleting user enrolment on {$ue->enrolid} for user {$ue->userid}');
                     $enrolplugin->unenrol_user($enrol, $ue->userid);
@@ -353,24 +364,28 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
         // Adjust enrol end date to latest.
         $remainingsvalues = array_values($remainings);
         $lastdateproduct = array_pop($remainingsvalues);
-        if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+        if ($ue = $DB->get_record('user_enrolments', ['id' => $product->instanceid])) {
             $ue->timeend = $lastdateproduct->enddate;
             shop_trace('[] Adjusting user enrolment enddate to {$lastdateproduct->enddate} for {$ue->enrolid} for user {$ue->userid}');
             $DB->update_record('user_enrolments', $ue);
         }
     }
 
+    /**
+     * Inhibates the product effect in a way it cans be restablished
+     * @param local_shop\Product $product
+     */
     public function soft_delete($product) {
         global $DB;
 
         // Get all products of type userenrol in the same instanceid context.
-        $params = array('contexttype' => 'userenrol', 'instanceid' => $product->instanceid);
+        $params = ['contexttype' => 'userenrol', 'instanceid' => $product->instanceid];
         $remainings = Product::get_instances($params, 'enddate');
 
         if (!$remaining || (count($remainings) == 1)) {
             // Am i the only one ? Usually should never be false.
             if ($product->contexttype == 'userenrol') {
-                if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+                if ($ue = $DB->get_record('user_enrolments', ['id' => $product->instanceid])) {
                     $ue->status = 1;
                     $DB->update_record('user_enrolments', $ue);
                 }
@@ -379,18 +394,22 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
         // Adjust enrol end date to latest.
         $lastdateproduct = array_pop(array_values($remainings));
-        $ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid));
+        $ue = $DB->get_record('user_enrolments', ['id' => $product->instanceid]);
         $ue->timeend = $lastdateproduct->enddate;
         shop_trace('[] Adjusting user enrolment enddate to {$lastdateproduct->enddate} for {$ue->enrolid} for user {$ue->userid}');
         $DB->update-record('user_enrolments', $ue);
 
     }
 
+    /**
+     * Restores product effect
+     * @param local_shop\Product $product
+     */
     public function soft_restore($product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
-            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+            if ($ue = $DB->get_record('user_enrolments', ['id' => $product->instanceid])) {
                 $ue->status = 0;
                 $DB->update_record('user_enrolments', $ue);
             }
@@ -400,6 +419,10 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
     /**
      * unit tests check input conditions from product setup without doing anything,
      * collects input errors and warnings
+     * @param local_shop\Catalogitem $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
      *
      */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
@@ -415,19 +438,19 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             $warnings[$data->code][] = get_string('errornocourse', 'shophandlers_std_enrolonecoursemultiple');
         } else {
             if (!empty($data->actionparams['coursename'])) {
-                if (!$DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+                if (!$DB->get_record('course', ['shortname' => $data->actionparams['coursename']])) {
                     $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecoursemultiple', $data->actionparams['coursename']);
                     $errors[$data->code][] = $fb;
                 }
             }
             if (!empty($data->actionparams['courseid'])) {
-                if (!$DB->get_record('course', array('id' => $data->actionparams['courseid']))) {
+                if (!$DB->get_record('course', ['id' => $data->actionparams['courseid']])) {
                     $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecoursemultiple', $data->actionparams['courseid']);
                     $errors[$data->code][] = $fb;
                 }
             }
             if (!empty($data->actionparams['courseidnumber'])) {
-                if (!$DB->get_record('course', array('idnumber' => $data->actionparams['courseidnumber']))) {
+                if (!$DB->get_record('course', ['idnumber' => $data->actionparams['courseidnumber']])) {
                     $fb = get_string('errorcoursenotexists', 'shophandlers_std_enrolonecoursemultiple', $data->actionparams['courseidnumber']);
                     $errors[$data->code][] = $fb;
                 }
@@ -439,15 +462,16 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             $data->actionparams['role'] = 'student';
         }
 
-        if (!$DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
+        if (!$DB->get_record('role', ['shortname' => $data->actionparams['role']])) {
             $errors[$data->code][] = get_string('errorrole', 'shophandlers_std_enrolonecoursemultiple', $data->actionparams['role']);
         }
-
     }
 
     /**
+     * Displays product info
      * @param int $pid the product instance id
-     * @param array $params production related info stored at purchase time
+     * @param array $pinfo production related info stored at purchase time
+     * @param array $extradata additional special data
      */
     public function display_product_infos($pid, $pinfo, $extradata = null) {
         global $DB, $OUTPUT;

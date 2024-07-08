@@ -18,7 +18,6 @@
  * Main handler class.
  *
  * @package     local_shop
- * @category    local
  * @subpackage  product_handlers
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
@@ -26,24 +25,38 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
+require_once($CFG->dirroot.'/local/shop/locallib.php');
+
 /**
  * STD_ADD_TRAINING_CREDITS is a standard shop product action handler that adds coursecredits to the customer
  * credit account. This will only work when the trainingcredits enrol method is installed an enabled.
  */
-require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
-require_once($CFG->dirroot.'/local/shop/locallib.php');
-
 class shop_handler_std_addtrainingcredits extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_addtrainingcredits'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * Who can use this hanlder
+     */
     public function supports() {
         return PROVIDING_LOGGEDIN_ONLY;
     }
 
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_prepay(&$data, &$errorstatus) {
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -52,6 +65,13 @@ class shop_handler_std_addtrainingcredits extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB, $USER;
 
@@ -68,7 +88,7 @@ class shop_handler_std_addtrainingcredits extends shop_handler {
         }
 
         if (is_dir($CFG->dirroot.'/enrol/trainingcredits')) {
-            if (!$creditsrec = $DB->get_record('enrol_trainingcredits', array('userid' => $USER->id))) {
+            if (!$creditsrec = $DB->get_record('enrol_trainingcredits', ['userid' => $USER->id])) {
                 $creditsrec = new StdClass;
                 $creditsrec->userid = $USER->id;
                 $creditsrec->coursecredits = $data->actionparams['creditsamount'] * $data->quantity;
@@ -111,6 +131,13 @@ class shop_handler_std_addtrainingcredits extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);

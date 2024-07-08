@@ -22,14 +22,13 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die;
 
 /**
  * useful templating functions from an older project of mine, hacked for Moodle
  * @param string $template the template's file name from $CFG->sitedir
  * @param array $infomap a hash containing pairs of parm => data to replace in template
  * @param string $subplugin when in a subplugin, the frankenstyle name of the subplugin
- * @param string $lang 
+ * @param string $lang
  * @param string $transactionid
  * @return a fully resolved template where all data has been injected
  */

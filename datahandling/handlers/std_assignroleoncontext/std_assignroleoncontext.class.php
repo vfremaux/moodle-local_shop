@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Shop handler main class
+ *
  * @package   local_shop
  * @category  local
  * @subpackage shophandlers
@@ -43,14 +45,28 @@ use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
 
+/**
+ * STD_ASSIGN_ROLE_ON_CONTEXT is a standard shop product action handler that products as result a single
+ * role assignation on a context.
+ */
 class shop_handler_std_assignroleoncontext extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_assignroleoncontext'; // For unit test reporting.
         parent::__construct($label);
     }
 
-    // Pre pay information always comme from shopping session.
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_prepay(&$data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
@@ -74,7 +90,13 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         return $productionfeedback;
     }
 
-    // Post pay information can come from session or from production data stored in delayed bills.
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $DB, $USER, $SITE;
 
@@ -259,8 +281,11 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
     }
 
     /**
-     * unit tests check input conditions from product setup without doing anything,
-     * collects input errors and warnings
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
      */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;

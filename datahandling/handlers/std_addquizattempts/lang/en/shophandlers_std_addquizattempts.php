@@ -15,26 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This library is a third-party proposal for standardizing mail
- * message constitution for third party modules. It is actually used
- * by all ethnoinformatique.fr module. It relies on mail and message content
- * templates that should reside in a mail/{$lang} directory within the
- * module space.
+ * Lang file
  *
- * @package      mod_tracker
- * @category     mod
- * @author       Valery Fremaux (France) (valery.fremaux@gmail.com)
- * @copyright    (C) 2008 onwards Valery Fremaux (http://www
+ * @package      local_shop
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-defined('MOODLE_INTERNAL') || die();
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std AddQuizAttempts does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std AddQuizAttempts does not directly store any personal data about
+ any user.';
 
 $string['handlername'] = 'Add quiz attempts to user (block_userquiz_limits)';
 $string['pluginname'] = 'Add quiz attempts to user (block_userquiz_limits)';
-$string['warningmultiplecourses'] = 'Multiple courses affected by quiz refs. Only first ref course enroll will be checked. You should point quizzes in the same course.';
+$string['warningmultiplecourses'] = 'Multiple courses affected by quiz refs. Only first ref course enroll will be checked. You
+ should point quizzes in the same course.';
 $string['errornoquizvalid'] = 'None of the quiz ref is a valid quiz.';
 $string['errornotaquiz'] = 'This quiz ref $a is not a quiz module';
 $string['errorbadidnumber'] = 'This quiz idnumber $a is invalid';

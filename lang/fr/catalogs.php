@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for catalogs
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['addcatalog'] = 'Nouveau catalogue';
 $string['editcatalog'] = 'Modifier le catalogue';
 $string['catalogs'] = 'Catalogues';
@@ -21,4 +30,3 @@ $string['defaultcatalogname'] = 'Catalogue de vente de formations';
 $string['defaultcatalogdescription'] = 'Catalogue par défaut pour la commercialisation des cours';
 $string['billfooter'] = 'Pied de page de facture';
 $string['usedcatalogcannotdelete'] = 'Ce catalogue est associé à une boutique. Il ne peut être supprimé.';
-

@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Production general handler
+ *
  * @package    local_shop
- * @category   blocks
- * @author     Valery Fremaux <valery@valeisti.fr>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  * This file is a library for production handling. Productino handling occurs
  * when order have been placed (prepay) or after order has been payed out
@@ -30,6 +31,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
+/**
+ * This function is called before payment has been proceeded.
+ * @param objectref &$afullbill the full Bill instance
+ */
 function produce_prepay(&$afullbill) {
 
     $response = new StdClass;
@@ -58,8 +63,11 @@ function produce_prepay(&$afullbill) {
 }
 
 /**
- *
- *
+ * Pre payment handler performed on each item when it is ordered
+ * @param objectref &$anitem the bill item
+ * @param objectref &$catalogitem the corresponding catalog item
+ * @param objectref &$afullbill the bill
+ * @param objectref &$response where to put production responses and feedbacks
  */
 function product_prepay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
 
@@ -88,7 +96,7 @@ function product_prepay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
 
             $fakebillitem = new \local_shop\BillItem($billrec, false, ['bill' => $afullbill], -1, true);
             $fakebillitem->id = $anitem->id; // To give to initialbillitemid and currentbillitemid.
-            $fakebillitem->actionparams = $element->get_handler_params(); // TODO get effective production data for the bundle elements...
+            $fakebillitem->actionparams = $element->get_handler_params(); // TODO get production data for the bundle elements...
             $fakebillitem->transactionid = $anitem->transactionid;
             $response->public .= "<br/>\nID: ".$catalogitem->code.':'.$element->code;
             $response->private .= "<br/>\nID:".$catalogitem->code.':'.$element->code;
@@ -179,6 +187,13 @@ function produce_postpay(&$afullbill) {
     return $response;
 }
 
+/**
+ * This part of the handler is executed when the shop can be sure the payment has been done.
+ * @param objectref &$anitem the bill item
+ * @param objectref &$catalogitem the corresponding catalog item
+ * @param objectref &$afullbill the bill
+ * @param objectref &$response where to put production responses and feedbacks
+ */
 function product_postpay_item(&$anitem, &$catalogitem, &$afullbill, &$response) {
 
     // Recurse in elements when a bundle.
@@ -209,7 +224,7 @@ function product_postpay_item(&$anitem, &$catalogitem, &$afullbill, &$response) 
 
             $fakebillitem = new \local_shop\BillItem($billrec, false, ['bill' => $afullbill], -1, true);
             $fakebillitem->id = $anitem->id; // To give to initialbillitemid and currentbillitemid.
-            $fakebillitem->actionparams = $element->get_handler_params(); // TODO get effective production data for the bundle elements...
+            $fakebillitem->actionparams = $element->get_handler_params(); // TODO get production data for the bundle elements...
             $fakebillitem->transactionid = $anitem->transactionid;
             product_postpay_item($fakebillitem, $elementcatalogitem, $afullbill, $response);
         }

@@ -17,12 +17,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- *
+ * Version file for the addquizattempt handler plugin
  * @package     local_shop
- * @category    local
  * @subpackage  product_handlers
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

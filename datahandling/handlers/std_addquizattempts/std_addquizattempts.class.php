@@ -20,7 +20,7 @@
  * @package     local_shop
  * @subpackage  product_handlers
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -34,19 +34,27 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 class shop_handler_std_addquizattempts extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_addquizattempts'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * Who can use this handler
+     */
     public function supports() {
         return PROVIDING_LOGGEDIN_ONLY;
     }
 
     /**
-     * this product should not be available if the current user (purchaser) is
+     * This product should not be available if the current user (purchaser) is
      * not enrolled in the course where the quizzes stand.
      * Note at this moment that first quiz instance id reference must exist and be sane.
+     * @param objectref &$catalogitem
      */
     public function is_available(&$catalogitem) {
         global $USER, $DB, $CFG;
@@ -73,7 +81,7 @@ class shop_handler_std_addquizattempts extends shop_handler {
         } else if (!empty($catalogitem->handlerparams['quizidnumber'])) {
             $quizzesidnums = explode(',', $catalogitem->handlerparams['quizidnumber']);
             $firstidnum = array_shift($quizzesidnums);
-            $params = array('idnumber' => $firstidnum);
+            $params = ['idnumber' => $firstidnum];
             $cm = $DB->get_record('course_modules', $params);
             if (!$cm) {
                 $catalogitem->notavailablereason = "Bad quiz idnumber reference";
@@ -83,7 +91,7 @@ class shop_handler_std_addquizattempts extends shop_handler {
         } else if (!empty($catalogitem->handlerparams['quizcmid'])) {
             $quizzescmids = explode(',', $catalogitem->handlerparams['quizcmid']);
             $firstcmid = array_shift($quizzescmids);
-            $params = array('id' => $firstcmid);
+            $params = ['id' => $firstcmid];
             $cm = $DB->get_record('course_modules', $params);
             if (!$cm) {
                 $catalogitem->notavailablereason = "Bad quiz course module reference";
@@ -112,6 +120,13 @@ class shop_handler_std_addquizattempts extends shop_handler {
         }
     }
 
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_prepay(&$data, &$errorstatus) {
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -120,6 +135,13 @@ class shop_handler_std_addquizattempts extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB, $USER;
 
@@ -227,6 +249,13 @@ class shop_handler_std_addquizattempts extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 

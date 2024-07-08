@@ -36,20 +36,23 @@ use coding_exception;
 
 // Note that other use cases are handled by the edit_catalogue.php script.
 
+/**
+ * An MVC controller for catalogs
+ */
 class catalog_controller {
 
     /**
-     * Action data
+     * @var object Action data
      */
     protected $data;
 
     /**
-     * Marks data has been received
+     * @var bool Marks data has been received
      */
     protected $received;
 
     /**
-     * May be unused.
+     * @var object May be unused.
      */
     protected $mform;
 
@@ -57,7 +60,9 @@ class catalog_controller {
      * Receives all needed parameters from outside for each action case.
      * @param string $cmd the action keyword
      * @param array $data incoming parameters from form when directly available, otherwise the
-     * function shoudl get them from request
+     * function should get them from request
+     * @param object $mform optionnaly the form that is receiving data.
+     * @TODO : revise the $mform presence.
      */
     public function receive($cmd, $data = [], $mform = null) {
 
@@ -175,15 +180,15 @@ class catalog_controller {
                 $draftideditor = file_get_submitted_draft_itemid('description_editor');
                 $catalog->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogdescription',
                                                                 $catalog->id, ['subdirs' => true], $catalog->description);
-                $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'catalogdescription', $catalog->id);
+                $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions,
+                                $context, 'local_shop', 'catalogdescription', $catalog->id);
 
                 $draftideditor = file_get_submitted_draft_itemid('billfooter_editor');
                 $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
                                                                        'catalogbillfooter', $catalog->id, ['subdirs' => true],
                                                                        $catalog->salesconditions);
-                $catalog = file_postupdate_standard_editor($catalog, 'billfooter', $this->mform->editoroptions, $context, 'local_shop',
-                                                        'catalogbillfooter', $catalog->id);
+                $catalog = file_postupdate_standard_editor($catalog, 'billfooter', $this->mform->editoroptions,
+                                $context, 'local_shop', 'catalogbillfooter', $catalog->id);
 
                 $DB->update_record('local_shop_catalog', $catalog);
             }
@@ -192,6 +197,9 @@ class catalog_controller {
         }
     }
 
+    /**
+     * Info about use cases. Experimental
+     */
     public static function info() {
         return [
             'deletecatalog' => ['catalogid' => 'ID of catalog to delete'],

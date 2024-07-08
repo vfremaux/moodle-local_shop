@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for products
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['searchforakeyinstructions'] = '
 this key was given to you by a customer as a transaction reference. you can try a search typing the first chars of the key
 ';
@@ -76,7 +85,8 @@ $string['removeset'] = 'Remove all set';
 $string['renewable'] = 'Can renew';
 $string['requiredformatsuccess'] = 'Required data JSON format is ok';
 $string['requireddata'] = 'Specific data to pull from customer';
-$string['requireddatacaption'] = 'Some of your products will need some configuration to be produced correctly. Please enter the required information in each product instance in the following form before continuing purchase sequence.';
+$string['requireddatacaption'] = 'Some of your products will need some configuration to be produced correctly. Please enter
+ the required information in each product instance in the following form before continuing purchase sequence.';
 $string['shortname'] = 'Short web name';
 $string['toset'] = 'Convert to set';
 $string['tobundle'] = 'Convert to bundle';
@@ -99,10 +109,10 @@ $string['handlerparams_help'] = '
 
 ### Purchase handler parameters
 
-Some purchase handlers need some parameters. This field allows the sales backofficer to tune each product by passing a parameter string.
-e.g. a hanlder that enrols a student in a paied for course needs to know the course where to enrol the customer.
-Some handlers may require mandatory values, and optional params. You can use the "Test products" feature to check the integrity of your
-products tunning before publishing them.
+Some purchase handlers need some parameters. This field allows the sales backofficer to tune each product by passing a parameter
+ string. e.g. a hanlder that enrols a student in a paied for course needs to know the course where to enrol the customer.
+Some handlers may require mandatory values, and optional params. You can use the "Test products" feature to check the integrity
+ of your products tunning before publishing them.
 
 The general form of the parameters is an url encoded like string:
 
@@ -194,13 +204,13 @@ the shortname of the role to assign. A capability check will be performed on pro
 
 $string['renewable_help'] = '
 When a product is set as renewable, it may be defined with a product duration from the purchase date. This should be handled
-by the product purchase handler and setup through an internal handler parameter. All handlers do not support duration. When enabled,
-the customer account interfaces will support product end of period notification, and purchasing agin the product with a reference code
-will extend the period on the same product instance.
+by the product purchase handler and setup through an internal handler parameter. All handlers do not support duration.
+ When enabled, the customer account interfaces will support product end of period notification, and purchasing again the
+  product with a reference code will extend the period on the same product instance.
 ';
 
-$string['producteulas_help'] = 'Eulas for each purchased product will be aggregated to general shop eulas into a panel that will need
-pre-order validation.
+$string['producteulas_help'] = 'Eulas for each purchased product will be aggregated to general shop eulas into a panel
+ that will need pre-order validation.
 ';
 
 $string['requireddata_help'] = 'some hanlders need some data to be requested from the customer for each instance.
@@ -237,10 +247,10 @@ You may use an online service such as http://www.objgen.com/json to help you gen
 appropriate syntax.
 ';
 
-$string['productiondata_help'] = 'Some additional data that will be used in the production cycle and that the product handlers or processing will need.
-Some data may affect additional optional shop processings such as license key verification (based on a "component" identification. See detailed doc)
-Enter a json encoded array of mapped values.';
+$string['productiondata_help'] = 'Some additional data that will be used in the production cycle and that the product
+ handlers or processing will need. Some data may affect additional optional shop processings such as license key verification
+  (based on a "component" identification. See detailed doc) Enter a json encoded array of mapped values.';
 
 $string['helpcode_help'] = 'Product code usually match the product codification that may exist in other external applications.';
-$string['helpshortname_help'] = 'Product shortname is a shortcode compatible with Web, Urls, Html and Javascript. It is deduced from code after some transforms.';
-
+$string['helpshortname_help'] = 'Product shortname is a shortcode compatible with Web, Urls, Html and Javascript. It is deduced
+ from code after some transforms.';

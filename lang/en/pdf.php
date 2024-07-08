@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for document production
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['billtemplate'] = 'Pdf HTML alternative template for bill';
 $string['billtemplate_desc'] = 'An alternate template for generating bills. See /local/shop/templates/bills_default_pdf_template.mustache as start point.';
 $string['billpaidstamp'] = 'A stamp for paid bill marking';

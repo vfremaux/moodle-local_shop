@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * BillItem postproduction
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux <valery@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  * This file is a library for postproduction handling. Post production
  * occurs when a customer wants to perform some action upon a registered
@@ -48,9 +49,9 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
-use \local_shop\Product;
-use \local_shop\CatalogItem;
-use \local_shop\Customer;
+use local_shop\Product;
+use local_shop\CatalogItem;
+use local_shop\Customer;
 
 $id = required_param('id', PARAM_INT); // The course ID.
 $productid = required_param('pid', PARAM_INT);
@@ -72,7 +73,7 @@ try {
 
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
-$params = array('id' => $id, 'pid' => $productid, 'method' => $method);
+$params = ['id' => $id, 'pid' => $productid, 'method' => $method];
 $url = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
 $PAGE->set_url($url);
 
@@ -97,12 +98,13 @@ $productinfo = $product->extract_production_data();
 list($handler, $methodname) = $product->get_handler_info($method);
 
 if (is_null($handler) || is_null($methodname)) {
-    throw new moodle_exception("Moodle shop could not find valuable information in product or catalog item. this is probably a coding issue.");
+    $mess = "Moodle shop could not find valuable information in product or catalog item. this is probably a coding issue.";
+    throw new moodle_exception($mess);
 }
 
 $productinfo->url = $url;
 
-$courseurl = new moodle_url('/course/view.php', array('id' => $id));
+$courseurl = new moodle_url('/course/view.php', ['id' => $id]);
 
 if ($confirm = optional_param('confirm', false, PARAM_TEXT)) {
     $handler->{$methodname}($product, $productinfo);

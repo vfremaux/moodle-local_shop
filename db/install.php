@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin post install sequence
+ *
  * @package   local_shop
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -22,6 +24,9 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Post install function. 
+ */
 function xmldb_local_shop_install() {
     global $DB, $CFG;
 
@@ -49,7 +54,7 @@ function xmldb_local_shop_install() {
         [
             'element' => 'order',
             'fromstate' => 'QUANTIFIED',
-            'tostate' => 'ANSWERED,'
+            'tostate' => 'ANSWERED',
         ],
         [
             'element' => 'order',
@@ -69,12 +74,12 @@ function xmldb_local_shop_install() {
         [
             'element' => 'order',
             'fromstate' => 'ANSWERED',
-            'tostate' => 'WORKING'
+            'tostate' => 'WORKING',
         ],
         [
             'element' => 'order',
             'fromstate' => 'RECEIVED',
-            'tostate' => 'CANCELLED'
+            'tostate' => 'CANCELLED',
         ],
 
         // Bills.

@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for purchase manager
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['addproductinstance'] = 'Ajouter un produit';
 $string['alignstartdate'] = 'Aligner les dates de début';
 $string['alignenddate'] = 'Aligner les dates de fin';
@@ -101,4 +110,3 @@ $string['justexpired_html'] = 'Liste des unités de vente expirées dans les 3 d
 <br/>
 Gérer dans le <a href="{$a->url}">gestionnaire des unités de vente</a>.
 ';
-

@@ -15,14 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Upgrade sequence
+ *
  * @package   local_shop
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-/*
+/**
  * Standard upgrade handler.
  * @param int $oldversion
  */
@@ -57,8 +58,8 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '4', null, null, null, '0');
 
         // Adding keys to table local_shop.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('ix_unique_name', XMLDB_KEY_UNIQUE, array('name'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('ix_unique_name', XMLDB_KEY_UNIQUE, ['name']);
 
         // Conditionally launch create table for local_shop.
         if (!$dbman->table_exists($table)) {
@@ -239,9 +240,9 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table local_shop.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('tnxid_unique_name', XMLDB_KEY_UNIQUE, array('tnxid'));
-        $table->add_key('transid_unique_name', XMLDB_KEY_UNIQUE, array('transid'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('tnxid_unique_name', XMLDB_KEY_UNIQUE, ['tnxid']);
+        $table->add_key('transid_unique_name', XMLDB_KEY_UNIQUE, ['transid']);
 
         // Conditionally launch create table for local_shop.
         if (!$dbman->table_exists($table)) {
@@ -311,8 +312,8 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         $table->add_field('enabled', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
 
         // Adding keys to table local_shop.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('tnxid_unique_partnerkey', XMLDB_KEY_UNIQUE, array('partnerkey'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('tnxid_unique_partnerkey', XMLDB_KEY_UNIQUE, ['partnerkey']);
 
         // Conditionally launch create table for local_shop.
         if (!$dbman->table_exists($table)) {
@@ -346,8 +347,8 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table local_shop_discount.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_index('fk_local_shop_id_uniq_name', XMLDB_KEY_UNIQUE, array('shopid', 'name'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('fk_local_shop_id_uniq_name', XMLDB_KEY_UNIQUE, ['shopid', 'name']);
 
         // Conditionally launch create table for local_shop.
         if (!$dbman->table_exists($table)) {
@@ -436,7 +437,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
     if ($oldversion < 2023032400) {
         $table = new xmldb_table('local_shop_catalogitem');
 
-        // Add field for product meta tags
+        // Add field for product meta tags.
         $field = new xmldb_field('seoalias');
         $field->set_attributes(XMLDB_TYPE_CHAR, 64, null, null, null, null, 'descriptionformat');
         if (!$dbman->field_exists($table, $field)) {
@@ -463,7 +464,7 @@ function xmldb_local_shop_upgrade($oldversion = 0) {
 
         $table = new xmldb_table('local_shop_catalogcategory');
 
-        // Add field for product meta tags
+        // Add field for product meta tags.
         $field = new xmldb_field('seoalias');
         $field->set_attributes(XMLDB_TYPE_CHAR, 64, null, null, null, null, 'descriptionformat');
         if (!$dbman->field_exists($table, $field)) {

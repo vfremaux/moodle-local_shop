@@ -16,6 +16,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Lang for partners
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['allbutpartners'] = 'All but partners';
 $string['partner'] = 'Partner';
 $string['partners'] = 'Partners';
