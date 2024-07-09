@@ -15,21 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main handler class
+ *
  * @package     local_shop
- * @category    local
- * @subpackage  shophandler
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage  shophandler_std_openltiaccess
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * STD_OPEN_LTI_ACCESS is a standard shop product action handler that creatres an LTI Provider
- * wrapper upon an existing course. By buying this hanlded product, you will receive an
- * LTI provider identity you can provide to your customers to access the ocurse.
- * The handler builds the LTI Provider records. this hanlde only supports "connected"
- * customer situation as the applicable course must preexist.
- */
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
@@ -40,18 +35,38 @@ use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
 
+/**
+ * STD_OPEN_LTI_ACCESS is a standard shop product action handler that creatres an LTI Provider
+ * wrapper upon an existing course. By buying this hanlded product, you will receive an
+ * LTI provider identity you can provide to your customers to access the ocurse.
+ * The handler builds the LTI Provider records. this hanlde only supports "connected"
+ * customer situation as the applicable course must preexist.
+ */
 class shop_handler_std_openltiaccess extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_openltiaccess'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * Who can use this handler
+     */
     public function supports() {
         return PROVIDING_LOGGEDIN_ONLY;
     }
 
-    // Pre pay information always comme from shopping session.
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     function produce_prepay(&$data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
@@ -71,6 +86,13 @@ class shop_handler_std_openltiaccess extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB;
 
@@ -108,12 +130,12 @@ class shop_handler_std_openltiaccess extends shop_handler {
         $config = get_config('local_ltiprovider');
 
         if ($data->actionparams['coursename']) {
-            $course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']));
+            $course = $DB->get_record('course', ['shortname' => $data->actionparams['coursename']]);
         }
 
         if (!$course) {
             if ($data->actionparams['courseid']) {
-                $course = $DB->get_record('course', array('id' => $data->actionparams['courseid']));
+                $course = $DB->get_record('course', ['id' => $data->actionparams['courseid']]);
             }
         }
 
@@ -122,7 +144,7 @@ class shop_handler_std_openltiaccess extends shop_handler {
         }
 
         $customer = new Customer($customerid);
-        $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+        $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
 
         if(!$course) {
             $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_openltiaccess', 'Code : LTI_SETUP');
@@ -227,6 +249,13 @@ class shop_handler_std_openltiaccess extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 

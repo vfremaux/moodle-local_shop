@@ -18,9 +18,9 @@
  * local_shop/handler data generator.
  *
  * @package     local_shop
- * @subpackage  shophandler_std_addtrainingcredits
- * @category    test
- * @copyright   2016 Valery Fremaux
+ * @subpackage  shophandlers_std_addtrainingcredits
+ * @author       Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright    2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

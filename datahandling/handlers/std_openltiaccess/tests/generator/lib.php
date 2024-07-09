@@ -19,8 +19,8 @@
  *
  * @package     local_shop
  * @subpackage  shophandler_std_openltiaccess
- * @category    test
- * @copyright   2016 Valery Fremaux
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,25 +34,34 @@ require_once($CFG->dirroot.'/local/shop/products/products.controller.php');
  */
 class shophandler_std_openltiaccess_generator extends shophandler_generator_base {
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         if (!is_dir($CFG->dirroot.'/local_ltiprovider')) {
             throw new Exception("Missing plugins for this handler");
         }
     }
 
+    /**
+     * Create product
+     * @param object $thecatalog
+     * @param object $category
+     * @param object $tax
+     * @param object $params
+     * @param array $data
+     */
     public function create_product($thecatalog, $category, $tax, $params, $data = null) {
 
         static $prodix = 1;
 
         if (is_null($data)) {
-            $data = array(
-            );
+            $data = [
+            ];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);
         $controller->receive('edit', $data);
         return $controller->process('edit');
     }
-
 }
-

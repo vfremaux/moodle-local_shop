@@ -15,10 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Main handler class
+ *
+ * @package     local_shop
+ * @subpackage  shophandler_std_prorogate
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,7 +39,7 @@ use local_shop\Product;
 use local_shop\Customer;
 
 /**
- * The Prorogate handler is convenient to push further the ending date of a product. 
+ * The STD_PROROGATE handler is convenient to push further the ending date of a product. 
  *
  * Prepay action : A prorogate product is available only regarding a preceding purchase and a valid
  * product instance id to work. There is no prepay action.
@@ -49,18 +52,28 @@ use local_shop\Customer;
  */
 class shop_handler_std_prorogate extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_prorogate'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * Who can use this hanlder ?
+     */
     public function supports() {
         return PROVIDING_CUSTOMER_ONLY;
     }
 
-    /*
-     * Pre pay information always comme from shopping session.
-     * Nothing to do here.
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
      */
     function produce_prepay(&$data, &$errorstatus) {
         global $CFG, $DB, $USER;
@@ -73,9 +86,12 @@ class shop_handler_std_prorogate extends shop_handler {
         return $productionfeedback;
     }
 
-    /*
-     * Postpay prorogates
-     * $data (full bill data) must contain a productiondata->reference product reference.
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
         global $CFG, $DB;
@@ -93,7 +109,9 @@ class shop_handler_std_prorogate extends shop_handler {
             $e->reference = $data->productiondata->reference;
             $e->errorcode = 'Code : NO PRODUCT REF';
             $e->username = $data->bill->customeruser->username;
-            shop_trace("[{$data->transactionid}] STD_PROROGATE Postpay Error : Product could not be identified with reference {$data->productiondata->reference}.");
+            $mess = "[{$data->transactionid}] STD_PROROGATE Postpay Error : ";
+            $mess .= "Product could not be identified with reference {$data->productiondata->reference}.";
+            shop_trace($mess);
             $fb = get_string('productiondata_failure_public', 'shophandlers_std_prorogate', $e);
             $productionfeedback->public = $fb;
             $fb = get_string('productiondata_failure_private', 'shophandlers_std_prorogate', $e);
@@ -103,7 +121,7 @@ class shop_handler_std_prorogate extends shop_handler {
             return $productionfeedback;
         }
 
-        // Push enddate
+        // Push enddate.
         $timeshift = $data->actionparams['timeshift'] ?? 0;
         $product->enddate = $product->enddate + $timeshift * DAYSECS;
         $product->save();
@@ -134,12 +152,20 @@ class shop_handler_std_prorogate extends shop_handler {
 
     /**
      * Prorogate always available as new references. Each handler updates an existing product.
+     * @param objectref &$catalogitem
      */
     public function is_available(&$catalogitem) {
         global $USER, $DB;
         return true;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 

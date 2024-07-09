@@ -23,6 +23,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_shop\Product;
+use local_shop\CatalogItem;
+
 /**
  * Shop handler abstract class.
  */
@@ -78,11 +81,11 @@ abstract class shop_handler {
      * Check wether the product is available for a particular context, user.
      * Some product handlers may know if the current user has already purchased
      * this product and cannot purchase it twice, or is NOT in condition to purchase it.
-     * @param object $catalogitem a Catalog item object with all parameters thzt is using
+     * @param CatalogItem $catalogitem a Catalog item object with all parameters thzt is using
      * this handler.
      * @return boolean true or false
      */
-    public function is_available(&$catalogitem) {
+    public function is_available(CatalogItem $catalogitem) {
         return true;
     }
 
@@ -138,36 +141,36 @@ abstract class shop_handler {
 
     /**
      * Deletes the product instance
-     * @param local_shop\Product $product the product instance
+     * @param Product $product the product instance
      */
-    public function delete(local_shop\Product $product) {
+    public function delete(Product $product) {
         // Do nothing.
         return;
     }
 
     /**
      * Inhibits the product instance in a way it can be reactivated
-     * @param local_shop\Product $product the product instance
+     * @param Product $product the product instance
      */
-    public function soft_delete($product) {
+    public function soft_delete(Product $product) {
         // Do nothing.
         return;
     }
 
     /**
      * Restores the product instance to its normal effect
-     * @param local_shop\Product $product the product instance
+     * @param Product $product the product instance
      */
-    public function soft_restore($product) {
+    public function soft_restore(Product $product) {
         // Do nothing.
         return;
     }
 
     /**
      * what should happen when product instance record is updated.
-     * @param local_shop\Product $product the product instance
+     * @param Product $product the product instance
      */
-    public function update($product) {
+    public function update(Product $product) {
         // Do nothing.
         return;
     }

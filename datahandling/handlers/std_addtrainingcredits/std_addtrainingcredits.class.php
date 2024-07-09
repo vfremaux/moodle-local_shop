@@ -18,7 +18,7 @@
  * Main handler class.
  *
  * @package     local_shop
- * @subpackage  product_handlers
+ * @subpackage  shophandlers_std_addtrainingcredits
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -44,7 +44,7 @@ class shop_handler_std_addtrainingcredits extends shop_handler {
     }
 
     /**
-     * Who can use this hanlder
+     * Who can use this handler
      */
     public function supports() {
         return PROVIDING_LOGGEDIN_ONLY;

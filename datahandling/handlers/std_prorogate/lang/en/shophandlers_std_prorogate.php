@@ -14,12 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Lang file
+ *
+ * @package   local_shop
+ * @subpackage  shophandler_std_prorogate
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std Prorogate does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std Prorogate does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'Product Prorogation';
 $string['pluginname'] = 'Product Prorogation';
@@ -43,8 +52,8 @@ $string['productiondata_post_sales'] = '
 <p><b>Payement has been received</b></p>
 <p>Customer {$a->username} product {$a->reference} has been prorogated up to {$a->endtime}.</p>
 <p><a href="'.$CFG->wwwroot.'/local/shop/bills/view.php?view=viewBill&id={$a->billid}">Access to bill</a></p>
-<p><a href="'.$CFG->wwwroot.'/local/shop/purchasemanager/view.php?view=viewProduct&id={$a->productid}">Access to product record</a></p>
-';
+<p><a href="'.$CFG->wwwroot.'/local/shop/purchasemanager/view.php?view=viewProduct&id={$a->productid}">Access to product
+ record</a></p>';
 
 $string['productiondata_failure_public'] = '
 The product reference could not be found for prorogation.

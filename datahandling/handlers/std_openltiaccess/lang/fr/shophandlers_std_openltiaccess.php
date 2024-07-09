@@ -15,16 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Lang file
+ *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage  shophandler_std_openltiaccess
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat OpenltiAccess ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat OpenltiAccess ne détient directement aucune donnée relative
+ aux utilisateurs.';
 
 $string['handlername'] = 'Ajout d\'un accès LTI';
 $string['pluginname'] = 'Ajout d\'un accès LTI';

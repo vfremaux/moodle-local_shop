@@ -18,7 +18,7 @@
  * Main handler class.
  *
  * @package     local_shop
- * @subpackage  product_handlers
+ * @subpackage  shophandlers_std_addquizattempts
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -54,9 +54,9 @@ class shop_handler_std_addquizattempts extends shop_handler {
      * This product should not be available if the current user (purchaser) is
      * not enrolled in the course where the quizzes stand.
      * Note at this moment that first quiz instance id reference must exist and be sane.
-     * @param objectref &$catalogitem
+     * @param CatalogItem $catalogitem
      */
-    public function is_available(&$catalogitem) {
+    public function is_available(CatalogItem $catalogitem) {
         global $USER, $DB, $CFG;
 
         if (!is_dir($CFG->dirroot.'/mod/quiz/accessrule/usernumattempts')) {

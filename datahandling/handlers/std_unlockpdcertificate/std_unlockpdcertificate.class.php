@@ -16,19 +16,13 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage  shophandlers_std_unlockpdcertificate
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * STD_OPEN_LTI_ACCESS is a standard shop product action handler that creatres an LTI Provider
- * wrapper upon an existing course. By buying this hanlded product, you will receive an
- * LTI provider identity you can provide to your customers to access the ocurse.
- * The handler builds the LTI Provider records. this hanlde only supports "connected"
- * customer situation as the applicable course must preexist.
- */
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
@@ -38,18 +32,36 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 use local_shop\Product;
 use local_shop\Customer;
 
+/**
+ * STD_UNLICKPDCERTIFICATE is a standard shop product action handler that unlocks a loced issue in a pdcertificate
+ * activitymodule
+ */
 class shop_handler_std_unlockpdcertificate extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_unlockpdcertificate'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * Who can use this handler ? 
+     */
     public function supports() {
         return PROVIDING_LOGGEDIN_ONLY;
     }
 
-    // Pre pay information always comme from shopping session.
+    /**
+     * Validates data required frm the user when ordering.
+     * @param string $itemname
+     * @param string $fieldname
+     * @param object $instance
+     * @param mixed $value
+     * @param arrayref &$errors
+     */
     function produce_prepay(&$data) {
         global $CFG, $DB, $USER;
 
@@ -67,6 +79,13 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB;
 
@@ -76,17 +95,17 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         $productionfeedback->salesadmin = '';
 
         if (!isset($data->actionparams['certificate']) && !isset($data->actionparams['certificateid'])) {
-            // TODO : handle better.
+            // @todo : handle better.
             return;
         }
 
         if (isset($data->actionparams['certificateid'])) {
-            $certificate = $DB->get_record('pdcertificate', array('id' => $data->actionparams['certificateid']));
+            $certificate = $DB->get_record('pdcertificate', ['id' => $data->actionparams['certificateid']]);
             $cm = get_coursemodule_from_instance('pdcertificate', $certificate->id);
         } else if (isset($data->actionparams['certificate'])) {
-            $module = $DB->get_record('modules', array('name' => 'pdcertificate'));
-            $cm = $DB->get_record('course_modules', array('idnumber' => $data->actionparams['certificate'], 'moduleid' => $module->id));
-            $certificate = $DB->get_record('pdcertificate', array('id' => $cm->instanceid));
+            $module = $DB->get_record('modules', ['name' => 'pdcertificate']);
+            $cm = $DB->get_record('course_modules', ['idnumber' => $data->actionparams['certificate'], 'moduleid' => $module->id]);
+            $certificate = $DB->get_record('pdcertificate', ['id' => $cm->instanceid]);
         } else {
             shop_trace("[{$data->transactionid}] STD_UNLOCK_PDCERTIFICATE Postpay Error : No target certificate");
             return;
@@ -99,10 +118,16 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
 
             // Cannot generate.
             if (!$issue) {
-                $productionfeedback->public = get_string('productiondata_failure_public', 'shophandlers_std_unlockpdcertificate', 'Code : CERTIFICATE_CREATION');
-                $productionfeedback->private = get_string('productiondata_failure_private', 'shophandlers_std_unlockpdcertificate', $data);
-                $productionfeedback->salesadmin = get_string('productiondata_failure_sales', 'shophandlers_std_unlockpdcertificate', $data);
-                shop_trace("[{$data->transactionid}] STD_UNLOCK_PDCERTIFICATE Postpay Error : Certificate unlocking failure (DB reason)...");
+                $pgn = 'shophandlers_std_unlockpdcertificate';
+                $mess = get_string('productiondata_failure_public', $pgn, 'Code : CERTIFICATE_CREATION');
+                $productionfeedback->public = $mess;
+                $mess = get_string('productiondata_failure_private', 'shophandlers_std_unlockpdcertificate', $data);
+                $productionfeedback->private = $mess;
+                $mess = get_string('productiondata_failure_sales', 'shophandlers_std_unlockpdcertificate', $data);
+                $productionfeedback->salesadmin = $mess;
+                $mess = "[{$data->transactionid}] STD_UNLOCK_PDCERTIFICATE Postpay Error : ";
+                $mess .= "Certificate unlocking failure (DB reason)...";
+                shop_trace($mess);
                 return $productionfeedback;
             }
         }
@@ -112,7 +137,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         $issue->locked = 0;
         $DB->update_record('pdcertificate_issues', $issue);
 
-        // TODO : Notify the user with a copy (when delivery by mail is enabled ?).
+        // @todo : Notify the user with a copy (when delivery by mail is enabled ?).
 
         // Register product.
         $product = new StdClass();
@@ -162,21 +187,22 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
      * this product should not be available if the current user (purchaser) is
      * already certified, i.e. has a delivered certificate for the associated certificate.
      * this might be better checked by testing a shop product existance
+     ù @param CatalogItem $catalogitem
      */
-    public function is_available(&$catalogitem) {
+    public function is_available(CatalogItem $catalogitem) {
         global $USER, $DB;
 
         if (!empty($catalogitem->handlerparams['certificate'])) {
-            $cm = $DB->get_record('course_modules', array('idnumber' => $catalogitem->handlerparams['certificate']));
+            $cm = $DB->get_record('course_modules', ['idnumber' => $catalogitem->handlerparams['certificate']]);
         } else if (!empty($catalogitem->handlerparams['certificateid'])) {
-            $pdcertificate = $DB->get_record('pdcertificate', array('id' => $catalogitem->handlerparams['certificateid']));
+            $pdcertificate = $DB->get_record('pdcertificate', ['id' => $catalogitem->handlerparams['certificateid']]);
             $cm = get_course_module_from_instance('pdcertificate', $pdcertificate->id);
         }
 
         // Get all customerids for this moodle user.
-        if ($meascustomers = Customer::get_instances(array('hasaccount' => $USER->id))) {
+        if ($meascustomers = Customer::get_instances(['hasaccount' => $USER->id])) {
             foreach ($meascustomers as $customer) {
-                if (Product::count(array('customerid' => $customer->id, 'contexttype' => 'course_module', 'instanceid' => $cm->id))) {
+                if (Product::count(['customerid' => $customer->id, 'contexttype' => 'course_module', 'instanceid' => $cm->id])) {
                     // If we hav one product owned for this course module, we already have the certificate. No need to purchase it agian.
                     return false;
                 }
@@ -185,16 +211,31 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         return true;
     }
 
-    public function soft_delete($product) {
+    /**
+     * Disables the product effect in a way it can be restored
+     * @param Product $product
+     */
+    public function soft_delete(Product $product) {
         // @TODO : Relock issue instance;
     }
 
-    public function soft_restore($product) {
-        // @TODO : Unlock issu instance back;
+    /** 
+     * Restores the effect of the product instance
+     * @param Product $product
+     */
+    public function soft_restore(Product $product) {
+        // @TODO : Unlock issue instance back;
     }
 
-    // No updaate.
+    // No update.
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
@@ -211,7 +252,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         }
 
         if (isset($data->actionparams['certificateid'])) {
-            if (!$certificate = $DB->get_record('pdcertificate', array('id' => $data->actionparams['certificateid']))) {
+            if (!$certificate = $DB->get_record('pdcertificate', ['id' => $data->actionparams['certificateid']])) {
                 $errors[$data->code][] = get_string('errorbadinstance', 'shophandlers_std_unlockpdcertificate');
             }
         }

@@ -18,7 +18,7 @@
  * Main handler class
  *
  * @package     local_shop
- * @subpackage  shophandlers
+ * @subpackage  shophandlers_std_createcategory
  * @author      Valery Fremaux (valery.fremaux@gmail.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -206,9 +206,9 @@ class shop_handler_std_createcategory extends shop_handler {
      * In createcategory plugin, deletes all courses and subcategories, delete
      * root category assigned to the product. Other role assignations will remain unchanged.
      *
-     * @param objectref &$product
+     * @param Product $product
      */
-    public function delete(&$product) {
+    public function delete(Product $product) {
         global $DB;
 
         if ($cat = $DB->get_record('course_categories', ['id' => $product->instanceid])) {
@@ -253,10 +253,9 @@ class shop_handler_std_createcategory extends shop_handler {
      * - Hiding the root category.
      * - Removing roles to the owner that would allow him to sho it again.
      *
-     * @param string $contexttype
-     * @param integer/string $instanceid
+     * @param Product $product
      */
-    public function soft_delete(&$product) {
+    public function soft_delete(Product $product) {
         global $DB;
 
         // Set root cat non visible.
@@ -274,10 +273,9 @@ class shop_handler_std_createcategory extends shop_handler {
 
     /**
      * Restores what soft_delete switches off in order to restore use of the product
-     * @param string $contexttype
-     * @param integer/string $instanceid
+     * @param Product $product
      */
-    public function soft_restore(&$product) {
+    public function soft_restore(Product $product) {
         global $DB;
 
         // Set root cat visible.

@@ -15,10 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version details
+ *
  * @package   local_shop
  * @category  local
- * @subpackage shophandlers
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage shophandlers_std_setuponecoursesession
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -27,4 +30,4 @@ $plugin = new stdclass;
 $plugin->version = 2016071400;
 $plugin->requires = 2014050800;
 $plugin->component = 'shophandlers_std_setuponecoursesession';
-$plugin->dependencies = array('local_shop' => 2016022500);
+$plugin->dependencies = ['local_shop' => 2016022500];

@@ -15,16 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Lang file
+ *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage  shophandler_std_openltiaccess
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std OpenltiAccess does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std OpenltiAccess does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'Open LTI Access ';
 $string['pluginname'] = 'Open LTI Access ';

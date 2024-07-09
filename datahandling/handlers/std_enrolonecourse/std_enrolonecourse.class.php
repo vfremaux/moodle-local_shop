@@ -18,7 +18,7 @@
  * Main handler class
  *
  * @package     local_shop
- * @subpackage  producthandlers
+ * @subpackage  shophandlers_std_enrolonecourse
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -387,9 +387,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * In enrolonecourse plugin, unenrols the target user from course using the user enrolment record
      * assigned to the product. Other enrol sources remain unchanged.
      *
-     * @param local_shop\Product $product
+     * @param Product $product
      */
-    public function delete(local_shop\Product $product) {
+    public function delete(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
@@ -404,9 +404,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
     /**
      * Disables the product effect in a way it can be restored
-     * @param local_shop\Product $product
+     * @param Product $product
      */
-    public function soft_delete(local_shop\Product $product) {
+    public function soft_delete(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
@@ -419,9 +419,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
     /**
      * Update essentially updates enrolment period against product date changes.
-     * @param local_shop\Product $product
+     * @param Product $product
      */
-    public function update(local_shop\Product $product) {
+    public function update(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
@@ -437,9 +437,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
 
     /** 
      * Restores the effect of the product instance
-     * @param object local_shop\Product
+     * @param Product $product
      */
-    public function soft_restore(local_shop\Product $product) {
+    public function soft_restore(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {

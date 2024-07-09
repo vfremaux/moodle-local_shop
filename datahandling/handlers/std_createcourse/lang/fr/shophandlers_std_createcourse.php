@@ -14,6 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file
+ *
+ * @package     local_shop
+ * @subpackage  shophandlers_std_createcourse
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 global $CFG;
 
 // Privacy.
@@ -44,9 +54,11 @@ seront validés dès réception de votre paiement.</p>
 $string['productiondata_private'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme.</p>
 <p>Votre identifiant : {$a->username}</p>
-<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous pouvez les retrouver avant de continuer...</b></p>
-<p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront initialisés dès la confirmation automatique
-de votre règlement. Vous pourrez vous connecter et bénéficier de vos accès sur vos volumes de travail. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p>
+<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous
+pouvez les retrouver avant de continuer...</b></p><p>Si vous avez effectué votre paiement en ligne, Vos produits de formation
+seront initialisés dès la confirmation automatique
+de votre règlement. Vous pourrez vous connecter et bénéficier de vos accès sur vos volumes de travail. Dans le cas contraire
+ vos accès seront validés dès réception de votre paiement.</p>
 <p><a href="'.$CFG->wwwroot.'/login/index.php">Accéder à la plate-forme de formation</a></p>
 ';
 

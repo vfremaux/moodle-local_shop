@@ -18,7 +18,7 @@
  * Main handler class
  *
  * @package   local_shop
- * @subpackage product_handlers
+ * @subpackage shophandlers_std_createcourse
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -213,7 +213,7 @@ class shop_handler_std_createcourse extends shop_handler {
         $product->enddate = $upto;
         $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
-        $extra = array('handler' => 'std_createcourse');
+        $extra = ['handler' => 'std_createcourse'];
         $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
         $product->id = $DB->insert_record('local_shop_product', $product);
 
@@ -295,10 +295,9 @@ class shop_handler_std_createcourse extends shop_handler {
      * In assignroleoncontext plugin, removes the role assignation
      * assigned to the product. Other role assignations will remain unchanged.
      *
-     * @param string $contexttype type of context to dismount
-     * @param integer/string $instanceid identifier of the instance
+     * @param Product $product
      */
-    public function delete(&$product) {
+    public function delete(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'course') {
@@ -313,10 +312,10 @@ class shop_handler_std_createcourse extends shop_handler {
      * Attempts to disable the product effect while preserving the data so the product
      * can be restored in active state without data loss. This is done by setting all
      * user enrolments inactive in the target course.
-     * @param string $contexttype
-     * @param integer/string $instanceid
+
+     * @param Product $product
      */
-    public function soft_delete(&$product) {
+    public function soft_delete(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'course') {
@@ -337,10 +336,10 @@ class shop_handler_std_createcourse extends shop_handler {
 
     /**
      * Restores what soft_delete switches off in order to restore use of the product
-     * @param string $contexttype
-     * @param integer/string $instanceid
+     *
+     * @param product $product
      */
-    public function soft_restore(&$product) {
+    public function soft_restore(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'course') {
@@ -359,6 +358,13 @@ class shop_handler_std_createcourse extends shop_handler {
         }
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 

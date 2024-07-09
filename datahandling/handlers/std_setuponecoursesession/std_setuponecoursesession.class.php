@@ -15,14 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * STD_SETUP_ONE_COURSE_SESSION is a standard shop product action handler that allows the shop operator to
- * prepare and setup a training session for other stakeholders
- * actiondata is defined as an action customized information for a specific product in the
- * product definition, where one standard handler is choosen.
+ * Main handler class
  *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage   shophjandlers_std_setuponecoursesession
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -39,17 +37,36 @@ use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
 use local_shop\Customer;
+use moodle_exception;
 
+/**
+ * STD_SETUP_ONE_COURSE_SESSION is a standard shop product action handler that allows the shop operator to
+ * prepare and setup a training session for other stakeholders
+ * actiondata is defined as an action customized information for a specific product in the
+ * product definition, where one standard handler is choosen.
+ */
 class shop_handler_std_setuponecoursesession extends shop_handler {
 
+    /** @var array roles required to declare when ordering */
     protected $requiredroles;
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_setuponecoursesession'; // For unit test reporting.
         parent::__construct($label);
-        $this->requiredroles = array('student', 'teacher', 'supervisor', 'owner');
+        $this->requiredroles = ['student', 'teacher', 'supervisor', 'owner'];
     }
 
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_prepay(&$data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
@@ -67,6 +84,12 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
     }
 
     /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     *
      * Scenario :
      * One course, a list of accounts to enrol or create and enrol.
      * List of accounts comme from production data, previously from $SESSION->shoppingcart->$roles
@@ -88,7 +111,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         // Get course designated by handler internal params.
         $coursename = $data->actionparams['coursename'];
 
-        if ($course = $DB->get_record('course', array('shortname' => $coursename))) {
+        if ($course = $DB->get_record('course', ['shortname' => $coursename])) {
             $context = context_course::instance($course->id);
         } else {
             $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure :";
@@ -101,7 +124,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $data->actionparams['supervisor'] = 'teacher';
         }
 
-        if (!$supervisorrole = $DB->get_record('role', array('shortname' => $data->actionparams['supervisor']))) {
+        if (!$supervisorrole = $DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
             $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure :";
             $message .= " Supervisor Role Do Not Exist [{$data->actionparams['supervisor']}].";
             shop_trace($message);
@@ -114,7 +137,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
 
         // Get manual enrol plugin to that course for user enrolments.
 
-        $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+        $params = ['enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED];
         if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
             $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
@@ -132,7 +155,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         }
 
         if (!isset($data->actionparams['autoenrolsupervisor']) && !empty($data->customer->hasaccount)) {
-            $role = $DB->get_record('role', array('shortname' => $data->actionparams['supervisor']));
+            $role = $DB->get_record('role', ['shortname' => $data->actionparams['supervisor']]);
             $enrolplugin->enrol_user($enrol, $data->customer->hasaccount, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
         }
 
@@ -143,18 +166,18 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         }
 
         if ($customer = new Customer($customerid)) {
-            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+            $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
             if (!$customeruser) {
-                throw new \Exception("Customer user with id {$customer->hasaccount} not found on postpay ");
+                throw new moodle_exception("Customer user with id {$customer->hasaccount} not found on postpay ");
             }
         } else {
-            throw new \Exception("Customer record not found on postpay ");
+            throw new moodle_exception("Customer record not found on postpay ");
         }
 
         if (!empty($data->productiondata->users)) {
             foreach ($data->productiondata->users as $roleshort => $participants) {
                 foreach ($participants as $p) {
-                    if (!$user = $DB->get_record('user', array('email' => $p->email))) {
+                    if (!$user = $DB->get_record('user', ['email' => $p->email])) {
                         $courseusers[$roleshort][] = shop_create_moodle_user($data, $p, $supervisorrole);
                         $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
                         $message .= " Creating user [{$p->username}].";
@@ -174,7 +197,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         if ($roleshort == '_supervisor') {
                             $role = $supervisorrole;
                         } else {
-                            $role = $DB->get_record('role', array('shortname' => $roleshort));
+                            $role = $DB->get_record('role', ['shortname' => $roleshort]);
                         }
 
                         if (empty($role)) {
@@ -189,7 +212,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                             $message .= " $u->lastname $u->firstname ($u->username) enrolled.";
                             shop_trace($message);
 
-                            $ueid = $DB->get_field('user_enrolments', 'id', array('userid' => $u->id, 'enrolid' => $enrol->id));
+                            $ueid = $DB->get_field('user_enrolments', 'id', ['userid' => $u->id, 'enrolid' => $enrol->id]);
                             // Register a product (userenrol instance) for each.
                             $product = new StdClass();
                             $product->catalogitemid = $data->catalogitem->id;
@@ -203,7 +226,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                             $product->extradata = '';
                             $product->reference = shop_generate_product_ref($data);
                             $product->test = $config->test;
-                            $itemproductiondata = array();
+                            $itemproductiondata = [];
                             $itemproductiondata['courseid'] = $course->id;
                             $itemproductiondata['handler'] = 'std_setuponecoursesession';
                             $itemproductiondata['coursename'] = $coursename;
@@ -244,7 +267,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         }
 
         // Make a group if needed for the customer.
-        if (!$group = $DB->get_record('groups', array('courseid' => $course->id, 'name' => 'customer_'.$customeruser->username))) {
+        if (!$group = $DB->get_record('groups', ['courseid' => $course->id, 'name' => 'customer_'.$customeruser->username])) {
             $group = new StdClass();
             $group->courseid = $course->id;
             $group->idnumber = $data->transactionid;
@@ -264,7 +287,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         if (!empty($courseusers)) {
             foreach ($courseusers as $roleshort => $users) {
                 foreach ($users as $u) {
-                    if (!$DB->record_exists('groups_members', array('groupid' => $group->id, 'userid' => $u->id))) {
+                    if (!$DB->record_exists('groups_members', ['groupid' => $group->id, 'userid' => $u->id])) {
                         $groupmember = new StdClass();
                         $groupmember->groupid = $group->id;
                         $groupmember->userid = $u->id;
@@ -282,7 +305,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $enrolplugin->enrol_user($enrol, $customeruser->id, $supervisorrole->id, $starttime, $endtime, ENROL_USER_ACTIVE);
 
         // Add customer to group.
-        if (!$DB->record_exists('groups_members', array('groupid' => $group->id, 'userid' => $customeruser->id))) {
+        if (!$DB->record_exists('groups_members', ['groupid' => $group->id, 'userid' => $customeruser->id])) {
             $groupmember = new StdClass();
             $groupmember->groupid = $group->id;
             $groupmember->userid = $customeruser->id;
@@ -315,6 +338,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
 
     /*
      * Gets a thumbnail from course overview files as thumb.
+     * @param object $catalogitem
      */
     public function get_alternative_thumbnail_url($catalogitem) {
         global $DB, $CFG;
@@ -322,15 +346,15 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $shouldexist = false;
         $course = null;
         if (!empty($catalogitem->handlerparams['coursename'])) {
-            $params = array('shortname' => $catalogitem->handlerparams['coursename']);
+            $params = ['shortname' => $catalogitem->handlerparams['coursename']];
             $course = $DB->get_record('course', $params);
             $shouldexist = true;
         } else if (!empty($catalogitem->handlerparams['courseidnumber'])) {
-            $params = array('idnumber' => $catalogitem->handlerparams['courseidnumber']);
+            $params = ['idnumber' => $catalogitem->handlerparams['courseidnumber']];
             $course = $DB->get_record('course', $params);
             $shouldexist = true;
         } else if (!empty($catalogitem->handlerparams['courseid'])) {
-            $params = array('id' => $catalogitem->handlerparams['courseid']);
+            $params = ['id' => $catalogitem->handlerparams['courseid']];
             $course = $DB->get_record('course', $params);
             $shouldexist = true;
         }
@@ -372,15 +396,14 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      * In assignroleoncontext plugin, removes the role assignation
      * assigned to the product. Other role assignations will remain unchanged.
      *
-     * @param string $contexttype type of context to dismount
-     * @param integer/string $instanceid identifier of the instance
+     * @param Product $product
      */
-    public function delete(&$product) {
+    public function delete(Product &$product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {
-            if ($ue = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
-                $enrol = $DB->get_record('enrol', array('id' => $ue->enrolid));
+            if ($ue = $DB->get_record('user_enrolments', ['id' => $product->instanceid])) {
+                $enrol = $DB->get_record('enrol', ['id' => $ue->enrolid]);
                 $enrolplugin = enrol_get_plugin($enrol->enrol);
                 shop_trace('[] Deleting user enrolment on {$ue->enrolid} for user {$ue->userid}');
                 $enrolplugin->unenrol_user($enrol, $ue->userid);
@@ -389,8 +412,11 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
     }
 
     /**
-     * unit tests check input conditions from product setup without doing anything, collects input errors and warnings
-     *
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
      */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
@@ -402,14 +428,14 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         if (!isset($data->actionparams['coursename'])) {
             $errors[$data->code][] = get_string('errornotarget', 'shophandlers_std_setuponecoursesession');
         } else {
-            if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['coursename']))) {
+            if (!$course = $DB->get_record('course', ['shortname' => $data->actionparams['coursename']])) {
                 $cn = $data->actionparams['coursename'];
                 $err = get_string('errorcoursenotexists', 'shophandlers_std_setuponecoursesession', $cn);
                 $errors[$data->code][] = $err;
             }
 
             // Check enrollability.
-            $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+            $params = ['enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED];
             if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
                 $enrol = reset($enrols);
             }
@@ -426,7 +452,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $data->actionparams['supervisor'] = 'teacher';
         }
 
-        if (!$role = $DB->get_record('role', array('shortname' => $data->actionparams['supervisor']))) {
+        if (!$role = $DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
             $err = get_string('errorsupervisorrole', 'shophandlers_std_setuponecoursesession', $data->actionparams['supervisor']);
             $errors[$data->code][] = $err;
         }
@@ -438,7 +464,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
      *
-     * TODO : Generalize to all logstores
+     * @todo : Generalize to all logstores
      */
     public function display_product_actions($pid, $params) {
         global $DB;
@@ -447,7 +473,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         // Check this in logs.
         $params = (array)$params; // Just to be sure.
 
-        $sqlparams = array($params['courseid'], $params['userid'], $params['starttime']);
+        $sqlparams = [$params['courseid'], $params['userid'], $params['starttime']];
 
         $select = " courseid = ?  AND userid = ? AND timecreated > ? ";
 
@@ -461,7 +487,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         if (!$hasentered) {
             $str = '';
             $freeassignstr = get_string('freeassign', 'shophandlers_std_setuponecoursesession');
-            $params = array('id' => $params['courseid'], 'pid' => $pid, 'method' => 'freeassign');
+            $params = ['id' => $params['courseid'], 'pid' => $pid, 'method' => 'freeassign'];
             $postprodurl = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
             $str .= '<a href="'.$postprodurl.'">'.$freeassignstr.'</a>';
         } else {
@@ -471,10 +497,10 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
     }
 
     /**
-     * this method renders user formated information about production information (contextually to handler)
+     * this method renders user formated information about product (contextually to handler)
      * for products generated with this handler
      * @param int $pid the product instance id
-     * @param array $params production related info stored at purchase time
+     * @param array $pinfo product info
      */
     public function display_product_infos($pid, $pinfo) {
         global $DB;
@@ -484,8 +510,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         $str .= '<div><div class="cs-product-key">'.get_string('coursename', 'shophandlers_std_setuponecoursesession').'</div>';
         $str .= '<div class="cs-product-value">'.$pinfo->coursename.'</div></div>';
         $str .= '<div><div class="cs-product-key">'.get_string('beneficiary', 'shophandlers_std_setuponecoursesession').'</div>';
-        $u = $DB->get_record('user', array('id' => $pinfo->userid));
-        $userurl = new moodle_url('/user/view.php', array('id' => $u->id));
+        $u = $DB->get_record('user', ['id' => $pinfo->userid]);
+        $userurl = new moodle_url('/user/view.php', ['id' => $u->id]);
         $str .= '<div class="cs-product-value"><a href="'.$userurl.'">'.fullname($u).'</a></div></div>';
 
         $str .= '<div><div class="cs-product-key">'.get_string('role').'</div>';

@@ -15,19 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main handler class
+ *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage shophandlers_std_registeredproduct
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * STD_REGISTERED_PRODUCT is a standard generic shop product action handler that creates instances of a catalogitem
- * as a product record. It has NO counterpart in moodle insternal data and should be used when the product definition
- * has external existance, but still need its lifecycle to be managed, such as validity period, product effective existance,
- * regarding an existance check service.
- */
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
@@ -38,6 +35,11 @@ use local_shop\Product;
 use local_shop\Customer;
 
 /**
+ * STD_REGISTERED_PRODUCT is a standard generic shop product action handler that creates instances of a catalogitem
+ * as a product record. It has NO counterpart in moodle insternal data and should be used when the product definition
+ * has external existance, but still need its lifecycle to be managed, such as validity period, product effective existance,
+ * regarding an existance check service.
+ *
  * The Registered product handler is convenient to register an external (or abstract) product that has no direct
  * tracks in moodle DB records. This is suitable for any extraneous product type we just want the shop to remind
  * the existance and manage the lifecycle. Therefore, the products will have effective trace in the local_shop_product
@@ -51,16 +53,29 @@ use local_shop\Customer;
  */
 class shop_handler_std_registeredproduct extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label 
+     */
     public function __construct($label) {
         $this->name = 'std_registeredproduct'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * Who can use this handler ?
+     */
     public function supports() {
         return PROVIDING_BOTH;
     }
 
-    // Pre pay information always comme from shopping session.
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     function produce_prepay(&$data, &$errorstatus) {
         global $CFG, $DB, $USER;
 
@@ -78,6 +93,13 @@ class shop_handler_std_registeredproduct extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB;
 
@@ -101,7 +123,7 @@ class shop_handler_std_registeredproduct extends shop_handler {
         $product->enddate = $endtime;
         $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
-        $extra = array('handler' => 'std_registeredproduct');
+        $extra = ['handler' => 'std_registeredproduct'];
         $product->productiondata = Product::compile_production_data($data->actionparams, $data->customerdata, $extra);
         $product->id = $DB->insert_record('local_shop_product', $product);
 
@@ -143,28 +165,56 @@ class shop_handler_std_registeredproduct extends shop_handler {
 
     /**
      * Registered product always available as new references. Each handler creates a new instance of the product.
+     * @param objectref &$catalogitem
      */
     public function is_available(&$catalogitem) {
         global $USER, $DB;
         return true;
     }
 
-    public function delete($product) {
-        // @TODO : Remove enrols to extrasupport;
+    /**
+     * Dismounts all effects of the handler production when a product is deleted.
+     *
+     * In enrolonecourse plugin, unenrols the target user from course using the user enrolment record
+     * assigned to the product. Other enrol sources remain unchanged.
+     *
+     * @param local_shop\Product $product
+     */
+    public function delete(local_shop\Product $product) {
+        // @todo : Remove enrols to extrasupport;
     }
 
-    public function soft_delete($product) {
-        // @TODO : Disable enrols to extrasupport;
+    /**
+     * Disables the product effect in a way it can be restored
+     * @param local_shop\Product $product
+     */
+    public function soft_delete(local_shop\Product $product) {
+        // @todo : Disable enrols to extrasupport;
     }
 
-    public function soft_restore($product) {
-        // @TODO : Disable enrols to extrasupport;
+    /** 
+     * Restores the effect of the product instance
+     * @param local_shop\Product $product
+     */
+    public function soft_restore(local_shop\Product $product) {
+        // @todo : Disable enrols to extrasupport;
     }
 
-    public function update($product) {
-        // @TODO : Realign enrol dates to extrasupport;
+    /**
+     * Update essentially updates enrolment period against product date changes.
+     * @param local_shop\Product $product
+     */
+    public function update(local_shop\Product $product) {
+        // @todo : Realign enrol dates to extrasupport;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 

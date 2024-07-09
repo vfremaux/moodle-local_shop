@@ -18,7 +18,7 @@
  * Lang file
  *
  * @package   local_shop
- * @subpackage shophandlers
+ * @subpackage shophandlers_std_enrolonecoursemultiple
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
@@ -27,8 +27,8 @@
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat EnrolOneCourseMultiple ne détient directement aucune donnée relative
- aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat EnrolOneCourseMultiple ne détient directement aucune donnée
+ relative aux utilisateurs.';
 
 $string['handlername'] = 'Inscription (multiples) à un cours';
 $string['pluginname'] = 'Inscription (mulitples) à un cours';

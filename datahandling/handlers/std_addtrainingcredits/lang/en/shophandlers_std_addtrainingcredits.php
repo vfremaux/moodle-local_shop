@@ -17,7 +17,8 @@
 /**
  * Lang file
  *
- * @package      local_shop
+ * @package     local_shop
+ * @subpackage  shophandlers_std_addtrainingcredits
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
@@ -65,8 +66,8 @@ $string['productiondata_post_public'] = '
 
 $string['productiondata_post_private'] = '
 <p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. {$a->credits} course credits have been added to your account. You may now enrol to proposed courses enabled for course credit program.</p>
-<p>Your credit amount is now: {$a->coursecredits}</p>
+<p>Your payment has been validated. {$a->credits} course credits have been added to your account. You may now enrol to proposed
+courses enabled for course credit program.</p><p>Your credit amount is now: {$a->coursecredits}</p>
 <p><a href="'.$CFG->wwwroot.'/my/index.php">Direct access to your account</a></p>
 ';
 

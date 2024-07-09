@@ -18,8 +18,9 @@
  * Version file
  *
  * @package   local_shop
- * @subpackage shophandlers
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage shophandlers_std_createcategory
+ * @author       Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright    2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();

@@ -18,7 +18,7 @@
  * Privacy controller
  *
  * @package     local_shop
- * @subpackage  product_handlers
+ * @subpackage  shophandlers_std_addquizattempts
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 namespace shophandlers_std_addquizattempts\privacy;
 
 /**
- * Privacy null controller.
+ * Null provider.
  */
 class provider implements \core_privacy\local\metadata\null_provider {
     /**

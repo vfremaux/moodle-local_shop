@@ -18,7 +18,7 @@
  * Lang file
  *
  * @package   local_shop
- * @subpackage shophandlers
+ * @subpackage shophandlers_std_enrolonecoursemultiple
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
@@ -27,7 +27,8 @@
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std EnrolOneCourseMultiple does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std EnrolOneCourseMultiple does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'One course multiple enrolment';
 $string['pluginname'] = 'One course multiple enrolment';

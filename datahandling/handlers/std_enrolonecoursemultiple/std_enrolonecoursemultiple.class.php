@@ -16,7 +16,7 @@
 
 /**
  * @package     local_shop
- * @subpackage  producthandlers
+ * @subpackage  shophandlers_std_enrolonecoursemultiple
  * @author      Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   2017 Valery Fremaux (valery.fremaux@gmail.com) (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -120,19 +120,19 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
         // Assign Student role in course for the period.
         if (!empty($data->actionparams['coursename'])) {
             $coursename = $data->actionparams['coursename'];
-            if (!$course = $DB->get_record('course', array('shortname' => $coursename))) {
+            if (!$course = $DB->get_record('course', ['shortname' => $coursename])) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE_MULTIPLE PostPay : failed... Bad course name");
                 throw new moodle_exception("Bad target course shortname for product");
             }
         } else if (!empty($data->actionparams['courseidnumber'])) {
             $idnumber = $data->actionparams['courseidnumber'];
-            if (!$course = $DB->get_record('course', array('idnumber' => $idnumber))) {
+            if (!$course = $DB->get_record('course', ['idnumber' => $idnumber])) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE_MULTIPLE PostPay : failed... Bad course idnumber");
                 throw new moodle_exception("Bad target course id for product");
             }
         } else {
             $courseid = $data->actionparams['courseid'];
-            if (!$course = $DB->get_record('course', array('shortname' => $courseid))) {
+            if (!$course = $DB->get_record('course', ['shortname' => $courseid])) {
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE_MULTIPLE PostPay : failed... Bad course id");
                 throw new moodle_exception("Bad target course id for product");
             }
@@ -147,12 +147,12 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             $enrolname = 'manual';
         }
 
-        $role = $DB->get_record('role', array('shortname' => $rolename));
+        $role = $DB->get_record('role', ['shortname' => $rolename]);
         $now = time();
 
         $context = context_course::instance($course->id);
 
-        $params = array('enrol' => $enrolname, 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+        $params = ['enrol' => $enrolname, 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED];
         if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
             $enrolplugin = enrol_get_plugin($enrolname); // The enrol object instance.
@@ -162,12 +162,12 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             $customerid = $data->get_customerid();
         }
 
-        $customer = $DB->get_record('local_shop_customer', array('id' => $customerid));
-        $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+        $customer = $DB->get_record('local_shop_customer', ['id' => $customerid]);
+        $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
 
-        if (!$oldue = $DB->get_record('user_enrolments', array('userid' => $customeruser->id, 'enrolid' => $enrol->id))) {
+        if (!$oldue = $DB->get_record('user_enrolments', ['userid' => $customeruser->id, 'enrolid' => $enrol->id])) {
             try {
-                $userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $data->get_customerid()));
+                $userid = $DB->get_field('local_shop_customer', 'hasaccount', ['id' => $data->get_customerid()]);
                 $enrolplugin->enrol_user($enrol, $userid, $role->id, $starttime, $endtime, ENROL_USER_ACTIVE);
                 $message = "User {$userid} Enrolled in course {$course->shortname} ";
                 shop_trace("[{$data->transactionid}] STD_ENROL_ONE_COURSE_MULTIPLE PostPay : ".$message);
@@ -187,7 +187,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             }
 
             // Get the user enrolment record as instance for product record.
-            $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $userid));
+            $ue = $DB->get_record('user_enrolments', ['enrolid' => $enrol->id, 'userid' => $userid]);
         } else {
             // If already enrolled, get the user_enrolment record and push the date forward with this purchase.
             // Ensure the enrolment is active.
@@ -211,7 +211,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
             $product->enddate = $endtime;
             $product->extradata = '';
             $product->reference = shop_generate_product_ref($data);
-            $extra = array('handler' => 'std_enrolonecoursemultiple');
+            $extra = ['handler' => 'std_enrolonecoursemultiple'];
             $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
             $product->test = $config->test;
             $product->id = $DB->insert_record('local_shop_product', $product);
@@ -340,9 +340,9 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
      * in same context. It there are some, will adjust the endtime period to the last available
      * remaining product. It none, will unenrol completely the user from that context.
      *
-     * @param local_shop\Product $product
+     * @param Product $product
      */
-    public function delete($product) {
+    public function delete(Product $product) {
         global $DB;
 
         // Get all products of type userenrol in the same instanceid context.
@@ -372,10 +372,10 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
     }
 
     /**
-     * Inhibates the product effect in a way it cans be restablished
-     * @param local_shop\Product $product
+     * Inhibitates the product effect in a way it cans be restablished
+     * @param Product $product
      */
-    public function soft_delete($product) {
+    public function soft_delete(Product $product) {
         global $DB;
 
         // Get all products of type userenrol in the same instanceid context.
@@ -403,9 +403,9 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
     /**
      * Restores product effect
-     * @param local_shop\Product $product
+     * @param Product $product
      */
-    public function soft_restore($product) {
+    public function soft_restore(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {

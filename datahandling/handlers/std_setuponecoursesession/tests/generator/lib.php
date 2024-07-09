@@ -18,9 +18,9 @@
  * local_shop/handler data generator.
  *
  * @package     local_shop
- * @subpackage  shophandler_std_setuponecoursesession
- * @category    test
- * @copyright   2016 Valery Fremaux
+ * @subpackage  shophandlers_std_setuponecoursesession
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,6 +33,14 @@ require_once($CFG->dirroot.'/local/shop/products/products.controller.php');
  */
 class shophandler_std_setuponecoursesession_generator extends component_generator_base {
 
+    /**
+     * Create product
+     * @param object $thecatalog
+     * @param object $category
+     * @param object $tax
+     * @param object $params
+     * @param array $data
+     */
     public function create_product($thecatalog, $category, $tax, $data = null) {
         global $CFG;
 
@@ -47,14 +55,15 @@ class shophandler_std_setuponecoursesession_generator extends component_generato
             $requireddata .= '{"field":"requ2","label":"Requirement 2","type":"select",';
             $requireddata .= '"desc":"Testing colecting form select", "options":{"MOD1":"Model1","MOD2":"Model2"}}]';
 
-            $data = (object) array(
+            $data = (object) [
                 'code' => 'TESTPROD',
                 'name' => 'Test product',
-                'description_editor' => array(
-                    'text' => '<p>Product for unit testing. Renewable, Seat allocatable, Multiple price (2 ranges), Automated on course session creation.</p>',
+                'description_editor' => [
+                    'text' => '<p>Product for unit testing. Renewable, Seat allocatable, Multiple price (2 ranges), 
+                        Automated on course session creation.</p>',
                     'format' => '1',
                     'itemid' => 0,
-                ),
+                ],
 
                 'userid' => 0,
                 'status' => 'AVAILABLE',
@@ -79,24 +88,24 @@ class shophandler_std_setuponecoursesession_generator extends component_generato
                 'showsnameinset' => 1,
                 'showsdescriptioninset' => 1,
 
-                'eula_editor' => array (
+                'eula_editor' => [
                         'text' => '<p>Sales conditions</p>',
                         'format' => 1,
                         'itemid' => 0,
-                ),
+                ],
 
-                'notes_editor' => array (
+                'notes_editor' => [
                     'text' => '<p>Test notes</p>',
                     'format' => 1,
                     'itemid' => 0,
-                ),
+                ],
 
                 'requireddata' => $requireddata,
                 'enablehandler' => 'std_setuponecoursesession',
                 'handlerparams' => 'coursename=TESTPROD',
                 'quantaddressesusers' => 2,
                 'renewable' => 1,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);

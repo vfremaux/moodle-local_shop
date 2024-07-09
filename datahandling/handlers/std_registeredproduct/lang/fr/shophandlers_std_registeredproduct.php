@@ -14,12 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Lang file
+ *
+ * @package   local_shop
+ * @subpackage  shophandlers_std_registeredproduct
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat RegisteredProduct ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat RegisteredProduct ne détient directement aucune donnée relative
+ aux utilisateurs.';
 
 $string['handlername'] = 'Produit enregistré';
 $string['pluginname'] = 'Produit enregistré';
@@ -41,5 +50,5 @@ $string['productiondata_post_sales'] = '
 <p><b>Paiement enregistré</b></p>
 <p>Le client {$a->username} a enregistré un produit {$a->productname}.</p>
 <p><a href="'.$CFG->wwwroot.'/local/shop/bills/view.php?view=viewBill&id={$a->billid}">Accès à la facture</a></p>
-<p><a href="'.$CFG->wwwroot.'/local/shop/purchasemanager/view.php?view=viewProduct&id={$a->productid}">Accès à l\'enregistrement produit</a></p>
-';
+<p><a href="'.$CFG->wwwroot.'/local/shop/purchasemanager/view.php?view=viewProduct&id={$a->productid}">Accès à l\'enregistrement
+ produit</a></p>';

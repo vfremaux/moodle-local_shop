@@ -18,6 +18,7 @@
  * Lang file
  *
  * @package      local_shop
+ * @subpackage   shophanlders_std_assignroleoncontext
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
@@ -26,7 +27,8 @@
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat AssignRoleOnContext ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat AssignRoleOnContext ne détient directement aucune donnée relative
+ aux utilisateurs.';
 
 
 $string['handlername'] = 'Assignation de rôle sur contexte';
@@ -42,7 +44,8 @@ $string['warningcustomersupportcoursedefaultstosettings'] = 'L\'espace client pa
 $string['warningnocustomersupportcourse'] = 'Espace client non défini';
 $string['errornocustomersupportcourse'] = 'Le cours pour l\'espace client {$a} n\'existe pas';
 $string['warningonlyforselfproviding'] = 'Ce gestionnaire ne fonctionne que pour des achats internes';
-$string['erroremptyuserriks'] = 'Ce gestionnaire n\'est pas compatible avec cette zone de diffusion. Modifiez le produit pour des  "achats internes", ou ajoutez la demande de paramètre "foruser"';
+$string['erroremptyuserriks'] = 'Ce gestionnaire n\'est pas compatible avec cette zone de diffusion. Modifiez le produit pour
+ des  "achats internes", ou ajoutez la demande de paramètre "foruser"';
 
 $string['productiondata_public'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme. Un courriel vous a été envoyé
@@ -56,7 +59,8 @@ seront validés dès réception de votre paiement.</p>
 $string['productiondata_private'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme.</p>
 <p>Votre identifiant : {$a->username}</p>
-<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous pouvez les retrouver avant de continuer...</b></p>
+<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous
+pouvez les retrouver avant de continuer...</b></p>
 <p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront initialisés dès la confirmation automatique
 de votre règlement. Vous pourrez vous connecter
 et bénéficier de vos accès de formation. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p>

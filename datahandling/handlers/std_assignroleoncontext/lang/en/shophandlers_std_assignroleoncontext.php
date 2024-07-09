@@ -18,6 +18,7 @@
  * Lang file
  *
  * @package      local_shop
+ * @subpackage  shophandlers_std_assignroleoncontext
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
@@ -26,7 +27,8 @@
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std AssignRoleOnContext does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std AssignRoleOnContext does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'Single role assign';
 $string['pluginname'] = 'Single role assign';
@@ -41,12 +43,13 @@ $string['warningcustomersupportcoursedefaultstosettings'] = 'Customer support co
 $string['warningnocustomersupportcourse'] = 'No customer support area defined';
 $string['errornocustomersupportcourse'] = 'Customer support course {$a} does not exist';
 $string['warningonlyforselfproviding'] = 'Settings constraints to providing for logged in only';
-$string['erroremptyuserriks'] = 'This product handler is not compatible with is providing area. Change product settings to "logged in only", or add "foruser" external request';
+$string['erroremptyuserriks'] = 'This product handler is not compatible with is providing area. Change product settings
+to "logged in only", or add "foruser" external request';
 
 $string['productiondata_public'] = '
-<p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate login information.</p>
-<p>If you made an online payment, your purchased products will be processed on automatic return of your payment order.
-You will be able to connect at once and get to your training volumes. On the other hand will our commercial service
+<p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate login
+information.</p><p>If you made an online payment, your purchased products will be processed on automatic return of your
+payment order. You will be able to connect at once and get to your training volumes. On the other hand will our commercial service
 validate your purchase on payment confirmation.</p>
 <p><a href="'.$CFG->wwwroot.'/login/index.php">Browse to the site entrance</a></p>
 ';

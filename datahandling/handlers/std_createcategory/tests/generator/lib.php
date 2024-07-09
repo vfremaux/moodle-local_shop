@@ -47,14 +47,14 @@ class shophandler_std_createcategory_generator extends shophandler_generator_bas
                 $requireddata .= '"desc":"Category name","attrs":{"size":80}}] ';
             }
 
-            $data = (object) array(
+            $data = (object) [
                 'code' => 'TESTPRODCREATECATEGORY',
                 'name' => 'Test product creating a course category',
-                'description_editor' => array(
+                'description_editor' => [
                     'text' => '<p>Product for unit testing. Single price, Automated on creating category.</p>',
                     'format' => '1',
                     'itemid' => 0,
-                ),
+                ],
 
                 'userid' => 0,
                 'status' => 'AVAILABLE',
@@ -79,24 +79,24 @@ class shophandler_std_createcategory_generator extends shophandler_generator_bas
                 'showsnameinset' => 0,
                 'showsdescriptioninset' => 0,
 
-                'eula_editor' => array (
+                'eula_editor' => [
                         'text' => '<p>Sales conditions / Creating category</p>',
                         'format' => 1,
                         'itemid' => 0,
-                ),
+                ],
 
-                'notes_editor' => array (
+                'notes_editor' => [
                     'text' => '<p>Test notes / Creating category</p>',
                     'format' => 1,
                     'itemid' => 0,
-                ),
+                ],
 
                 'requireddata' => $requireddata,
                 'enablehandler' => 'std_createcategory',
                 'handlerparams' => $handlerparams,
                 'quantaddressesusers' => 0,
                 'renewable' => 0,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);
@@ -104,4 +104,3 @@ class shophandler_std_createcategory_generator extends shophandler_generator_bas
         return $controller->process('edit');
     }
 }
-
