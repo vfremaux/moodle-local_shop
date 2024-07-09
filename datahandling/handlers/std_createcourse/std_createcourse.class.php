@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main handler class
+ *
  * @package   local_shop
- * @category  local
  * @subpackage product_handlers
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * STD_CREATE_COURSE is a standard shop product action handler that creates a course space for the customer
@@ -38,14 +40,27 @@ use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
 
+/**
+ * STD_CREATE_COURSE is a standard shop product action handler that creates a course space for the customer
+ * and enrols the customer as editing teacher inside.
+ */
 class shop_handler_std_createcourse extends shop_handler {
 
+    /**
+     * Constructor
+     */
     public function __construct($label) {
         $this->name = 'std_createcourse'; // For unit test reporting.
         parent::__construct($label);
     }
 
-    // Pre pay information always comme from shopping session.
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_prepay(&$data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
@@ -60,6 +75,13 @@ class shop_handler_std_createcourse extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB;
 
@@ -93,8 +115,8 @@ class shop_handler_std_createcourse extends shop_handler {
         $secsduration = $data->actionparams['duration'] * DAYSECS;
         $upto = ($secsduration) ? $now + $secsduration : 0;
 
-        $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-        $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+        $customer = $DB->get_record('local_shop_customer', ['id' => $data->get_customerid()]);
+        $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
 
         $c = new StdClass;
         $c->category = $data->actionparams['coursecategory'];
@@ -112,7 +134,7 @@ class shop_handler_std_createcourse extends shop_handler {
         if (!empty($data->actionparams['template'])) {
             $coursetemplatename = $data->actionparams['template'];
 
-            $template = $DB->get_record('course', array('shortname' => $coursetemplatename));
+            $template = $DB->get_record('course', ['shortname' => $coursetemplatename]);
             if ($templatefile = shop_delivery_check_available_backup($template->id)) {
                 if ($c->id = shop_restore_template($templatefile, $c)) {
                     $context = context_course::instance($c->id);
@@ -156,13 +178,13 @@ class shop_handler_std_createcourse extends shop_handler {
                 return $productionfeedback;
             }
         }
-        if (!$role = $DB->get_record('role', array('shortname' => 'courseowner'))) {
-            $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        if (!$role = $DB->get_record('role', ['shortname' => 'courseowner'])) {
+            $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
         }
         $now = time();
 
         $enrolplugin = enrol_get_plugin('manual');
-        $params = array('enrol' => 'manual', 'courseid' => $c->id, 'status' => ENROL_INSTANCE_ENABLED);
+        $params = ['enrol' => 'manual', 'courseid' => $c->id, 'status' => ENROL_INSTANCE_ENABLED];
         if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
             try {
@@ -228,6 +250,14 @@ class shop_handler_std_createcourse extends shop_handler {
         return 'coursecategory={&duration=&customersupport=}';
     }
 
+    /**
+     * Validates the mandatory data a customer must provide when ordering
+     * @param string $itemname
+     * @param string $fieldname
+     * @param int $instance
+     * @param mixed $value
+     * @param objectref &$errors
+     */
     public function validate_required_data($itemname, $fieldname, $instance = 0, $value, &$errors) {
         global $SESSION, $DB;
 
@@ -245,7 +275,7 @@ class shop_handler_std_createcourse extends shop_handler {
 
         if ($fieldname == 'idnumber') {
             // First check no course with that idnumber already.
-            if ($DB->count_records('course', array('idnumber' => $value))) {
+            if ($DB->count_records('course', ['idnumber' => $value])) {
                 $err = get_string('erroralreadyexists', 'shophandlers_std_createcourse');
                 $errors[$itemname][$fieldname][$instance] = $err;
                 $hasnolocalerros = false;
@@ -272,7 +302,7 @@ class shop_handler_std_createcourse extends shop_handler {
         global $DB;
 
         if ($product->contexttype == 'course') {
-            if ($course = $DB->get_record('course', array('id' => $product->instanceid))) {
+            if ($course = $DB->get_record('course', ['id' => $product->instanceid])) {
                 shop_trace('[] Deleting all course data {$course->shortname}');
                 delete_course($course, false);
             }
@@ -290,8 +320,8 @@ class shop_handler_std_createcourse extends shop_handler {
         global $DB;
 
         if ($product->contexttype == 'course') {
-            if ($course = $DB->get_record('course', array('id' => $product->instanceid))) {
-                $enrol = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol' => 'manual'));
+            if ($course = $DB->get_record('course', ['id' => $product->instanceid])) {
+                $enrol = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'manual']);
                 $sql = "
                     UPDATE
                         {user_enrolments}
@@ -314,8 +344,8 @@ class shop_handler_std_createcourse extends shop_handler {
         global $DB;
 
         if ($product->contexttype == 'course') {
-            if ($course = $DB->get_record('course', array('id' => $product->instanceid))) {
-                $enrol = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol' => 'manual'));
+            if ($course = $DB->get_record('course', ['id' => $product->instanceid])) {
+                $enrol = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'manual']);
                 $sql = "
                     UPDATE
                         {user_enrolments}
@@ -340,7 +370,7 @@ class shop_handler_std_createcourse extends shop_handler {
             $errors[$data->code][] = get_string('errornocategory', 'shophandlers_std_createcourse');
         } else {
             $catid = $data->actionparams['coursecategory'];
-            if (!$DB->record_exists('course_categories', array('id' => $catid))) {
+            if (!$DB->record_exists('course_categories', ['id' => $catid])) {
                 $code= get_string('errorcategorynotexists', 'shophandlers_std_createcourse', $catid);
                 $errors[$data->code][] = $code;
             }
@@ -349,7 +379,7 @@ class shop_handler_std_createcourse extends shop_handler {
         if (!isset($data->actionparams['template'])) {
             $warnings[$data->code][] = get_string('warningnohandlerusingdefault', 'shophandlers_std_createcourse');
         } else {
-            if (!$DB->record_exists('course', array('shortname' => $data->actionparams['template']))) {
+            if (!$DB->record_exists('course', ['shortname' => $data->actionparams['template']])) {
                 $errors[$data->code][] = get_string('errortemplatenocourse', 'shophandlers_std_createcourse');
             }
         }

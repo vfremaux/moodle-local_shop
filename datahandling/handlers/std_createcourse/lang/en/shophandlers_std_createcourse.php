@@ -14,10 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file for English
+ *
+ * @package   local_shop
+ * @subpackage product_handlers
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std CreateCourse does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std CreateCourse does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'One Course Creation ';
 $string['pluginname'] = 'One Course Creation ';
@@ -32,10 +43,10 @@ $string['erroralreadyinform'] = 'This ID is already used in this form';
 $string['warningnoduration'] = 'No duration defined. ownership enrolment will be unlimited.';
 
 $string['productiondata_public'] = '
-<p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate login information.</p>
-<p>If you made an online payment, your purchased products will be processed on automatic return of your payment order.
-You will be able to connect at once and get to your training volumes. On the other hand will our commercial service
-validate your purchase on payment confirmation.</p>
+<p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate
+ login information.</p><p>If you made an online payment, your purchased products will be processed on automatic return
+ of your payment order. You will be able to connect at once and get to your training volumes. On the other hand will
+ our commercial service validate your purchase on payment confirmation.</p>
 <p><a href="'.$CFG->wwwroot.'/login/index.php">Browse to the site entrance</a></p>
 ';
 

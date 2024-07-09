@@ -14,10 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file
+ *
+ * @package   local_shop
+ * @subpackage shophandlers
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat CreateVInstance ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat CreateVInstance ne détient directement aucune donnée relative
+ aux utilisateurs.';
 
 $string['handlername'] = 'Création d\'instances de Moodle';
 $string['pluginname'] = 'Création d\'instances de Moodle';
@@ -35,10 +46,11 @@ seront validés dès réception de votre paiement.</p>
 $string['productiondata_private'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme.</p>
 <p>Votre identifiant : {$a->username}</p>
-<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous pouvez les retrouver avant de continuer...</b></p>
-<p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront initialisés dès la confirmation automatique
-de votre règlement. Vous pourrez vous connecter et bénéficier de vos accès sur vos volumes de travail. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p>
-<p><a href="'.$CFG->wwwroot.'/login/index.php">Accéder à la plate-forme de formation</a></p>
+<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous
+ pouvez les retrouver avant de continuer...</b></p><p>Si vous avez effectué votre paiement en ligne, Vos produits de formation
+ seront initialisés dès la confirmation automatique de votre règlement. Vous pourrez vous connecter et bénéficier de vos accès
+ sur vos volumes de travail. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p><p>
+ <a href="'.$CFG->wwwroot.'/login/index.php">Accéder à la plate-forme de formation</a></p>
 ';
 
 $string['productiondata_sales'] = '
@@ -58,7 +70,8 @@ seront validés dès réception de votre paiement.</p>
 $string['productiondata_post_private'] = '
 <p>Votre compte Gestionnaire a été ouvert sur cette plate-forme.</p>
 <p>Votre identifiant d\'administrateur : {$a->username}</p>
-<p>Le mot de passe d\'administrateur vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous pouvez les retrouver avant de continuer...</b></p>
+<p>Le mot de passe d\'administrateur vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part
+ où vous pouvez les retrouver avant de continuer...</b></p>
 <p>Si vous avez effectué votre paiement en ligne, Votre plate-forme a été initialisée dès la confirmation automatique
 de votre règlement. Vous pourrez vous connecter
 et bénéficier de vos accès de formation. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p>
@@ -79,7 +92,8 @@ $string['productiondata_post_public'] = '
 
 $string['productiondata_post_private'] = '
 <p><b>Paiement enregistré</b></p>
-<p>Votre règlement a été validé. Votre plate-forme {$a->wwwroot} a été initialisée. Vous pouvez vous y connecter comme Gestionnaire.</p>
+<p>Votre règlement a été validé. Votre plate-forme {$a->wwwroot} a été initialisée. Vous pouvez vous y connecter comme
+ Gestionnaire.</p>
 <p>Vos identifiants d\'administrateur sont :<br/>
 Identifiant : {$a->managerusername}<br/>
 Mot de passe : {"a->managerpassword}</p>

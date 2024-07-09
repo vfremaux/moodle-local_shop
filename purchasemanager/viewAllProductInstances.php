@@ -91,7 +91,7 @@ if (!empty($contexttype)) {
 }
 
 $productinstancesnum = Product::count_instances_on_context($filter);
-$productinstances = Product::get_instances_on_context($filter, 'ci.shortname', $from, $perpage);
+$productinstances = Product::get_instances_on_context($filter, 'ci.shortname', $page * $perpage, $perpage);
 Product::filter_by_state($productinstances, $productstate);
 
 echo $out;

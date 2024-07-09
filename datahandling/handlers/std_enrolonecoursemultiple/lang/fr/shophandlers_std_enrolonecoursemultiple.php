@@ -14,18 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file
+ *
+ * @package   local_shop
+ * @subpackage shophandlers
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat EnrolOneCourseMultiple ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat EnrolOneCourseMultiple ne détient directement aucune donnée relative
+ aux utilisateurs.';
 
 $string['handlername'] = 'Inscription (multiples) à un cours';
 $string['pluginname'] = 'Inscription (mulitples) à un cours';
 
-$string['pluginname_desc'] = 'Ce plugin permet la vente d\'une inscription qui peut être répétée plusieurs fois pour le même cours, permettant
-ainsi de disposer de plusieurs unités de produid dans le même contexte de cours support. Un achat de ce produit ne bloquera pas le processus
-d\'achat d\'unités supplémentaires du même produit avec le même cours support. La période de validité de l\'inscription sera repoussée à la 
-date la plus lointaine de tous les produits détenus par l\'utilisateur.';
+$string['pluginname_desc'] = 'Ce plugin permet la vente d\'une inscription qui peut être répétée plusieurs fois pour le même cours,
+ permettant ainsi de disposer de plusieurs unités de produid dans le même contexte de cours support. Un achat de ce produit ne
+ bloquera pas le processus d\'achat d\'unités supplémentaires du même produit avec le même cours support. La période de validité
+ de l\'inscription sera repoussée à la date la plus lointaine de tous les produits détenus par l\'utilisateur.';
 
 $string['errornocourse'] = 'cours cible non défini';
 $string['errorcoursenotexists'] = 'Cours cible {$a} non existant';
@@ -44,9 +55,9 @@ seront validés dès réception de votre paiement.</p>
 $string['productiondata_private'] = '
 <p>Votre compte utilisateur a été ouvert sur cette plate-forme.</p>
 <p>Votre identifiant : {$a->username}</p>
-<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous pouvez les retrouver avant de continuer...</b></p>
-<p>Si vous avez effectué votre paiement en ligne, Vos produits de formation seront initialisés dès la confirmation automatique
-de votre règlement. Vous pourrez vous connecter
+<p>Un mot de passe vous a été envoyé dans un courriel séparé. <b>Veuillez noter vos coordonnées d\'accès quelque part où vous
+ pouvez les retrouver avant de continuer...</b></p> <p>Si vous avez effectué votre paiement en ligne, Vos produits de formation
+  seront initialisés dès la confirmation automatique de votre règlement. Vous pourrez vous connecter
 et bénéficier de vos accès de formation. Dans le cas contraire vos accès seront validés dès réception de votre paiement.</p>
 <p><a href="'.$CFG->wwwroot.'/login/index.php">Accéder à la plate-forme de formation</a></p>
 ';

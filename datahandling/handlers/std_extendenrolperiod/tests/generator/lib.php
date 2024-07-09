@@ -19,8 +19,8 @@
  *
  * @package     local_shop
  * @subpackage  shophandler_std_extendenrolperiod
- * @category    test
- * @copyright   2016 Valery Fremaux
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,6 +34,14 @@ require_once($CFG->dirroot.'/local/shop/products/products.controller.php');
  */
 class shophandler_std_extendenrolperiod_generator extends shophandler_generator_base {
 
+    /**
+     * Create product
+     * @param object $thecatalog
+     * @param object $category
+     * @param object $tax
+     * @param object $params
+     * @param array $data
+     */
     public function create_product($thecatalog, $category, $tax, $params, $data = null) {
 
         static $prodix = 1;
@@ -43,14 +51,14 @@ class shophandler_std_extendenrolperiod_generator extends shophandler_generator_
             $handlerparams = 'courseid='.$params['course'].'&role=student&duration=365&customersupport=CUSTOMERSUPPORT';
             $requireddata = '';
 
-            $data = (object) array(
+            $data = (object) [
                 'code' => 'TESTPRODENROLONECOURSE',
                 'name' => 'Test product for enrolling in a course',
-                'description_editor' => array(
+                'description_editor' => [
                     'text' => '<p>Product for unit testing. Single price, Automated on enrolling in a course.</p>',
                     'format' => '1',
                     'itemid' => 0,
-                ),
+                ],
 
                 'userid' => 0,
                 'status' => 'AVAILABLE',
@@ -75,24 +83,24 @@ class shophandler_std_extendenrolperiod_generator extends shophandler_generator_
                 'showsnameinset' => 0,
                 'showsdescriptioninset' => 0,
 
-                'eula_editor' => array (
+                'eula_editor' => [
                         'text' => '<p>Sales conditions / Creating course</p>',
                         'format' => 1,
                         'itemid' => 0,
-                ),
+                ],
 
-                'notes_editor' => array (
+                'notes_editor' => [
                     'text' => '<p>Test notes / Creating course</p>',
                     'format' => 1,
                     'itemid' => 0,
-                ),
+                ],
 
                 'requireddata' => $requireddata,
                 'enablehandler' => 'std_createcourse',
                 'handlerparams' => $handlerparams,
                 'quantaddressesusers' => 0,
                 'renewable' => 0,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);
@@ -100,4 +108,3 @@ class shophandler_std_extendenrolperiod_generator extends shophandler_generator_
         return $controller->process('edit');
     }
 }
-

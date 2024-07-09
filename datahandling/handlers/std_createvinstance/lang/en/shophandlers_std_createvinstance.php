@@ -14,17 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file
+ *
+ * @package   local_shop
+ * @subpackage shophandlers
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std CreateVInstance does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std CreateVInstance does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'Creates a full instance of Moodle';
 $string['pluginname'] = 'Creates a full instance of Moodle';
 $string['errorhostnameexists'] = 'This host shortname ({$a}) is already used';
 
 $string['productiondata_post_public'] = '
-<p>A new account has been created for you for your customer support. A mail has been sent to your given mailbox with full credentials to administrate it.</p>
+<p>A new account has been created for you for your customer support. A mail has been sent to your given mailbox with
+ full credentials to administrate it.</p>
 <p>If you made an online payment, your purchased products will be processed on automatic return of your payment order.
 You will be able to connect at once and get to your training volumes. On the other hand will our commercial service
 validate your purchase on payment confirmation.</p>
@@ -55,7 +67,8 @@ $string['productiondata_post_public'] = '
 
 $string['productiondata_delivered_private'] = '
 <p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. Your new site {$a->wwwroot} has been initialized. You may now log in to configure and administrate it.</p>
+<p>Your payment has been validated. Your new site {$a->wwwroot} has been initialized. You may now log in to configure
+ and administrate it.</p>
 
 <p>Your administrator credentials:<br/>
 Login: {$a->managerusername}<br/>

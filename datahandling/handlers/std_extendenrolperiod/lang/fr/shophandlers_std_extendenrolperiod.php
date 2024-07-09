@@ -14,10 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file
+ *
+ * @package   local_shop
+ * @subpackage shophandler_std_extendenrolperiod
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat ExtendEnrolPeriod ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat ExtendEnrolPeriod ne détient directement aucune donnée relative
+ aux utilisateurs.';
 
 $string['handlername'] = 'Extension d\'inscription';
 $string['pluginname'] = 'Extension d\'inscription';
@@ -39,8 +50,8 @@ et bénéficier de votre temps supplémentaires. Dans le cas contraire votre ext
 $string['productiondata_post_private'] = '
 <p>Vous avez obtenu {$a->extension} jours d\'entrainement supplémentaire(s).</p>
 <p>Si vous avez effectué votre paiement en ligne, Votre extension est immédiatement réalisée. Vous pouvez vous connecter
-et bénéficier de votre temps supplémentaires. Dans le cas contraire votre extension sera validée dès réception de votre paiement.</p>
-<p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a->courseid}">Accéder à la formation</a></p>
+et bénéficier de votre temps supplémentaires. Dans le cas contraire votre extension sera validée dès réception de votre
+ paiement.</p><p><a href="'.$CFG->wwwroot.'/course/view.php?id={$a->courseid}">Accéder à la formation</a></p>
 ';
 
 $string['productiondata_post_sales'] = '

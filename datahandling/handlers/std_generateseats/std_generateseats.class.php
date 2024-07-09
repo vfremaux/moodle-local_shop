@@ -16,8 +16,9 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @subpackage shophandler_std_generateseats
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * STD_GENERATE_SEATS is a standard shop product action handler that create product instances standing
@@ -40,13 +41,29 @@ use local_shop\Shop;
 use local_shop\Bill;
 use local_shop\Customer;
 
+/**
+ * STD_GENERATE_SEATS is a standard shop product action handler that create product instances standing
+ * for unassigned seats (defered to future choice enrolments). These products belong to the customer and
+ * he will be able to "burn" those products later assigning people he has on his behalf.
+ */
 class shop_handler_std_generateseats extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_generateseats'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_prepay(&$data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params and prepare customer support action.
@@ -60,6 +77,13 @@ class shop_handler_std_generateseats extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB;
 
@@ -68,15 +92,19 @@ class shop_handler_std_generateseats extends shop_handler {
         $productionfeedback->private = '';
         $productionfeedback->salesadmin = '';
 
-        $enabledcourses = array();
+        $enabledcourses = [];
 
         if (!empty($data->actionparams['supervisor'])) {
-            if (!$DB->get_record('role', array('shortname' => $data->actionparams['supervisor']))) {
-                shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : Supervisor role defined but not in database. Using teacher as default.");
+            if (!$DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
+                $mess = "[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : ";
+                $mess .= "Supervisor role defined but not in database. Using teacher as default.";
+                shop_trace($mess);
                 $data->actionparams['supervisor'] = 'teacher';
             }
         } else {
-            shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : Supervisor role not defined. Using teacher as default.");
+            $mess = "[{$data->transactionid}] STD_GENERATE_SEATS Postpay Warning : ";
+            $mess .= "Supervisor role not defined. Using teacher as default.";
+            shop_trace($mess);
             $data->actionparams['supervisor'] = 'teacher';
         }
 
@@ -87,7 +115,9 @@ class shop_handler_std_generateseats extends shop_handler {
             $coursepatterns = explode(',', $data->actionparams['courselist']);
 
             foreach ($coursepatterns as $cn) {
-                if ($allowedcourses = $DB->get_records_select('course', $DB->sql_like('shortname', ':shortname'), array('shortname' => $cn), 'shortname', 'id,shortname')) {
+                $params = ['shortname' => $cn];
+                $select = $DB->sql_like('shortname', ':shortname');
+                if ($allowedcourses = $DB->get_records_select('course', $select, $params, 'shortname', 'id,shortname')) {
                     foreach ($allowedcourses as $c) {
                         $enabledcourses[$c->shortname] = 1;
                     }
@@ -100,12 +130,12 @@ class shop_handler_std_generateseats extends shop_handler {
         }
 
         if ($customer = new Customer($customerid)) {
-            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+            $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
             if (!$customeruser) {
-                throw new \Exception("Customer user with id {$customer->hasaccount} not found on postpay ");
+                throw new moodle_exception("Customer user with id {$customer->hasaccount} not found on postpay ");
             }
         } else {
-            throw new \Exception("Customer record not found on postpay ");
+            throw new moodle_exception("Customer record not found on postpay ");
         }
 
         /*
@@ -128,11 +158,11 @@ class shop_handler_std_generateseats extends shop_handler {
         for ($i = 0 ; $i < $data->quantity * $data->actionparams['packsize'] ; $i++) {
             $product = new StdClass();
             $product->catalogitemid = $data->catalogitem->id;
-            $product->initialbillitemid = $data->id; // Data is a billitem
-            $product->currentbillitemid = $data->id; // Data is a billitem
+            $product->initialbillitemid = $data->id; // Data is a billitem.
+            $product->currentbillitemid = $data->id; // Data is a billitem.
             $product->customerid = $data->bill->customerid;
             $product->contexttype = 'userenrol';
-            $product->instanceid = ''; // will match a user_enrolment record when attributed
+            $product->instanceid = ''; // Will match a user_enrolment record when attributed.
             $product->startdate = time();
             $product->enddate = '';
             $product->extradata = '';
@@ -164,8 +194,8 @@ class shop_handler_std_generateseats extends shop_handler {
             shop_trace("[{$data->transactionid}] STD_GENERATE_SEATS Postpay : Registering Customer Support");
             shop_register_customer_support($data->actionparams['customersupport'], $customeruser, $data->transactionid);
 
-            $supportid = $DB->get_field('course', 'id', array('shortname' => $data->actionparams['customersupport']));
-            $e->customersupporturl = new moodle_url('/course/view.php', array('id' => $supportid));
+            $supportid = $DB->get_field('course', 'id', ['shortname' => $data->actionparams['customersupport']]);
+            $e->customersupporturl = new moodle_url('/course/view.php', ['id' => $supportid]);
 
             $productionfeedback->public = get_string('productiondata_created_public', 'shophandlers_std_generateseats', $e);
             $productionfeedback->private = get_string('productiondata_created_private', 'shophandlers_std_generateseats', $e);
@@ -185,9 +215,12 @@ class shop_handler_std_generateseats extends shop_handler {
     }
 
     /**
-    * unit tests check input conditions from product setup without doing anything, collects input errors and warnings
-    *
-    */
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
@@ -201,7 +234,8 @@ class shop_handler_std_generateseats extends shop_handler {
             $courselist = explode(',', $data->actionparams['courselist']);
             $hascourses = false;
             foreach ($courselist as $cn) {
-                if ($courses = $DB->get_records_select('course', $DB->sql_like('shortname', ':shortname'), array('shortname' => $cn))) {
+                $select = $DB->sql_like('shortname', ':shortname');
+                if ($courses = $DB->get_records_select('course', $select, ['shortname' => $cn])) {
                     $hascourses = true;
                 }
             }
@@ -215,7 +249,7 @@ class shop_handler_std_generateseats extends shop_handler {
             $data->actionparams['supervisor'] = 'teacher';
         }
 
-        if (!$role = $DB->get_record('role', array('shortname' => $data->actionparams['supervisor']))) {
+        if (!$role = $DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
             $errors[$data->code][] = get_string('errorsupervisorrole', 'shophandlers_std_generateseats');
         }
 
@@ -234,13 +268,13 @@ class shop_handler_std_generateseats extends shop_handler {
         global $CFG, $COURSE, $DB, $OUTPUT;
 
         $str = '';
-        $options = array('class' => 'form-submit');
-        if ($assignedenrol = $DB->get_field('local_shop_product', 'instanceid', array('id' => $pid))) {
+        $options = ['class' => 'form-submit'];
+        if ($assignedenrol = $DB->get_field('local_shop_product', 'instanceid', ['id' => $pid])) {
 
-            $ue = $DB->get_record('user_enrolments', array('id' => $assignedenrol));
-            $enrol = $DB->get_record('enrol', array('id' => $ue->enrolid));
-            $userenrolled = $DB->get_record('user', array('id' => $ue->userid));
-            $courseenrolled = $DB->get_record('course', array('id' => $enrol->courseid));
+            $ue = $DB->get_record('user_enrolments', ['id' => $assignedenrol]);
+            $enrol = $DB->get_record('enrol', ['id' => $ue->enrolid]);
+            $userenrolled = $DB->get_record('user', ['id' => $ue->userid]);
+            $courseenrolled = $DB->get_record('course', ['id' => $enrol->courseid]);
 
             $str .= $OUTPUT->box_start();
             $str .= get_string('assignedto', 'shophandlers_std_generateseats', fullname($userenrolled));
@@ -248,62 +282,52 @@ class shop_handler_std_generateseats extends shop_handler {
             $str .= get_string('incourse', 'shophandlers_std_generateseats', $courseenrolled);
             $str .= $OUTPUT->box_end();
 
-            // TODO : This wll have to be adapted for 2.7
-            if ($DB->count_records('log', array('userid' => $ue->userid, 'course' => $enrol->courseid))) {
+            if ($DB->count_records('log', ['userid' => $ue->userid, 'course' => $enrol->courseid])) {
                 $str .= get_string('assignseatlocked', 'shophandlers_std_generateseats');
             } else {
-                $url = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $COURSE->id, 'pid' => $pid, 'method' => 'unassignseat'));
+                $params = ['id' => $COURSE->id, 'pid' => $pid, 'method' => 'unassignseat'];
+                $url = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
                 $str .= $OUTPUT->single_button($url, get_string('unassignseat', 'shophandlers_std_generateseats'), 'post', $options);
             }
         } else {
-            $url = new moodle_url('/local/shop/datahandling/postproduction.php', array('id' => $COURSE->id, 'pid' => $pid, 'method' => 'assignseat'));
+            $params = ['id' => $COURSE->id, 'pid' => $pid, 'method' => 'assignseat'];
+            $url = new moodle_url('/local/shop/datahandling/postproduction.php', $params);
             $str .= $OUTPUT->single_button($url, get_string('assignseat', 'shophandlers_std_generateseats'), 'post', $options);
         }
         return $str;
     }
 
     /**
+     * Post produces assigned seats
+     *
      * @param object $product a Product instance
      * @param object $productioninfo a data aggregate with production contextual data
      */
     public function postprod_assignseat(Product &$product, &$productioninfo) {
         global $COURSE, $CFG, $OUTPUT, $DB, $USER, $SITE;
 
-        require_once 'assign_seat_form.php';
-
-        /*
-        // Donot reject empty courselist
-        if (empty($productioninfo->enabledcourses)) {
-            echo $OUTPUT->header();
-            echo $OUTPUT->box(get_string('errornoallowedcourses', 'shophandlers_std_generateseats'));
-
-            echo '<center><br/>';
-            echo $OUTPUT->single_button(new moodle_url('/course/view.php', array('id' => $COURSE->id)), get_string('backtocourse', 'shophandlers_std_generateseats'), 'get');
-            echo '<br/><center>';
-            echo $OUTPUT->footer();
-            die;
-        }
-        */
+        include_once($CFG->dirroot.'/local/shop/datahandling/handlers/std_generateseats/assign_seat_form.php');
 
         $coursenames = explode(',', urldecode($productioninfo->enabledcourses));
-        $supervisorrole = $DB->get_record('role', array('shortname' => $productioninfo->supervisor));
-        $allowedcourses = array();
+        $supervisorrole = $DB->get_record('role', ['shortname' => $productioninfo->supervisor]);
+        $allowedcourses = [];
         if (!empty($coursenames)) {
             foreach ($coursenames as $cn) {
-                if ($valid_courses = $DB->get_records_select('course', $DB->sql_like('shortname', ':shortname'), array('shortname' => $cn))) {
+                $select = $DB->sql_like('shortname', ':shortname');
+                if ($valid_courses = $DB->get_records_select('course', $select, ['shortname' => $cn])) {
                     foreach ($valid_courses as $c) {
                         $allowedcourses[$c->id] = $c;
                     }
                 }
             }
         } else {
-            $allowedcourses = $DB->get_records('course', array(), 'fullname');
+            $allowedcourses = $DB->get_records('course', [], 'fullname');
         }
 
-        $mform = new AssignSeatForm($productioninfo->url, array('allowedcourses' => $allowedcourses));
+        $mform = new AssignSeatForm($productioninfo->url, ['allowedcourses' => $allowedcourses]);
 
         if ($mform->is_cancelled()) {
-            redirect(new moodle_url('/course/view.php', array('id' => $COURSE->id)));
+            redirect(new moodle_url('/course/view.php', ['id' => $COURSE->id]));
         }
 
         if ($data = $mform->get_data()) {
@@ -313,7 +337,8 @@ class shop_handler_std_generateseats extends shop_handler {
 
             echo $OUTPUT->header();
             echo $ret;
-            echo $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$COURSE->id), get_string('backtocourse', 'shophandlers_std_generateseats'));
+            $label = get_string('backtocourse', 'shophandlers_std_generateseats');
+            echo $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$COURSE->id), $label);
             echo $OUTPUT->footer();
             die;
         }
@@ -331,6 +356,11 @@ class shop_handler_std_generateseats extends shop_handler {
         die;
     }
 
+    /**
+     * Postproduction worker for each seat.
+     * @param objet $data
+     * @param Product ref &$product
+     */
     public function postprod_assignseat_worker($data, Product &$product) {
         global $OUTPUT, $DB, $SITE, $USER;
 
@@ -345,17 +375,18 @@ class shop_handler_std_generateseats extends shop_handler {
         $endtime = 0;
 
         // Get target course
-        $course = $DB->get_record('course', array('id' => $data->courseid));
+        $course = $DB->get_record('course', ['id' => $data->courseid]);
         $coursecontext = context_course::instance($data->courseid);
 
         // get bill information
-        $billid = $DB->get_field('local_shop_billitem', 'billid', array('id' => $product->currentbillitemid));
+        $billid = $DB->get_field('local_shop_billitem', 'billid', ['id' => $product->currentbillitemid]);
         $bill = new Bill($billid);
         $billnumber = 'B'.sprintf('%010d', $bill->ordering);
 
         $enrolname = 'manual';
 
-        if ($enrols = $DB->get_records('enrol', array('enrol' => $enrolname, 'courseid' => $data->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+        $params = ['enrol' => $enrolname, 'courseid' => $data->courseid, 'status' => ENROL_INSTANCE_ENABLED];
+        if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
             $enrolplugin = enrol_get_plugin($enrolname); // the enrol object instance
         }
@@ -380,7 +411,7 @@ class shop_handler_std_generateseats extends shop_handler {
                 $mailtitle = get_string('seatassigned_title', 'shophandlers_std_generateseats', $SITE->fullname);
                 $a = new StdClass();
                 $a->course = $course->fullname;
-                $a->url = new moodle_url('/course/view.php', array('id' => $course->id));
+                $a->url = new moodle_url('/course/view.php', ['id' => $course->id]);
                 $mailcontent = get_string('seatassigned_mail', 'shophandlers_std_generateseats', $a);
                 email_to_user($usertoenrol, $USER, $mailtitle, $mailcontent);
             }
@@ -391,7 +422,7 @@ class shop_handler_std_generateseats extends shop_handler {
             }
 
             // Check course has a group for the bill.
-            if (!$group = $DB->get_record('groups', array('courseid' => $course->id, 'name' => $billnumber))) {
+            if (!$group = $DB->get_record('groups', ['courseid' => $course->id, 'name' => $billnumber])) {
                 $group = new StdClass();
                 $group->courseid = $course->id;
                 $group->name = $billnumber;
@@ -402,7 +433,7 @@ class shop_handler_std_generateseats extends shop_handler {
                 $group->id = $DB->insert_record('groups', $group);
 
                 // Invalidate the grouping cache for the course.
-                cache_helper::invalidate_by_definition('core', 'groupdata', array(), array($course->id));
+                cache_helper::invalidate_by_definition('core', 'groupdata', [], [$course->id]);
             }
 
             // Put both users in group.
@@ -410,7 +441,7 @@ class shop_handler_std_generateseats extends shop_handler {
             groups_add_member($group->id, $USER->id);
 
             // Mark product with enrolment instance.
-            $ue = $DB->get_record('user_enrolments', array('enrolid' => $enrol->id, 'userid' => $usertoenrol->id));
+            $ue = $DB->get_record('user_enrolments', ['enrolid' => $enrol->id, 'userid' => $usertoenrol->id]);
             $product->instanceid = $ue->id;
             $product->startdate = time();
             $product->save();
@@ -422,34 +453,41 @@ class shop_handler_std_generateseats extends shop_handler {
         return $ret;
     }
 
+    /**
+     * Post production : unassign assigned seats
+     * @param Product ref &$product
+     * @param object production info &$productioninfo
+     */
     public function postprod_unassignseat(&$product, &$productioninfo) {
         global $COURSE, $CFG, $OUTPUT, $DB, $USER;
 
         $enrolname = 'manual';
 
-        if (!$ueinstance = $DB->get_record('user_enrolments', array('id' => $product->instanceid))) {
+        if (!$ueinstance = $DB->get_record('user_enrolments', ['id' => $product->instanceid])) {
             echo $OUTPUT->header();
-            echo $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$COURSE->id), get_string('backtocourse', 'shophandlers_std_generateseats'));
+            $label = get_string('backtocourse', 'shophandlers_std_generateseats');
+            echo $OUTPUT->single_button(new moodle_url('/course/view.php?id='.$COURSE->id), $label);
             echo $OUTPUT->footer();
             die;
         }
-        $enrol = $DB->get_record('enrol', array('id' => $ueinstance->enrolid));
+        $enrol = $DB->get_record('enrol', ['id' => $ueinstance->enrolid]);
 
         // Unenrol user if still exists.
-        if ($enrols = $DB->get_records('enrol', array('enrol' => $enrolname, 'courseid' => $enrol->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder ASC')) {
+        $params = ['enrol' => $enrolname, 'courseid' => $enrol->courseid, 'status' => ENROL_INSTANCE_ENABLED];
+        if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
             $enrol = reset($enrols);
             $enrolplugin = enrol_get_plugin($enrolname); // the enrol object instance
             $enrolplugin->unenrol_user($enrol, $ueinstance->userid);
         }
 
         // Get bill information.
-        $billid = $DB->get_field('local_shop_billitem', 'billid', array('id' => $product->currentbillitemid));
+        $billid = $DB->get_field('local_shop_billitem', 'billid', ['id' => $product->currentbillitemid]);
         $bill = $DB->get_record('local_shop_bill', array('id' => $billid));
         $billnumber = 'B'.sprintf('%010d', $bill->ordering);
 
         // Remove group marking for the product.
-        if ($group = $DB->get_record('groups', array('courseid' => $enrol->courseid, 'name' => $billnumber))) {
-            $DB->delete_records('groups_members', array('userid' => $ueinstance->userid, 'groupid' => $group->id));
+        if ($group = $DB->get_record('groups', ['courseid' => $enrol->courseid, 'name' => $billnumber])) {
+            $DB->delete_records('groups_members', ['userid' => $ueinstance->userid, 'groupid' => $group->id]);
         }
 
         // Release product instance.
@@ -459,10 +497,15 @@ class shop_handler_std_generateseats extends shop_handler {
         echo $OUTPUT->header();
         echo $OUTPUT->notification(get_string('seatreleased', 'shophandlers_std_generateseats'));
         $label = get_string('backtocourse', 'shophandlers_std_generateseats');
-        echo $OUTPUT->single_button(new moodle_url('/course/view.php', array('id' => $COURSE->id)), $label);
+        echo $OUTPUT->single_button(new moodle_url('/course/view.php', ['id' => $COURSE->id]), $label);
         echo $OUTPUT->footer();
     }
 
+    /**
+     * Display some info about the product
+     * @param int $pid
+     * @param object $pinfos
+     */
     public function display_product_infos($pid, $pinfos) {
         global $DB;
 

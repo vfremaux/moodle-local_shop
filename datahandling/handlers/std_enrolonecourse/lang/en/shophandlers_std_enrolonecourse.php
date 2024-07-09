@@ -14,10 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file
+ *
+ * @package   local_shop
+ * @subpackage shophandlers
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std EnroloneCourse does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std EnroloneCourse does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'One course enrolment';
 $string['pluginname'] = 'One course enrolment';
@@ -26,13 +37,14 @@ $string['errornocourse'] = 'No target course for product';
 $string['errorcoursenotexists'] = 'Course {$a} does not exist';
 $string['errorrole'] = 'Enrolment role {$a} does not exist';
 $string['warningroledefaultstoteacher'] = 'Enrolment role not defined. "Student" is used.';
-$string['warninggrouptobecreated'] = 'The group name {$a} does not exist in target course and will be created on first transaction.';
+$string['warninggrouptobecreated'] = 'The group name {$a} does not exist in target course and will be created on first
+ transaction.';
 
 $string['productiondata_public'] = '
-<p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate login information.</p>
-<p>If you made an online payment, your purchased products will be processed on automatic return of your payment order.
-You will be able to connect at once and get to your training volumes. On the other hand will our commercial service
-validate your purchase on payment confirmation.</p>
+<p>Your user account has been open on the site. A mail has been sent to your given mailbox. You will find appropriate
+ login information.</p><p>If you made an online payment, your purchased products will be processed on automatic return
+ of your payment order. You will be able to connect at once and get to your training volumes. On the other hand will
+ our commercial service validate your purchase on payment confirmation.</p>
 <p><a href="'.$CFG->wwwroot.'/login/index.php">Browse to the site entrance</a></p>
 ';
 

@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main handler class
+ *
  * @package   local_shop
- * @category  local
  * @subpackage shophandlers
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * STD_CREATE_VINSTANCE is a standard shop product action handler that can deply a full Virtualized
@@ -35,18 +37,34 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 Use local_shop\Product;
 Use local_shop\Shop;
 
+/**
+ * STD_CREATE_VINSTANCE is a standard shop product action handler that can deply a full Virtualized
+ * Moodle instance in the domaine scope.
+ */
 class shop_handler_std_createvinstance extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_createvinstance'; // For unit test reporting.
         parent::__construct($label);
     }
 
+    /**
+     * Validates data required frm the user when ordering.
+     * @param string $itemname
+     * @param string $fieldname
+     * @param object $instance
+     * @param mixed $value
+     * @param arrayref &$errors
+     */
     public function validate_required_data($itemname, $fieldname, $instance, $value, &$errors) {
         global $DB;
 
         if ($fieldname == 'shortname') {
-            if ($DB->record_exists('block_vmoodle', array('shortname' => $value))) {
+            if ($DB->record_exists('block_vmoodle', ['shortname' => $value])) {
                 $err = get_string('errorhostnameexists', 'shophanlders_createvinstance', $value);
                 $errors[$itemname][$fieldname][$instance] = $err;
                 return false;
@@ -55,6 +73,13 @@ class shop_handler_std_createvinstance extends shop_handler {
         return true;
     }
 
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_prepay(&$data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
@@ -68,6 +93,13 @@ class shop_handler_std_createvinstance extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $CFG, $DB;
 
@@ -166,15 +198,15 @@ class shop_handler_std_createvinstance extends shop_handler {
              * We need overseed the issue of loosing the name of the master node in the deploied instance
              * TODO : this is a turnaround quick fix.
              */
-            if ($remote_vhost = $VDB->get_record('mnet_host', array('wwwroot' => $CFG->wwwroot))) {
+            if ($remote_vhost = $VDB->get_record('mnet_host', ['wwwroot' => $CFG->wwwroot])) {
                 global $SITE;
                 $remote_vhost->name = $SITE->fullname;
                 $VDB->update_record('mnet_host', $remote_vhost, 'id');
             }
 
             // Setup the customer as manager account.
-            $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+            $customer = $DB->get_record('local_shop_customer', ['id' => $data->get_customerid()]);
+            $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
 
             $manager = new StdClass();
             $manager->firstname = 'Manager';
@@ -247,6 +279,13 @@ class shop_handler_std_createvinstance extends shop_handler {
         return $productionfeedback;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
@@ -295,6 +334,10 @@ class shop_handler_std_createvinstance extends shop_handler {
         }
     }
 
+    /**
+     * cleans hostname
+     * @param string $str hostname
+     */
     protected function clean_hostname($str) {
         $str = str_replace(' ', '-', $str);
 

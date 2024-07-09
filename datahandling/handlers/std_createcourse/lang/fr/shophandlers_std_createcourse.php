@@ -17,7 +17,8 @@
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat CreateCourse ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat CreateCourse ne détient directement aucune donnée relative
+ aux utilisateurs.';
 
 $string['handlername'] = 'Création d\'un cours';
 $string['pluginname'] = 'Création d\'un cours';

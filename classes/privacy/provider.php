@@ -33,7 +33,6 @@ use core_privacy\local\request\helper as request_helper;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\transform;
 use context_system;
-use writer;
 use transform;
 
 /**

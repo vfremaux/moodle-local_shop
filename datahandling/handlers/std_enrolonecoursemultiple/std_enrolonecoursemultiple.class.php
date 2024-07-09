@@ -40,8 +40,8 @@ use local_shop\ProductEvent;
 use local_shop\Shop;
 
 /**
- * Shop handler main class.
- * this handler allows enrolling a user in several courses at a time.
+ * STD_ENROL_ONE_COURSE is a standard shop product action handler that enrols in one course setup in
+ * actiondata.
  */
 class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
