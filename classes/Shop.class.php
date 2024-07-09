@@ -230,7 +230,7 @@ class Shop extends ShopObject {
      * Deleting shop will not necesarily delete the attached catalogue
      * as some other shop instances may use it.
      */
-    public function delete() {
+    public function delete(): void {
         global $DB;
 
         // Delete all attached bills.
