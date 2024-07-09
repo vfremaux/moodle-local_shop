@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main handler class
+ *
  * @package   local_shop
  * @subpackage shophandler_std_generateseats
  * @author      Valery Fremaux <valery.fremaux@gmail.com>

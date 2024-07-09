@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * View all products
+ *
  * @package     local_shop
  * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -57,7 +59,7 @@ $products = array();
 
 $thecatalog->get_all_products_for_admin($products);
 
-$shopinstances = Shop::get_instances(array('catalogid' => $thecatalog->id));
+$shopinstances = Shop::get_instances(['catalogid' => $thecatalog->id]);
 $shopcount = 0 + count($shopinstances);
 if ($shopcount == 1) {
     $theshop = array_pop($shopinstances);
@@ -82,7 +84,7 @@ echo $OUTPUT->heading(get_string('catalogue', 'local_shop'));
 
 echo $renderer->catalog_header();
 
-$params = array('view' => 'viewAllProducts', 'id' => $theshop->id, 'catalogid' => $thecatalog->id);
+$params = ['view' => 'viewAllProducts', 'id' => $theshop->id, 'catalogid' => $thecatalog->id];
 $viewurl = new moodle_url('/local/shop/products/view.php', $params);
 echo $renderer->category_chooser($viewurl);
 
@@ -124,39 +126,6 @@ if (count(array_keys($products)) == 0) {
                 // Is a product set.
                 echo $renderer->set_admin_line($portlet, true);
             } else {
-                // CHANGE : Let bundle have their own pricing.
-                /*
-                // Is a product bundle.
-                // Update bundle price info.
-                $bundleprice = 0;
-                $bundlettcprice = 0;
-                if ($portlet->elements) {
-                    foreach (array_values($portlet->elements) as $element) {
-                        // Accumulate untaxed.
-                        $bundleprice += $element->price1;
-                        // Accumulate taxed after tax transform.
-                        $price = $element->price1;
-                        $element->TTCprice = shop_calculate_taxed($element->price1, $element->taxcode);
-                        $bundlettcprice += $element->TTCprice;
-                    }
-                } else {
-                    $bundleprice = 0;
-                    $bundlettcprice = 0;
-                }
-
-                /*
-                 * update bundle price in database for other applications. Note that only visible product entry
-                 * is updated.
-                 */
-                /*
-                $record = new StdClass;
-                $record->id = $portlet->id;
-                $record->price1 = $bundleprice;
-                $DB->update_record('local_shop_catalogitem', $record);
-
-                $portlet->price1 = $bundleprice;
-                $portlet->bundleTTCPrice = $bundlettcprice;
-                */
                 echo $renderer->bundle_admin_line($portlet);
             }
         }

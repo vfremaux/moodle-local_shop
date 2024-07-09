@@ -62,7 +62,7 @@ class catalog_controller {
      * @param array $data incoming parameters from form when directly available, otherwise the
      * function should get them from request
      * @param object $mform optionnaly the form that is receiving data.
-     * @TODO : revise the $mform presence.
+     * @todo : revise the $mform presence.
      */
     public function receive($cmd, $data = [], $mform = null) {
 

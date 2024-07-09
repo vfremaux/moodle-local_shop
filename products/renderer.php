@@ -16,7 +16,6 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,8 +33,14 @@ use local_shop\Tax;
 use local_shop\Category;
 use local_shop\CatalogItem;
 
+/**
+ * Renderer for catalog items management
+ */
 class shop_products_renderer extends local_shop_base_renderer {
 
+    /**
+     * Prints shop header
+     */
     public function shop_header() {
         global $SESSION;
         $theshop = new Shop($SESSION->shop->shopid);
@@ -47,6 +52,9 @@ class shop_products_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/products_shopheader', $template);
     }
 
+    /**
+     * Prints catalog header
+     */
     public function catalog_header() {
 
         $this->check_context();
@@ -64,8 +72,8 @@ class shop_products_renderer extends local_shop_base_renderer {
         }
 
         $template->description = format_string($this->thecatalog->description);
-        $template->shops = 0 + Shop::count(array('catalogid' => $this->thecatalog->id));
-        $shopinstances = Shop::get_instances(array('catalogid' => $this->thecatalog->id));
+        $template->shops = 0 + Shop::count(['catalogid' => $this->thecatalog->id]);
+        $shopinstances = Shop::get_instances(['catalogid' => $this->thecatalog->id]);
         foreach ($shopinstances as $s) {
             $shoptpl = new StdClass;
             $shoptpl->id = $s->id;
@@ -77,6 +85,9 @@ class shop_products_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/products_catalogheader', $template);
     }
 
+    /**
+     * Prints a backoffice admin line for a product
+     */
     public function product_admin_line($product) {
         global $OUTPUT;
 
@@ -91,7 +102,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             $template->helpshortnameicon = $this->output->help_icon('helpshortname', 'local_shop');
         } else {
             $template->header = false;
-            $template->pricelines = array();
+            $template->pricelines = [];
             $prices = $product->get_printable_prices();
             foreach ($prices as $key => $price) {
                 $pricelinetpl = new StdClass;
@@ -100,7 +111,7 @@ class shop_products_renderer extends local_shop_base_renderer {
                 $template->pricelines[] = $pricelinetpl;
             }
 
-            $taxedpricelines = array();
+            $taxedpricelines = [];
             $prices = $product->get_printable_prices(true);
             foreach ($prices as $key => $price) {
                 $pricelinetpl = new StdClass;
@@ -162,13 +173,23 @@ class shop_products_renderer extends local_shop_base_renderer {
             $cmds = '';
             if (!$this->thecatalog->isslave || (@$product->masterrecord == 0)) {
                 // We cannot edit master records ghosts from the slave catalog.
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'toset', 'itemid' => $product->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'toset',
+                    'itemid' => $product->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
                 $cmds .= '<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('toset', get_string('toset', 'local_shop'), 'local_shop').'</a> ';
 
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'tobundle', 'itemid' => $product->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'tobundle',
+                    'itemid' => $product->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
                 $cmds .= '<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('tobundle', get_string('tobundle', 'local_shop'), 'local_shop').'</a> ';
 
@@ -177,14 +198,24 @@ class shop_products_renderer extends local_shop_base_renderer {
                 $editurl = new moodle_url('/local/shop/products/edit_product.php', $params);
                 $cmds .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit')).'</a> ';
 
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'clone', 'itemid' => $product->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'clone',
+                    'itemid' => $product->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
                 $cmds .= '<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/copy', get_string('copy')).'</a> ';
 
                 $deletestr = get_string('deleteproduct', 'local_shop');
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'delete', 'itemid' => $product->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'delete',
+                    'itemid' => $product->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
                 $cmds .= '&nbsp;<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/delete', $deletestr).'</a>';
             }
@@ -194,22 +225,26 @@ class shop_products_renderer extends local_shop_base_renderer {
 
             if ($this->thecatalog->isslave) {
                 if ($product->masterrecord == 1) {
-                    $params = array('view' => 'viewAllProducts',
-                                    'shopid' => $shopid, 
-                                    'what' => 'makecopy',
-                                    'itemid' => $product->id,
-                                    'catalogid' => $this->thecatalog->id,
-                                     'categoryid' => $this->categoryid);
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid, 
+                        'what' => 'makecopy',
+                        'itemid' => $product->id,
+                        'catalogid' => $this->thecatalog->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
                     $pixicon = $OUTPUT->pix_icon('copy', $createlocalstr, 'local_shop');
                     $cmds .= '&nbsp;<a href="'.$cmdurl.'">'.$pixicon.'</a>';
                 } else {
-                    $params = array('view' => 'viewAllProducts',
-                                    'shopid' => $shopid, 
-                                    'what' => 'freecopy',
-                                    'itemid' => $product->id,
-                                    'catalogid' => $this->thecatalog->id,
-                                     'categoryid' => $this->categoryid);
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid, 
+                        'what' => 'freecopy',
+                        'itemid' => $product->id,
+                        'catalogid' => $this->thecatalog->id,
+                        'categoryid' => $this->categoryid
+                    ];
                     $cmdurl = new moodle_url('/local/shop/products/view.php', $params);
                     $pixicon = $OUTPUT->pix_icon('uncopy', $deletelocalversionstr, 'local_shop');
                     $cmds .= '&nbsp;<a href="'.$cmdurl.'">'.$pixicon.'</a>';
@@ -223,8 +258,9 @@ class shop_products_renderer extends local_shop_base_renderer {
 
     /**
      * Prints an administration line for a product set
+     * @param Set $set;
      */
-    public function set_admin_line($set) {
+    public function set_admin_line(Set $set) {
         global $OUTPUT;
 
         $this->check_context();
@@ -258,15 +294,25 @@ class shop_products_renderer extends local_shop_base_renderer {
             $cmds .= '<a href="'.$editseturl.'">'.$pixicon.'</a>';
 
             if ($hassubs) {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'unlink', 'itemid' => $set->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'unlink',
+                    'itemid' => $set->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $unlinkurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('unlinkcontent', 'local_shop');
                 $pixicon = $OUTPUT->pix_icon('unlink', $linklbl, 'local_shop');
                 $cmds .= '&nbsp;<a href="'.$unlinkurl.'">'.$pixicon.'</a>';
             } else {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'delete', 'itemid' => $set->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'delete',
+                    'itemid' => $set->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('delete');
                 $pixicon = $OUTPUT->pix_icon('t/delete', $linklbl, 'moodle');
@@ -276,15 +322,25 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         if ($this->thecatalog->isslave) {
             if ($set->masterrecord == 1) {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'makecopy', 'itemid' => $set->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'makecopy',
+                    'itemid' => $set->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('addoverride', 'local_shop');
                 $pixicon = $OUTPUT->pix_icon('copy', $linklbl, 'local_shop');
                 $cmds .= '&nbsp;<a href="'.$copyurl.'">'.$pixicon.'</a>';
             } else {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'freecopy', 'itemid' => $set->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'freecopy',
+                    'itemid' => $set->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $uncopyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('deleteoverride', 'local_shop');
                 $pixicon = $OUTPUT->pix_icon('uncopy', $linklbl, 'local_shop');
@@ -302,7 +358,11 @@ class shop_products_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/products_set_admin_line', $template);
     }
 
-    public function bundle_admin_line($bundle) {
+    /**
+     * Prints an admin line for a bundle
+     * @param CatalogItem $bundle
+     */
+    public function bundle_admin_line(CatalogItem $bundle) {
         global $OUTPUT;
 
         $this->check_context();
@@ -347,15 +407,25 @@ class shop_products_renderer extends local_shop_base_renderer {
             $cmds .= '<a href="'.$editurl.'">'.$pixicon.'</a>';
 
             if ($hassubs) {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'unlink', 'itemid' => $bundle->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'unlink',
+                    'itemid' => $bundle->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $viewurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('unlinkcontent', 'local_shop');
                 $pixicon = $OUTPUT->pix_icon('unlink', $linklbl, 'local_shop');
                 $cmds .= '&nbsp;<a href="'.$viewurl.'">'.$pixicon.'</a>';
             } else {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'delete', 'itemid' => $bundle->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'delete',
+                    'itemid' => $bundle->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $viewurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('deletebundle', 'local_shop');
                 $pixicon = $OUTPUT->pix_icon('i/delete', $linklbl, 'core');
@@ -365,15 +435,25 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         if ($this->thecatalog->isslave) {
             if ($bundle->masterrecord == 1) {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'makecopy', 'productid' => $bundle->id,
-                    'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'makecopy',
+                    'productid' => $bundle->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('addoverride', 'local_shop');
                 $pixicon = $OUTPUT->pix_icon('copy', $linklbl, 'local_shop');
                 $cmds .= '&nbsp;<a href="'.$copyurl.'">'.$pixicon.'</a>';
             } else {
-                $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'freecopy', 'productid' => $bundle->id,
-                        'categoryid' => $this->categoryid];
+                $params = [
+                    'view' => 'viewAllProducts',
+                    'shopid' => $shopid,
+                    'what' => 'freecopy',
+                    'productid' => $bundle->id,
+                    'categoryid' => $this->categoryid,
+                ];
                 $deletecopyurl = new moodle_url('/local/shop/products/view.php', $params);
                 $linklbl = get_string('deleteoverride', 'local_shop');
                 $pixicon = $OUTPUT->pix_icon('uncopy', $linklbl, 'local_shop');
@@ -393,9 +473,9 @@ class shop_products_renderer extends local_shop_base_renderer {
 
     /**
      * Prints the set subelements
-     * @param object $set a complete set structure.
+     * @param Set $set a complete set structure.
      */
-    public function set_admin_elements($set) {
+    public function set_admin_elements(Set $set) {
         global $OUTPUT;
 
         $table = $this->prepare_elements_table();
@@ -407,7 +487,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             } else {
                 $table->rowclasses[] = 'slaved';
             }
-            $row = array();
+            $row = [];
             $row[] = '<img class="thumb" src="'.$setelm->get_thumb_url().'" height="50">';
             $row[] = $setelm->code;
             $row[] = format_string($setelm->name);
@@ -426,22 +506,37 @@ class shop_products_renderer extends local_shop_base_renderer {
 
                 if (!$this->thecatalog->isslave) {
 
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'clone', 'itemid' => $setelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'clone',
+                        'itemid' => $setelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $pixicon = $OUTPUT->pix_icon('t/copy', get_string('copy'), 'moodle');
                     $commands .= '&nbsp;<a href="'.$copyurl.'">'.$pixicon.'</a>';
 
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'unlink', 'itemid' => $setelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'unlink',
+                        'itemid' => $setelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $unlinkurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('unlinkproduct', 'local_shop');
                     $pixicon = $OUTPUT->pix_icon('unlink', $linklbl, 'local_shop');
                     $commands .= '&nbsp;<a href="'.$unlinkurl.'">'.$pixicon.'</a>';
 
                     // Only real products can be unlinked or deleted or copied.
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'delete', 'items' => $setelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'delete',
+                        'items' => $setelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('delete');
                     $pixicon = $OUTPUT->pix_icon('t/delete', $linklbl, 'moodle');
@@ -452,16 +547,26 @@ class shop_products_renderer extends local_shop_base_renderer {
             if ($this->thecatalog->isslave) {
                 if ($setelm->masterrecord == 1) {
                     // If we do not have a local override, allow creating one.
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'makecopy', 'itemid' => $setelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'makecopy',
+                        'itemid' => $setelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('addoverride', 'local_shop');
                     $pixicon = $OUTPUT->pix_icon('copy', $linklbl, 'local_shop');
                     $commands .= '&nbsp;<a href="'.$copyurl.'"><img src="'.$pixicon.'</a>';
                 } else {
                     // If we do have an override, allow discarding it.
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'freecopy', 'itemid' => $setelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'freecopy',
+                        'itemid' => $setelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $uncopyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('deleteoverride', 'local_shop');
                     $pixicon = $OUTPUT->pix_icon('uncopy', $linklbl, 'local_shop');
@@ -480,9 +585,9 @@ class shop_products_renderer extends local_shop_base_renderer {
 
     /**
      * Prints subelements of a bundle.
-     * @param object $bundle a complete bundle structure.
+     * @param CatalogItem $bundle a complete bundle structure.
      */
-    public function bundle_admin_elements($bundle) {
+    public function bundle_admin_elements(CatalogItem $bundle) {
         global $OUTPUT;
 
         $table = $this->prepare_elements_table();
@@ -494,7 +599,7 @@ class shop_products_renderer extends local_shop_base_renderer {
             } else {
                 $table->rowclasses[] = 'slaved';
             }
-            $row = array();
+            $row = [];
             $row[] = '<img class="thumb" src="'.$bundleelm->get_thumb_url().'" height="50">';
             $row[] = $bundleelm->code;
             $row[] = $bundleelm->name;
@@ -519,15 +624,25 @@ class shop_products_renderer extends local_shop_base_renderer {
                     $commands .= '&nbsp;<a href="'.$copyurl.'">'.$pixicon.'</a> ';
 
                     // Only real products can be unlinked or deleted.
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'unlink', 'itemid' => $bundleelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'unlink',
+                        'itemid' => $bundleelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $unlinkurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('unlinkproduct', 'local_shop');
                     $pixicon = $OUTPUT->pix_icon('unlink', $linklbl, 'local_shop');
                     $commands .= '&nbsp;<a href="'.$unlinkurl.'">'.$pixicon.'</a>';
 
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'delete', 'itemid' => $bundleelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'delete',
+                        'itemid' => $bundleelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $deleteurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('delete');
                     $pixicon = $OUTPUT->pix_icon('t/delete', $linklbl, 'moodle');
@@ -537,15 +652,25 @@ class shop_products_renderer extends local_shop_base_renderer {
 
             if ($this->thecatalog->isslave) {
                 if ($bundleelm->masterrecord == 1) {
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'makecopy', 'itemid' => $bundleelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'makecopy',
+                        'itemid' => $bundleelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $copyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('addoverride', 'local_shop');
                     $pixicon = $OUTPUT->pix_icon('copy', $linklbl, 'local_shop');
                     $commands .= '&nbsp;<a href="'.$copyurl.'">'.$pixicon.'</a>';
                 } else {
-                    $params = ['view' => 'viewAllProducts', 'shopid' => $shopid, 'what' => 'freecopy', 'itemid' => $bundleelm->id,
-                            'categoryid' => $this->categoryid];
+                    $params = [
+                        'view' => 'viewAllProducts',
+                        'shopid' => $shopid,
+                        'what' => 'freecopy',
+                        'itemid' => $bundleelm->id,
+                        'categoryid' => $this->categoryid,
+                    ];
                     $deletecopyurl = new moodle_url('/local/shop/products/view.php', $params);
                     $linklbl = get_string('deleteoverride', 'local_shop');
                     $pixicon = $OUTPUT->pix_icon('uncopy', $linklbl, 'local_shop');
@@ -562,7 +687,11 @@ class shop_products_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function catlinks($thecatalog) {
+    /**
+     * Links to product categories
+     * @param Catalog $thecatalog
+     */
+    public function catlinks(Catalog $thecatalog) {
         global $OUTPUT, $SESSION;
 
         $this->check_context();
@@ -577,12 +706,12 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
 
-        $params = array('view' => 'viewAllCategories', 'shopid' => $this->theshop->id, 'catalogid' => $this->thecatalog->id);
+        $params = ['view' => 'viewAllCategories', 'shopid' => $this->theshop->id, 'catalogid' => $this->thecatalog->id];
         $template->catlinkurl = new moodle_url('/local/shop/products/category/view.php', $params);
 
-        if (Category::count(array('catalogid' => $thecatalog->id))) {
+        if (Category::count(['catalogid' => $thecatalog->id])) {
             $template->hascategories = true;
-            $params = array('id' => $this->theshop->id, 'categoryid' => $categoryid);
+            $params = ['id' => $this->theshop->id, 'categoryid' => $categoryid];
 
             if (local_shop_supports_feature() == 'pro' || CatalogItem::count(array()) < 10) {
                 $template->producturl = new moodle_url('/local/shop/products/edit_product.php', $params);
@@ -592,36 +721,39 @@ class shop_products_renderer extends local_shop_base_renderer {
                 $template->bundleurl = new moodle_url('/local/shop/products/edit_bundle.php', $params);
             }
 
-            $template->testurl = new moodle_url('/local/shop/unittests/index.php', array('id' => $this->theshop->id));
+            $template->testurl = new moodle_url('/local/shop/unittests/index.php', ['id' => $this->theshop->id]);
         }
 
-        $linkedshops = Shop::get_instances(array('catalogid' => $this->thecatalog->id), 'name');
+        $linkedshops = Shop::get_instances(['catalogid' => $this->thecatalog->id], 'name');
         if (count($linkedshops) == 1) {
             $template->hasonelinkedshop = true;
             $shop = array_shift($linkedshops);
-            $template->fronturl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'id' => $shop->id));
+            $template->fronturl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'id' => $shop->id]);
         } else {
             $template->hasseverallinkedshops = true;
-            $shopopts = array();
+            $shopopts = [];
             foreach ($linkedshops as $sh) {
                 $shopopts[$sh->id] = format_string($sh->name);
             }
-            $shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop'));
+            $shopurl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop']);
             $template->shopselect = $this->output->single_select($shopurl, 'id', $shopopts);
         }
 
         return $this->output->render_from_template('local_shop/products_catlinks', $template);
     }
 
+    /**
+     * Category chooser
+     */
     public function category_chooser($url) {
         global $OUTPUT, $SESSION;
 
         // In case it was not done before, but it might.
         $SESSION->shop->categoryid = $current = optional_param('categoryid', 0 + @$SESSION->shop->categoryid, PARAM_INT);
 
-        $categories = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => 0), 'sortorder');
+        $categories = Category::get_instances(['catalogid' => $this->thecatalog->id, 'parentid' => 0], 'sortorder');
 
-        $catoptions = array();
+        $catoptions = [];
         $this->feed_chooser($catoptions, $categories);
 
         if (count($categories) <= 1) {
@@ -630,17 +762,20 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
         $name = 'categoryid';
-        $params = array(0 => get_string('allcategories', 'local_shop'));
+        $params = [0 => get_string('allcategories', 'local_shop']);
         $categoryselect = $OUTPUT->single_select($url, $name, $catoptions, $current, $params);
         $template->categories = get_string('category', 'local_shop').' : '.$categoryselect;
 
         return $this->output->render_from_template('local_shop/products_category_chooser', $template);
     }
 
+    /**
+     * Feed chooser
+     */
     protected function feed_chooser(&$catoptions, $categories, $prefix = '') {
         foreach ($categories as $cat) {
             $catoptions[$cat->id] = $prefix.format_string($cat->name);
-            $subs = Category::get_instances(array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id), 'sortorder');
+            $subs = Category::get_instances(['catalogid' => $this->thecatalog->id, 'parentid' => $cat->id], 'sortorder');
             if ($subs) {
                 $prefixtmp = $prefix;
                 $prefix .= format_string($cat->name).'/';
@@ -650,6 +785,9 @@ class shop_products_renderer extends local_shop_base_renderer {
         }
     }
 
+    /**
+     * Print categories
+     */
     public function categories($categories) {
         $order = optional_param('order', 'sortorder', PARAM_ALPHA);
         $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
@@ -661,10 +799,10 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $table = new html_table();
         $table->class = 'generaltable';
-        $table->head = array("<b>$namestr</b>", "<b>$parentcatstr</b>", "<b>$catdescstr</b>", "<b>$prodcountstr</b>", '');
+        $table->head = ["<b>$namestr</b>", "<b>$parentcatstr</b>", "<b>$catdescstr</b>", "<b>$prodcountstr</b>", ''];
         $table->width = '100%';
-        $table->align = array('left', 'left', 'left', 'center', 'right');
-        $table->size = array('20%', '20%', '30%', '10%', '20%');
+        $table->align = ['left', 'left', 'left', 'center', 'right'];
+        $table->size = ['20%', '20%', '30%', '10%', '20%'];
 
         foreach ($categories as $cat) {
             $this->category_add_row($table, $cat, $order, $dir);
@@ -673,21 +811,28 @@ class shop_products_renderer extends local_shop_base_renderer {
         echo html_writer::table($table);
     }
 
+    /**
+     * Print the category add button
+     * @param objectref &$table
+     * @param Category $category
+     * @param string $order
+     * @param string $dir
+     */
     protected function category_add_row(&$table, $category, $order, $dir) {
         global $OUTPUT, $DB;
-        static $indentarr = array();
+        static $indentarr = [];
 
-        $subs = Category::get_instances(array('catalogid' => $this->thecatalog->id,
-                                              'parentid' => $category->id), "$order $dir");
+        $subs = Category::get_instances(['catalogid' => $this->thecatalog->id,
+                                              'parentid' => $category->id], "$order $dir");
 
-        $params = array('catalogid' => $this->thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
+        $params = ['catalogid' => $this->thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir];
         $url = new moodle_url('/local/shop/products/category/view.php', $params);
-        $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid);
+        $params = ['catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid];
         $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
 
         $indent = implode('', $indentarr);
 
-        $row = array();
+        $row = [];
 
         $class = (!$category->visible) ? 'shop-shadow' : '';
         $row[] = $indent.'<span class="'.$class.'">'.format_string($category->name).'</span>';
@@ -699,7 +844,7 @@ class shop_products_renderer extends local_shop_base_renderer {
                                                               $contextid, 'local_shop', 'categorydescription', $category->id);
         $row[] = format_text($category->description);
 
-        $row[] = $DB->count_records('local_shop_catalogitem', array('categoryid' => $category->id));
+        $row[] = $DB->count_records('local_shop_catalogitem', ['categoryid' => $category->id]);
 
         if ($category->visible) {
             $pixurl = \local_shop\compat::pix_url('t/hide', 'core');
@@ -709,17 +854,19 @@ class shop_products_renderer extends local_shop_base_renderer {
             $cmd = 'show';
         }
         $commands = "<a href=\"{$url}&amp;what=$cmd&amp;categoryid={$category->id}\"><img src=\"$pixurl\" /></a>";
-        $params = array('catalogid' => $this->thecatalog->id, 'categoryid' => $category->id, 'what' => 'updatecategory');
+        $params = ['catalogid' => $this->thecatalog->id, 'categoryid' => $category->id, 'what' => 'updatecategory'];
         $editurl = new moodle_url('/local/shop/products/category/edit_category.php', $params);
         $commands .= '&nbsp;<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 
         if (empty($subs)) {
-            $params = array('catalogid' => $this->thecatalog->id,
-                            'view' => 'viewAllCategories',
-                            'order' => $order,
-                            'dir' => $dir,
-                            'what' => 'delete',
-                            'categoryids[]' => $category->id);
+            $params = [
+                'catalogid' => $this->thecatalog->id,
+                'view' => 'viewAllCategories',
+                'order' => $order,
+                'dir' => $dir,
+                'what' => 'delete',
+                'categoryids[]' => $category->id,
+            ];
             $deleteurl = new moodle_url('/local/shop/products/category/view.php', $params);
             $commands .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
         }
@@ -745,6 +892,9 @@ class shop_products_renderer extends local_shop_base_renderer {
         }
     }
 
+    /**
+     * Prepare a table for elements
+     */
     protected function prepare_elements_table() {
         $codestr = get_string('code', 'local_shop');
         $namestr = get_string('name', 'local_shop');
@@ -753,25 +903,28 @@ class shop_products_renderer extends local_shop_base_renderer {
         $availabilitystr = get_string('availability', 'local_shop');
 
         $table = new html_table();
-        $table->head = array('',
-                             "<b>$codestr</b>",
-                             "<b>$namestr</b>",
-                             "<b>$pricestr</b>",
-                             "<b>$ttcstr</b>",
-                             "<b>$availabilitystr</b>",
-                             '');
+        $table->head = [
+            '',
+            "<b>$codestr</b>",
+            "<b>$namestr</b>",
+            "<b>$pricestr</b>",
+            "<b>$ttcstr</b>",
+            "<b>$availabilitystr</b>",
+            '',
+        ];
         $table->width = '100%';
-        $table->size = array('10%', '10%', '45%', '10%', '10%', '10%', '5%');
-        $table->align = array('left', 'left', 'left', 'right', 'right', 'center', 'right');
-        $table->colclasses = array('', '', '', '', '', '', 'shop-setcontrols');
+        $table->size = ['10%', '10%', '45%', '10%', '10%', '10%', '5%'];
+        $table->align = ['left', 'left', 'left', 'right', 'right', 'center', 'right'];
+        $table->colclasses = ['', '', '', '', '', '', 'shop-setcontrols'];
 
         return $table;
     }
 
     /**
-     * Prints detail of a product.
+     * Prints detail of a product (general function).
+     * @param CatalogItem $catalogitem
      */
-    public function catalogitem_details($catalogitem) {
+    public function catalogitem_details(CatalogItem $catalogitem) {
 
         $frontrenderer = shop_get_renderer('front');
         $frontrenderer->load_context($this->theshop, $this->thecatalog, $this->theblock);

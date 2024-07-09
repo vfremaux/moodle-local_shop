@@ -15,12 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edit a simple product
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/products/lib.php');
@@ -66,10 +67,10 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
+    $mform = new Product_Form($url, ['what' => 'edit', 'catalog' => $thecatalog]);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
+    $mform = new Product_Form($url, ['what' => 'add', 'catalog' => $thecatalog]);
 }
 
 if ($mform->is_cancelled()) {

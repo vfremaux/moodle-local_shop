@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edit a bundle
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -60,10 +62,10 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 if ($bundleid) {
     $bundle = new CatalogItem($bundleid);
     $itemcatalog = $bundle->get_catalog();
-    $mform = new Bundle_Form('', array('what' => 'edit', 'catalog' => $itemcatalog));
+    $mform = new Bundle_Form('', ['what' => 'edit', 'catalog' => $itemcatalog]);
 } else {
     $itemcatalog = $thecatalog;
-    $mform = new Bundle_Form('', array('what' => 'add', 'catalog' => $thecatalog));
+    $mform = new Bundle_Form('', ['what' => 'add', 'catalog' => $thecatalog]);
 }
 
 if ($mform->is_cancelled()) {
@@ -112,7 +114,7 @@ if ($data = $mform->get_data()) {
 
         // If bundle code as changed, we'd better recompute a new shortname.
         if (empty($data->shortname) ||
-                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
+                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', ['id' => $data->id]))) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
 
