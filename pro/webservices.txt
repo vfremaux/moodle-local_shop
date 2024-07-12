@@ -1,0 +1,96 @@
+
+
+L'implementation des web services de la boutique moodle permet à tout utilisateur autorisé une exploration
+complète des données de catalogue pour réaliser une publication exportée des produits.
+
+Entités exportées :
+- Shop : Instance de boutique
+- Catalog : Instance de catalogue principal attaché à la boutique
+- CatalogCategory : Catégorie de catalogue
+- CatalogItem : Un produit au catalogue, par id ou référence produit.
+- CatalogItems : Produits au catalogue, filtrables par état de publication, par type et par
+catégorie.
+
+Les données de prix seront fournies pour une quantité indiquée dans la requête de données.
+
+Toutes les données peuvent être fournies au formats Rest, Soap, ou XMLRPC.
+
+Toutes les données sont codées en UTF-8.
+
+Les URLs des éléments non textuels (plaquette pdf, images, vignettes) sont fournies sous forme d'une URL accessible
+soumise à contrôle d'accès. Ces éléments étant en général publics, ils sont en principe accessibles sans authentification
+particulière.
+
+Impact technique:
+=> Ecriture des Web Services.
+=> Ecriture et déroulement des test unitaires
+
+## Urls d'accès à l'ordre d'achat :
+
+La boutique fournira une URL d'accès sur son domaine propre, capable de : 
+- mettre en place le panier produit
+- acheminer directement le client vers la page de synthèse de commande (avant paiement).
+- capturer l'identité partenaire
+- identifier le demandeur et détecter si un compte local existe pour cet utilisateur
+
+## Mise en place du panier produit
+
+La boutique admet dans ses URLs publiques la prédéfinition du pannier en session temporaire d'achat. La technique
+consiste à ajouter dans les Urls d'entrée les couples <codeproduit>=<quant>.
+
+## Acheminement vers la synthèse de commande
+
+Un acheminement automatique vers la synthèse de commande (immédiatement avant paiement) est possible si :
+- les produits n'ont pas besoin de saisie de paramètres externes par l'acheteur (produits entièrement pré-configurés)
+- les produits n'ont pas besoin d'une configuration de bénéficiaires (achat pour compte propre) et le client
+est pré-authentifié). Si le client acheteur n'est pas préauthentifié, l'acheminement automatique ne pourra
+aller que jusqu'à la saisie de coordonnées.
+
+Impact technique:
+=> Verification, modification de la cinématique de vente.
+=> Mise en place d'un enchainement auto des contrôleurs de phase de vente (jusqu'à la phase atteignable).
+
+## Reconnaissance du partenaire :
+
+La boutique implémentera un attribut particulier de requête permettant de recevoir un PartnerID. Ce PartnerID sera stocké de manière
+transparente dans les métadonnées de données de facturation, et un filtre sera ajouté sur le backoffice pour filtrer les entrées
+par partenaire.
+
+Impact technique:
+=> Ajout champ de partenaire dans la table local_shop_bill
+=> Ajout du filtrage du facturier sur identité de partenaire
+
+## Certification de l'identité partenaire / Intégrité de vérification des résultats comptables :
+
+La donnée partenaire sera évaluée jusqu'au premier '_' trouvé dans l'identifiant de partenaire. Il est conseillé aux partenaires
+qui souhaitent certifier et garantir l'intégrité de leur identité de générer un code additionnel unique vérifiable par eux (un cryptoken)
+qui sera stocké dans le champ partenaire. La boutique devra pouvoir alors être en mesure de fournir un listing complet
+et vérifiable des entrées provenant du partenaire. Ce code doit être unique et sa méthode de génération ne DOIT PAS être
+connue de la boutique.
+
+format de clef de partenaire sécurisée :
+
+<partnerID>_<partnerUniqID>
+
+partnerID : Fourni par la boutique au partenaire
+partnerUniqID : Généré et vérifiable par le partenaire.
+
+Impact technique:
+=> Capture de l'info partenaire dans les Urls d'entrée de boutique
+
+## Identification éventuelle de l'acheteur :
+
+Un acheteur peut être identifié sur la base de son email. Email => acheteur unique est un rapprochement possible si
+l'adresse email est présente dans la base du LMS. L'identification ne vaut cependant pas pour authentification. Cependant,
+dans le contexte d'une arrivée "contresignée" par une clef partenaire valide, l'identification peut suffire pour
+authentification par tiers de confiance (le partenaire). Pour que ceci fonctionne, il sera nécessaire que les transations
+s'effectuent sous protocole HTTPS, pour garantir l'intégrité de la clef de partenaire. Dans ce scénario, et si la clef 
+partnenaire vaut pour authentification SSO déléguée, elle doit être pouvoir vérifiée par la boutique. Elle doit donc être
+enregistrée en backoffice par la boutique pour pouvoir être vérifiée lors de sa soumission dans une Url de panier
+d'achat.
+
+Impact technique :
+=> Ajout d'une table de partenaires : local_shop_partner(id, partnerkey, name).
+=> Back-office d'enregistrement de partenaires.
+=> Modification du circuit d'arrivée sur la boutique avec préauthentification automatique sur correspondance d'email
+(viser les achats ultérieurs d'un utilisateur acheminé une première fois)

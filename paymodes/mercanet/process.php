@@ -15,13 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Proces a request
+ *
  * @package    shoppaymodes_mercanet
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ *
+ * Get DATA param string from Mercanet API and redirect to shop.
  */
-
-// Get DATA param string from Mercanet API and redirect to shop.
 
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet.class.php');

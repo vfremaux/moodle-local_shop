@@ -1,0 +1,6 @@
+<?php
+/*   __________________________________________________
+    |              on 2.0.12              |
+    |__________________________________________________|
+*/
+ require "\x2e\56\x2f\x2e\x2e\57\56\56\x2f\x2e\x2e\x2f\x63\157\x6e\x66\x69\147\x2e\x70\150\160"; require_once $CFG->dirroot . "\x2f\154\157\143\141\x6c\x2f\x73\x68\x6f\x70\x2f\143\x6c\x61\x73\163\145\x73\x2f\x42\151\x6c\154\x2e\x63\x6c\x61\x73\x73\56\160\150\160"; require_once $CFG->dirroot . "\x2f\x6c\x6f\143\x61\154\57\163\150\157\x70\57\x70\x72\x6f\x2f\x70\144\x66\57\160\x64\x66\x62\x69\x6c\x6c\x6c\x69\142\56\x70\150\x70"; require_once $CFG->dirroot . "\57\154\x6f\x63\141\x6c\x2f\163\x68\157\160\x2f\x70\x72\157\57\x70\144\x66\57\160\x64\146\162\x65\156\144\145\162\145\162\163\56\160\x68\x70"; use local_shop\Bill; goto LtMA5; cUPlk: $KeASr = required_param("\x74\162\x61\156\x73\x69\x64", PARAM_TEXT); goto cxn3Z; LtMA5: $PAGE->set_context(context_system::instance()); goto cUPlk; cxn3Z: if (!empty($KeASr)) { goto nSzZS; } goto FPSVD; FPSVD: print_error("\x69\156\x76\x61\x6c\x69\x64\x61\x72\x67\165\155\x65\x6e\x74\x73"); goto OxvmA; Qrhdg: if (!empty($qQ0hv)) { goto KMaR8; } goto aTNkr; OxvmA: nSzZS: goto njevz; aTNkr: send_file_not_found(); goto KKw21; KKw21: KMaR8: goto gY4Z9; njevz: $qQ0hv = Bill::get_by_transaction($KeASr); goto Qrhdg; gY4Z9: local_shop_output_bill($qQ0hv);

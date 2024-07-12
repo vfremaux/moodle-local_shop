@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Lang file
+ *
+ * @package  shoppaymodes_paypal
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes Paypal does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Paypal does not directly store any personal data
+about any user.';
 
 $string['ipnfortest'] = 'Test the IPN backcall with this transaction';
 $string['enablepaypal'] = 'Paypal payment';
@@ -69,6 +72,7 @@ when done. Thank you again for your purchase.</p>
 
 global $CFG;
 $string['paypaltest_desc'] = '
-When using test mode, you will send all purchases to the Paypal sandbox. Paypal sandbox do NOT automate the IPN process (asynchronous return to merchant site) and
-you will have to simulate it using the Paypal IPN Simulator. The IPN end point of this site is : '.$CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php.
+When using test mode, you will send all purchases to the Paypal sandbox. Paypal sandbox do NOT automate the IPN process
+(asynchronous return to merchant site) and you will have to simulate it using the Paypal IPN Simulator. The IPN end point
+of this site is : '.$CFG->wwwroot.'/local/shop/paymodes/paypal/paypal_ipn.php.
 ';

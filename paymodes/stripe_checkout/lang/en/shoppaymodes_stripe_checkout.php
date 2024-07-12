@@ -15,15 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_shop
- * @subpackage shoppaymodes_stripe_checkout
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package shoppaymodes_stripe_checkout
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes StripeCheckout does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes StripeCheckout does not directly store any personal data 
+about any user.';
 
 $string['checkout'] = 'Pay now !';
 $string['configsecret'] = 'This is the secret code to authentify transmission';
@@ -65,4 +67,3 @@ when done. Thank you again for your purchase.</p>
 
 <p>In case the activation has not occured in the next 48 hours, contact our sales service <%%SUPPORT%%>.</p>
 ';
-

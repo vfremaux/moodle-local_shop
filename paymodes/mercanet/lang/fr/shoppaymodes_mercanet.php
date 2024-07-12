@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package    shoppaymodes_mercanet
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +30,8 @@ $string['card'] = 'Carte bleue';
 $string['configmercanetAPIurl'] = 'Cette Url est donnée par le support d\'Intégration Mercanet';
 $string['configmercanetcountry'] = 'Pays d\'usage';
 $string['configmercanetcurrencycode'] = 'Code devise Mercanet';
-$string['configmercanetmerchantid'] = 'Numéro de contrat marchand. Ce numéro est fourni lors de la souscription Mercanet.';
+$string['configmercanetmerchantid'] = 'Numéro de contrat marchand. Ce numéro est fourni lors de la souscription
+ Mercanet.';
 $string['configmercanetpathbin'] = 'Chemin physique des exécutables mercanet';
 $string['configmercanetprocessortype'] = 'Type de processeur pour l\'implémntation Linux';
 $string['configmercanetlogofilename'] = 'Nom du fichier de logo téléchargé sur la console de gestion Mercanet';
@@ -85,16 +88,17 @@ $string['pending_followup_text_tpl'] = '
 <p>Votre transaction a été acceptée chez le partenaire de paiement Mercanet. Votre commande sera automatiquement
 exécutée dès la réception de la notification d\'acceptation du réglement. Vous recevrez un dernier
 courriel d\'activation dès ce moment. Merci de votre achat.</p>
-<p>Au cas où l\'activation de votre achat n\'aurait pas eu lieu dans les prochaines 48 heures, contactez-nous pour vérifier votre situation.</p>
+<p>Au cas où l\'activation de votre achat n\'aurait pas eu lieu dans les prochaines 48 heures, contactez-nous pour vérifier
+votre situation.</p>
 ';
 
 $string['success_followup_text_tpl'] = '
-<p>... Votre paiement a été confirmé par notre service de paiement (Mercanet BNP). Nous avons procédé à la mise en oeuvre de vos produits.</p>
-<p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne trouvez pas de courriel dans votre boite de réception, 
-pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
-<p>Si vous éprouvez des difficultés d\'accès, n\'hésitez
-pas à contacter notre service commercial <%%SUPPORT%%>.</p>
+<p>... Votre paiement a été confirmé par notre service de paiement (Mercanet BNP). Nous avons procédé à la mise en oeuvre de
+vos produits.</p><p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne
+trouvez pas de courriel dans votre boite de réception, pensez à consulter votre boite de spam, et vos dossiers de
+"notifications".</p><p>Si vous éprouvez des difficultés d\'accès, n\'hésitez pas à contacter notre service commercial
+<%%SUPPORT%%>.</p>
 ';
 
-$string['door_transfer_text_tpl'] = 'Nous allons vous transférer sur l\'interface de paiement <b>sécurisée</b> de notre partenaire
-financier BNP Paribas. Cliquez sur le type de carte bancaire que vous allez utiliser pour le paiement.';
+$string['door_transfer_text_tpl'] = 'Nous allons vous transférer sur l\'interface de paiement <b>sécurisée</b> de notre
+partenaire financier BNP Paribas. Cliquez sur le type de carte bancaire que vous allez utiliser pour le paiement.';

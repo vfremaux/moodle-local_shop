@@ -16,25 +16,35 @@
 
 /**
  * @package    shoppaymodes_publicmandate
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
+use local_shop\Shop;
+use local_shop\Bill;
+
+/**
+ * Pay method for those cases where public organisations provide a mandate to pay with state funds.
+ */
 class shop_paymode_publicmandate extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $shop
+     */
+    public function __construct(Shop $shop) {
         parent::__construct('publicmandate', $shop);
     }
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$billdata
+     * @param Bill $billdata
      */
-    public function print_payment_portlet(&$billdata) {
+    public function print_payment_portlet(Bill $billdata) {
         $proc = 1;
 
         echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_publicmandate');
@@ -44,16 +54,21 @@ class shop_paymode_publicmandate extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$billdata
+     * @param Bill $billdata
      */
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info($billdata = null) {
         $proc = 1;
 
-        echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_publicmandate');
-        echo shop_compile_mail_template('print_procedure_text_invoice', array(
-            'PROC_ORDER' => $proc++), 'shoppaymodes_publicmandate');
+        echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', [], 'shoppaymodes_publicmandate');
+        $data = [
+            'PROC_ORDER' => $proc++,
+        ];
+        echo shop_compile_mail_template('print_procedure_text_invoice', $data, 'shoppaymodes_publicmandate');
     }
 
+    /**
+     * Print when payment is complete
+     */
     public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
@@ -62,6 +77,7 @@ class shop_paymode_publicmandate extends shop_paymode {
      * Processes a payment return.
      */
     public function process() {
+        assert(true);
     }
 
     /**
@@ -69,9 +85,14 @@ class shop_paymode_publicmandate extends shop_paymode {
      */
     public function process_ipn() {
         // No IPN for offline payment.
+        assert(true);
     }
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
+     */
     public function settings(&$settings) {
+            assert(true);
     }
 }

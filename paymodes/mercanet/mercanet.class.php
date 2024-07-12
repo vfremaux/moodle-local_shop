@@ -16,8 +16,8 @@
 
 /**
  * @package    shoppaymodes_mercanet
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -26,7 +26,8 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-Use \local_shop\Bill;
+Use local_shop\Bill;
+Use local_shop\Shop;
 
 // Response codes.
 
@@ -34,66 +35,86 @@ Use \local_shop\Bill;
  * Autorisation acceptée.
  */
 define('MRCNT_PAYMENT_ACCEPTED', '00');
+
 /*
  * Demande d’autorisation par téléphone à la banque à cause d’un dépassement du plafond
  * d’autorisation sur la carte, si vous êtes autorisé à forcer les transactions. (cf. Annexe L)
  * Dans le cas contraire, vous obtiendrez un code 05.
  */
 define('MRCNT_MAX_LIMIT_REACHED', '02');
+
 /*
  * Champ merchant_id invalide, vérifier la valeur renseignée dans la requête. 
  * Contrat de vente à distance inexistant, contacter votre banque.
  */
 define('MRCNT_INVALID_MERCHANT', '03');
+
 /*
  * Autorisation refusée.
  */
 define('MRCNT_PAYMENT_REJECTED', '05');
+
 /*
  * Transaction invalide, vérifier les paramètres transférés dans la requête.
  */
 define('MRCNT_INVALID_TX', '12');
+
 /*
  * Annulation de l’internaute.
  */
 define('MRCNT_USER_CANCELLED', '17');
+
 /*
  * Annulation de l’internaute.
  */
 define('MRCNT_FORMAT_ERROR', '30');
+
 /*
  * Suspicion de fraude.
  */
 define('MRCNT_POSSIBLY_EVIL', '34');
+
 /*
  * Nombre de tentatives de saisie du numéro de carte dépassé.
  */
 define('MRCNT_MAX_TRIES', '75');
+
 /*
  * Service temporairement indisponible.
  */
 define('MRCNT_UNVAILABLE', '90');
 
+/**
+ * Pay by Mercanet
+ */
 class shop_paymode_mercanet extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct($shop) {
         parent::__construct('mercanet', $shop, true, true); // Overrides local confirm.
         $overridelocalconfirm = true;
     }
 
+    /**
+     * Is this method instant payment ?
+     */
     public function is_instant_payment() {
         return true;
     }
 
     /**
      * Prints a payment porlet in an order form.
+     * @param object $shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
+    public function print_payment_portlet($shoppingcart) {
         global $CFG, $USER;
 
         echo '<div id="shop-panel-caption">';
 
-        echo shop_compile_mail_template('door_transfer_text', array(), 'shoppaymodes_mercanet');
+        echo shop_compile_mail_template('door_transfer_text', [], 'shoppaymodes_mercanet');
 
         echo '</div>';
         echo '<div id="shop-panel-mercanet"><br />';
@@ -124,20 +145,24 @@ class shop_paymode_mercanet extends shop_paymode {
         echo '<center><p><span class="procedureOrdering"></span>';
         echo '<p><span class="shop-procedure-cancel">X</span> ';
         $cancelstr = get_string('cancel');
-        $cancelurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
+        $cancelurl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'shopid' => $this->theshop->id]);
         echo '<a href="'.$cancelurl.'" class="smalltext">'.$cancelstr.'</a>';
         echo '</div>';
     }
 
     /**
      * Prints a payment porlet in an order form
+     * @param Bill $billdata
      */
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info(Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_mercanet', $this->name);
     }
 
+    /**
+     * Print when payment is complete
+     */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**
@@ -164,7 +189,7 @@ class shop_paymode_mercanet extends shop_paymode {
          * do not cancel shopping cart, user may use another payment
          */
 
-        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
+        $redirecturl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'shopid' => $this->theshop->id]);
         redirect($redirecturl);
     }
 
@@ -215,7 +240,9 @@ class shop_paymode_mercanet extends shop_paymode {
             if ($afullbill->status == SHOP_BILL_PLACED) {
                 // processing bill changes
                 if ($paydata['response_code'] == MRCNT_PAYMENT_ACCEPTED) {
-                    $afullbill->onlinetransactionid = $paydata['merchant_id'].'-'.$paydata['transmission_date'].'-'.$paydata['transaction_id'];
+                    $afullbill->onlinetransactionid = $paydata['merchant_id'];
+                    $afullbill->onlinetransactionid .= '-'.$paydata['transmission_date'];
+                    $afullbill->onlinetransactionid .= '-'.$paydata['transaction_id'];
                     $afullbill->status = SHOP_BILL_PENDING;
                     $afullbill->save(true);
 
@@ -223,10 +250,12 @@ class shop_paymode_mercanet extends shop_paymode {
                     shop_trace("[$transid] Mercanet : Transaction Pending for IPN confirmation, transferring to success end point");
 
                     if (empty($this->_config->test)) {
-                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
+                        $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid];
+                        $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                         redirect($redirecturl);
                     } else {
-                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
+                        $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid];
+                        $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueaftersuccess', 'shoppaymodes_mercanet'));
                     }
                 } else if ($paydata['response_code'] == MRCNT_PAYMENT_REJECTED) {
@@ -235,10 +264,12 @@ class shop_paymode_mercanet extends shop_paymode {
 
                     // Do not erase shopping cart : user might try again with other payment mean.
                     if (empty($this->_config->test)) {
-                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                         redirect($redirecturl);
                     } else {
-                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueafterfailure', 'shoppaymodes_mercanet'));
                     }
                 } else {
@@ -248,20 +279,24 @@ class shop_paymode_mercanet extends shop_paymode {
                     // Do not erase shopping cart : user might try again with other payment mean.
 
                     if (empty($this->_config->test)) {
-                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                         redirect($redirecturl);
                     } else {
-                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueafterfailure', 'shoppaymodes_mercanet'));
                     }
                 }
             }
             if ($afullbill->status == SHOP_BILL_SOLDOUT) {
                 if (empty($this->_config->test)) {
-                    $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                    $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                     redirect($redirecturl);
                 } else {
-                    $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = ['view' => 'produce', 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                    $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                     echo $OUTPUT->continue_button($continueurl, get_string('continueaftersoldout', 'shoppaymodes_mercanet'));
                 }
             }
@@ -269,10 +304,12 @@ class shop_paymode_mercanet extends shop_paymode {
                 // All is done already. clear everything.
                 unset($SESSION->shoppingcart);
                 if (empty($this->_config->test)) {
-                    $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                    $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                     redirect($redirecturl);
                 } else {
-                    $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                    $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                     echo $OUTPUT->continue_button($continueurl, get_string('continueaftersoldout', 'shoppaymodes_mercanet'));
                 }
             }
@@ -309,7 +346,9 @@ class shop_paymode_mercanet extends shop_paymode {
             if ($afullbill->status == SHOP_BILL_PENDING || $afullbill->status == SHOP_BILL_PLACED) {
 
                 if ($paydata['response_code'] == MRCNT_PAYMENT_ACCEPTED) {
-                    $afullbill->onlinetransactionid = $paydata['merchant_id'].'-'.$paydata['transmission_date'].'-'.$paydata['transaction_id'];
+                    $afullbill->onlinetransactionid = $paydata['merchant_id'];
+                    $afullbill->onlinetransactionid .= '-'.$paydata['transmission_date'];
+                    $afullbill->onlinetransactionid .= '-'.$paydata['transaction_id'];
                     $afullbill->status = SHOP_BILL_SOLDOUT;
                     $afullbill->save(true);
 
@@ -363,6 +402,7 @@ class shop_paymode_mercanet extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
      */
     public function settings(&$settings) {
 
@@ -395,31 +435,33 @@ class shop_paymode_mercanet extends shop_paymode {
         $content = '<a href="'.$pathfileurl.'">'.get_string('makepathfile', 'shoppaymodes_mercanet').'</a>';
         $settings->add(new admin_setting_heading($key, '', $content));
 
-        $currencycodesoptions = array('978' => get_string('cur978', 'shoppaymodes_mercanet'),
-                                    '840' => get_string('cur840', 'shoppaymodes_mercanet'),
-                                    '756' => get_string('cur756', 'shoppaymodes_mercanet'),
-                                    '826' => get_string('cur826', 'shoppaymodes_mercanet'),
-                                    '124' => get_string('cur124', 'shoppaymodes_mercanet'),
-                                    // Yen 392 0 106 106.
-                                    // Peso Mexicain 484 2 106.55 10655.
-                                    '949' => get_string('cur949', 'shoppaymodes_mercanet'),
-                                    '036' => get_string('cur036', 'shoppaymodes_mercanet'),
-                                    '554' => get_string('cur554', 'shoppaymodes_mercanet'),
-                                    '578' => get_string('cur578', 'shoppaymodes_mercanet'),
-                                    '986' => get_string('cur986', 'shoppaymodes_mercanet'),
-                                    '032' => get_string('cur032', 'shoppaymodes_mercanet'),
-                                    '116' => get_string('cur116', 'shoppaymodes_mercanet'),
-                                    '901' => get_string('cur901', 'shoppaymodes_mercanet'),
-                                    '752' => get_string('cur752', 'shoppaymodes_mercanet'),
-                                    '208' => get_string('cur208', 'shoppaymodes_mercanet'),
-                                    '702' => get_string('cur702', 'shoppaymodes_mercanet'));
+        $currencycodesoptions = [
+            '978' => get_string('cur978', 'shoppaymodes_mercanet'),
+            '840' => get_string('cur840', 'shoppaymodes_mercanet'),
+            '756' => get_string('cur756', 'shoppaymodes_mercanet'),
+            '826' => get_string('cur826', 'shoppaymodes_mercanet'),
+            '124' => get_string('cur124', 'shoppaymodes_mercanet'),
+            // Yen 392 0 106 106.
+            // Peso Mexicain 484 2 106.55 10655.
+            '949' => get_string('cur949', 'shoppaymodes_mercanet'),
+            '036' => get_string('cur036', 'shoppaymodes_mercanet'),
+            '554' => get_string('cur554', 'shoppaymodes_mercanet'),
+            '578' => get_string('cur578', 'shoppaymodes_mercanet'),
+            '986' => get_string('cur986', 'shoppaymodes_mercanet'),
+            '032' => get_string('cur032', 'shoppaymodes_mercanet'),
+            '116' => get_string('cur116', 'shoppaymodes_mercanet'),
+            '901' => get_string('cur901', 'shoppaymodes_mercanet'),
+            '752' => get_string('cur752', 'shoppaymodes_mercanet'),
+            '208' => get_string('cur208', 'shoppaymodes_mercanet'),
+            '702' => get_string('cur702', 'shoppaymodes_mercanet'),
+        ];
 
         $key = 'local_shop/mercanet_currency_code';
         $label = get_string('mercanetcurrencycode', 'shoppaymodes_mercanet');
         $desc = get_string('configmercanetcurrencycode', 'shoppaymodes_mercanet');
         $settings->add(new admin_setting_configselect($key, $label, $desc, '', $currencycodesoptions));
 
-        $processoroptions = array('32' => '32 bits', '64' => '64 bits');
+        $processoroptions = ['32' => '32 bits', '64' => '64 bits'];
         $key = 'local_shop/mercanet_processor_type';
         $label = get_string('mercanetprocessortype', 'shoppaymodes_mercanet');
         $desc = get_string('configmercanetprocessortype', 'shoppaymodes_mercanet');
@@ -452,7 +494,7 @@ class shop_paymode_mercanet extends shop_paymode {
             $tmp = str_replace('<%%DEBUG%%>', $mercanetdebug, $tmp);
         }
 
-        $settingsurl = new moodle_url('/admin/settings.php', array('section' => 'localsettingshop'));
+        $settingsurl = new moodle_url('/admin/settings.php', ['section' => 'localsettingshop']);
         if ($PATHFILE = @fopen($pathfile, 'w')) {
             fputs($PATHFILE, $tmp);
             fclose($PATHFILE);
@@ -477,14 +519,20 @@ class shop_paymode_mercanet extends shop_paymode {
         }
         if ($os == 'linux') {
             $pluginpath = $CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet_615_PLUGIN_'.$os.$config->mercanet_processor_type;
-            return $pluginpath.'/param/pathfile';
+            $pluginpath .= '/param/pathfile';
+            return $pluginpath;
         } else {
-            return str_replace('/', "\\", $CFG->dirroot).'\\blocks\\shop\\paymodes\\mercanet\\mercanet_615_PLUGIN_'.$os.$config->mercanet_processor_type.'\\param\\pathfile';
+            $pluginpath = str_replace('/', "\\", $CFG->dirroot);
+            $pluginpath .= '\\blocks\\shop\\paymodes\\mercanet\\mercanet_615_PLUGIN_';
+            $pluginpath .= $os.$config->mercanet_processor_type;
+            $pluginpath .= '\\param\\pathfile';
+            return $path;
         }
     }
 
     /**
      * returns mercanet request form generator location
+     * @param string $os
      */
     protected function get_request_bin($os) {
         global $CFG;
@@ -493,12 +541,15 @@ class shop_paymode_mercanet extends shop_paymode {
 
         $exeextension = ($os == 'linux') ? '' : '.exe';
         $relpath = ($os == 'linux') ? 'static/' : '';
-        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet_615_PLUGIN_'.$os.$config->mercanet_processor_type;
-        return $pluginpath.'/bin/'.$relpath.'request'.$exeextension;
+        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet_615_PLUGIN_';
+        $pluginpath .= $os.$config->mercanet_processor_type;
+        $pluginpath .= '/bin/'.$relpath.'request'.$exeextension; 
+        return $pluginpath;
     }
 
     /**
      * returns mercanet request form response decoder
+     * @param string $os
      */
     protected function get_response_bin($os) {
         global $CFG;
@@ -507,8 +558,10 @@ class shop_paymode_mercanet extends shop_paymode {
 
         $exeextension = ($os == 'linux') ? '' : '.exe';
         $relpath = ($os == 'linux') ? 'static/' : '';
-        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet_615_PLUGIN_'.$os.$config->mercanet_processor_type;
-        return $pluginpath.'/bin/'.$relpath.'response'.$exeextension;
+        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet_615_PLUGIN_';
+        $pluginpath .= $os.$config->mercanet_processor_type;
+        $pluginpath .= '/bin/'.$relpath.'response'.$exeextension;
+        return $pluginpath;
     }
 
     /**
@@ -556,7 +609,7 @@ class shop_paymode_mercanet extends shop_paymode {
          * -> Windows : $path_bin = "c:/repertoire/bin/response";
          * -> Unix    : $path_bin = "/home/repertoire/bin/response";
          * $path_bin = $this->get_response_bin($os);
-         * Appel du binaire response
+         * Calling binary "response"
          */
         $path_bin = $this->get_response_bin($os);
         $message = escapeshellcmd($message);

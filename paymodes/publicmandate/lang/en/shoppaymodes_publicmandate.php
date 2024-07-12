@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     shoppaymodes_test
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package     shoppaymodes_publicmandate
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes PublicMandate does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes PublicMandate does not directly store any personal data
+ about any user.';
 
 $string['enablepublicmandate'] = 'Public mandate';
 $string['enablepublicmandate2'] = 'Public mandate';
@@ -31,7 +34,8 @@ $string['publicmandate'] = 'Public mandate';
 $string['pluginname'] = 'Public mandate paymode';
 
 $string['pay_instructions_tpl'] = '
-To confirm your order, you need provide the public mandate ID and upload the pdf copy of the public purchase mandate. Your products will be immediately activated.
+To confirm your order, you need provide the public mandate ID and upload the pdf copy of the public purchase mandate.
+Your products will be immediately activated.
 ';
 
 $string['pay_instructions_invoice_tpl'] = '
@@ -39,7 +43,8 @@ You have paied with a public purchase mandate.
 ';
 
 $string['print_procedure_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Please prepare the mandate ID you got from your administration and a digital version of the original purchase order.
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Please prepare the mandate ID you got from your
+administration and a digital version of the original purchase order.
 
 ';
 

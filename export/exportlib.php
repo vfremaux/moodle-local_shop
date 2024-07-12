@@ -16,11 +16,10 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 abstract class shop_export {
 
@@ -36,6 +35,12 @@ abstract class shop_export {
      */
     protected $options;
 
+    /**
+     * Constructor
+     * @param object $data
+     * @param array $datadesc
+     * @param array $options
+     */
     public function __construct($data, $datadesc, $options) {
 
         $this->filename = $datadesc[0]['filename'];
@@ -53,9 +58,18 @@ abstract class shop_export {
         }
     }
 
+    /**
+     * Open export storage.
+     */
     abstract public function open_export();
 
+    /**
+     * Render data in export.
+     */
     abstract public function render();
 
+    /**
+     * Render close export storage.
+     */
     abstract public function close_export();
 }

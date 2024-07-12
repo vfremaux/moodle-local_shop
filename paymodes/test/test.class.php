@@ -16,8 +16,8 @@
 
 /**
  * @package    shoppaymodes_test
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -25,7 +25,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-use \local_shop\Bill;
+use local_shop\Bill;
+use local_shop\Shop;
 
 /**
  * A generic class for making payment tests
@@ -33,11 +34,18 @@ use \local_shop\Bill;
  */
 class shop_paymode_test extends shop_paymode {
 
-    public function __construct(&$shopblockinstance) {
-        parent::__construct('test', $shopblockinstance, true, true);
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct(&$theshop) {
+        parent::__construct('test', $theshop, true, true);
     }
 
-    // Prints a payment porlet in an order form.
+    /**
+     * Prints a payment porlet in an order form.
+     * @param objectref &$shoppingcart
+     */
     public function print_payment_portlet(&$shoppingcart) {
 
         $shopurl = new moodle_url('/local/shop/front/view.php');
@@ -97,38 +105,48 @@ class shop_paymode_test extends shop_paymode {
         echo '</table>';
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_invoice_info(&$billdata = null) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    public function print_invoice_info($billdata = null) {
+        assert(true);
     }
 
+    /**
+     * Print when payment is completed
+     */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
-    // Processes a payment return.
-    public function process($afullbill = null) {
+    /**
+     * Processes a payment return.
+     * @param Bill ref &$billdata the processed bill. Bill attributes may change
+     */
+    public function process(&$billdata = null) {
         global $OUTPUT;
 
-        if (!$afullbill) {
+        if (!$billdata) {
             $delayed = optional_param('delayed', 0, PARAM_BOOL);
             $transid = required_param('transid', PARAM_TEXT);
         } else {
-            $transid = $afullbill->transactionid;
+            $transid = $billdata->transactionid;
             $delayed = @$afullbill->delayed;
         }
         shop_trace("[$transid]  Test Processing : paying");
 
         try {
-            $afullbill = Bill::get_by_transaction($transid);
+            $billdata = Bill::get_by_transaction($transid);
 
             if ($delayed) {
-                $afullbill->status = 'PENDING';
-                $afullbill->save(true);
+                $billdata->status = 'PENDING';
+                $billdata->save(true);
                 shop_trace("[$transid]  Test Interactive : Payment Success but waiting IPN for processing");
                 return false; // Has not yet payed.
             } else {
-                $afullbill->status = 'SOLDOUT';
-                $afullbill->save(true);
+                $billdata->status = 'SOLDOUT';
+                $billdata->save(true);
                 shop_trace("[$transid]  Test Interactive : Payment Success");
                 return true; // Has payed.
             }
@@ -138,11 +156,16 @@ class shop_paymode_test extends shop_paymode {
         }
     }
 
+    /**
+     * Is this method capable of instant payment ?
+     */
     public function is_instant_payment() {
         return true;
     }
 
-    // Processes a payment asynchronous confirmation.
+    /**
+     * Processes a payment asynchronous confirmation.
+     */
     public function process_ipn() {
         global $CFG, $OUTPUT;
 
@@ -160,7 +183,8 @@ class shop_paymode_test extends shop_paymode {
             $cmd = 'produce';
             include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
             $nullblock = null;
-            $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock, $afullbill, $ipncall, true);
+            $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock,
+                        $afullbill, $ipncall, true);
             $controller->process($cmd);
 
             mtrace("[$transid]  Test IPN : Payment Success, transferring to production controller");
@@ -179,7 +203,10 @@ class shop_paymode_test extends shop_paymode {
         }
     }
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
+     */
     public function settings(&$settings) {
         return false;
     }

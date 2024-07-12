@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     shoppaymodes_test
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package     shoppaymodes_systempay
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes SystemPay does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes SystemPay does not directly store any personal
+data about any user.';
 
 $string['configsystempaybankbrand'] = '';
 $string['configsystempaycountry'] = 'Country';
@@ -31,7 +34,8 @@ $string['configsystempaymerchantid'] = 'This is the ID of the merchant service p
 $string['configsystempayprodcertificate'] = 'The certificate key to encode production submissions';
 $string['configsystempayserviceurl'] = 'Url for Payment Transaction Server';
 $string['configsystempaytestcertificate'] = 'The certificate key to encode test submissions';
-$string['configsystempayusesecure'] = '3D Secure is an option to the merchant payment contract that will callback the customer for a confirmation code.';
+$string['configsystempayusesecure'] = '3D Secure is an option to the merchant payment contract that will callback the
+customer for a confirmation code.';
 $string['configsystempayuselocaltime'] = 'Use local time for transations, or UTC/GMT time if not checked.';
 $string['configsystempayalgorithm'] = 'Algorithm for signing VADS messages.';
 $string['enablesystempay'] = 'System Pay PLUS (Caisse d\'Epargne/Banque Populaire/Société Générale)';
@@ -55,9 +59,9 @@ $string['systempayalgorithm'] = 'Algorithm';
 
 $string['systempayinfo'] = '
 System Pay PLUS is a payment gateway developped by ATOS and has been adopted by several banks
-such as Société Générale and Banque Populaire in France. Its setup needs setting up crypted certificates and description files on the server
-that cannot be uploaded from the Web interface for security reasons. Please ask a Moodle Shop integrator to operate this setup for you and perform
-appropriate testing and service kick-off.
+such as Société Générale and Banque Populaire in France. Its setup needs setting up crypted certificates and description files
+on the server that cannot be uploaded from the Web interface for security reasons. Please ask a Moodle Shop integrator to operate
+this setup for you and perform appropriate testing and service kick-off.
 ';
 
 $string['pending_followup_text_tpl'] = '

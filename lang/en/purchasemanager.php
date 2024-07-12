@@ -76,8 +76,8 @@ $string['productending'] = 'Ending';
 $string['productpending'] = 'Pending to start';
 $string['productrunning'] = 'Running';
 $string['longtimeexpired'] = 'Moodle Shop {$a} : Long time (over a week) expired product instances';
-$string['longtimeexpired_mail'] = 'These product instances have expired for more than one week. 
-List of expired product instances (undeleted): 
+$string['longtimeexpired_mail'] = 'These product instances have expired for more than one week.
+List of expired product instances (undeleted):
 {$a->list}
 
 Check at {$a->url}.
@@ -90,7 +90,7 @@ List of expired product instances (undeleted):
 Check at <a href="{$a->url}">Purchase manager index</a>.
 ';
 $string['neartoexpire'] = 'Moodle Shop {$a} : Will expire in one week';
-$string['neartoexpire_mail'] = 'List of product instances: 
+$string['neartoexpire_mail'] = 'List of product instances:
 {$a->list}
 
 Check at {$a->url}.
@@ -101,7 +101,7 @@ $string['neartoexpire_html'] = 'List of product instances :<br/>
 Check at <a href="{$a->url}">Purchase manager index</a>.
 ';
 $string['justexpired'] = 'Moodle Shop {$a} : Just expried product instances';
-$string['justexpired_mail'] = 'List of product instances expired up to 3 days ago: 
+$string['justexpired_mail'] = 'List of product instances expired up to 3 days ago:
 {$a->list}
 
 Check at {$a->url}.

@@ -25,7 +25,7 @@
 namespace local_shop;
 
 use local_shop\Bill;
-s
+
 /**
  * A discount policy that triggers when the bill amount is reaching some threshold.
  */

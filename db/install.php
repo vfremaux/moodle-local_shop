@@ -22,10 +22,9 @@
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 /**
- * Post install function. 
+ * Post install function.
  */
 function xmldb_local_shop_install() {
     global $DB, $CFG;

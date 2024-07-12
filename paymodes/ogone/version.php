@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version details;
  * @package    shoppaymodes_paybox
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)

@@ -86,7 +86,7 @@ function shop_register_customer($data, &$errorstatus) {
         }
 
         if (empty($data->bill->customer->hasaccount)) {
-            // customer may have been created by a previous product in bill or in bundle.
+            // Customer may have been created by a previous product in bill or in bundle.
             if (!shop_create_customer_user($data, $data->bill->customer, $newuser)) {
                 $message = "[{$data->transactionid}] Prepay Commons Error :";
                 $message .= " User could not be created {$newuser->username}.";
@@ -166,7 +166,7 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
 }
 
 /**
- * This enrols a user account into the designated extra support courses as a student for the 
+ * This enrols a user account into the designated extra support courses as a student for the
  * product validity time range.
  * @param int $supportcoursename the Moodle shortname of the course used for extra support
  * @param object $customer a customer record
@@ -220,7 +220,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
     // Create Moodle User but no assignation.
     $newuser = new StdClass();
-    $newuser->username = shop_generate_username($customer, true); // Unique username
+    $newuser->username = shop_generate_username($customer, true); // Unique username.
     $newuser->city = $customer->city;
     $newuser->country = (!empty($customer->country)) ? $customer->country : $CFG->country;
     $newuser->lang = (!empty($customer->lang)) ? $customer->lang : $CFG->lang;
@@ -282,12 +282,14 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 }
 
 /**
+ * Create a user in moodle for the customer
+ *
  * @param $participant a minimal object with essential user information
  * @param object $data a full set of data from the order/bill
  * @param object $participant
  * @param string $supervisorrole
  */
-function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
+function shop_create_moodle_user($data, $participant, $supervisorrole) {
     global $CFG, $DB;
 
     if (!$customer = $DB->get_record('local_shop_customer', ['id' => $data->get_customerid()])) {

@@ -16,107 +16,157 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 class shop_export_source_allbills {
 
     /**
+     * Describes data to export
      * @param array &$params
      */
     public function get_data_description(&$params) {
         global $DB, $CFG;
 
-        $catalogue = $DB->get_record('local_shop_catalog', array('id' => $params->catalogid));
+        $catalogue = $DB->get_record('local_shop_catalog', ['id' => $params->catalogid]);
         $desc['filename'] = get_string('allbillsfile', 'local_shop', $catalogue->name);
         $desc['title'] = get_string('allbills', 'local_shop');
         $desc['colheadingformat'] = 'bold';
-        $desc['columns'] = array(
-            array('name' => 'id',
-                  'width' => 10,
-                  'format' => 'smalltext'),
-            array('name' => 'transactionid',
-                  'width' => 40,
-                  'format' => 'smalltext'),
-            array('name' => 'onlinetransactionid',
-                  'width' => 40,
-                  'format' => 'smalltext'),
-            array('name' => 'idnumber',
-                  'width' => 10,
-                  'format' => 'smalltext'),
-            array('name' => 'title',
-                  'width' => 40,
-                  'format' => 'smalltext'),
-            array('name' => 'worktype',
-                  'width' => 15,
-                  'format' => 'smalltext'),
-            array('name' => 'status',
-                  'width' => 10,
-                  'format' => 'smalltext'),
-            array('name' => 'emissiondate',
-                  'width' => 15,
-                  'format' => 'date'),
-            array('name' => 'lastactiondate',
-                  'width' => 15,
-                  'format' => 'date'),
-            array('name' => 'untaxedamount',
-                  'width' => 10,
-                  'format' => 'float'),
-            array('name' => 'taxes',
-                  'width' => 10,
-                  'format' => 'float'),
-            array('name' => 'amount',
-                  'width' => 10,
-                  'format' => 'float'),
-            array('name' => 'items',
-                  'width' => 60,
-                  'format' => 'smalltext'),
-            array('name' => 'itemnames',
-                  'width' => 60,
-                  'format' => 'smalltext'),
-            array('name' => 'firstname',
-                  'width' => 20,
-                  'format' => 'smalltext'),
-            array('name' => 'lastname',
-                  'width' => 20,
-                  'format' => 'smalltext'),
-            array('name' => 'address',
-                  'width' => 40,
-                  'format' => 'smalltext'),
-            array('name' => 'city',
-                  'width' => 15,
-                  'format' => 'smalltext'),
-            array('name' => 'zip',
-                  'width' => 8,
-                  'format' => 'smalltext'),
-            array('name' => 'country',
-                  'width' => 8,
-                  'format' => 'smalltext'),
-            array('name' => 'email',
-                  'width' => 20,
-                  'format' => 'smalltext'),
-            array('name' => 'hasaccount',
-                  'width' => 0, /* ignore */
-                  'format' => 'smalltext'),
-            array('name' => 'username',
-                  'width' => 20,
-                  'format' => 'smalltext'),
-            array('name' => 'institution',
-                  'width' => 20,
-                  'format' => 'smalltext'),
-            array('name' => 'department',
-                  'width' => 20,
-                  'format' => 'smalltext'),
-        );
+        $desc['columns'] = [
+            [
+                'name' => 'id',
+                'width' => 10,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'transactionid',
+                'width' => 40,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'onlinetransactionid',
+                'width' => 40,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'idnumber',
+                'width' => 10,
+                'format' => 'smalltext'
+            ],
+            [
+                'name' => 'title',
+                'width' => 40,
+                'format' => 'smalltext'
+            ],
+            [
+                'name' => 'worktype',
+                'width' => 15,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'status',
+                'width' => 10,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'emissiondate',
+                'width' => 15,
+                'format' => 'date',
+            ],
+            [
+                'name' => 'lastactiondate',
+                'width' => 15,
+                'format' => 'date',
+            ],
+            [
+                'name' => 'untaxedamount',
+                'width' => 10,
+                'format' => 'float',
+            ],
+            [
+                'name' => 'taxes',
+                'width' => 10,
+                'format' => 'float',
+            ],
+            [
+                'name' => 'amount',
+                'width' => 10,
+                'format' => 'float',
+            ],
+            [
+                'name' => 'items',
+                'width' => 60,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'itemnames',
+                'width' => 60,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'firstname',
+                'width' => 20,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'lastname',
+                'width' => 20,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'address',
+                'width' => 40,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'city',
+                'width' => 15,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'zip',
+                'width' => 8,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'country',
+                'width' => 8,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'email',
+                'width' => 20,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'hasaccount',
+                'width' => 0, /* ignore */
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'username',
+                'width' => 20,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'institution',
+                'width' => 20,
+                'format' => 'smalltext',
+            ],
+            [
+                'name' => 'department',
+                'width' => 20,
+                'format' => 'smalltext',
+            ],
+        ];
 
         if (local_shop_supports_feature('shop/partners')) {
             require_once($CFG->dirroot.'/local/shop/pro/localprolib.php');
             \local_shop\local_pro_manager::add_bill_export_columns($desc['columns']);
         }
-        return array($desc);
+        return [$desc];
     }
 
     /**
@@ -205,6 +255,6 @@ class shop_export_source_allbills {
 
         $data = $DB->get_records_sql($sql, $sqlparams);
 
-        return array($data);
+        return [$data];
     }
 }

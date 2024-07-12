@@ -15,40 +15,60 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main paymode class
+ *
  * @package    shoppaymodes_paybox
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
+use local_shop\Shop;
+use local_shop\Bill;
+
+/**
+ * Pay with paybox
+ */
 class shop_paymode_paybox extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct($shop) {
         // To enable paybox in your installation, change second param to "true".
         parent::__construct('paybox', $shop, false, true);
     }
 
+    /**
+     * Is this plugin instant Payment capable ?
+     */
     public function is_instant_payment() {
         return true;
     }
 
     /**
      * prints a payment porlet in an order form
+     * @param Bill $billdata
      */
-    public function print_payment_portlet(&$billdata) {
+    public function print_payment_portlet($billdata) {
         echo '<p>Not implemeted Yet!</p> ';
     }
 
     /**
      * prints a payment porlet in an order form
+     * @param Bill $billdata
      */
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info($billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paybox', '');
     }
 
+    /**
+     * Print when payment is complete
+     */
     public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
@@ -57,16 +77,21 @@ class shop_paymode_paybox extends shop_paymode {
      * processes a payment return.
      */
     public function process() {
+        // @todo : implement it.
+        assert(true);
     }
 
     /**
      * processes a payment asynchronoous confirmation
      */
     public function process_ipn() {
+        // @todo : implement it.
+        assert(true);
     }
 
     /**
      * provides global settings to add to shop settings when installed
+     * @param objectref &$settings
      */
     public function settings(&$settings) {
         $label = get_string($this->name.'paymodeparams', 'local_shop');

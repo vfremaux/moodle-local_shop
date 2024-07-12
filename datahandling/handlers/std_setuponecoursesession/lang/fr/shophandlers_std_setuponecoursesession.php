@@ -17,8 +17,7 @@
 /**
  * Lang file
  *
- * @package   local_shop
- * @subpackage  shophandlers_std_setuponecoursesession
+ * @package  shophandlers_std_setuponecoursesession
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,7 +26,8 @@
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat SetupOneCourseSession ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat SetupOneCourseSession ne détient directement aucune donnée
+ relative aux utilisateurs.';
 
 $string['handlername'] = 'Mise en place d\'une session de formation';
 $string['pluginname'] = 'Mise en place d\'une session de formation';

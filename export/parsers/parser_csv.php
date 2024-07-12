@@ -18,56 +18,56 @@
  * Controller for the customer screen responses.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die;
 
 class parser_csv {
 
+    /** @var string parsed file */
     protected $file;
 
+    /** @var string line delimiter */
     protected $linedelimiter;
 
+    /** @var string field delimiter */
     protected $fielddelimiter;
 
+    /** @var string input encoding */
     protected $encoding;
 
+    /** @var string columns mapping */
     protected $columnmap = null;
 
-    /**
-     * Headers found in the csv file.
-     */
+    /** @var Headers found in the csv file. */
     protected $headers;
 
-    /**
-     * Required fields. Fields in this array must be found in the header.
-     */
+    /** @var Required fields. Fields in this array must be found in the header. */
     protected $required;
 
     /**
-     * Patterns fields. Fields matching this patterns are legitimate in header.
+     * @var string Patterns fields. Fields matching this patterns are legitimate in header.
      * Patternized fields are f.E. numerically indexed fields as f1, f2, f3 ...
      */
     protected $patterns;
 
-    /**
-     * Meta fields are fields that may match a known prefix
-     */
+    /** @var string Meta fields are fields that may match a known prefix */
     protected $metas;
 
-    /**
-     * Optional fields. Fields in this array are legitimate to appear, but not mandatory.
-     */
+    /** @var Optional fields. Fields in this array are legitimate to appear, but not mandatory. */
     protected $optionals;
 
-    /**
-     * Optional defaults. Gives default values for missing optional fields.
-     */
+    /** @var Optional defaults. Gives default values for missing optional fields. */
     protected $optionaldefaults;
 
+    /**
+     * Constructor
+     * @param mixed $filenameorrec
+     * @param string $linedelimiter
+     * @param string $fielddelimiter
+     * @param string $encoding 
+     */
     public function __construct($filenameorrec, $linedelimiter = "\n", $fielddelimiter = ":", $encoding = 'UTF-8') {
         global $CFG;
 
@@ -86,32 +86,49 @@ class parser_csv {
             throw new Exception();
         }
 
-        $required = array();
-        $patterns = array();
-        $metas = array();
-        $optionals = array();
-        $optionaldefaults = array();
+        $required = [];
+        $patterns = [];
+        $metas = [];
+        $optionals = [];
+        $optionaldefaults = [];
     }
 
     /**
-     *
+     * Accessor
+     * @param string $required
      */
     public function set_required($required) {
         $this->required = $required;
     }
 
+    /**
+     * Accessor
+     * @param string $patterns
+     */
     public function set_patterns($patterns) {
         $this->patterns = $patterns;
     }
 
+    /**
+     * Accessor
+     * @param string $metas
+     */
     public function set_metas($metas) {
         $this->metas = $metas;
     }
 
+    /**
+     * Accessor
+     * @param string $optionals
+     */
     public function set_optionals($optionals) {
         $this->optionals = $optionals;
     }
 
+    /**
+     * Accessor
+     * @param string $optionaldefaults
+     */
     public function set_optionaldefaults($optionaldefaults) {
         $this->optionaldefaults = $optionaldefaults;
     }
@@ -119,11 +136,15 @@ class parser_csv {
     /**
      * Set an eventual column mapping to map input columns
      * to object member names.
+     * @param array $columnmap
      */
     public function set_column_mapping($columnmap) {
         $this->columnmap = $columnmap;
     }
 
+    /**
+     * Parse the file
+     */
     public function parse() {
 
         // Get headers.
@@ -143,7 +164,7 @@ class parser_csv {
     protected function next() {
 
         if (empty($this->file)) {
-            throw new Exception('CSV file was not opened');
+            throw new moodle_exception('CSV file was not opened');
         }
 
         $line = fgets($this->file, 1024);
@@ -155,12 +176,15 @@ class parser_csv {
         return $line;
     }
 
+    /**
+     * Checks header consistency.
+     */
     protected function check_headers() {
 
         /*
          * Prepare the required markers from a scalar array to an associative array.
          */
-        $required = array();
+        $required = [];
         foreach ($this->required as $r) {
             $required[$r] = 1;
         }
@@ -169,7 +193,7 @@ class parser_csv {
         /*
          * Prepare the required markers from a scalar array to an associative array.
          */
-        $optionals = array();
+        $optionals = [];
         foreach ($this->optionals as $r) {
             $optionals[$r] = 1;
         }
@@ -188,7 +212,7 @@ class parser_csv {
                                     preg_match("/{$patternized}/", $h) ||
                                             preg_match("/{$metapattern}/", $h))) {
                 // If the header is not present in any of the definitions.
-                throw new Exception ("Required field missing : $h");
+                throw new moodle_exception ("Required field missing : $h");
             }
 
             if (isset($this->required[$h])) {
@@ -200,7 +224,7 @@ class parser_csv {
         foreach ($this->required as $key => $value) {
             if ($value) {
                 // Required field missing.
-                throw new Exception ("Required field missing : $key");
+                throw new moodle_exception ("Required field missing : $key");
             }
         }
 
@@ -210,6 +234,8 @@ class parser_csv {
     /**
      * Check a CSV input line format for empty or commented lines
      * Ensures compatbility to UTF-8 BOM or unBOM formats
+     * @param arrayref &$text
+     * @param bool $resetfirst
      */
     protected function is_empty_line_or_format(&$text, $resetfirst = false) {
         static $textlib;
@@ -238,6 +264,9 @@ class parser_csv {
         return preg_match('/^$/', $text) || preg_match('/^(\(|\[|-|#|\/| )/', $text);
     }
 
+    /**
+     * Destructor
+     */
     public function __destruct() {
         if ($this->file) {
             fclose($this->file);

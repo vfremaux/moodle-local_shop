@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main paymode class
+ *
  * @package    shoppaymodes_systempay
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -39,16 +41,16 @@ define('SP_REQUEST_ERROR', '30'); // Erreur de requete.
 define('SP_INTERNAL_ERROR', '96'); // Erreur interne de traitement.
 
 global $vadsresult;
-$vadsresult = array(
+$vadsresult = [
     SP_PAYMENT_ACCEPTED => 'SP_PAYMENT_ACCEPTED',
     SP_PAYMENT_JOIN_BANK => 'SP_PAYMENT_JOIN_BANK', // Le commerçant doit contacter la banque du porteur.
     SP_PAYMENT_REJECTED => 'SP_PAYMENT_REJECTED', // Echéance du paiement refusée.
     SP_PURCHASE_CANCELLED => 'SP_PURCHASE_CANCELLED', // Abandon de l’internaute.
     SP_REQUEST_ERROR => 'SP_REQUEST_ERROR', // Erreur de requete.
     SP_INTERNAL_ERROR => 'SP_INTERNAL_ERROR', // Erreur interne de traitement.
-);
+];
 
-// Transaction status
+// Transaction status.
 
 define('SP_TRANS_STATUS_ABANDONNED', 'ABANDONED');
 define('SP_TRANS_STATUS_AUTHORISED', 'AUTHORISED');
@@ -64,7 +66,7 @@ define('SP_TRANS_WAITING_AUTHORISATION', 'WAITING_AUTHORISATION');
 define('SP_TRANS_WAITING_AUTHORISATION_TO_VALIDATE', 'WAITING_AUTHORISATION_TO_VALIDATE');
 
 global $vadstransstatus;
-$vadstransstatus = array(
+$vadstransstatus = [
     SP_TRANS_STATUS_ABANDONNED => 'SP_TRANS_STATUS_ABANDONED',
     SP_TRANS_STATUS_AUTHORISED => 'SP_TRANS_STATUS_AUTHORISED',
     SP_TRANS_STATUS_AUTHORISED_TO_VALIDATE => 'SP_TRANS_STATUS_AUTHORISED_TO_VALIDATE',
@@ -77,9 +79,10 @@ $vadstransstatus = array(
     SP_TRANS_UNDER_VERIFICATION => 'SP_TRANS_STATUS_UNDER_VERIFICATION',
     SP_TRANS_WAITING_AUTHORISATION => 'SP_TRANS_STATUS_WAITING_AUTHORISATION',
     SP_TRANS_WAITING_AUTHORISATION_TO_VALIDATE => 'SP_TRANS_STATUS_WAITING_AUTHORISATION_TO_VALIDATE',
-);
+];
 
 // Extra error explicitaton code (vads_extra_result).
+
 /*
  * Pas de contrôle effectué.
  */
@@ -139,7 +142,7 @@ define('SP_RESULT_IP_COUNTRY_EXCLUDES', '30');
 define('SP_RESULT_TECH_ERROR', '99');
 
 global $vadsextraresult;
-$vadsextraresult = array(
+$vadsextraresult = [
     SP_RESULT_NOCHECK => 'SP_RESULT_NOCHECK',
     SP_RESULT_GOOD => 'SP_RESULT_GOOD',
     SP_RESULT_OVER => 'SP_RESULT_OVER',
@@ -154,7 +157,7 @@ $vadsextraresult = array(
     SP_RESULT_BAD_COUNTRY => 'SP_RESULT_BAD_COUNTRY',
     SP_RESULT_IP_COUNTRY_EXCLUDES => 'SP_RESULT_IP_COUNTRY_EXCLUDES',
     SP_RESULT_TECH_ERROR => 'SP_RESULT_TECH_ERROR',
-);
+];
 
 define('SP_SECURE_NO', '0');
 define('SP_SECURE_13DS', '1 3DS');
@@ -167,23 +170,36 @@ define('SP_WARANTY_NO', 'NO'); // Le paiement n’est pas garanti.
 define('SP_WARANTY_UNKNOWN', 'UNKNOWN'); // Suite à une erreur technique, le paiement ne peut pas être garanti.
 define('SP_WARANTY_NA', ''); // Garantie de paiement non applicable.
 
+/**
+ * Pay by systempay
+ */
 class shop_paymode_systempay extends shop_paymode {
 
-    public function __construct(&$shopblockinstance) {
-        parent::__construct('systempay', $shopblockinstance, true, true);
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct(&$theshop) {
+        parent::__construct('systempay', $theshop, true, true);
     }
 
+    /**
+     * Is this paymode capable of instant payment ?
+     */
     public function is_instant_payment() {
         return true;
     }
 
-    // Prints a payment porlet in an order form.
+    /** 
+     * Prints a payment porlet in an order form.
+     * @param objectref &$shoppingcart
+     */
     function print_payment_portlet(&$shoppingcart) {
         global $CFG;
 
         echo '<div id="shop-panel-caption">';
 
-        echo shop_compile_mail_template('door_transfer_text', array(), 'shoppaymodes_systempay');
+        echo shop_compile_mail_template('door_transfer_text', [], 'shoppaymodes_systempay');
 
         echo '</div>';
         echo '<div id="shop-panel-systempay"><br />';
@@ -202,22 +218,30 @@ class shop_paymode_systempay extends shop_paymode {
         echo '<center><p><span class="procedureOrdering"></span>';
         echo '<p><span class="shop-procedure-cancel">X</span> ';
         $cancelstr = get_string('cancel');
-        $params = array('view' => 'shop', 'shopid' => $this->theshop->id);
+        $params = ['view' => 'shop', 'shopid' => $this->theshop->id];
         $cancelurl = new moodle_url('/local/shop/front/view.php', $params);
         echo '<a href="'.$cancelurl.'" class="smalltext">'.$cancelstr.'</a>';
         echo '</div>';
     }
 
-    // Prints a payment porlet in an order form.
-    function print_invoice_info(&$billdata = null) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    function print_invoice_info(Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_systempay', $this->name);
     }
 
+    /**
+     * Print when payment is completed
+     */
     function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
-    // Extract DATA, get context_return and bounce to shop entrance with proper context values.
+    /**
+     * Extract DATA, get context_return and bounce to shop entrance with proper context values.
+     */
     public function cancel() {
         global $SESSION;
 
@@ -230,7 +254,9 @@ class shop_paymode_systempay extends shop_paymode {
 
         $this->theshop = $afullbill->theshop;
 
-        $afullbill->onlinetransactionid = $paydata['vads_site_id'].'-'.$paydata['vads_trans_date'].'-'.$paydata['vads_trans_id'];
+        $afullbill->onlinetransactionid = $paydata['vads_site_id'];
+        $afullbill->onlinetransactionid .= '-'.$paydata['vads_trans_date'];
+        $afullbill->onlinetransactionid = '-'.$paydata['vads_trans_id'];
         $afullbill->paymode = 'systempay';
         $afullbill->status = SHOP_BILL_CANCELLED;
         $afullbill->save(true); //Light save.
@@ -238,7 +264,7 @@ class shop_paymode_systempay extends shop_paymode {
         // Cancel shopping cart.
         unset($SESSION->shoppingcart);
 
-        $params = array('view' => 'shop', 'shopid' => $this->theshop->id);
+        $params = ['view' => 'shop', 'shopid' => $this->theshop->id];
         $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
         redirect($redirecturl);
     }
@@ -281,14 +307,14 @@ class shop_paymode_systempay extends shop_paymode {
 
                 // Redirect to success for actually produce  with significant data.
                 shop_trace("[$transid] SystemPay : Transation Complete, transferring to success end point");
-                $params = array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid);
+                $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
                 $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                 redirect($redirecturl);
             }
 
             if (($afullbill->status == SHOP_BILL_SOLDOUT) || ($afullbill->status == SHOP_BILL_COMPLETE)) {
                 shop_trace("[$transid] SystemPay : Transation Already Complete, transferring to success end point");
-                $params = array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid);
+                $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
                 $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                 redirect($redirecturl);
             }
@@ -299,7 +325,7 @@ class shop_paymode_systempay extends shop_paymode {
              * and confirm the order to process it in backoffice.
              */
             shop_trace("[$transid] SystemPay : Weird state sequence Trans accept in status ".$afullbill->status);
-            $params = array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid);
+            $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid];
             $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
             redirect($redirecturl);
         } else {
@@ -308,7 +334,7 @@ class shop_paymode_systempay extends shop_paymode {
 
             // Do not erase shopping cart : user might try again with other payment mean.
 
-            $params = array('view' => 'shop', 'shopid' => $shopid, 'transid' => $transid);
+            $params = ['view' => 'shop', 'shopid' => $shopid, 'transid' => $transid];
             redirect(new moodle_url('/local/shop/front/view.php', $params));
         }
 
@@ -366,7 +392,8 @@ class shop_paymode_systempay extends shop_paymode {
 
                 include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
                 $nullblock = null;
-                $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock, $afullbill, true, false);
+                $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue,
+                            $nullblock, $afullbill, true, false);
                 $result = $controller->process('produce');
                 die;
 
@@ -394,6 +421,7 @@ class shop_paymode_systempay extends shop_paymode {
 
     /**
      * Provides global settings to add to courseshop settings when installed.
+     * @param objectref &$settings
      */
     public function settings(&$settings) {
 
@@ -425,9 +453,11 @@ class shop_paymode_systempay extends shop_paymode {
         $desc = get_string('configsystempayusesecure', 'shoppaymodes_systempay');
         $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 1, PARAM_BOOL));
 
-        $bankoptions = array('ce' => 'Caisse d\'Epargne',
-                             'bp' => 'Banque Populaire',
-                             'sg' => 'SogeCommerce / Société Générale');
+        $bankoptions = [
+            'ce' => 'Caisse d\'Epargne',
+            'bp' => 'Banque Populaire',
+            'sg' => 'SogeCommerce / Société Générale',
+        ];
         $key = 'local_shop/systempay_bank';
         $label = get_string('systempaybankbrand', 'shoppaymodes_systempay');
         $desc = get_string('configsystempaybankbrand', 'shoppaymodes_systempay');
@@ -444,11 +474,13 @@ class shop_paymode_systempay extends shop_paymode {
         $desc = get_string('configsystempaycountry', 'shoppaymodes_systempay');
         $settings->add(new admin_setting_configselect($key, $label, $desc, '', $countryoptions));
 
-        $currencycodesoptions = array('978' => get_string('cur978', 'shoppaymodes_systempay'),
-                                    '840' => get_string('cur840', 'shoppaymodes_systempay'),
-                                    '756' => get_string('cur756', 'shoppaymodes_systempay'),
-                                    '826' => get_string('cur826', 'shoppaymodes_systempay'),
-                                    '124' => get_string('cur124', 'shoppaymodes_systempay'));
+        $currencycodesoptions = [
+            '978' => get_string('cur978', 'shoppaymodes_systempay'),
+            '840' => get_string('cur840', 'shoppaymodes_systempay'),
+            '756' => get_string('cur756', 'shoppaymodes_systempay'),
+            '826' => get_string('cur826', 'shoppaymodes_systempay'),
+            '124' => get_string('cur124', 'shoppaymodes_systempay'),
+        ];
 
         $key = 'local_shop/systempay_currency_code';
         $label = get_string('systempaycurrencycode', 'shoppaymodes_systempay');
@@ -503,13 +535,6 @@ class shop_paymode_systempay extends shop_paymode {
      */
     public function generate_online_id() {
         $now = time();
-        /*
-        $midnight = mktime (0, 0, 0, date('n', $now), date('j', $now), date('Y', $now));
-        if ($midnight > 0 + @$this->_config->systempay_lastmid {night) {
-            set_config('systempay_idseq', 1, 'local_shop');
-            set_config('systempay_lastmidnight', $midnight, 'local_shop');
-        }
-        */
         // rotate on 1000000.
         global $DB;
 

@@ -15,14 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Paymode main class
+ *
  * @package    shoppaymodes_freeorder
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+
+use local_shop\Shop;
 
 /**
  * A class free order payment as a fallback when order is 0
@@ -30,7 +34,11 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
  */
 class shop_paymode_freeorder extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct($shop) {
         // NOT ENABLED AS NOT SELECTABLE METHOD!
         parent::__construct('freeorder', $shop, false);
     }

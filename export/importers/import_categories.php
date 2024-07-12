@@ -16,33 +16,47 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 class shop_import_categories {
 
+    /** @var object data object */
     protected $data;
 
+    /** @var array overrides declarations */
     protected $overrides;
 
+    /**
+     * Constructor
+     * @param string $table
+     * @param object $data
+     */
     public function __construct($table, $data) {
         $this->data = $data;
-        $this->overrides = array();
+        $this->overrides = [];
     }
 
+    /**
+     * Overrides accessor
+     * @param array $overrides 
+     */
     public function set_overrides($overrides) {
         $this->overrides = $overrides;
     }
 
+    /**
+     * Import data
+     */
     public function import() {
         global $DB;
 
         foreach ($this->data as $object) {
 
-            $results = array();
+            $results = [];
 
             foreach ($this->overrides as $ovk => $ovv) {
                 $object->$ovk = $ovv;

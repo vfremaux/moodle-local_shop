@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package    shoppaymodes_ogone
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes Ogone does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Ogone does not directly store any personal data
+about any user.';
 
 $string['enableogone'] = 'Ogone/Ingenico Gateway payment';
 $string['enableogone2'] = 'Ogone/Ingenico Gateway payment';
@@ -33,13 +36,17 @@ $string['ogonoepaymodeinvoiceinfo'] = 'You have choosen Ogone/Ingenico Gateway a
 $string['psid'] = 'Ogone/Ingenico Merchant Idendifier';
 $string['configpsid'] = 'Ogone/Ingenico Merchant Idendifier';
 $string['secretin'] = 'Secret glue for gateway input';
-$string['configsecretin'] = 'This glue is used to secure the transfer of your merchant data to the ogone gateway. It needs to be identical to the secret you have setup in the ogone account backoffice.';
+$string['configsecretin'] = 'This glue is used to secure the transfer of your merchant data to the ogone gateway.
+It needs to be identical to the secret you have setup in the ogone account backoffice.';
 $string['secretout'] = 'Secret glue for gateway output';
-$string['configsecretout'] = 'This glue is used to check the answers of the ogone gateway. It needs to be identical to the secret you have setup in the ogone account backoffice.';
+$string['configsecretout'] = 'This glue is used to check the answers of the ogone gateway. It needs to be identical
+to the secret you have setup in the ogone account backoffice.';
 $string['paramvar'] = 'Multiple Shop diverter info';
-$string['configparamvar'] = 'This is to be used in case you have multiple shops hosted on the same facility (See Ingenico/Ogone Integration Documentation)';
+$string['configparamvar'] = 'This is to be used in case you have multiple shops hosted on the same facility
+(See Ingenico/Ogone Integration Documentation)';
 $string['logourl'] = 'Logo URL';
-$string['configlogourl'] = 'An URL to your logo for the remote payment page. (must be an HTTPS url as ogone payment service is secured)';
+$string['configlogourl'] = 'An URL to your logo for the remote payment page. (must be an HTTPS url as ogone payment service
+is secured)';
 
 $string['door_transfer_tpl'] = '
 <p><b>Card o online payment through Ogone/Ingenico Financial Services:</b>
@@ -65,4 +72,3 @@ when done. Thank you again for your purchase.</p>
 
 <p>In case the activation has not occured in the next 48 hours, contact our sales service <%%SUPPORT%%>.</p>
 ';
-

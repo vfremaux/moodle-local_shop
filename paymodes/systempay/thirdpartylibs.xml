@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>docs</location>
+    <name>SystemPay integration documentation</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+</libraries>

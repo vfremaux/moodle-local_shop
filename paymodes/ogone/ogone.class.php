@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Paymode main class
+ *
  * @package    shoppaymodes_ogone
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
@@ -23,6 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+require_once($CFG->dirroot.'/local/shop/paymodes/ogone/extlibs/extralibs.php');
+
+use local_shop\Shop;
 
 define('OGONE_STATUS_INVALID', 0);
 define('OGONE_STATUS_CUSTOMER_CANCELLED', 1);
@@ -42,30 +47,41 @@ define('OGONE_STATUS_PROCEEDING', 91);
 define('OGONE_STATUS_PROCEEDING_INCERTAIN', 92);
 define('OGONE_STATUS_PROCEEDING_REFUSED', 93);
 
+/**
+ * Pay using Ogone Ingenico API
+ */
 class shop_paymode_ogone extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct($shop) {
         // To enable ogone in your installation, change second param to "true".
         parent::__construct('ogone', $shop, true, true);
     }
 
+    /**
+     * Is this mode instant payment ?
+     */
     public function is_instant_payment() {
         return true;
     }
 
     /**
      * prints a payment porlet in an order form
+     * @param objectref &$shoppingcart
      */
     public function print_payment_portlet(&$shoppingcart) {
         global $CFG;
 
-        $LANGS = array(
+        $LANGS = [
             'en' => 'en_US',
             'fr' => 'fr_FR',
             'sp' => 'sp_SP',
             'de' => 'de_DE',
-            'it' => 'it_IT'
-        );
+            'it' => 'it_IT',
+        ];
 
         if ($shoppingcart->usedistinctinvoiceinfo) {
             $paymentinfo = $shoppingcart->invoicinginfo;
@@ -82,7 +98,7 @@ class shop_paymode_ogone extends shop_paymode {
 
         echo '<form method="post" action="https://secure.ogone.com/ncol/'.$mode.'/orderstandard_utf8.asp" id=form1 name=form1>';
 
-        $commanddata = array(
+        $commanddata = [
             'PSPID' => $this->_config->ogone_psid,
             'ORDERID' => $shoppingcart->transid,
             'AMOUNT' => $shoppingcart->finalshippedtaxedtotal * 100,
@@ -94,11 +110,11 @@ class shop_paymode_ogone extends shop_paymode {
             'OWNERADDRESS' => $paymentinfo['address'],
             'OWNERCTY' => $paymentinfo['country'],
             'OWNERTOWN' => $paymentinfo['city'],
-            'OWNERTELNO' => ''
-        );
+            'OWNERTELNO' => '',
+        ];
 
         // General params.
-        $singdata = array();
+        $singdata = [];
         foreach ($commanddata as $name => $value) {
             echo '<input type="hidden" name="'.$name.'" value="'.$value.'">';
             if (!empty($value)) {
@@ -135,13 +151,17 @@ class shop_paymode_ogone extends shop_paymode {
 
     /**
      * prints a payment porlet in an order form.
+     * @param Bill $billdata
      */
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info($billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paybox');
     }
 
+    /**
+     * Print when payment is complete
+     */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**
@@ -156,7 +176,9 @@ class shop_paymode_ogone extends shop_paymode {
 
         if ($this->check_data_out()) {
 
-            $transid = $_REQUEST['orderID'];
+            // @todo : check if this is possible. Do we have moodle libs here ?
+            // $transid = $_REQUEST['orderID'];
+            $transid = required_param('orderID', PARAM_RAW);
 
             if ($afullbill = Bill::get_by_transaction($transid)) {
 
@@ -172,9 +194,11 @@ class shop_paymode_ogone extends shop_paymode {
                     $afullbill->save(true);
 
                     shop_trace("[$transid] Ogone/Ingenico Return Controller Complete : Redirecting");
-                    $params = array('view' => $this->theshop->get_next_step('payment'),
-                                    'id' => $this->theshop->id,
-                                    'transid' => $transid);
+                    $params = [
+                        'view' => $this->theshop->get_next_step('payment'),
+                        'id' => $this->theshop->id,
+                        'transid' => $transid,
+                    ];
                     redirect(new moodle_url('/local/shop/front/view.php', $params));
                 }
             } else {
@@ -208,12 +232,15 @@ class shop_paymode_ogone extends shop_paymode {
 
         if ($this->check_data_out()) {
 
-            $transid = $_REQUEST['orderID'];
+            // @todo : check if this is possible. Do we have moodle libs here ?
+            $transid = required_param('orderID', PARAM_RAW);
+            // $transid = $_REQUEST['orderID'];
 
             // Get the bill from the response.
             if ($afullbill = Bill::get_by_transaction($transid)) {
 
-                if (in_array($_REQUEST['STATUS'], $acceptancecodes)) {
+                $status = required_param('STATUS', PARAM_TEXT);
+                if (in_array($status, $acceptancecodes)) {
                     if ($afullbill->status != SHOP_BILL_SOLDOUT) {
                         /*
                          * Bill has not yet been soldout through an IPN notification
@@ -221,10 +248,10 @@ class shop_paymode_ogone extends shop_paymode {
                          */
 
                         // Stores the back code of ogone.
-                        $afullbill->onlinetransactionid = $_REQUEST['PAYDID'];
+                        $afullbill->onlinetransactionid = required_param('PAYDID', PARAM_TEXT);
                         $afullbill->paymode = 'ogone';
                         $afullbill->status = SHOP_BILL_SOLDOUT;
-                        $afullbill->remotestatus = $_REQUEST['STATUS'];
+                        $afullbill->remotestatus = $status;
                         $afullbill->save(true);
 
                         $message = "[{$afullbill->transactionid}] Ogone/Ingenico IPN Start Production";
@@ -237,13 +264,13 @@ class shop_paymode_ogone extends shop_paymode {
                         $controller->process($action);
                         shop_trace("[{$afullbill->transactionid}] Ogone/Ingenico IPN End Production");
                     }
-                } else if (in_array($_REQUEST['STATUS'], $rejectcodes)) {
+                } else if (in_array($status, $rejectcodes)) {
                     if ($afullbill->status != SHOP_BILL_REFUSED) {
                         shop_trace("[{$afullbill->transactionid}] Ogone/Ingenico IPN : Payment refused");
                         $afullbill->status = SHOP_BILL_REFUSED;
                         $afullbill->save(true);
                     }
-                } else if (in_array($_REQUEST['STATUS'], $cancellationcodes)) {
+                } else if (in_array($status, $cancellationcodes)) {
                     if ($afullbill->status != SHOP_BILL_CANCELLED) {
                         shop_trace("[{$afullbill->transactionid}] Ogone/Ingenico IPN : Customer cancelled");
                         $afullbill->status = SHOP_BILL_CANCELLED;
@@ -292,9 +319,12 @@ class shop_paymode_ogone extends shop_paymode {
         redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
 
+    /**
+     * check data when outgoing.
+     */
     private function check_data_out() {
 
-        $possiblefields = array(
+        $possiblefields = [
             'AAVADDRESS',
             'AAVCHECK',
             'AAVMAIL',
@@ -355,12 +385,15 @@ class shop_paymode_ogone extends shop_paymode {
             'SUBBRAND',
             'SUBSCRIPTION_ID',
             'TRXDATE',
-            'VC');
+            'VC',
+        ];
 
-        $checkdata = array();
-        foreach ($_REQUEST as $key => $value) {
+        $checkdata = [];
+        $request = shoppaymodes_ogone_x_get_request();
+        foreach ($request as $key => $value) {
             if (in_array($possiblefields, $key) && !empty($value)) {
-                $checkdata[] = strtoupper($key)."=$value";
+                // @todo : check cleaning is OK.
+                $checkdata[] = strtoupper($key)."=".clean_param($value, PARAM_TEXT);
             }
         }
 
@@ -373,8 +406,10 @@ class shop_paymode_ogone extends shop_paymode {
         $shabase = implode($this->_config->ogone_secret_out, $checkdata).$this->_config->ogone_secret_out;
         $shaout = sha1($shabase);
 
-        if (!empty($_REQUEST['SHASIGN']) && $_REQUEST['SHASIGN'] == $shaout) {
-            return $_REQUEST['orderID'];
+        $shasign = optional_param('SHASIGN', '', PARAM_RAW);
+        $transid = required_param('orderID', PARAM_TEXT);
+        if (!empty($shasign) && $shasign == $shaout) {
+            return $transid;
         }
 
         return false;
@@ -382,6 +417,7 @@ class shop_paymode_ogone extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
      */
     public function settings(&$settings) {
 
@@ -412,6 +448,5 @@ class shop_paymode_ogone extends shop_paymode {
         $label = get_string('logourl', 'shoppaymodes_ogone');
         $desc = get_string('configlogourl', 'shoppaymodes_ogone');
         $settings->add(new admin_setting_configtext($key, $label, $desc, ''));
-
     }
 }

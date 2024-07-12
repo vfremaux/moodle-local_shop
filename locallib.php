@@ -1181,7 +1181,8 @@ function shop_get_admin_navigation($theshop) {
         $nav->add_node($nav::create(get_string('allshops', 'local_shop'), $allshopsurl, $nav::TYPE_CUSTOM, '', 'shops'));
     } else {
         $shopsettingsurl = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $theshop->id, 'shopid' => $theshop->id]);
-        $nav->add_node($nav::create(get_string('editshopsettings', 'local_shop'), $shopsettingsurl, $nav::TYPE_CUSTOM, '', 'shops'));
+        $label = get_string('editshopsettings', 'local_shop');
+        $nav->add_node($nav::create($label, $shopsettingsurl, $nav::TYPE_CUSTOM, '', 'shops'));
     }
 
     $billsurl = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewAllBills', 'id' => $theshop->id]);

@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version details
  * @package    shoppaymodes_mercanet
  * @category   local
  * @author     Valery Fremaux (valery.fremaux@gmail.com)
@@ -22,12 +23,6 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * Created on 22 sept. 2009
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
 $plugin = new stdclass;
 $plugin->version = 2013031900;
 $plugin->component = 'shoppaymodes_mercanet';

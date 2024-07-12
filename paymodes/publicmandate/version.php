@@ -16,17 +16,14 @@
 
 /**
  * @package    shoppaymodes_publicmandate
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*
- *
- */
 $plugin = new stdclass;
 $plugin->version = 2016061000;
 $plugin->release = 'Build 2016061000';
 $plugin->component = 'shoppaymodes_publicmandate';
-$plugin->dependencies = array('local_shop' => '*');
+$plugin->dependencies = ['local_shop' => '*'];

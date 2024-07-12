@@ -14,10 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang file
+ *
+ * @package shophandlers_std_generateseats
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
 global $CFG;
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shophandler Std GenerateSeats does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shophandler Std GenerateSeats does not directly store any personal data
+ about any user.';
 
 $string['handlername'] = 'Generate unassigned seats';
 $string['pluginname'] = 'Generate unassigned seats';
@@ -25,21 +35,26 @@ $string['pluginname'] = 'Generate unassigned seats';
 $string['assignavailableseat'] = 'Assign an available seat';
 $string['allcourses'] = 'All courses';
 $string['assignedto'] = '<b>Assigned to:</b> {$a}';
-$string['assigninstructions'] = 'This seat is actually unassigned yet. Please choose one learner you have under your behalf and a course in which you want to add this user. If the user is already enrolled in this course, the seat will remain unassigned, you\'ll be notified and sollicitated to reassign this product.';
+$string['assigninstructions'] = 'This seat is actually unassigned yet. Please choose one learner you have under your behalf
+and a course in which you want to add this user. If the user is already enrolled in this course, the seat will remain unassigned,
+you\'ll be notified and sollicitated to reassign this product.';
 $string['assignseat'] = 'Assign the seat';
 $string['assignseatlocked'] = 'Seat assignment is locked by user\'s activity';
 $string['backtocourse'] = 'Back to customer support area';
 $string['enabledcourses'] = 'Enabled courses';
 $string['enrolinstructions'] = '
-    At the moment, you have no learners registered on your behalf. You may first create accounts using the following link (TODO). You will need simple
-    CSV text file to import users.
+At the moment, you have no learners registered on your behalf. You may first create accounts using the following
+ link (TODO). You will need simple
+ CSV text file to import users.
 ';
 $string['errornoallowedcourses'] = 'Product seems misconfigured and has no course allowed for assign';
 $string['errornocustomersupportcourse'] = 'Customer support course {$a} does not exist';
 $string['errorsupervisorrole'] = 'Supervisor role {$a} does not exist';
 $string['incourse'] = '<b>In course: </b>[{$a->shortname}] {$a->fullname}';
-$string['seatalreadyassigned'] = 'Sorry ! It seems that {$a->user} is already enrolled to the course ($a->course}. We will not burn this product for this choice. Please choose another seat assignation for this product.';
-$string['seatassigned'] = 'Congratulations ! You just enrolled {$a->user} to the course ($a->course}. We notify him/her about the event. This product can be reassigned as long as the concerned user has no activity track in the course. It will be locked in at the first activity log.';
+$string['seatalreadyassigned'] = 'Sorry ! It seems that {$a->user} is already enrolled to the course ($a->course}.
+We will not burn this product for this choice. Please choose another seat assignation for this product.';
+$string['seatassigned'] = 'Congratulations ! You just enrolled {$a->user} to the course ($a->course}. We notify him/her
+about the event. This product can be reassigned as long as the concerned user has no activity track in the course. It will be locked in at the first activity log.';
 $string['seatreleased'] = 'Seat released ! You can reassign it now to another user.';
 $string['supervisor'] = 'Supervisor role.';
 $string['unassignseat'] = 'Unassign the seat';
@@ -77,12 +92,14 @@ $string['productiondata_sales'] = '
 
 $string['productiondata_created_public'] = '
 <p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your <a href="{$a->customersupporturl}">customer account</a>.</p>
+<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your 
+<a href="{$a->customersupporturl}">customer account</a>.</p>
 ';
 
 $string['productiondata_created_private'] = '
 <p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your customer account. You may now browse into your customer area to use these seats.</p>
+<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your customer account.
+You may now browse into your customer area to use these seats.</p>
 <p><a href="{$a->customersupporturl}">Direct access to your customer support</a></p>
 ';
 
@@ -93,7 +110,8 @@ $string['productiondata_created_public_no_support'] = '
 
 $string['productiondata_created_private_no_support'] = '
 <p><b>Your payment has been received</b></p>
-<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your customer account. You may now browse into your customer area to use these seats.</p>
+<p>Your payment has been validated. {$a->seats} unassigned seats have been added to your customer account.
+You may now browse into your customer area to use these seats.</p>
 ';
 
 $string['productiondata_created_sales'] = '

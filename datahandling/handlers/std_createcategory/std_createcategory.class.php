@@ -17,9 +17,9 @@
 /**
  * Main handler class
  *
- * @package     local_shop
- * @subpackage  shophandlers_std_createcategory
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @package  shophandlers_std_createcategory
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * STD_CREATE_CATEGORY is a standard shop product action handler that creates a category for the customer

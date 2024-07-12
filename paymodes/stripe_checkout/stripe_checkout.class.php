@@ -16,8 +16,8 @@
 
 /**
  * @package    shoppaymodes_stripe_checkout
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -27,19 +27,29 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/stripe_checkout/extralib/stripe-php/init.php');
 
+use local_shop\Shop;
+
 class shop_paymode_stripe_checkout extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $shop
+     */
+    public function __construct($shop) {
         // To enable stripe_checkout in your installation, change second param to "true".
         parent::__construct('stripe_checkout', $shop, true, true);
     }
 
+    /**
+     * Is this paymode capable of instant payment ?
+     */
     public function is_instant_payment() {
         return true;
     }
 
     /**
      * prints a payment porlet in an order form
+     * @param objectref &$shoppingcart
      */
     public function print_payment_portlet(&$shoppingcart) {
         global $OUTPUT, $PAGE;
@@ -61,21 +71,23 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         }
         \Stripe\Stripe::setApiKey($private);
 
-        $successurl = new moodle_url('/local/shop/paymodes/stripe_checkout/accept.php', array('transid' => $shoppingcart->transid));
-        $cancelurl = new moodle_url('/local/shop/paymodes/stripe_checkout/cancel.php', array('transid' => $shoppingcart->transid));
+        $successurl = new moodle_url('/local/shop/paymodes/stripe_checkout/accept.php', ['transid' => $shoppingcart->transid]);
+        $cancelurl = new moodle_url('/local/shop/paymodes/stripe_checkout/cancel.php', ['transid' => $shoppingcart->transid]);
 
         $shoppingcartlines = $this->convert_lines($shoppingcart);
 
-        $session = \Stripe\Checkout\Session::create([
+        $sessiondata = [
           'customer_email' => $shoppingcart->customerinfo['email'],
           'client_reference_id' => $shoppingcart->transid,
           'payment_method_types' => ['card'],
           'line_items' => [$shoppingcartlines],
           'success_url' => $successurl,
           'cancel_url' => $cancelurl,
-        ]);
+        ];
+        $session = \Stripe\Checkout\Session::create($sessiondata);
 
-        $PAGE->requires->js_call_amd('shoppaymodes_stripe_checkout/stripe_checkout', 'init', array("{\"pk\":\"{$public}\", \"sid\":\"{$session->id}\"}"));
+        $params = ["{\"pk\":\"{$public}\", \"sid\":\"{$session->id}\"}"];
+        $PAGE->requires->js_call_amd('shoppaymodes_stripe_checkout/stripe_checkout', 'init', $params);
 
         $template = new StdClass();
         if ($session) {
@@ -87,16 +99,19 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         }
 
         echo $OUTPUT->render_from_template('shoppaymodes_stripe_checkout/portlet', $template);
-
     }
 
     /**
      * prints a payment porlet in an order form.
+     * @param Bill $billdata
      */
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info($billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_stripe_checkout');
     }
 
+    /**
+     * Print when payment is complete
+     */
     public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
@@ -117,17 +132,21 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         $afullbill = \local_shop\Bill::get_by_transaction($transid);
 
         if ($afullbill->status == SHOP_BILL_PLACED) {
-            throw new moodle_exception("Stripe WebHooks have failed to produce your order. this may be due to a misconfiguration of the moodle shop Stripe Payment method.");
+            $mess = "Stripe WebHooks have failed to produce your order. ";
+            $mess .= "This may be due to a misconfiguration of the moodle shop Stripe Payment method.";
+            throw new moodle_exception($mess);
             die;
         }
 
         if ($afullbill->status == SHOP_BILL_SOLDOUT) {
             // Usually should not. Webhooks should have produced at this stage.
             if (empty($this->_config->test)) {
-                $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                 redirect($redirecturl);
             } else {
-                $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                $params = ['view' => 'produce', 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                 echo $OUTPUT->continue_button($continueurl, get_string('continueaftersoldout', 'shoppaymodes_mercanet'));
             }
         }
@@ -135,10 +154,22 @@ class shop_paymode_stripe_checkout extends shop_paymode {
             // All is done already. clear everything.
             unset($SESSION->shoppingcart);
             if (empty($this->_config->test)) {
-                $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                $params = [
+                    'view' => $this->theshop->get_starting_step(),
+                    'id' => $this->theshop->id,
+                    'what' => 'produce',
+                    'transid' => $transid,
+                ];
+                $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                 redirect($redirecturl);
             } else {
-                $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                $params = [
+                    'view' => $this->theshop->get_starting_step(),
+                    'id' => $this->theshop->id,
+                    'what' => 'produce',
+                    'transid' => $transid,
+                ];
+                $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                 echo $OUTPUT->continue_button($continueurl, get_string('continueaftersoldout', 'shoppaymodes_mercanet'));
             }
         }
@@ -202,7 +233,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
             } else {
                 // payment_intent.succeeded
                 $payment = $event->data->object;
-                $transid = $DB->get_field('local_shop_bill', 'transactionid', array('onlinetransactionid' => $payment->id));
+                $transid = $DB->get_field('local_shop_bill', 'transactionid', ['onlinetransactionid' => $payment->id]);
             }
 
             if (!$afullbill = \local_shop\Bill::get_by_transaction($transid)) {
@@ -222,7 +253,8 @@ class shop_paymode_stripe_checkout extends shop_paymode {
                 if ($afullbill->onlinetransactionid != $session->payment_intent) {
                     // Bill exists, but does not match the refering session/payment_intent
                     // This is a probable faulty situation.
-                    shop_trace("[$transid] Stripe/Checkout WebHook ERROR : Mismatched bill with session, keyed by payment_intent ID");
+                    $mess = "[$transid] Stripe/Checkout WebHook ERROR : Mismatched bill with session, keyed by payment_intent ID";
+                    shop_trace($mess);
                     http_response_code(400);
                     exit();
                 }
@@ -237,7 +269,8 @@ class shop_paymode_stripe_checkout extends shop_paymode {
                 // Perform final production.
                 $action = 'produce';
                 include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
-                $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, null, $afullbill, true, false);
+                $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue,
+                            null, $afullbill, true, false);
                 $controller->process($action);
                 shop_trace("[{$afullbill->transactionid}] Stripe/Checkout WebHook End Production");
             }
@@ -254,7 +287,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         if ($event->type == 'payment_intent.payment_failed') {
 
             $payment = $event->data->object;
-            $transid = $DB->get_field('local_shop_bill', 'transactionid', array('onlinetransactionid' => $payment->id));
+            $transid = $DB->get_field('local_shop_bill', 'transactionid', ['onlinetransactionid' => $payment->id]);
 
             if (!$afullbill = \local_shop\Bill::get_by_transaction($transid)) {
                 // Not matched any internal bill.
@@ -295,7 +328,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
 
         // Do not cancel shopping cart. User may use another payment.
 
-        $params = array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id);
+        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id];
         redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
 
@@ -329,6 +362,10 @@ class shop_paymode_stripe_checkout extends shop_paymode {
 
     }
 
+    /**
+     * convert lines for stripe.
+     * @param objectref &$shoppingcart
+     */
     protected function convert_lines(&$shoppingcart) {
 
         list($theshop, $thecatalog, $theblock) = shop_build_context();

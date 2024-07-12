@@ -26,6 +26,9 @@
  */
 namespace local_shop;
 
+/**
+ * A class to apply a discount policy for products in a reference list
+s */
 class ProductListPolicy extends DiscountPolicy {
 
     /**

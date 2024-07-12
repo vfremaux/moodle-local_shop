@@ -35,14 +35,10 @@ use local_shop\Shop;
  */
 class reset_controller {
 
-    /**
-     * @var object Action data context
-     */
+    /** @var object Action data context */
     protected $data;
 
-    /**
-     * @var bool Marks data has been loaded for action.
-     */
+    /** @var bool Marks data has been loaded for action. */
     protected $received;
 
     /**

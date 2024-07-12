@@ -17,7 +17,6 @@
 /**
  * Version details
  *
- * @package   local_shop
  * @subpackage shophandlers_std_assignroleoncontext
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)

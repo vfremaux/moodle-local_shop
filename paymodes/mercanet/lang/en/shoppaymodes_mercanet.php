@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * File lang
+ *
+ * @package    shoppaymodes_mercanet
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes Mercanet does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Mercanet does not directly store any personal
+ data about any user.';
 
 $string['card'] = 'Credit card';
 $string['configmercanetAPIurl'] = 'This url is usually provided by Mercanet Integration support';
@@ -30,7 +33,8 @@ $string['configmercanetcountry'] = 'Mercanet country';
 $string['configmercanetcurrencycode'] = 'Currency code';
 $string['configmercanetmerchantid'] = 'Merchant ID. Provided by Mercanet.';
 $string['configmercanetprocessortype'] = 'Determines API Processor type to be used (Linux versions)';
-$string['configmercanetlogofilename'] = 'The file name of the logo resource that has been uploaded on the Mercanet management service';
+$string['configmercanetlogofilename'] = 'The file name of the logo resource that has been uploaded on the Mercanet management
+service';
 $string['enablemercanet'] = 'Credit card (Mercanet)';
 $string['enablemercanet2'] = 'Credit card payment';
 $string['errorcallingAPI'] = 'Mercanet API Call error :<br/>Executable not found (or not executable) in path : {$a}';
@@ -90,4 +94,5 @@ $string['success_followup_text_tpl'] = '
 <p>If you cannot access the training platform, please contact our sales service <%%SUPPORT%%>.</p>
 ';
 
-$string['door_transfer_text_tpl'] = 'We are up to transfer you on the <b>secure</b> payment service of our banking partner BNP Paribas. Click over the card type you are going to use for payment.';
+$string['door_transfer_text_tpl'] = 'We are up to transfer you on the <b>secure</b> payment service of our banking partner
+BNP Paribas. Click over the card type you are going to use for payment.';

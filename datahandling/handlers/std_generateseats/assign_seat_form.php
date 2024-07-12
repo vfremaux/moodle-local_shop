@@ -14,19 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * @package   local_shop
- * @category  blocks
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Form to assign seats
+ *
+ * @package  shophandler_std_generateseats
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once($CFG->dirroot.'/lib/formslib.php');
 
+/**
+ * Form to assign seats as postproduction operation
+ */
 class AssignSeatForm extends moodleform {
 
+    /**
+     * Standard form definition
+     */
     function definition() {
         global $USER, $OUTPUT;
 
@@ -35,7 +40,7 @@ class AssignSeatForm extends moodleform {
 
         // Get users that i am behalfed on.
         $usermenu = [];
-		$fields = \local_shop\compat::get_fields_for_get_cap();
+        $fields = \local_shop\compat::get_fields_for_get_cap();
         if ($myusers = get_users_by_capability($mycontext, 'block/user_delegation:hasasbehalf', $fields)) {
             foreach ($myusers as $uid => $u) {
                 $usermenu[$uid] = fullname($u);
@@ -71,8 +76,5 @@ class AssignSeatForm extends moodleform {
         if (empty($usermenu)) {
             $mform->disabledIf('submitbutton', 'userid', 'noitemselected');
         }
-    }
-
-    function validation($data, $files = array()) {
     }
 }

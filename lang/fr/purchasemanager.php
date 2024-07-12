@@ -75,14 +75,14 @@ $string['productending'] = 'En cours de terminaison';
 $string['productpending'] = 'Pas encore en service';
 $string['productrunning'] = 'En cours de validité';
 $string['longtimeexpired'] = 'Boutique Moodle {$a} : Unités de vente expirées (plus d\'une semaine)';
-$string['longtimeexpired_mail'] = 'Ces unités de vente ont expiré il y a plus d\'une semaine et ne sont pas supprimés. 
-Liste des unités de vente : 
+$string['longtimeexpired_mail'] = 'Ces unités de vente ont expiré il y a plus d\'une semaine et ne sont pas supprimés.
+Liste des unités de vente :
 {$a->list}
 
 Gérer à l\'adresse {$a->url}.
 ';
 $string['longtimeexpired_html'] = 'Ces unités de vente ont expiré il y a plus d\'une semaine et ne sont pas supprimés.<br/>
-Liste des unités de vente : 
+Liste des unités de vente :
 {$a->list}
 
 <br/>
@@ -100,7 +100,7 @@ $string['neartoexpire_html'] = 'Liste des instances :<br/>
 Gérer dans le <a href="{$a->url}">gestionnaire des unités de vente</a>.
 ';
 $string['justexpired'] = 'Boutique Moodle {$a} : Viennent d\'expirer (3 jours)';
-$string['justexpired_mail'] = 'Liste des unités de vente expirées dans les 3 derniers jours : 
+$string['justexpired_mail'] = 'Liste des unités de vente expirées dans les 3 derniers jours :
 {$a->list}
 
 Check at {$a->url}.

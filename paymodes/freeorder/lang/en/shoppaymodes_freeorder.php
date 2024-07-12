@@ -16,13 +16,14 @@
 
 /**
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes FreeOrder does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes FreeOrder does not directly store any personal data
+ about any user.';
 
 $string['enablefreeorder'] = 'Free order (zero amount)';
 $string['enablefreeorder2'] = 'Free order (zero amount)';

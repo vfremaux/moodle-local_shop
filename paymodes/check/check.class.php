@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main paymode method class
+ *
  * @package    shoppaymodes_check
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -25,23 +27,34 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-use \local_shop\Bill;
+use local_shop\Bill;
+use local_shop\Shop;
 
+/**
+ * Pay by check
+ */
 class shop_paymode_check extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $shop
+     */
+    public function __construct(Shop $shop) {
         parent::__construct('check', $shop);
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_payment_portlet(&$billdata) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    public function print_payment_portlet(Bill $billdata) {
 
         $afullbill = Bill::get_by_transaction($billdata->transid);
         $afullbill->status = SHOP_BILL_PENDING;
         $afullbill->save(true);
 
         $proc = 1;
-        echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_check');
+        echo '<p>' . shop_compile_mail_template('pay_instructions', [], 'shoppaymodes_check');
         echo '<blockquote>';
 
         $params = ['view' => 'bill', 'id' => $afullbill->theshop->id, 'transid' => $billdata->transid];
@@ -66,9 +79,10 @@ class shop_paymode_check extends shop_paymode {
 
     public function print_invoice_info(&$billdata = null) {
         $proc = 1;
-        echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_check');
+        echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', [], 'shoppaymodes_check');
         echo '<blockquote>';
-        $billurl = new moodle_url('/local/shop/front/view.php', ['view' => 'bill', 'id' => $afullbill->shop->id, 'transid' =>$billdata->transid]);
+        $params = ['view' => 'bill', 'id' => $afullbill->shop->id, 'transid' =>$billdata->transid];
+        $billurl = new moodle_url('/local/shop/front/view.php', $params);
         $params = [
             'PROC_ORDER' => $proc++,
             'BILL_URL' => $billurl,
@@ -81,26 +95,38 @@ class shop_paymode_check extends shop_paymode {
             'CITY' => $this->_config->sellercity,
             'COUNTRY' => strtoupper($this->_config->sellercountry),
             'BILL_URL' => $billurl,
-            'PROC_ORDER' => $proc++ ];
+            'PROC_ORDER' => $proc++,
+        ];
         echo shop_compile_mail_template('procedure_text_invoice', $params, 'shoppaymodes_check');
         echo '</blockquote>';
     }
 
+    /**
+     * Print when payment completed
+     */
     public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
 
-    // Processes a payment return.
+    /**
+     * Processes a payment return.
+     */
     public function process() {
+        assert(true);
     }
 
-    // Processes a payment asynchronoous confirmation.
+    /**
+     * Processes a payment asynchronoous confirmation.
+     */
     public function process_ipn() {
         // No IPN for offline payment.
+        assert(true);
     }
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Provides global settings to add to shop settings when installed.
+     */
     public function settings(&$settings) {
+        assert(true);
     }
-
 }

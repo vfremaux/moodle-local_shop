@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main paymode class
+ *
  * @package    shoppaymodes_sherlocks
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -26,9 +28,8 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-Use \local_shop\Bill;
-
-// Response codes.
+Use local_shop\Bill;
+Use local_shop\Shop;
 
 /*
  * Autorisation acceptée.
@@ -74,19 +75,30 @@ define('SHLCK_MAX_TRIES', '75');
  */
 define('SHLCK_UNVAILABLE', '90');
 
+/**
+ * Pay by sherlocks (LCL)
+ */
 class shop_paymode_sherlocks extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $shop
+     */
+    public function __construct(Shop $shop) {
         parent::__construct('sherlocks', $shop, true, true); // Overrides local confirm.
         $overridelocalconfirm = true;
     }
 
+    /**
+     * Is this plugin available for instant payment ?
+     */
     public function is_instant_payment() {
         return true;
     }
 
     /**
      * Prints a payment porlet in an order form.
+     * @param objectref &$shoppingcart
      */
     public function print_payment_portlet(&$shoppingcart) {
         global $CFG, $USER;
@@ -95,7 +107,7 @@ class shop_paymode_sherlocks extends shop_paymode {
 
         echo '<div id="shop-panel-caption">';
 
-        echo shop_compile_mail_template('door_transfer_text', array(), 'shoppaymodes_sherlocks');
+        echo shop_compile_mail_template('door_transfer_text', [], 'shoppaymodes_sherlocks');
 
         echo '</div>';
         echo '<div id="shop-panel-sherlocks"><br />';
@@ -126,20 +138,24 @@ class shop_paymode_sherlocks extends shop_paymode {
         echo '<center><p><span class="procedureOrdering"></span>';
         echo '<p><span class="shop-procedure-cancel">X</span> ';
         $cancelstr = get_string('cancel');
-        $cancelurl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
+        $cancelurl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'shopid' => $this->theshop->id]);
         echo '<a href="'.$cancelurl.'" class="smalltext">'.$cancelstr.'</a>';
         echo '</div>';
     }
 
     /**
      * Prints a payment porlet in an order form
+     * @param Bill $billdata
      */
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info(Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_sherlocks', $this->name);
     }
 
+    /**
+     * Print when payment is complete
+     */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**
@@ -166,7 +182,7 @@ class shop_paymode_sherlocks extends shop_paymode {
          * do not cancel shopping cart, user may use another payment
          */
 
-        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'shop', 'shopid' => $this->theshop->id));
+        $redirecturl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'shopid' => $this->theshop->id]);
         redirect($redirecturl);
     }
 
@@ -224,13 +240,26 @@ class shop_paymode_sherlocks extends shop_paymode {
                     $afullbill->save(true);
 
                     // Redirect to success for ordering production with significant data.
-                    shop_trace("[$transid] sherlocks : Transaction Pending for IPN confirmation, transferring to success end point");
+                    $mess = "[$transid] sherlocks : Transaction Pending for IPN confirmation, transferring to success end point";
+                    shop_trace($mess);
 
                     if (empty($this->_config->test)) {
-                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
+                        $params = [
+                            'view' => 'produce',
+                            'shopid' => $this->theshop->id,
+                            'what' => 'confirm',
+                            'transid' => $transid,
+                        ];
+                        $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                         redirect($redirecturl);
                     } else {
-                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'confirm', 'transid' => $transid));
+                        $params = [
+                            'view' => 'produce',
+                            'shopid' => $this->theshop->id,
+                            'what' => 'confirm',
+                            'transid' => $transid,
+                        ];
+                        $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueaftersuccess', 'shoppaymodes_sherlocks'));
                     }
                 } else if ($paydata['response_code'] == SHLCK_PAYMENT_REJECTED) {
@@ -239,10 +268,20 @@ class shop_paymode_sherlocks extends shop_paymode {
 
                     // Do not erase shopping cart : user might try again with other payment mean.
                     if (empty($this->_config->test)) {
-                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
+                        $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                         redirect($redirecturl);
                     } else {
-                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
+                        $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueafterfailure', 'shoppaymodes_sherlocks'));
                     }
                 } else {
@@ -252,20 +291,42 @@ class shop_paymode_sherlocks extends shop_paymode {
                     // Do not erase shopping cart : user might try again with other payment mean.
 
                     if (empty($this->_config->test)) {
-                        $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
+                        $redirecturl = new moodle_url('/local/shop/front/view.php', $parms);
                         redirect($redirecturl);
                     } else {
-                        $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid));
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
+                        $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueafterfailure', 'shoppaymodes_sherlocks'));
                     }
                 }
             }
             if ($afullbill->status == SHOP_BILL_SOLDOUT) {
                 if (empty($this->_config->test)) {
-                    $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'shopid' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = [
+                        'view' => 'produce',
+                        'shopid' => $this->theshop->id,
+                        'what' => 'produce',
+                        'transid' => $transid,
+                    ];
+                    $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                     redirect($redirecturl);
                 } else {
-                    $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => 'produce', 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = [
+                        'view' => 'produce',
+                        'id' => $this->theshop->id,
+                        'what' => 'produce',
+                        'transid' => $transid,
+                    ];
+                    $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                     echo $OUTPUT->continue_button($continueurl, get_string('continueaftersoldout', 'shoppaymodes_sherlocks'));
                 }
             }
@@ -273,10 +334,22 @@ class shop_paymode_sherlocks extends shop_paymode {
                 // All is done already. clear everything.
                 unset($SESSION->shoppingcart);
                 if (empty($this->_config->test)) {
-                    $redirecturl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = [
+                        'view' => $this->theshop->get_starting_step(),
+                        'id' => $this->theshop->id,
+                        'what' => 'produce',
+                        'transid' => $transid,
+                    ];
+                    $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                     redirect($redirecturl);
                 } else {
-                    $continueurl = new moodle_url('/local/shop/front/view.php', array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid));
+                    $params = [
+                        'view' => $this->theshop->get_starting_step(),
+                        'id' => $this->theshop->id,
+                        'what' => 'produce',
+                        'transid' => $transid,
+                    ];
+                    $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                     echo $OUTPUT->continue_button($continueurl, get_string('continueaftersoldout', 'shoppaymodes_sherlocks'));
                 }
             }
@@ -336,7 +409,7 @@ class shop_paymode_sherlocks extends shop_paymode {
                      */
                     if (!empty($afullbill->customer->hasaccount)) {
                         global $USER;
-                        $USER = $DB->get_record('user', array('id' => $afullbill->customer->hasaccount));
+                        $USER = $DB->get_record('user', ['id' => $afullbill->customer->hasaccount]);
                     }
 
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
@@ -377,6 +450,7 @@ class shop_paymode_sherlocks extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
      */
     public function settings(&$settings) {
 
@@ -409,37 +483,45 @@ class shop_paymode_sherlocks extends shop_paymode {
         $content = '<a href="'.$pathfileurl.'">'.get_string('makepathfile', 'shoppaymodes_sherlocks').'</a>';
         $settings->add(new admin_setting_heading($key, '', $content));
 
-        $currencycodesoptions = array('978' => get_string('cur978', 'shoppaymodes_sherlocks'),
-                                    '840' => get_string('cur840', 'shoppaymodes_sherlocks'),
-                                    '756' => get_string('cur756', 'shoppaymodes_sherlocks'),
-                                    '826' => get_string('cur826', 'shoppaymodes_sherlocks'),
-                                    '124' => get_string('cur124', 'shoppaymodes_sherlocks'),
-                                    // Yen 392 0 106 106.
-                                    // Peso Mexicain 484 2 106.55 10655.
-                                    '949' => get_string('cur949', 'shoppaymodes_sherlocks'),
-                                    '036' => get_string('cur036', 'shoppaymodes_sherlocks'),
-                                    '554' => get_string('cur554', 'shoppaymodes_sherlocks'),
-                                    '578' => get_string('cur578', 'shoppaymodes_sherlocks'),
-                                    '986' => get_string('cur986', 'shoppaymodes_sherlocks'),
-                                    '032' => get_string('cur032', 'shoppaymodes_sherlocks'),
-                                    '116' => get_string('cur116', 'shoppaymodes_sherlocks'),
-                                    '901' => get_string('cur901', 'shoppaymodes_sherlocks'),
-                                    '752' => get_string('cur752', 'shoppaymodes_sherlocks'),
-                                    '208' => get_string('cur208', 'shoppaymodes_sherlocks'),
-                                    '702' => get_string('cur702', 'shoppaymodes_sherlocks'));
+        $currencycodesoptions = [
+            '978' => get_string('cur978', 'shoppaymodes_sherlocks'),
+            '840' => get_string('cur840', 'shoppaymodes_sherlocks'),
+            '756' => get_string('cur756', 'shoppaymodes_sherlocks'),
+            '826' => get_string('cur826', 'shoppaymodes_sherlocks'),
+            '124' => get_string('cur124', 'shoppaymodes_sherlocks'),
+            // Yen 392 0 106 106.
+            // Peso Mexicain 484 2 106.55 10655.
+            '949' => get_string('cur949', 'shoppaymodes_sherlocks'),
+            '036' => get_string('cur036', 'shoppaymodes_sherlocks'),
+            '554' => get_string('cur554', 'shoppaymodes_sherlocks'),
+            '578' => get_string('cur578', 'shoppaymodes_sherlocks'),
+            '986' => get_string('cur986', 'shoppaymodes_sherlocks'),
+            '032' => get_string('cur032', 'shoppaymodes_sherlocks'),
+            '116' => get_string('cur116', 'shoppaymodes_sherlocks'),
+            '901' => get_string('cur901', 'shoppaymodes_sherlocks'),
+            '752' => get_string('cur752', 'shoppaymodes_sherlocks'),
+            '208' => get_string('cur208', 'shoppaymodes_sherlocks'),
+            '702' => get_string('cur702', 'shoppaymodes_sherlocks'),
+        ];
 
         $key = 'local_shop/sherlocks_currency_code';
         $label = get_string('sherlockscurrencycode', 'shoppaymodes_sherlocks');
         $desc = get_string('configsherlockscurrencycode', 'shoppaymodes_sherlocks');
         $settings->add(new admin_setting_configselect($key, $label, $desc, '', $currencycodesoptions));
 
-        $processoroptions = array('32' => '32 bits', '64' => '64 bits');
+        $processoroptions = [
+            '32' => '32 bits',
+            '64' => '64 bits',
+        ];
         $key = 'local_shop/sherlocks_processor_type';
         $label = get_string('sherlocksprocessortype', 'shoppaymodes_sherlocks');
         $desc = get_string('configsherlocksprocessortype', 'shoppaymodes_sherlocks');
         $settings->add(new admin_setting_configselect($key, $label, $desc, '', $processoroptions));
 
-        $libraryoptions = array('static' => 'Static', 'glibc-2.5-42' => 'Glibc (old)');
+        $libraryoptions = [
+            'static' => 'Static',
+            'glibc-2.5-42' => 'Glibc (old)',
+        ];
         $key = 'local_shop/sherlocks_library';
         $label = get_string('sherlockslibrary', 'shoppaymodes_sherlocks');
         $desc = get_string('configsherlockslibrary', 'shoppaymodes_sherlocks');
@@ -455,7 +537,8 @@ class shop_paymode_sherlocks extends shop_paymode {
         $config = get_config('local_shop');
 
         $os = (preg_match('/Linux/i', $CFG->os)) ? 'linux' : 'win';
-        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_'.$os.$config->sherlocks_processor_type;
+        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_';
+        $pluginpath .= $os.$config->sherlocks_processor_type;
         $pathfiletemplate = $pluginpath.'/param/pathfile.tpl';
         $pathfile = $this->get_pathfile($os);
         assert(file_exists($pathfiletemplate));
@@ -474,7 +557,7 @@ class shop_paymode_sherlocks extends shop_paymode {
             $tmp = str_replace('<%%DEBUG%%>', $sherlocksdebug, $tmp);
         }
 
-        $settingsurl = new moodle_url('/admin/settings.php', array('section' => 'localsettingshop'));
+        $settingsurl = new moodle_url('/admin/settings.php', ['section' => 'localsettingshop']);
         if ($PATHFILE = @fopen($pathfile, 'w')) {
             fputs($PATHFILE, $tmp);
             fclose($PATHFILE);
@@ -500,7 +583,8 @@ class shop_paymode_sherlocks extends shop_paymode {
             set_config('sherlocks_processor_type', '32', 'local_shop');
         }
         if ($os == 'linux') {
-            $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_'.$os.$config->sherlocks_processor_type;
+            $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_';
+            $pluginpath .= $os.$config->sherlocks_processor_type;
             return $pluginpath.'/param/pathfile';
         } else {
             return str_replace('/', "\\", $CFG->dirroot).'\\local\\shop\\paymodes\\sherlocks\\sherlocks_617_PLUGIN_'.$os.$config->sherlocks_processor_type.'\\param\\pathfile';

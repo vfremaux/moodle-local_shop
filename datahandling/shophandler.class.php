@@ -32,7 +32,7 @@ use local_shop\CatalogItem;
 abstract class shop_handler {
 
     /**
-     * @var string 
+     * @var string
      */
     public $productlabel;
 
@@ -66,7 +66,7 @@ abstract class shop_handler {
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    public abstract function produce_prepay(&$data, &$errorstatus);
+    abstract public function produce_prepay(&$data, &$errorstatus);
 
     /**
      * What is happening after it has been actually paied out, interactively
@@ -75,7 +75,7 @@ abstract class shop_handler {
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    public abstract function produce_postpay(&$data);
+    abstract public function produce_postpay(&$data);
 
     /**
      * Check wether the product is available for a particular context, user.
@@ -195,11 +195,11 @@ abstract class shop_handler {
             $data->actionparams['customersupport'] = $data->defaultcustomersupportcourse;
         } else {
             if (is_numeric($data->actionparams['customersupport'])) {
-                if (!$course = $DB->get_record('course', array('id' => $data->actionparams['customersupport']))) {
+                if (!$course = $DB->get_record('course', ['id' => $data->actionparams['customersupport']])) {
                     $errors[$data->code][] = get_string('errornocustomersupportcourse', 'local_shop');
                 }
             } else {
-                if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['customersupport']))) {
+                if (!$course = $DB->get_record('course', ['shortname' => $data->actionparams['customersupport']])) {
                     $errors[$data->code][] = get_string('errornocustomersupportcourse', 'local_shop');
                 }
             }

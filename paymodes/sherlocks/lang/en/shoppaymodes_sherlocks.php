@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package    shoppaymodes_sherlocks
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes Sherlocks does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Sherlocks does not directly store any personal data
+ about any user.';
 
 $string['card'] = 'Credit card';
 $string['configsherlocksAPIurl'] = 'This url is usually provided by sherlocks Integration support';
@@ -31,7 +34,8 @@ $string['configsherlockscurrencycode'] = 'Currency code';
 $string['configsherlocksmerchantid'] = 'Merchant ID. Provided by sherlocks.';
 $string['configsherlocksprocessortype'] = 'Determines API Processor type to be used (Linux versions)';
 $string['configsherlockslibrary'] = 'Determines Binary library type to be used (Linux versions)';
-$string['configsherlockslogofilename'] = 'The file name of the logo resource that has been uploaded on the Sherlock management service';
+$string['configsherlockslogofilename'] = 'The file name of the logo resource that has been uploaded on the Sherlocks
+management service';
 $string['enablesherlocks'] = 'Credit card (Sherlocks LCL)';
 $string['enablesherlocks2'] = 'Credit card payment';
 $string['errorcallingAPI'] = 'sherlocks API Call error :<br/>Executable not found (or not executable) in path : {$a}';

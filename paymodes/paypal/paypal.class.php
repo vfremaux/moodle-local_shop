@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    shoppaymodes_paypal
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Paymode main class
+ *
+ * @package  shoppaymodes_paypal
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,10 +34,17 @@ use \local_shop\Shop;
 
 class shop_paymode_paypal extends shop_paymode {
 
+    /**
+     * Constructor
+     * @param Shop $shop
+     */
     public function __construct(&$shop) {
         parent::__construct('paypal', $shop, true, true);
     }
 
+    /**
+     * Is this mode instant payment ?
+     */
     public function is_instant_payment() {
         return true;
     }
@@ -43,9 +52,9 @@ class shop_paymode_paypal extends shop_paymode {
     /**
      * Prints a payment porlet in an order form.
      *
-     * @param object $portlet a data stub that contains required information for the portlet raster
+     * @param object $shoppingcart a data stub that contains required information for the portlet raster
      */
-    public function print_payment_portlet(&$shoppingcart) {
+    public function print_payment_portlet($shoppingcart) {
         global $CFG, $OUTPUT;
 
         $config = get_config('local_shop');
@@ -59,10 +68,12 @@ class shop_paymode_paypal extends shop_paymode {
         }
 
         if (empty($config->test)) {
-            $paypalsupportedlangs = array ('AU', 'AT', 'BE', 'BR', 'CA', 'CH', 'CN', 'DE', 'ES', 'GB',
-                                           'FR', 'IT', 'NL', 'PL', 'PT', 'RU', 'US');
+            $paypalsupportedlangs = [
+                'AU', 'AT', 'BE', 'BR', 'CA', 'CH', 'CN', 'DE', 'ES', 'GB',
+                'FR', 'IT', 'NL', 'PL', 'PT', 'RU', 'US',
+            ];
         } else {
-            $paypalsupportedlangs = array ('US');
+            $paypalsupportedlangs = ['US'];
         }
 
         $template->istesting = $config->test;
@@ -94,7 +105,7 @@ class shop_paymode_paypal extends shop_paymode {
         } else {
             $template->currency = $this->theshop->get_currency();
         }
-        $params = array('shopid' => $this->theshop->id, 'transid' => $shoppingcart->transid);
+        $params = ['shopid' => $this->theshop->id, 'transid' => $shoppingcart->transid];
         $template->returnurl = new moodle_url('/local/shop/paymodes/paypal/process.php', $params);
         $template->notifyurl = new moodle_url('/local/shop/paymodes/paypal/paypal_ipn.php');
         $template->cancelurl = new moodle_url('/local/shop/paymodes/paypal/cancel.php', $params);
@@ -115,20 +126,23 @@ class shop_paymode_paypal extends shop_paymode {
         $template->paypalmsg = get_string('paypalmsg', 'shoppaymodes_paypal');
 
         $template->cancelstr = get_string('cancel');
-        $params = array('step' => 'shop', 'id' => $this->theshop->id);
+        $params = ['step' => 'shop', 'id' => $this->theshop->id];
         $template->cancelurl = new moodle_url('/local/shop/front/view.php', $params);
 
         echo $OUTPUT->render_from_template('shoppaymodes_paypal/paypalbutton', $template);
-
     }
 
     /**
      * prints a payment porlet in an order form
+     * @param BIll $billdata
      */
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info($billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paypal', '');
     }
 
+    /**
+     * Print when payment is complete.
+     */
     public function print_complete() {
         echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
     }
@@ -149,7 +163,7 @@ class shop_paymode_paypal extends shop_paymode {
 
         // Do not cancel shopping cart. User may need another payment method.
 
-        $params = array('view' => 'shop', 'shopid' => $this->theshop->id);
+        $params = ['view' => 'shop', 'shopid' => $this->theshop->id];
         redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
 
@@ -177,7 +191,7 @@ class shop_paymode_paypal extends shop_paymode {
             $afullbill->save(true);
 
             shop_trace("[$transid] Paypal Return Controller Complete : Redirecting");
-            $params = array('view' => 'produce', 'shopid' => $this->theshop->id, 'transid' => $transid);
+            $params = ['view' => 'produce', 'shopid' => $this->theshop->id, 'transid' => $transid];
             redirect(new moodle_url('/local/shop/front/view.php', $params));
         }
     }
@@ -331,7 +345,7 @@ class shop_paymode_paypal extends shop_paymode {
 
             // At this point the IPN is a true return from PAYPAL AND is VERIFIED.
 
-            $DB->set_field('local_shop_paypal_ipn', 'result', 'VERIFIED', array('txnid' => $txnid));
+            $DB->set_field('local_shop_paypal_ipn', 'result', 'VERIFIED', ['txnid' => $txnid]);
             shop_trace("[$transid] Paypal IPN : Recording VERIFIED STATE on ".$txnid);
 
             if ($data->payment_status != "Completed" && $data->payment_status != "Pending") {
@@ -410,6 +424,7 @@ class shop_paymode_paypal extends shop_paymode {
 
     /**
      * provides global settings to add to shop settings when installed
+     * @param objectref &$settings
      */
     public function settings(&$settings) {
 

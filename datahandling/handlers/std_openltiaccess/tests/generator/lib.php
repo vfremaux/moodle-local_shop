@@ -17,8 +17,7 @@
 /**
  * local_shop/handler data generator.
  *
- * @package     local_shop
- * @subpackage  shophandler_std_openltiaccess
+ * @package  shophandler_std_openltiaccess
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -38,6 +37,8 @@ class shophandler_std_openltiaccess_generator extends shophandler_generator_base
      * Constructor
      */
     public function __construct() {
+        global $CFG;
+
         if (!is_dir($CFG->dirroot.'/local_ltiprovider')) {
             throw new Exception("Missing plugins for this handler");
         }

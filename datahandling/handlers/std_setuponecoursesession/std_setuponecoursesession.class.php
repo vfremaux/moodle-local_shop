@@ -17,8 +17,7 @@
 /**
  * Main handler class
  *
- * @package   local_shop
- * @subpackage   shophjandlers_std_setuponecoursesession
+ * @package   shophandlers_std_setuponecoursesession
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -37,7 +36,7 @@ use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
 use local_shop\Customer;
-use moodle_exception;
+use local_shop\CatalogItem;
 
 /**
  * STD_SETUP_ONE_COURSE_SESSION is a standard shop product action handler that allows the shop operator to
@@ -338,9 +337,9 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
 
     /*
      * Gets a thumbnail from course overview files as thumb.
-     * @param object $catalogitem
+     * @param CatalogItem $catalogitem
      */
-    public function get_alternative_thumbnail_url($catalogitem) {
+    public function get_alternative_thumbnail_url(CatalogItem $catalogitem) {
         global $DB, $CFG;
 
         $shouldexist = false;
@@ -398,7 +397,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
      *
      * @param Product $product
      */
-    public function delete(Product &$product) {
+    public function delete(Product $product) {
         global $DB;
 
         if ($product->contexttype == 'userenrol') {

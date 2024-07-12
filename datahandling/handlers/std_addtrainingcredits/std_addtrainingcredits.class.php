@@ -17,8 +17,7 @@
 /**
  * Main handler class.
  *
- * @package     local_shop
- * @subpackage  shophandlers_std_addtrainingcredits
+ * @package  shophandlers_std_addtrainingcredits
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

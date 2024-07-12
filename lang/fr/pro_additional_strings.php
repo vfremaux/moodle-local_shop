@@ -34,7 +34,7 @@ sous certaines conditions, afin de soutenir l\'effort de développement, amélio
 // Caches.
 $string['cachedef_pro'] = 'Stocke des données spécifiques de la zone "pro"';
 
-require_once($CFG->dirroot.'/local/shop/lib.php'); // to get xx_supports_feature();
+require_once($CFG->dirroot.'/local/shop/lib.php'); // To get xx_supports_feature().
 if ('pro' == local_shop_supports_feature()) {
     include($CFG->dirroot.'/local/shop/pro/lang/fr/pro.php');
 }

@@ -17,8 +17,7 @@
 /**
  * Version details
  *
- * @package     local_shop
- * @subpackage  shophandlers_std_addquizattempts
+ * @package  shophandlers_std_addquizattempts
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

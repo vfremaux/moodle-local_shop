@@ -16,13 +16,15 @@
 
 /**
  * @package    shoppaymodes_card
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+
+use local_shop\Shop;
 
 /**
  * A generic sample class for credic card payment
@@ -30,18 +32,25 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
  */
 class shop_paymode_card extends shop_paymode {
 
-    public function __construct(&$shop) {
+    /**
+     * Constructor
+     * @param Shop $shop
+     */
+    public function __construct(Shop $shop) {
         // GENERIC PLUGIN. DO NOT ENABLE!
         parent::__construct('card', $shop, false);
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_payment_portlet(&$billdata) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    public function print_payment_portlet($billdata) {
         return;
     }
 
     // Prints a payment porlet in an order form.
-    public function print_invoice_info(&$billdata = null) {
+    public function print_invoice_info($billdata = null) {
         return;
     }
 

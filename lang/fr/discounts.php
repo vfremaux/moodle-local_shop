@@ -71,7 +71,7 @@ Une remise peut concerner la totalité du catalogue ou uniquement une sélection
 dans celui-ci. Sélectionnez les produits qui seront concernés par la remise.
 ';
 
-$string['ratio_help'] = 'Pourcentage de remise sur la portée. Selon certains choix d\'algorithmes et de données spécifiques, 
+$string['ratio_help'] = 'Pourcentage de remise sur la portée. Selon certains choix d\'algorithmes et de données spécifiques,
 ce taux peut ne pas avoir d\'effet direct et être supplanté par des décisions de l\'algorithme choisi.';
 
 $string['type_help'] = '
