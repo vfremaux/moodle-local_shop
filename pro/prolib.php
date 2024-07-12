@@ -1,6 +1,0 @@
-<?php
-/*   __________________________________________________
-    |              on 2.0.12              |
-    |__________________________________________________|
-*/
- namespace local_shop; defined("\x4d\117\117\104\114\105\137\111\x4e\124\105\x52\x4e\x41\114") || die; require_once $CFG->dirroot . "\57\154\157\143\141\154\57\163\x68\x6f\x70\57\x6c\x69\x62\x2e\160\x68\x70"; require_once $CFG->dirroot . "\x2f\154\157\x63\x61\x6c\57\x76\146\143\157\162\145\x2f\x70\x72\x6f\x2f\x6c\x69\x62\56\x70\150\x70"; final class pro_manager extends \local_vfcore\license_manager { const TRACE_ERRORS = 1; const TRACE_DEBUG = 5; const TRACE_DEBUG_FINE = 10; public static $shortcomponent = "\154\157\143\141\154\x5f\163\150\157\160"; public static $component = "\x6c\157\143\141\x6c\x5f\x73\x68\157\x70"; public static $componentpath = "\154\x6f\x63\141\x6c\x2f\163\150\x6f\x70"; public static $componentsettings = "\154\x6f\x63\x61\154\163\x65\164\164\151\156\x67\163\150\157\x70"; protected function __construct() { assert(1); } public static function instance() { goto SG1ZB; aq1Pe: jH2kq: goto Abf7E; SG1ZB: static $MmfW1; goto SEqwL; Abf7E: return $MmfW1; goto a26dR; SEqwL: if (!is_null($MmfW1)) { goto jH2kq; } goto sMjd6; sMjd6: $MmfW1 = new pro_manager(); goto aq1Pe; a26dR: } }

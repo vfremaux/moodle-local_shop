@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<ruleset name="PHPCS Coding Standards for PHPCompatibility">
+    <description>Check the code of the PHPCompatibility standard itself.</description>
+
+    <!--
+    #############################################################################
+    COMMAND LINE ARGUMENTS
+    https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki/Annotated-ruleset.xml
+    #############################################################################
+    -->
+
+    <file>.</file>
+
+    <!-- Exclude Composer vendor directory. -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Only check PHP files. -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Show progress, show the error codes for each message (source). -->
+    <arg value="ps"/>
+
+    <!-- Strip the filepaths down to the relevant bit. -->
+    <arg name="basepath" value="./"/>
+
+    <!-- Check up to 8 files simultaneously. -->
+    <arg name="parallel" value="8"/>
+
+    <!-- Enable caching to a fixed file. -->
+    <arg name="cache" value=".phpcs.cache"/>
+
+
+    <!--
+    #############################################################################
+    USE THE PHPCSDev RULESET
+    This ruleset checks code against PSR2, PHPCompatibility and various
+    other sniffs.
+    For more information, see: https://github.com/PHPCSStandards/PHPCSDevTools
+    #############################################################################
+    -->
+
+    <config name="testVersion" value="5.4-"/>
+
+    <rule ref="PHPCSDev">
+
+        <!-- To address at a later point in time. -->
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+
+        <!-- Ignoring a number of whitespace issues around blank lines. -->
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.Before"/>
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen"/>
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose"/>
+        <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace"/>
+
+        <!-- Allow for the file docblock on the line directly following the PHP open tag.
+             As the sniff in PHPCS does not use modular error codes (yet - see upstream PR #2729),
+             the complete error code needs to be disabled, not just the bit involving
+             the file docblocks.
+        -->
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock"/>
+
+        <!-- All nice and good, but too much of a fuss for the outer array of nested arrays. -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
+    </rule>
+
+
+    <!--
+    #############################################################################
+    SELECTIVE EXCLUSIONS
+    Exclude specific files for specific sniffs and/or exclude sub-groups in sniffs.
+    #############################################################################
+    -->
+
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>*/phpunit-bootstrap\.php</exclude-pattern>
+        <exclude-pattern>*/PHPCSAliases\.php</exclude-pattern>
+    </rule>
+
+    <!-- No need to be as strict about comment punctuation for the unit tests. -->
+    <rule ref="Generic.Commenting.DocComment.ShortNotCapital">
+        <exclude-pattern>*/PHPCompatibility/Tests/*\.php</exclude-pattern>
+        <exclude-pattern>*/PHPCompatibility/Util/Tests/*\.php</exclude-pattern>
+    </rule>
+
+</ruleset>

@@ -39,7 +39,7 @@ class shop_paymode_check extends shop_paymode {
      * Constructor
      * @param Shop $shop
      */
-    public function __construct(Shop $shop) {
+    public function __construct(?Shop $shop) {
         parent::__construct('check', $shop);
     }
 

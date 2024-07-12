@@ -762,7 +762,7 @@ class shop_products_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
         $name = 'categoryid';
-        $params = [0 => get_string('allcategories', 'local_shop']);
+        $params = [0 => get_string('allcategories', 'local_shop')];
         $categoryselect = $OUTPUT->single_select($url, $name, $catoptions, $current, $params);
         $template->categories = get_string('category', 'local_shop').' : '.$categoryselect;
 

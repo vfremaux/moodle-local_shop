@@ -36,7 +36,7 @@ class shop_paymode_card extends shop_paymode {
      * Constructor
      * @param Shop $shop
      */
-    public function __construct(Shop $shop) {
+    public function __construct(?Shop $shop) {
         // GENERIC PLUGIN. DO NOT ENABLE!
         parent::__construct('card', $shop, false);
     }

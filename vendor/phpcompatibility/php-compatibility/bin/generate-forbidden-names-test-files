@@ -1,0 +1,324 @@
+#!/usr/bin/env php
+<?php
+/**
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
+ *
+ * This script is used to generate the test case specimens for the forbidden-names Sniff.
+ *
+ * @package   PHPCompatibility
+ * @copyright 2012-2020 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
+ *
+ * @since 5.5
+ * @since 10.0.0 Includes the "other" reserved keywords in the generated files.
+ */
+
+// This array is pulled from PHPCompatibility/Sniffs/Keywords/ForbiddenNamesSniff.php
+$invalidNames = [
+    'abstract'      => '5.0',
+    'and'           => 'all',
+    'array'         => 'all',
+    'as'            => 'all',
+    'break'         => 'all',
+    'callable'      => '5.4',
+    'case'          => 'all',
+    'catch'         => '5.0',
+    'class'         => 'all',
+    'clone'         => '5.0',
+    'const'         => 'all',
+    'continue'      => 'all',
+    'declare'       => 'all',
+    'default'       => 'all',
+    'die'           => 'all',
+    'do'            => 'all',
+    'echo'          => 'all',
+    'else'          => 'all',
+    'elseif'        => 'all',
+    'empty'         => 'all',
+    'enddeclare'    => 'all',
+    'endfor'        => 'all',
+    'endforeach'    => 'all',
+    'endif'         => 'all',
+    'endswitch'     => 'all',
+    'endwhile'      => 'all',
+    'eval'          => 'all',
+    'exit'          => 'all',
+    'extends'       => 'all',
+    'final'         => '5.0',
+    'finally'       => '5.5',
+    'fn'            => '7.4',
+    'for'           => 'all',
+    'foreach'       => 'all',
+    'function'      => 'all',
+    'global'        => 'all',
+    'goto'          => '5.3',
+    'if'            => 'all',
+    'implements'    => '5.0',
+    'include'       => 'all',
+    'include_once'  => 'all',
+    'instanceof'    => '5.0',
+    'insteadof'     => '5.4',
+    'interface'     => '5.0',
+    'isset'         => 'all',
+    'list'          => 'all',
+    'match'         => '8.0',
+    'namespace'     => '5.3',
+    'new'           => 'all',
+    'or'            => 'all',
+    'print'         => 'all',
+    'private'       => '5.0',
+    'protected'     => '5.0',
+    'public'        => '5.0',
+    'readonly'      => '8.1',
+    'require'       => 'all',
+    'require_once'  => 'all',
+    'return'        => 'all',
+    'static'        => 'all',
+    'switch'        => 'all',
+    'throw'         => '5.0',
+    'trait'         => '5.4',
+    'try'           => '5.0',
+    'unset'         => 'all',
+    'use'           => 'all',
+    'var'           => 'all',
+    'while'         => 'all',
+    'xor'           => 'all',
+    'yield'         => '5.5',
+    '__CLASS__'     => 'all',
+    '__DIR__'       => '5.3',
+    '__FILE__'      => 'all',
+    '__FUNCTION__'  => 'all',
+    '__LINE__'      => 'all',
+    '__METHOD__'    => 'all',
+    '__NAMESPACE__' => '5.3',
+    '__TRAIT__'     => '5.4',
+];
+
+// This array is pulled from PHPCompatibility/Sniffs/Keywords/ForbiddenNamesSniff.php
+$otherInvalidNames = [
+    'null'     => '7.0',
+    'true'     => '7.0',
+    'false'    => '7.0',
+    'bool'     => '7.0',
+    'int'      => '7.0',
+    'float'    => '7.0',
+    'string'   => '7.0',
+    'iterable' => '7.1',
+    'void'     => '7.1',
+    'object'   => '7.2',
+    'mixed'    => '8.0',
+    'never'    => '8.1',
+
+    // Soft reserved.
+    'resource' => '7.0',
+    'numeric'  => '7.0',
+    'enum'     => '8.1'
+];
+
+// The "other" reserved names are fine to use for function or constant names, so should only be injected in select tests.
+$testsForOtherInvalidNames = [
+    // Declarations.
+    'namespace'        => true,
+    'nested-namespace' => true,
+    'class'            => true,
+    'interface'        => true,
+    'trait'            => true,
+    'enum'             => true,
+    'enum-backed'      => true,
+
+    // Aliases.
+    'use-as'           => true,
+    'multi-use-as'     => true,
+    'group-use-as'     => true,
+];
+
+echo "Generating files containing invalid PHP code that is attempting to use reserved keywords in various capacities.\n\n";
+
+$tests = [
+    /*
+     * Reserved names being used in a declaration.
+     */
+    // Only pre-PHP 8!
+    'namespace'                              => function ($name) use ($invalidNames, $otherInvalidNames) {
+        if ($name === 'namespace') {
+            return '';
+        }
+
+        if ($name === 'Baz'
+            || (isset($invalidNames[$name])
+                && ($invalidNames[$name] === 'all'
+                    || $invalidNames[$name][0] === '4'
+                    || $invalidNames[$name][0] === '5'
+                    || $invalidNames[$name][0] === '7'))
+            || (isset($otherInvalidNames[$name])
+                && $otherInvalidNames[$name][0] === '7')
+        ) {
+            return "namespace $name;\n";
+        }
+
+        return '';
+    },
+    // Only pre-PHP 8!
+    'nested-namespace'                       => function ($name) use ($invalidNames, $otherInvalidNames) {
+        if ($name === 'Baz'
+            || (isset($invalidNames[$name])
+                && ($invalidNames[$name] === 'all'
+                    || $invalidNames[$name][0] === '4'
+                    || $invalidNames[$name][0] === '5'
+                    || $invalidNames[$name][0] === '7'))
+            || (isset($otherInvalidNames[$name])
+                && $otherInvalidNames[$name][0] === '7')
+        ) {
+            $name = ucfirst($name);
+            return "namespace Foo\\{$name}\\Bar;\n";
+        }
+
+        return '';
+    },
+    'class'                                  => function ($name) {
+        return "class $name {}\n";
+    },
+    'interface'                              => function ($name) {
+        $name = ucfirst($name);
+        return "interface $name {}\n";
+    },
+    'trait'                                  => function ($name) {
+        $name = ucfirst($name);
+        return "trait $name {}\n";
+    },
+    'enum'                                   => function ($name) {
+        $name = ucfirst($name);
+        return "enum $name {}\n";
+    },
+    'enum-backed'                            => function ($name) {
+        $name = ucfirst($name);
+        return "enum $name: string implements Foo {}\n";
+    },
+    'function-declare'                       => function ($name) {
+        if ($name === 'readonly') {
+            // Tested separately as there is an exception in place.
+            return '';
+        } else {
+            return "function $name() { }\n";
+        }
+    },
+    // Only pre-PHP 7!
+    'method-declare'                         => function ($name) use ($invalidNames) {
+        if ($name === 'Baz'
+            || isset($invalidNames[$name]) === false
+            || $invalidNames[$name] === 'all'
+            || $invalidNames[$name][0] === '4'
+            || $invalidNames[$name][0] === '5'
+        ) {
+            $name = strtolower($name);
+            return "class Foobar { function $name() { } }\n";
+        }
+
+        return '';
+    },
+    'const'                                  => function ($name) {
+        return "const $name = 1;\n";
+    },
+    // Only pre-PHP 7!
+    'class-const'                            => function ($name) use ($invalidNames) {
+        if ($name === 'class') {
+            return '';
+        }
+
+        if ($name === 'Baz'
+            || isset($invalidNames[$name]) === false
+            || $invalidNames[$name] === 'all'
+            || $invalidNames[$name][0] === '4'
+            || $invalidNames[$name][0] === '5'
+        ) {
+            $name = strtoupper($name);
+            return "class Foobar { const $name = 1; }\n";
+        }
+
+        return '';
+    },
+    'define'                                 => function ($name) {
+        $name = strtoupper($name);
+        return "define('$name', 1);\n";
+    },
+
+    /*
+     * Reserved names being used as an alias.
+     */
+    'use-as'                                 => function ($name) {
+        $name = ucfirst($name);
+        return "use Foobar as $name;\n";
+    },
+    'use-function-as'                        => function ($name) {
+        $name = strtolower($name);
+        return "use function foobar as $name;\n";
+    },
+    'use-const-as'                           => function ($name) {
+        $name = strtoupper($name);
+        return "use const FOOBAR as $name;\n";
+    },
+    'multi-use-as'                           => function ($name) {
+        return "use Foobar as Foo, BarFoo as $name;\n";
+    },
+    'multi-use-function-as'                  => function ($name) {
+        return "use function Foobar as $name, barfoo as Bar;\n";
+    },
+    'multi-use-const-as'                     => function ($name) {
+        return "use const FOOBAR as Foo, BARFOO as $name;\n";
+    },
+    'group-use-as'                           => function ($name) {
+        return "use My\NS\{ Foobar as $name };\n";
+    },
+    'group-use-function-as'                  => function ($name) {
+        $name = strtolower($name);
+        return "use function My\NS\{ foobar as $name, };\n";
+    },
+    'group-use-const-as'                     => function ($name) {
+        $name = strtoupper($name);
+        return "use const My\NS\{ FOOBAR as $name };\n";
+    },
+    'group-use-function-as-in-group'         => function ($name) {
+        return "use My\NS\{ function foobar as $name };\n";
+    },
+    'group-use-const-as-in-group'            => function ($name) {
+        return "use My\NS\{ const FOOBAR as $name, };\n";
+    },
+    'class-use-trait-alias-method'           => function ($name) {
+        if (in_array($name, array('public', 'protected', 'private', 'final'), true) === true) {
+            return '';
+        } else {
+            return "class Foobar { use BazTrait { oldfunction as $name; } }\n";
+        }
+    },
+];
+
+$path = realpath(dirname(__DIR__))
+    . DIRECTORY_SEPARATOR . 'PHPCompatibility'
+    . DIRECTORY_SEPARATOR . 'Tests'
+    . DIRECTORY_SEPARATOR . 'Keywords'
+    . DIRECTORY_SEPARATOR . 'ForbiddenNames';
+
+foreach ($tests as $name => $callback) {
+    $filename = $path . DIRECTORY_SEPARATOR . $name . '.inc';
+    echo "Creating file '$filename'\n";
+    file_put_contents($filename, "<?php\n" . $callback('Baz'));
+}
+
+foreach (array_keys($invalidNames) as $name) {
+    foreach ($tests as $testname => $callback) {
+        $filename = $path . DIRECTORY_SEPARATOR . $testname . '.inc';
+        file_put_contents($filename, $callback($name), FILE_APPEND);
+    }
+}
+
+foreach (array_keys($otherInvalidNames) as $name) {
+    foreach ($tests as $testname => $callback) {
+        if (isset($testsForOtherInvalidNames[$testname]) === false) {
+            continue;
+        }
+
+        $filename = $path . DIRECTORY_SEPARATOR . $testname . '.inc';
+        file_put_contents($filename, $callback($name), FILE_APPEND);
+    }
+}

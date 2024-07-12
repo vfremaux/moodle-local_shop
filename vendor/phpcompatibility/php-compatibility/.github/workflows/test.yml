@@ -1,0 +1,310 @@
+name: Test
+
+on:
+  # Run on pushes to `master` and on all pull requests.
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
+
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # - COMPOSER_ROOT_VERSION is needed to get round the recursive dependency when using CI.
+  COMPOSER_ROOT_VERSION: '10.99.99'
+
+jobs:
+  #### PHP LINT STAGE ####
+  # Linting against high/low of each PHP major should catch everything.
+  # If needs be, we can always add interim versions back at a later point in time.
+  lint:
+    if: ${{ github.ref != 'refs/heads/develop' }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php: ['5.4', '5.6', '7.0', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+
+    name: "Lint: PHP ${{ matrix.php }}"
+    continue-on-error: ${{ matrix.php == '8.4' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          ini-values: error_reporting=-1, display_errors=On, zend.assertions=1
+          coverage: none
+          tools: cs2pr
+
+      - name: 'Composer: adjust dependencies'
+        # Remove PHPUnit requirement to save some bandwidth.
+        run: composer remove --no-update phpunit/phpunit --no-interaction
+
+      # Install dependencies and handle caching in one go.
+      # @link https://github.com/marketplace/actions/install-php-dependencies-with-composer
+      - name: Install Composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM.
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      - name: Lint against parse errors
+        if: ${{ matrix.php != '5.4' && matrix.php != '8.3' }}
+        run: composer lint
+
+      - name: Lint against parse errors
+        if: ${{ matrix.php == '5.4' || matrix.php == '8.3' }}
+        run: composer lint -- --checkstyle | cs2pr
+
+  #### TEST STAGE ####
+  test:
+    if: ${{ github.ref != 'refs/heads/develop' }}
+    # No use running the tests if there is a linting error somewhere as they would fail anyway.
+    needs: lint
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Keys:
+      # - custom_ini: Whether to run with specific custom ini settings to hit very specific
+      #   code conditions.
+      # - experimental: Whether the build is "allowed to fail".
+      matrix:
+        # The GHA matrix works different from Travis.
+        # You can define jobs here and then augment them with extra variables in `include`,
+        # as well as add extra jobs in `include`.
+        # @link https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
+        #
+        # The matrix is set up so as not to duplicate the builds which are run for code coverage.
+        php: ['5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
+        phpcs_version: ['lowest', 'dev-master']
+        experimental: [false]
+
+        include:
+          - php: '7.2'
+            phpcs_version: '^3.10.0'
+            custom_ini: true
+            experimental: false
+
+          # Experimental builds. These are allowed to fail.
+          #- php: '7.4'
+          #  phpcs_version: '4.0.x-dev@dev'
+          #  experimental: true
+
+          - php: '8.4' # Nightly.
+            phpcs_version: 'dev-master'
+            experimental: true
+
+    name: "Test: PHP ${{ matrix.php }}${{ matrix.custom_ini && ' (ini)' || '' }} - PHPCS ${{ matrix.phpcs_version }}"
+
+    continue-on-error: ${{ matrix.experimental }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup ini config
+        id: set_ini
+        run: |
+          # On stable PHPCS versions, allow for PHP deprecation notices.
+          # Unit tests don't need to fail on those for stable releases where those issues won't get fixed anymore.
+          # Also set the "short_open_tag" ini to make sure specific conditions are tested.
+          if [ ${{ matrix.custom_ini }} == "true" ]; then
+            if [ "${{ matrix.phpcs_version }}" != "dev-master" ]; then
+              echo 'PHP_INI=error_reporting=E_ALL & ~E_DEPRECATED, display_errors=On, zend.assertions=1, short_open_tag=On' >> $GITHUB_OUTPUT
+            else
+              echo 'PHP_INI=error_reporting=-1, display_errors=On, short_open_tag=On, zend.assertions=1' >> $GITHUB_OUTPUT
+            fi
+          else
+            if [ "${{ matrix.phpcs_version }}" != "dev-master" ]; then
+              echo 'PHP_INI=error_reporting=E_ALL & ~E_DEPRECATED, display_errors=On, zend.assertions=1' >> $GITHUB_OUTPUT
+            else
+              echo 'PHP_INI=error_reporting=-1, display_errors=On, zend.assertions=1' >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          ini-values: ${{ steps.set_ini.outputs.PHP_INI }}
+          coverage: none
+
+      - name: "Composer: set PHPCS version for tests (master)"
+        if: ${{ matrix.phpcs_version != 'lowest' }}
+        run: composer require squizlabs/php_codesniffer:"${{ matrix.phpcs_version }}" --no-update --no-scripts --no-interaction
+
+      - name: Enable creation of `composer.lock` file
+        if: ${{ matrix.phpcs_version == 'lowest' }}
+        run: composer config --unset lock
+
+      # Install dependencies and handle caching in one go.
+      # @link https://github.com/marketplace/actions/install-php-dependencies-with-composer
+      - name: Install Composer dependencies - normal
+        if: ${{ matrix.php < 8.4 }}
+        uses: "ramsey/composer-install@v3"
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM.
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      # For the PHP "nightly", we need to install with ignore platform reqs as not all dependencies allow it yet.
+      - name: Install Composer dependencies - with ignore platform
+        if: ${{ matrix.php >= 8.4 }}
+        uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: --ignore-platform-req=php
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      - name: "Composer: set PHPCS version for tests (lowest)"
+        if: ${{ matrix.phpcs_version == 'lowest' }}
+        run: composer update squizlabs/php_codesniffer phpcsstandards/phpcsutils --prefer-lowest --no-scripts --no-interaction
+
+      - name: Grab PHPUnit version
+        id: phpunit_version
+        run: echo "VERSION=$(vendor/bin/phpunit --version | grep --only-matching --max-count=1 --extended-regexp '\b[0-9]+\.[0-9]+')" >> $GITHUB_OUTPUT
+
+      - name: Run the unit tests (PHPUnit < 10)
+        if: ${{ ! startsWith( steps.phpunit_version.outputs.VERSION, '10.' ) }}
+        run: vendor/bin/phpunit --no-coverage
+
+      - name: Run the unit tests (PHPUnit 10+)
+        if: ${{ startsWith( steps.phpunit_version.outputs.VERSION, '10.' ) }}
+        run: vendor/bin/phpunit -c phpunit10.xml.dist --no-coverage
+
+
+  #### CODE COVERAGE STAGE ####
+  # N.B.: Coverage is only checked on the lowest and highest stable PHP versions
+  # and low/high of each major for PHPCS.
+  coverage:
+    # No use running the coverage builds if there are failing test builds.
+    needs: test
+    # The default condition is success(), but this is false when one of the previous jobs is skipped (but don't run on forks).
+    if: always() && github.repository_owner == 'PHPCompatibility' && (needs.test.result == 'success' || needs.test.result == 'skipped')
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Keys:
+      # - custom_ini: Whether to run with specific custom ini settings to hit very specific
+      #   code conditions.
+      matrix:
+        include:
+          - php: '8.3'
+            phpcs_version: 'dev-master'
+            custom_ini: true
+          - php: '8.3'
+            phpcs_version: 'lowest'
+
+          - php: '5.4'
+            phpcs_version: 'dev-master'
+          - php: '5.4'
+            phpcs_version: 'lowest'
+            custom_ini: true
+
+    name: "Coverage: PHP ${{ matrix.php }}${{ matrix.custom_ini && ' (ini)' || '' }} - PHPCS ${{ matrix.phpcs_version }}"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup ini config
+        id: set_ini
+        run: |
+          # On stable PHPCS versions, allow for PHP deprecation notices.
+          # Unit tests don't need to fail on those for stable releases where those issues won't get fixed anymore.
+          # Also set the "short_open_tag" ini to make sure specific conditions are tested.
+          if [ ${{ matrix.custom_ini }} == "true" ]; then
+            if [ "${{ matrix.phpcs_version }}" != "dev-master" ]; then
+              echo 'PHP_INI=error_reporting=E_ALL & ~E_DEPRECATED, display_errors=On, zend.assertions=1, short_open_tag=On' >> $GITHUB_OUTPUT
+            else
+              echo 'PHP_INI=error_reporting=-1, display_errors=On, short_open_tag=On, zend.assertions=1' >> $GITHUB_OUTPUT
+            fi
+          else
+            if [ "${{ matrix.phpcs_version }}" != "dev-master" ]; then
+              echo 'PHP_INI=error_reporting=E_ALL & ~E_DEPRECATED, display_errors=On, zend.assertions=1' >> $GITHUB_OUTPUT
+            else
+              echo 'PHP_INI=error_reporting=-1, display_errors=On, zend.assertions=1' >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          ini-values: ${{ steps.set_ini.outputs.PHP_INI }}
+          coverage: xdebug
+
+      - name: "Composer: set PHPCS version for tests (master)"
+        if: ${{ matrix.phpcs_version != 'lowest' }}
+        run: composer require squizlabs/php_codesniffer:"${{ matrix.phpcs_version }}" --no-update --no-scripts --no-interaction
+
+      - name: Enable creation of `composer.lock` file
+        if: ${{ matrix.phpcs_version == 'lowest' }}
+        run: composer config --unset lock
+
+      - name: Install Composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM.
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      - name: "Composer: set PHPCS version for tests (lowest)"
+        if: ${{ matrix.phpcs_version == 'lowest' }}
+        run: composer update squizlabs/php_codesniffer phpcsstandards/phpcsutils --prefer-lowest --no-scripts --no-interaction
+
+      - name: Grab PHPUnit version
+        id: phpunit_version
+        run: echo "VERSION=$(vendor/bin/phpunit --version | grep --only-matching --max-count=1 --extended-regexp '\b[0-9]+\.[0-9]+')" >> $GITHUB_OUTPUT
+
+      - name: "DEBUG: Show grabbed version"
+        run: echo ${{ steps.phpunit_version.outputs.VERSION }}
+
+      # PHPUnit 9.3 started using PHP-Parser for code coverage causing some of our coverage builds to fail.
+      # As of PHPUnit 9.3.4, a cache warming option is available.
+      # Using that option prevents issues with PHP-Parser backfilling PHP tokens when PHPCS does not (yet),
+      # which would otherwise cause tests to fail on tokens being available when they shouldn't be.
+      # As coverage is only run on high/low PHP, the high PHP version will use PHPUnit 10, so just check for that.
+      - name: "Warm the PHPUnit cache (PHPUnit 9.3+)"
+        if: ${{ startsWith( steps.phpunit_version.outputs.VERSION, '10.' ) }}
+        run: vendor/bin/phpunit -c phpunit10.xml.dist --coverage-cache ./build/phpunit-cache --warm-coverage-cache
+
+      - name: "Run the unit tests with code coverage (PHPUnit < 10)"
+        if: ${{ ! startsWith( steps.phpunit_version.outputs.VERSION, '10.' ) }}
+        run: vendor/bin/phpunit
+
+      - name: "Run the unit tests with code coverage (PHPUnit 10+)"
+        if: ${{ startsWith( steps.phpunit_version.outputs.VERSION, '10.' ) }}
+        run: vendor/bin/phpunit -c phpunit10.xml.dist --coverage-cache ./build/phpunit-cache
+
+      - name: Upload coverage results to Coveralls
+        if: ${{ success() }}
+        uses: coverallsapp/github-action@v2
+        with:
+          format: clover
+          file: build/logs/clover.xml
+          flag-name: php-${{ matrix.php }}-phpcs-${{ matrix.phpcs_version }}
+          parallel: true
+
+  coveralls-finish:
+    needs: coverage
+    # Don't run on forks.
+    if: always() && github.repository_owner == 'PHPCompatibility' && needs.coverage.result == 'success'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true

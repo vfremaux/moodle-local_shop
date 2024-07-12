@@ -1,0 +1,115 @@
+name: CS
+
+on:
+  # Run on all pushes and on all pull requests.
+  # Prevent the build from running when there are only irrelevant changes.
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
+
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checkcs:
+    name: 'Basic CS and QA checks'
+    runs-on: ubuntu-latest
+
+    env:
+      XMLLINT_INDENT: '    '
+      # - COMPOSER_ROOT_VERSION is needed to get round the recursive dependency when using CI.
+      COMPOSER_ROOT_VERSION: '10.99.99'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 'latest'
+          coverage: none
+          tools: cs2pr
+
+      - name: 'Composer: adjust dependencies'
+        run: |
+          # Using PHPCS `master` as an early detection system for bugs upstream.
+          composer require --no-update squizlabs/php_codesniffer:"dev-master" --no-interaction
+
+      # Install dependencies and handle caching in one go.
+      # @link https://github.com/marketplace/actions/install-php-dependencies-with-composer
+      - name: Install Composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM.
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      # Updating the lists can fail intermittently, typically after Microsoft has released a new package.
+      # This should not be blocking for this job, so ignore any errors from this step.
+      # Ref: https://github.com/dotnet/core/issues/4167
+      - name: Update the available packages list
+        continue-on-error: true
+        run: sudo apt-get update
+
+      - name: Install xmllint
+        run: sudo apt-get install --no-install-recommends -y libxml2-utils
+
+      # Show XML violations inline in the file diff.
+      # @link https://github.com/marketplace/actions/xmllint-problem-matcher
+      - name: Enable showing XML issues inline
+        uses: korelstar/xmllint-problem-matcher@v1
+
+      # Validate the Ruleset XML file.
+      # @link http://xmlsoft.org/xmllint.html
+      - name: Validate ruleset against schema
+        run: xmllint --noout --schema vendor/squizlabs/php_codesniffer/phpcs.xsd PHPCompatibility/ruleset.xml
+
+      # Check the code-style consistency of the XML file.
+      - name: Check XML code style
+        run: diff -B ./PHPCompatibility/ruleset.xml <(xmllint --format "./PHPCompatibility/ruleset.xml")
+
+      # Validate the Documentation XML files.
+      - name: Validate documentation against schema
+        run: xmllint --noout --schema vendor/phpcsstandards/phpcsdevtools/DocsXsd/phpcsdocs.xsd ./PHPCompatibility/Docs/*/*Standard.xml
+
+      # Check the code-style consistency of the PHP files.
+      - name: Check PHP code style
+        id: phpcs
+        run: vendor/bin/phpcs --no-cache --report-full --report-checkstyle=./phpcs-report.xml
+
+      - name: Show PHPCS results in PR
+        if: ${{ always() && steps.phpcs.outcome == 'failure' }}
+        run: cs2pr ./phpcs-report.xml
+
+      # Check that the sniffs available are feature complete.
+      # For now, just check that all sniffs have unit tests.
+      # At a later stage the documentation check can be activated.
+      - name: Check sniff feature completeness
+        run: composer check-complete
+
+  verify-tests:
+    name: 'Check test files are up to date'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 'latest'
+          ini-values: zend.assertions=1, error_reporting=-1, display_errors=On
+          coverage: none
+
+      - name: Regenerate the test files for the forbidden names test
+        run: php "./bin/generate-forbidden-names-test-files"
+
+      # If the regeneration of the test files yielded changes, this will ensure we fail the build.
+      - name: Ensure version-controlled files are not modified or deleted
+        run: git diff --exit-code

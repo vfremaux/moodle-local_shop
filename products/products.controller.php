@@ -18,7 +18,7 @@
  * Controller for catalog items management
  * @package     local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\backoffice;
@@ -89,7 +89,7 @@ class product_controller {
                 break;
 
             case 'deleteselection' :
-                $this->data->itemids = required_param_['itemids', PARAM_INT);
+                $this->data->itemids = required_param_array('itemids', PARAM_INT);
                 break;
 
             case 'unlink' :
@@ -179,7 +179,7 @@ class product_controller {
                     $this->data->id = $DB->insert_record('local_shop_catalogitem', $this->data);
 
                     // We have items in the set. update relevant products.
-                    if (!empty($this->data->productsinset) && is_[$this->data->productsinset)) {
+                    if (!empty($this->data->productsinset) && is_array($this->data->productsinset)) {
                         foreach ($this->productsinset as $productid) {
                             $record = new StdClass();
                             $record->id = $productid;
@@ -341,7 +341,7 @@ class product_controller {
             case 'makecopy': {
                 // Get source item in master catalog.
                 $item = new CatalogItem($this->data->masteritemid);
-                $result = CatalogItem::get_instances(['code' => $item->code, 'catalogid' => $this->thecatalog->id));
+                $result = CatalogItem::get_instances(['code' => $item->code, 'catalogid' => $this->thecatalog->id]);
                 if (empty($result)) {
                     $item->catalogid = $this->thecatalog->id; // Binding to local catalog.
                     $item->id = 0; // Ensure new record.

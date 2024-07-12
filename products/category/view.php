@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * General view of categories
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../../../config.php');
@@ -43,11 +44,11 @@ $view = optional_param('view', 'viewAllCategories', PARAM_TEXT);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/category/view.php', array('shopid' => $theshop->id));
+$url = new moodle_url('/local/shop/products/category/view.php', ['shopid' => $theshop->id]);
 $PAGE->set_url($url);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$viewurl = new moodle_url('/local/shop/index.php', array('shopid' => $theshop->id));
+$viewurl = new moodle_url('/local/shop/index.php', ['shopid' => $theshop->id]);
 $PAGE->navbar->add(get_string('salesservice', 'local_shop'), $viewurl);
 $PAGE->navbar->add(get_string('category', 'local_shop'));
 

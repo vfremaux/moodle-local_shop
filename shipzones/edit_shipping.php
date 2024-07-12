@@ -16,9 +16,8 @@
 
 /**
  * @package         local_shop
- * @category        local
  * @author          Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright       Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright       Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../../config.php');
@@ -48,7 +47,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/shipzones/edit_shipping.php', array('shippingid' => $shippingid));
+$url = new moodle_url('/local/shop/shipzones/edit_shipping.php', ['shippingid' => $shippingid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -57,12 +56,12 @@ $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/lo
 $PAGE->navbar->add(get_string('shippings', 'local_shop'));
 $PAGE->set_pagelayout('admin');
 
-$products = CatalogItem::get_instances_menu(array('catalogid' => $thecatalog->id), 'name');
-$zones = CatalogShipZone::get_instances_menu(array('catalogid' => $thecatalog->id), 'zonecode');
+$products = CatalogItem::get_instances_menu(['catalogid' => $thecatalog->id], 'name');
+$zones = CatalogShipZone::get_instances_menu(['catalogid' => $thecatalog->id], 'zonecode');
 
 if ($shippingid) {
     $shipping = new CatalogShipping($shippingid);
-    $mform = new ProductShipping_Form('', array('what' => 'edit', 'products' => $products, 'shippingzones' => $zones));
+    $mform = new ProductShipping_Form('', ['what' => 'edit', 'products' => $products, 'shippingzones' => $zones]);
     $shippingrec = $shipping->record;
     $shippingrec->shippingid = $shippinggid;
     $shippingrec->id = $catalogid;
@@ -70,7 +69,7 @@ if ($shippingid) {
 } else {
     $shipping = new CatalogShipping(null);
     $shippingrec = $shipping->record;
-    $mform = new ProductShipping_Form('', array('what' => 'add', 'products' => $products, 'shippingzones' => $zones));
+    $mform = new ProductShipping_Form('', ['what' => 'add', 'products' => $products, 'shippingzones' => $zones]);
     if ($zoneid) {
         $shippingrec->zoneid = $zoneid;
         $mform->freeze('zoneid');
@@ -82,7 +81,7 @@ if ($shippingid) {
     $mform->set_data($shippingrec);
 }
 if ($mform->is_cancelled()) {
-     redirect(new moodle_url('/local/shop/shipzones/zoneindex.php', array('zoneid' => $zoneid)));
+     redirect(new moodle_url('/local/shop/shipzones/zoneindex.php', ['zoneid' => $zoneid]));
 }
 
 if ($data = $mform->get_data()) {
@@ -100,7 +99,7 @@ if ($data = $mform->get_data()) {
     } else {
         $DB->update_record('shop_catalogshipping', $shipping);
     }
-     redirect(new moodle_url('/local/shop/shipzones/zoneindex.php', array('zoneid' => $zoneid)));
+     redirect(new moodle_url('/local/shop/shipzones/zoneindex.php', ['zoneid' => $zoneid]));
 }
 
 echo $OUTPUT->header();

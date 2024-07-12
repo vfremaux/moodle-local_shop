@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Renderer for shipzones management
+ *
  * @package     local_shop
  * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -32,8 +34,16 @@ use local_shop\CatalogShipping;
 use local_shop\Tax;
 use local_shop\Shop;
 
+/**
+ * specialized renderer
+ */
 class shop_shipzones_renderer extends local_shop_base_renderer {
 
+    /**
+     * Prints catalog data
+     * @param Catalog $catalog
+     * @todo : turn into template
+     */
     public function catalog_data($catalog) {
 
         $str = '<div class="shop-table container-fluid">';
@@ -47,7 +57,7 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         $str .= '</div>';
         $str .= '<div class="shop-row row-fluid">';
         $str .= '<div class="shop-cell param">'.get_string('shops', 'local_shop').'</div>';
-        $shopcount = Shop::count(array('catalogid' => $catalog->id));
+        $shopcount = Shop::count(['catalogid' => $catalog->id]);
         $str .= '<div class="value">'.$shopcount.'</div>';
         $str .= '</div>';
 
@@ -56,6 +66,11 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * Prints zone data
+     * @param ShipZone $shipzone
+     * @todo : turn into template
+     */
     public function zone_data($shipzone) {
 
         $str = '';

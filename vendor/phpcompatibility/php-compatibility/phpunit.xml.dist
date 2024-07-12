@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/9.0/phpunit.xsd"
+        bootstrap="./phpunit-bootstrap.php"
+        backupGlobals="true"
+        colors="true"
+        verbose="false"
+        beStrictAboutChangesToGlobalState="true"
+        beStrictAboutOutputDuringTests="true"
+        beStrictAboutTestsThatDoNotTestAnything="true"
+        convertErrorsToExceptions="true"
+        convertWarningsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertDeprecationsToExceptions="true"
+        forceCoversAnnotation="true"
+    >
+    <testsuites>
+        <testsuite name="PHPCompatibility Utilities Tests">
+            <directory suffix="UnitTest.php">./PHPCompatibility/Util/Tests/</directory>
+        </testsuite>
+        <testsuite name="PHPCompatibility Sniffs Tests">
+            <directory suffix="UnitTest.php">./PHPCompatibility/Tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true" processUncoveredFilesFromWhitelist="false">
+            <file>./PHPCompatibility/Sniff.php</file>
+            <file>./PHPCompatibility/AbstractInitialValueSniff.php</file>
+            <file>./PHPCompatibility/AbstractFunctionCallParameterSniff.php</file>
+            <directory>./PHPCompatibility/Sniffs/</directory>
+            <directory>./PHPCompatibility/Exceptions/</directory>
+            <directory>./PHPCompatibility/Helpers/</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" showOnlySummary="true"/>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
+</phpunit>
