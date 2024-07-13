@@ -38,7 +38,7 @@ class shop_paymode_paybox extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct($shop) {
+    public function __construct(?Shop $shop) {
         // To enable paybox in your installation, change second param to "true".
         parent::__construct('paybox', $shop, false, true);
     }
@@ -54,7 +54,8 @@ class shop_paymode_paybox extends shop_paymode {
      * prints a payment porlet in an order form
      * @param Bill $billdata
      */
-    public function print_payment_portlet($billdata) {
+    public function print_payment_portlet(Bill $billdata) {
+        // @todo : implement it.
         echo '<p>Not implemeted Yet!</p> ';
     }
 
@@ -62,7 +63,7 @@ class shop_paymode_paybox extends shop_paymode {
      * prints a payment porlet in an order form
      * @param Bill $billdata
      */
-    public function print_invoice_info($billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paybox', '');
     }
 
@@ -70,7 +71,7 @@ class shop_paymode_paybox extends shop_paymode {
      * Print when payment is complete
      */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**

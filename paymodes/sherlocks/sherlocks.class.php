@@ -84,7 +84,7 @@ class shop_paymode_sherlocks extends shop_paymode {
      * Constructor
      * @param Shop $shop
      */
-    public function __construct(Shop $shop) {
+    public function __construct(?Shop $shop) {
         parent::__construct('sherlocks', $shop, true, true); // Overrides local confirm.
         $overridelocalconfirm = true;
     }
@@ -147,7 +147,7 @@ class shop_paymode_sherlocks extends shop_paymode {
      * Prints a payment porlet in an order form
      * @param Bill $billdata
      */
-    public function print_invoice_info(Bill $billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_sherlocks', $this->name);
     }
 

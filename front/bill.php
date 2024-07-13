@@ -16,15 +16,15 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-use \local_shop\Bill;
+use local_shop\Bill;
 
 $transid = required_param('transid', PARAM_TEXT);
 
@@ -32,7 +32,7 @@ $billrenderer = shop_get_renderer('bills');
 $billrenderer->load_context($theshop, $thecatalog, $theblock);
 
 if (!$bill = Bill::get_by_transaction($transid)) {
-    $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
+    $params = ['view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id]);
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
     $errormessage = get_string('invalidtransid', 'local_shop', $viewurl);
 }
@@ -45,7 +45,7 @@ if (!empty($errormessage)) {
     die;
 }
 
-$realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
+$realized = [SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD];
 if (!in_array($bill->status, $realized)) {
     $billtitlestr = get_string('ordersheet', 'local_shop');
     print_string('ordertempstatusadvice', 'local_shop');
@@ -93,7 +93,7 @@ echo $billrenderer->bill_footer($bill);
 
 echo $renderer->sales_contact();
 
-$params = array('view' => 'shop' , 'id' => $theshop->id, 'blockid' => 0 + @$theblock->id);
+$params = ['view' => 'shop' , 'id' => $theshop->id, 'blockid' => 0 + @$theblock->id];
 $backurl = new moodle_url('/local/shop/front/view.php', $params);
 echo '<center>';
 echo $OUTPUT->single_button($backurl, get_string('backtoshop', 'local_shop'));

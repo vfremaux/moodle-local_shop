@@ -57,7 +57,7 @@ abstract class shop_paymode {
      * @param bool $enabled
      * @param bool $overridelocalconfirm
      */
-    public function __construct($name, $shop, $enabled = true, $overridelocalconfirm = false) {
+    public function __construct(string $name, ?Shop $shop, bool $enabled = true, bool $overridelocalconfirm = false) {
         $this->name = $name;
         $this->theshop = $shop;
         $this->enabled = $enabled;
@@ -76,16 +76,16 @@ abstract class shop_paymode {
     }
 
     /**
-     * Prints a payment portlet in an order form.
-     * @param Bill $billdata
+     * Prints a payment portlet in an order form from the shoppingcart content.
+     * @param object $shoppingcart
      */
-    public abstract function print_payment_portlet($billdata);
+    public abstract function print_payment_portlet($shoppingcart);
 
     /**
      * Prints a payment info on an invoice.
      * @param Bill $billdata
      */
-    public abstract function print_invoice_info($billdata = null);
+    public abstract function print_invoice_info(Bill $billdata = null);
 
     /**
      * Prints a message when transaction is complete.
@@ -199,7 +199,7 @@ abstract class shop_paymode {
      * @param Shop $shop
      * @return an array of paymode objects
      */
-    public static function get_plugins($shop) {
+    public static function get_plugins(?Shop $shop) {
         global $CFG;
 
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
@@ -226,10 +226,10 @@ abstract class shop_paymode {
 
     /**
      * get one plugin instance by name (Factory)
-     * @param object $shop the shop instance we are working on
+     * @param Shop $shop the shop instance we are working on
      * @param string $paymentpluginname instance builder from name
      */
-    public static function get_instance($shop, $paymentpluginname) {
+    public static function get_instance(?Shop $shop, $paymentpluginname) {
         global $CFG;
 
         include_once($CFG->dirroot.'/local/shop/paymodes/'.$paymentpluginname.'/'.$paymentpluginname.'.class.php');

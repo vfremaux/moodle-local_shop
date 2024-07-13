@@ -15,14 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Purchase front step controller
+ *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;
 
-use \StdClass;
+use StdClass;
+use coding_exception;
+use context_system;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -30,9 +35,18 @@ require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
+/**
+ * Front purchase controller : order step (pre checkout)
+ */
 class order_controller extends front_controller_base {
 
-    public function receive($cmd, $data = array()) {
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -54,11 +68,15 @@ class order_controller extends front_controller_base {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $SESSION, $CFG, $SITE, $DB;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         $shoppingcart = $SESSION->shoppingcart;
@@ -78,10 +96,12 @@ class order_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('order');
-                $params = array('view' => $prev,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id,
-                                'back' => 1);
+                $params = [
+                    'view' => $prev,
+                    'shopid' => $this->theshop->id,
+                    'blockid' => 0 + @$this->theblock->id,
+                    'back' => 1
+                ];
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
 
@@ -98,31 +118,33 @@ class order_controller extends front_controller_base {
                     $items += $quant;
                 }
 
-                $vars = array('TRANSACTION' => $shoppingcart->transid,
-                              'SERVER' => $SITE->fullname,
-                              'SERVER_URL' => $CFG->wwwroot,
-                              'SELLER' => $config->sellername,
-                              'FIRSTNAME' => $shoppingcart->customerinfo['firstname'],
-                              'LASTNAME' => $shoppingcart->customerinfo['lastname'],
-                              'MAIL' => $shoppingcart->customerinfo['email'],
-                              'CITY' => $shoppingcart->customerinfo['city'],
-                              'COUNTRY' => $shoppingcart->customerinfo['country'],
-                              'PAYMODE' => $shoppingcart->paymode,
-                              'ITEMS' => $items,
-                              'AMOUNT' => sprintf("%.2f", round($shoppingcart->finaluntaxedtotal, 2)),
-                              'TAXES' => sprintf("%.2f", round($shoppingcart->finaltaxestotal, 2)),
-                              'TTC' => sprintf("%.2f", round($shoppingcart->finaltaxedtotal, 2)));
+                $vars = [
+                    'TRANSACTION' => $shoppingcart->transid,
+                    'SERVER' => $SITE->fullname,
+                    'SERVER_URL' => $CFG->wwwroot,
+                    'SELLER' => $config->sellername,
+                    'FIRSTNAME' => $shoppingcart->customerinfo['firstname'],
+                    'LASTNAME' => $shoppingcart->customerinfo['lastname'],
+                    'MAIL' => $shoppingcart->customerinfo['email'],
+                    'CITY' => $shoppingcart->customerinfo['city'],
+                    'COUNTRY' => $shoppingcart->customerinfo['country'],
+                    'PAYMODE' => $shoppingcart->paymode,
+                    'ITEMS' => $items,
+                    'AMOUNT' => sprintf("%.2f", round($shoppingcart->finaluntaxedtotal, 2)),
+                    'TAXES' => sprintf("%.2f", round($shoppingcart->finaltaxestotal, 2)),
+                    'TTC' => sprintf("%.2f", round($shoppingcart->finaltaxedtotal, 2)),
+                ];
                 $salesnotification = shop_compile_mail_template('transaction_input', $vars, '');
 
-                if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
-                    $systemcontext = \context_system::instance();
-                    $seller = new \StdClass;
+                if ($salesrole = $DB->get_record('role', ['shortname' => 'sales'])) {
+                    $systemcontext = context_system::instance();
+                    $seller = new StdClass();
                     $seller->username = 'moodleseller';
                     $seller->firstname = '';
                     $seller->lastname = $config->sellername;
                     $seller->email = $config->sellermail;
                     $seller->maildisplay = true;
-                    $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
+                    $seller->id = $DB->get_field('user', 'id', ['email' => $config->sellermail]);
 
                     // Add other name fields required by fullname.
                     $morefields = \local_shop\compat::get_name_fields_as_array();
@@ -160,11 +182,13 @@ class order_controller extends front_controller_base {
                 }
 
                 $next = $this->theshop->get_next_step('order');
-                $params = array('view' => $next,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id,
-                                'what' => 'place');
-                return new \moodle_url('/local/shop/front/view.php', $params);
+                $params = [
+                    'view' => $next,
+                    'shopid' => $this->theshop->id,
+                    'blockid' => 0 + @$this->theblock->id,
+                    'what' => 'place',
+                ];
+                return new moodle_url('/local/shop/front/view.php', $params);
             }
         }
     }

@@ -16,15 +16,15 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) {
-    $params = array('shopid' => $theshop->id, 'blockid' => 0 + @$theblock->id, 'view' => 'shop');
+    $params = ['shopid' => $theshop->id, 'blockid' => 0 + @$theblock->id, 'view' => 'shop'];
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
@@ -73,7 +73,7 @@ if (empty($SESSION->shoppingcart->eulas)) {
     }
 }
 $params = array('eulas' => $SESSION->shoppingcart->eulas);
-$PAGE->requires->js_call_amd('local_shop/front', 'initeulas', array($params));
+$PAGE->requires->js_call_amd('local_shop/front', 'initeulas', [$params]);
 
 // Print main ordering table.
 
@@ -86,7 +86,7 @@ echo '<table cellspacing="5" class="generaltable" width="100%">';
 
 $null = null;
 echo $renderer->order_line($null);
-$hasrequireddata = array();
+$hasrequireddata = [];
 
 foreach ($SESSION->shoppingcart->order as $shortname => $fooq) {
     echo $renderer->order_line($shortname);
@@ -114,7 +114,7 @@ if (!empty($config->sellermail)) {
 
 echo $OUTPUT->box_end();
 
-$options = array();
+$options = [];
 $options['inform'] = true;
 $options['nextstring'] = 'launch';
 if (!shop_has_enabled_paymodes($theshop)) {

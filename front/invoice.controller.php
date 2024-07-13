@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Purchase front step controller
+ *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;
@@ -26,15 +28,27 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
+use StdClass;
+use moodle_url;
+
+/**
+ * Front purchase controller : invoice step
+ */
 class invoice_controller extends front_controller_base {
 
-    public function receive($cmd, $data = array()) {
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
         switch ($cmd) {
@@ -44,6 +58,10 @@ class invoice_controller extends front_controller_base {
         }
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $SESSION;
 
@@ -51,14 +69,14 @@ class invoice_controller extends front_controller_base {
 
             if ($this->data->customerservice) {
                 if (!empty($theshop->defaultcustomersupportcourse) && $SESSION->shoppingcart->customerinfo->hasaccount) {
-                    $targeturl = new \moodle_url('/course/view.php', array('id' => $theshop->defaultcustomersupportcourse));
+                    $targeturl = new moodle_url('/course/view.php', ['id' => $theshop->defaultcustomersupportcourse]);
                     if (isloggedin()) {
                         /*
                          * clear all session data and go back to shop front or go to
                          * customer service if asked to and is able to go there...
                          */
                         unset($SESSION->shoppingcart);
-                        redirect(new \moodle_url('/login/index.php', array('wantsurl' => urlencode($targeturl))));
+                        redirect(new moodle_url('/login/index.php', ['wantsurl' => urlencode($targeturl)]));
                     } else {
                         /*
                          * clear all session data and go back to shop front or go to
@@ -71,7 +89,7 @@ class invoice_controller extends front_controller_base {
             }
 
             $next = $this->theshop->get_next_step('invoice');
-            $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            $params = ['view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id];
             redirect(new \moodle_url('/local/shop/front/view.php', $params));
         }
     }

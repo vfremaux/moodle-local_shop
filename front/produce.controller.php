@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Purchase front step controller
+ * 
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;
@@ -33,23 +35,29 @@ require_once($CFG->dirroot.'/auth/ticket/lib.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/production.php');
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
+/**
+ * Front purchase controller : production step (post payment)
+ */
 class production_controller extends front_controller_base {
 
-    /**
-     * this boolean value is true if the call comes from an IPN asynchronous paiement return.
-     */
+    /** @var this boolean value is true if the call comes from an IPN asynchronous paiement return. */
     protected $ipncall;
 
-    /**
-     * this boolean value is true if the payment is interactive, using online payment methods.
-     */
+    /** @var  this boolean value is true if the payment is interactive, using online payment methods. */
     public $interactive;
 
-    /**
-     * The complete bill to produce.
-     */
+    /** @var The complete bill to produce. */
     protected $abill;
 
+    /**
+     * Constructor
+     * @param &$theshop
+     * @param &$thecatalog
+     * @param &$theblock,
+     * @param &$afullbill
+     * @param bool $ipncall
+     * @param bool $interactive
+     */
     public function __construct(&$theshop, &$thecatalog, &$theblock, &$afullbill, $ipncall = false, $interactive = false) {
         $this->abill = $afullbill;
         $this->ipncall = $ipncall;
@@ -61,7 +69,7 @@ class production_controller extends front_controller_base {
      * In this case, all the data resides already in session.
      * there is nothing to get from a query.
      */
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -82,6 +90,10 @@ class production_controller extends front_controller_base {
         }
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd, $holding = false) {
         global $SESSION, $DB, $CFG, $SITE, $OUTPUT;
 
@@ -90,11 +102,13 @@ class production_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             // No back possible after production.
             $next = $this->abill->theshop->get_next_step('produce');
-            $params = array('view' => $next,
-                            'shopid' => $this->abill->theshop->id,
-                            'blockid' => 0 + @$this->abill->theblock->id,
-                            'transid' => $this->abill->transactionid);
-            $url = new \moodle_url('/local/shop/front/view.php', $params);
+            $params = [
+                'view' => $next,
+                'shopid' => $this->abill->theshop->id,
+                'blockid' => 0 + @$this->abill->theblock->id,
+                'transid' => $this->abill->transactionid,
+            ];
+            $url = new moodle_url('/local/shop/front/view.php', $params);
             if (empty($SESSION->shoppingcart->debug)) {
                 redirect($url);
             } else {
@@ -139,14 +153,14 @@ class production_controller extends front_controller_base {
 
                 if ($this->interactive) {
                     if ($this->ipncall) {
-                        mtrace("[{$afullbill->transactionid}] ".'Order confirm (online asynchronous payment return, bill is expected to be PENDING)');
+                        $mess = "[{$afullbill->transactionid}] ";
+                        $mess .= 'Order confirm (online asynchronous payment return, bill is expected to be PENDING)';
+                        mtrace($mess);
                     }
                 } else {
                     shop_trace("[{$afullbill->transactionid}] ".'Order confirm (offline payments, bill is expected to be PENDING)');
                 }
 
-                // mtrace("[{$afullbill->transactionid}] ".'Production starting ...');
-                // mtrace("[{$afullbill->transactionid}] ".'Production Controller : Pre Pay process');
                 $productionfeedback = produce_prepay($afullbill);
                 /*
                  * log new production data into bill record
@@ -171,7 +185,7 @@ class production_controller extends front_controller_base {
                 mtrace($message);
             }
 
-            $pendingstates = array(SHOP_BILL_PENDING, SHOP_BILL_SOLDOUT);
+            $pendingstates = [SHOP_BILL_PENDING, SHOP_BILL_SOLDOUT];
             if (in_array($afullbill->status, $pendingstates) || $overriding) {
                 /*
                  * when using the controller to finish a started production, do not
@@ -247,46 +261,51 @@ class production_controller extends front_controller_base {
 
         // Notify end user.
         // Feedback customer with mail confirmation.
-        $customer = $DB->get_record('local_shop_customer', array('id' => $afullbill->customerid));
+        $customer = $DB->get_record('local_shop_customer', ['id' => $afullbill->customerid]);
 
         if (empty($afullbill->customeruser)) {
-            $afullbill->customeruser = $DB->get_record('user', array('id' => $afullbill->customer->hasaccount));
+            $afullbill->customeruser = $DB->get_record('user', ['id' => $afullbill->customer->hasaccount]);
         }
 
         if ($afullbill->customeruser) {
-            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $afullbill->id, 'transid' => $afullbill->transactionid));
+            $params = ['billid' => $afullbill->id, 'transid' => $afullbill->transactionid];
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', $params);
             $ticket = ticket_generate($afullbill->customeruser, 'immediate access', $billurl);
         } else {
             $ticket = 'NOUSER';
         }
 
         $paymodename = get_string($afullbill->paymode, 'shoppaymodes_'.$afullbill->paymode);
-        $vars = array('SERVER' => $SITE->shortname,
-                      'SERVER_URL' => $CFG->wwwroot,
-                      'SELLER' => $config->sellername,
-                      'FIRSTNAME' => $customer->firstname,
-                      'LASTNAME' => $customer->lastname,
-                      'MAIL' => $customer->email,
-                      'CITY' => $customer->city,
-                      'COUNTRY' => $customer->country,
-                      'ITEMS' => $afullbill->itemcount,
-                      'PAYMODE' => $paymodename,
-                      'AMOUNT' => sprintf("%.2f", round($afullbill->amount, 2)),
-                      'TICKET' => $ticket);
+        $vars = [
+            'SERVER' => $SITE->shortname,
+            'SERVER_URL' => $CFG->wwwroot,
+            'SELLER' => $config->sellername,
+            'FIRSTNAME' => $customer->firstname,
+            'LASTNAME' => $customer->lastname,
+            'MAIL' => $customer->email,
+            'CITY' => $customer->city,
+            'COUNTRY' => $customer->country,
+            'ITEMS' => $afullbill->itemcount,
+            'PAYMODE' => $paymodename,
+            'AMOUNT' => sprintf("%.2f", round($afullbill->amount, 2)),
+            'TICKET' => $ticket,
+        ];
         $notification = shop_compile_mail_template('sales_feedback', $vars, '');
-        $params = array('id' => $afullbill->shopid,
-                        'blockid' => $afullbill->blockid,
-                        'view' => 'bill',
-                        'transid' => $afullbill->transactionid);
-        $customerbillviewurl = new \moodle_url('/local/shop/front/view.php', $params);
+        $params = [
+            'id' => $afullbill->shopid,
+            'blockid' => $afullbill->blockid,
+            'view' => 'bill',
+            'transid' => $afullbill->transactionid,
+        ];
+        $customerbillviewurl = new moodle_url('/local/shop/front/view.php', $params);
 
-        $seller = new StdClass;
-        $seller->id = $DB->get_field('user', 'id', array('username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id));
+        $seller = new StdClass();
+        $seller->id = $DB->get_field('user', 'id', ['username' => 'admin', 'mnethostid' => $CFG->mnet_localhost_id]);
         $seller->firstname = '';
         $seller->lastname = $config->sellername;
         $seller->email = $config->sellermail;
         $seller->maildisplay = true;
-        $seller->id = $DB->get_field('user', 'id', array('email' => $config->sellermail));
+        $seller->id = $DB->get_field('user', 'id', ['email' => $config->sellermail]);
 
         // Complete seller with expected fields.
         $fields = \local_shop\compat::get_name_fields_as_array();
@@ -328,30 +347,34 @@ class production_controller extends front_controller_base {
 
         // Notify sales forces and administrator.
         // Send final notification by mail if something has been done the sales administrators users should know.
-        $vars = array('TRANSACTION' => $afullbill->transactionid,
-                      'SERVER' => $SITE->fullname,
-                      'SERVER_URL' => $CFG->wwwroot,
-                      'SELLER' => $config->sellername,
-                      'FIRSTNAME' => $customer->firstname,
-                      'LASTNAME' => $customer->lastname,
-                      'MAIL' => $customer->email,
-                      'CITY' => $customer->city,
-                      'COUNTRY' => $customer->country,
-                      'PAYMODE' => $afullbill->paymode,
-                      'ITEMS' => $afullbill->itemcount,
-                      'AMOUNT' => sprintf("%.2f", round($afullbill->untaxedamount, 2)),
-                      'TAXES' => sprintf("%.2f", round($afullbill->taxes, 2)),
-                      'TTC' => sprintf("%.2f", round($afullbill->amount, 2)));
+        $vars = [
+            'TRANSACTION' => $afullbill->transactionid,
+            'SERVER' => $SITE->fullname,
+            'SERVER_URL' => $CFG->wwwroot,
+            'SELLER' => $config->sellername,
+            'FIRSTNAME' => $customer->firstname,
+            'LASTNAME' => $customer->lastname,
+            'MAIL' => $customer->email,
+            'CITY' => $customer->city,
+            'COUNTRY' => $customer->country,
+            'PAYMODE' => $afullbill->paymode,
+            'ITEMS' => $afullbill->itemcount,
+            'AMOUNT' => sprintf("%.2f", round($afullbill->untaxedamount, 2)),
+            'TAXES' => sprintf("%.2f", round($afullbill->taxes, 2)),
+            'TTC' => sprintf("%.2f", round($afullbill->amount, 2)),
+        ];
 
         $salesnotification = shop_compile_mail_template('transaction_confirm', $vars, '');
 
-        $params = array('id' => $afullbill->shopid,
-                        'view' => 'viewBill',
-                        'transid' => $afullbill->transactionid);
+        $params = [
+            'id' => $afullbill->shopid,
+            'view' => 'viewBill',
+            'transid' => $afullbill->transactionid,
+        ];
 
         $administratorviewurl = new \moodle_url('/local/shop/bills/view.php', $params);;
 
-        if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
+        if ($salesrole = $DB->get_record('role', ['shortname' => 'sales'])) {
             // If the sales role is defined.
 
             $title = $SITE->shortname.' Backoffice : '.get_string('orderconfirm', 'local_shop');

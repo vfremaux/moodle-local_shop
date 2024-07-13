@@ -38,13 +38,14 @@ class shop_paymode_test extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct(&$theshop) {
+    public function __construct(?Shop $theshop) {
         parent::__construct('test', $theshop, true, true);
     }
 
     /**
      * Prints a payment porlet in an order form.
      * @param objectref &$shoppingcart
+     * @tot : turn into template
      */
     public function print_payment_portlet(&$shoppingcart) {
 
@@ -109,7 +110,7 @@ class shop_paymode_test extends shop_paymode {
      * Prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    public function print_invoice_info($billdata = null) {
+    public function print_invoice_info(Bill $billdata = null) {
         assert(true);
     }
 
@@ -121,10 +122,11 @@ class shop_paymode_test extends shop_paymode {
     }
 
     /**
-     * Processes a payment return.
+     * Processes a payment return. this is a special case that admits being triggered
+     * by a pre-existing Bill.
      * @param Bill ref &$billdata the processed bill. Bill attributes may change
      */
-    public function process(&$billdata = null) {
+    public function process(?Bill $billdata = null) {
         global $OUTPUT;
 
         if (!$billdata) {

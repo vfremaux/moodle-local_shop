@@ -29,16 +29,19 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-use \local_shop\Bill;
-use \local_shop\Shop;
+use local_shop\Bill;
+use local_shop\Shop;
 
+/**
+ * A class to use when paying by Paypal accounts.
+ */
 class shop_paymode_paypal extends shop_paymode {
 
     /**
      * Constructor
      * @param Shop $shop
      */
-    public function __construct(&$shop) {
+    public function __construct(?Shop $shop) {
         parent::__construct('paypal', $shop, true, true);
     }
 
@@ -134,9 +137,9 @@ class shop_paymode_paypal extends shop_paymode {
 
     /**
      * prints a payment porlet in an order form
-     * @param BIll $billdata
+     * @param Bill $billdata
      */
-    public function print_invoice_info($billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paypal', '');
     }
 
@@ -144,7 +147,7 @@ class shop_paymode_paypal extends shop_paymode {
      * Print when payment is complete.
      */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**

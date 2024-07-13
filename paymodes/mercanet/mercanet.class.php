@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main paymode class
+ *
  * @package    shoppaymodes_mercanet
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -93,7 +95,7 @@ class shop_paymode_mercanet extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct($shop) {
+    public function __construct(?Shop $shop) {
         parent::__construct('mercanet', $shop, true, true); // Overrides local confirm.
         $overridelocalconfirm = true;
     }
@@ -154,7 +156,7 @@ class shop_paymode_mercanet extends shop_paymode {
      * Prints a payment porlet in an order form
      * @param Bill $billdata
      */
-    public function print_invoice_info(Bill $billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_mercanet', $this->name);
     }
 

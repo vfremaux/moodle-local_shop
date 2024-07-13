@@ -38,43 +38,71 @@ class shop_paymode_freeorder extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct($shop) {
+    public function __construct(?Shop $shop) {
         // NOT ENABLED AS NOT SELECTABLE METHOD!
         parent::__construct('freeorder', $shop, false);
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_payment_portlet(&$billdata) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    public function print_payment_portlet(Bill $billdata) {
         // No portlet.
+        assert(true);
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_invoice_info(&$billdata = null) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    public function print_invoice_info(?Bill $billdata = null) {
+        // Nothing to print.
+        assert(true);
     }
 
+    /**
+     * Print something on payment completion.
+     */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
-    // Processes a payment return.
+    /**
+     * Processes a payment return.
+     */
     public function process() {
+        assert(true);
     }
 
-    // Processes a payment asynchronoous confirmation.
+    /**
+     * Processes a payment asynchronoous confirmation.
+     */
     public function process_ipn() {
+        assert(true);
     }
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Has this method configuration ?
+     */
     public function has_config() {
         return false;
     }
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Is this payment method interactive (needs customer payment action) ? 
+     */
     public function is_interactive() {
+        // Non interactive.
         return false;
     }
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
+     */
     public function settings(&$settings) {
+        // No settings.
+        assert(true);
     }
 }

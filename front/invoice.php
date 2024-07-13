@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -31,7 +31,7 @@ $action = optional_param('what', '', PARAM_TEXT);
 $transid = required_param('transid', PARAM_RAW);
 
 if (!$afullbill = Bill::get_by_transaction($transid)) {
-    $params = array('view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id));
+    $params = ['view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id)];
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
     throw new moodle_exception(get_string('invalidtransid', 'local_shop', $viewurl));
 }
@@ -107,8 +107,8 @@ if ($afullbill->status == SHOP_BILL_SOLDOUT || $afullbill->status == SHOP_BILL_C
 } else {
     echo $OUTPUT->box_start();
     echo $config->sellername.' ';
-    echo shop_compile_mail_template('post_billing_message', array(), '');
-    echo shop_compile_mail_template('pending_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$afullbill->paymode);
+    echo shop_compile_mail_template('post_billing_message', [], '');
+    echo shop_compile_mail_template('pending_followup_text', ['SUPPORT' => $supportstr], 'shoppaymodes_'.$afullbill->paymode);
     echo $OUTPUT->box_end();
 }
 
@@ -116,7 +116,7 @@ echo $renderer->printable_bill_link($afullbill, $transid);
 
 // If testing the shop, provide a manual link to generate the paypal_ipn call.
 if ($config->test && $afullbill->paymode == 'paypal') {
-    require_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
+    include_once($CFG->dirroot.'/local/shop/paymodes/paypal/ipn_lib.php');
     paypal_print_test_ipn_link($transid, $theshop->id);
 }
 

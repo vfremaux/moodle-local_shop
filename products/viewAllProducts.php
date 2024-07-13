@@ -28,8 +28,8 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-use \local_shop\Catalog;
-use \local_shop\Shop;
+use local_shop\Catalog;
+use local_shop\Shop;
 
 $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
@@ -54,7 +54,7 @@ if ($action != '') {
     $controller->receive($action);
     $controller->process($action);
 }
-$products = array();
+$products = [];
 
 $thecatalog->get_all_products_for_admin($products);
 

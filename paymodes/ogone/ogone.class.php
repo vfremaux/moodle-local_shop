@@ -18,8 +18,8 @@
  * Paymode main class
  *
  * @package    shoppaymodes_ogone
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -56,7 +56,7 @@ class shop_paymode_ogone extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct($shop) {
+    public function __construct(?Shop $shop) {
         // To enable ogone in your installation, change second param to "true".
         parent::__construct('ogone', $shop, true, true);
     }
@@ -153,7 +153,7 @@ class shop_paymode_ogone extends shop_paymode {
      * prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    public function print_invoice_info($billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paybox');
     }
 

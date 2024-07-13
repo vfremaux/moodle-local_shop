@@ -41,7 +41,7 @@ class shop_paymode_delegated extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct($theshop) {
+    public function __construct(?Shop $theshop) {
         parent::__construct('transfer', $theshop);
     }
 
@@ -56,7 +56,7 @@ class shop_paymode_delegated extends shop_paymode {
      * Prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    public function print_invoice_info($billdata = null) {
+    public function print_invoice_info(Bill $billdata = null) {
     }
 
     /**
@@ -84,7 +84,7 @@ class shop_paymode_delegated extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @params arrayref &$settings
+     * @params objectref &$settings
      */
     public function settings(&$settings) {
         assert(true);

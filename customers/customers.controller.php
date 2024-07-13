@@ -18,9 +18,8 @@
  * Controller for the customer screen responses.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @usecase deletecustomer
@@ -33,9 +32,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-use \local_shop\Customer;
-use \local_shop\Bill;
+use local_shop\Customer;
+use local_shop\Bill;
 
+/**
+ * A controller for managing customer accounts
+ */
 class customers_controller {
 
     protected $data;

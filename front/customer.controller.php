@@ -15,26 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Purchase front step controller
+ *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;
 
-use \moodle_url;
-use \StdClass;
+use moodle_url;
+use StdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
+/**
+ * Front purchase controller : customer info step
+ */
 class customer_controller extends front_controller_base {
 
     /**
-     *
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
      */
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
 
         if (!empty($data)) {
             // Data is fed from outside.
@@ -79,18 +87,23 @@ class customer_controller extends front_controller_base {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $SESSION, $USER, $DB;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         $config = get_config('local_shop');
 
         if ($cmd == 'login') {
 
-            $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', ['view' => 'customer', 'shopid' => $this->theshop->id]);
+            $params = ['view' => 'customer', 'shopid' => $this->theshop->id];
+            $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', $params);
             redirect(get_login_url());
 
         } else if ($cmd == 'revalidate') {
@@ -123,7 +136,7 @@ class customer_controller extends front_controller_base {
             }
 
             if (!empty($this->data->back)) {
-                $params = array('view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1);
+                $params = ['view' => $this->theshop->get_prev_step('customer'), 'shopid' => $this->theshop->id, 'back' => 1];
                 return new moodle_url('/local/shop/front/view.php', $params);
             }
 
@@ -143,7 +156,7 @@ class customer_controller extends front_controller_base {
                  * process. We will always update data for the same email.
                  * this is not considered as reliable data, user accounts are...
                  */
-                $params = array('email' => $shoppingcart->customerinfo['email']);
+                $params = ['email' => $shoppingcart->customerinfo['email']];
                 if (!$customer = $DB->get_record('local_shop_customer', $params)) {
                     $customer = (object) $shoppingcart->customerinfo;
                     $customer->timecreated = time();
@@ -169,7 +182,7 @@ class customer_controller extends front_controller_base {
                 }
 
                 $next = $this->theshop->get_next_step('customer');
-                $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+                $params = ['view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id];
                 return new \moodle_url('/local/shop/front/view.php', $params);
             }
         }

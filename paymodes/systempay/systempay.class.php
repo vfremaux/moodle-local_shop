@@ -29,8 +29,8 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-use \local_shop\Bill;
-use \local_shop\Shop;
+use local_shop\Bill;
+use local_shop\Shop;
 
 // Response codes (vads_status).
 define('SP_PAYMENT_ACCEPTED', '00'); // Paiement réalisé avec succès.
@@ -179,7 +179,7 @@ class shop_paymode_systempay extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct(&$theshop) {
+    public function __construct(?Shop $theshop) {
         parent::__construct('systempay', $theshop, true, true);
     }
 
@@ -228,7 +228,7 @@ class shop_paymode_systempay extends shop_paymode {
      * Prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    function print_invoice_info(Bill $billdata = null) {
+    function print_invoice_info(?Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_systempay', $this->name);
     }
 
@@ -337,7 +337,6 @@ class shop_paymode_systempay extends shop_paymode {
             $params = ['view' => 'shop', 'shopid' => $shopid, 'transid' => $transid];
             redirect(new moodle_url('/local/shop/front/view.php', $params));
         }
-
     }
 
     /**

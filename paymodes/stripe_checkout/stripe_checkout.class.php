@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main payumode class
+ *
  * @package    shoppaymodes_stripe_checkout
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -28,14 +30,18 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/stripe_checkout/extralib/stripe-php/init.php');
 
 use local_shop\Shop;
+use local_shop\Bill;
 
+/**
+ * A class to pay using a stripe_checkout broker
+ */
 class shop_paymode_stripe_checkout extends shop_paymode {
 
     /**
      * Constructor
      * @param Shop $shop
      */
-    public function __construct($shop) {
+    public function __construct(?Shop $shop) {
         // To enable stripe_checkout in your installation, change second param to "true".
         parent::__construct('stripe_checkout', $shop, true, true);
     }
@@ -94,7 +100,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
             $template->sid = $session->id;
 
             // Records payment intent id in session.
-            $shoppingcart->stripe = new StdClass;
+            $shoppingcart->stripe = new StdClass();
             $shoppingcart->onlinetransactionid = $session->payment_intent;
         }
 
@@ -105,7 +111,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
      * prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    public function print_invoice_info($billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_stripe_checkout');
     }
 
@@ -113,7 +119,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
      * Print when payment is complete
      */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**
@@ -129,7 +135,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         // There is no handling of interactive action.
 
         $transid = required_param('transid', PARAM_TEXT);
-        $afullbill = \local_shop\Bill::get_by_transaction($transid);
+        $afullbill = Bill::get_by_transaction($transid);
 
         if ($afullbill->status == SHOP_BILL_PLACED) {
             $mess = "Stripe WebHooks have failed to produce your order. ";
@@ -314,7 +320,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         if ($transid = required_param('transid', PARAM_TEXT)) {
             shop_trace('[$transid] Stripe Checkout Payment Cancelled');
 
-            $afullbill = \local_shop\Bill::get_by_transaction($transid);
+            $afullbill = Bill::get_by_transaction($transid);
             $afullbill->onlinetransactionid = $transid;
             $afullbill->paymode = 'ogone';
             $afullbill->status = SHOP_BILL_CANCELLED;
@@ -334,6 +340,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
      */
     public function settings(&$settings) {
 

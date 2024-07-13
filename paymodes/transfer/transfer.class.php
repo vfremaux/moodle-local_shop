@@ -37,15 +37,15 @@ class shop_paymode_transfer extends shop_paymode {
      * Constructor
      * @param Shop $theshop
      */
-    public function __construct($theshop) {
+    public function __construct(?Shop $theshop) {
         parent::__construct('transfer', $shopblockinstance);
     }
 
     /**
      * Prints a payment porlet in an order form.
-     * @param Bill $billdata
+     * @param objectref $shoppingcart
      */
-    public function print_payment_portlet(Bill $billdata) {
+    public function print_payment_portlet($shoppingcart) {
 
         $proc = 1;
 
@@ -75,7 +75,7 @@ class shop_paymode_transfer extends shop_paymode {
      * Prints a payment portlet in an invoice.
      * @param Bill $billdata
      */
-    public function print_invoice_info($billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
 
         $proc = 1;
 
@@ -111,7 +111,8 @@ class shop_paymode_transfer extends shop_paymode {
 
     /**
      * In transfer mode, there is no immediate payment return.
-     * So process 
+     * So it can be processed as payed immediately. Process action will need
+     * an operator action in the backoffice.
      */
     public function process() {
         // Void.
@@ -120,6 +121,7 @@ class shop_paymode_transfer extends shop_paymode {
 
     /**
      * Processes a payment asynchronoous confirmation.
+     * Not relevant for transfer payments.
      */
     public function process_ipn() {
         // No IPN for offline payment.

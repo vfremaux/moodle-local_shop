@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -45,7 +44,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', array('item' => $zoneid));
+$url = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', ['item' => $zoneid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -59,12 +58,12 @@ $PAGE->set_pagelayout('admin');
 
 if ($zoneid) {
     $zone = new CatalogShipZone($zoneid);
-    $mform = new ShippingZone_Form('', array('what' => 'edit'));
+    $mform = new ShippingZone_Form('', ['what' => 'edit']);
     $zonerec = $zone->record;
     $zonerec->zoneid = $zoneid;
     $mform->set_data($zonerec);
 } else {
-    $mform = new ShippingZone_Form('', array('what' => 'add'));
+    $mform = new ShippingZone_Form('', ['what' => 'add']);
     $zone = new CatalogShipZone();
     $zonerec = $zone->record;
     $mform->set_data($zonerec);

@@ -18,9 +18,8 @@
  * controller for searching in products
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +27,7 @@ namespace local_shop\productinstances;
 
 defined('MOODLE_INTERNAL') || die;
 
-use \moodle_url;
+use moodle_url;
 
 class search_controller {
 

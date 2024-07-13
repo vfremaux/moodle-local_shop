@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
+use coding_exception;
 use local_shop\Shop;
 
 /**
@@ -79,7 +80,7 @@ class reset_controller {
         global $OUTPUT, $DB, $CFG;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         $out = '<code>';

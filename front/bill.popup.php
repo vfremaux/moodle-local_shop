@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../../config.php');
@@ -27,7 +26,7 @@ require_once($CFG->dirroot.'/local/shop/front/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
-use \local_shop\Bill;
+use local_shop\Bill;
 
 $config = get_config('local_shop');
 
@@ -37,33 +36,33 @@ $billid = required_param('billid', PARAM_INT);
 
 if ($transid) {
     if (!$afullbill = Bill::get_by_transaction($transid)) {
-        $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
+        $params = ['view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id];
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         throw new moodle_exception(get_string('invalidtransid', 'local_shop', $viewurl));
     }
 } else if ($billid) {
     require_login();
     if (!$afullbill = new Bill($billid)) {
-        $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id);
+        $params = ['view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id];
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         throw new moodle_exception(get_string('invalidbillid', 'local_shop', $viewurl));
     }
 
     $systemcontext = context_system::instance();
     if (($afullbill->customer->hasaccount != $USER->id) &&
-            !has_any_capability(array('local/shop:salesadmin', 'moodle/site:config'), $systemcontext)) {
-        $params = array('view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->instance->id);
+            !has_any_capability(['local/shop:salesadmin', 'moodle/site:config'), $systemcontext]) {
+        $params = ['view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->instance->id];
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         throw new moodle_exception(get_string('errornotownedbill', 'local_shop', $viewurl));
     }
 
-    $realized = array('SOLDOUT', 'COMPLETE', 'PARTIAL');
+    $realized = ['SOLDOUT', 'COMPLETE', 'PARTIAL'];
     $printcommand = (in_array($afullbill->status, $realized)) ? 'printbilllink' : 'printorderlink';
 }
 
 $usercontext = context_user::instance($afullbill->customeruser->id);
 
-$params = array('transid' => $transid, 'billid' => $billid, 'id' => $theshop->id);
+$params = ['transid' => $transid, 'billid' => $billid, 'id' => $theshop->id];
 $url = new moodle_url('/local/shop/front/bill.popup.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($usercontext);
@@ -75,7 +74,7 @@ $renderer->load_context($theshop, $thecatalog, $theblock);
 $billrenderer = shop_get_renderer('bills');
 $billrenderer->load_context($theshop, $thecatalog, $theblock);
 
-$realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
+$realized = [SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD];
 
 if (!in_array($afullbill->status, $realized)) {
     $headerstring = get_string('ordersheet', 'local_shop');
@@ -98,7 +97,7 @@ echo '<div id="order" style="margin-top:20px">';
 
 echo '<table cellspacing="5" class="generaltable" width="100%">';
 echo $renderer->order_line(null);
-$hasrequireddata = array();
+$hasrequireddata = [];
 
 foreach ($afullbill->items as $biid => $bi) {
     if ($bi->type == 'BILLING') {
