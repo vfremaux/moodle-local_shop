@@ -36,22 +36,22 @@ $billid = required_param('billid', PARAM_INT);
 
 if ($transid) {
     if (!$afullbill = Bill::get_by_transaction($transid)) {
-        $params = ['view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id];
+        $params = ['view' => 'shop', 'shopid' => $theshop->id, 'blockid' => $theblock->instance->id ?? 0];
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         throw new moodle_exception(get_string('invalidtransid', 'local_shop', $viewurl));
     }
 } else if ($billid) {
     require_login();
     if (!$afullbill = new Bill($billid)) {
-        $params = ['view' => 'shop', 'shopid' => $theshop->id, 'blockid' => 0 + @$theblock->instance->id];
+        $params = ['view' => 'shop', 'shopid' => $theshop->id, 'blockid' => ($theblock->instance->id ?? 0)];
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         throw new moodle_exception(get_string('invalidbillid', 'local_shop', $viewurl));
     }
 
     $systemcontext = context_system::instance();
     if (($afullbill->customer->hasaccount != $USER->id) &&
-            !has_any_capability(['local/shop:salesadmin', 'moodle/site:config'), $systemcontext]) {
-        $params = ['view' => 'shop', 'id' => $id, 'blockid' => 0 + @$theblock->instance->id];
+            !has_any_capability(['local/shop:salesadmin', 'moodle/site:config'], $systemcontext)) {
+        $params = ['view' => 'shop', 'id' => $id, 'blockid' => ($theblock->instance->id ?? 0)];
         $viewurl = new moodle_url('/local/shop/front/view.php', $params);
         throw new moodle_exception(get_string('errornotownedbill', 'local_shop', $viewurl));
     }

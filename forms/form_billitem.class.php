@@ -18,23 +18,37 @@
  * Defines form to add a new billitem
  *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
+/**
+ * A form to edit a bill item manually.
+ */
 class BillItem_Form extends moodleform {
 
+    /** @var an array of options for text editor */
     protected $editoroptions;
+
+    /** @var attributes for short text inputs */
     protected $attributesshort;
+
+    /** @var js for short text inputs */
     protected $attributesshortjs;
+
+    /** @var attributes for long text inputs */
     protected $attributesdescription;
 
+    /**
+     * Constructor
+     * @param string $action
+     * @param array $data
+     */
     public function __construct($action, $data) {
         global $COURSE;
 
@@ -42,21 +56,28 @@ class BillItem_Form extends moodleform {
 
         $maxfiles = 99;                // TODO: add some setting.
         $maxbytes = $COURSE->maxbytes; // TODO: add some setting.
-        $this->editoroptions = array('trusttext' => true,
-                                     'subdirs' => false,
-                                     'maxfiles' => $maxfiles,
-                                     'maxbytes' => $maxbytes,
-                                     'context' => $context);
+        $this->editoroptions = [
+            'trusttext' => true,
+            'subdirs' => false,
+            'maxfiles' => $maxfiles,
+            'maxbytes' => $maxbytes,
+            'context' => $context,
+        ];
 
         $this->attributesshort = 'size="24" maxlength="24"';
-        $this->attributesshortjs = array('size' => 24,
-                                         'maxlength' => 24,
-                                         'onchange' => 'calculate_price()');
+        $this->attributesshortjs = [
+            'size' => 24,
+            'maxlength' => 24,
+            'onchange' => 'calculate_price()',
+        ];
         $this->attributesdescription = 'cols="50" rows="8"';
 
         parent::__construct($action, $data);
     }
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT, $DB;
 
@@ -72,6 +93,7 @@ class BillItem_Form extends moodleform {
         // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'billitem', 'local_shop')));
 
+        // @todo : convert into template
         $js = "
             <script type=\"text/javascript\">
             function calculate_price() {
@@ -123,11 +145,11 @@ class BillItem_Form extends moodleform {
 
         $content = '<span id="billitem-totalprice">0.00</span> '. $config->defaultcurrency;
         $mform->addElement('static', 'totalprice', get_string('total'), $content);
-        $bill = $DB->get_record('local_shop_bill', array('id' => $bill->id));
+        $bill = $DB->get_record('local_shop_bill', ['id' => $bill->id]);
 
         if ($bill->ignoretax == 0) {
             $taxcodeopts = $DB->get_records_menu('local_shop_tax', null, 'title', 'id, title');
-            $jsoptions = array('onchange' => 'calculate_price()');
+            $jsoptions = ['onchange' => 'calculate_price()'];
             $mform->addElement('select', 'taxcode', get_string('taxcode', 'local_shop'), $taxcodeopts, $jsoptions);
             $mform->setType('taxcode', PARAM_INT);
         }

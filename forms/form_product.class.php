@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Form for editing products
+ *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,12 +31,23 @@ require_once($CFG->dirroot.'/local/shop/forms/form_catalogitem.class.php');
 
 use local_shop\Tax;
 
+/**
+ * Form for edting catalog products
+ */
 class Product_Form extends CatalogItem_Form {
 
+    /**
+     * Constructor
+     * @param string $action
+     * @param array $data
+     */
     public function __construct($action, $data) {
         parent::__construct($action, $data);
     }
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT, $DB;
 
@@ -47,7 +59,7 @@ class Product_Form extends CatalogItem_Form {
                 catalogid = ? AND
                 (isset = 1 OR isset = 2)
             ";
-            $params = array($this->_customdata['catalog']->id);
+            $params = [$this->_customdata['catalog']->id];
             $sets = $DB->get_records_select('local_shop_catalogitem', $select, $params, 'id, name');
         }
 
@@ -59,7 +71,14 @@ class Product_Form extends CatalogItem_Form {
         $mform->setType('itemid', PARAM_INT);
 
         $attributesspecificdata = 'rows="4" style="width:80%" ';
-        $attributeshandlerparams = ['cols' => 50, 'rows' => 8, 'style' => "width:80%", 'data-format' => "url", 'data-edithandle' => 'id_edithandlerparams'];
+        $params = [
+            'cols' => 50,
+            'rows' => 8,
+            'style' => "width:80%",
+            'data-format' => "url",
+            'data-edithandle' => 'id_edithandlerparams',
+        ];
+        $attributeshandlerparams = $params;
 
         // Adding title and description.
         $variant = '';
@@ -102,7 +121,7 @@ class Product_Form extends CatalogItem_Form {
         $group[] = &$mform->createElement('advcheckbox', 'showsdescriptioninset', '', $label);
         $mform->setDefault('showsdescriptioninset', 1);
 
-        $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
+        $mform->addGroup($group, 'setvisibilityarray', '', [' '], false);
 
         $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));
 
@@ -179,6 +198,10 @@ class Product_Form extends CatalogItem_Form {
         $mform->closeHeaderBefore('buttonar');
     }
 
+    /**
+     * Feed form with previous data
+     * @param array $defaults
+     */
     public function set_data($defaults) {
         $context = context_system::instance();
         $this->set_name_data($defaults, $context);
@@ -186,6 +209,11 @@ class Product_Form extends CatalogItem_Form {
         parent::set_data($defaults);
     }
 
+    /**
+     * Validates
+     * @param array $data
+     * @param array $files embedded files
+     */
     public function validation($data, $files = []) {
         return parent::validation($data, $files);
     }

@@ -19,11 +19,9 @@
  * Defines form to add a new shop
  *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
- *
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,10 +29,17 @@ require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 
+/**
+ * A form class to edit shop intances
+ */
 class Shop_Form extends moodleform {
 
+    /** @var array edition options for file managers */
     public $editoroptions;
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $DB;
 
@@ -43,7 +48,7 @@ class Shop_Form extends moodleform {
 
         $config = get_config('local_shop');
 
-        $this->editoroptions = array('maxfiles' => 10, 'context' => context_system::instance(), 'subdirs' => true);
+        $this->editoroptions = ['maxfiles' => 10, 'context' => context_system::instance(), 'subdirs' => true];
 
         // Adding title and description.
         $mform->addElement('header', 'general', get_string($this->_customdata['what'].'shop', 'local_shop'));
@@ -99,10 +104,10 @@ class Shop_Form extends moodleform {
         if (!empty($cats)) {
 
             // Tax application.
-            $radioarray = array();
+            $radioarray = [];
             $radioarray[] = &$mform->createElement('radio', 'allowtax', '', get_string('yes'), 1, $attributes);
             $radioarray[] = &$mform->createElement('radio', 'allowtax', '', get_string('no'), 0, $attributes);
-            $mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'local_shop').':', array(' '), false);
+            $mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'local_shop').':', [' '], false);
             $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
             // Shop Currency.
@@ -110,28 +115,6 @@ class Shop_Form extends moodleform {
             $mform->addElement('select', 'currency', get_string('currency', 'local_shop').':', $currencies);
             $mform->addRule('currency', '', 'required', null, 'client');
             $mform->setDefault('currency', $config->defaultcurrency);
-
-            /*
-            // Discount application. OBSOLETE
-            $mform->addElement('header', 'heading_discounts', get_string('discounts', 'local_shop'));
-
-            $mform->addElement('text', 'discountthreshold', get_string('discountthreshold', 'local_shop'), 0);
-            $mform->addHelpButton('discountthreshold', 'discountthreshold', 'local_shop');
-            $mform->setType('discountthreshold', PARAM_NUMBER);
-
-            $mform->addElement('text', 'discountrate', get_string('discountrate', 'local_shop'), 0);
-            $mform->addHelpButton('discountrate', 'discountrate', 'local_shop');
-            $mform->setType('discountrate', PARAM_INT);
-
-            $mform->addElement('text', 'discountrate2', get_string('discountrate2', 'local_shop'), 0);
-            $mform->addHelpButton('discountrate2', 'discountrate2', 'local_shop');
-            $mform->setType('discountrate2', PARAM_INT);
-
-            $mform->addElement('text', 'discountrate3', get_string('discountrate3', 'local_shop'), 0);
-            $mform->addHelpButton('discountrate3', 'discountrate3', 'local_shop');
-            $mform->setType('discountrate3', PARAM_INT);
-
-            */
 
             // Choosing valid paymodes for this shop instance.
             $mform->addElement('header', 'heading_paymodes', get_string('paymentmethods', 'local_shop'));
@@ -148,7 +131,7 @@ class Shop_Form extends moodleform {
             $mform->addElement('advcheckbox', 'forcedownloadleaflet', get_string('configforcedownloadleaflet', 'local_shop'));
             $mform->setType('forcedownloadleaflet', PARAM_BOOL);
 
-            $yesnochoices = array('0' => get_string('no'), '1' => get_string('yes'));
+            $yesnochoices = ['0' => get_string('no'), '1' => get_string('yes')];
             $label = get_string('configcustomerorganisationrequired', 'local_shop');
             $mform->addElement('select', 'customerorganisationrequired', $label, $yesnochoices);
             $mform->setDefault('customerorganisationrequired', 1);
@@ -166,7 +149,7 @@ class Shop_Form extends moodleform {
             $mform->setDefault('customerorganisationrequired', 0);
 
             // Default customer support course if.
-            $courseoptions = $DB->get_records_menu('course', array('visible' => 1), 'fullname', 'id,fullname');
+            $courseoptions = $DB->get_records_menu('course', ['visible' => 1], 'fullname', 'id,fullname');
             $courseoptions[0] = get_string('none', 'local_shop');
             $label = get_string('configdefaultcustomersupportcourse', 'local_shop');
             $mform->addElement('select', 'defaultcustomersupportcourse', $label, $courseoptions);
@@ -181,9 +164,12 @@ class Shop_Form extends moodleform {
             // We cannot submit.
             $mform->addElement('cancel');
         }
-
     }
 
+    /**
+     * Feeding form with previous data
+     * @param array $defaults
+     */
     public function set_data($defaults) {
         $context = context_system::instance();
 
@@ -196,14 +182,19 @@ class Shop_Form extends moodleform {
         parent::set_data($defaults);
     }
 
-    public function validation($data, $files = array()) {
+    /**
+     * Validates data on submission
+     * @param array $data
+     * @param array $files embedded files
+     */
+    public function validation($data, $files = []) {
         global $DB;
 
         $errors = parent::validation($data, $files);
 
         if (empty($data['shopid'])) {
             // Only if creating new.
-            if ($DB->record_exists('local_shop', array('name' => $data['name']))) {
+            if ($DB->record_exists('local_shop', ['name' => $data['name']])) {
                 $errors['name'] = get_string('errorshopexists', 'local_shop');
             }
         }

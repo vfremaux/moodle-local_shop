@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A form to edt customer accounts
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -30,6 +31,9 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 use local_shop\Shop;
 use local_shop\Catalog;
 
+/**
+ * A form to edt customer accounts
+ */
 class Customer_Form extends moodleform {
 
     public function definition() {

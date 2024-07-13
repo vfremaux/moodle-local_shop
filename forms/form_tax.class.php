@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   (C) 2016 Valery Fremaux (http://www.mylearningfactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 defined('MOODLE_INTERNAL') || die();

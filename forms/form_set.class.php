@@ -16,10 +16,9 @@
 
 /**
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -31,12 +30,24 @@ require_once($CFG->dirroot.'/local/shop/forms/form_catalogitem.class.php');
 
 use local_shop\Tax;
 
+/**
+ * A form for editing a Set. this is a derivated form from a more
+ * generic CatalogItem form.
+ */
 class Set_Form extends CatalogItem_Form {
 
+    /**
+     * Constructor
+     * @param string $action
+     * @param array $data
+     */
     public function __construct($action, $data) {
         parent::__construct($action, $data);
     }
 
+    /**
+     * Standard definition.
+     */
     public function definition() {
         global $OUTPUT;
 
@@ -103,6 +114,10 @@ class Set_Form extends CatalogItem_Form {
         $this->add_action_buttons();
     }
 
+    /**
+     * Feed form with previous data
+     * @param array $defaults;
+     */
     public function set_data($defaults) {
         $context = context_system::instance();
         $this->set_name_data($defaults, $context);

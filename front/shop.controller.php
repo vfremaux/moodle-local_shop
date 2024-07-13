@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;
@@ -178,8 +178,8 @@ class shop_controller extends front_controller_base {
         } else if ($cmd == 'clearall') {
 
             unset($SESSION->shoppingcart);
-            $params = ['view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + ($this->theblock->id ?? 0)];
-            return new \moodle_url('/local/shop/front/view.php', $params);
+            $params = ['view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => ($this->theblock->id ?? 0)];
+            return new moodle_url('/local/shop/front/view.php', $params);
 
         } else if ($cmd == 'addunit') {
 
@@ -193,7 +193,8 @@ class shop_controller extends front_controller_base {
             } else {
                 $category = optional_param('category', '', PARAM_INT);
                 $shopid = required_param('shopid', PARAM_INT);
-                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+                $params = ['view' => 'shop', 'shopid' => $shopid, 'category' => $category];
+                redirect(new moodle_url('/local/shop/front/view.php', $params));
             }
 
         } else if ($cmd == 'setunits') {
@@ -213,7 +214,8 @@ class shop_controller extends front_controller_base {
             } else {
                 $category = optional_param('category', '', PARAM_INT);
                 $shop = required_param('shopid', PARAM_INT);
-                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+                $params = ['view' => 'shop', 'shopid' => $shopid, 'category' => $category];
+                redirect(new moodle_url('/local/shop/front/view.php', $params));
             }
 
         } else if ($cmd == 'deleteunit') {
@@ -268,7 +270,8 @@ class shop_controller extends front_controller_base {
             } else {
                 $category = optional_param('category', '', PARAM_INT);
                 $shop = required_param('shopid', PARAM_INT);
-                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+                $params = ['view' => 'shop', 'shopid' => $shopid, 'category' => $category];
+                redirect(new moodle_url('/local/shop/front/view.php', $params));
             }
 
         } else if ($cmd == 'orderdetails') {
@@ -342,7 +345,8 @@ class shop_controller extends front_controller_base {
                     $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal - $discountpreview->discounttax;
                     if (!empty($shoppingcart->taxes)) {
                         foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
-                            if (array_key_exists($tcode, $shoppingcart->taxes) && array_key_exists($tcode, $discountpreview->discounttaxes)) {
+                            if (array_key_exists($tcode, $shoppingcart->taxes) &&
+                                    array_key_exists($tcode, $discountpreview->discounttaxes)) {
                                 $shoppingcart->finaltaxes[$tcode] = $shoppingcart->taxes[$tcode] - $discountpreview->discounttaxes[$tcode];
                             } else {
                                 $shoppingcart->finaltaxes[$tcode] = 0;
@@ -360,7 +364,7 @@ class shop_controller extends front_controller_base {
             assert($shoppingcart->finaltaxedtotal == $shoppingcart->finaluntaxedtotal + $shoppingcart->finaltaxestotal);
 
             $next = $this->theshop->get_next_step('shop');
-            $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            $params = ['view' => $next, 'shopid' => $this->theshop->id, 'blockid' => ($this->theblock->id ?? 0)];
 
             return new \moodle_url('/local/shop/front/view.php', $params);
         }

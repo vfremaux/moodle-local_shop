@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;

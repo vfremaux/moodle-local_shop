@@ -18,8 +18,8 @@
  * local_shop/handler data generator.
  *
  * @package     local_shop
- * @category    test
- * @copyright   2016 Valery Fremaux
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

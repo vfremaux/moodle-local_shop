@@ -30,9 +30,9 @@ require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-use \local_shop\Shop;
-use \local_shop\Catalog;
-use \local_shop\Bill;
+use local_shop\Shop;
+use local_shop\Catalog;
+use local_shop\Bill;
 
 // Get all the shop session context objects.
 list($theshop, $thecatalog, $theblock) = shop_build_context();

@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
-use \local_shop\CatalogItem;
-use \local_shop\Customer;
+use local_shop\CatalogItem;
+use local_shop\Customer;
 
 /**
  * A class to handle all cron jobs.
@@ -118,11 +118,11 @@ class manager {
             $title = get_string('neartoexpire', 'local_shop', $a);
             $params = ['view' => 'viewAllProducts', 'id' => $theshop->id ?? 1];
             $managerurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-            $b = new StdClass;
+            $b = new StdClass();
             $b->url = $managerurl->out();
             $b->list = $instancereport;
             $text = get_string('neartoexpire_mail', 'local_shop', $b);
-            $c = new StdClass;
+            $c = new StdClass();
             $c->url = $managerurl->out();
             $c->list = $instancereporthtml;
             $html = get_string('neartoexpire_html', 'local_shop', $c);
@@ -130,6 +130,9 @@ class manager {
         }
     }
 
+    /**
+     * Weekly notifications.
+     */
     public function notify_weekly_task() {
         global $DB, $SITE;
 
@@ -145,11 +148,11 @@ class manager {
             $title = get_string('longtimeexpired', 'local_shop', $a);
             $params = ['view' => 'viewAllProducts', 'id' => $theshop->id ?? 1];
             $managerurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
-            $b = new StdClass;
+            $b = new StdClass();
             $b->url = $managerurl->out();
             $b->list = $instancereport;
             $text = get_string('longtimeexpired_mail', 'local_shop', $b);
-            $c = new StdClass;
+            $c = new StdClass();
             $c->url = $managerurl->out();
             $c->list = $instancereporthtml;
             $html = get_string('longtimeexpired_html', 'local_shop', $c);
@@ -157,6 +160,9 @@ class manager {
         }
     }
 
+    /**
+     * Process all instances
+     */
     function compile_instances($instances, $linesep = "\n") {
 
         $instancerecs = [];
@@ -174,6 +180,11 @@ class manager {
         return null;
     }
 
+    /**
+     * Send notifications to all sales admins.
+     * @param string $title notification caption
+     * @param string $str notification content
+     */
     function send_notification($title, $str) {
         global $DB;
 

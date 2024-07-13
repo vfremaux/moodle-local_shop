@@ -18,9 +18,8 @@
  * Library for catalog items management
  *
  * @package    local_shop
- * @category   local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

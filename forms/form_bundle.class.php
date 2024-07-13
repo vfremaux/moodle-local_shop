@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines form to add a new project
+ * Defines form to add a new bundle.
+ * Bundle are product sets that are sold as one pack.
  *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,12 +32,23 @@ require_once($CFG->dirroot.'/local/shop/forms/form_catalogitem.class.php');
 
 use local_shop\Tax;
 
+/**
+ * Form to edit a Bundle
+ */
 class Bundle_Form extends CatalogItem_Form {
 
+    /**
+     * Constructor
+     * @param string $action
+     * @param array $data
+     */
     public function __construct($action, $data) {
         parent::__construct($action, $data);
     }
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT;
 
@@ -66,11 +77,11 @@ class Bundle_Form extends CatalogItem_Form {
         $this->add_target_market();
         $this->add_category();
 
-        $group = array();
+        $group = [];
         $group[] = &$mform->createElement('checkbox', 'shownameinset', '', get_string('shownameinset', 'local_shop'), 1);
         $label = get_string('showdescriptioninset', 'local_shop');
         $group[] = &$mform->createElement('checkbox', 'showdescriptioninset', '', $label, 1);
-        $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
+        $mform->addGroup($group, 'setvisibilityarray', '', [' '], false);
 
         $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));
 

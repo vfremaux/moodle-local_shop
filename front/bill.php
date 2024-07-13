@@ -32,7 +32,7 @@ $billrenderer = shop_get_renderer('bills');
 $billrenderer->load_context($theshop, $thecatalog, $theblock);
 
 if (!$bill = Bill::get_by_transaction($transid)) {
-    $params = ['view' => 'shop', 'id' => $id, 'blockid' => (0 + @$theblock->id]);
+    $params = ['view' => 'shop', 'id' => $id, 'blockid' => $theblock->id ?? 0];
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
     $errormessage = get_string('invalidtransid', 'local_shop', $viewurl);
 }
