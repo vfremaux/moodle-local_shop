@@ -389,7 +389,7 @@ class BillItem extends ShopObject {
      * @param bool $light
      * @param array $internalrefs
      */
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0,
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0,
                 $limitnum = '', $light = false, $internalrefs = []) {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light, $internalrefs);
     }
@@ -400,7 +400,7 @@ class BillItem extends ShopObject {
      * @param string $order
      * @param string $chooseopt
      */
-    public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
+    public static function get_instances_menu($filter = [], $order = '', $chooseopt = 'choosedots') {
         $fields = "CONCAT(billid, '-', ordering, '-', itemcode)";
         return parent::_get_instances_menu(self::$table, $filter, $order, $fields, $chooseopt);
     }

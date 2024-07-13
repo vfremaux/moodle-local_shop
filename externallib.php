@@ -40,11 +40,11 @@ class local_shop_external extends external_api {
     protected function validate_shop_parameters($requs, $params) {
         global $DB;
 
-        $TYPES = array(
+        $types = [
             'plain' => SHOP_PRODUCT,
             'set' => SHOP_SET,
             'bundle' => SHOP_BUNDLE,
-        );
+        ];
 
         parent::validate_parameters($requs, $params);
 
@@ -56,11 +56,11 @@ class local_shop_external extends external_api {
         }
 
         if (array_key_exists('type', $params)) {
-            if (!in_array($params['type'], array('plain', 'set', 'bundle'))) {
+            if (!in_array($params['type'], ['plain', 'set', 'bundle'])) {
                 throw new ParameterException("Invalid product type");
             }
 
-            $parameter['type'] = $TYPES[$parameter['type']];
+            $parameter['type'] = $types[$parameter['type']];
         }
     }
 

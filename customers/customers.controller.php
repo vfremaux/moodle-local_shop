@@ -90,8 +90,8 @@ class customers_controller {
 
         if ($cmd == 'edit') {
 
-            if ($DB->record_exists('user', array('email' => $this->data->email))) {
-                $account = $DB->get_record('user', array('email' => $this->data->email));
+            if ($DB->record_exists('user', ['email' => $this->data->email])) {
+                $account = $DB->get_record('user', ['email' => $this->data->email]);
                 $this->data->hasaccount = $account->id;
             } else {
                 $this->data->hasaccount = 0;

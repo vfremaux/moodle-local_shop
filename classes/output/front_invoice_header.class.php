@@ -32,7 +32,7 @@ class front_invoice_header implements \Templatable {
 
         $afullbill = $this->bill;
 
-        $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
+        $realized = [SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD];
 
         $template = new \StdClass;
 

@@ -18,9 +18,8 @@
  * A tax instance applies for a country.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop;
@@ -29,10 +28,19 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
+/**
+ * Tax
+ */
 class Tax extends ShopObject {
 
+    /** @var the storage table */
     protected static $table = 'local_shop_tax';
 
+    /**
+     * Constructor
+     * @param mixed $idorrecord
+     * @param bool $light if true builds a lightweight object
+     */
     public function __construct($idorrecord, $light = false) {
 
         parent::__construct($idorrecord, self::$table);
@@ -52,7 +60,15 @@ class Tax extends ShopObject {
         }
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
@@ -62,16 +78,22 @@ class Tax extends ShopObject {
     public static function get_json_taxset() {
         global $DB;
 
-        $taxarr = array();
+        $taxarr = [];
         if ($taxes = $DB->get_records('local_shop_tax')) {
             foreach ($taxes as $tax) {
-                $taxarr[$tax->id] = array('ratio' => $tax->ratio, 'formula' => str_replace('$', '', $tax->formula));
+                $taxarr[$tax->id] = ['ratio' => $tax->ratio, 'formula' => str_replace('$', '', $tax->formula)];
             }
         }
         return json_encode($taxarr);
     }
 
-    public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     * @param string $order
+     * @param string $chooseopt text for "choose" option
+     */
+    public static function get_instances_menu($filter = [], $order = '', $chooseopt = 'choosedots') {
         return parent::_get_instances_menu(self::$table, $filter, $order, 'title', $chooseopt);
     }
 }

@@ -164,7 +164,7 @@ class Catalog extends ShopObject {
         } else {
             $select = " catalogid = ? ";
         }
-        $params = array($this->id, $visible);
+        $params = [$this->id, $visible];
         $fields = '*,0 as masterrecord';
         if (!$localcats = $DB->get_records_select('local_shop_catalogcategory', $select, $params, 'parentid,sortorder', $fields)) {
             $localcats = [];
@@ -241,7 +241,7 @@ class Catalog extends ShopObject {
             $isloggedinclause = ' AND ci.onlyforloggedin IN ('.implode(',', $modes).') ';
         }
 
-        $shopproducts = array();
+        $shopproducts = [];
         foreach ($categories as $key => $cat) {
             /*
              * product might be standalone product or set or bundle
@@ -262,7 +262,7 @@ class Catalog extends ShopObject {
                    ORDER BY
                       ci.shortname
                 ";
-                $params = array($this->groupid, $cat->id);
+                $params = [$this->groupid, $cat->id];
                 $catalogitems = $DB->get_records_sql($sql, $params);
 
                 // Build the master catalog structure.
@@ -294,7 +294,7 @@ class Catalog extends ShopObject {
                ORDER BY
                   ci.shortname
             ";
-            $params = array($this->id);
+            $params = [$this->id];
             if (!$this->isslave) {
                 $params[] = $cat->id;
             }
@@ -1009,7 +1009,7 @@ class Catalog extends ShopObject {
 
         $isloggedinclause = '';
 
-        $modes = array();
+        $modes = [];
         if (empty($SESSION->shopseeall)) {
             if (isloggedin() && !isguestuser()) {
                 $modes[] = PROVIDING_BOTH;

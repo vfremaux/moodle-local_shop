@@ -69,7 +69,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $template->emissiondate = userdate($afullbill->emissiondate);
 
         $template->transid = $afullbill->transactionid;
-        $params = array('id' => $afullbill->theshop->id, 'transid' => $afullbill->transactionid);
+        $params = ['id' => $afullbill->theshop->id, 'transid' => $afullbill->transactionid];
         $template->scanurl = new moodle_url('/local/shop/front/scantrace.php', $params);
 
         $template->onlinetransactionid = $afullbill->onlinetransactionid;
@@ -116,7 +116,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', ['id' => $customerid])) {
                 $billuser = $DB->get_record('user', ['id' => $userid]);
                 $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-                $options = array('ticket' => $ticket);
+                $options = ['ticket' => $ticket];
                 $loginurl = new moodle_url('/login/index.php');
                 $label = get_string('printbill', 'local_shop');
                 $template->loginbutton = $this->output->single_button($loginurl, $label, 'post',  $options);
@@ -591,7 +591,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         if (empty($bill->idnumber)) {
             $template->bill = false;
-            $params = array('id' => $this->theshop->id, 'billid' => $bill->id);
+            $params = ['id' => $this->theshop->id, 'billid' => $bill->id];
             $billitemurl = new moodle_url('/local/shop/bills/edit_billitem.php', $params);
             $template->billitemurl = $billitemurl;
         } else {

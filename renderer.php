@@ -51,9 +51,9 @@ class local_shop_renderer extends local_shop_base_renderer {
             return;
         }
 
-        $owners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), 'hasaccount,firstname,lastname');
+        $owners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", [], 'hasaccount,firstname,lastname');
 
-        $ownersmenu = array();
+        $ownersmenu = [];
         if ($owners) {
             foreach ($owners as $accountid => $owner) {
                 $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
@@ -85,7 +85,7 @@ class local_shop_renderer extends local_shop_base_renderer {
     public function print_customer_menu($urlroot, &$customers, $activecustomerid) {
         global $OUTPUT, $DB;
 
-        $customersmenu = array();
+        $customersmenu = [];
         if ($customers) {
             foreach ($customers as $cid => $cu) {
                 $customersmenu[$cid] = $cu->lastname.' '.$cu->firstname.' ('.$cu->city.') ['.$cu->country.']';
@@ -100,7 +100,7 @@ class local_shop_renderer extends local_shop_base_renderer {
             $output .= ' ('.$defaultcustomer->city.') ['.$defaultcustomer->country.']';
         } else {
             $u = new moodle_url($urlroot);
-            $select = new single_select($u, 'customer', $customersmenu, $activecustomerid, array('' => 'choosedots'), 'selectcustomer');
+            $select = new single_select($u, 'customer', $customersmenu, $activecustomerid, ['' => 'choosedots'], 'selectcustomer');
             $select->label = $customerlabel;
             $output = $OUTPUT->render($select);
         }
@@ -156,7 +156,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str = '';
         $catalogs = Catalog::get_instances();
-        $catalogmenu = array();
+        $catalogmenu = [];
         foreach ($catalogs as $c) {
             $catalogmenu[$c->id] = format_string($c->name);
         }
@@ -176,7 +176,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str = '';
         $shops = Shop::get_instances();
-        $shopmenu = array();
+        $shopmenu = [];
 
         if ($chooseall) {
             $shopmenu[0] = get_string('allshops', 'local_shop');
@@ -224,8 +224,8 @@ class local_shop_renderer extends local_shop_base_renderer {
             $SESSION->shop->billyear = $current;
         }
 
-        $firstyear = $DB->get_field('local_shop_bill', 'MIN(emissiondate)', array());
-        $lastyear = $DB->get_field('local_shop_bill', 'MAX(emissiondate)', array());
+        $firstyear = $DB->get_field('local_shop_bill', 'MIN(emissiondate)', []);
+        $lastyear = $DB->get_field('local_shop_bill', 'MAX(emissiondate)', []);
 
         if (!$firstyear && !$lastyear) {
             return '';
@@ -330,7 +330,7 @@ class local_shop_renderer extends local_shop_base_renderer {
             $template->shippingurl = new moodle_url('/local/shop/shipzones/index.php', ['id' => $theshop->id]);
         }
 
-        $template->traceurl = new moodle_url('/local/shop/front/scantrace.php', array('id' => $theshop->id));
+        $template->traceurl = new moodle_url('/local/shop/front/scantrace.php', ['id' => $theshop->id]);
 
         if (has_capability('moodle/site:config', context_system::instance())) {
             $template->hassiteadmin = true;
@@ -377,7 +377,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         $transids = $DB->get_records('local_shop_bill', null, 'id', 'transactionid, amount');
         $scanstr = get_string('scantrace', 'local_shop');
 
-        $transidsmenu = array();
+        $transidsmenu = [];
         if ($transids) {
             foreach ($transids as $trans) {
                 $transidsmenu[$trans->transactionid] = $trans->transactionid.' ('.$trans->amount.')';

@@ -87,7 +87,7 @@ class bill_controller {
      * @param array $data incoming parameters from form when directly available, otherwise the
      * function should get them from request
      */
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
