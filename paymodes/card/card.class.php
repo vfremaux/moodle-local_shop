@@ -55,7 +55,7 @@ class shop_paymode_card extends shop_paymode {
     }
 
     public function print_complete() {
-        echo compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     // Processes a payment return.

@@ -68,7 +68,7 @@ echo '<div id="order">';
 
 echo '<table cellspacing="5" class="generaltable" width="100%">';
 echo $renderer->order_line(null);
-$hasrequireddata = array();
+$hasrequireddata = [];
 
 if (!empty($bill->items)) {
     foreach ($bill->items as $biid => $bi) {

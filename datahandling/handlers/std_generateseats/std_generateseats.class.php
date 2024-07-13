@@ -170,7 +170,7 @@ class shop_handler_std_generateseats extends shop_handler {
             $product->extradata = '';
             $product->reference = shop_generate_product_ref($data);
 
-            $proddata = array();
+            $proddata = [];
             $proddata['handler'] = 'std_generateseats';
             $proddata['enabledcourses'] = implode(',', array_keys($enabledcourses));
             $proddata['supervisor'] = $data->actionparams['supervisor'];
@@ -368,11 +368,11 @@ class shop_handler_std_generateseats extends shop_handler {
 
         // Get role record
         // TODO : Generalize with _supervisor
-        $role = $DB->get_record('role', array('shortname' => 'student'));
+        $role = $DB->get_record('role', ['shortname' => 'student']);
         $supervisorrole = $data->supervisor;
 
         // Get user to enrol record
-        $usertoenrol = $DB->get_record('user', array('id' => $data->userid));
+        $usertoenrol = $DB->get_record('user', ['id' => $data->userid]);
         $starttime = time();
         $endtime = 0;
 
@@ -484,7 +484,7 @@ class shop_handler_std_generateseats extends shop_handler {
 
         // Get bill information.
         $billid = $DB->get_field('local_shop_billitem', 'billid', ['id' => $product->currentbillitemid]);
-        $bill = $DB->get_record('local_shop_bill', array('id' => $billid));
+        $bill = $DB->get_record('local_shop_bill', ['id' => $billid]);
         $billnumber = 'B'.sprintf('%010d', $bill->ordering);
 
         // Remove group marking for the product.

@@ -75,7 +75,7 @@ if (empty($categoryid) && empty($categoryalias)) {
         $errormessage .= "Shop : {$theshop->id}<br/>";
         $errormessage .= "Catalog : {$thecatalog->id}<br/>";
     } else {
-        $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
+        $params = ['view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id];
         redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
 }

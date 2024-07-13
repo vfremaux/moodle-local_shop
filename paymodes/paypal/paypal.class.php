@@ -279,7 +279,7 @@ class shop_paymode_paypal extends shop_paymode {
 
         $validationquery .= $querystring;
         // Control for replicated notifications (normal operations).
-        if (empty($this->_config->test) && $DB->record_exists('local_shop_paypal_ipn', array('txnid' => $txnid))) {
+        if (empty($this->_config->test) && $DB->record_exists('local_shop_paypal_ipn', ['txnid' => $txnid])) {
             if ($simulating) {
                 mtrace("[$transid] Paypal IPN : paypal event collision on $txnid");
             }
@@ -330,7 +330,7 @@ class shop_paymode_paypal extends shop_paymode {
             } else {
                 curl_setopt($ch, CURLOPT_USERAGENT, 'PHP-IPN-Moodle-Shop');
             }
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: text/xml charset=UTF-8"));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: text/xml charset=UTF-8"]);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             $rawresponse = curl_exec($ch);

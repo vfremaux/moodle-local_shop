@@ -112,7 +112,7 @@ class Product_Form extends CatalogItem_Form {
             }
             $mform->addElement('select', 'setid', get_string('set', 'local_shop'), $setopts);
         }
-        $group = array();
+        $group = [];
         $label = get_string('shownameinset', 'local_shop');
         $group[] = &$mform->createElement('advcheckbox', 'showsnameinset', '', $label);
         $mform->setDefault('showsnameinset', 1);

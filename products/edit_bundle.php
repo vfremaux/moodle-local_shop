@@ -92,7 +92,7 @@ if ($data = $mform->get_data()) {
         $data->id = $DB->insert_record('local_shop_catalogitem', $data);
 
         // We have items in the set. update relevant products.
-        $productsinbundle = optional_param('productsinset', array(), PARAM_INT);
+        $productsinbundle = optional_param('productsinset', [], PARAM_INT);
         if (is_array($productsinbundle)) {
             foreach ($productsinbundle as $productid) {
                 $record = new $record;
@@ -124,7 +124,7 @@ if ($data = $mform->get_data()) {
     // Process text fields from editors.
     $draftideditor = file_get_submitted_draft_itemid('description_editor');
     $data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemdescription',
-                                                    $data->id, array('subdirs' => true), $data->description);
+                                                    $data->id, ['subdirs' => true], $data->description);
     $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                             'catalogitemdescription', $data->id);
     // Post update after processing text.

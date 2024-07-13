@@ -34,7 +34,7 @@ class purchaserequ_controller extends front_controller_base {
 
     protected $received;
 
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
         global $SESSION;
 
         if (!empty($data)) {
@@ -86,7 +86,7 @@ class purchaserequ_controller extends front_controller_base {
 
         if ($cmd == 'collect') {
 
-            $errors = array();
+            $errors = [];
 
             $shoppingcart->customerdata['completed'] = true;
             foreach ($shoppingcart->order as $itemname => $itemcount) {
@@ -115,17 +115,21 @@ class purchaserequ_controller extends front_controller_base {
             // Coming from further form.
             if (!empty($this->data->back)) {
                 $prev = $this->theshop->get_prev_step('purchaserequ');
-                $params = array('view' => $prev,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id,
-                                'back' => 1);
+                $params = [
+                    'view' => $prev,
+                    'shopid' => $this->theshop->id,
+                    'blockid' => 0 + @$this->theblock->id,
+                    'back' => 1,
+                ];
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
                 // Going further silently.
                 $next = $this->theshop->get_next_step('purchaserequ');
-                $params = array('view' => $next,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id);
+                $params = [
+                    'view' => $next,
+                    'shopid' => $this->theshop->id,
+                    'blockid' => ($this->theblock->id ?? 0),
+                ];
                 return new \moodle_url('/local/shop/front/view.php', $params);
             }
         }

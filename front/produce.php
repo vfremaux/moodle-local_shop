@@ -77,7 +77,7 @@ echo $out;
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
-$completestates = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
+$completestates = [SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD];
 if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo '<center>';
     echo $renderer->progress('PRODUCE');

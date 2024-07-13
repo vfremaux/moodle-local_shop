@@ -367,7 +367,7 @@ class shop_paymode_mercanet extends shop_paymode {
                      */
                     if (!empty($afullbill->customer->hasaccount)) {
                         global $USER;
-                        $USER = $DB->get_record('user', array('id' => $afullbill->customer->hasaccount));
+                        $USER = $DB->get_record('user', ['id' => $afullbill->customer->hasaccount]);
                     }
 
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');

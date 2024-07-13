@@ -216,7 +216,7 @@ abstract class shop_paymode {
      * @return an array for select
      */
     public static function get_list() {
-        $paylist = array();
+        $paylist = [];
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
         foreach ($plugins as $p) {
             $paylist[$p] = get_string('pluginname', 'shoppaymodes_'.$p);

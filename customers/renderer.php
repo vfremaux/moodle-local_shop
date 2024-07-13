@@ -42,23 +42,25 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $table = new html_table();
         $table->width = '100%';
-        $table->head = array('CID',
-                             "<b>$lastnamestr $firstnamestr</b>".$this->sortby($url, 'name'),
-                             "<b>$emailstr</b>",
-                             "<b>$placedstr</b>",
-                             "<b>$pendingsstr</b>",
-                             "<b>$purchasesstr</b>".$this->sortby($url, 'billcount'),
-                             "<b>$totalamountstr</b>".$this->sortby($url, 'totalaccount'),
-                             '');
-        $table->align = array('center', 'left', 'left', 'left', 'center', 'center', 'right');
+        $table->head = [
+            'CID',
+            "<b>$lastnamestr $firstnamestr</b>".$this->sortby($url, 'name'),
+            "<b>$emailstr</b>",
+            "<b>$placedstr</b>",
+            "<b>$pendingsstr</b>",
+            "<b>$purchasesstr</b>".$this->sortby($url, 'billcount'),
+            "<b>$totalamountstr</b>".$this->sortby($url, 'totalaccount'),
+            '',
+        ];
+        $table->align = ['center', 'left', 'left', 'left', 'center', 'center', 'right'];
 
         $emptyaccounts = 0;
         foreach ($customers as $c) {
             if ($c->billcount == 0) {
                 $emptyaccounts++;
             }
-            $row = array();
-            $params = array('view' => 'viewCustomer', 'customer' => $c->id);
+            $row = [];
+            $params = ['view' => 'viewCustomer', 'customer' => $c->id];
             $customerurl = new moodle_url('/local/shop/customers/view.php', $params);
             $row[] = '<a href="'.$customerurl.'">'.$c->id.'</a>';
             $row[] = $c->lastname.' '.$c->firstname;
@@ -75,10 +77,10 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $row[] = $c->pendingscount;
             $row[] = $c->billcount;
             $row[] = sprintf("%.2f", round($c->totalaccount, 2)).' '.$this->theshop->defaultcurrency;
-            $editurl = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $c->id));
+            $editurl = new moodle_url('/local/shop/customers/edit_customer.php', ['customerid' => $c->id]);
             $cmd = '<a href="'.$editurl.'">'.$this->output->pix_icon('t/edit', get_string('edit')).'</a>';
             if ($c->billcount == 0) {
-                $params = array('view' => 'viewAllCustomers', 'customerid[]' => $c->id, 'what' => 'deletecustomer');
+                $params = ['view' => 'viewAllCustomers', 'customerid[]' => $c->id, 'what' => 'deletecustomer'];
                 $deleteurl = new moodle_url('/local/shop/customers/view.php', $params);
                 $cmd .= '&nbsp;<a href="'.$deleteurl.'">'.$this->output->pix_icon('t/delete', get_string('delete')).'</a>';
             }
@@ -135,7 +137,7 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $template->hasaccount = $customer->hasaccount;
         if ($template->hasaccount) {
-            $template->userurl = new moodle_url('/user/view.php', array('id' => $customer->hasaccount));
+            $template->userurl = new moodle_url('/user/view.php', ['id' => $customer->hasaccount]);
         }
 
         $template->lastname = $customer->lastname;
@@ -167,23 +169,25 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $table = new html_table();
         $table->heading = print_string('bill_' . $status.'s', 'local_shop');
-        $table->head = array("<b>$numstr</b>",
-                             "<b>$idnumberstr</b>",
-                             "<b>$emissiondatestr</b>",
-                             "<b>$lastmovestr</b>",
-                             "<b>$titlestr</b>",
-                             "<b>$amountstr</b>",
-                             '');
-        $table->size = array('5%', '5%', '%10', '10%', '50%', '10%', '10%');
+        $table->head = [
+            "<b>$numstr</b>",
+            "<b>$idnumberstr</b>",
+            "<b>$emissiondatestr</b>",
+            "<b>$lastmovestr</b>",
+            "<b>$titlestr</b>",
+            "<b>$amountstr</b>",
+            '',
+        ];
+        $table->size = ['5%', '5%', '%10', '10%', '50%', '10%', '10%'];
         $table->width = '100%';
-        $table->data = array();
+        $table->data = [];
 
         $markstr = get_string('mark', 'local_shop');
         $unmarkstr = get_string('unmark', 'local_shop');
 
         foreach ($billset as $portlet) {
-            $row = array();
-            $url = new moodle_url('/local/shop/bills/view.php', array('view' => 'viewBill', 'billid' => $portlet->id));
+            $row = [];
+            $url = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewBill', 'billid' => $portlet->id]);
             $row[] = '<a href="'.$url.'">B-'.date('Y-m', $portlet->emissiondate).'-'.$portlet->id.'</a>';
             $row[] = '<a href="'.$url.'">'.$portlet->idnumber.'</a>';
             $row[] = userdate($portlet->emissiondate);
@@ -191,25 +195,34 @@ class shop_customers_renderer extends local_shop_base_renderer {
             $row[] = $portlet->title;
             $row[] = sprintf("%.2f", round($portlet->amount, 2)).' '.$config->defaultcurrency;
             if ($portlet->status == SHOP_BILL_PENDING) {
-                $params = array('view' => 'viewCustomer',
-                                'what' => 'sellout',
-                                'billid' => $portlet->id,
-                                'customer' => $portlet->userid);
+                $params = [
+                    'view' => 'viewCustomer',
+                    'what' => 'sellout',
+                    'billid' => $portlet->id,
+                    'customer' => $portlet->userid,
+                ];
                 $url = new moodle_url('/local/shop/customers/view.php', $params);
-                $row[] = '<a href="'.$url.'" alt="'.$markstr.'">'.$OUTPUT->pix_icon('mark', get_string('mark', 'local_shop'), 'local_shop').'</a>';
+                $icon = $OUTPUT->pix_icon('mark', get_string('mark', 'local_shop'), 'local_shop');
+                $row[] = '<a href="'.$url.'" alt="'.$markstr.'">'.$icon.'</a>';
             } else if ($portlet->status == SHOP_BILL_SOLDOUT) {
-                $params = array('view' => 'viewCustomer',
-                                'what' => 'unmark',
-                                'billid' => $portlet->id,
-                                'customer' => $portlet->customerid);
+                $params = [
+                    'view' => 'viewCustomer',
+                    'what' => 'unmark',
+                    'billid' => $portlet->id,
+                    'customer' => $portlet->customerid,
+                ];
                 $url = new moodle_url('/local/shop/customers/view.php', $params);
-                $row[] = '<a href="'.$url.'" alt="'.$unmarkstr.'">'.$OUTPUT->pix_icon('unmark', get_string('unmark', 'local_shop'), 'local_shop').'</a>';
+                $icon = $OUTPUT->pix_icon('unmark', get_string('unmark', 'local_shop'), 'local_shop');
+                $row[] = '<a href="'.$url.'" alt="'.$unmarkstr.'">'.$icon.'</a>';
             }
             $table->data[] = $row;
         }
         echo html_writer::table($table);
     }
 
+    /**
+     * Print options for customer list
+     */
     public function customers_options($mainrenderer) {
         global $SESSION;
 
@@ -219,22 +232,16 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
 
-        $params = array(
+        $params = [
             'view' => 'viewAllCustomers',
             'dir' => $dir,
             'order' => $sortorder,
             'shopid' => $shopid,
-        );
+        ];
 
         $url = new moodle_url('/local/shop/customers/view.php', $params);
         $url->remove_params('shopid');
         $template->shopselect = $mainrenderer->shop_choice($url, true, $shopid);
-
-        /*
-        $params = array('view' => 'search');
-        $template->searchurl = new moodle_url('/local/shop/customers/view.php', $params);
-        $template->searchinbillsstr = get_string('searchincustomers', 'local_shop');
-        */
 
         return $this->output->render_from_template('local_shop/customers_options', $template);
     }
@@ -253,6 +260,9 @@ class shop_customers_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * Print list to customer view
+     */
     public function customer_view_links() {
 
         $template = new StdClass;

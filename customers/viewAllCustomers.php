@@ -48,7 +48,7 @@ if (!empty($action)) {
     $controller->process($action);
 }
 
-$params = array('view' => 'viewAllCustomers', 'sortorder' => $sortorder, 'dir' => $dir);
+$params = ['view' => 'viewAllCustomers', 'sortorder' => $sortorder, 'dir' => $dir];
 $url = new moodle_url('/local/shop/customers/view.php', $params);
 
 $config = get_config('local_shop');

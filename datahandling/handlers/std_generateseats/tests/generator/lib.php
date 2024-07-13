@@ -38,8 +38,7 @@ class shophandler_std_generateseats_generator extends shophandler_generator_base
         static $prodix = 1;
 
         if (is_null($data)) {
-            $data = array(
-            );
+            $data = [];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);

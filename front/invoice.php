@@ -43,7 +43,7 @@ if ($action) {
     $result = $controller->process($action);
 }
 
-$supports = array();
+$supports = [];
 if ($config->sellermailsupport) {
     $supports[] = get_string('byemailat', 'local_shop'). ' '. $config->sellermailsupport;
 }

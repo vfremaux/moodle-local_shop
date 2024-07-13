@@ -47,9 +47,10 @@ class shop_paymode_publicmandate extends shop_paymode {
     public function print_payment_portlet(Bill $billdata) {
         $proc = 1;
 
-        echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_publicmandate');
-        echo shop_compile_mail_template('print_procedure_text', array(
-            'PROC_ORDER' => $proc++), 'shoppaymodes_publicmandate');
+        echo '<p>' . shop_compile_mail_template('pay_instructions', [], 'shoppaymodes_publicmandate');
+        echo shop_compile_mail_template('print_procedure_text', [
+            'PROC_ORDER' => $proc++,
+        ], 'shoppaymodes_publicmandate');
     }
 
     /**
@@ -70,7 +71,7 @@ class shop_paymode_publicmandate extends shop_paymode {
      * Print when payment is complete
      */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**

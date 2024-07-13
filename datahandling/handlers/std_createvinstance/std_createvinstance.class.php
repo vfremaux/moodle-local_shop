@@ -234,7 +234,7 @@ class shop_handler_std_createvinstance extends shop_handler {
             $product->enddate = $endtime;
             $product->extradata = '';
             $product->reference = shop_generate_product_ref($data);
-            $extra = array('handler' => 'std_createvinstance');
+            $extra = ['handler' => 'std_createvinstance'];
             $product->productiondata = Product::compile_production_data($data->actionparams,
                                                                         $data->customerdata,
                                                                         $extra);

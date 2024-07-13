@@ -137,7 +137,7 @@ abstract class CatalogItem_Form extends moodleform {
             $fields = 'hasaccount,firstname,lastname';
             $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", [], $fields);
 
-            $ownersmenu = array('' => get_string('sitelevel', 'local_shop'));
+            $ownersmenu = ['' => get_string('sitelevel', 'local_shop')];
             if ($potentialowners) {
                 foreach ($potentialowners as $accountid => $owner) {
                     $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
@@ -165,7 +165,7 @@ abstract class CatalogItem_Form extends moodleform {
 
         $mform = $this->_form;
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price1 = &$mform->createElement('text', 'price1', '', $attributesprice1);
         $price1->updateAttributes(['onchange' => 'updatetiprice(1)']);
         $pricegroup[] = $price1;
@@ -182,7 +182,7 @@ abstract class CatalogItem_Form extends moodleform {
         $pricegroup[] = $ttc1;
         $mform->addGroup($pricegroup, 'priceset1', get_string('unitprice1', 'local_shop'), ' ', false);
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price2 = &$mform->createElement('text', 'price2', '', $attributesprice1);
         $price2->updateAttributes(['onchange' => 'updatetiprice(2)']);
         $pricegroup[] = $price2;
@@ -216,7 +216,7 @@ abstract class CatalogItem_Form extends moodleform {
         $pricegroup[] = $ttc3;
         $mform->addGroup($pricegroup, 'priceset3', get_string('unitprice3', 'local_shop'), ' ', false);
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price4 = &$mform->createElement('text', 'price4', '', $attributesprice1);
         $price4->updateAttributes(['onchange' => 'updatetiprice(4)']);
         $pricegroup[] = $price4;
@@ -233,7 +233,7 @@ abstract class CatalogItem_Form extends moodleform {
         $pricegroup[] = $ttc4;
         $mform->addGroup($pricegroup, 'priceset4', get_string('unitprice4', 'local_shop'), ' ', false);
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price5 = &$mform->createElement('text', 'price5', '', $attributesprice1);
         $price5->updateAttributes(['onchange' => 'updatetiprice(5)']);
         $pricegroup[] = $price5;

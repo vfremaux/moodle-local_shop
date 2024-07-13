@@ -39,7 +39,7 @@ $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->order)) {
-    $params = array('id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop');
+    $params = ['id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop'];
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 

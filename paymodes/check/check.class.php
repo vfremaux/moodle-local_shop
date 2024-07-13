@@ -45,11 +45,11 @@ class shop_paymode_check extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param Bill $billdata
+     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(Bill $billdata) {
+    public function print_payment_portlet(&$shoppingcart) {
 
-        $afullbill = Bill::get_by_transaction($billdata->transid);
+        $afullbill = Bill::get_by_transaction($shoppingcart->transid);
         $afullbill->status = SHOP_BILL_PENDING;
         $afullbill->save(true);
 
@@ -57,12 +57,12 @@ class shop_paymode_check extends shop_paymode {
         echo '<p>' . shop_compile_mail_template('pay_instructions', [], 'shoppaymodes_check');
         echo '<blockquote>';
 
-        $params = ['view' => 'bill', 'id' => $afullbill->theshop->id, 'transid' => $billdata->transid];
+        $params = ['view' => 'bill', 'id' => $afullbill->theshop->id, 'transid' => $shoppingcart->transid];
         $billurl = new moodle_url('/local/shop/front/view.php', $params);
 
         $params = [
             'PROC_ORDER' => $proc++,
-            'BILL_URL' => $billurl
+            'BILL_URL' => $billurl,
         ];
         echo shop_compile_mail_template('print_procedure_text', $params, 'shoppaymodes_check');
         $params = [
@@ -72,11 +72,16 @@ class shop_paymode_check extends shop_paymode {
             'CITY' => $this->_config->sellercity,
             'COUNTRY' => strtoupper($this->_config->sellercountry),
             'BILL_URL' => $billurl,
-            'PROC_ORDER' => $proc++ ];
+            'PROC_ORDER' => $proc++,
+        ];
         echo shop_compile_mail_template('procedure_text', $params, 'shoppaymodes_check');
         echo '</blockquote>';
     }
 
+    /**
+     * Prints a payment porlet in an order form
+     * @param Bill $billdata
+     */
     public function print_invoice_info(&$billdata = null) {
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', [], 'shoppaymodes_check');
@@ -105,7 +110,7 @@ class shop_paymode_check extends shop_paymode {
      * Print when payment completed
      */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array(), 'local_shop');
+        echo shop_compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
     /**

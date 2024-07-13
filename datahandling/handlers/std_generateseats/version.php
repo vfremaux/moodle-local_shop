@@ -28,4 +28,4 @@ $plugin = new stdclass;
 $plugin->version = 2016071400;
 $plugin->requires = 2014050800;
 $plugin->component = 'shophandlers_std_generateseats';
-$plugin->dependencies = array('local_shop' => 2016022500);
+$plugin->dependencies = ['local_shop' => 2016022500];

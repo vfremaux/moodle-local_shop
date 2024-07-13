@@ -123,7 +123,7 @@ class shop_controller extends front_controller_base {
 
             unset($SESSION->shoppingcart);
             $SESSION->shoppingcart = new StdClass;
-            $SESSION->shoppingcart->order = array();
+            $SESSION->shoppingcart->order = [];
             foreach (array_keys((array)$this->data) as $inputkey) {
                 if ($inputkey == 'shipping') {
                     continue;

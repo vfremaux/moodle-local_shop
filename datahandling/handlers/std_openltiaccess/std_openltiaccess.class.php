@@ -215,7 +215,7 @@ class shop_handler_std_openltiaccess extends shop_handler {
         $product->enddate = $upto;
         $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
-        $extra = array('handler' => 'std_openltiaccess');
+        $extra = ['handler' => 'std_openltiaccess'];
         $product->productiondata = Product::compile_production_data($data->actionparams, $required, $extra);
         $product->id = $DB->insert_record('local_shop_product', $product);
 
@@ -288,9 +288,9 @@ class shop_handler_std_openltiaccess extends shop_handler {
     public function display_product_infos($pid, $pinfo) {
         global $DB, $CFG;
 
-        $product = $DB->get_record('local_shop_product', array('id' => $pid));
-        $ltiaccess = $DB->get_record('local_ltiprovider', array('id' => $product->instanceid));
-        $course = $DB->get_record('course', array('id' => $ltiaccess->courseid));
+        $product = $DB->get_record('local_shop_product', ['id' => $pid]);
+        $ltiaccess = $DB->get_record('local_ltiprovider', ['id' => $product->instanceid]);
+        $course = $DB->get_record('course', ['id' => $ltiaccess->courseid]);
 
         $str = '';
 

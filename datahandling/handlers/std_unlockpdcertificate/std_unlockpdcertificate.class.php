@@ -110,7 +110,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
             return;
         }
 
-        $issue = $DB->get_record('pdcertificate_issues', array('userid' => $USER->id, 'pdcertificateid' => $certificate->id));
+        $issue = $DB->get_record('pdcertificate_issues', ['userid' => $USER->id, 'pdcertificateid' => $certificate->id]);
 
         if (!$issue) {
             // TODO : Try generating for the user if not yet generated.
@@ -150,7 +150,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         $product->enddate = 0;
         $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
-        $extra = array('handler' => 'std_unlockpdcertificate');
+        $extra = ['handler' => 'std_unlockpdcertificate'];
         $product->productiondata = Product::compile_production_data($data->actionparams, $data->customerdata, $extra);
         $product->id = $DB->insert_record('local_shop_product', $product);
 

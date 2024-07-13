@@ -49,7 +49,7 @@ class Tax_Form extends moodleform {
         $mform->setType('ratio', PARAM_TEXT);
 
         $choices = get_string_manager()->get_list_of_countries();
-        $choices = array('' => get_string('selectacountry').'...') + $choices;
+        $choices = ['' => get_string('selectacountry').'...'] + $choices;
         $mform->addElement('select', 'country', get_string('taxcountry', 'local_shop'), $choices);
         $mform->setType('country', PARAM_TEXT);
 
@@ -63,7 +63,12 @@ class Tax_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    public function validation($data, $files = array()) {
+    /**
+     * Standard validation
+     * @param array $data
+     * @param array $files the embedded files
+     */
+    public function validation($data, $files = []) {
 
         $errors = parent::validation($data, $files);
 

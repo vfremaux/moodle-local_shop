@@ -72,7 +72,7 @@ if (empty($SESSION->shoppingcart->eulas)) {
         $SESSION->shoppingcart->eulas = 'required';
     }
 }
-$params = array('eulas' => $SESSION->shoppingcart->eulas);
+$params = ['eulas' => $SESSION->shoppingcart->eulas];
 $PAGE->requires->js_call_amd('local_shop/front', 'initeulas', [$params]);
 
 // Print main ordering table.

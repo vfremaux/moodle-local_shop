@@ -184,7 +184,7 @@ class shop_export_excel extends shop_export {
             throw new moodle_exception(get_string('errorexcelcreation', 'local_shop'));
         }
 
-        $formats = array();
+        $formats = [];
 
         $formats['title'] = $this->workbook->add_format();
         $formats['title']->set_size(20);

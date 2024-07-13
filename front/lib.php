@@ -111,7 +111,7 @@ function shop_validate_customer(Shop $theshop) {
     if (!isset($shoppingcart->errors) || !is_object($shoppingcart->errors)) {
         $shoppingcart->errors = new StdClass();
     }
-    $shoppingcart->errors->customerinfo = array();
+    $shoppingcart->errors->customerinfo = [];
 
     if ($shoppingcart->customerinfo['email'] == '') {
         $shoppingcart->errors->customerinfo['custommerinfo::email'] = '';

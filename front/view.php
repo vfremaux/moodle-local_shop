@@ -70,7 +70,7 @@ $params = [
     'required' => $required,
     'assigned' => $assigned,
 ];
-$PAGE->requires->js_call_amd('local_shop/front', 'init', array($params));
+$PAGE->requires->js_call_amd('local_shop/front', 'init', [$params]);
 
 $view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);
 
@@ -98,7 +98,7 @@ $PAGE->set_cacheable(false);
 // Add a forced shop_total block at right if necessary.
 
 if (!isloggedin()) {
-    $USER = $DB->get_record('user', array('username' => 'guest'));
+    $USER = $DB->get_record('user', ['username' => 'guest']);
 }
 
 if (empty($config->sellername)) {

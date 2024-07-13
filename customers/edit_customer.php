@@ -64,7 +64,7 @@ if ($customerid) {
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers')));
+    redirect(new moodle_url('/local/shop/customers/view.php', ['view' => 'viewAllCustomers']));
 }
 
 if ($data = $mform->get_data()) {
@@ -74,7 +74,7 @@ if ($data = $mform->get_data()) {
     $controller->receive('edit', $data);
     $controller->process('edit');
 
-    redirect(new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers')));
+    redirect(new moodle_url('/local/shop/customers/view.php', ['view' => 'viewAllCustomers']));
 }
 
 echo $OUTPUT->header();

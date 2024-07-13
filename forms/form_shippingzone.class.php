@@ -67,7 +67,7 @@ class ShippingZone_Form extends moodleform {
 
         // Bill scope amount when bill applied.
         $taxes = Tax::get_instances();
-        $taxoptions = array();
+        $taxoptions = [];
         foreach ($taxes as $t) {
             $taxoptions[$t->id] = $t->title;
         }

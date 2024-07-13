@@ -24,15 +24,22 @@ namespace local_shop\front;
 
 defined('MOODLE_INTERNAL') || die();
 
+use StdClass;
+use moodle_url;
+
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
+/**
+ * A class to manage shop users
+ */
 class users_controller extends front_controller_base {
 
+    /** @var array */
     protected $data;
 
     protected $received;
 
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -84,24 +91,28 @@ class users_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('users');
-                $params = array('view' => $prev,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id,
-                                'back' => 1);
+                $params = [
+                    'view' => $prev,
+                    'shopid' => $this->theshop->id,
+                    'blockid' => ($this->theblock->id ?? 0),
+                    'back' => 1,
+                ];
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
                 $next = $this->theshop->get_next_step('users');
-                $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-                return new \moodle_url('/local/shop/front/view.php', $params);
+                $params = ['view' => $next, 'shopid' => $this->theshop->id, 'blockid' => ($this->theblock->id ?? 0)];
+                return new moodle_url('/local/shop/front/view.php', $params);
             }
         } else if ($cmd == 'back') {
             // This can be decided into the user page.
             $next = $this->theshop->get_prev_step('users');
-            $params = array('view' => $next,
-                            'shopid' => $this->theshop->id,
-                            'blockid' => 0 + @$this->theblock->id,
-                            'back' => 1);
-            return new \moodle_url('/local/shop/front/view.php', $params);
+            $params = [
+                'view' => $next,
+                'shopid' => $this->theshop->id,
+                'blockid' => ($this->theblock->id ?? 0),
+                'back' => 1,
+            ];
+            return new moodle_url('/local/shop/front/view.php', $params);
 
         } else if ($cmd == 'addparticipant') {
 
@@ -113,8 +124,8 @@ class users_controller extends front_controller_base {
             } else {
 
                 if (!isset($SESSION->shoppingcart)) {
-                    $SESSION->shoppingcart = new \StdClass();
-                    $SESSION->shoppingcart->participants = array();
+                    $SESSION->shoppingcart = new StdClass();
+                    $SESSION->shoppingcart->participants = [];
                 }
 
                 if ($moodleuser = $DB->get_record('user', ['lastname' => $pt->lastname, 'email' => $pt->email])) {
@@ -173,7 +184,7 @@ class users_controller extends front_controller_base {
         if ($cmd == 'addassign') {
 
             if (!isset($SESSION->shoppingcart->users)) {
-                $SESSION->shoppingcart->users = array();
+                $SESSION->shoppingcart->users = [];
             }
             $sn = $this->data->shortname;
             $r = $this->data->role;

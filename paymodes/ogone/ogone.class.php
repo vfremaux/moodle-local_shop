@@ -221,9 +221,9 @@ class shop_paymode_ogone extends shop_paymode {
 
         shop_trace('Ogone/Ingenico IPN Controller');
 
-        $acceptancecodes = array(OGONE_STATUS_PROCEEDED);
-        $rejectcodes = array(OGONE_STATUS_REFUSED, OGONE_STATUS_PROCEEDING_REFUSED);
-        $cancellationcodes = array(OGONE_STATUS_CANCELLED);
+        $acceptancecodes = [OGONE_STATUS_PROCEEDED];
+        $rejectcodes = [OGONE_STATUS_REFUSED, OGONE_STATUS_PROCEEDING_REFUSED];
+        $cancellationcodes = [OGONE_STATUS_CANCELLED];
 
         /*
          * Possibly liberalize in the future
@@ -315,7 +315,7 @@ class shop_paymode_ogone extends shop_paymode {
 
         // Do not cancel shopping cart. User may use another payment.
 
-        $params = array('view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id);
+        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id];
         redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
 

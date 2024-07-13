@@ -91,7 +91,10 @@ class Customer_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    public function validation($data, $files = array()) {
+    /**
+     * Standard Validation
+     */
+    public function validation($data, $files = []) {
         global $DB;
 
         $errors = parent::validation($data, $files);
@@ -102,7 +105,7 @@ class Customer_Form extends moodleform {
         }
 
         /**
-         * @TODO : Build a stronger mail format validation pattern.
+         * @todo : Build a stronger mail format validation pattern.
          */
         if (!preg_match('/.+@.+/', $data['email'])) {
             $errors['email'] = get_string('errornotanemail', 'local_shop');

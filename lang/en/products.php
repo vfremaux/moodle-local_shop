@@ -220,21 +220,25 @@ front office.
 
 The object expressions adopt the following structure :
 
-    array(
-        \'p0\': array(\'field\' => \'the_field_name\',
+    [
+        \'p0\': [\'field\' => \'the_field_name\',
               \'label\' => \'some visible name\',
               \'type\' => \'textfield\',
               \'desc\' => \'some desc\',
-              \'attrs\' => array(\'size\' => 80)),
-         \'p1\': array(\'field\' => \'description_sample\',
+              \'attrs\' => [\'size\' => 80],
+          ],
+         \'p1\': [\'field\' => \'description_sample\',
                \'label\' => \'Description (sample)\',
                \'type\' => \'textarea\',
                \'desc\' => \'Short Description (sample)\'),
-         \'p2\': array(\'field\' => \'template_sample\',
+         \'p2\': [\'field\' => \'template_sample\',
                \'label\' => \'Model (sample)\',
                \'type\' => \'select\',
                \'desc\' => \'Course template (sample)\',
-               \'options\' => array(\'MOD1\' => \'Model1\', \'MOD2\' => \'Model2\')));
+               \'options\' => [\'MOD1\' => \'Model1\', \'MOD2\' => \'Model2\',
+           ]
+       ]
+   ];
 
 the resuting expression is :
 
