@@ -110,7 +110,7 @@ class shop_paymode_test extends shop_paymode {
      * Prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    public function print_invoice_info(Bill $billdata = null) {
+    public function print_invoice_info(?Bill $billdata = null) {
         assert(true);
     }
 

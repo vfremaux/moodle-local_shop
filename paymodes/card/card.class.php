@@ -49,8 +49,11 @@ class shop_paymode_card extends shop_paymode {
         return;
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_invoice_info($billdata = null) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    public function print_invoice_info(?Bill $billdata = null) {
         return;
     }
 

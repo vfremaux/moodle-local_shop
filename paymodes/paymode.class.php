@@ -86,7 +86,7 @@ abstract class shop_paymode {
      * Prints a payment info on an invoice.
      * @param Bill $billdata
      */
-    public abstract function print_invoice_info(Bill $billdata = null);
+    public abstract function print_invoice_info(?Bill $billdata = null);
 
     /**
      * Prints a message when transaction is complete.
