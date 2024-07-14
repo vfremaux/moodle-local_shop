@@ -77,9 +77,10 @@ abstract class shop_paymode {
 
     /**
      * Prints a payment portlet in an order form from the shoppingcart content.
-     * @param object $shoppingcart
+     * Shopping cart may be altered.
+     * @param objectref $shoppingcart
      */
-    public abstract function print_payment_portlet($shoppingcart);
+    public abstract function print_payment_portlet(&$shoppingcart);
 
     /**
      * Prints a payment info on an invoice.

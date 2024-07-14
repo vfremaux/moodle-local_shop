@@ -41,7 +41,14 @@ $producttext = optional_param('producttext', '', PARAM_TEXT);
 $page = optional_param('page', 0, PARAM_INT);
 $perpage = 50;
 
-$viewparams = array('view' => $view, 'customerid' => $customerid, 'order' => $order, 'dir' => $dir, 'shopowner' => $shopownerid, 'shopid' => $shopid);
+$viewparams = [
+    'view' => $view,
+    'customerid' => $customerid,
+    'order' => $order,
+    'dir' => $dir,
+    'shopowner' => $shopownerid,
+    'shopid' => $shopid,
+];
 
 $ownermenu = '';
 
@@ -66,7 +73,7 @@ if ($action != '') {
 // $select = " hasaccount > 0 ";
 $select = " 1 = 1 ";
 $join = '';
-$params = array();
+$params = [];
 if ($shopownerid) {
     $select .= " AND co.userid = ? ";
     $params[] = $shopownerid;

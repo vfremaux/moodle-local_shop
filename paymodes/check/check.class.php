@@ -79,8 +79,7 @@ class shop_paymode_check extends shop_paymode {
     }
 
     /**
-     * Prints a payment porlet in an order form
-     * @param Bill $billdata
+     *
      */
     public function print_invoice_info(&$billdata = null) {
         $proc = 1;

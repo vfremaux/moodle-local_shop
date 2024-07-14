@@ -555,7 +555,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
-            $template->description = format_text($product->description, FORMAT_MOODLE, array('para' => false));
+            $template->description = format_text($product->description, FORMAT_MOODLE, ['para' => false]);
 
             $cutoff = $config->shortdescriptionthreshold;
             $template->shortdescription = $this->trim_chars($template->description, $cutoff);
@@ -717,7 +717,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $template->isshortdescription = false;
             if ($bundle->description) {
                 $template->hasdescription = true;
-                $template->description = format_text($bundle->description, FORMAT_MOODLE, array('para' => false));
+                $template->description = format_text($bundle->description, FORMAT_MOODLE, ['para' => false]);
 
                 $cutoff = $config->shortdescriptionthreshold;
                 $template->shortdescription = $this->trim_chars($template->description, $cutoff);
@@ -1164,10 +1164,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         if (!empty($shoppingcart->users[$shortname][$role])) {
             $rkeys = array_keys($shoppingcart->users[$shortname][$role]);
         } else {
-            $rkeys = array();
+            $rkeys = [];
         }
 
-        $options = array();
+        $options = [];
         if (!empty($shoppingcart->participants)) {
             foreach ($shoppingcart->participants as $email => $pt) {
                 if (!in_array($email, $rkeys)) {
@@ -1497,7 +1497,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->untaxedtotal = sprintf('%0.2f', round($shoppingcart->untaxedtotal, 2));
         if (!empty($shoppingcart->taxes)) {
             foreach ($shoppingcart->taxes as $taxcode => $taxsum) {
-                if ($tax = $DB->get_record('local_shop_tax', array('id' => $taxcode))) {
+                if ($tax = $DB->get_record('local_shop_tax', ['id' => $taxcode])) {
                     $taxtpl = new StdClass;
                     $taxtpl->taxsum = sprintf('%.2f', $taxsum);
                     $taxtpl->title = $tax->title;
@@ -1854,7 +1854,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', ['id' => $customerid])) {
                 $billuser = $DB->get_record('user', ['id' => $userid]);
                 $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-                $options = array('ticket' => $ticket);
+                $options = ['ticket' => $ticket];
                 $template->loginbutton = $this->output->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
             }
         }

@@ -49,7 +49,7 @@ class local_shop_external extends external_api {
         parent::validate_parameters($requs, $params);
 
         if (array_key_exists('shopid', $params)) {
-            $params = array('id' => $params['shopid']);
+            $params = ['id' => $params['shopid']];
             if (!$DB->record_exists('local_shop', $params)) {
                 throw new ParameterException("No such shop");
             }

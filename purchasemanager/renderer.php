@@ -40,7 +40,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
      * @param Productref &$productinstance a full Product instance.
      * @param array $viewparams contextual query params from the view.
      */
-    public function productinstance_admin_form(&$productinstances, $viewparams = array(), $customerid, $shopowner) {
+    public function productinstance_admin_form(&$productinstances, $viewparams = [], $customerid, $shopowner) {
 
         $this->check_context();
 
@@ -287,7 +287,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $url->remove_params('quicksearchfilter');
         $template->quicksearch = $this->quicksearch($quicksearchfilter, $url);
 
-        $params = array('view' => 'search');
+        $params = ['view' => 'search'];
         $template->searchurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
         return $this->output->render_from_template('local_shop/productinstances_options', $template);

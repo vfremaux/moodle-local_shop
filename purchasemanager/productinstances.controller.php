@@ -116,7 +116,10 @@ class productinstances_controller {
         }
     }
 
+    /**
+     * Gives meta informaiton on controller.
+     */
     public static function info() {
-        return array('delete' => array('productids' => 'Array of integers pointing local_shop_product records.'));
+        return ['delete' => ['productids' => 'Array of integers pointing local_shop_product records.']];
     }
 }

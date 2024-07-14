@@ -53,7 +53,7 @@ if (!preg_match('/viewAllProductInstances|search/', $view)) {
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances', 'id' => $theshop->id));
+$url = new moodle_url('/local/shop/purchasemanager/view.php', ['view' => 'viewAllProductInstances', 'id' => $theshop->id]);
 $PAGE->set_url($url);
 
 $PAGE->set_context($context);

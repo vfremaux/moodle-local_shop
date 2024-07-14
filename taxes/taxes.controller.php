@@ -83,15 +83,18 @@ class taxes_controller {
         }
     }
 
+    /**
+     * Gives meta informztion on controller.
+     */
     public function info() {
-        return array(
-            'delete' => array('taxid' => 'Numeric ID'),
-            'edit' => array(
+        return [
+            'delete' => ['taxid' => 'Numeric ID'],
+            'edit' => [
                 'title' => 'String',
                 'ratio' => 'Number',
                 'country' => '2 digits uppercase coutry code',
                 'formula' => 'String (expression)',
-            ),
-        );
+            ],
+        ];
     }
 }
