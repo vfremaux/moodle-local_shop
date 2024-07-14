@@ -109,9 +109,9 @@ class shop_paymode_mercanet extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param object $shoppingcart
+     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet($shoppingcart) {
+    public function print_payment_portlet(&$shoppingcart) {
         global $CFG, $USER;
 
         echo '<div id="shop-panel-caption">';

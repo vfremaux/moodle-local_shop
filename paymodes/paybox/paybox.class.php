@@ -52,9 +52,9 @@ class shop_paymode_paybox extends shop_paymode {
 
     /**
      * prints a payment porlet in an order form
-     * @param Bill $billdata
+     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(Bill $billdata) {
+    public function print_payment_portlet(&$shoppingcart) {
         // @todo : implement it.
         echo '<p>Not implemeted Yet!</p> ';
     }

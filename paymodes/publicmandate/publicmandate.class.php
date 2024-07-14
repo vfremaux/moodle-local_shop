@@ -42,9 +42,9 @@ class shop_paymode_publicmandate extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param Bill $billdata
+     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(Bill $billdata) {
+    public function print_payment_portlet(&$shoppingcart) {
         $proc = 1;
 
         echo '<p>' . shop_compile_mail_template('pay_instructions', [], 'shoppaymodes_publicmandate');

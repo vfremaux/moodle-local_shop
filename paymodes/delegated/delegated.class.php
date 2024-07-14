@@ -47,9 +47,10 @@ class shop_paymode_delegated extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param Bill $billdata
+     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(Bill $billdata) {
+    public function print_payment_portlet(&$shoppingcart) {
+        assert(true);
     }
 
     /**
@@ -57,6 +58,7 @@ class shop_paymode_delegated extends shop_paymode {
      * @param Bill $billdata
      */
     public function print_invoice_info(Bill $billdata = null) {
+        assert(true);
     }
 
     /**

@@ -55,9 +55,9 @@ class shop_paymode_paypal extends shop_paymode {
     /**
      * Prints a payment porlet in an order form.
      *
-     * @param object $shoppingcart a data stub that contains required information for the portlet raster
+     * @param objectref &$shoppingcart a data stub that contains required information for the portlet raster
      */
-    public function print_payment_portlet($shoppingcart) {
+    public function print_payment_portlet(&$shoppingcart) {
         global $CFG, $OUTPUT;
 
         $config = get_config('local_shop');

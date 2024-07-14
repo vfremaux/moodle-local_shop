@@ -43,9 +43,9 @@ class shop_paymode_transfer extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref $shoppingcart
+     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet($shoppingcart) {
+    public function print_payment_portlet(&$shoppingcart) {
 
         $proc = 1;
 
