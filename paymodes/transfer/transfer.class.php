@@ -41,7 +41,7 @@ class shop_paymode_transfer extends shop_paymode {
      * @param Shop $theshop
      */
     public function __construct(?Shop $theshop) {
-        parent::__construct('transfer', $shopblockinstance);
+        parent::__construct('transfer', $theshop);
     }
 
     /**
