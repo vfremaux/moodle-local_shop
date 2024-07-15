@@ -23,8 +23,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
 use local_shop\Shop;
+use local_shop\Bill;
 
 /**
  * A generic sample class for credic card payment
@@ -39,6 +42,13 @@ class shop_paymode_card extends shop_paymode {
     public function __construct(?Shop $shop) {
         // GENERIC PLUGIN. DO NOT ENABLE!
         parent::__construct('card', $shop, false);
+    }
+
+    /**
+     * Is this plugin capable of instant payment ?
+     */
+    public function is_instant_payment() {
+        return true;
     }
 
     /**
@@ -57,26 +67,32 @@ class shop_paymode_card extends shop_paymode {
         return;
     }
 
+    /**
+     * Print when payment completed
+     */
     public function print_complete() {
         echo compile_mail_template('bill_complete_text', [], 'local_shop');
     }
 
-    // Processes a payment return.
+    /**
+     * Processes a payment return.
+     */
     public function process() {
         return;
     }
 
-    // Processes a payment asynchronoous confirmation.
+    /**
+     * Processes a payment asynchronoous confirmation.
+     */
     public function process_ipn() {
         return;
     }
 
-    // Provides global settings to add to shop settings when installed.
+    /**
+     * Provides global settings to add to shop settings when installed.
+     * @param objectref &$settings
+     */
     public function settings(&$settings) {
         return;
-    }
-
-    public function is_instant_payment() {
-        return true;
     }
 }

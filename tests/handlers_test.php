@@ -70,7 +70,7 @@ class handlers_test extends advanced_testcase {
         // Setup moodle content environment.
 
         $category = $this->getDataGenerator()->create_category();
-        $params = array('name' => 'Test course', 'shortname' => 'TESTPROD', 'category' => $category->id);
+        $params = ['name' => 'Test course', 'shortname' => 'TESTPROD', 'category' => $category->id];
         $course = $this->getDataGenerator()->create_course($params);
 
         // Create customersupport default course.

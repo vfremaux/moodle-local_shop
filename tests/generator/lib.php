@@ -62,9 +62,9 @@ class local_shop_generator extends component_generator_base {
         $config = get_config('local_shop');
 
         if (is_null($data)) {
-            $data = (object) array(
+            $data = (object) [
                 'name' => 'Test shop '.$shopix,
-                'description_editor' => array('text' => 'Shop instance for tests', 'format' => 1, 'itemid' => 0),
+                'description_editor' => ['text' => 'Shop instance for tests', 'format' => 1, 'itemid' => 0],
                 'catalogid' => 0,
                 'navsteps' => $config->defaultnavsteps,
                 'allowtax' => true,
@@ -82,8 +82,8 @@ class local_shop_generator extends component_generator_base {
                 'endusermobilephonerequired' => true,
                 'printtabbedcategories' => true,
                 'defaultcustomersupportcourse' => 0,
-                'eula_editor' => array('text' => 'Test shop eulas', 'format' => 1, 'itemid' => 0),
-            );
+                'eula_editor' => ['text' => 'Test shop eulas', 'format' => 1, 'itemid' => 0],
+            ];
         }
 
         $controller = new \local_shop\backoffice\shop_controller();
@@ -91,17 +91,21 @@ class local_shop_generator extends component_generator_base {
         return $controller->process('edit');
     }
 
+    /**
+     * Create Tax instance
+     * @param object $data
+     */
     public function create_tax($data = null) {
 
         $taxix = 1;
 
         if (is_null($data)) {
-            $data = (object) array(
+            $data = (object) [
                 'title' => 'Test VAT '.$taxix,
                 'ratio' => '10.0',
                 'country' => 'NZ',
                 'formula' => '$ttc * $rt',
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\taxes_controller();
@@ -110,21 +114,22 @@ class local_shop_generator extends component_generator_base {
 
     }
 
+    /**
+     * Create catalog instance
+     * @param object $data
+     */
     public function create_catalog($data = null) {
 
         static $catalogix = 1;
 
         if (is_null($data)) {
-            $data = (object) array(
+            $data = (object) [
                 'name' => 'Test catalog '.$catalogix,
-                'description_editor' => array('text' => 'Catalog instance for tests', 'format' => 1, 'itemid' => 0),
-/*
-                'salesconditions_editor' => array('text' => 'Catalog sales conditions', 'format' => 1, 'itemid' => 0),
-*/
+                'description_editor' => ['text' => 'Catalog instance for tests', 'format' => 1, 'itemid' => 0],
                 'countryrestrictions' => '',
                 'linked' => 'free',
                 'groupid' => 0,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\catalog_controller();
@@ -132,6 +137,11 @@ class local_shop_generator extends component_generator_base {
         return $controller->process('edit');
     }
 
+    /**
+     * Create a catalog category
+     * @param object $thecatalog
+     * @param object $data
+     */
     public function create_category($thecatalog, $data = null) {
         global $CFG;
 
@@ -140,12 +150,12 @@ class local_shop_generator extends component_generator_base {
         static $catix = 1;
 
         if (is_null($data)) {
-            $data = (object) array(
+            $data = (object) [
                 'name' => 'Test product category '.$catix,
-                'description_editor' => array('text' => 'Product category for tests', 'format' => 1, 'itemid' => 0),
+                'description_editor' => ['text' => 'Product category for tests', 'format' => 1, 'itemid' => 0],
                 'parentid' => 0,
                 'visible' => 1,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\category_controller($thecatalog);
@@ -153,6 +163,13 @@ class local_shop_generator extends component_generator_base {
         return $controller->process('edit');
     }
 
+    /**
+     * Create a product
+     * @param object $thecatalog
+     * @param object $category
+     * @param object $tax
+     * @param object $data
+     */
     public function create_product($thecatalog, $category, $tax, $data = null) {
         global $CFG;
 
@@ -167,14 +184,16 @@ class local_shop_generator extends component_generator_base {
             $requireddata .= '{"field":"requ2","label":"Requirement 2","type":"select",';
             $requireddata .= '"desc":"Testing colecting form select", "options":{"MOD1":"Model1","MOD2":"Model2"}}]';
 
-            $data = (object) array(
+            $txt = '<p>Product for unit testing. Renewable, Seat allocatable, Multiple price (2 ranges),';
+            $txt .= ' Automated on course session creation.</p>';
+            $data = (object) [
                 'code' => 'TESTPROD',
                 'name' => 'Test product',
-                'description_editor' => array(
-                    'text' => '<p>Product for unit testing. Renewable, Seat allocatable, Multiple price (2 ranges), Automated on course session creation.</p>',
+                'description_editor' => [
+                    'text' => $txt,
                     'format' => '1',
                     'itemid' => 0,
-                ),
+                ],
 
                 'userid' => 0,
                 'status' => 'AVAILABLE',
@@ -199,24 +218,24 @@ class local_shop_generator extends component_generator_base {
                 'showsnameinset' => 1,
                 'showsdescriptioninset' => 1,
 
-                'eula_editor' => array (
+                'eula_editor' => [
                         'text' => '<p>Sales conditions</p>',
                         'format' => 1,
                         'itemid' => 0,
-                ),
+                ],
 
-                'notes_editor' => array (
+                'notes_editor' => [
                     'text' => '<p>Test notes</p>',
                     'format' => 1,
                     'itemid' => 0,
-                ),
+                ],
 
                 'requireddata' => $requireddata,
                 'enablehandler' => 'std_setuponecoursesession',
                 'handlerparams' => 'coursename=TESTPROD',
                 'quantaddressesusers' => 2,
                 'renewable' => 1,
-            );
+            ];
         }
 
         $controller = new \local_shop\backoffice\product_controller($thecatalog);
@@ -232,31 +251,80 @@ class local_shop_generator extends component_generator_base {
 
         $this->reset();
 
-        /*
-        $catalogs = array(
-          array('id' => '1','name' => 'Base catalog','description' => '<p>Catalog for independant products<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '0','countryrestrictions' => ''),
-          array('id' => '2','name' => 'Master catalog 1','description' => '<p>Master products 1<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '2','countryrestrictions' => ''),
-          array('id' => '3','name' => 'Master catalog 2','description' => '<p>Master records 2<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '3','countryrestrictions' => ''),
-          array('id' => '4','name' => 'Slave catalog 1 - 1','description' => '<p>slave to master 1<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '2','countryrestrictions' => ''),
-          array('id' => '5','name' => 'Slave 1 - 2','description' => '<p>Slave to master 1<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '2','countryrestrictions' => ''),
-          array('id' => '6','name' => 'Slave catalog 2 - 1','description' => '<p>Slave of Master 2<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '3','countryrestrictions' => ''),
-          array('id' => '7','name' => 'Master to delete','description' => '<p>To delete<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '7','countryrestrictions' => ''),
-          array('id' => '8','name' => 'Master to delete w slaves','description' => '<p>Master with slaves to delete<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '8','countryrestrictions' => ''),
-          array('id' => '9','name' => 'Slave to master to delete','description' => '<p>Slave to master to delete<br></p>','descriptionformat' => '1','salesconditions' => '','salesconditionsformat' => '1','groupid' => '8','countryrestrictions' => '')
-        );
-        */
-
-        $catalogs = array(
-          array('id' => '1','name' => 'Base catalog','description' => '<p>Catalog for independant products<br></p>','descriptionformat' => '1','groupid' => '0','countryrestrictions' => ''),
-          array('id' => '2','name' => 'Master catalog 1','description' => '<p>Master products 1<br></p>','descriptionformat' => '1','groupid' => '2','countryrestrictions' => ''),
-          array('id' => '3','name' => 'Master catalog 2','description' => '<p>Master records 2<br></p>','descriptionformat' => '1','groupid' => '3','countryrestrictions' => ''),
-          array('id' => '4','name' => 'Slave catalog 1 - 1','description' => '<p>slave to master 1<br></p>','descriptionformat' => '1','groupid' => '2','countryrestrictions' => ''),
-          array('id' => '5','name' => 'Slave 1 - 2','description' => '<p>Slave to master 1<br></p>','descriptionformat' => '1','groupid' => '2','countryrestrictions' => ''),
-          array('id' => '6','name' => 'Slave catalog 2 - 1','description' => '<p>Slave of Master 2<br></p>','descriptionformat' => '1','groupid' => '3','countryrestrictions' => ''),
-          array('id' => '7','name' => 'Master to delete','description' => '<p>To delete<br></p>','descriptionformat' => '1','groupid' => '7','countryrestrictions' => ''),
-          array('id' => '8','name' => 'Master to delete w slaves','description' => '<p>Master with slaves to delete<br></p>','descriptionformat' => '1','groupid' => '8','countryrestrictions' => ''),
-          array('id' => '9','name' => 'Slave to master to delete','description' => '<p>Slave to master to delete<br></p>','descriptionformat' => '1','groupid' => '8','countryrestrictions' => '')
-        );
+        $catalogs = [
+            [
+                'id' => 1,
+                'name' => 'Base catalog',
+                'description' => '<p>Catalog for independant products<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 0,
+                'countryrestrictions' => '',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Master catalog 1',
+                'description' => '<p>Master products 1<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 2,
+                'countryrestrictions' => ''
+            ],
+            [
+                'id' => 3,
+                'name' => 'Master catalog 2',
+                'description' => '<p>Master records 2<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 3,
+                'countryrestrictions' => ''
+            ],
+            [
+                'id' => 4,
+                'name' => 'Slave catalog 1 - 1',
+                'description' => '<p>slave to master 1<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 2,
+                'countryrestrictions' => '',
+            ],
+            [
+                'id' => 5,
+                'name' => 'Slave 1 - 2',
+                'description' => '<p>Slave to master 1<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 2,
+                'countryrestrictions' => '',
+            ],
+            [
+                'id' => 6,
+                'name' => 'Slave catalog 2 - 1',
+                'description' => '<p>Slave of Master 2<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 3,
+                'countryrestrictions' => '',
+            ],
+            [
+                'id' => 7,
+                'name' => 'Master to delete',
+                'description' => '<p>To delete<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 7,
+                'countryrestrictions' => '',
+            ],
+            [
+                'id' => 8,
+                'name' => 'Master to delete w slaves',
+                'description' => '<p>Master with slaves to delete<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 8,
+                'countryrestrictions' => '',
+            ],
+            [
+                'id' => 9,
+                'name' => 'Slave to master to delete',
+                'description' => '<p>Slave to master to delete<br></p>',
+                'descriptionformat' => 1,
+                'groupid' => 8,
+                'countryrestrictions' => '',
+            ],
+        ];
 
         foreach ($catalogs as $c) {
             $cobj = (object)$c;
@@ -265,4 +333,3 @@ class local_shop_generator extends component_generator_base {
         }
     }
 }
-

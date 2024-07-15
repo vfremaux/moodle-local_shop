@@ -42,7 +42,7 @@ $mform = new check_product_key_form();
 $checked = false;
 if ($data = $mform->get_data()) {
     $check = shop_check_product_ref($data->productkey);
-    $hasproduct = $DB->record_exists('local_shop_product', array('reference' => $data->productkey));
+    $hasproduct = $DB->record_exists('local_shop_product', ['reference' => $data->productkey]);
     $checked = true;
 }
 
