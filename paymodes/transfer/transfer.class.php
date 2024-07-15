@@ -24,8 +24,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
 use local_shop\Shop;
+use local_shop\Bill;
 
 /**
  * Pay by bank transfer. This is a non instant payment method that will

@@ -25,8 +25,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
 use local_shop\Shop;
+use local_shop\Bill;
 
 /**
  * A class free order payment as a fallback when order is 0

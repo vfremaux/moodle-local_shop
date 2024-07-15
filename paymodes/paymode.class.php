@@ -21,6 +21,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_shop\Bill;
+use local_shop\Shop;
+
 /**
  * This abstract class emplements an object wrapper for a payment method
  * in the shop block
