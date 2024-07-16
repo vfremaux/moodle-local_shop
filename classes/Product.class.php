@@ -151,7 +151,8 @@ class Product extends ShopObject {
      */
     public function delete(): void {
         // Dismount product effect in Moodle using delete method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->delete($this);
@@ -177,7 +178,8 @@ class Product extends ShopObject {
         $this->save(true);
 
         // Dismount product effect in Moodle using soft_delete method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->soft_delete($this);
@@ -187,7 +189,7 @@ class Product extends ShopObject {
         $productevent = new ProductEvent(null);
         $productevent->productid = $this->id;
         $productevent->billitemid = $this->currentbillitemid;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->eventtype = 'delete';
         $productevent->save();
     }
@@ -200,7 +202,8 @@ class Product extends ShopObject {
         $this->save(true);
 
         // Restores product effect in Moodle using soft_restore method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->soft_restore($this);
@@ -210,7 +213,7 @@ class Product extends ShopObject {
         $productevent = new ProductEvent(null);
         $productevent->productid = $this->id;
         $productevent->billitemid = $this->currentbillitemid;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->eventtype = 'restore';
         $productevent->save();
     }
@@ -222,7 +225,8 @@ class Product extends ShopObject {
         $this->save(true);
 
         // Restores product effect in Moodle using soft_restore method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->update($this);
@@ -232,7 +236,7 @@ class Product extends ShopObject {
         $productevent = new ProductEvent(null);
         $productevent->productid = $this->id;
         $productevent->billitemid = $this->currentbillitemid;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->eventtype = 'update';
         $productevent->save();
     }

@@ -79,7 +79,7 @@ class Bill extends ShopObject {
      * the final bill amount including taxes, discounts AND shipping
      * this is stored into the $bill->record->amount attribute in db
      */
-    protected $finalshippedtaxedtotal;
+    protected $finalshippedtxtot;
 
     /**
      * the final bill amount including taxes, discounts
@@ -409,7 +409,7 @@ class Bill extends ShopObject {
      * for recording in DB.
      */
     public function recalculate() {
-        global $DB, $CFG;
+        global $CFG;
 
         $this->orderuntaxed = 0;
         $this->ordertaxes = 0;
@@ -417,7 +417,7 @@ class Bill extends ShopObject {
         $this->finaluntaxedtotal = 0;
         $this->finaltaxestotal = 0;
         $this->finaltaxedtotal = 0;
-        $this->finalshippedtaxedtotal = 0;
+        $this->finalshippedtxtot = 0;
         $this->discount = 0;
         $this->discounttaxes = 0;
         $this->untaxeddiscount = 0;
@@ -498,10 +498,10 @@ class Bill extends ShopObject {
         $this->record->taxes = $this->finaltaxestotal;
         $this->record->untaxedamount = $this->finaluntaxedtotal;
 
-        // Discounts are applied in 'finalshippedtaxedtotal'
-        $this->finalshippedtaxedtotal = $this->finaltaxedtotal + $this->shipping; // Not in record.
+        // Discounts are applied in 'finalshippedtxtot'
+        $this->finalshippedtxtot = $this->finaltaxedtotal + $this->shipping; // Not in record.
         $this->dirty = false;
-        shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated to final amount : {$this->finalshippedtaxedtotal}");
+        shop_trace("[{$this->transactionid}] Bill.recalculate : Bill recalculated to final amount : {$this->finalshippedtxtot}");
     }
 
     /**
@@ -536,7 +536,8 @@ class Bill extends ShopObject {
         $transitionhandler = core_text::strtolower("bill_transition_{$this->record->status}_{$tostatus}");
         shop_trace('['.$this->transactionid.'] Internal transaction: '.$transitionhandler);
         if (function_exists($transitionhandler)) {
-            $result = $transitionhandler($this);
+            // Not using the result.
+            $transitionhandler($this);
         } else {
             // Just pass to final status.
             $this->status = $tostatus;

@@ -626,10 +626,12 @@ class Catalog extends ShopObject {
                 continue; // Optional '00' special default zone is considered 'in fine'.
             }
             $ands = preg_split('/&\|/', $z->applicability); // Detokenize &.
-            for ($i = 0; $i < count($ands); $i++) {
+            $andsnum = count($ands);
+            for ($i = 0; $i < $andsnum; $i++) {
                 if (strstr('|', $ands[$i])) {
                     $ors = preg_split('/\|/', $ands[$i]); // Detokenize |.
-                    for ($j = 0; $j < count($ors); $j++) {
+                    $orsnum = count($ors);
+                    for ($j = 0; $j < $orsnum; $j++) {
                         $ors[$j] = shop_resolve_zone_rule($c, $zip, $ors[$j]);
                     }
                     $ands[$i] = array_reduce($ors, 'reduce_or', false);
@@ -770,7 +772,7 @@ class Catalog extends ShopObject {
         $requiredroles = ['student' => true];
 
         if (!empty($SESSION->shoppingcart->order)) {
-            foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
+            foreach (array_keys($SESSION->shoppingcart->order) as $shortname) {
                 $product = $this->get_product_by_shortname($shortname);
                 $handlerparams = $product->get_serialized_handlerparams();
                 $params = json_decode($handlerparams);
@@ -890,7 +892,7 @@ class Catalog extends ShopObject {
         }
 
         $this->get_all_products_for_admin($shopproducts);
-        if (!empty($shoppproducts)) {
+        if (!empty($shopproducts)) {
             $yml .= $indent.'items:'."\n";
             $level++;
             $indent = str_repeat('    ', $level);

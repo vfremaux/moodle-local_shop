@@ -193,8 +193,6 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
         // Perform operations.
 
-        $now = time();
-
         try {
             $raid = role_assign($role->id, $user->id, $context->id);
         } catch (Exception $exc) {

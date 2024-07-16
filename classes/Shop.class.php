@@ -266,6 +266,7 @@ class Shop extends ShopObject {
         if (!empty($this->thecatalogue)) {
             $yml .= $this->thecatalogue->export();
         }
+        return $yml;
     }
 
     /**

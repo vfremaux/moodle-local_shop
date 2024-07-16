@@ -16,27 +16,43 @@
 
 namespace local_shop\output;
 
-require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
-
 defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
 use StdClass;
 use local_shop\Tax;
+use local_shop\Shop;
+use Templatable;
+use renderer_base;
 
-class front_taxes implements \Templatable {
+/**
+ * Taxes
+ */
+class front_taxes implements Templatable {
 
+    /** @var array of taxlines */
     protected $taxes;
+
+    /** @var the shop in context */
     protected $theshop;
 
-    /*
-     *
+    /**
+     * Constructor
+     * @param array $taxes
+     * @param Shop $theshop
      */
-    public function __construct($taxes, $theshop) {
+    public function __construct($taxes, Shop $theshop) {
         $this->taxes = $taxes;
         $this->theshop = $theshop;
     }
 
-    public function export_for_template(\renderer_base $output) {
+    /**
+     * Exporter for template
+     * @param renderer_base $output unused
+     */
+    public function export_for_template(renderer_base $output /* unused */) {
 
         $template = new StdClass();
 

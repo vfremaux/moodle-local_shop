@@ -123,7 +123,7 @@ class shop_handler_std_addtrainingcredits extends shop_handler {
         // Add user to customer support on real purchase.
         if (!empty($data->actionparams['customersupport'])) {
             shop_trace("[{$data->transactionid}] STD_ADD_TRAINING_CREDITS Postpay : Registering Customer Support");
-            shop_register_customer_support($data->actionparams['customersupport'], $customeruser, $data->transactionid);
+            shop_register_customer_support($data->actionparams['customersupport'], $data->customeruser, $data->transactionid);
         }
 
         shop_trace("[{$data->transactionid}] STD_ADD_TRAINING_CREDITS Postpay : Complete.");

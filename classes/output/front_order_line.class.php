@@ -18,26 +18,53 @@ namespace local_shop\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-class front_order_line implements \Templatable {
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
+use Templatable;
+use renderer_base;
+use local_shop\CatalogItem;
+use local_shop\Shop;
+use StdClass;
+
+/**
+ * A line of an order, before submission
+ */
+class front_order_line implements Templatable {
+
+    /** @var a catalog item **/
     protected $catalogitem;
 
+    /** @var the current shop **/
     protected $theshop;
 
+    /** @var an array of options **/
     protected $options;
 
+    /** @var the quantity **/
     protected $q;
 
-    public function __construct($catalogitem, $q, $theshop, $options) {
+    /**
+     * Constructor
+     * @param CatalogItem $catalogitem
+     * @param int $q
+     * @param Shop $theshop
+     * @param array $options
+     */
+    public function __construct(CatalogItem $catalogitem, $q, Shop $theshop, $options) {
         $this->catalogitem = $catalogitem;
         $this->theshop = $theshop;
         $this->options = $options;
         $this->q = $q;
     }
 
-    public function export_for_template(\renderer_base $output) {
+    /**
+     * Exporter for template
+     * @param renderer_base $output unused
+     */
+    public function export_for_template(renderer_base $output /* unused */) {
 
-        $template = new \StdClass;
+        $template = new StdClass();
 
         $theshop = $this->theshop;
         $catalogitem = $this->catalogitem;

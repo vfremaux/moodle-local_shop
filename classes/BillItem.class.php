@@ -26,6 +26,8 @@ namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
 
+use StdClass;
+
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
@@ -88,7 +90,6 @@ class BillItem extends ShopObject {
      * @param bool $nosave
      */
     public function __construct($idorrec, $light = false, $internalrefs = [], $ordering = -1, $nosave = false) {
-        global $DB;
 
         if (array_key_exists('bill', $internalrefs)) {
             $this->bill = $internalrefs['bill'];
@@ -152,7 +153,7 @@ class BillItem extends ShopObject {
              * first creation of a record
              * itemcode is NOT a legacy record field, but comes from shopping front
              */
-            $this->record = new \StdClass;
+            $this->record = new StdClass();
             $this->record->type = $idorrec->type;
 
             if ($idorrec->type != 'BILLING') {

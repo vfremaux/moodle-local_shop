@@ -404,7 +404,7 @@ class CatalogItem extends ShopObject {
         $context = context_system::instance();
 
         $fs = get_file_storage();
-        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemunit', $this->id, $ignoredirs = true)) {
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemunit', $this->id, true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemunit', $this->id);
             $unitpix = array_pop($files);
             $url = moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
@@ -424,7 +424,7 @@ class CatalogItem extends ShopObject {
         $context = context_system::instance();
 
         $fs = get_file_storage();
-        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemtenunits', $this->id, $ignoredirs = true)) {
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemtenunits', $this->id, true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemtenunits', $this->id);
             $unitpix = array_pop($files);
             $url = moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
@@ -689,10 +689,12 @@ class CatalogItem extends ShopObject {
         return true;
     }
 
+    /**
+     * Forges an url for the leaflet document.
+     */
     public function get_leaflet_url() {
-        global $OUTPUT;
 
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         $url = null;
 
@@ -713,7 +715,7 @@ class CatalogItem extends ShopObject {
      * slave catalogs: master usecase is to internationalize or change of some commercial
      * values for a special country/region.
      * Variant should not alter the effective nature of the product, nor technical definition.
-     *
+     * @param CatalogItem $override
      * TODO : Check if still usefull
      */
     public function apply(CatalogItem $override) {
@@ -798,6 +800,10 @@ class CatalogItem extends ShopObject {
         parent::delete();
     }
 
+    /**
+     * clone a catalog item
+     * @param bool $inset
+     */
     public function clone_instance($inset = false) {
         global $DB;
 
@@ -842,7 +848,12 @@ class CatalogItem extends ShopObject {
         }
     }
 
-    public function export_to_ws($q, $withsubs) {
+    /**
+     * Export CatalogItem for WS
+     * @param int $q
+     * @param bool $withsubs
+     */
+    public function export_to_ws($q, $withsubs = false) {
         $export = new StdClass;
 
         $export->id = $this->record->id;
@@ -891,6 +902,12 @@ class CatalogItem extends ShopObject {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(code, ' ', name)");
     }
 
+    /**
+     * Search in catalog items
+     * @param string $by
+     * @param string $arg
+     * @param array $searchscope array of catalog ids where to search in
+     */
     public static function search($by, $arg, $searchscope = null) {
         global $DB;
 
@@ -953,7 +970,6 @@ class CatalogItem extends ShopObject {
      * @param object $formdata data received from edition forms.
      */
     public static function compute_item_shortname(&$formdata) {
-        global $DB;
 
         $shortname = $formdata->code;
         $shortname = strtolower(str_replace(' ', '_', $shortname));

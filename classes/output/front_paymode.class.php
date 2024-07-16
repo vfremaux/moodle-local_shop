@@ -16,21 +16,41 @@
 
 namespace local_shop\output;
 
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-class front_paymode implements \Templatable {
+defined('MOODLE_INTERNAL') || die();
 
+use Templatable;
+use StdClass;
+use local_shop\Bill;
+use renderer_base;
+
+/**
+ * Paymode info
+ */
+class front_paymode implements Templatable {
+
+    /** @var the bill */
     protected $bill;
 
-    public function __construct($bill) {
+    /**
+     * Constructor
+     * @param Bill $bill
+     */
+    public function __construct(Bill $bill) {
         $this->bill = $bill;
     }
 
-    public function export_for_template(\renderer_base $output) {
+    /**
+     * Exporter for template
+     * @param renderer_base $output unused
+     */
+    public function export_for_template(renderer_base $output /* unused */) {
         global $CFG;
 
         $afullbill = $this->bill;
 
-        $template = new \StdClass;
+        $template = new StdClass();
         include_once($CFG->dirroot.'/local/shop/paymodes/'.$afullbill->paymode.'/'.$afullbill->paymode.'.class.php');
 
         $classname = 'shop_paymode_'.$afullbill->paymode;

@@ -60,7 +60,7 @@ class daily_shop_indicator extends zabbix_indicator {
      * @param string $submode to target an aquisition to an explicit submode, elsewhere 
      */
     public function acquire_submode($submode) {
-        global $DB;
+        global $DB, $CFG;
 
         if(!isset($this->value)) {
             $this->value = new Stdclass;

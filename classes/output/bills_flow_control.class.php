@@ -26,20 +26,17 @@ namespace local_shop\output;
 
 use StdClass;
 use renderer_base;
+use Templatable;
 
 /**
  * Data recollection for bill changing states
  */
-class bills_flow_control implements \Templatable {
+class bills_flow_control implements Templatable {
 
-    /**
-     * The current status
-     */
+    /** @var The current status */
     protected $status;
 
-    /**
-     * the base URL
-     */
+    /** @var the base URL */
     protected $url;
 
     /**
@@ -54,9 +51,9 @@ class bills_flow_control implements \Templatable {
 
     /**
      * Exporter for renderer.
-     * @param renderer_base $output
+     * @param renderer_base $output unused
      */
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output /* unused */) {
         global $DB;
 
         $select = "

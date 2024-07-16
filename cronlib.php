@@ -80,6 +80,9 @@ class manager {
         }
     }
 
+    /**
+     * Daily notifications by cron
+     */
     public function notify_daily_task() {
         global $DB;
 
@@ -116,7 +119,7 @@ class manager {
             $instancereporthtml = $this->compile_instances($productinstances, '<br/>');
             $a = format_string($SITE->shortname);
             $title = get_string('neartoexpire', 'local_shop', $a);
-            $params = ['view' => 'viewAllProducts', 'id' => $theshop->id ?? 1];
+            $params = ['view' => 'viewAllProducts', 'id' => 1];
             $managerurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
             $b = new StdClass();
             $b->url = $managerurl->out();
@@ -146,7 +149,7 @@ class manager {
             $instancereporthtml = $this->compile_instances($productinstances, '<br/>');
             $a = format_string($SITE->shortname);
             $title = get_string('longtimeexpired', 'local_shop', $a);
-            $params = ['view' => 'viewAllProducts', 'id' => $theshop->id ?? 1];
+            $params = ['view' => 'viewAllProducts', 'id' => 1];
             $managerurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
             $b = new StdClass();
             $b->url = $managerurl->out();
@@ -161,23 +164,49 @@ class manager {
     }
 
     /**
-     * Process all instances
+     * Process all instances. Optimized to build objects only once in memory,
+     * then forget everything once done.
+     * @param array $instances process instances by adding info in product objects.
      */
     function compile_instances($instances, $linesep = "\n") {
 
+        $shops = [];
+        $catalogs = [];
+        $catalogitems = [];
+        $customers = [];
+
         $instancerecs = [];
 
-        if (!empty($productinstances)) {
-            foreach ($productinstances as $pi) {
-                $ci = new CatalogItem($pi->catalogitemid);
-                $cu = new Customer($pi->customerid);
+        if (!empty($instances)) {
+            foreach ($instances as &$pi) {
+                if (!array_key_exists($pi->catalogitemid, $catalogitems)) {
+                    $ci = new CatalogItem($pi->catalogitemid, true); /* lightweight */
+                } else {
+                    $ci = $catalogitems[$pi->catalogitemid];
+                }
+                if (!array_key_exists($ci->catalogid, $catalogs)) {
+                    $c = new Catalog($ci->catalogid, true); /* lightweight */
+                } else {
+                    $c = $catalogs[$ci->catalogid];
+                }
+                if (!array_key_exists($c->shopid, $shops)) {
+                    $s = new Shop($c->shopid, true); /* lightweight */
+                } else {
+                    $s = $shops[$c->shopid];
+                }
+                if (!array_key_exists($pi->customerid, $customers)) {
+                    $cu = new Customer($pi->customerid);
+                } else {
+                    $cu = $customers[$pi->customerid];
+                }
+
                 $instancerecs[] = $ci->code.' '.$ci->name.' / Instance : '.$pi->reference.' /customer : '.$cu->firstname.' '.$cu->lastname. '('.$cu->organisation.')';
             }
 
             return implode($linesep, $instancerecs);
         }
 
-        return null;
+        return false;
     }
 
     /**
@@ -186,9 +215,8 @@ class manager {
      * @param string $str notification content
      */
     function send_notification($title, $str) {
-        global $DB;
-
         $admin = get_site_admin();
+        $systemcontext = context_system::instance();
         $sales = get_users_by_capability($systemcontext, 'local/shop:salesadmin');
         foreach ($sales as $saleadmin) {
             email_to_user($saleadmin, $admin, $title, $str);

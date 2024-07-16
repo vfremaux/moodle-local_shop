@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
+use StdClass;
 use Exception;
 use local_shop\Bill;
 use local_shop\BillItem;
@@ -305,7 +306,7 @@ class bill_controller {
 
             // Relocates.
             $relocated = $this->data->relocated;
-            $z = $thie->data->z;
+            $z = $this->data->z;
             $where = $this->data->where;
             if ($z > $where) {
                 $gap = $z - $where;
@@ -401,16 +402,17 @@ class bill_controller {
 
             if (!empty($billrec->billid)) {
                 $bill = new Bill($billrec->billid);
-                $bill->lastactiondate = $now;
+                $bill->lastactiondate = time();
             } else {
                 $bill = new Bill(null, false, $this->theshop, $this->thecatalog, $this->theblock);
             }
 
             if (empty($billrec->currency)) {
-                $billrec->currency = $theshop->defaultcurrency;
+                $billrec->currency = $this->theshop->defaultcurrency;
             }
 
-            $shipping = new \StdClass;
+            $shipping = new StdClass();
+            $config = get_config('local_shop');
             if (!empty($config->useshipping)) {
                 $shipping->value = 0;
                 // TODO : Call shipping calculation.
@@ -421,7 +423,7 @@ class bill_controller {
             // Creating a customer account for a user if missing.
             if ($billrec->useraccountid != 0) {
                 $user = $DB->get_record('user', ['id' => $billrec->useraccountid]);
-                if (!$potcustomers = $DB->get_records('local_shop_customer', ['hasaccount' => $user->id])) {
+                if (!$DB->get_records('local_shop_customer', ['hasaccount' => $user->id])) {
                     $customer = new Customer(null);
                     $customer->firstname = $user->firstname;
                     $customer->lastname = $user->lastname;

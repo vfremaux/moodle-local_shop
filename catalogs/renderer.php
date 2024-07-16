@@ -75,8 +75,6 @@ class shop_catalogs_renderer extends local_shop_base_renderer {
      */
     public function catalogs($catalogs) {
 
-        $config = get_config('local_shop');
-
         $template = new StdClass();
 
         if ($catalogs) {

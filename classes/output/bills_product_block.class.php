@@ -25,16 +25,17 @@
 namespace local_shop\output;
 
 use StdClass;
+use Templatable;
+use renderer_base;
 
-class bill_product_block implements \Templatable {
+class bill_product_block implements Templatable {
 
-    /**
-     * The product to render
-     */
+    /** @var The product to render */
     protected $product;
 
     /**
      * Base constructor
+     * @param Catalogitem $product
      */
     public function __construct($product) {
         $this->product = $product;
@@ -42,8 +43,9 @@ class bill_product_block implements \Templatable {
 
     /**
      * Exporter for template.
+     * @param renderer_base $output unused
      */
-    public function export_for_template($output) {
+    public function export_for_template(renderer_base $output /* unused */) {
 
         $template = new StdClass();
         $template->imageurl = $product->get_image_url();
@@ -58,7 +60,7 @@ class bill_product_block implements \Templatable {
         } else {
             $template->singleprice = false;
             foreach ($prices as $range => $price) {
-                $pricetpl = new \StdClass;
+                $pricetpl = new StdClass();
                 $pricetpl->range = $range;
                 $pricetpl->price = $price;
                 $template->prices[] = $pricetpl;

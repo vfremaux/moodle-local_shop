@@ -100,7 +100,6 @@ class catalog_controller {
         }
 
         if ($cmd == 'deletecatalog') {
-            $catalogidlist = $this->data->catalogid;
             // If master catalog, must delete all slaves.
             $thecatalog = new Catalog($this->data->catalogid);
             if ($thecatalog->ismaster) {

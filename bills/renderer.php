@@ -213,9 +213,6 @@ class shop_bills_renderer extends local_shop_base_renderer {
      */
     public function billitem_line($billitem) {
         global $OUTPUT;
-        static $movestr;
-        static $editstr;
-        static $deletestr;
 
         $template = new StdClass;
 
@@ -411,7 +408,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param object $bill a full bill
      */
     public function bill_merchant_line($bill) {
-        global $CFG;
+        global $CFG, $SESSION;
 
         if (local_shop_supports_feature('shop/discounts')) {
             include_once($CFG->dirroot.'/local/shop/pro/classes/Discount.class.php');
@@ -419,7 +416,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         }
 
         if (local_shop_supports_feature('shop/partners')) {
-            $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+            $p = optional_param('p', $SESSION->shop->partnerid ?? 0, PARAM_INT);
         }
 
         if (is_null($bill)) {
@@ -497,7 +494,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $outputclass = 'bills_flow_control';
             shop_load_output_class($outputclass);
             $tpldata = new \local_shop\output\bills_flow_control($status, $url);
-            $template = $tpldata->export_for_template($renderer);
+            $template = $tpldata->export_for_template();
             return $this->output->render_from_template('local_shop/bills_flow_controller', $template);
         } catch (Exception $e) {
             throw new moodle_exception("Missing output class $outputclass");
@@ -519,7 +516,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $usedcurrencies = $DB->get_records('local_shop_bill', null, '', ' DISTINCT(currency), currency ');
         if (count($usedcurrencies) > 1) {
             $curmenu = [];
-            foreach ($usedcurrencies as $curid => $void) {
+            foreach (array_keys($usedcurrencies) as $curid) {
                 if ($curid) {
                     $curmenu[$curid] = get_string($curid, 'local_shop');
                 }
@@ -663,16 +660,15 @@ class shop_bills_renderer extends local_shop_base_renderer {
     /**
      * Prints a search result set
      * @param array $results array of matching bills
-     * @param object $theshop
      */
-    public function search_results($results, $theshop) {
+    public function search_results($results) {
         $template = new StdClass;
         $odd = 0;
-        foreach ($result as $bill) {
-            $afullbill = Bill::get_by_transaction($bill->transactionid);
-            $bill->lineclass = ($odd) ? 'r0' : 'r1';
+        foreach ($results as $bill) {
+            $afullbilltpl = Bill::get_by_transaction($bill->transactionid);
+            $afullbilltpl->lineclass = ($odd) ? 'r0' : 'r1';
             $odd = ($odd + 1) % 2;
-            $template->afullbill[] = $bill;
+            $template->afullbill[] = $afullbilltpl;
         }
 
         return $this->output->render_from_template('local_shop/bills_search_result', $template);
@@ -695,10 +691,10 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param bool $samecurrency should be set false if all bills in the list do not share the same currecy unit.
      */
     public function bill_group_subtotal($data, $billcurrency, $samecurrency) {
-        global $CFG;
+        global $CFG, $SESSION;
 
         if (local_shop_supports_feature('shop/partners')) {
-            $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+            $p = optional_param('p', $SESSION->shop->partnerid ?? 0, PARAM_INT);
         }
 
         $template = new StdClass;

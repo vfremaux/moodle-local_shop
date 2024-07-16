@@ -199,8 +199,6 @@ class Customer extends ShopObject {
     public static function get_instances_by_shop($filter, $order = 'c.lastname, c.firstname', $dir = "ASC", $limitfrom = 0, $limitnum = '') {
         global $DB;
 
-        $config = get_config('local_shop');
-
         $params = [];
         $shopclause = '';
         $catalogclause = '';
@@ -282,8 +280,6 @@ class Customer extends ShopObject {
      */
     public static function count_instances_by_shop($filter) {
         global $DB;
-
-        $config = get_config('local_shop');
 
         $params = [];
         $shopclause = '';

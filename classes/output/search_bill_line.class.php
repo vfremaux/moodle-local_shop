@@ -18,17 +18,33 @@ namespace local_shop\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-class search_bill_line implements \Templatable {
+use Templatable;
+use Stdclass;
+use renderer_base;
 
+/**
+ * Result of a bill search
+ */
+class search_bill_line implements Templatable {
+
+    /** @var a bill that matches search */
     protected $bill;
 
-    public function __construct($bill) {
+    /**
+     * Constructor
+     * @param Bill $bill
+     */
+    public function __construct(Bill $bill) {
         $this->bill = $bill;
     }
 
-    public function export_for_template($output) {
+    /**
+     * Exporter for template
+     * @param renderer_base $output
+     */
+    public function export_for_template(renderer_base $output) {
 
-        $template = new \StdClass();
+        $template = new StdClass();
 
         $bill = $this->bill;
 

@@ -222,9 +222,9 @@ class shop_customers_renderer extends local_shop_base_renderer {
 
     /**
      * Print options for customer list
+     * @param object $mainrenderer
      */
     public function customers_options($mainrenderer) {
-        global $SESSION;
 
         $shopid = optional_param('shopid', 0, PARAM_INT);
         $dir = optional_param('dir', 'asc', PARAM_TEXT);
@@ -246,6 +246,11 @@ class shop_customers_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/customers_options', $template);
     }
 
+    /**
+     * Print a switch to avoid paging.
+     * @param mixed $url
+     * @param string $urlfilter
+     */
     public function no_paging_switch($url, $urlfilter) {
         $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
         if ($nopaging) {

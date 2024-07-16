@@ -192,7 +192,7 @@ class shop_handler_std_addquizattempts extends shop_handler {
             $quizids = explode(',', $data->actionparams['quizid']);
             // Validate all quizids, in case some were deleted.
             foreach ($quizids as $qid) {
-                if ($quiz = $DB->get_record('quiz', ['id' => $data->actionparams['quizid']])) {
+                if ($quiz = $DB->get_record('quiz', ['id' => $qid])) {
                     $quizzes[$quiz->id] = $quiz;
                 }
             }
@@ -275,7 +275,7 @@ class shop_handler_std_addquizattempts extends shop_handler {
         }
 
         // Check if all quizes in same course. Warn if not.
-        $firstcourse = null;
+        $firstcourseid = 0;
         $courseids = [];
 
         if (!empty($data->actionparams['quizid'])) {
@@ -287,7 +287,7 @@ class shop_handler_std_addquizattempts extends shop_handler {
                 } else {
                     $courseids[$quiz->course] = $quiz->course;
                     if (is_null($firstcourse)) {
-                        $firstcourse = $quiz->course;
+                        $firstcourseid = $quiz->course;
                     }
                 }
             }
@@ -301,7 +301,7 @@ class shop_handler_std_addquizattempts extends shop_handler {
                 } else {
                     $courseids[$cm->course] = $cm->course;
                     if (is_null($firstcourse)) {
-                        $firstcourse = $cm->course;
+                        $firstcourseid = $cm->course;
                     }
                     if ($cm->module != $module->id) {
                         $errors[$data->code][] = get_string('errornotaquiz', 'shophandlers_std_addquizattempts', $idnum);
@@ -317,7 +317,7 @@ class shop_handler_std_addquizattempts extends shop_handler {
                 } else {
                     $courseids[$cm->course] = $cm->course;
                     if (is_null($firstcourse)) {
-                        $firstcourse = $cm->course;
+                        $firstcourseid = $cm->course;
                     }
                     if ($cm->module != $module->id) {
                         $errors[$data->code][] = get_string('errornotaquiz', 'shophandlers_std_addquizattempts', $idnum);

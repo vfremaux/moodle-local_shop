@@ -221,14 +221,13 @@ class provider implements
      * @param object $recordobj The customer record.
      */
     protected static function export_customer_account($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
         }
 
-        // Necessary format transforms
-        $recordobj->hasaccount = transform::user($recordobj->hasaccount);
+        // Necessary format transforms.
+        $recordobj->hasaccount = transform::user($user->id);
         $recordobj->timecreated = transform::datetime($recordobj->timecreated);
 
         // Data about the record.
@@ -242,13 +241,12 @@ class provider implements
      * @param object $recordobj The bill record.
      */
     protected static function export_bill($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
         }
 
-        $recordobj->userid = transform::user($recordobj->userid);
+        $recordobj->userid = transform::user($user->id);
         $recordobj->emissiondate = transform::datetime($recordobj->emissiondate);
         $recordobj->lastactiondate = transform::datetime($recordobj->lastactiondate);
         $recordobj->assignedto = transform::user($recordobj->assignedto);
@@ -265,7 +263,6 @@ class provider implements
      * @param object $recordobj The bill item record.
      */
     protected static function export_bill_item($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
@@ -282,7 +279,6 @@ class provider implements
      * @param object $recordobj The product record.
      */
     protected static function export_product($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
@@ -297,9 +293,12 @@ class provider implements
         writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
     }
 
+    /**
+     * Exports a product event
+     * @param object $user
+     * @param object $recordobj a product zvent object
+     */
     protected static function export_product_event($user, $recordobj) {
-        global $DB;
-
         if (!$recordobj) {
             return;
         }
@@ -321,8 +320,6 @@ class provider implements
      * @param context $context The specific context to delete data for.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
-        global $DB;
-
         assert(true);
     }
 
@@ -337,8 +334,6 @@ class provider implements
      * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
-        global $DB;
-
         assert(true);
     }
 }

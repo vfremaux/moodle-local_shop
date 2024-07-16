@@ -16,12 +16,26 @@
 
 namespace local_shop\output;
 
-class front_order_totals implements \Templatable {
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
+defined('MOODLE_INTERNAL') || die();
+
+use Templatable;
+use Stdclass;
+use local_shop\Bill;
+
+/**
+ * The total of the order
+ */
+class front_order_totals implements Templatable {
+
+    /** @var the bill */
     protected $bill;
 
+    /** @var the current shop */
     protected $theshop;
 
+    /** @var the moodle context */
     protected $context;
 
     public function __construct($args) {
@@ -29,17 +43,19 @@ class front_order_totals implements \Templatable {
         $this->theshop = $args[1];
     }
 
-    public function export_for_template(\renderer_base $output) {
+    /**
+     * Exporter for template
+     * @param renderer_base $output unused
+     */
+    public function export_for_template(renderer_base $output /* unused */) {
         global $SESSION, $CFG;
 
         $config = get_config('local_shop');
 
-        $template = new \StdClass;
+        $template = new StdClass();
         $bill = $this->bill;
 
-        $shoppingcart = @$SESSION->shoppingcart;
-
-        $reason = '';
+        $shoppingcart = $SESSION->shoppingcart ?? new StdClass();
 
         if (!is_null($bill)) {
             $bill->recalculate(); // Recalculate from DB with discounts.
@@ -50,13 +66,12 @@ class front_order_totals implements \Templatable {
             $shippingtaxedvalue = 0;
         } else {
             $taxedtotal = $shoppingcart->taxedtotal;
-            $context = \context_system::instance();
 
-            $finaluntaxedtotal = @$shoppingcart->finaluntaxedtotal;
-            $finaltaxedtotal = @$shoppingcart->finaltaxedtotal;
-            $finaltaxestotal = @$shoppingcart->finaltaxestotal;
-            $shippingtaxedvalue = 0 + @$shoppingcart->shipping->taxedvalue;
-            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal;
+            $finaluntaxedtotal = $shoppingcart->finaluntaxedtotal ?? 0;
+            $finaltaxedtotal = $shoppingcart->finaltaxedtotal ?? 0;
+            $finaltaxestotal = $shoppingcart->finaltaxestotal ?? 0;
+            $shippingtaxedvalue = $shoppingcart->shipping->taxedvalue ?? 0;
+            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal ?? 0;
 
             // Check discounts.
             if (local_shop_supports_feature('shop/discounts')) {
@@ -75,6 +90,7 @@ class front_order_totals implements \Templatable {
             }
         }
 
+        $template->taxes = sprintf("%0.2f", round($finaltaxestotal, 2));
         $template->taxedtotal = sprintf("%0.2f", round($taxedtotal, 2));
         $template->currency = $this->theshop->get_currency('symbol');
 
