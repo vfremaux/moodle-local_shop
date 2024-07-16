@@ -42,7 +42,7 @@ class BillItem_Form extends moodleform {
     protected $attributesshortjs;
 
     /** @var attributes for long text inputs */
-    protected $attributesdescription;
+    protected $attrdescription;
 
     /**
      * Constructor
@@ -70,7 +70,7 @@ class BillItem_Form extends moodleform {
             'maxlength' => 24,
             'onchange' => 'calculate_price()',
         ];
-        $this->attributesdescription = 'cols="50" rows="8"';
+        $this->attrdescription = 'cols="50" rows="8"';
 
         parent::__construct($action, $data);
     }

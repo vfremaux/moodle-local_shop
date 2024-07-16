@@ -32,11 +32,13 @@ require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
+use local_shop\CatalogItem;
 
 /**
  * STD_ENROL_ONE_COURSE is a standard shop product action handler that enrols in one course setup in
@@ -56,9 +58,9 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
     /**
      * this product should always be available, oppositely to the
      * enrolonecourse original product.
-     * @param object $catalogitem
+     * @param CatalogItem $catalogitem
      */
-    public function is_available($catalogitem) {
+    public function is_available(CatalogItem $catalogitem) {
         return true;
     }
 
@@ -148,8 +150,6 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
 
         $role = $DB->get_record('role', ['shortname' => $rolename]);
         $now = time();
-
-        $context = context_course::instance($course->id);
 
         $params = ['enrol' => $enrolname, 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED];
         if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
@@ -381,7 +381,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
         $params = ['contexttype' => 'userenrol', 'instanceid' => $product->instanceid];
         $remainings = Product::get_instances($params, 'enddate');
 
-        if (!$remaining || (count($remainings) == 1)) {
+        if (!$remainings || (count($remainings) == 1)) {
             // Am i the only one ? Usually should never be false.
             if ($product->contexttype == 'userenrol') {
                 if ($ue = $DB->get_record('user_enrolments', ['id' => $product->instanceid])) {
@@ -473,7 +473,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
      * @param array $extradata additional special data
      */
     public function display_product_infos($pid, $pinfo, $extradata = null) {
-        global $DB, $OUTPUT;
+        global $OUTPUT;
 
         // Aggregate here the extradata info that may content an exploitation customer side reference.
         $str = '';

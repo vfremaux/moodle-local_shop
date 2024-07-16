@@ -102,9 +102,7 @@ class shop_paymode_sherlocks extends shop_paymode {
      * @param objectref &$shoppingcart
      */
     public function print_payment_portlet(&$shoppingcart) {
-        global $CFG, $USER;
-
-        $config = get_config('local_shop');
+        global $CFG;
 
         echo '<div id="shop-panel-caption">';
 
@@ -163,11 +161,11 @@ class shop_paymode_sherlocks extends shop_paymode {
      * Extract DATA, get context_return and bounce to shop entrance with proper context values.
      */
     public function cancel() {
-        global $SESSION;
 
         $paydata = $this->decode_return_data();
 
-        list($cmd, $instanceid, $transid) = explode('-', $paydata['return_context']);
+        $returns = explode('-', $paydata['return_context']);
+        $transid = $returns[2];
         // Mark transaction (order record) as abandonned.
 
         $afullbill = Bill::get_by_transaction($transid);
@@ -209,7 +207,8 @@ class shop_paymode_sherlocks extends shop_paymode {
 
             // OK, affichage des champs de la réponse.
 
-            list($cmd, $instanceid, $transid) = explode('-', $paydata['return_context']);
+            $returns = explode('-', $paydata['return_context']);
+            $transid = $returns[2];
 
             $afullbill = Bill::get_by_transaction($transid);
 
@@ -380,7 +379,8 @@ class shop_paymode_sherlocks extends shop_paymode {
 
         } else {
 
-            list($cmd, $instanceid, $transid) = explode('-', $paydata['return_context']);
+            $returns = explode('-', $paydata['return_context']);
+            $transid = $returns[2];
 
             shop_trace("[$transid] sherlocks IPN processing");
 
@@ -416,7 +416,7 @@ class shop_paymode_sherlocks extends shop_paymode {
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
                     $nullblock = null;
                     $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock, $afullbill, true, false);
-                    $result = $controller->process('produce');
+                    $controller->process('produce');
                     die;
 
                 } else if ($paydata['response_code'] == SHLCK_PAYMENT_REJECTED) {
@@ -558,7 +558,6 @@ class shop_paymode_sherlocks extends shop_paymode {
             $tmp = str_replace('<%%DEBUG%%>', $sherlocksdebug, $tmp);
         }
 
-        $settingsurl = new moodle_url('/admin/settings.php', ['section' => 'localsettingshop']);
         if ($PATHFILE = @fopen($pathfile, 'w')) {
             fputs($PATHFILE, $tmp);
             fclose($PATHFILE);

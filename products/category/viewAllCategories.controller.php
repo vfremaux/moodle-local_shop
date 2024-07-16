@@ -169,7 +169,7 @@ class category_controller {
 
                 // If slave catalogue must insert a master copy.
                 if ($this->thecatalog->isslave) {
-                    $category->catalogid = $thecatalog->groupid;
+                    $category->catalogid = $this->thecatalog->groupid;
                     $DB->insert_record('local_shop_catalogcategory', $category);
                 }
             } else {

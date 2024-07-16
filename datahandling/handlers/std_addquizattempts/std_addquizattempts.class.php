@@ -29,8 +29,14 @@ defined('MOODLE_INTERNAL') || die();
  * credit account. This will only work when the trainingcredits enrol method is installed an enabled.
  */
 require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
+use local_shop\CatalogItem;
+
+/**
+ * Handler class to add available attempts to a quie
+ */
 class shop_handler_std_addquizattempts extends shop_handler {
 
     /**

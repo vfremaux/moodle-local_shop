@@ -243,7 +243,6 @@ function product_postpay_item(&$anitem, &$catalogitem, &$afullbill, &$response) 
             shop_trace("[{$afullbill->transactionid}] Postpay Production : producing for {$anitem->itemcode}");
             // An item passes productiondata and customerdata to the handler.
             if ($itemresponse = $handler->produce_postpay($anitem)) {
-                $hasworked = true;
                 $response->public .= "<br/>\n".$itemresponse->public;
                 $response->private .= "<br/>\n".$itemresponse->private;
                 $response->salesadmin .= "<br/>\n".$itemresponse->salesadmin;

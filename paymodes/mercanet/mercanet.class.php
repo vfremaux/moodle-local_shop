@@ -97,7 +97,6 @@ class shop_paymode_mercanet extends shop_paymode {
      */
     public function __construct(?Shop $shop) {
         parent::__construct('mercanet', $shop, true, true); // Overrides local confirm.
-        $overridelocalconfirm = true;
     }
 
     /**
@@ -112,7 +111,7 @@ class shop_paymode_mercanet extends shop_paymode {
      * @param objectref &$shoppingcart
      */
     public function print_payment_portlet(&$shoppingcart) {
-        global $CFG, $USER;
+        global $CFG;
 
         echo '<div id="shop-panel-caption">';
 
@@ -171,11 +170,13 @@ class shop_paymode_mercanet extends shop_paymode {
      * Extract DATA, get context_return and bounce to shop entrance with proper context values.
      */
     public function cancel() {
-        global $SESSION;
 
         $paydata = $this->decode_return_data();
 
-        list($cmd, $instanceid, $transid) = explode('-', $paydata['return_context']);
+        $returns = explode('-', $paydata['return_context']);
+        $instanceid = $returns[1];
+        $transid = $returns[2];
+
         // Mark transaction (order record) as abandonned.
 
         $afullbill = Bill::get_by_transaction($transid);
@@ -217,7 +218,9 @@ class shop_paymode_mercanet extends shop_paymode {
 
             // OK, affichage des champs de la réponse.
 
-            list($cmd, $instanceid, $transid) = explode('-', $paydata['return_context']);
+            $returns = explode('-', $paydata['return_context']);
+            $instanceid = $returns[1];
+            $transid = $returns[2];
 
             $afullbill = Bill::get_by_transaction($transid);
 
@@ -335,7 +338,9 @@ class shop_paymode_mercanet extends shop_paymode {
 
         } else {
 
-            list($cmd, $instanceid, $transid) = explode('-', $paydata['return_context']);
+            $returns = explode('-', $paydata['return_context']);
+            $instanceid = $returns[1);
+            $transid = $returns[2];
 
             shop_trace("[$transid] Mercanet IPN processing");
 
@@ -373,7 +378,7 @@ class shop_paymode_mercanet extends shop_paymode {
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
                     $nullblock = null;
                     $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock, $afullbill, true, false);
-                    $result = $controller->process('produce');
+                    $controller->process('produce');
                     die;
 
                 } else if ($paydata['response_code'] == MRCNT_PAYMENT_REJECTED) {
@@ -476,6 +481,8 @@ class shop_paymode_mercanet extends shop_paymode {
     public function generate_pathfile() {
         global $CFG, $OUTPUT;
 
+        $config = get_config('local_shop');
+
         $os = (preg_match('/Linux/i', $CFG->os)) ? 'linux' : 'win';
         $pluginpath = $CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet_615_PLUGIN_'.$os.$config->mercanet_processor_type;
         $pathfiletemplate = $pluginpath.'/param/pathfile.tpl';
@@ -500,7 +507,7 @@ class shop_paymode_mercanet extends shop_paymode {
         if ($PATHFILE = @fopen($pathfile, 'w')) {
             fputs($PATHFILE, $tmp);
             fclose($PATHFILE);
-            echo $OUTPUT->notification('Pathfile generated', $settignsurl);
+            echo $OUTPUT->notification('Pathfile generated', $settingsurl);
         } else {
             $message = 'Pathfile is not writable. Check file permissions on system. ';
             $message .= 'This is a very SENSIBLE file. Don\'t forget to protect it back after operation.';
@@ -510,6 +517,7 @@ class shop_paymode_mercanet extends shop_paymode {
 
     /**
      * returns pathfile location
+     * @param string $os
      */
     protected function get_pathfile($os) {
         global $CFG;
@@ -528,7 +536,7 @@ class shop_paymode_mercanet extends shop_paymode {
             $pluginpath .= '\\blocks\\shop\\paymodes\\mercanet\\mercanet_615_PLUGIN_';
             $pluginpath .= $os.$config->mercanet_processor_type;
             $pluginpath .= '\\param\\pathfile';
-            return $path;
+            return $pluginpath;
         }
     }
 

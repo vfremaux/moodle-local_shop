@@ -26,10 +26,12 @@ require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\Product;
 use local_shop\Customer;
+use local_shop\CatalogItem;
 
 /**
  * STD_UNLICKPDCERTIFICATE is a standard shop product action handler that unlocks a loced issue in a pdcertificate
@@ -62,7 +64,6 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
      * @param arrayref &$errors
      */
     function produce_prepay(&$data) {
-        global $CFG, $DB, $USER;
 
         // Get customersupportcourse designated by handler internal params and prepare customer support action.
         if (!isset($data->actionparams['customersupport'])) {
@@ -86,7 +87,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $CFG, $DB;
+        global $DB;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -189,7 +190,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
      ù @param CatalogItem $catalogitem
      */
     public function is_available(CatalogItem $catalogitem) {
-        global $USER, $DB;
+        global $DB;
 
         if (!empty($catalogitem->handlerparams['certificate'])) {
             $cm = $DB->get_record('course_modules', ['idnumber' => $catalogitem->handlerparams['certificate']]);
@@ -240,7 +241,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
 
-        parent::unit_test($data, $erors, $warnings, $messages);
+        parent::unit_test($data, $errors, $warnings, $messages);
 
         if (!isset($data->actionparams['certificate']) && !isset($data->actionparams['certificateid'])) {
             $errors[$data->code][] = get_string('errornoinstance', 'shophandlers_std_unlockpdcertificate');
@@ -251,7 +252,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
         }
 
         if (isset($data->actionparams['certificateid'])) {
-            if (!$certificate = $DB->get_record('pdcertificate', ['id' => $data->actionparams['certificateid']])) {
+            if (!$DB->get_record('pdcertificate', ['id' => $data->actionparams['certificateid']])) {
                 $errors[$data->code][] = get_string('errorbadinstance', 'shophandlers_std_unlockpdcertificate');
             }
         }

@@ -117,7 +117,7 @@ class shop_paymode_ogone extends shop_paymode {
         ];
 
         // General params.
-        $singdata = [];
+        $signdata = [];
         foreach ($commanddata as $name => $value) {
             echo '<input type="hidden" name="'.$name.'" value="'.$value.'">';
             if (!empty($value)) {
@@ -143,6 +143,7 @@ class shop_paymode_ogone extends shop_paymode {
 
         echo '<input type="hidden" name="ACCEPTURL" value="'.$accepturl.'">';
         echo '<input type="hidden" name="DECLINEURL" value="'.$declineurl.'">';
+        echo '<input type="hidden" name="EXCEPTIONURL" value="'.$exceptionurl.'">';
         // Rely on acceptance process for incertain states.
         echo '<input type="hidden" name="CANCELURL" value="'.$cancelurl.'">';
         echo '<input type="hidden" name="HOMEURL" value="'.$CFG->wwwroot.'">';
@@ -299,7 +300,6 @@ class shop_paymode_ogone extends shop_paymode {
      * Cancels the order and return to shop.
      */
     public function cancel() {
-        global $SESSION;
 
         if ($transid = $this->check_data_out()) {
             shop_trace('[$transid] Ogone/Ingenico Payment Cancelled');

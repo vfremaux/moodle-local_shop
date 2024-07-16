@@ -87,7 +87,7 @@ class shop_handler_std_generateseats extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $CFG, $DB;
+        global $DB;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -182,7 +182,7 @@ class shop_handler_std_generateseats extends shop_handler {
             $productevent = new StdClass();
             $productevent->productid = $product->id;
             $productevent->billitemid = $data->id;
-            $productevent->datecreated = $now = time();
+            $productevent->datecreated = time();
             $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
         }
 
@@ -237,12 +237,12 @@ class shop_handler_std_generateseats extends shop_handler {
             $hascourses = false;
             foreach ($courselist as $cn) {
                 $select = $DB->sql_like('shortname', ':shortname');
-                if ($courses = $DB->get_records_select('course', $select, ['shortname' => $cn])) {
+                if ($DB->get_records_select('course', $select, ['shortname' => $cn])) {
                     $hascourses = true;
                 }
             }
             if (!$hascourses) {
-                $warnings[$data->code][] = get_string('warningonecoursenotexists', 'shophandlers_std_generateseats', $shortname);
+                $warnings[$data->code][] = get_string('warningonecoursenotexists', 'shophandlers_std_generateseats', $cn);
             }
         }
 
@@ -251,7 +251,7 @@ class shop_handler_std_generateseats extends shop_handler {
             $data->actionparams['supervisor'] = 'teacher';
         }
 
-        if (!$role = $DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
+        if (!$DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
             $errors[$data->code][] = get_string('errorsupervisorrole', 'shophandlers_std_generateseats');
         }
 
@@ -267,7 +267,7 @@ class shop_handler_std_generateseats extends shop_handler {
      * @param array $params production related info stored at purchase time
      */
     public function display_product_actions($pid, $params) {
-        global $CFG, $COURSE, $DB, $OUTPUT;
+        global $COURSE, $DB, $OUTPUT;
 
         $str = '';
         $options = ['class' => 'form-submit'];
@@ -306,7 +306,7 @@ class shop_handler_std_generateseats extends shop_handler {
      * @param object $productioninfo a data aggregate with production contextual data
      */
     public function postprod_assignseat(Product &$product, &$productioninfo) {
-        global $COURSE, $CFG, $OUTPUT, $DB, $USER, $SITE;
+        global $COURSE, $CFG, $OUTPUT, $DB;
 
         include_once($CFG->dirroot.'/local/shop/datahandling/handlers/std_generateseats/assign_seat_form.php');
 
@@ -461,7 +461,7 @@ class shop_handler_std_generateseats extends shop_handler {
      * @param object production info &$productioninfo
      */
     public function postprod_unassignseat(&$product, &$productioninfo) {
-        global $COURSE, $CFG, $OUTPUT, $DB, $USER;
+        global $COURSE, $OUTPUT, $DB;
 
         $enrolname = 'manual';
 

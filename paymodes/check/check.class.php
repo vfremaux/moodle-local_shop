@@ -86,7 +86,7 @@ class shop_paymode_check extends shop_paymode {
         $proc = 1;
         echo '<p>' . shop_compile_mail_template('pay_instructions_invoice', [], 'shoppaymodes_check');
         echo '<blockquote>';
-        $params = ['view' => 'bill', 'id' => $afullbill->shop->id, 'transid' =>$billdata->transid];
+        $params = ['view' => 'bill', 'id' => $billdata->shop->id, 'transid' => $billdata->transid];
         $billurl = new moodle_url('/local/shop/front/view.php', $params);
         $params = [
             'PROC_ORDER' => $proc++,

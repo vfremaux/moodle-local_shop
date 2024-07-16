@@ -86,11 +86,11 @@ class parser_csv {
             throw new Exception();
         }
 
-        $required = [];
-        $patterns = [];
-        $metas = [];
-        $optionals = [];
-        $optionaldefaults = [];
+        $this->required = [];
+        $this->patterns = [];
+        $this->metas = [];
+        $this->optionals = [];
+        $this->optionaldefaults = [];
     }
 
     /**
@@ -201,7 +201,7 @@ class parser_csv {
 
         // Check for valid field names.
         foreach ($this->headers as $h) {
-            $header[] = trim($h);
+            $h = trim($h);
 
             $patternized = implode('|', $this->patterns)."\\d+";
             $metapattern = implode('|', $this->metas);
@@ -240,6 +240,8 @@ class parser_csv {
     protected function is_empty_line_or_format(&$text, $resetfirst = false) {
         static $textlib;
         static $first = true;
+
+        $config = get_config('local_shop');
 
         // We may have a risk the BOM is present on first line.
         if ($resetfirst) {

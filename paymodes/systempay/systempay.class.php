@@ -247,7 +247,9 @@ class shop_paymode_systempay extends shop_paymode {
 
         $paydata = $this->decode_return_data();
 
-        list($cmd, $shopid, $transid) = explode('-', $paydata['return_context']);
+        $results = explode('-', $paydata['return_context']);
+        $shopid = $results[1];
+        $transid = $results[2];
 
         // Mark transaction (order record) as abandonned.
         $afullbill = Bill::get_by_transaction($transid);
@@ -286,7 +288,9 @@ class shop_paymode_systempay extends shop_paymode {
             echo "<br/><br/><hr/>";
         }
 
-        list($cmd, $shopid, $transid) = explode('-', $paydata['return_context']);
+        $results = explode('-', $paydata['return_context']);
+        $shopid = $results[1];
+        $transid = $results[2];
 
         $afullbill = Bill::get_by_transaction($transid);
 
@@ -347,7 +351,10 @@ class shop_paymode_systempay extends shop_paymode {
 
         $paydata = $this->decode_return_data();
 
-        list($cmd, $shopid, $transid) = explode('-', $paydata['return_context']);
+        $results = explode('-', $paydata['return_context']);
+        $shopid = $results[1];
+        $transid = $results[2];
+
         shop_trace("[$transid] SystemPay IPN processing");
 
         if ($_POST['vads_operation_type'] != 'DEBIT') {
@@ -393,7 +400,7 @@ class shop_paymode_systempay extends shop_paymode {
                 $nullblock = null;
                 $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue,
                             $nullblock, $afullbill, true, false);
-                $result = $controller->process('produce');
+                $controller->process('produce');
                 die;
 
             default: {
@@ -533,26 +540,26 @@ class shop_paymode_systempay extends shop_paymode {
      * real bill online id is : shopid (2d), payment_date (yyyymmdd as 8d), and the onlinetxid (6d) generated here.
      */
     public function generate_online_id() {
-        $now = time();
+
         // rotate on 1000000.
         global $DB;
 
         // Avoid using potentially cached configuration. Process directly in DB.
-        $params = ['plugin' => 'local_shop', 'name' => 'systempay_idseq'];
+        $params = ['plugin' => 'local_shop', 'name' => 'systempayidseq'];
         try {
             $transaction = $DB->start_delegated_transaction();
-            $systempay_idseq = $DB->get_field('config_plugins', 'value', $params);
-            $systempay_idseq = ($systempay_idseq + 1) % 1000000;
-            if ($systempay_idseq == 0) {
+            $systempayidseq = $DB->get_field('config_plugins', 'value', $params);
+            $systempayidseq = ($systempayidseq + 1) % 1000000;
+            if ($systempayidseq == 0) {
                 // make 000000 never available.
-                $systempay_idseq++;
+                $systempayidseq++;
             }
-            $DB->set_field('config_plugins', 'value', $systempay_idseq, $params);
+            $DB->set_field('config_plugins', 'value', $systempayidseq, $params);
             $transaction->allow_commit();
         } catch (Exception $e) {
              $transaction->rollback($e);
         }
-        $onlinetxid = sprintf('%06d', $systempay_idseq);
+        $onlinetxid = sprintf('%06d', $systempayidseq);
 
         return $onlinetxid;
     }
@@ -568,8 +575,8 @@ class shop_paymode_systempay extends shop_paymode {
         $paydata['return_context'] = base64_decode($paydata['vads_order_info']);
 
         if (empty($paydata['return_context'])) {
-              $systempayreturnerrorstr = get_string('emptymessage', 'shoppaymodes_systempay');
-              echo "<br/><center>$systempayreturnerrorstr</center><br/>";
+              $str = get_string('emptymessage', 'shoppaymodes_systempay');
+              echo "<br/><center>$str</center><br/>";
             return false;
         }
 

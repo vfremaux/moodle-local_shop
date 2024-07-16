@@ -24,6 +24,9 @@ defined('MOODLE_INTERNAL') || die();
 
 class shop_import_categories {
 
+    /** @var string table name */
+    protected $table;
+
     /** @var object data object */
     protected $data;
 
@@ -36,6 +39,7 @@ class shop_import_categories {
      * @param object $data
      */
     public function __construct($table, $data) {
+        $this->table = $table;
         $this->data = $data;
         $this->overrides = [];
     }
@@ -60,7 +64,7 @@ class shop_import_categories {
 
             foreach ($this->overrides as $ovk => $ovv) {
                 $object->$ovk = $ovv;
-                $object->id = $DB->insert_record($table, $record);
+                $object->id = $DB->insert_record($this->table, $object);
                 $results[$object->id] = $object;
             }
         }

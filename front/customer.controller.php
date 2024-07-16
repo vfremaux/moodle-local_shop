@@ -109,7 +109,7 @@ class customer_controller extends front_controller_base {
         } else if ($cmd == 'revalidate') {
 
             // This comes after a customer login with a owned moodle account.
-            $errors = shop_validate_customer($this->theshop);
+            $shoppingcart->errors = shop_validate_customer($this->theshop);
 
         } else if ($cmd == 'navigate') {
 

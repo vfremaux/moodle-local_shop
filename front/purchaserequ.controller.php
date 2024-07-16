@@ -24,16 +24,25 @@ namespace local_shop\front;
 
 defined('MOODLE_INTERNAL') || die();
 
+use StdClass;
+use moodle_url;
+use coding_exception;
+
 require_once($CFG->dirroot.'/local/shop/front/lib.php');
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
+/**
+ * A controller for collecting purchase requirements.
+ */
 class purchaserequ_controller extends front_controller_base {
 
-    protected $data;
-
-    protected $received;
-
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
     public function receive($cmd, $data = []) {
         global $SESSION;
 
@@ -43,7 +52,7 @@ class purchaserequ_controller extends front_controller_base {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
         $shoppingcart = $SESSION->shoppingcart;
@@ -52,8 +61,6 @@ class purchaserequ_controller extends front_controller_base {
             case 'collect':
                 foreach ($shoppingcart->order as $itemname => $itemcount) {
                     $catalogitem = $this->thecatalog->get_product_by_shortname($itemname);
-
-                    $handler = $catalogitem->get_handler();
 
                     $requireddata = $catalogitem->requireddata; // Take care, result of magic _get() is not directly testable.
                     $requirements = json_decode($requireddata);
@@ -75,11 +82,15 @@ class purchaserequ_controller extends front_controller_base {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $SESSION;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         $shoppingcart = $SESSION->shoppingcart;
@@ -130,7 +141,7 @@ class purchaserequ_controller extends front_controller_base {
                     'shopid' => $this->theshop->id,
                     'blockid' => ($this->theblock->id ?? 0),
                 ];
-                return new \moodle_url('/local/shop/front/view.php', $params);
+                return new moodle_url('/local/shop/front/view.php', $params);
             }
         }
     }

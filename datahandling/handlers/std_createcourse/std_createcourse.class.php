@@ -82,7 +82,7 @@ class shop_handler_std_createcourse extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $CFG, $DB;
+        global $DB;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -136,7 +136,6 @@ class shop_handler_std_createcourse extends shop_handler {
             $template = $DB->get_record('course', ['shortname' => $coursetemplatename]);
             if ($templatefile = shop_delivery_check_available_backup($template->id)) {
                 if ($c->id = shop_restore_template($templatefile, $c)) {
-                    $context = context_course::instance($c->id);
                     $message = "[{$data->transactionid}] STD_CREATE_COURSE Course created.";
                     shop_trace($message);
                 } else {
@@ -180,7 +179,6 @@ class shop_handler_std_createcourse extends shop_handler {
         if (!$role = $DB->get_record('role', ['shortname' => 'courseowner'])) {
             $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
         }
-        $now = time();
 
         $enrolplugin = enrol_get_plugin('manual');
         $params = ['enrol' => 'manual', 'courseid' => $c->id, 'status' => ENROL_INSTANCE_ENABLED];
@@ -258,7 +256,7 @@ class shop_handler_std_createcourse extends shop_handler {
      * @param objectref &$errors
      */
     public function validate_required_data($itemname, $fieldname, $instance = 0, $value, &$errors) {
-        global $SESSION, $DB;
+        global $DB;
 
         // Ensure we have an integer index.
         $instance = 0 + $instance;
@@ -268,7 +266,7 @@ class shop_handler_std_createcourse extends shop_handler {
             if (empty($value)) {
                 $err = get_string('errorvalueempty', 'shophandlers_std_createcourse');
                 $errors[$itemname][$fieldname][$instance] = $err;
-                $hasnolocalerros = false;
+                $hasnolocalerrors = false;
             }
         }
 
@@ -277,7 +275,7 @@ class shop_handler_std_createcourse extends shop_handler {
             if ($DB->count_records('course', ['idnumber' => $value])) {
                 $err = get_string('erroralreadyexists', 'shophandlers_std_createcourse');
                 $errors[$itemname][$fieldname][$instance] = $err;
-                $hasnolocalerros = false;
+                $hasnolocalerrors = false;
             }
         }
 
@@ -328,7 +326,7 @@ class shop_handler_std_createcourse extends shop_handler {
                     WHERE
                         enrolid = ?
                 ";
-                $DB->execute($sql);
+                $DB->execute($sql, [$enrol->id]);
             }
         }
     }
@@ -352,7 +350,7 @@ class shop_handler_std_createcourse extends shop_handler {
                     WHERE
                         enrolid = ?
                 ";
-                $DB->execute($sql);
+                $DB->execute($sql, [$enrol->id]);
             }
         }
     }

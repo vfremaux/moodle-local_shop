@@ -256,11 +256,10 @@ class shop_handler_std_openltiaccess extends shop_handler {
      * @param arrayref &$messages
      */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
-        global $DB;
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
 
-        parent::unit_test($data, $erors, $warnings, $messages);
+        parent::unit_test($data, $errors, $warnings, $messages);
 
         if (!isset($data->actionparams['coursename'])) {
             $errors[$data->code][] = get_string('errornocourse', 'shophandlers_std_openltiaccess');

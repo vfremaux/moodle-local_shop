@@ -98,6 +98,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         $template = new StdClass();
         if ($session) {
             $template->sid = $session->id;
+            $template->info = $paymentinfo;
 
             // Records payment intent id in session.
             $shoppingcart->stripe = new StdClass();
@@ -304,7 +305,6 @@ class shop_paymode_stripe_checkout extends shop_paymode {
 
             $afullbill->status = SHOP_BILL_REFUSED;
             $afullbill->save(true);
-            $tracereport = "[$transid] Mercanet IPN Payment Rejected : ".$paydata['response_code'];
             shop_trace($tracereport);
             http_response_code(200);
             exit();
@@ -315,7 +315,6 @@ class shop_paymode_stripe_checkout extends shop_paymode {
      * Cancels the order and return to shop.
      */
     public function cancel() {
-        global $SESSION;
 
         if ($transid = required_param('transid', PARAM_TEXT)) {
             shop_trace('[$transid] Stripe Checkout Payment Cancelled');
@@ -375,7 +374,9 @@ class shop_paymode_stripe_checkout extends shop_paymode {
      */
     protected function convert_lines(&$shoppingcart) {
 
-        list($theshop, $thecatalog, $theblock) = shop_build_context();
+        $context = shop_build_context();
+        $theshop = $context[0];
+        $thecatalog = $context[1];
 
         $lines = [];
 

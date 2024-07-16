@@ -81,7 +81,7 @@ class payment_controller extends front_controller_base {
      * @param string $cmd
      */
     public function process($cmd) {
-        global $SESSION, $DB, $USER, $OUTPUT, $CFG;
+        global $DB, $USER, $OUTPUT, $CFG;
 
         if (!$this->received) {
             throw new coding_exception('Data must be received in controller before operation. this is a programming error.');

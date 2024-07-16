@@ -82,7 +82,7 @@ class shop_export_excel extends shop_export {
      * with all the relevant data about a user.
      */
     protected function print_header() {
-        global $OUTPUT;
+        global $OUTPUT, $CFG;
 
         $i = 0;
 
@@ -94,14 +94,13 @@ class shop_export_excel extends shop_export {
             if ($col['width'] == 0) {
                 continue;
             }
-            if (@$CFG->latinexcelexport) {
+            if (!empty($CFG->latinexcelexport)) {
                 $coltitle = mb_convert_encoding(get_string('export'.$col['name'], 'local_shop'), 'ISO-8859-1', 'UTF-8');
             } else {
                 $coltitle = get_string('export'.$col['name'], 'local_shop');
             }
 
-            $text = get_string('export'.$col['name'], 'local_shop');
-            $this->worksheets[0]->write_string(0, $i, $text, $this->xlsformats[$this->datadesc[0]['colheadingformat']]);
+            $this->worksheets[0]->write_string(0, $i, $coltitle, $this->xlsformats[$this->datadesc[0]['colheadingformat']]);
             $i++;
         }
     }

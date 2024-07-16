@@ -82,7 +82,7 @@ class shop_handler_std_createcategory extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $CFG, $DB;
+        global $DB;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -107,16 +107,19 @@ class shop_handler_std_createcategory extends shop_handler {
             // Let format the final catname using an administrable string pattern.
             $cat->name = get_string('catnameformatter', 'shophandler_std_createcategory', $data->required['catname']);
         }
+        $description = '';
 
         $customer = $DB->get_record('local_shop_customer', ['id' => $data->get_customerid()]);
         $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
 
-        if ($catid = shop_fast_make_category($catname, $description, $catparent)) {
+        if ($catid = shop_fast_make_category($cat->name, $description, $catparent)) {
 
             if (!$role = $DB->get_record('role', ['shortname' => 'categoryowner'])) {
                 // Non standard specific role when selling parts of managmeent delegation.
                 $role = $DB->get_record('role', ['shortname' => 'coursecreator']); // Fall back for standard implementations.
             }
+
+            $context = context_coursecategory::instance($catid);
 
             if (!role_assign($role->id, $customeruser->id, 0, $context->id, $now, $upto, false, 'manual', time())) {
                 $fb = get_string('productiondata_failure_public', 'shophandlers_std_createcategory', 'Code : COURSECREATOR ROLE ASSIGN');
@@ -139,6 +142,10 @@ class shop_handler_std_createcategory extends shop_handler {
             shop_trace("[{$data->transactionid}] STD_CREATE_CATEGORY Postpay Error : Failed to create catgory.");
             return $productionfeedback;
         }
+
+        // @todo : revise validity period strategy.
+        $starttime = $now;
+        $endtime = $now + 365 * DAYSECS;
 
         // Register product.
         $product = new StdClass();
@@ -224,6 +231,7 @@ class shop_handler_std_createcategory extends shop_handler {
      * @param objectref &$cat
      */
     protected function delete_rec(&$cat) {
+        global $DB;
 
         $subcats = $DB->get_records('course_categories', ['parent' => $cat->id]);
         if ($subcats) {
@@ -239,6 +247,8 @@ class shop_handler_std_createcategory extends shop_handler {
      * @param int $catid
      */
     protected function delete_cat_courses($catid) {
+        global $DB;
+
         if ($courses = $DB->get_records('course', ['category' => $catid])) {
             foreach ($courses as $c) {
                 delete_course($c);
@@ -268,7 +278,7 @@ class shop_handler_std_createcategory extends shop_handler {
         $catcontext = context_coursecat::instance($product->instanceid);
 
         $role = $DB->get_role('role', ['shortname' => 'categoryowner']);
-        $DB->delete_record('role_assignments', ['contextid' => $catcontext->id, 'roleid' => $role->id]);
+        $DB->delete_record('role_assignments', ['contextid' => $catcontext->id, 'roleid' => $role->id, $catcontext->id]);
     }
 
     /**
@@ -288,7 +298,7 @@ class shop_handler_std_createcategory extends shop_handler {
         $catcontext = context_coursecat::instance($product->instanceid);
         $role = $DB->get_role('role', ['shortname' => 'categoryowner']);
         $customer = new Customer($product->customerid);
-        role_assign($role->id, $customer->hasaccount);
+        role_assign($role->id, $customer->hasaccount, $catcontext->id);
     }
 
     /**

@@ -29,6 +29,7 @@ class shop_instances_renderer {
     /**
      * Print admin line of a shop instance
      * @param object $instance
+     * @todo : templatize
      */
     public function instance_admin_line($instance) {
         global $OUTPUT;
@@ -122,7 +123,7 @@ class shop_instances_renderer {
             $deletestr = get_string('deleteproduct', 'local_shop');
             $params = ['view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id];
             $deleteurl = new moodle_url('/local/shop/instances/view.php', $params);
-            $str .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
+            $str .= '&nbsp;<a href="'.$deleteurl.'" alt="'.$deletestr.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
 
             $str .= '</td>';
             $str .= '</tr>';
@@ -132,6 +133,7 @@ class shop_instances_renderer {
 
     /**
      * Print global commands
+     * @todo : templatize
      */
     public function global_commands() {
         $str = '';

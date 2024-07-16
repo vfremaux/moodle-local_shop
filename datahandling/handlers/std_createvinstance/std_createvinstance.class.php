@@ -180,16 +180,13 @@ class shop_handler_std_createvinstance extends shop_handler {
             $SESSION->vmoodledata['vdatapath'] = dirname($CFG->dataroot).'/'.$data->actionparams['vhostname'];
             $SESSION->vmoodledata['mnet'] = 'NEW';
 
-            $action = 'doadd';
-            $automation = true;
-
             for ($step = 0; $step <= 4; $step++) {
                 include $CFG->dirroot.'/local/vmoodle/controller.management.php';
             }
 
             // Now setup local "manager" account.
 
-            $VDB = vmoodle_setup_DB($n);
+            $VDB = vmoodle_setup_DB((object)$SESSION->vmoodledata);
 
             /*
              * special fix for deployed networks :
@@ -220,6 +217,10 @@ class shop_handler_std_createvinstance extends shop_handler {
             $manager->email = $customer->email;
             $VDB->insert_record('user', $manager);
 
+            // @todo : review validity period management
+            $starttime = time();
+            $endtime = starttime + DAYSECS * 365;
+
             // TODO : Enrol him as manager at system level.
 
             // Register product.
@@ -244,7 +245,7 @@ class shop_handler_std_createvinstance extends shop_handler {
             $productevent = new StdClass();
             $productevent->productid = $product->id;
             $productevent->billitemid = $data->id;
-            $productevent->datecreated = $now = time();
+            $productevent->datecreated = time();
             $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
     
             // Add user to customer support.

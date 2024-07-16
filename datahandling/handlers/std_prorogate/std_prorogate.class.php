@@ -32,10 +32,12 @@ require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\Product;
 use local_shop\Customer;
+use local_shop\CatalogItem;
 
 /**
  * The STD_PROROGATE handler is convenient to push further the ending date of a product. 
@@ -75,7 +77,6 @@ class shop_handler_std_prorogate extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     function produce_prepay(&$data, &$errorstatus) {
-        global $CFG, $DB, $USER;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -93,7 +94,7 @@ class shop_handler_std_prorogate extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $CFG, $DB;
+        global $DB;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -151,10 +152,9 @@ class shop_handler_std_prorogate extends shop_handler {
 
     /**
      * Prorogate always available as new references. Each handler updates an existing product.
-     * @param objectref &$catalogitem
+     * @param CatalogItem $catalogitem
      */
-    public function is_available(&$catalogitem) {
-        global $USER, $DB;
+    public function is_available(CatalogItem $catalogitem) {
         return true;
     }
 
@@ -166,11 +166,10 @@ class shop_handler_std_prorogate extends shop_handler {
      * @param arrayref &$messages
      */
     function unit_test($data, &$errors, &$warnings, &$messages) {
-        global $DB;
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
 
-        parent::unit_test($data, $erors, $warnings, $messages);
+        parent::unit_test($data, $errors, $warnings, $messages);
 
         if (empty($data->actionparams['timeshift'])) {
             $warnings[$data->code][] = get_string('warningnotimeshift', 'shophandlers_std_prorogate');

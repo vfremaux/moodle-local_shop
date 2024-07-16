@@ -89,7 +89,7 @@ class local_shop_external extends external_api {
         $desc = 'Id of the catalog';
         return new external_function_parameters(
             [
-                'catalogid' => new external_value(PARAM_INT, 'Catalog id'),
+                'catalogid' => new external_value(PARAM_INT, $desc),
             ]
         );
     }
@@ -103,7 +103,7 @@ class local_shop_external extends external_api {
         $desc = 'Id of the category';
         return new external_function_parameters(
             [
-                'categoryid' => new external_value(PARAM_INT, 'Category id'),
+                'categoryid' => new external_value(PARAM_INT, $desc),
             ]
         );
     }
@@ -117,7 +117,6 @@ class local_shop_external extends external_api {
         $desc1 = 'Source field of the catalog item';
         $desc2 = 'Id of the catalogitem, depending on required source ';
         $desc3 = 'Quantity required for pricing';
-        $desc4 = 'Output subrecords';
         return new external_function_parameters(
             [
                 'itemidsource' => new external_value(PARAM_ALPHA, $desc1),
@@ -138,7 +137,6 @@ class local_shop_external extends external_api {
         $desc3 = 'Status filter, such as AVAILABLE or "*" for any';
         $desc4 = 'Product type such as : plain, set or bundle or "*" for any';
         $desc5 = 'Quantity required for pricing';
-        $desc6 = 'Output subrecords';
         return new external_function_parameters(
             [
                 'catalogid' => new external_value(PARAM_INT, $desc1),

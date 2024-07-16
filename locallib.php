@@ -197,7 +197,7 @@ function shop_delivery_check_available_backup($courseid) {
  * @param stringref &$log
  */
 function shop_backup_for_template($courseid, $options = [], &$log = null) {
-    global $CFG, $USER;
+    global $CFG;
 
     $user = get_admin();
 
@@ -373,15 +373,11 @@ function shop_generate_shortname($user) {
  * @param object $data a course record where the fullname, shortname, description and idnumber can be overriden from
  */
 function shop_restore_template($archivefile, $data) {
-    global $USER, $CFG, $DB;
+    global $CFG, $DB;
 
     // Let the site admin performing the restore.
     $user = get_admin();
 
-    $contextid = context_system::instance()->id;
-    $component = 'local_coursetemplates';
-    $filearea = 'temp';
-    $itemid = $uniq = 9999999 + rand(0, 100000);
     $tempdir = $CFG->tempdir."/backup/$uniq";
 
     if (!is_dir($tempdir)) {
@@ -393,6 +389,7 @@ function shop_restore_template($archivefile, $data) {
         echo $OUTPUT->box_start('error');
         echo $OUTPUT->notification(get_string('restoreerror', 'local_coursetemplates'));
         echo $OUTPUT->box_end();
+        $url = new moodle_url('local/shop/front/view.php');
         echo $OUTPUT->continue_button($url);
         echo $OUTPUT->footer();
         die;
@@ -1036,14 +1033,14 @@ function shop_get_bill_tabs($total, $fullview) {
 function shop_get_bill_filtering() {
     global $SESSION;
 
-    $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
-    $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
-    $customerid = optional_param('customerid', 0 + @$SESSION->shop->customerid, PARAM_INT);
+    $y = optional_param('y', $SESSION->shop->billyear ?? 0, PARAM_INT);
+    $m = optional_param('m', $SESSION->shop->billmonth ?? 0, PARAM_INT);
+    $customerid = optional_param('customerid', $SESSION->shop->customerid ?? 0, PARAM_INT);
     $SESSION->shop->billyear = $y;
     $SESSION->shop->billmonth = $m;
     $SESSION->shop->customerid = $customerid;
     if (local_shop_supports_feature('shop/partners')) {
-        $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+        $p = optional_param('p', $SESSION->shop->partnerid ?? 0, PARAM_INT);
         $SESSION->shop->partnerid = $p;
     }
 
@@ -1105,7 +1102,6 @@ function shop_get_bill_filtering() {
  * Get a filter assets for customers listing.
  */
 function shop_get_customer_filtering() {
-    global $SESSION;
 
     $shopid = optional_param('shopid', 0, PARAM_INT);
     $nopaging = optional_param('nopaging', 0, PARAM_BOOL);
@@ -1141,7 +1137,7 @@ function local_shop_strftimefixed($format, $timestamp = null) {
         $format = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format);
 
         // Be carefull windows only uses a 2 letters locale.
-        $locale = setlocale(LC_ALL, $CFG->lang);
+        setlocale(LC_ALL, $CFG->lang);
 
         // This has been seen on some Win2012 server environments where the fr locale comes out in latin or Windows encding.
         return mb_convert_encoding(strftime($format, $timestamp), 'UTF-8');

@@ -110,9 +110,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
         // Get course designated by handler internal params.
         $coursename = $data->actionparams['coursename'];
 
-        if ($course = $DB->get_record('course', ['shortname' => $coursename])) {
-            $context = context_course::instance($course->id);
-        } else {
+        if (!$course = $DB->get_record('course', ['shortname' => $coursename])) {
             $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay Internal Failure :";
             $message .= " Target Course Error [{$coursename}].";
             shop_trace($message);
@@ -191,7 +189,8 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             }
 
             if (!empty($courseusers)) {
-                try {
+                $defaultstudentrole = $DB->get_record('roles', ['shortname' => 'student']);
+                try {s
                     foreach ($courseusers as $roleshort => $users) {
                         if ($roleshort == '_supervisor') {
                             $role = $supervisorrole;
@@ -200,7 +199,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         }
 
                         if (empty($role)) {
-                            $role = $studentrole;
+                            $role = $defaultstudentrole;
                         }
 
                         shop_trace("[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay : Enrolling $roleshort.");
@@ -292,7 +291,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
                         $groupmember->userid = $u->id;
                         $groupmember->timeadded = time();
                         $DB->insert_record('groups_members', $groupmember);
-                        $messgae = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
+                        $message = "[{$data->transactionid}] STD_SETUP_ONE_COURSE_SESSION Postpay :";
                         $message .= " Binding ({$u->username} in group ['customer_{$customeruser->username}].";
                         shop_trace($message);
                     }
@@ -451,7 +450,7 @@ class shop_handler_std_setuponecoursesession extends shop_handler {
             $data->actionparams['supervisor'] = 'teacher';
         }
 
-        if (!$role = $DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
+        if (!$DB->get_record('role', ['shortname' => $data->actionparams['supervisor']])) {
             $err = get_string('errorsupervisorrole', 'shophandlers_std_setuponecoursesession', $data->actionparams['supervisor']);
             $errors[$data->code][] = $err;
         }

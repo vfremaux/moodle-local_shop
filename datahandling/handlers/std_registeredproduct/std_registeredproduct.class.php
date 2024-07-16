@@ -29,10 +29,12 @@ require_once($CFG->dirroot.'/local/shop/datahandling/shophandler.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 use local_shop\Product;
 use local_shop\Customer;
+use local_shop\CatalogItem;
 
 /**
  * STD_REGISTERED_PRODUCT is a standard generic shop product action handler that creates instances of a catalogitem
@@ -77,7 +79,6 @@ class shop_handler_std_registeredproduct extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     function produce_prepay(&$data, &$errorstatus) {
-        global $CFG, $DB, $USER;
 
         // Get customersupportcourse designated by handler internal params and prepare customer support action.
         if (!isset($data->actionparams['customersupport'])) {
@@ -101,7 +102,7 @@ class shop_handler_std_registeredproduct extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $CFG, $DB;
+        global $DB;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -165,10 +166,9 @@ class shop_handler_std_registeredproduct extends shop_handler {
 
     /**
      * Registered product always available as new references. Each handler creates a new instance of the product.
-     * @param objectref &$catalogitem
+     * @param CatalogItem $catalogitem unused
      */
-    public function is_available(&$catalogitem) {
-        global $USER, $DB;
+    public function is_available(CatalogItem $catalogitem) {
         return true;
     }
 
@@ -216,10 +216,9 @@ class shop_handler_std_registeredproduct extends shop_handler {
      * @param arrayref &$messages
      */
     function unit_test($data, &$errors, &$warnings, &$messages) {
-        global $DB;
 
         $messages[$data->code][] = get_string('usinghandler', 'local_shop', $this->name);
 
-        parent::unit_test($data, $erors, $warnings, $messages);
+        parent::unit_test($data, $errors, $warnings, $messages);
     }
 }

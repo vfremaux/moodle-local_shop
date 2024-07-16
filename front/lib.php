@@ -451,8 +451,6 @@ function shop_checksum($productref) {
 function shop_get_orderbag($thecatalog) {
     global $SESSION;
 
-    $maxseats = 0;
-
     foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
         $orderentry = new StdClass();
         $orderentry->shortname = $shortname;

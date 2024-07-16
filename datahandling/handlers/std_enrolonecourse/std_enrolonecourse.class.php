@@ -34,6 +34,7 @@ require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/ProductEvent.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/compatlib.php');
 require_once($CFG->dirroot.'/group/lib.php');
@@ -41,6 +42,7 @@ require_once($CFG->dirroot.'/group/lib.php');
 use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
+use local_shop\CatalogItem;
 
 /**
  * STD_ENROL_ONE_COURSE is a standard shop product action handler that enrols in one course setup in
@@ -60,9 +62,9 @@ class shop_handler_std_enrolonecourse extends shop_handler {
     /**
      * this product should not be available if the current user (purchaser) is
      * already enrolled in course.
-     * @param object $catalogitem
+     * @param CatalogItem $catalogitem
      */
-    public function is_available($catalogitem) {
+    public function is_available(CatalogItem $catalogitem) {
         global $USER, $DB;
 
         if (!empty($catalogitem->handlerparams['coursename'])) {
@@ -491,10 +493,12 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             // If we have course, and an explicit groupname given, check groupname
             if (!empty($course)) {
                 if (!empty($data->actionparams['groupname'])) {
-                    $params = ['courseid' => $course->id, 'name' => $data->actionparams['courseidnumber']];
-                    if (!$group = $DB->get_record('groups', $params)) {
+                    $params = ['courseid' => $course->id, 'name' => $data->actionparams['groupname']];
+                    if (!$DB->get_record('groups', $params)) {
                         $fb = get_string('warninggrouptobecreated', 'shophandlers_std_enrolonecourse', $data->actionparams['groupname']);
                         $warnings[$data->code][] = $fb;
+                    } else {
+                        // In unit tests, do not create anything.
                     }
                 }
             }
