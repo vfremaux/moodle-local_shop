@@ -356,7 +356,9 @@ class shop_front_renderer extends local_shop_base_renderer {
             $catidsarr[] = $cat->id;
         }
 
-        $template->withtabs = ($this->theshop->printtabbedcategories ?? false) == 1);
+        // Be carefull of empty on magic getters.
+        $ptr = $this->theshop->printtabbedcategories;
+        $template->withtabs = !empty($ptr);
         $template->categorytabs = [];
 
         if ($template->withtabs) {
@@ -834,9 +836,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         $shoppingcart = $SESSION->shoppingcart;
-        if (empty($shoppingcart)) [
+        if (empty($shoppingcart)) {
             return '';
-        ]
+        }
 
         $str = '';
 
@@ -970,7 +972,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $organisation = $shoppingcart->customerinfo['organisation'] ?? '';
             $country = $shoppingcart->customerinfo['country'] ?? '';
             $address = $shoppingcart->customerinfo['address'] ?? '';
-            $city = $shoppingcart->customerinfo['city'] ? '';
+            $city = $shoppingcart->customerinfo['city'] ?? '';
             $zip = $shoppingcart->customerinfo['zip'] ?? '';
             $email = $shoppingcart->customerinfo['email'] ?? '';
         }
