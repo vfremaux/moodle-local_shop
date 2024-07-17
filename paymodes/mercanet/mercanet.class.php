@@ -339,7 +339,7 @@ class shop_paymode_mercanet extends shop_paymode {
         } else {
 
             $returns = explode('-', $paydata['return_context']);
-            $instanceid = $returns[1);
+            $instanceid = $returns[1];
             $transid = $returns[2];
 
             shop_trace("[$transid] Mercanet IPN processing");
