@@ -49,6 +49,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $itemid = optional_param('itemid', 0, PARAM_INT);
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
+$return = optional_param('return', 'back', PARAM_TEXT);
 
 // Security.
 
@@ -59,7 +60,8 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_product.php', ['itemid' => $itemid, 'categoryid' => $categoryid]);
+$params = ['itemid' => $itemid, 'categoryid' => $categoryid, 'return' => $return];
+$url = new moodle_url('/local/shop/products/edit_product.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -73,18 +75,23 @@ if ($itemid) {
     $mform = new Product_Form($url, ['what' => 'add', 'catalog' => $thecatalog]);
 }
 
-if ($mform->is_cancelled()) {
+if ($return == 'back') {
     $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
-    redirect(new moodle_url('/local/shop/products/view.php', $params));
+    $returnurl = new moodle_url('/local/shop/products/view.php', $params);
+} else {
+    $params = ['view' => 'shop', 'shopid' => $theshop->id, 'category' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/front/view.php', $params);
+}
+
+if ($mform->is_cancelled()) {
+    redirect($returnurl);
 }
 
 if ($data = $mform->get_data()) {
     $controller = new \local_shop\backoffice\product_controller($thecatalog);
     $controller->receive('edit', $data, $mform);
     $controller->process('edit');
-
-    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
-    redirect(new moodle_url('/local/shop/products/view.php', $params));
+    redirect($returnurl);
 }
 
 if ($itemid) {

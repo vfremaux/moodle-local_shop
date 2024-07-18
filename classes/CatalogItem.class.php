@@ -860,10 +860,9 @@ class CatalogItem extends ShopObject {
     /**
      * Export CatalogItem for WS
      * @param int $q
-     * @param bool $withsubs
      */
-    public function export_to_ws($q, $withsubs = false) {
-        $export = new StdClass;
+    public function export_to_ws($q) {
+        $export = new StdClass();
 
         $export->id = $this->record->id;
         $export->catalogid = $this->record->catalogid;
@@ -899,14 +898,31 @@ class CatalogItem extends ShopObject {
         return $export;
     }
 
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     */
     public static function count($filter) {
         return parent::_count(self::$table, $filter);
     }
 
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
     public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     * @param string $order
+     */
     public static function get_instances_menu($filter = [], $order = '') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(code, ' ', name)");
     }

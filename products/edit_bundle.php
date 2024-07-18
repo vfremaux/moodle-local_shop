@@ -44,6 +44,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $bundleid = optional_param('itemid', 0, PARAM_INT);
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
+$return = optional_param('return', 'back', PARAM_TEXT);
 
 // Security.
 
@@ -53,7 +54,8 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_bundle.php', ['bundleid' => $bundleid, 'categoryid' => $categoryid]);
+$params = ['bundleid' => $bundleid, 'categoryid' => $categoryid, 'return' => $return];
+$url = new moodle_url('/local/shop/products/edit_bundle.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -62,18 +64,25 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 if ($bundleid) {
     $bundle = new CatalogItem($bundleid);
     $itemcatalog = $bundle->get_catalog();
-    $mform = new Bundle_Form('', ['what' => 'edit', 'catalog' => $itemcatalog]);
+    $mform = new Bundle_Form('', ['what' => 'edit', 'catalog' => $itemcatalog, 'return' => $return]);
 } else {
     $itemcatalog = $thecatalog;
-    $mform = new Bundle_Form('', ['what' => 'add', 'catalog' => $thecatalog]);
+    $mform = new Bundle_Form('', ['what' => 'add', 'catalog' => $thecatalog, 'return' => $return]);
+}
+
+if ($return == 'back') {
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/products/view.php', $params);
+} else {
+    $params = ['view' => 'shop', 'shopid' => $theshop->id, 'category' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/front/view.php', $params);
 }
 
 if ($mform->is_cancelled()) {
-    redirect(moodle_url('/local/shop/products/view.php', ['view' => 'viewAllProducts', 'categoryid' => $categoryid]));
+    redirect($returnurl);
 }
 
 if ($data = $mform->get_data()) {
-    global $USER;
 
     $data->catalogid = $itemcatalog->id;
     $data->isset = PRODUCT_BUNDLE;
@@ -133,8 +142,7 @@ if ($data = $mform->get_data()) {
     $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);
 
-    $params = ['view' => 'viewAllProducts', 'categoryid' => $categoryid];
-    redirect(new moodle_url('/local/shop/products/view.php', $params));
+    redirect($returnurl);
 }
 
 if ($bundleid) {

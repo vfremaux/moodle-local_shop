@@ -15,27 +15,27 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/frontproductbundle
+    @template local_shop/front_product_bundle
 
     Classes required for JS:
     * none
 
 }}
-<!-- frontproductbundle -->
+<!-- local_shop/front_product_bundle -->
 <div class="shop-article bundle" data-pid="{{id}}">
 
     <div class="shop-front-productpix">{{{image}}}</div>
 
     <div class="shop-front-productdef">
         {{#ispart}}
-            <div class="shop-front-partof">{{{name}}}</div>
+            <div class="shop-front-partof">{{{name}}} {{#canedit}}{{{editlink}}}{{/canedit}}</div>
         {{/ispart}}
         {{^ispart}}
             {{^smarturl}}
             <h1>{{{name}}}</h1>
             {{/smarturl}}
             {{#smarturl}}
-            <a href="{{{smarturl}}}" target="_blank"><h1>{{name}}</h1></a>
+            <a href="{{{smarturl}}}" target="_blank"><h1>{{name}}</h1></a> {{#canedit}}{{{editlink}}}{{/canedit}}
             {{/smarturl}}
             {{> local_shop/front_modal_product }}
         {{/ispart}}
@@ -110,4 +110,4 @@
         </div>
     </div>
 </div>
-<!-- /frontproductbundle -->
+<!-- /local_shop/front_product_bundle -->

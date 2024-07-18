@@ -29,6 +29,8 @@ require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\CatalogItem;
 use local_shop\Customer;
+use context_system;
+use StdClass;
 
 /**
  * A class to handle all cron jobs.
@@ -96,7 +98,7 @@ class manager {
             $instancereporthtml = $this->compile_instances($productinstances, '<br/>');
             $a = format_string($SITE->shortname);
             $title = get_string('justexpired', 'local_shop', $a);
-            $params = ['view' => 'viewAllProducts'];
+            $params = ['view' => 'viewAllProducts', 'id' => $theshop->id ?? 1];
             $managerurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
             $b = new StdClass;
             $b->url = $managerurl->out();

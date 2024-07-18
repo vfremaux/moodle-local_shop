@@ -51,6 +51,7 @@ class front_taxes implements Templatable {
     /**
      * Exporter for template
      * @param renderer_base $output unused
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function export_for_template(renderer_base $output /* unused */) {
 

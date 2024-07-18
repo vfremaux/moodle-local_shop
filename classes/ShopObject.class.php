@@ -29,6 +29,7 @@ use moodle_exception;
 
 /**
  * A shop object is a generic object that has record in DB
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class ShopObject {
 

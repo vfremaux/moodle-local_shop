@@ -42,6 +42,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $setid = optional_param('itemid', '', PARAM_INT);
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
+$return = optional_param('return', 'back', PARAM_TEXT);
 
 // Security.
 $context = context_system::instance();
@@ -50,7 +51,8 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_set.php', ['setid' => $setid]);
+$params = ['setid' => $setid, 'return' => $return];
+$url = new moodle_url('/local/shop/products/edit_set.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -59,14 +61,22 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 if ($setid) {
     $set = new CatalogItem($setid);
     $itemcatalog = $set->get_catalog();
-    $mform = new Set_Form($url, ['what' => 'edit', 'catalog' => $itemcatalog]);
+    $mform = new Set_Form($url, ['what' => 'edit', 'catalog' => $itemcatalog, 'return' => $return]);
 } else {
     $itemcatalog = $thecatalog;
-    $mform = new Set_Form($url, ['what' => 'add', 'catalog' => $itemcatalog]);
+    $mform = new Set_Form($url, ['what' => 'add', 'catalog' => $itemcatalog, 'return' => $return]);
+}
+
+if ($return == 'back') {
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/products/view.php', $params);
+} else {
+    $params = ['view' => 'shop', 'shopid' => $theshop->id, 'category' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/front/view.php', $params);
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', ['view' => 'viewAllProducts', 'categoryid' => $categoryid]));
+    redirect($returnurl);
 }
 
 if ($data = $mform->get_data()) {
@@ -136,8 +146,7 @@ if ($data = $mform->get_data()) {
     $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);
 
-    $params = ['view' => 'viewAllProducts', 'categoryid' => $categoryid];
-    redirect(new moodle_url('/local/shop/products/view.php', $params));
+    redirect($returnurl);
 }
 
 if ($setid) {

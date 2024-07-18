@@ -57,6 +57,7 @@ class front_bill_line implements Templatable {
     /**
      * Exporter for template
      * @param renderer_base $output unused
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function export_for_template(renderer_base $output /* unused */) {
         $template = new StdClass();

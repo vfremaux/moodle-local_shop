@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * CatalogShipZone object is provided for direct Object Mapping of the _catalogshipzone database model
  * A Shipzone is reprensents a geographic area that may have influence on shipping calculation.
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class CatalogShipZone extends ShopObject {
 

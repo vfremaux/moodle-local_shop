@@ -27,8 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 
 use StdClass;
 
-// Library of list dedicated operations when stored in DB.
-
+/**
+ * Library of list dedicated operations when stored in DB.
+ * @suppressWarnings(PHPMD.ShortMethodName)
+ */
 class DBListUtils {
 
     /**

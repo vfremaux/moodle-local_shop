@@ -15,19 +15,19 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shop/productset
+    @template local_shop/font_product_set
 
     Classes required for JS:
     * none
 
 }}
-<!-- productset -->
+<!-- local_shop/font_product_set -->
 <div class="shop-article set">
     <div class="shop-front-productpix">{{{image}}}</div>
 
     <div class="shop-front-productdef">
         <div class="shop-front-setcaption">
-            <h1>{{{name}}}</h1>
+            <h1>{{{name}}} {{#canedit}}{{{editlink}}}{{/canedit}}</h1> 
             {{> local_shop/front_modal_product }}
         </div>
 
@@ -42,4 +42,4 @@
         </div>
     </div>
 </div>
-<!-- /productset -->
+<!-- /local_shop/font_product_set -->

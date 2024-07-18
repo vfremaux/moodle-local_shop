@@ -37,6 +37,7 @@ use local_shop\Tax;
  * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.TooManyMethods)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
@@ -558,6 +559,17 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         $template->name = format_string($product->name);
+        $systemcontext = context_system::instance();
+        $template->canedit = has_capability('local/shop:salesadmin', $systemcontext);
+        $params = [
+            'shopid' => $this->theshop->id,
+            'itemid' => $product->id,
+            'categoryid' => $product->categoryid,
+            'return' => 'front',
+        ];
+        $editurl = new moodle_url('/local/shop/products/edit_product.php', $params);
+        $icon = $this->output->pix_icon('t/edit', get_string('edit'));
+        $template->editlink = '<a href="'.$editurl.'">'.$icon.'</a>';
         $template->shortname = $product->shortname;
         $template->puttcstr = get_string('puttc', 'local_shop');
 
@@ -657,6 +669,17 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template = new StdClass();
 
         $template->name = format_string($set->name);
+        $systemcontext = context_system::instance();
+        $template->canedit = has_capability('local/shop:salesadmin', $systemcontext);
+        $params = [
+            'shopid' => $this->theshop->id,
+            'itemid' => $set->id,
+            'categoryid' => $set->categoryid,
+            'return' => 'front',
+        ];
+        $editurl = new moodle_url('/local/shop/products/edit_set.php', $params);
+        $icon = $this->output->pix_icon('t/edit', get_string('edit'));
+        $template->editlink = '<a href="'.$editurl.'">'.$icon.'</a>';
         $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
 
         $template->hasdescription = false;
@@ -731,6 +754,17 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->thumburl = ($bundle->get_thumb_url(false))->out();
 
         $template->name = format_string($bundle->name);
+        $systemcontext = context_system::instance();
+        $template->canedit = has_capability('local/shop:salesadmin', $systemcontext);
+        $params = [
+            'shopid' => $this->theshop->id,
+            'itemid' => $bundle->id,
+            'categoryid' => $bundle->categoryid,
+            'return' => 'front',
+        ];
+        $editurl = new moodle_url('/local/shop/products/edit_bundle.php', $params);
+        $icon = $this->output->pix_icon('t/edit', get_string('edit'));
+        $template->editlink = '<a href="'.$editurl.'">'.$icon.'</a>';
 
         if (empty($bundle->ispart)) {
             $template->hasdescription = false;
@@ -1295,7 +1329,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 'blockid' => ($this->theblock->id ?? 0),
             ];
             $template->backofficeurl = new moodle_url('/local/shop/products/view.php', $params);
-            return $OUTPUT->render_from_template('local_shop/admin_options', $template);
+            return $this->output->render_from_template('local_shop/admin_options', $template);
         }
 
         return '';
@@ -1869,7 +1903,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             shop_load_output_class($outputclass);
             $invoiceheader = new \local_shop\output\front_paymode($afullbill);
             $template = $invoiceheader->export_for_template($this);
-            return $OUTPUT->render_from_template('local_shop/front_paymode', $template);
+            return $this->output->render_from_template('local_shop/front_paymode', $template);
         } catch (Exception $e) {
             throw new moodle_exception("Missing output class $outputclass");
         }

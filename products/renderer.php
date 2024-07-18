@@ -25,12 +25,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/renderer.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Set.class.php');
 
 use local_shop\Shop;
+use local_shop\Set;
 use local_shop\Tax;
 use local_shop\Category;
+use local_shop\Catalog;
 use local_shop\CatalogItem;
 
 /**
