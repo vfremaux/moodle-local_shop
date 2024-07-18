@@ -28,6 +28,7 @@ use local_shop\CatalogItem;
 
 /**
  * Shop handler abstract class.
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 abstract class shop_handler {
 
@@ -113,6 +114,7 @@ abstract class shop_handler {
      * @param string $value the value to validate
      * @param arrayref $errors, an error array to be field with all encountered errors. Keys of the
      * array are [catalogitem][fieldname][instanceix].
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @return false if not validated
      */
     public function validate_required_data($itemname, $field, $instance, $value, &$errors) {
@@ -123,6 +125,7 @@ abstract class shop_handler {
      * Shows product info
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function display_product_infos($pid, $pinfo) {
         // Do nothing.
@@ -133,6 +136,7 @@ abstract class shop_handler {
      * Shows product possible actions
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function display_product_actions($pid, $params) {
         // Do nothing.
@@ -142,6 +146,7 @@ abstract class shop_handler {
     /**
      * Deletes the product instance
      * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function delete(Product $product) {
         // Do nothing.
@@ -151,6 +156,7 @@ abstract class shop_handler {
     /**
      * Inhibits the product instance in a way it can be reactivated
      * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function soft_delete(Product $product) {
         // Do nothing.
@@ -160,6 +166,7 @@ abstract class shop_handler {
     /**
      * Restores the product instance to its normal effect
      * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function soft_restore(Product $product) {
         // Do nothing.
@@ -169,6 +176,7 @@ abstract class shop_handler {
     /**
      * what should happen when product instance record is updated.
      * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function update(Product $product) {
         // Do nothing.

@@ -34,6 +34,13 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 /**
  * A customer has customer info and MAYor MAY not be linked to a moodle user.
  * Generally, a customer having finalized a purchase will have an associated moodle account.
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class Customer extends ShopObject {
 

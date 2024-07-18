@@ -35,6 +35,13 @@ require_once($CFG->dirroot.'/local/shop/classes/Category.class.php');
 
 /**
  * User object is provided for direct Object Mapping of the _user database model
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class Catalog extends ShopObject {
 

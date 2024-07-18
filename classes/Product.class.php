@@ -32,36 +32,36 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
+/**
+ * A product is an instance of a CatalogIem purchased by a Customer.
+ * It will have a lifecycle, and snapshots the Catalog info for immutability.
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ */
 class Product extends ShopObject {
 
-    /**
-     * DB table (for ShopObject)
-     */
+    /** @var DB table (for ShopObject) */
     protected static $table = 'local_shop_product';
 
-    /**
-     * A sub object representing the customer
-     */
+    /** @var A sub object representing the customer */
     public $customer;
 
-    /**
-     * A sub object representing the current bill item.
-     */
+    /** @var A sub object representing the current bill item. */
     public $currentbillitem;
 
-    /**
-     * A sub object representing the first bill item that has generated this product.
-     */
+    /** @var A sub object representing the first bill item that has generated this product. */
     public $initialbillitem;
 
-    /**
-     * A sub object representing the initial catalogitem of this product.
-     */
+    /** @var A sub object representing the initial catalogitem of this product. */
     public $catalogitem;
 
-    /**
-     * Boolean mark if there is an associated bill.
-     */
+    /** @var Boolean mark if there is an associated bill. */
     public $hasbill;
 
     /**

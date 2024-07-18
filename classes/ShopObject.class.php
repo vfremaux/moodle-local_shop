@@ -29,17 +29,20 @@ use moodle_exception;
 
 /**
  * A shop object is a generic object that has record in DB
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class ShopObject {
 
-    /**
-     * DB storage table name
-     */
+    /** @var DB storage table name */
     protected static $table;
 
-    /** 
-     * Rehydrated record from DB.
-     */
+    /**  @var Rehydrated record from DB. */
     protected $record;
 
     /**

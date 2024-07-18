@@ -31,6 +31,13 @@ require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
 /**
  * A catalog category has sub categories and / or catalog items.
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class Category extends ShopObject {
 

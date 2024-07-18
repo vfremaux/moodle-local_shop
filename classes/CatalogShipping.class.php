@@ -33,6 +33,13 @@ require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
  * product for a given geographic area.
  * the shipping applies either a value (simple way) indexed by quantity,
  * a formula may fix the shipping calculation, using three parameters a, b, c;
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class CatalogShipping extends ShopObject {
 

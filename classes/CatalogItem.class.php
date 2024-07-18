@@ -37,6 +37,13 @@ require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
 
 /**
  * CatalogItem object is provided for direct Object Mapping of the _catalogitem database model
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class CatalogItem extends ShopObject {
 
