@@ -34,16 +34,34 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
 use local_shop\Customer;
 use local_shop\Bill;
+use coding_exception;
 
 /**
- * A controller for managing customer accounts
+ * An MVC controller for managing customer accounts
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class customers_controller {
 
+    /** @var controller input data */
     protected $data;
 
+    /** @var Marks a received state */
     protected $received;
 
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
     public function receive($cmd, $data = null) {
 
         if (!empty($data)) {
@@ -72,11 +90,15 @@ class customers_controller {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $DB;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         if ($cmd == 'deletecustomer') {

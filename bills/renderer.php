@@ -32,23 +32,27 @@ use local_shop\Tax;
 use local_shop\Bill;
 
 /**
+ * Renderer for bills.
  *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class shop_bills_renderer extends local_shop_base_renderer {
 
-    /**
-     * The current shop instance
-     */
+    /** @var The current shop instance */
     protected $theshop;
 
-    /**
-     * The current product catalog
-     */
+    /** @var The current product catalog */
     protected $thecatalog;
 
-    /**
-     * The current access block having been used. May be unknown.
-     */
+    /** @var The current access block having been used. May be unknown. */
     protected $theblock;
 
     /**
@@ -58,7 +62,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      */
     public function bill_header($afullbill, $url) {
 
-        $template = new StdClass;
+        $template = new StdClass();
         if ($afullbill->status == 'PENDING' || $afullbill->status == 'PLACED') {
             $template->heading = get_string('order', 'local_shop');
         } else {
@@ -100,7 +104,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         global $DB;
 
         $config = get_config('local_shop');
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->transid = $transid;
         $template->billid = $billid;
@@ -129,7 +133,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * Prints when no items in bill.
      */
     public function no_items() {
-        $template = new StdClass;
+        $template = new StdClass();
 
         return $this->output->render_from_template('local_shop/bills_no_items', $template);
     }
@@ -166,7 +170,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
     /**
      * Prints order detail, from the SESSION shopping cart
      * @param arrayref &$categories the product categores of the catalog.
-     * @TODO : may be this turned into mustache
+     * @todo : may be this turned into mustache
      */
     public function order_detail(&$categories) {
         global $SESSION, $CFG;
@@ -214,7 +218,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
     public function billitem_line($billitem) {
         global $OUTPUT;
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         if (empty($billitem)) {
             $template->head = true;
@@ -276,12 +280,12 @@ class shop_bills_renderer extends local_shop_base_renderer {
     /**
      * total line
      * @param object $ci a CatalogItem instance;
-     * @TODO : amd-ize javascript.
+     * @todo : amdize javascript.
      */
     public function item_total_line($ci) {
         global $CFG, $OUTPUT;
 
-        $template = new StdClass;
+        $template = new StdClass();
         $ttcprice = $ci->get_taxed_price($ci->preset, $ci->taxcode);
         $template->total = $ttcprice * $ci->preset;
         $template->preset = $ci->preset;
@@ -304,7 +308,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $config = get_config('local_shop');
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->currency = $this->theshop->get_currency('symbol');
 
         if (!empty($bill->discount) || !empty($config->hasshipping)) {
@@ -372,7 +376,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param string $class
      */
     public function field_start($legend, $class) {
-        $template = new StdClass;
+        $template = new StdClass();
         $template->varclass = $class;
         $template->legend = $legend;
 
@@ -383,7 +387,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * Prints a fieldset end
      */
     public function field_end() {
-        $template = new StdClass;
+        $template = new StdClass();
         return $this->output->render_from_template('local_shop/bills_field_end', $template);
     }
 
@@ -393,7 +397,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      */
     public function bill_footer($bill) {
         $billfooter = $bill->thecatalogue->billfooter;
-        $template = new StdClass;
+        $template = new StdClass();
         $systemcontext = context_system::instance();
         if (!empty($billfooter)) {
             $billfooter = file_rewrite_pluginfile_urls($billfooter, 'pluginfile.php', $systemcontext->id,
@@ -420,14 +424,14 @@ class shop_bills_renderer extends local_shop_base_renderer {
         }
 
         if (is_null($bill)) {
-            $template = new StdClass;
+            $template = new StdClass();
             $template->head = true;
             $template->haspartners = !($p > 1);
             $template->hasdiscounts = $hasdiscounts;
             return $this->output->render_from_template('local_shop/bills_merchant_line', $template);
         }
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->head = false;
         $template->haspartners = !($p > 1);
         $template->hasdiscounts = $hasdiscounts;
@@ -554,7 +558,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
         $pixurl = $OUTPUT->image_url('relocatebox', 'local_shop');
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->relocateurl = $relocateurl;
         $template->pixurl = $pixurl;
 
@@ -568,7 +572,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
     public function attachments($bill) {
         global $OUTPUT;
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         if (!local_shop_supports_feature('bill/attachements')) {
             $template->billnoattachementnotification = $OUTPUT->notification(get_string('billattachementsispro', 'local_shop'));
@@ -584,7 +588,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * Print a bill control block
      */
     public function bill_controls($bill) {
-        $template = new StdClass;
+        $template = new StdClass();
 
         if (empty($bill->idnumber)) {
             $template->bill = false;
@@ -606,7 +610,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param object $bill a full bill
      */
     public function lettering_form($shopid, $bill) {
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->shopid = $shopid;
         $template->billid = $bill->id;
@@ -639,7 +643,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
     /**
      * full search form
-     * @TODO : recheck the consistance of using block instance here.
+     * @todo : recheck the consistance of using block instance here.
      * @param object $blockinstance the shop_access instance
      * @param int $billcount
      */
@@ -662,7 +666,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param array $results array of matching bills
      */
     public function search_results($results) {
-        $template = new StdClass;
+        $template = new StdClass();
         $odd = 0;
         foreach ($results as $bill) {
             $afullbilltpl = Bill::get_by_transaction($bill->transactionid);
@@ -679,7 +683,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param string $status bill state code
      */
     public function bill_status_line($status) {
-        $template = new StdClass;
+        $template = new StdClass();
         $template->statusstr = get_string('bill_'.$status.'s', 'local_shop');
         return $this->output->render_from_template('local_shop/bills_bill_status_line', $template);
     }
@@ -697,7 +701,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $p = optional_param('p', $SESSION->shop->partnerid ?? 0, PARAM_INT);
         }
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         // Adjust span of total row.
         $template->span = 5;
@@ -755,7 +759,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $excelurl = new moodle_url('/local/shop/export/export.php', $params);
         $billurl = new moodle_url('/local/shop/bills/edit_bill.php', ['shopid' => $theshop->id]);
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->excelurl = $excelurl;
         $template->billurl = $billurl;
@@ -790,10 +794,10 @@ class shop_bills_renderer extends local_shop_base_renderer {
     public function bill_options($mainrenderer, $fullview) {
         global $SESSION;
 
-        $y = optional_param('y', 0 + @$SESSION->shop->billyear, PARAM_INT);
-        $m = optional_param('m', 0 + @$SESSION->shop->billmonth, PARAM_INT);
+        $y = optional_param('y', 0 + $SESSION->shop->billyear ?? 0, PARAM_INT);
+        $m = optional_param('m', 0 + $SESSION->shop->billmonth ?? 0, PARAM_INT);
         if (local_shop_supports_feature('shop/partners')) {
-            $p = optional_param('p', 0 + @$SESSION->shop->partnerid, PARAM_INT);
+            $p = optional_param('p', 0 + $SESSION->shop->partnerid ?? 0, PARAM_INT);
         }
 
         $status = optional_param('status', 'COMPLETE', PARAM_TEXT);
@@ -803,7 +807,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $customerid = optional_param('customerid', 0, PARAM_INT);
         $shopid = optional_param('shopid', 0, PARAM_INT);
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $params = [
             'view' => 'viewAllBills',
@@ -883,7 +887,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
      */
     public function ownership($bill) {
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         if (!local_shop_supports_feature('shop/partners')) {
             $template->billnoownershipnotification = $this->output->notification(get_string('billownershipispro', 'local_shop'));

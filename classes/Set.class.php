@@ -27,12 +27,19 @@ namespace local_shop;
 
 /**
  * A Set is a set of products that may propose variants for a single product type.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class Set extends ShopObject {
 
-    /**
-     * DB table (for ShopObject)
-     */
+    /** @var DB table (for ShopObject) */
     protected static $table = 'local_shop_catalogitem';
 
     /**

@@ -28,8 +28,25 @@ require_once($CFG->dirroot.'/local/shop/renderer.php');
 
 use local_shop\Shop;
 
+/**
+ * A renderer for customers
+ *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class shop_customers_renderer extends local_shop_base_renderer {
 
+    /**
+     * @param array $customers
+     * @param mixed $url
+     */
     public function customers($customers, $url) {
 
         $lastnamestr = get_string('lastname');

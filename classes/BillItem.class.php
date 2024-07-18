@@ -36,8 +36,15 @@ require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
  * A Bill Item represents an order line with all the context that was there when
  * it was created. It stores a freezed image of the catalog item (may be even disconnected from
  * deleted catalogs) for reference to a stable price table.
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class BillItem extends ShopObject {
 

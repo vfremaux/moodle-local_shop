@@ -28,6 +28,8 @@ namespace local_shop\backoffice;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 use StdClass;
@@ -36,47 +38,50 @@ use local_shop\Bill;
 use local_shop\BillItem;
 use moodle_exception;
 
+/**
+ * MVC Controller for bills management.
+ *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class bill_controller {
 
-    /**
-     * Action data
-     */
+    /** @var Action data */
     protected $data;
 
-    /**
-     * Marks data has been received
-     */
+    /** @var Marks data has been received */
     protected $received;
 
-    /**
-     * The current shop instance
-     */
+    /** @var The current shop instance */
     protected $theshop;
 
-    /**
-     * The current product catalog
-     */
+    /** @var The current product catalog */
     protected $thecatalog;
 
-    /**
-     * The current access block having been used. May be unknown.
-     */
+    /** @var The current access block having been used. May be unknown. */
     protected $theblock;
 
     /**
-     * May be unused.
-     * @TODO : clean it out
+     * @var May be unused.
+     * @todo : clean it out
      */
     protected $mform;
 
     /**
      * constructor
-     * @param objectref &$theshop
-     * @param objectref &$thecatalog
+     * @param Shop $theshop
+     * @param Catalog $thecatalog
      * @param object $theblock
      * @TODO : type the signature
      */
-    public function __construct(&$theshop, &$thecatalog, $theblock) {
+    public function __construct(Shop $theshop, Catalog $thecatalog, $theblock) {
         $this->theshop = $theshop;
         $this->thecatalog = $thecatalog;
         $this->theblock = $theblock;
@@ -95,7 +100,7 @@ class bill_controller {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
         switch ($cmd) {
@@ -291,6 +296,7 @@ class bill_controller {
         }
 
         // Relocates.
+        // @todo : Add a SQL Transaction here ?
         if ($cmd == 'relocate') {
             /*
              * Unlocks constraint
@@ -337,6 +343,7 @@ class bill_controller {
                 ";
                 $DB->execute($sql);
             }
+
             /*
              * Locks constraints back
              * remove this : cannot support concurrent operations

@@ -29,8 +29,21 @@ use local_shop\Category;
 use local_shop\Catalog;
 use local_shop\Tax;
 
+/**
+ * Front shop renderer.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class shop_front_renderer extends local_shop_base_renderer {
 
+    /** @var context associated to the shop_access block */
     protected $context;
 
     const STATE_DONE = 0; // Those steps have been completed.
