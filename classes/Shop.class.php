@@ -29,26 +29,21 @@ use StdClass;
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
-/**
- * A shop instance has one or several Catalogs and operates one associated front.
- *
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
- * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- * @SuppressWarnings(PHPMD.NPathComplexity)
- * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
- * @SuppressWarnings(PHPMD.ExcessiveClassLength)
- */
 class Shop extends ShopObject {
 
-    /** @var DB table (for ShopObject) */
+    /**
+     * DB table (for ShopObject)
+     */
     protected static $table = 'local_shop';
 
-    /** @var An ref to the catalogue */
+    /**
+     * An ref to the catalogue
+     */
     public $thecatalogue;
 
-    /** @var An array of navigation paths */
+    /**
+     * An array of navigation paths
+     */
     private $navorder;
 
     /**

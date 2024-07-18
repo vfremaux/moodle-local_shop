@@ -457,10 +457,10 @@ class shop_handler_std_generateseats extends shop_handler {
 
     /**
      * Post production : unassign assigned seats
-     * @param Product ref &$product
-     * @param object production info &$productioninfo
+     * @param Product $product
+     * @param object production info $productioninfo
      */
-    public function postprod_unassignseat(&$product, &$productioninfo) {
+    public function postprod_unassignseat($product, $productioninfo) {
         global $COURSE, $OUTPUT, $DB;
 
         $enrolname = 'manual';

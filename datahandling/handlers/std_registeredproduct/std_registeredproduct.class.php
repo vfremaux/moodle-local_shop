@@ -132,7 +132,7 @@ class shop_handler_std_registeredproduct extends shop_handler {
         $productevent = new StdClass();
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
 
         // Add user to customer support on real purchase.

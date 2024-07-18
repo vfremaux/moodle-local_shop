@@ -228,9 +228,9 @@ class shop_handler_std_createcategory extends shop_handler {
 
     /**
      * Recurse by deleting children
-     * @param objectref &$cat
+     * @param object $cat
      */
-    protected function delete_rec(&$cat) {
+    protected function delete_rec($cat) {
         global $DB;
 
         $subcats = $DB->get_records('course_categories', ['parent' => $cat->id]);
@@ -239,7 +239,7 @@ class shop_handler_std_createcategory extends shop_handler {
                 $this->delete_rec($subcat);
             }
         }
-        $this->delete_cat_courses($catid);
+        $this->delete_cat_courses($cat->id);
     }
 
     /**

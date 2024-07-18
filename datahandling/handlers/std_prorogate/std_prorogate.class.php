@@ -132,7 +132,7 @@ class shop_handler_std_prorogate extends shop_handler {
         $productevent->billitemid = $data->id;
         $productevent->eventtype = 'updated';
         $productevent->eventdata = json_encode($data);
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->id = $DB->insert_record('local_shop_productevent', $productevent);
 
         $e = new StdClass;

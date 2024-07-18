@@ -96,7 +96,7 @@ class manager {
             $instancereporthtml = $this->compile_instances($productinstances, '<br/>');
             $a = format_string($SITE->shortname);
             $title = get_string('justexpired', 'local_shop', $a);
-            $params = ['view' => 'viewAllProducts', 'id' => $theshop->id ?? 1];
+            $params = ['view' => 'viewAllProducts'];
             $managerurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
             $b = new StdClass;
             $b->url = $managerurl->out();
@@ -200,7 +200,7 @@ class manager {
                     $cu = $customers[$pi->customerid];
                 }
 
-                $instancerecs[] = $ci->code.' '.$ci->name.' / Instance : '.$pi->reference.' /customer : '.$cu->firstname.' '.$cu->lastname. '('.$cu->organisation.')';
+                $instancerecs[] = $ci->code.' '.$ci->name.' / Instance : '.$pi->reference.' / Shop : '.$s->name.' / Customer : '.$cu->firstname.' '.$cu->lastname. '('.$cu->organisation.')';
             }
 
             return implode($linesep, $instancerecs);

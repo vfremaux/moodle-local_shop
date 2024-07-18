@@ -42,13 +42,6 @@ require_once($CFG->dirroot.'/local/shop/front/lib.php');
  *
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
- * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- * @SuppressWarnings(PHPMD.NPathComplexity)
- * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
- * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class Bill extends ShopObject {
 
@@ -528,14 +521,11 @@ class Bill extends ShopObject {
     }
 
     /**
-     * Operates a trasition to another state.
+     * Operates a transition to another state.
      * @param string $tostatus the target state
      */
     public function work($tostatus) {
         global $CFG;
-
-        // Call a transition handler.
-        $result = 1;
 
         include_once($CFG->dirroot.'/local/shop/transitions.php');
         // Lower case because Moodle validation forces all functions to be lowercase.

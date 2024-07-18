@@ -227,7 +227,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $productevent = new ProductEvent(null);
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->save();
 
         // Add user to customer support.

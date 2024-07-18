@@ -87,7 +87,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $DB;
+        global $DB, $USER;
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
@@ -190,7 +190,7 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
      ù @param CatalogItem $catalogitem
      */
     public function is_available(CatalogItem $catalogitem) {
-        global $DB;
+        global $DB, $USER;
 
         if (!empty($catalogitem->handlerparams['certificate'])) {
             $cm = $DB->get_record('course_modules', ['idnumber' => $catalogitem->handlerparams['certificate']]);

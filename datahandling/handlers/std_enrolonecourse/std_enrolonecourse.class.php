@@ -141,7 +141,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
      * summary messaging to the customer, and sales admin backtracking.
      */
     public function produce_postpay(&$data) {
-        global $DB, $USER;
+        global $DB;
 
         $message = "[{$data->transactionid}] STD_ENROL_ONE_COURSE Postpay :";
         $message .= " Start processing.";
@@ -160,7 +160,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
             throw new moodle_exception(get_string('errormissingactiondata', 'local_shop', $this->get_name()));
         }
 
-        $rolename = @$data->actionparams['role'];
+        $rolename = $data->actionparams['role'] ?? '';
         if (empty($rolename)) {
             $rolename = 'student';
         }
@@ -198,7 +198,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
         $starttime = shop_compute_enrol_time($data, 'starttime', $course);
         $endtime = shop_compute_enrol_time($data, 'endtime', $course);
 
-        $enrolname = @$data->actionparams['enrol'];
+        $enrolname = $data->actionparams['enrol'] ?? '';
         if (empty($enrolname)) {
             $enrolname = 'manual';
         }
