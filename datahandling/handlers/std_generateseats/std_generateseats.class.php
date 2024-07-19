@@ -57,6 +57,7 @@ use local_shop\Customer;
  * @SuppressWarnings(PHPMD.TooManyMethods)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.ExitExpression)
  */
 class shop_handler_std_generateseats extends shop_handler {
 
@@ -469,6 +470,7 @@ class shop_handler_std_generateseats extends shop_handler {
      * Post production : unassign assigned seats
      * @param Product $product
      * @param object production info $productioninfo
+     * @SuppressWarnings[PHPMD.UnusedFormalParameter)
      */
     public function postprod_unassignseat($product, $productioninfo) {
         global $COURSE, $OUTPUT, $DB;

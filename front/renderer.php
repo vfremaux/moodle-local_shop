@@ -266,7 +266,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             $sessionpartner = $SESSION->shoppingcart->partner ?? null;
             if (!empty($sessionpartner)) {
                 $partner = \local_shop\Partner::get_by_key($sessionpartner->partnerkey);
-                $template->partnername = $sesionpartner->name;
+                $template->partnername = $partner->name;
                 $template->haspartner = true;
             }
         }

@@ -44,7 +44,7 @@ class front_paymode implements Templatable {
     /**
      * Exporter for template
      * @param renderer_base $output unused
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function export_for_template(renderer_base $output /* unused */) {
         global $CFG;

@@ -47,6 +47,7 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
  * @SuppressWarnings(PHPMD.TooManyMethods)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.ExitExpression)
  */
 class production_controller extends front_controller_base {
 

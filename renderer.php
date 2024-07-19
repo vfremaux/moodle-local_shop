@@ -92,7 +92,7 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param int $activecustomerid
      */
     public function print_customer_menu($urlroot, &$customers, $activecustomerid) {
-        global $OUTPUT, $DB;
+        global $OUTPUT;
 
         $customersmenu = [];
         if ($customers) {
@@ -260,7 +260,7 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param moodle_url $url the base url
      */ 
     public function month_choice($current, $url) {
-        global $OUTPUT, $DB, $SESSION;
+        global $OUTPUT, $SESSION;
 
         if ($current) {
             // Register in user's session.

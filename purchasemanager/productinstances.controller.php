@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * controller for product instances.
  *
  * @package     local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -32,12 +32,34 @@ require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
 use local_shop\Product;
 use moodle_exception;
 
+/**
+ * A MVC controller to manage product instances.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.ExitExpression)
+ */
 class productinstances_controller {
 
+    /**  @var data to process */ 
     protected $data;
 
+    /**  @var Mark data as received */ 
     protected $received;
-
+    
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
     public function receive($cmd, $data = null) {
         if (!empty($data)) {
             // Data is fed from outside.
@@ -59,6 +81,10 @@ class productinstances_controller {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $DB;
 

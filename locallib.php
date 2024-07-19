@@ -674,6 +674,8 @@ function shop_get_supported_currencies() {
  * Builds the full memmory context from incoming params and
  * session state.
  * @return three object refs if they are buildable, null for other.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function shop_build_context() {
     global $SESSION, $DB;
@@ -909,6 +911,8 @@ function shop_list_reorder($selectcontext, $table) {
 /**
  * Get the list of enabled pay mode plugins for a shop instance.
  * @param object $theshop
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function shop_get_enabled_paymodes($theshop) {
     global $USER;
@@ -1032,7 +1036,9 @@ function shop_get_bill_tabs($total, $fullview) {
 }
 
 /**
- * Get filter for bills
+ * Get filter for bills.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function shop_get_bill_filtering() {
     global $SESSION;

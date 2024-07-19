@@ -88,6 +88,17 @@ define('MRCNT_UNVAILABLE', '90');
 
 /**
  * Pay by Mercanet
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.ExitExpression)
  */
 class shop_paymode_mercanet extends shop_paymode {
 
@@ -174,7 +185,6 @@ class shop_paymode_mercanet extends shop_paymode {
         $paydata = $this->decode_return_data();
 
         $returns = explode('-', $paydata['return_context']);
-        $instanceid = $returns[1];
         $transid = $returns[2];
 
         // Mark transaction (order record) as abandonned.
@@ -219,7 +229,6 @@ class shop_paymode_mercanet extends shop_paymode {
             // OK, affichage des champs de la réponse.
 
             $returns = explode('-', $paydata['return_context']);
-            $instanceid = $returns[1];
             $transid = $returns[2];
 
             $afullbill = Bill::get_by_transaction($transid);
@@ -339,7 +348,6 @@ class shop_paymode_mercanet extends shop_paymode {
         } else {
 
             $returns = explode('-', $paydata['return_context']);
-            $instanceid = $returns[1];
             $transid = $returns[2];
 
             shop_trace("[$transid] Mercanet IPN processing");
@@ -634,8 +642,8 @@ class shop_paymode_mercanet extends shop_paymode {
         $paymentresponse = explode ("!", $result);
         // analyse du code retour.
         if (!$paymentresponse || (($paymentresponse[1] === '' /* code */) && ($paymentresponse[2] == '' /* error */))) {
-            $mercanetapierrorstr = get_string('errorcallingAPI', 'shoppaymodes_mercanet', $path_bin);
-            echo "<br/><center>$mercanetapierrorstr</center><br/>";
+            $apierrorstr = get_string('errorcallingAPI', 'shoppaymodes_mercanet', $path_bin);
+            echo "<br/><center>$apierrorstr</center><br/>";
             return false;
         }
         // Récupération des données de la réponse.

@@ -491,7 +491,6 @@ class shop_bills_renderer extends local_shop_base_renderer {
      * @param moodle_url $url
      */
     public function flow_controller($status, $url) {
-        global $PAGE;
 
         try {
             $outputclass = 'bills_flow_control';

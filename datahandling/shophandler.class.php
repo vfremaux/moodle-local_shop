@@ -37,6 +37,7 @@ use local_shop\CatalogItem;
  * @SuppressWarnings(PHPMD.TooManyMethods)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 abstract class shop_handler {
 
@@ -143,7 +144,7 @@ abstract class shop_handler {
      * Shows product possible actions
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function display_product_actions($pid, $params) {
         // Do nothing.
