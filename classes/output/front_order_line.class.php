@@ -61,7 +61,7 @@ class front_order_line implements Templatable {
     /**
      * Exporter for template
      * @param renderer_base $output unused
-     * @SuppressWarnings(PHPMD.UnusedFormaParameter)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function export_for_template(renderer_base $output /* unused */) {
 

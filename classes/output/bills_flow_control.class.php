@@ -52,7 +52,7 @@ class bills_flow_control implements Templatable {
     /**
      * Exporter for renderer.
      * @param renderer_base $output unused
-     * @SuppressWarnings(PHPMD.UnusedFormaParameter)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function export_for_template(renderer_base $output /* unused */) {
         global $DB;

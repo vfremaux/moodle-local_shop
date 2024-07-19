@@ -349,6 +349,7 @@ function shop_create_moodle_user($data, $participant, $supervisorrole) {
  * @param object $user a User record.
  * @param bool $nosend if true, the password will be generated and stored, but no mail goes out.
  * @param bool $testmode if true, the password is generated but not stored. With nosend, will just return a new password.
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 function shop_set_and_send_password($user, $testmode = false) {
     global $DB, $SITE, $CFG;

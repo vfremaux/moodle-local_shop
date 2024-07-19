@@ -60,16 +60,18 @@ class payment_controller extends front_controller_base {
      * function should get them from request
      */
     public function receive($cmd, $data = []) {
+        global $SESSION;
+
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
-        $this->data->debug = optional_param('debug', @$SESSION->shoppingcart->debug, PARAM_BOOL);
+        $this->data->debug = optional_param('debug', $SESSION->shoppingcart->debug ?? false, PARAM_BOOL);
 
         switch ($cmd) {
             case 'place':
@@ -89,6 +91,7 @@ class payment_controller extends front_controller_base {
     /**
      * Processes the action
      * @param string $cmd
+     * @SuppressWarnings(PHPMD.ExitExpression)
      */
     public function process($cmd) {
         global $DB, $USER, $OUTPUT, $CFG;
@@ -97,7 +100,7 @@ class payment_controller extends front_controller_base {
             throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
-        $SESSION->shoppingcart->debug = @$this->data->debug;
+        $SESSION->shoppingcart->debug = $this->data->debug ?? false;
 
         if ($cmd == 'place') {
             shop_debug_trace('Payment controller: placing', SHOP_TRACE_DEBUG);
@@ -209,7 +212,7 @@ class payment_controller extends front_controller_base {
                 // For further reference to some origin shop parameters and defaults.
                 $itemrec->productiondata->id = $this->theshop->id;
                 // For further reference to some origin block parameters and defaults.
-                $itemrec->productiondata->blockid = 0 + @$this->theblock->id;
+                $itemrec->productiondata->blockid = $this->theblock->id ?? 0;
                 if (!empty($SESSION->shoppingcart->customerdata[$shortname])) {
                     $itemrec->customerdata = $SESSION->shoppingcart->customerdata[$shortname];
                 } else {
@@ -258,7 +261,7 @@ class payment_controller extends front_controller_base {
                 $params = [
                     'view' => $prev,
                     'shopid' => $this->theshop->id,
-                    'blockid' => 0 + @$this->theblock->id,
+                    'blockid' => $this->theblock->id ?? 0,
                     'back' => 1,
                 ];
                 $url = new moodle_url('/local/shop/front/view.php', $params);
@@ -280,7 +283,7 @@ class payment_controller extends front_controller_base {
                     $params = [
                         'view' => $next,
                         'shopid' => $this->theshop->id,
-                        'blockid' => 0 + @$this->theblock->id,
+                        'blockid' => $this->theblock->id ?? 0,
                         'what' => 'produce',
                         'transid' => $afullbill->transactionid,
                     ];
@@ -298,7 +301,7 @@ class payment_controller extends front_controller_base {
                     $params = [
                         'view' => $next,
                         'shopid' => $this->theshop->id,
-                        'blockid' => 0 + @$this->theblock->id,
+                        'blockid' => $this->theblock->id ?? 0,
                         'what' => 'confirm',
                         'transid' => $afullbill->transactionid,
                     ];

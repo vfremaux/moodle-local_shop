@@ -72,7 +72,7 @@ class front_order_totals implements Templatable {
             $finaltaxedtotal = $shoppingcart->finaltaxedtotal ?? 0;
             $finaltaxestotal = $shoppingcart->finaltaxestotal ?? 0;
             $shippingtaxedvalue = $shoppingcart->shipping->taxedvalue ?? 0;
-            $finalshippedtaxedtotal = $shoppingcart->finalshippedtaxedtotal ?? 0;
+            $finalshippedtxtotal = $shoppingcart->finalshippedtaxedtotal ?? 0;
 
             // Check discounts.
             if (local_shop_supports_feature('shop/discounts')) {
@@ -100,7 +100,7 @@ class front_order_totals implements Templatable {
             $template->hasshipping = $config->hasshipping;
             $template->shippingtaxedvalue = sprintf("%0.2f", round($shippingtaxedvalue, 2));
         }
-        $template->finalshippedtaxedtotal = sprintf("%0.2f", round($finalshippedtaxedtotal, 2));
+        $template->finalshippedtaxedtotal = sprintf("%0.2f", round($finalshippedtxtotal, 2));
 
         // Finalizing and formatting.
         $template->finaltaxedtotal = sprintf("%0.2f", round($finaltaxedtotal, 2));

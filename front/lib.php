@@ -112,6 +112,9 @@ function shop_resolve_zone_rule($country, $zipcode, $rule) {
  * Validates customer information from the session stored shoppingcart. checks if every data
  * is receivable.
  * @param Shop $theshop the current shop to get settings from.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+
  */
 function shop_validate_customer(Shop $theshop) {
     global $SESSION, $CFG, $USER;
@@ -227,6 +230,8 @@ function shop_load_customerinfo($user) {
 
 /**
  * Validates invocing customer information
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function shop_validate_invoicing() {
     global $SESSION;
@@ -318,6 +323,8 @@ function shop_get_payment_plugin(&$shopinstance, $pluginname = null) {
  * @param arrayref &$handlerdata a complete parameter set for the product based on a billitem object.
  * @param string $fieldtoreturn 'starttime' or 'endtime'
  * @param objectref &$course a reference course
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 

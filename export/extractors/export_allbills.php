@@ -22,6 +22,11 @@
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+ 
+ /**
+  * Extractor class
+   * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+  */
 class shop_export_source_allbills {
 
     /**

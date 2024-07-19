@@ -98,7 +98,8 @@ class manager {
             $instancereporthtml = $this->compile_instances($productinstances, '<br/>');
             $a = format_string($SITE->shortname);
             $title = get_string('justexpired', 'local_shop', $a);
-            $params = ['view' => 'viewAllProducts', 'id' => $theshop->id ?? 1];
+            // Notifications only can route admins to service on shop 1. 
+            $params = ['view' => 'viewAllProducts', 'id' => 1];
             $managerurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
             $b = new StdClass;
             $b->url = $managerurl->out();

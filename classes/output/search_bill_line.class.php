@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 use Templatable;
 use Stdclass;
 use renderer_base;
+use moodle_url;
 
 /**
  * Result of a bill search
@@ -41,7 +42,7 @@ class search_bill_line implements Templatable {
     /**
      * Exporter for template
      * @param renderer_base $output unused
-     * @SuppressWarnings(PHPMD.UnusedFormaParameter)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function export_for_template(renderer_base $output /* unused */) {
 
@@ -50,11 +51,11 @@ class search_bill_line implements Templatable {
         $bill = $this->bill;
 
         $params = ['view' => 'viewBill', 'id' => $bill->theshop->id, 'billid' => $bill->id];
-        $template->billurl = new \moodle_url('/local/shop/bills/view.php', $params);
+        $template->billurl = new moodle_url('/local/shop/bills/view.php', $params);
         $template->uniqueid = 'B-'.strftime('%Y%m%d', $bill->emissiondate).'-'.$bill->id;
 
         $params = ['view' => 'viewCustomer', 'customer' => $bill->customer->id];
-        $template->customerurl = new  \moodle_url('/local/shop/customers/view.php', $params);
+        $template->customerurl = new  moodle_url('/local/shop/customers/view.php', $params);
         $template->customername = $bill->customer->lastname.' '.$bill->customer->firstname;
 
         $template->emissiondate = strftime('%c', $bill->emissiondate);

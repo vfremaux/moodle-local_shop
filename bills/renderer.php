@@ -493,8 +493,6 @@ class shop_bills_renderer extends local_shop_base_renderer {
     public function flow_controller($status, $url) {
         global $PAGE;
 
-        $renderer = $PAGE->get_renderer('local_shop');
-
         try {
             $outputclass = 'bills_flow_control';
             shop_load_output_class($outputclass);

@@ -26,6 +26,9 @@
 /**
  * Standard upgrade handler.
  * @param int $oldversion
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(ExcessiveMethodLength)
  */
 function xmldb_local_shop_upgrade($oldversion = 0) {
     global $DB, $CFG;

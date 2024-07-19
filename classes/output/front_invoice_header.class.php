@@ -24,6 +24,8 @@ use Templatable;
 use renderer_base;
 use local_shop\Bill;
 use StdClass;
+use moodle_url;
+use context_system;
 
 /**
  * the invoice header
@@ -56,7 +58,7 @@ class front_invoice_header implements Templatable {
 
         $template = new StdClass();
 
-        $subheaderstring = '';
+        $template->subheadingstr = '';
         if (!in_array($afullbill->status, $realized)) {
             $headerstring = get_string('ordersheet', 'local_shop');
             $template->subheadingstr = get_string('ordertempstatusadvice', 'local_shop');
@@ -72,13 +74,13 @@ class front_invoice_header implements Templatable {
             $template->withlogo = true;
 
             if (!empty($config->sellerlogo)) {
-                $syscontext = \context_system::instance();
+                $syscontext = context_system::instance();
                 $component = 'local_shop';
                 $filearea = 'shoplogo';
                 $itemid = 0;
                 $filepath = $config->sellerlogo;
                 $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
-                $template->logourl = \moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
+                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
             } else {
                 $template->logourl = $output->image_url('logo', 'theme');
             }

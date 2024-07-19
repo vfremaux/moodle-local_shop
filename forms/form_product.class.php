@@ -81,7 +81,7 @@ class Product_Form extends CatalogItem_Form {
         $mform->addElement('hidden', 'itemid');
         $mform->setType('itemid', PARAM_INT);
 
-        $attributesspecificdata = 'rows="4" style="width:80%" ';
+        $attrsspecificdata = 'rows="4" style="width:80%" ';
         $params = [
             'cols' => 50,
             'rows' => 8,
@@ -89,7 +89,7 @@ class Product_Form extends CatalogItem_Form {
             'data-format' => "url",
             'data-edithandle' => 'id_edithandlerparams',
         ];
-        $attributeshandlerparams = $params;
+        $attrshandlerparams = $params;
 
         // Adding title and description.
         $variant = '';
@@ -142,13 +142,13 @@ class Product_Form extends CatalogItem_Form {
 
         // This may need to be translated for localised catalogs.
         $label = get_string('requireddata', 'local_shop').':';
-        $mform->addElement('textarea', 'requireddata', $label, $attributesspecificdata);
+        $mform->addElement('textarea', 'requireddata', $label, $attrsspecificdata);
         $mform->setType('requireddata', PARAM_TEXT);
         $mform->addHelpButton('requireddata', 'requireddata', 'local_shop');
 
         // This may need to be translated for localised catalogs.
         $label = get_string('productiondata', 'local_shop').':';
-        $mform->addElement('textarea', 'productiondata', $label, $attributesspecificdata);
+        $mform->addElement('textarea', 'productiondata', $label, $attrsspecificdata);
         $mform->setType('productiondata', PARAM_TEXT);
         $mform->addHelpButton('productiondata', 'productiondata', 'local_shop');
         $mform->setAdvanced('productiondata');
@@ -163,7 +163,7 @@ class Product_Form extends CatalogItem_Form {
             $mform->setType('enablehandler', PARAM_TEXT);
 
             $group = [];
-            $group[] = & $mform->createElement('textarea', 'handlerparams', '', $attributeshandlerparams);
+            $group[] = & $mform->createElement('textarea', 'handlerparams', '', $attrshandlerparams);
             $mform->setType('handlerparams', PARAM_TEXT);
             $group[] = & $mform->createElement('button', 'edithandlerparams', get_string('edit', 'local_shop'));
             $mform->addGroup($group, 'grphandlerparams', get_string('handlerparams', 'local_shop'), '', false);

@@ -28,6 +28,14 @@ use local_shop\CatalogItem;
 
 /**
  * Shop handler abstract class.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 abstract class shop_handler {
@@ -82,7 +90,7 @@ abstract class shop_handler {
      * this product and cannot purchase it twice, or is NOT in condition to purchase it.
      * @param CatalogItem $catalogitem a Catalog item object with all parameters thzt is using
      * this handler.
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @return boolean true or false
      */
     public function is_available(CatalogItem $catalogitem) {
@@ -113,7 +121,7 @@ abstract class shop_handler {
      * @param string $value the value to validate
      * @param arrayref $errors, an error array to be field with all encountered errors. Keys of the
      * array are [catalogitem][fieldname][instanceix].
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @return false if not validated
      */
     public function validate_required_data($itemname, $field, $instance, $value, &$errors) {
@@ -124,7 +132,7 @@ abstract class shop_handler {
      * Shows product info
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function display_product_infos($pid, $pinfo) {
         // Do nothing.
@@ -145,7 +153,7 @@ abstract class shop_handler {
     /**
      * Deletes the product instance
      * @param Product $product the product instance
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function delete(Product $product) {
         // Do nothing.
@@ -155,7 +163,7 @@ abstract class shop_handler {
     /**
      * Inhibits the product instance in a way it can be reactivated
      * @param Product $product the product instance
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function soft_delete(Product $product) {
         // Do nothing.
@@ -165,7 +173,7 @@ abstract class shop_handler {
     /**
      * Restores the product instance to its normal effect
      * @param Product $product the product instance
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function soft_restore(Product $product) {
         // Do nothing.
@@ -175,7 +183,7 @@ abstract class shop_handler {
     /**
      * what should happen when product instance record is updated.
      * @param Product $product the product instance
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function update(Product $product) {
         // Do nothing.
@@ -188,6 +196,7 @@ abstract class shop_handler {
      * @param arrayref &$errors
      * @param arrayref &$warnings
      * @param arrayref &$messages
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
@@ -202,11 +211,11 @@ abstract class shop_handler {
             $data->actionparams['customersupport'] = $data->defaultcustomersupportcourse;
         } else {
             if (is_numeric($data->actionparams['customersupport'])) {
-                if (!$course = $DB->get_record('course', ['id' => $data->actionparams['customersupport']])) {
+                if (!$DB->get_record('course', ['id' => $data->actionparams['customersupport']])) {
                     $errors[$data->code][] = get_string('errornocustomersupportcourse', 'local_shop');
                 }
             } else {
-                if (!$course = $DB->get_record('course', ['shortname' => $data->actionparams['customersupport']])) {
+                if (!$DB->get_record('course', ['shortname' => $data->actionparams['customersupport']])) {
                     $errors[$data->code][] = get_string('errornocustomersupportcourse', 'local_shop');
                 }
             }

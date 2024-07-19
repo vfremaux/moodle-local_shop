@@ -49,7 +49,7 @@ class bill_product_block implements Templatable {
     /**
      * Exporter for template.
      * @param renderer_base $output unused
-     * @SuppressWarnings(PHPMD.UnusedFormaParameter)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function export_for_template(renderer_base $output /* unused */) {
 
@@ -76,7 +76,7 @@ class bill_product_block implements Templatable {
         $ismax = $product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset;
         $template->disabled = ($ismax) ? 'disabled="disabled"' : '';
         $template->blockid = $this->theblock->instance->id ?? 0;
-        $template->jshandler = 'ajax_add_unit('.$blockid.', \''.$product->shortname.'\')';
+        $template->jshandler = 'ajax_add_unit('.$this->theblock->id.', \''.$product->shortname.'\')';
         $template->shortname = $product->shortname;
         $template->units = $this->units($product, true);
 

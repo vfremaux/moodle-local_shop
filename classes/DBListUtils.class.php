@@ -52,7 +52,7 @@ class DBListUtils {
         $this->table = $table;
         $this->field = $field;
         $this->params = $params;
-s    }
+    }
 
     /**
      * Pushes up an item in his own list context
