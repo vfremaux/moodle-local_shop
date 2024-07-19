@@ -28,6 +28,9 @@ use StdClass;
 use Templatable;
 use renderer_base;
 
+/**
+ * An objecvt that represents product block data in bills
+ */
 class bill_product_block implements Templatable {
 
     /** @var The product to render */
@@ -36,15 +39,17 @@ class bill_product_block implements Templatable {
     /**
      * Base constructor
      * @param Catalogitem $product
+     * @param object $theblock instance of shop_access block if known.
      */
-    public function __construct($product) {
+    public function __construct(CatalogItem $product, $theblock = null) {
         $this->product = $product;
+        $this->theblock = $theblock;
     }
 
     /**
      * Exporter for template.
      * @param renderer_base $output unused
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedFormaParameter)
      */
     public function export_for_template(renderer_base $output /* unused */) {
 
@@ -70,7 +75,7 @@ class bill_product_block implements Templatable {
 
         $ismax = $product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset;
         $template->disabled = ($ismax) ? 'disabled="disabled"' : '';
-        $template->blockid = 0 + @$this->theblock->instance->id;
+        $template->blockid = $this->theblock->instance->id ?? 0;
         $template->jshandler = 'ajax_add_unit('.$blockid.', \''.$product->shortname.'\')';
         $template->shortname = $product->shortname;
         $template->units = $this->units($product, true);

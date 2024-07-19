@@ -25,6 +25,8 @@
 
 /**
  * Post install function.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function xmldb_local_shop_install() {
     global $DB, $CFG;

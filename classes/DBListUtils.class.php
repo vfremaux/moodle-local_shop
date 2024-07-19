@@ -33,19 +33,13 @@ use StdClass;
  */
 class DBListUtils {
 
-    /**
-     * The table containing the list
-     */
+    /** @var The table containing the list */
     protected $table;
 
-    /**
-     * The ordering field
-     */
+    /** @var The ordering field */
     protected $field;
 
-    /**
-     * Context params to find the list in the table.
-     */
+    /** @var Context params to find the list in the table. */
     protected $params;
 
     /**
@@ -58,7 +52,7 @@ class DBListUtils {
         $this->table = $table;
         $this->field = $field;
         $this->params = $params;
-    }
+s    }
 
     /**
      * Pushes up an item in his own list context

@@ -30,6 +30,16 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 /**
  * STD_ADD_TRAINING_CREDITS is a standard shop product action handler that adds coursecredits to the customer
  * credit account. This will only work when the trainingcredits enrol method is installed an enabled.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class shop_handler_std_addtrainingcredits extends shop_handler {
 

@@ -21,6 +21,8 @@
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeproelarn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -284,6 +286,7 @@ function shop_backup_for_template($courseid, $options = [], &$log = null) {
  * @param object $user a user record.
  * @param bool $checkunique if true, generates indexed untill not found in DB.
  * @return a username
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 function shop_generate_username($user, $checkunique = false) {
     global $DB;
@@ -371,6 +374,7 @@ function shop_generate_shortname($user) {
  * if reqested.
  * @param object $archivefile a moodle file containing the mbz.
  * @param object $data a course record where the fullname, shortname, description and idnumber can be overriden from
+ * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function shop_restore_template($archivefile, $data) {
     global $CFG, $DB;

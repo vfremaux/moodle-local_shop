@@ -108,7 +108,7 @@ function local_shop_has_leaflet($itemid) {
  * @param array $args
  * @param bool $forcedownload
  * @param array $options
- * @SuppressWarnings(PHPMD.UnusedLocalVariables)
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $DB;

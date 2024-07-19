@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A class to export bills to Excel Sheet
+ *
  * @package   local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -24,6 +26,20 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/export/exportlib.php');
 
+/**
+ * Excel exporter.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+
+ */
 class shop_export_excel extends shop_export {
 
     /** @var array a woorkbook as an array of worksheets */

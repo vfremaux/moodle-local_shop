@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Purchase front step controller
+ * 
  * @package   local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -30,15 +32,26 @@ use moodle_url;
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
 /**
- * A class to manage shop users
+ * Front purchase controller : users info step
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class users_controller extends front_controller_base {
 
-    /** @var array */
-    protected $data;
-
-    protected $received;
-
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
     public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
@@ -79,6 +92,10 @@ class users_controller extends front_controller_base {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $SESSION, $DB, $OUTPUT;
 
@@ -154,7 +171,9 @@ class users_controller extends front_controller_base {
                     foreach ($SESSION->shoppingcart->order as $shortname => $fooq) {
                         if (isset($SESSION->shoppingcart->users[$shortname][$role][$ptid])) {
                             unset($SESSION->shoppingcart->users[$shortname][$role][$ptid]);
-                            @$SESSION->shoppingcart->assigns[$shortname]--;
+                            if (array_key_exists($shortname, $SESSION->shoppingcart->assigns)) {
+                                $SESSION->shoppingcart->assigns[$shortname]--;
+                            }
                         }
                     }
                 }
@@ -176,7 +195,7 @@ class users_controller extends front_controller_base {
                     $i++;
                 }
             }
-            for (; $i < (0 + @$SESSION->shoppingcart->seats); $i++) {
+            for (; $i < ($SESSION->shoppingcart->seats ?? 0); $i++) {
                 $output .= $this->renderer->participant_blankrow();
             }
         }
@@ -190,7 +209,11 @@ class users_controller extends front_controller_base {
             $r = $this->data->role;
             $pt = $this->data->ptid;
             $SESSION->shoppingcart->users[$sn][$r][$pt] = $SESSION->shoppingcart->participants[$pt];
-            @$SESSION->shoppingcart->assigns[$sn]++;
+            if (array_key_exists($sn, $SESSION->shoppingcart->assigns)) {
+                $SESSION->shoppingcart->assigns[$sn]++;
+            } else {
+                $SESSION->shoppingcart->assigns[$sn] = 1;
+            }
             $cmd = 'assignlistobj';
 
         } else if ($cmd == 'deleteassign') {
@@ -199,9 +222,11 @@ class users_controller extends front_controller_base {
             $r = $this->data->role;
             $pt = $this->data->ptid;
             unset($SESSION->shoppingcart->users[$sn][$r][$pt]);
-            @$SESSION->shoppingcart->assigns[$sn]--;
+            if (array_key_exists($sn, $SESSION->shoppingcart->assigns)) {
+                $SESSION->shoppingcart->assigns[$sn]--;
+            }
             // Secures in case of failure...
-            $SESSION->shoppingcart->assigns[$sn] = max(0, @$SESSION->shoppingcart->assigns[$sn]);
+            $SESSION->shoppingcart->assigns[$sn] = max(0, $SESSION->shoppingcart->assigns[$sn] ?? 0);
             $cmd = 'assignlistobj';
 
         } else if ($cmd == 'assignlist') {
@@ -215,7 +240,7 @@ class users_controller extends front_controller_base {
 
             $requiredroles = $this->thecatalog->check_required_roles();
 
-            $a = new \StdClass;
+            $a = new StdClass();
             $a->role = $this->data->role;
             foreach ($requiredroles as $role) {
                 $a->content[$role] = $this->renderer->role_list($role, $this->data->shortname);
@@ -227,7 +252,7 @@ class users_controller extends front_controller_base {
 
             $requiredroles = $this->thecatalog->check_required_roles();
 
-            $a = new \StdClass;
+            $a = new StdClass();
             foreach ($requiredroles as $role) {
                 foreach ($SESSION->shoppingcart->order as $shortname => $fooq) {
                     $a->content[$role][$shortname] = $this->renderer->role_list($role, $shortname);

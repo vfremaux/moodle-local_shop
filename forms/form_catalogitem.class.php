@@ -488,6 +488,7 @@ abstract class CatalogItem_Form extends moodleform {
      * Standard validation
      * @param array $data
      * @param array $files attached files
+     * @SuppressWarnings(PHPMD.UnusedLocalVariables)
      */
     public function validation($data, $files = []) {
         global $DB;

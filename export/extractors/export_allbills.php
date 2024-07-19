@@ -15,19 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * An extractor class that fetches all bills
+ *
  * @package   local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class shop_export_source_allbills {
 
     /**
      * Describes data to export
-     * @param array &$params
+     * @param object $params
      */
-    public function get_data_description(&$params) {
+    public function get_data_description($params) {
         global $DB, $CFG;
 
         $catalogue = $DB->get_record('local_shop_catalog', ['id' => $params->catalogid]);
@@ -170,9 +171,10 @@ class shop_export_source_allbills {
     }
 
     /**
-     * @param array &$params
+     * Get the data to extract.
+     * @param object $params
      */
-    public function get_data(&$params) {
+    public function get_data($params) {
         global $DB, $CFG;
 
         $yearclause = '';
