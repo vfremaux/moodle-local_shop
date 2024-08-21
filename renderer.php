@@ -88,10 +88,10 @@ class local_shop_renderer extends local_shop_base_renderer {
     /**
      * prints a customer menu and changes currently viewed owner if required
      * @param string $urlroot
-     * @param arrayref &$customers
+     * @param array $customers
      * @param int $activecustomerid
      */
-    public function print_customer_menu($urlroot, &$customers, $activecustomerid) {
+    public function print_customer_menu($urlroot, $customers, $activecustomerid) {
         global $OUTPUT;
 
         $customersmenu = [];
@@ -451,11 +451,11 @@ class local_shop_base_renderer extends \plugin_renderer_base {
     /**
      * Loads the renderer with contextual objects. Most of the renderer function need
      * at least a shop instance.
-     * @param objectref &$theshop
-     * @param arrayref &$thecatalog
-     * @param objectref &$theblock
+     * @param object $theshop
+     * @param array $thecatalog
+     * @param object $theblock
      */
-    public function load_context(&$theshop, &$thecatalog, &$theblock = null) {
+    public function load_context($theshop, $thecatalog, $theblock = null) {
 
         $this->theshop = $theshop;
         $this->thecatalog = $thecatalog;

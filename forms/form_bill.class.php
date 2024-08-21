@@ -36,6 +36,7 @@ use local_shop\compat;
 /**
  * Defines form to add a new bill.
  *
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)

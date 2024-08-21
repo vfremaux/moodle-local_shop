@@ -66,6 +66,7 @@ class product_controller {
     /**
      * Constructor
      * @param Catalog $thecatalog
+     * @param moodle_form $mform the form where data comes from (for file handling)
      */
     public function __construct(Catalog $thecatalog, $mform = null) {
         $this->thecatalog = $thecatalog;

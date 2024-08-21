@@ -34,6 +34,7 @@ use local_shop\Tax;
 /**
  * Form for edting catalog products.
  *
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)

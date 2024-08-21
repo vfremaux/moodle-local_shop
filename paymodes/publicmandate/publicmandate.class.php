@@ -36,7 +36,7 @@ class shop_paymode_publicmandate extends shop_paymode {
 
     /**
      * Constructor
-     * @param Shop $shop
+     * @param ?Shop $shop
      */
     public function __construct(?Shop $shop) {
         parent::__construct('publicmandate', $shop);
@@ -57,7 +57,7 @@ class shop_paymode_publicmandate extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param Bill $billdata
+     * @param ?Bill $billdata
      */
     public function print_invoice_info(?Bill $billdata = null) {
         $proc = 1;

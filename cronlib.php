@@ -170,6 +170,7 @@ class manager {
      * Process all instances. Optimized to build objects only once in memory,
      * then forget everything once done.
      * @param array $instances process instances by adding info in product objects.
+     * @param string $linesep
      */
     function compile_instances($instances, $linesep = "\n") {
 
@@ -203,7 +204,9 @@ class manager {
                     $cu = $customers[$pi->customerid];
                 }
 
-                $instancerecs[] = $ci->code.' '.$ci->name.' / Instance : '.$pi->reference.' / Shop : '.$s->name.' / Customer : '.$cu->firstname.' '.$cu->lastname. '('.$cu->organisation.')';
+                $instancestr = $ci->code.' '.$ci->name.' / Instance : '.$pi->reference;
+                $instancestr .= ' / Shop : '.$s->name.' / Customer : '.$cu->firstname.' '.$cu->lastname. '('.$cu->organisation.')';
+                $instancerecs[] = $instancestr;
             }
 
             return implode($linesep, $instancerecs);

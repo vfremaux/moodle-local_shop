@@ -75,6 +75,7 @@ class category_controller {
      * @param string $cmd the action keyword
      * @param array $data incoming parameters from form when directly available, otherwise the
      * function should get them from request
+     * @param moodle_form $mform the form where data comes from (for file handling)
      */
     public function receive($cmd, $data = null, $mform = null) {
 
@@ -86,7 +87,7 @@ class category_controller {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
         switch ($cmd) {
@@ -129,23 +130,23 @@ class category_controller {
                 shop_list_reorder($selectcontext, 'local_shop_catalogcategory');
             }
         } else if ($cmd == 'up') {
-            // Raises a question in the list ***************.
+            // Raises a question in the list.
             $parentid = $DB->get_field('local_shop_catalogcategory', 'parentid', ['id' => $this->data->cid]);
             $selectcontext = ['catalogid' => $this->thecatalog->id, 'parentid' => $parentid];
             shop_list_up($selectcontext, $this->data->cid, 'local_shop_catalogcategory');
 
         } else if ($cmd == 'down') {
-            // Lowers a question in the list ****************.
+            // Lowers a question in the list.
             $parentid = $DB->get_field('local_shop_catalogcategory', 'parentid', ['id' => $this->data->cid]);
             $selectcontext = ['catalogid' => $this->thecatalog->id, 'parentid' => $parentid];
             shop_list_down($selectcontext, $this->data->cid, 'local_shop_catalogcategory');
 
         } else if ($cmd == 'show') {
-            // Show a category ******************************.
+            // Show a category.
             $DB->set_field('local_shop_catalogcategory', 'visible', 1, ['id' => $this->data->cid]);
 
         } else if ($cmd == 'hide') {
-            // Hide a category ******************************.
+            // Hide a category.
             $DB->set_field('local_shop_catalogcategory', 'visible', 0, ['id' => $this->data->cid]);
 
         } else if ($cmd == 'edit') {
@@ -161,7 +162,7 @@ class category_controller {
             $category->descriptionformat = 0 + $category->description_editor['format'];
 
             if (empty($category->categoryid)) {
-                $params = ['catalogid' => $this->thecatalog->id, 'parentid' => @$category->parentid];
+                $params = ['catalogid' => $this->thecatalog->id, 'parentid' => $category->parentid ?? 0];
                 $maxorder = $DB->get_field('local_shop_catalogcategory', 'MAX(sortorder)', $params);
                 $category->sortorder = $maxorder + 1;
                 if (!$category->id = $DB->insert_record('local_shop_catalogcategory', $category)) {
@@ -196,8 +197,8 @@ class category_controller {
 
                 // We do not have form runnig tests.
                 $draftideditor = file_get_submitted_draft_itemid('description_editor');
-                $category->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'categorydescription',
-                                                                $category->id, $this->mform->editoroptions, $category->description);
+                $category->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
+                                    'categorydescription', $category->id, $this->mform->editoroptions, $category->description);
                 $category = file_postupdate_standard_editor($category, 'description', $this->mform->editoroptions, $context,
                                                             'local_shop', 'categorydescription', $category->id);
 

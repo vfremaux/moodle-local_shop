@@ -36,6 +36,8 @@ class local_shop_external extends external_api {
 
     /**
      * Validates all inpout params and change or remap values if required.
+     * @param array $requs
+     * @param array $params
      */
     protected function validate_shop_parameters($requs, $params) {
         global $DB;
@@ -363,4 +365,3 @@ class local_shop_external extends external_api {
         );
     }
 }
-

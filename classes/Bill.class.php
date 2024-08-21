@@ -22,6 +22,7 @@
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_shop;
 
 use StdClass;
@@ -42,6 +43,7 @@ require_once($CFG->dirroot.'/local/shop/front/lib.php');
  *
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
