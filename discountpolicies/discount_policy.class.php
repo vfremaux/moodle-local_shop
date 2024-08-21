@@ -43,15 +43,15 @@ abstract class DiscountPolicy {
      */
     public function discount_shop_elements($mform) {
 
-            $policyname = $this->get_name();
+        $policyname = $this->get_name();
 
-            $mform->addElement('checkbox', 'policy'.$policyname.'enabled', get_string($policyname.'local_shop'), 0);
-            $mform->setType('policy'.$policyname.'enabled', PARAM_BOOL);
+        $mform->addElement('checkbox', 'policy'.$policyname.'enabled', get_string($policyname.'local_shop'), 0);
+        $mform->setType('policy'.$policyname.'enabled', PARAM_BOOL);
     }
 
     /**
      * How to calculate discount
-     * @param Bill ref &$bill
+     * @param Bill $bill
      */
-    abstract function calculate_discount(&$bill);
+    abstract function calculate_discount(Bill $bill);
 }

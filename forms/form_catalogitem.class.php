@@ -398,54 +398,54 @@ abstract class CatalogItem_Form extends moodleform {
 
     /**
      * Part of set data for name elements
-     * @param arrayref &$defaults
+     * @param StdClass $defaults
      * @param context $context
      */
-    protected function set_name_data(&$defaults, $context) {
-        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemdescription', @$defaults->itemid);
+    protected function set_name_data($defaults, $context) {
+        file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogitemdescription', $defaults->itemid ?? null);
     }
 
     /**
      * Part of set data for documents
-     * @param arrayref &$defaults
+     * @param StdClass $defaults
      * @param context $context
      * @todo better factorize the options.
      */
-    protected function set_document_asset_data(&$defaults, $context) {
+    protected function set_document_asset_data($defaults, $context) {
         global $COURSE;
 
         $fileoptions = ['subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1];
 
         $draftitemid = file_get_submitted_draft_itemid('grleaflet[leaflet]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->itemid,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', $defaults->itemid ?? null,
                                 $fileoptions);
         $defaults->grleaflet = ['leaflet' => $draftitemid ];
 
         $draftitemid = file_get_submitted_draft_itemid('grimage[image]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->itemid,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', $defaults->itemid ?? null,
                                 $fileoptions);
         $defaults->grimage = ['image' => $draftitemid];
 
         $draftitemid = file_get_submitted_draft_itemid('grthumb[thumb]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->itemid,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', $defaults->itemid ?? null,
                                 $fileoptions);
         $defaults->grthumb = ['thumb' => $draftitemid];
         $draftitemid = file_get_submitted_draft_itemid('grunit[unit]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->itemid,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', $defaults->itemid ?? null,
                                 $fileoptions);
         $defaults->grunit = ['unit' => $draftitemid];
 
         $draftitemid = file_get_submitted_draft_itemid('grtenunits[tenunits]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', @$defaults->itemid,
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', $defaults->itemid ?? null,
                                 $fileoptions);
         $defaults->grtenunits = ['tenunits' => $draftitemid];
 
         $defaults = file_prepare_standard_editor($defaults, 'eula', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemeula', @$defaults->itemid);
+                                                 'catalogitemeula', $defaults->itemid ?? null);
 
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemnotes', @$defaults->itemid);
+                                                 'catalogitemnotes', $defaults->itemid ?? null);
     }
 
     /**

@@ -431,9 +431,9 @@ class shop_paymode_ogone extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param objectref &$settings
+     * @param object $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
 
         $label = get_string($this->name.'paymodeparams', 'shoppaymodes_ogone');
         $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, ''));

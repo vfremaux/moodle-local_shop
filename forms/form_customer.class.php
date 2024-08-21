@@ -104,6 +104,8 @@ class Customer_Form extends moodleform {
 
     /**
      * Standard Validation
+     * @param StdClass $data
+     * @param array $files
      */
     public function validation($data, $files = []) {
         global $DB;

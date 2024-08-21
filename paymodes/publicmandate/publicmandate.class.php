@@ -93,9 +93,9 @@ class shop_paymode_publicmandate extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param objectref &$settings
+     * @param object $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
             assert(true);
     }
 }

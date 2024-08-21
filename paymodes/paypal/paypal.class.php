@@ -438,9 +438,9 @@ class shop_paymode_paypal extends shop_paymode {
 
     /**
      * provides global settings to add to shop settings when installed
-     * @param objectref &$settings
+     * @param object $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
 
         $label = get_string($this->name.'paymodeparams', 'shoppaymodes_paypal', $this->name);
         $info = get_string('paypaltest_desc', 'shoppaymodes_paypal');

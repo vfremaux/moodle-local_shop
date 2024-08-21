@@ -90,9 +90,9 @@ class shop_paymode_card extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param objectref &$settings
+     * @param StdClass $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
         return;
     }
 }

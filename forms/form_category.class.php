@@ -143,13 +143,14 @@ class Category_Form extends moodleform {
 
     /**
      * Feed form with previous data
+     * @param StdClass $defaults
      */
     public function set_data($defaults) {
 
         $context = context_system::instance();
 
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'categorydescription', @$defaults->categoryid);
+                                                 'categorydescription', $defaults->categoryid ?? null);
 
         parent::set_data($defaults);
     }

@@ -88,6 +88,7 @@ class BillItem_Form extends moodleform {
 
     /**
      * Standard definition
+     * @todo : convert script into template
      */
     public function definition() {
         global $OUTPUT, $DB;
@@ -104,7 +105,6 @@ class BillItem_Form extends moodleform {
         // Adding title and description.
         $mform->addElement('html', $OUTPUT->heading(get_string($this->_customdata['what'].'billitem', 'local_shop')));
 
-        // @todo : convert into template
         $js = "
             <script type=\"text/javascript\">
             function calculate_price() {

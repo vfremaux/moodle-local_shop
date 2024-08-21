@@ -94,9 +94,9 @@ class shop_paymode_paybox extends shop_paymode {
 
     /**
      * provides global settings to add to shop settings when installed
-     * @param objectref &$settings
+     * @param object $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
         $label = get_string($this->name.'paymodeparams', 'local_shop');
         $settings->add(new admin_setting_heading('local_shop_'.$this->name, $label, ''));
     }

@@ -834,12 +834,12 @@ class shop_products_renderer extends local_shop_base_renderer {
 
     /**
      * Print the category add button
-     * @param objectref &$table
+     * @param object $table
      * @param Category $category
      * @param string $order
      * @param string $dir
      */
-    protected function category_add_row(&$table, $category, $order, $dir) {
+    protected function category_add_row($table, Category $category, $order, $dir) {
         global $OUTPUT, $DB;
         static $indentarr = [];
 

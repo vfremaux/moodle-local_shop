@@ -462,9 +462,9 @@ class shop_paymode_sherlocks extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param objectref &$settings
+     * @param object $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
 
         $label = get_string($this->name.'paymodeparams', 'shoppaymodes_sherlocks');
         $settings->add(new admin_setting_heading('local_shop/'.$this->name, $label, ''));

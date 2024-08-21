@@ -51,12 +51,12 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Displays a single product instance admin line.
-     * @param Productref &$productinstance a full Product instance.
+     * @param array $productinstances a full Product instance.
      * @param array $viewparams contextual query params from the view.
      * @param int $customerid
      * @param int $shopowner
      */
-    public function productinstance_admin_form(&$productinstances, $viewparams = [], $customerid = 0, $shopowner = 0) {
+    public function productinstance_admin_form($productinstances, $viewparams = [], $customerid = 0, $shopowner = 0) {
 
         $this->check_context();
 
@@ -146,8 +146,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Given a product instance, returns the product status CSS class to apply.
+     * @param Product $productinstance
+     * @param array &$totals
      */
-    protected function get_productinstance_running_status($productinstance, &$totals) {
+    protected function get_productinstance_running_status(Product $productinstance, &$totals) {
 
             $now = time();
 
@@ -183,10 +185,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Builds the command set.
-     * @param object $productinstance
+     * @param Product $productinstance
      * @param array $viewparams
      */
-    protected function get_product_commands($productinstance, $viewparams) {
+    protected function get_product_commands(Product $productinstance, $viewparams) {
 
         $commands = '';
 
@@ -229,8 +231,9 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Extracts some extra metadata if config requires.
+     * @param Product $productinstance
      */
-    protected function process_extradata($productinstance) {
+    protected function process_extradata(Product $productinstance) {
         $config = get_config('local_shop');
 
         if (!empty($config->extradataonproductinstances)) {
@@ -309,6 +312,8 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Provides a selector for filtering context types
+     * @param string $current
+     * @param moodle_url|string $url
      */
     protected function contexttypes($current, $url) {
         global $DB;
@@ -336,10 +341,12 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Provides a simple text widget for filtering the screen by text
+     * @param string $current
+     * @param moodle_url|string $url
      */
     protected function quicksearch($current, $url) {
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->url = $url;
         $template->current = $current;
 
@@ -348,6 +355,8 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Provides a selector for filtering product by state
+     * @param string $current
+     * @param moodle_url|string $url
      */
     protected function productstates($current, $url) {
 
@@ -388,7 +397,6 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
     /**
      * Results of search
      * @param array $results
-     * @param object $theshop
      */
     public function search_results($results) {
         $template = new StdClass();

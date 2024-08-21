@@ -210,11 +210,10 @@ class local_shop_external extends external_api {
      * @param string $itemidsource the catalog item source field for id.
      * @param string $itemid the catalog item id.
      * @param string $q the required quantity for princing.
-     * @param string $withsubs if true, will complete the sub products if a set or a bundle.
      *
      * @return external_description
      */
-    public static function get_catalogitem($itemidsource, $itemid, $q /* , $withsubs */) {
+    public static function get_catalogitem($itemidsource, $itemid, $q) {
         global $CFG;
 
         if (local_shop_supports_feature('api/ws')) {
@@ -228,11 +227,15 @@ class local_shop_external extends external_api {
     /**
      * Get catalog info
      *
-     * @param string $cid the catalog id.
+     * @param int $catalogid the catalog id.
+     * @param int $categoryid the category id.
+     * @param string $status state of the items.
+     * @param string $type type of items.
+     * @param string $q quantity.
      *
      * @return external_description
      */
-    public static function get_catalogitems($catalogid, $categoryid, $status, $type, $q /* , $withsubs */) {
+    public static function get_catalogitems($catalogid, $categoryid, $status, $type, $q) {
         global $CFG;
 
         if (local_shop_supports_feature('api/ws')) {

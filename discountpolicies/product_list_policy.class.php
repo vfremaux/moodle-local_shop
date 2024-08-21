@@ -28,7 +28,7 @@ namespace local_shop;
 
 /**
  * A class to apply a discount policy for products in a reference list
-s */
+ */
 class ProductListPolicy extends DiscountPolicy {
 
     /**
@@ -40,8 +40,9 @@ class ProductListPolicy extends DiscountPolicy {
 
     /**
      * How to calculate discount
-     * @param Bill ref &$bill
+     * @param Bill $bill
      */
-    public function calculate_discount(&$bill) {
+    public function calculate_discount(Bill $bill) {
+        assert(true);
     }
 }

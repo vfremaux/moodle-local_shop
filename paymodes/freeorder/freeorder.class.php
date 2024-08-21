@@ -102,9 +102,9 @@ class shop_paymode_freeorder extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param objectref &$settings
+     * @param StdClass $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
         // No settings.
         assert(true);
     }

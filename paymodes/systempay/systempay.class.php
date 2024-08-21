@@ -438,9 +438,9 @@ class shop_paymode_systempay extends shop_paymode {
 
     /**
      * Provides global settings to add to courseshop settings when installed.
-     * @param objectref &$settings
+     * @param object $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
 
         $label = get_string('systempaypaymodeparams', 'shoppaymodes_systempay');
         $settings->add(new admin_setting_heading('local_shop/'.$this->name, $label, ''));

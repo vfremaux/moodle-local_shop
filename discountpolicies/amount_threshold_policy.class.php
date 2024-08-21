@@ -24,8 +24,6 @@
  */
 namespace local_shop;
 
-use local_shop\Bill;
-
 /**
  * A discount policy that triggers when the bill amount is reaching some threshold.
  */
@@ -40,8 +38,8 @@ class AmountThresholdPolicy extends DiscountPolicy {
 
     /**
      * How to calculate discount
-     * @param Bill ref &$bill
+     * @param Bill $bill
      */
-    public function calculate_discount(Bill &$bill) {
+    public function calculate_discount(Bill $bill) {
     }
 }

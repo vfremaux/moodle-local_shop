@@ -118,9 +118,9 @@ abstract class shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param objectref &$settings
+     * @param StdClass $settings
      */
-    public abstract function settings(&$settings);
+    public abstract function settings($settings);
 
     /**
      * Provides global settings to add to shop settings when installed.

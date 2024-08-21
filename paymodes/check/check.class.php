@@ -130,8 +130,9 @@ class shop_paymode_check extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
+     * @param StdClass $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
         assert(true);
     }
 }

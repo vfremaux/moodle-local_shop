@@ -89,9 +89,9 @@ class shop_paymode_delegated extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @params objectref &$settings
+     * @params StdClass $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
         assert(true);
     }
 }

@@ -38,7 +38,7 @@ class shop_paymode_transfer extends shop_paymode {
 
     /**
      * Constructor
-     * @param Shop $theshop
+     * @param ?Shop $theshop
      */
     public function __construct(?Shop $theshop) {
         parent::__construct('transfer', $theshop);
@@ -76,7 +76,7 @@ class shop_paymode_transfer extends shop_paymode {
 
     /**
      * Prints a payment portlet in an invoice.
-     * @param Bill $billdata
+     * @param ?Bill $billdata
      */
     public function print_invoice_info(?Bill $billdata = null) {
 
@@ -133,9 +133,9 @@ class shop_paymode_transfer extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param objectref &$settings
+     * @param object $settings
      */
-    public function settings(&$settings) {
+    public function settings($settings) {
         return false;
     }
 }

@@ -77,6 +77,7 @@ class ProductShipping_Form extends moodleform {
 
     /**
      * Quickform Freeze wrapper
+     * @param string $field
      */
     public function freeze($field) {
         $mform = $this->_form;
