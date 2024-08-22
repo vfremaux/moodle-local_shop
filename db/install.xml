@@ -342,18 +342,6 @@
         <INDEX NAME="ix_cs_product_billitem" UNIQUE="false" FIELDS="billitemid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="local_flowcontrol" COMMENT="flowcontrol table retrofitted from MySQL">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="element" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="fromstate" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="tostate" TYPE="char" LENGTH="16" NOTNULL="true" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="flow_rule_is_unique" TYPE="unique" FIELDS="element, fromstate, tostate"/>
-      </KEYS>
-    </TABLE>
     <TABLE NAME="local_shop_paypal_ipn" COMMENT="Tracks paypal IPN returns">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>

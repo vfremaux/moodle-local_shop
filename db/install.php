@@ -32,6 +32,31 @@
 function xmldb_local_shop_install() {
     global $DB, $CFG;
 
+    $dbman = $DB->get_manager();
+
+    /*
+     * This table cannot be handled by install.xml because it is shared
+     * with other plugins that may need their own flow control definition.
+     */
+
+    // Define table local_flowcontrol to be created.
+    $table = new xmldb_table('local_flowcontrol');
+
+    // Adding fields to table local_shop.
+    $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+    $table->add_field('element', XMLDB_TYPE_CHAR, 16, null, XMLDB_NOTNULL, null, null);
+    $table->add_field('fromstate', XMLDB_TYPE_CHAR, 16, null, XMLDB_NOTNULL, null, null);
+    $table->add_field('tostate', XMLDB_TYPE_CHAR, 16, null, XMLDB_NOTNULL, null, null);
+
+    // Adding keys to table local_shop.
+    $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+    $table->add_key('ix_unique_trans', XMLDB_KEY_UNIQUE, ['element', 'fromstate', 'tostate']);
+
+    // Conditionally launch create table for local_flowcontrol.
+    if (!$dbman->table_exists($table)) {
+        $dbman->create_table($table);
+    }
+
     $flowcodes = [
         [
             'element' => 'order',

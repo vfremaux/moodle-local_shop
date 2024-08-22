@@ -116,7 +116,7 @@ class Set_Form extends CatalogItem_Form {
 
     /**
      * Feed form with previous data
-     * @param array $defaults;
+     * @param array $defaults
      */
     public function set_data($defaults) {
         $context = context_system::instance();

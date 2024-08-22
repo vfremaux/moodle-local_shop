@@ -25,6 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/compatlib.php');
 
 /**
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ */
+
+/**
  * This is part of the dual release distribution system.
  * Tells wether a feature is supported or not. Gives back the
  * implementation path where to fetch resources.
