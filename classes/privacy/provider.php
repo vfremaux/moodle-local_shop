@@ -17,10 +17,10 @@
 /**
  * Privacy Subsystem implementation for local shop.
  *
- * @package    local_shop
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @package     local_shop
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_shop\privacy;
@@ -36,9 +36,6 @@ use context_system;
 
 /**
  * Implementation of the privacy subsystem plugin provider for the forum activity module.
- *
- * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
     // This plugin has data.

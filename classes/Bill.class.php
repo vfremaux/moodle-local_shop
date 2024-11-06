@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * A Bill is the main object for Invoice document.
  *
  * @package     local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>

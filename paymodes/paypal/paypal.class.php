@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Paymode main class
+ * Paymode implemetation class
  *
  * @package  shoppaymodes_paypal
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -65,13 +65,12 @@ class shop_paymode_paypal extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     *
-     * @param objectref &$shoppingcart a data stub that contains required information for the portlet raster
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        global $CFG, $OUTPUT;
+    public function print_payment_portlet() {
+        global $CFG, $OUTPUT, $SESSION;
 
         $config = get_config('local_shop');
+        $shoppingcart = $SESSION->shoppingcart;
 
         $template = new StdClass;
 
@@ -150,7 +149,7 @@ class shop_paymode_paypal extends shop_paymode {
      * prints a payment porlet in an order form
      * @param Bill $billdata
      */
-    public function print_invoice_info(?Bill $billdata = null) {
+    public function print_invoice_info(? Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paypal', '');
     }
 

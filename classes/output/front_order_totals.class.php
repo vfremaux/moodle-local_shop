@@ -23,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
 use Templatable;
 use Stdclass;
 use local_shop\Bill;
+use renderer_base;
 
 /**
  * The total of the order
@@ -65,6 +66,7 @@ class front_order_totals implements Templatable {
             $finaluntaxedtotal = $bill->finaluntaxedtotal;
             $finaltaxestotal = $bill->taxes;
             $shippingtaxedvalue = 0;
+            $finalshippedtxtotal = 0;
         } else {
             $taxedtotal = $shoppingcart->taxedtotal;
 

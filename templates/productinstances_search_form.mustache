@@ -79,7 +79,7 @@
 <div class="">
 {{#str}}fromdate, local_shop{{/str}} <input type="text" name="enddatefrom" width="10" maxlength="10">
 {{#str}}todate, local_shop{{/str}} <input type="text" name="enddateto" width="10" maxlength="10">
-{{#str}}notending, local_shop{{/str}} <input type="checkbox" name="withoutend" value="1">
+<label id="not-ending">{{#str}}notending, local_shop{{/str}}</label> <input type="checkbox" name="withoutend" value="1" aria-labelledby="not-ending">
 <br/>
 <p class="smalltext">{{#str}}searchtimerange, local_shop{{/str}};
 </div>

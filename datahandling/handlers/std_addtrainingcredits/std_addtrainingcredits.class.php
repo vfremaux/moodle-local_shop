@@ -66,7 +66,7 @@ class shop_handler_std_addtrainingcredits extends shop_handler {
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    public function produce_prepay(&$data, &$errorstatus) {
+    public function produce_prepay($data, &$errorstatus) {
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
         $productionfeedback->private = '';

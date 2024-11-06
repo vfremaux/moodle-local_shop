@@ -15,10 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Process an IPN callback. Possibly unconnected action.
+ *
  * @package    shoppaymodes_sherlocks
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/**
+ * phpcs:disable moodle.Files.RequireLogin.Missing
  */
 
 // Get all input parms.

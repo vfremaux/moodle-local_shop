@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main paymode class
+ * Paymode implemetation class
  *
  * @package    shoppaymodes_paybox
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -53,11 +53,10 @@ class shop_paymode_paybox extends shop_paymode {
     }
 
     /**
-     * prints a payment porlet in an order form
-     * @param objectref &$shoppingcart
+     * prints a payment portlet in an order form
+     * @todo : implement it.
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        // @todo : implement it.
+    public function print_payment_portlet() {
         echo '<p>Not implemeted Yet!</p> ';
     }
 
@@ -65,7 +64,7 @@ class shop_paymode_paybox extends shop_paymode {
      * prints a payment porlet in an order form
      * @param Bill $billdata
      */
-    public function print_invoice_info(?Bill $billdata = null) {
+    public function print_invoice_info(? Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_paybox', '');
     }
 
@@ -77,24 +76,24 @@ class shop_paymode_paybox extends shop_paymode {
     }
 
     /**
-     * processes a payment return.
+     * Processes a payment return.
+     * @todo : implement it.
      */
     public function process() {
-        // @todo : implement it.
         assert(true);
     }
 
     /**
-     * processes a payment asynchronoous confirmation
+     * Processes a payment asynchronoous confirmation.
+     * @todo : implement it.
      */
     public function process_ipn() {
-        // @todo : implement it.
         assert(true);
     }
 
     /**
      * provides global settings to add to shop settings when installed
-     * @param object $settings
+     * @param StdClass $settings
      */
     public function settings($settings) {
         $label = get_string($this->name.'paymodeparams', 'local_shop');

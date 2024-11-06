@@ -86,7 +86,7 @@ class shop_handler_std_prorogate extends shop_handler {
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    function produce_prepay(&$data, &$errorstatus) {
+    function produce_prepay($data, &$errorstatus) {
 
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';

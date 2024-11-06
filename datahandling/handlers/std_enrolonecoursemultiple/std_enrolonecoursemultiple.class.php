@@ -79,7 +79,7 @@ class shop_handler_std_enrolonecoursemultiple extends shop_handler {
      * @param objectref &$data the purchase info, usually a local_shop\BillItem with full info.
      * @param objectref &$errorstatus a returned object filled with output status
      */
-    public function produce_prepay(&$data, &$errorstatus) {
+    public function produce_prepay($data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
         if (!isset($data->actionparams['customersupport'])) {

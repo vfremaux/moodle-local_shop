@@ -35,6 +35,8 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 use StdClass;
 use Exception;
 use local_shop\Bill;
+use local_shop\Shop;
+use local_shop\Catalog;
 use local_shop\BillItem;
 use moodle_exception;
 
@@ -297,7 +299,7 @@ class bill_controller {
         }
 
         // Relocates.
-        // @todo : Add a SQL Transaction here ?
+        // todo : Add a SQL Transaction here ?
         if ($cmd == 'relocate') {
             /*
              * Unlocks constraint
@@ -375,19 +377,23 @@ class bill_controller {
 
         // Registers accountance lettering **************************************.
         if ($cmd == 'reclettering') {
-            if ($billrec = $DB->get_record('local_shop_bill', ['idnumber' => $this->data->lettering])) {
-                if ($billrec->id != $this->data->billid) {
-                    $params = ['view' => 'viewBill', 'billid' => $billrec->id];
-                    $badbillurl = new \moodle_url('/local/shop/bills/view.php', $params);
+            $bill = new Bill($this->data->billid);
+
+            // check we have already this lettering.
+            if (!empty($this->data->lettering)) {
+                $select = " idnumber = :idnumber AND id <> :id ";
+                $params = [
+                    'idnumber' => $this->data->lettering,
+                    'id' => $this->data->billid,
+               ];
+                // Assume lettering should be unique among all shops.
+                if ($billrec = $DB->get_record_select('local_shop_bill', $select, $params)) {
                     $errorline = get_string('uniqueletteringfailure', 'local_shop', $badbillurl);
                     return '<div class="bill_error">'.$errorline.'</div>';
                 }
-                $bill = new Bill($billrec);
-            } else {
-                $bill = new Bill($this->data->billid);
             }
 
-            $bill->idnumber = $this->data->lettering;
+            $bill->record->idnumber = $this->data->lettering;
             $bill->save(true); // Light save.
         }
 

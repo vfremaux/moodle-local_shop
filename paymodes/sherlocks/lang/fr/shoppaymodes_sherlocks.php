@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Lang file
+ *
  * @package    shoppaymodes_sherlocks
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -94,10 +96,8 @@ $string['success_followup_text_tpl'] = '
 <p>... Votre paiement a été confirmé par notre service de paiement (sherlocks LCL). Nous avons procédé à la mise en
 oeuvre de vos produits.</p>
 <p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne trouvez
-pas de courriel dans votre boite de réception, 
-pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
-<p>Si vous éprouvez des difficultés d\'accès, n\'hésitez
-pas à contacter notre service commercial <%%SUPPORT%%>.</p>
+pas de courriel dans votre boite de réception, pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
+<p>Si vous éprouvez des difficultés d\'accès, n\'hésitez pas à contacter notre service commercial <%%SUPPORT%%>.</p>
 ';
 
 $string['door_transfer_text_tpl'] = 'Nous allons vous transférer sur l\'interface de paiement <b>sécurisée</b> de

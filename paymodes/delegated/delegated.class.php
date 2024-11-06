@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main paymode class
+ * Paymode implemetation class
  *
  * @package    shoppaymodes_delegated
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -50,10 +50,9 @@ class shop_paymode_delegated extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        assert(true);
+    public function print_payment_portlet() {
+        return;
     }
 
     /**
@@ -89,7 +88,7 @@ class shop_paymode_delegated extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @params StdClass $settings
+     * @param StdClass $settings
      */
     public function settings($settings) {
         assert(true);

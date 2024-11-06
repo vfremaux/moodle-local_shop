@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main paymode class
+ * Paymode implemetation class
  *
  * @package    shoppaymodes_mercanet
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -46,7 +46,7 @@ define('MRCNT_PAYMENT_ACCEPTED', '00');
 define('MRCNT_MAX_LIMIT_REACHED', '02');
 
 /*
- * Champ merchant_id invalide, vérifier la valeur renseignée dans la requête. 
+ * Champ merchant_id invalide, vérifier la valeur renseignée dans la requête.
  * Contrat de vente à distance inexistant, contacter votre banque.
  */
 define('MRCNT_INVALID_MERCHANT', '03');
@@ -88,6 +88,8 @@ define('MRCNT_UNVAILABLE', '90');
 
 /**
  * Pay by Mercanet
+ *
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -119,10 +121,11 @@ class shop_paymode_mercanet extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        global $CFG;
+    public function print_payment_portlet() {
+        global $CFG, $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         echo '<div id="shop-panel-caption">';
 
@@ -252,7 +255,7 @@ class shop_paymode_mercanet extends shop_paymode {
              * process it only if needing to process.
              */
             if ($afullbill->status == SHOP_BILL_PLACED) {
-                // processing bill changes
+                // Processing bill changes.
                 if ($paydata['response_code'] == MRCNT_PAYMENT_ACCEPTED) {
                     $afullbill->onlinetransactionid = $paydata['merchant_id'];
                     $afullbill->onlinetransactionid .= '-'.$paydata['transmission_date'];
@@ -278,11 +281,19 @@ class shop_paymode_mercanet extends shop_paymode {
 
                     // Do not erase shopping cart : user might try again with other payment mean.
                     if (empty($this->_config->test)) {
-                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
                         $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                         redirect($redirecturl);
                     } else {
-                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
                         $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueafterfailure', 'shoppaymodes_mercanet'));
                     }
@@ -293,11 +304,19 @@ class shop_paymode_mercanet extends shop_paymode {
                     // Do not erase shopping cart : user might try again with other payment mean.
 
                     if (empty($this->_config->test)) {
-                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
                         $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                         redirect($redirecturl);
                     } else {
-                        $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'transid' => $transid];
+                        $params = [
+                            'view' => $this->theshop->get_starting_step(),
+                            'id' => $this->theshop->id,
+                            'transid' => $transid,
+                        ];
                         $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                         echo $OUTPUT->continue_button($continueurl, get_string('continueafterfailure', 'shoppaymodes_mercanet'));
                     }
@@ -318,11 +337,21 @@ class shop_paymode_mercanet extends shop_paymode {
                 // All is done already. clear everything.
                 unset($SESSION->shoppingcart);
                 if (empty($this->_config->test)) {
-                    $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                    $params = [
+                        'view' => $this->theshop->get_starting_step(),
+                        'id' => $this->theshop->id,
+                        'what' => 'produce',
+                        'transid' => $transid,
+                    ];
                     $redirecturl = new moodle_url('/local/shop/front/view.php', $params);
                     redirect($redirecturl);
                 } else {
-                    $params = ['view' => $this->theshop->get_starting_step(), 'id' => $this->theshop->id, 'what' => 'produce', 'transid' => $transid];
+                    $params = [
+                        'view' => $this->theshop->get_starting_step(),
+                        'id' => $this->theshop->id,
+                        'what' => 'produce',
+                        'transid' => $transid,
+                    ];
                     $continueurl = new moodle_url('/local/shop/front/view.php', $params);
                     echo $OUTPUT->continue_button($continueurl, get_string('continueaftersoldout', 'shoppaymodes_mercanet'));
                 }
@@ -368,6 +397,7 @@ class shop_paymode_mercanet extends shop_paymode {
                     $afullbill->save(true);
 
                     shop_trace("[$transid]  Mercanet IPN : success, transferring to production controller");
+
                     /*
                      * now we need to execute non interactive production code
                      * this SHOULD NOT be done by redirection as Mercanet server might not
@@ -385,7 +415,8 @@ class shop_paymode_mercanet extends shop_paymode {
 
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
                     $nullblock = null;
-                    $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock, $afullbill, true, false);
+                    $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue,
+                            $nullblock, $afullbill, true, false);
                     $controller->process('produce');
                     die;
 
@@ -398,7 +429,7 @@ class shop_paymode_mercanet extends shop_paymode {
                 } else {
                     if (($afullbill->status == SHOP_BILL_PLACED) || ($afullbill->status == SHOP_BILL_PENDING)) {
                         $afullbill->status = SHOP_BILL_FAILED;
-                        $afullbill->save(true); // stateonly
+                        $afullbill->save(true); // Stateonly.
 
                         $tracereport = "[$transid] Mercanet IPN failure : ".$paydata['response_code'];
                         shop_trace($tracereport);
@@ -512,9 +543,9 @@ class shop_paymode_mercanet extends shop_paymode {
         }
 
         $settingsurl = new moodle_url('/admin/settings.php', ['section' => 'localsettingshop']);
-        if ($PATHFILE = @fopen($pathfile, 'w')) {
-            fputs($PATHFILE, $tmp);
-            fclose($PATHFILE);
+        if ($pathfile = @fopen($pathfile, 'w')) {
+            fputs($pathfile, $tmp);
+            fclose($pathfile);
             echo $OUTPUT->notification('Pathfile generated', $settingsurl);
         } else {
             $message = 'Pathfile is not writable. Check file permissions on system. ';
@@ -561,7 +592,7 @@ class shop_paymode_mercanet extends shop_paymode {
         $relpath = ($os == 'linux') ? 'static/' : '';
         $pluginpath = $CFG->dirroot.'/local/shop/paymodes/mercanet/mercanet_615_PLUGIN_';
         $pluginpath .= $os.$config->mercanet_processor_type;
-        $pluginpath .= '/bin/'.$relpath.'request'.$exeextension; 
+        $pluginpath .= '/bin/'.$relpath.'request'.$exeextension;
         return $pluginpath;
     }
 
@@ -629,9 +660,9 @@ class shop_paymode_mercanet extends shop_paymode {
          * $path_bin = $this->get_response_bin($os);
          * Calling binary "response"
          */
-        $path_bin = $this->get_response_bin($os);
+        $pathbin = $this->get_response_bin($os);
         $message = escapeshellcmd($message);
-        $result = exec("$path_bin $pathfile $message");
+        $result = exec("$pathbin $pathfile $message");
         /*
          * Sortie de la fonction : !code!error!v1!v2!v3!...!v29
          * - code=0    : la fonction retourne les données de la transaction dans les variables v1, v2, ...
@@ -640,9 +671,9 @@ class shop_paymode_mercanet extends shop_paymode {
          * on separe les differents champs et on les met dans une variable tableau
          */
         $paymentresponse = explode ("!", $result);
-        // analyse du code retour.
+        // Analyse du code retour.
         if (!$paymentresponse || (($paymentresponse[1] === '' /* code */) && ($paymentresponse[2] == '' /* error */))) {
-            $apierrorstr = get_string('errorcallingAPI', 'shoppaymodes_mercanet', $path_bin);
+            $apierrorstr = get_string('errorcallingAPI', 'shoppaymodes_mercanet', $pathbin);
             echo "<br/><center>$apierrorstr</center><br/>";
             return false;
         }

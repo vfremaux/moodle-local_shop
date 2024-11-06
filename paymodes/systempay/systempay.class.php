@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main paymode class
+ * Paymode implementation class
  *
  * @package    shoppaymodes_systempay
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -172,6 +172,8 @@ define('SP_WARANTY_NA', ''); // Garantie de paiement non applicable.
 
 /**
  * Pay by systempay.
+ *
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -202,11 +204,12 @@ class shop_paymode_systempay extends shop_paymode {
     }
 
     /** 
-     * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
+     * Prints a payment portlet in an order form.
      */
-    function print_payment_portlet(&$shoppingcart) {
-        global $CFG;
+    function print_payment_portlet() {
+        global $CFG, $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         echo '<div id="shop-panel-caption">';
 
@@ -239,7 +242,7 @@ class shop_paymode_systempay extends shop_paymode {
      * Prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    function print_invoice_info(?Bill $billdata = null) {
+    function print_invoice_info(? Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_systempay', $this->name);
     }
 
@@ -556,7 +559,7 @@ class shop_paymode_systempay extends shop_paymode {
         global $DB;
 
         // Avoid using potentially cached configuration. Process directly in DB.
-        $params = ['plugin' => 'local_shop', 'name' => 'systempayidseq'];
+        $params = ['plugin' => 'local_shop', 'name' => 'systempay_idseq'];
         try {
             $transaction = $DB->start_delegated_transaction();
             $systempayidseq = $DB->get_field('config_plugins', 'value', $params);

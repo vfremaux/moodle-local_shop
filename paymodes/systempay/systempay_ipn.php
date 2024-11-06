@@ -15,13 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Process an IPN return from the payment system.
+ *
  * @package    shoppaymodes_systempay
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get all input parms.
+/**
+ * phpcs:disable moodle.Files.RequireLogin.Missing
+ */
 
 require('../../../../config.php');
 require_once($CFG->dirroot.'/local/shop/paymodes/systempay/systempay.class.php');
@@ -33,7 +37,7 @@ shop_trace('SystemPay Autoresponse (IPN) : Open systempaybacksession');
 
 // Keep out casual intruders.
 
-if (empty($_POST) or !empty($_GET)) {
+if (empty($_POST) || !empty($_GET)) {
     die("Sorry, you can not use the script that way.");
 }
 

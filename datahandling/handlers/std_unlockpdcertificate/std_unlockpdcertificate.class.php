@@ -67,13 +67,12 @@ class shop_handler_std_unlockpdcertificate extends shop_handler {
 
     /**
      * Validates data required frm the user when ordering.
-     * @param string $itemname
-     * @param string $fieldname
-     * @param object $instance
-     * @param mixed $value
-     * @param arrayref &$errors
+     * @param StdClass $data a bill item (real or simulated).
+     * @param bool $errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
      */
-    function produce_prepay(&$data) {
+    function produce_prepay($data, & $errorstatus) {
 
         // Get customersupportcourse designated by handler internal params and prepare customer support action.
         if (!isset($data->actionparams['customersupport'])) {

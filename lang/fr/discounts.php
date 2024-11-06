@@ -54,6 +54,7 @@ $string['errordiscount:notenougharguments'] = 'Erreur : Pas assez d\'arguments s
 $string['nodiscounts'] = 'Pas de remise définie';
 $string['newdiscountinstance'] = 'Nouvelle instance de remise';
 $string['onitemlist'] = 'Une sélection du catalogue';
+$string['itemlist'] = 'Sélection du catalogue';
 $string['onbill'] = 'Toute la commande';
 $string['ratio'] = 'Taux';
 $string['enabled'] = 'Actif';

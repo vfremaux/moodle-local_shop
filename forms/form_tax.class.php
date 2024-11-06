@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A form to edit taxes
+ *
  * @package     local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -25,8 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/country.php');
 
+/**
+ * Tax definition form.
+ */
 class Tax_Form extends moodleform {
 
+    /**
+     * Standard definition.
+     */
     public function definition() {
         global $OUTPUT;
 

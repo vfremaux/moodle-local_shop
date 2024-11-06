@@ -137,12 +137,12 @@ class shop_handler_std_addquizattempts extends shop_handler {
 
     /**
      * What is happening on order time, before it has been actually paied out
-     * @param objectref &$data a bill item (real or simulated).
+     * @param StdClass $data a bill item (real or simulated).
      * @param boolref &$errorstatus an error status to report to caller.
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    public function produce_prepay(&$data, &$errorstatus) {
+    public function produce_prepay($data, &$errorstatus) {
         $productionfeedback = new StdClass();
         $productionfeedback->public = '';
         $productionfeedback->private = '';

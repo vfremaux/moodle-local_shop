@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Paymode implemetation class
+ *
  * @package    shoppaymodes_publicmandate
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -44,9 +46,9 @@ class shop_paymode_publicmandate extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
+    public function print_payment_portlet() {
+
         $proc = 1;
 
         echo '<p>' . shop_compile_mail_template('pay_instructions', [], 'shoppaymodes_publicmandate');
@@ -59,7 +61,7 @@ class shop_paymode_publicmandate extends shop_paymode {
      * Prints a payment porlet in an order form.
      * @param ?Bill $billdata
      */
-    public function print_invoice_info(?Bill $billdata = null) {
+    public function print_invoice_info(? Bill $billdata = null) {
         $proc = 1;
 
         echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', [], 'shoppaymodes_publicmandate');

@@ -49,15 +49,6 @@ use local_shop\Tax;
 class Bundle_Form extends CatalogItem_Form {
 
     /**
-     * Constructor
-     * @param string $action
-     * @param array $data
-     */
-    public function __construct($action, $data) {
-        parent::__construct($action, $data);
-    }
-
-    /**
      * Standard definition
      */
     public function definition() {
@@ -102,6 +93,10 @@ class Bundle_Form extends CatalogItem_Form {
         $this->add_action_buttons();
     }
 
+    /**
+     * Loads data into form.
+     * @param object $defaults
+     */
     public function set_data($defaults) {
         $context = context_system::instance();
         $this->set_name_data($defaults, $context);

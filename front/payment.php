@@ -74,7 +74,7 @@ if (!empty($config->test) && empty($config->testoverride) &&
     $mess = "[{$SESSION->shoppingcart->transid}] ".'Order placed : ';
     $mess .= count($SESSION->shoppingcart->order).' product types for '.$SESSION->shoppingcart->finalshippedtaxedtotal;
     shop_trace($mess);
-    echo $paymentplugin->print_payment_portlet($SESSION->shoppingcart);
+    echo $paymentplugin->print_payment_portlet();
     $renderer->field_end();
 }
 

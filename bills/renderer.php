@@ -170,10 +170,10 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
     /**
      * Prints order detail, from the SESSION shopping cart
-     * @param arrayref &$categories the product categores of the catalog.
+     * @param array $categories the product categores of the catalog.
      * @todo : may be this turned into mustache
      */
-    public function order_detail(&$categories) {
+    public function order_detail($categories) {
         global $SESSION, $CFG;
 
         $shoppingcart = $SESSION->shoppingcart;
@@ -496,7 +496,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
             $outputclass = 'bills_flow_control';
             shop_load_output_class($outputclass);
             $tpldata = new \local_shop\output\bills_flow_control($status, $url);
-            $template = $tpldata->export_for_template();
+            $template = $tpldata->export_for_template($this->output);
             return $this->output->render_from_template('local_shop/bills_flow_controller', $template);
         } catch (Exception $e) {
             throw new moodle_exception("Missing output class $outputclass");
@@ -583,9 +583,10 @@ class shop_bills_renderer extends local_shop_base_renderer {
     }
 
     /**
-     * Print a bill control block
+     * Print a bill control block.
+     * @param Bill $bill
      */
-    public function bill_controls($bill) {
+    public function bill_controls(Bill $bill) {
         $template = new StdClass();
 
         if (empty($bill->idnumber)) {
@@ -619,9 +620,9 @@ class shop_bills_renderer extends local_shop_base_renderer {
 
     /**
      * Search widget for bills
-     * àparam object $bill
+     * @param Bill $bill
      */
-    public function search_bill_line($bill) {
+    public function search_bill_line(Bill $bill) {
         static $odd = 0;
 
         try {

@@ -104,7 +104,7 @@ class shop_products_renderer extends local_shop_base_renderer {
      * Prints a backoffice admin line for a product
      * @param CatalogItem $product
      */
-    public function product_admin_line(CatalogItem $product) {
+    public function product_admin_line(?CatalogItem $product) {
         global $OUTPUT;
 
         $this->check_context();
@@ -792,7 +792,7 @@ class shop_products_renderer extends local_shop_base_renderer {
      * @param array $categories
      * @param string $prefix
      */
-    protected function feed_chooser($catoptions, $categories, $prefix = '') {
+    protected function feed_chooser(&$catoptions, $categories, $prefix = '') {
         foreach ($categories as $cat) {
             $catoptions[$cat->id] = $prefix.format_string($cat->name);
             $subs = Category::get_instances(['catalogid' => $this->thecatalog->id, 'parentid' => $cat->id], 'sortorder');

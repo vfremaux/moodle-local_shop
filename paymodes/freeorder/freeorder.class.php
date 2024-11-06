@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Paymode main class
+ * Paymode implemetation class
  *
  * @package    shoppaymodes_freeorder
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -48,11 +48,9 @@ class shop_paymode_freeorder extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        // No portlet.
-        assert(true);
+    public function print_payment_portlet() {
+        return;
     }
 
     /**

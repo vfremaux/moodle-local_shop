@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main paymode method class
+ * Paymode implemetation class
  *
  * @package    shoppaymodes_check
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -45,10 +45,11 @@ class shop_paymode_check extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
+    public function print_payment_portlet() {
+        global $SESSION;
 
+        $shoppingcart = $SESSION->shoppingcart;
         $afullbill = Bill::get_by_transaction($shoppingcart->transid);
         $afullbill->status = SHOP_BILL_PENDING;
         $afullbill->save(true);

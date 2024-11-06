@@ -27,7 +27,10 @@ require_once($CFG->dirroot.'/local/shop/renderer.php');
 
 use local_shop\Category;
 use local_shop\Catalog;
+use local_shop\CatalogItem;
 use local_shop\Tax;
+use local_shop\Shop;
+use local_shop\Bill;
 
 /**
  * Front shop renderer.
@@ -174,7 +177,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->currency = $this->theshop->get_currency('symbol');
 
         $template->amount = sprintf('%0.2f', round($amount, 2));
@@ -826,8 +829,9 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template->buystr = get_string('buy', 'local_shop');
         $template->maxdeliveryquant = $bundle->maxdeliveryquant;
-        if ((!empty($bundle->maxdeliveryquant) && 
-                ($bundle->maxdeliveryquant == $bundle->preset)) || empty($bundle->password)) {
+        $template->preset = $bundle->preset;
+        if ((!empty($template->maxdeliveryquant) &&
+                ($template->maxdeliveryquant === $template->preset)) || !empty($bundle->password)) {
              $disabled = 'disabled="disabled"';
         } else {
              $disabled = '';

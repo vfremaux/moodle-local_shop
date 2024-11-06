@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Proces a request
+ * Proces a request, possibly in unconnected mode.
  *
  * @package    shoppaymodes_mercanet
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -24,6 +24,10 @@
  *
  *
  * Get DATA param string from Mercanet API and redirect to shop.
+ */
+
+/**
+ * phpcs:disable moodle.Files.RequireLogin.Missing
  */
 
 require('../../../../config.php');

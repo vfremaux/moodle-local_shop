@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main paymode class
+ *
  * @package     local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -89,11 +91,10 @@ abstract class shop_paymode {
     }
 
     /**
-     * Prints a payment portlet in an order form from the shoppingcart content.
+     * Prints a payment portlet in an order form from the shoppingcart content in SESSION.
      * Shopping cart may be altered.
-     * @param objectref $shoppingcart
      */
-    public abstract function print_payment_portlet(&$shoppingcart);
+    public abstract function print_payment_portlet();
 
     /**
      * Prints a payment info on an invoice.
@@ -214,7 +215,7 @@ abstract class shop_paymode {
      * @param Shop $shop
      * @return an array of paymode objects
      */
-    public static function get_plugins(?Shop $shop) {
+    public static function get_plugins(Shop $shop) {
         global $CFG;
 
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');
@@ -244,7 +245,7 @@ abstract class shop_paymode {
      * @param Shop $shop the shop instance we are working on
      * @param string $paymentpluginname instance builder from name
      */
-    public static function get_instance(?Shop $shop, $paymentpluginname) {
+    public static function get_instance(Shop $shop, $paymentpluginname) {
         global $CFG;
 
         include_once($CFG->dirroot.'/local/shop/paymodes/'.$paymentpluginname.'/'.$paymentpluginname.'.class.php');
@@ -255,9 +256,9 @@ abstract class shop_paymode {
 
     /**
      * Aggregate gobal settings for all available paymodes
-     * @param objectref $settings the global settings
+     * @param StdClass $settings the global settings
      */
-    public static function shop_add_paymode_settings(&$settings) {
+    public static function shop_add_paymode_settings($settings) {
         global $CFG;
 
         $plugins = get_list_of_plugins('/local/shop/paymodes', 'CVS');

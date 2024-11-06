@@ -28,6 +28,7 @@ require_once($CFG->dirroot.'/local/shop/renderer.php');
 
 /**
  * Renderer for catalog data.
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)

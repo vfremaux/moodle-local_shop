@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Paymode main class
+ * Paymode implemetation class
  *
  * @package    shoppaymodes_ogone
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -84,10 +84,11 @@ class shop_paymode_ogone extends shop_paymode {
 
     /**
      * prints a payment porlet in an order form
-     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        global $CFG;
+    public function print_payment_portlet() {
+        global $CFG, $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         $LANGS = [
             'en' => 'en_US',
@@ -184,6 +185,7 @@ class shop_paymode_ogone extends shop_paymode {
      *
      * The process() handler will pass the bill from PLACED to PENDING state, unless
      * it has asynchronously already be processed by an IPN return.
+     * @todo : check if required_param is possible. Do we have moodle libs here ?
      */
     public function process() {
 
@@ -191,8 +193,6 @@ class shop_paymode_ogone extends shop_paymode {
 
         if ($this->check_data_out()) {
 
-            // @todo : check if this is possible. Do we have moodle libs here ?
-            // $transid = $_REQUEST['orderID'];
             $transid = required_param('orderID', PARAM_RAW);
 
             if ($afullbill = Bill::get_by_transaction($transid)) {
@@ -230,6 +230,7 @@ class shop_paymode_ogone extends shop_paymode {
      * Note that this function is not interactive and should not care
      * about session handling even when cancelling : it has NO user session
      * in the context.
+     * @todo : check if required_param is possible. Do we have moodle libs here ?
      */
     public function process_ipn() {
         global $CFG;
@@ -247,7 +248,6 @@ class shop_paymode_ogone extends shop_paymode {
 
         if ($this->check_data_out()) {
 
-            // @todo : check if this is possible. Do we have moodle libs here ?
             $transid = required_param('orderID', PARAM_RAW);
             // $transid = $_REQUEST['orderID'];
 
@@ -335,6 +335,7 @@ class shop_paymode_ogone extends shop_paymode {
 
     /**
      * check data when outgoing.
+     * @todo : check cleaning is available.
      */
     private function check_data_out() {
 
@@ -406,7 +407,6 @@ class shop_paymode_ogone extends shop_paymode {
         $request = shoppaymodes_ogone_x_get_request();
         foreach ($request as $key => $value) {
             if (in_array($possiblefields, $key) && !empty($value)) {
-                // @todo : check cleaning is OK.
                 $checkdata[] = strtoupper($key)."=".clean_param($value, PARAM_TEXT);
             }
         }

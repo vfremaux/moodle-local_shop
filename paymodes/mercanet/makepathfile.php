@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    shopaymodes_mercanet
+ * Phptemplate for making Mercanet service instance.
+ *
+ * @package    shoppaymodes_mercanet
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,6 +31,7 @@ $PAGE->set_url($url);
 $context = context_system::instance();
 $PAGE->set_context($context);
 
+require_login();
 require_capability('moodle/site:config', context_system::instance());
 
 echo $OUTPUT->header();

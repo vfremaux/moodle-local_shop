@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main payumode class
+ * Paymode implemetation class
  *
  * @package    shoppaymodes_stripe_checkout
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -65,11 +65,12 @@ class shop_paymode_stripe_checkout extends shop_paymode {
     }
 
     /**
-     * prints a payment porlet in an order form
-     * @param objectref &$shoppingcart
+     * Prints a payment portlet in an order form.
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        global $OUTPUT, $PAGE;
+    public function print_payment_portlet() {
+        global $OUTPUT, $PAGE, $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         if ($shoppingcart->usedistinctinvoiceinfo) {
             $paymentinfo = $shoppingcart->invoicinginfo;
@@ -91,7 +92,8 @@ class shop_paymode_stripe_checkout extends shop_paymode {
         $successurl = new moodle_url('/local/shop/paymodes/stripe_checkout/accept.php', ['transid' => $shoppingcart->transid]);
         $cancelurl = new moodle_url('/local/shop/paymodes/stripe_checkout/cancel.php', ['transid' => $shoppingcart->transid]);
 
-        $shoppingcartlines = $this->convert_lines($shoppingcart);
+        // Convert shoppingcart for Stripe.
+        $shoppingcartlines = $this->convert_lines();
 
         $sessiondata = [
           'customer_email' => $shoppingcart->customerinfo['email'],
@@ -123,7 +125,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
      * prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    public function print_invoice_info(?Bill $billdata = null) {
+    public function print_invoice_info(? Bill $billdata = null) {
         echo get_string($this->name.'paymodeinvoiceinfo', 'shoppaymodes_stripe_checkout');
     }
 
@@ -350,7 +352,7 @@ class shop_paymode_stripe_checkout extends shop_paymode {
 
     /**
      * Provides global settings to add to shop settings when installed.
-     * @param object $settings
+     * @param StdClass $settings
      */
     public function settings($settings) {
 
@@ -380,10 +382,12 @@ class shop_paymode_stripe_checkout extends shop_paymode {
     }
 
     /**
-     * convert lines for stripe.
-     * @param objectref &$shoppingcart
+     * Convert lines for stripe.
      */
-    protected function convert_lines(&$shoppingcart) {
+    protected function convert_lines() {
+        global $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         $context = shop_build_context();
         $theshop = $context[0];

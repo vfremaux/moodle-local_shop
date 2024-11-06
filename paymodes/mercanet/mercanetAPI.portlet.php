@@ -17,7 +17,7 @@
 /**
  * Paymode API portler
  *
- * @package  shoppaymodes_systempay
+ * @package  shoppaymodes_mercanet
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -35,7 +35,7 @@ if (has_capability('moodle/site:config', context_system::instance())) {
     $this->generate_pathfile();
 }
 
-$return_context = 'mercanetback' . '-' .$this->theshop->id.'-'.$portlet->transactionid;
+$returncontext = 'mercanetback' . '-' .$this->theshop->id.'-'.$portlet->transactionid;
 
 // Mandatory parameters.
 
@@ -75,7 +75,7 @@ if ($USER->id) {
 }
 
 $parms[] = 'customer_email='.$portlet->customer->email;
-$parms[] = 'return_context='.$return_context;
+$parms[] = 'return_context='.$returncontext;
 
 /*
  * Les valeurs suivantes ne sont utilisables qu'en pré-production
@@ -93,11 +93,11 @@ if (!empty($config->mercanet_logo_filename)) {
  * -> Windows : $path_bin = "c:/repertoire/bin/request";
  * -> Unix    : $path_bin = "/home/repertoire/bin/request";
  */
-$path_bin = $this->get_request_bin($os);
+$pathbin = $this->get_request_bin($os);
 
-if (!is_file($path_bin) || !is_executable($path_bin)) {
-      $APIcallerrorstr = get_string('errorcallingAPI', 'shoppaymodes_mercanet', $path_bin);
-      echo ("<br/><center>$APIcallerrorstr</center><br/>");
+if (!is_file($pathbin) || !is_executable($pathbin)) {
+      $apicallerrorstr = get_string('errorcallingAPI', 'shoppaymodes_mercanet', $pathbin);
+      echo ("<br/><center>$apicallerrorstr</center><br/>");
       return;
 }
 
@@ -110,7 +110,7 @@ if (!is_file($path_bin) || !is_executable($path_bin)) {
  * sur chacun des paramètres que l.on veut passer à l.exécutable sauf sur le paramètre data.
  */
 $parmstring = escapeshellcmd(implode(' ', $parms));
-$result = exec("{$path_bin} $parmstring");
+$result = exec("{$pathbin} $parmstring");
 
 /*
  * sortie de la fonction : $result=!code!error!buffer!
@@ -131,8 +131,8 @@ $message = $mercanetanswer[3];
 // Analyse du code retour.
 
 if (($code == '') && ($error == '') ) {
-      $APIcallerrorstr = get_string('errorcallingAPI2', 'shoppaymodes_mercanet', $path_bin);
-      echo ("<br/><center>$APIcallerrorstr</center><br/>");
+      $apicallerrorstr = get_string('errorcallingAPI2', 'shoppaymodes_mercanet', $pathbin);
+      echo ("<br/><center>$apicallerrorstr</center><br/>");
       return;
 } else if ($code != 0) {
     // Erreur, affiche le message d'erreur.

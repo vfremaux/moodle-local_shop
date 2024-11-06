@@ -1,8 +1,8 @@
 /* Generic shop table */
 
 #page-local-shop-front-view #region-main-box {
-    padding-left: 30px !important;
-    padding-right: 30px !important;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .shop-table {

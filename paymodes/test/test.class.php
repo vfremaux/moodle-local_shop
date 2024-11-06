@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Paymode implemetation class
+ *
  * @package    shoppaymodes_test
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -44,10 +46,12 @@ class shop_paymode_test extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
-     * @tot : turn into template
+     * @todo : turn into template
      */
-    public function print_payment_portlet(&$shoppingcart) {
+    public function print_payment_portlet() {
+        global $SESSION;
+        
+        $shoppingcart = $SESSION->shoppingcart;
 
         $shopurl = new moodle_url('/local/shop/front/view.php');
         $ipnurl = new moodle_url('/local/shop/paymodes/test/test_ipn.php');
@@ -110,7 +114,7 @@ class shop_paymode_test extends shop_paymode {
      * Prints a payment porlet in an order form.
      * @param Bill $billdata
      */
-    public function print_invoice_info(?Bill $billdata = null) {
+    public function print_invoice_info(? Bill $billdata = null) {
         assert(true);
     }
 

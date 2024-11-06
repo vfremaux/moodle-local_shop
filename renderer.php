@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Main renderer
+ *
  * @package     local_shop
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
@@ -34,6 +36,7 @@ use local_shop\Shop;
  * A general renderer for global parts of the moodle shop
  * It will provide generic functions that may be used in several services inside
  * the shop front and backoffice implementation.
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -52,7 +55,7 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param string $activeowner
      */
     public function print_owner_menu($urlroot, $activeowner) {
-        global $OUTPUT, $DB;
+        global $DB;
 
         $config = get_config('local_shop');
 
@@ -77,7 +80,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         } else {
             $select = new single_select(new moodle_url($urlroot), 'shopowner', $ownersmenu, $activeowner, null, 'selectowner');
             $select->label = $ownerlabel;
-            $output = $OUTPUT->render($select);
+            $output = $this->output->render($select);
         }
 
         $output = '<div class="shopownerselector">'.$output.'</div>';
@@ -92,7 +95,6 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param int $activecustomerid
      */
     public function print_customer_menu($urlroot, $customers, $activecustomerid) {
-        global $OUTPUT;
 
         $customersmenu = [];
         if ($customers) {
@@ -111,7 +113,7 @@ class local_shop_renderer extends local_shop_base_renderer {
             $u = new moodle_url($urlroot);
             $select = new single_select($u, 'customer', $customersmenu, $activecustomerid, ['' => 'choosedots'], 'selectcustomer');
             $select->label = $customerlabel;
-            $output = $OUTPUT->render($select);
+            $output = $this->output->render($select);
         }
 
         $output = '<div class="shopcustomerselector">'.$output.'</div>';
@@ -121,7 +123,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 
     /**
      * Renders a custom pager
-     * @TODO : maybe could be replaced with moodle standard pager.
+     * @todo : maybe could be replaced with moodle standard pager.
      * @param object $portlet an object with all data for pager
      */
     public function paging_results($portlet) {
@@ -161,7 +163,7 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param mixed $url a string or a moodle_url as base url.
      */
     public function catalog_choice($url) {
-        global $SESSION, $OUTPUT;
+        global $SESSION;
 
         $str = '';
         $catalogs = Catalog::get_instances();
@@ -169,7 +171,7 @@ class local_shop_renderer extends local_shop_base_renderer {
         foreach ($catalogs as $c) {
             $catalogmenu[$c->id] = format_string($c->name);
         }
-        $str .= $OUTPUT->single_select($url, 'catalogid', $catalogmenu, $SESSION->shop->catalogid);
+        $str .= $this->output->single_select($url, 'catalogid', $catalogmenu, $SESSION->shop->catalogid);
 
         return $str;
     }
@@ -181,7 +183,7 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param int $shopid the preselected shop. If null, taken from $SESSION
      */
     public function shop_choice($url, $chooseall = false, $shopid = null) {
-        global $SESSION, $OUTPUT;
+        global $SESSION;
 
         $str = '';
         $shops = Shop::get_instances();
@@ -195,9 +197,9 @@ class local_shop_renderer extends local_shop_base_renderer {
             $shopmenu[$s->id] = format_string($s->name);
         }
         if (is_null($shopid)) {
-            $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid, null);
+            $str .= $this->output->single_select($url, 'shopid', $shopmenu, $SESSION->shop->shopid, null);
         } else {
-            $str .= $OUTPUT->single_select($url, 'shopid', $shopmenu, $shopid, null);
+            $str .= $this->output->single_select($url, 'shopid', $shopmenu, $shopid, null);
         }
 
         return $str;
@@ -209,13 +211,12 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param moodle_url $url the base url
      */
     public function currency_choice($current, $url) {
-        global $OUTPUT;
 
         $currencies = shop_get_supported_currencies();
 
         $str = '';
 
-        $str .= $OUTPUT->single_select($url, 'cur', $currencies, $current);
+        $str .= $this->output->single_select($url, 'cur', $currencies, $current);
 
         return $str;
     }
@@ -226,7 +227,7 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param moodle_url $url the base url
      */
     public function year_choice($current, $url) {
-        global $OUTPUT, $DB, $SESSION;
+        global $DB, $SESSION;
 
         if ($current) {
             // Register in user's session.
@@ -249,7 +250,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        $str .= $OUTPUT->single_select($url, 'y', $years, $current);
+        $str .= $this->output->single_select($url, 'y', $years, $current);
 
         return $str;
     }
@@ -260,7 +261,7 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param moodle_url $url the base url
      */ 
     public function month_choice($current, $url) {
-        global $OUTPUT, $SESSION;
+        global $SESSION;
 
         if ($current) {
             // Register in user's session.
@@ -275,7 +276,7 @@ class local_shop_renderer extends local_shop_base_renderer {
 
         $str = '';
 
-        $str .= $OUTPUT->single_select($url, 'm', $months, $current);
+        $str .= $this->output->single_select($url, 'm', $months, $current);
 
         return $str;
     }
@@ -286,15 +287,14 @@ class local_shop_renderer extends local_shop_base_renderer {
      * @param moodle_url $url the base url
      */ 
     public function customer_choice($current, $url) {
-        global $OUTPUT;
 
         $customers = Customer::get_instances_menu([], 'lastname, firstname');
 
         $str = '';
 
         $customers = ['' => get_string('allcustomers', 'local_shop')] + $customers;
-        $attrs['label'] = get_string('customer', 'local_shop').': ';
-        $str .= $OUTPUT->single_select($url, 'customerid', $customers, $current, null, null, $attrs);
+        $attrs['label'] = get_string('customer', 'local_shop'). ':';
+        $str .= $this->output->single_select($url, 'customerid', $customers, $current, null, null, $attrs);
 
         return $str;
     }
@@ -361,16 +361,15 @@ class local_shop_renderer extends local_shop_base_renderer {
      * Generates a back button for the purchase process.
      */
     public function back_buttons() {
-        global $OUTPUT;
 
         $str = '';
 
         $options['id'] = $this->theshop->id;
         $label = get_string('backtoshopadmin', 'local_shop');
-        $str .= $OUTPUT->single_button(new moodle_url('/local/shop/index.php', $options), $label, 'get');
+        $str .= $this->output->single_button(new moodle_url('/local/shop/index.php', $options), $label, 'get');
         $options['view'] = 'shop';
         $label = get_string('backtoshop', 'local_shop');
-        $str .= $OUTPUT->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
+        $str .= $this->output->single_button(new moodle_url('/local/shop/front/view.php', $options), $label, 'get');
 
         return $str;
     }
@@ -411,36 +410,28 @@ class local_shop_renderer extends local_shop_base_renderer {
 class local_shop_base_renderer extends \plugin_renderer_base {
 
     // Context references.
-    /**
-     * The initial block instance from where we got access to the shop.
+    /*
      * **DEPRECATED** : This seems not a very operable context data to use.
      */
+    /** @var The initial block instance from where we got access to the shop. */
     protected $theblock;
 
-    /**
-     * the currently active shop, i.e. public front end that is the actual context of navigation.
-     */
+    /** @var the currently active shop, i.e. public front end that is the actual context of navigation. */
     protected $theshop;
 
-    /**
-     * the currently displaying product catalog.
-     */
+    /** @var the currently displaying product catalog. */
     protected $thecatalog;
 
-    /**
-     * The current catalog category to display, for some renderers.
-     * Captures an URL param to tell other renderers where we are.
-     */
+    /** @var The current catalog category to display, for some renderers.
+     * Captures an URL param to tell other renderers where we are. */
     protected $categoryid;
 
-    /**
-     * the generic $OUTPUT
-     */
+    /** @var the generic $OUTPUT */
     protected $output;
 
     /**
      * this is to cope with subrenderers standards
-     * @TODO : reshape renderers into core fashion subrenderers.
+     * @todo : reshape renderers into core fashion subrenderers.
      */
     public function __construct() {
         global $OUTPUT;

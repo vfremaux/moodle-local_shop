@@ -47,6 +47,9 @@ use local_shop\Catalog;
  */
 class Customer_Form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $CFG, $OUTPUT;
 

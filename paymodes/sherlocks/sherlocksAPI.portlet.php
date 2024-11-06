@@ -16,6 +16,17 @@
 
 // Regenerate the sherlocks pathfile from template.
 
+/**
+ * API Portlet.
+ *
+ * @package    shoppaymodes_sherlocks
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
 if (has_capability('moodle/site:config', context_system::instance())) {
     /*
      * avoid normal customers to regenerate pathfile. This should be reserved to administrator when
@@ -25,7 +36,7 @@ if (has_capability('moodle/site:config', context_system::instance())) {
     $this->generate_pathfile();
 }
 
-$return_context = 'sherlocksback' . '-' .$this->theshop->id.'-'.$portlet->transactionid;
+$returncontext = 'sherlocksback' . '-' .$this->theshop->id.'-'.$portlet->transactionid;
 
 // Mandatory parameters.
 
@@ -65,7 +76,7 @@ if ($USER->id) {
 }
 
 $parms[] = 'customer_email='.$portlet->customer->email;
-$parms[] = 'return_context='.$return_context;
+$parms[] = 'return_context='.$returncontext;
 
 /*
  * Les valeurs suivantes ne sont utilisables qu'en pré-production
@@ -83,17 +94,17 @@ if (!empty($config->sherlocks_logo_filename)) {
  * -> Windows : $path_bin = "c:/repertoire/bin/request";
  * -> Unix    : $path_bin = "/home/repertoire/bin/request";
  */
-$path_bin = $this->get_request_bin($os);
+$pathbin = $this->get_request_bin($os);
 
-if (!is_file($path_bin) || !is_executable($path_bin)) {
-    if (!is_file($path_bin)) {
+if (!is_file($pathbin) || !is_executable($pathbin)) {
+    if (!is_file($pathbin)) {
         $code = '404';
     }
-    if (!is_executable($path_bin)) {
+    if (!is_executable($pathbin)) {
         $code = '400';
     }
-    $APIcallerrorstr = get_string('errorcallingAPI', 'shoppaymodes_sherlocks', $path_bin);
-    echo ("<br/><center>$APIcallerrorstr Error code : $code</center><br/>");
+    $apicallerrorstr = get_string('errorcallingAPI', 'shoppaymodes_sherlocks', $pathbin);
+    echo ("<br/><center>$apicallerrorstr Error code : $code</center><br/>");
     return;
 }
 
@@ -106,9 +117,9 @@ if (!is_file($path_bin) || !is_executable($path_bin)) {
  * sur chacun des paramètres que l.on veut passer à l.exécutable sauf sur le paramètre data.
  */
 $parmstring = escapeshellcmd(implode(' ', $parms));
-$cmd = "{$path_bin} {$parmstring}";
+$cmd = "{$pathbin} {$parmstring}";
 shop_debug_trace($cmd);
-$result = exec("{$path_bin} $parmstring");
+$result = exec("{$pathbin} $parmstring");
 shop_debug_trace("Result : $result");
 
 
@@ -137,8 +148,8 @@ if ($config->test) {
 // Analyse du code retour.
 
 if (($code == '') && ($error == '') ) {
-      $APIcallerrorstr = get_string('errorcallingAPI2', 'shoppaymodes_sherlocks', $path_bin);
-      echo ("<br/><center>581 $APIcallerrorstr</center><br/>");
+      $apicallerrorstr = get_string('errorcallingAPI2', 'shoppaymodes_sherlocks', $pathbin);
+      echo ("<br/><center>581 $apicallerrorstr</center><br/>");
       return;
 } else if ($code != 0) {
     // Erreur, affiche le message d'erreur.

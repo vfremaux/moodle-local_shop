@@ -54,6 +54,7 @@ $string['multipleratios'] = 'Multiple (see attributes)';
 $string['nodiscounts'] = 'No discount defined';
 $string['newdiscountinstance'] = 'New discount instance';
 $string['onitemlist'] = 'Selected item list';
+$string['itemlist'] = 'Item list';
 $string['onbill'] = 'Full order range';
 $string['ratio'] = 'Ratio';
 $string['enabled'] = 'Enabled';

@@ -37,6 +37,8 @@ require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
 
+use local_shop\Shop;
+
 if (!defined('PHP_ROUND_HALF_EVEN')) {
     define('PHP_ROUND_HALF_EVEN', 3);
 }
@@ -389,7 +391,7 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
  * a 2 letters checksum completing a WWWW-XXXX-YYYY-ZZCC code.
  * @param object &$anitem a catalog item instance
  */
-function shop_generate_product_ref(&$anitem) {
+function shop_generate_product_ref($anitem) {
     global $DB;
 
     $transactionid = $anitem->transactionid;

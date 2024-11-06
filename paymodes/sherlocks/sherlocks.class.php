@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main paymode class
+ * Paymode implementation class
  *
  * @package    shoppaymodes_sherlocks
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
@@ -43,7 +43,7 @@ define('SHLCK_PAYMENT_ACCEPTED', '00');
  */
 define('SHLCK_MAX_LIMIT_REACHED', '02');
 /*
- * Champ merchant_id invalide, vérifier la valeur renseignée dans la requête. 
+ * Champ merchant_id invalide, vérifier la valeur renseignée dans la requête.
  * Contrat de vente à distance inexistant, contacter votre banque.
  */
 define('SHLCK_INVALID_MERCHANT', '03');
@@ -78,6 +78,7 @@ define('SHLCK_UNVAILABLE', '90');
 
 /**
  * Pay by sherlocks (LCL)
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  * @SuppressWarnings(PHPMD.NPathComplexity)
  * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -110,10 +111,11 @@ class shop_paymode_sherlocks extends shop_paymode {
 
     /**
      * Prints a payment porlet in an order form.
-     * @param objectref &$shoppingcart
      */
-    public function print_payment_portlet(&$shoppingcart) {
-        global $CFG;
+    public function print_payment_portlet() {
+        global $CFG, $SESSION;
+
+        $shoppingcart = $SESSION->shoppingcart;
 
         echo '<div id="shop-panel-caption">';
 
@@ -244,9 +246,10 @@ class shop_paymode_sherlocks extends shop_paymode {
              * process it only if needing to process.
              */
             if ($afullbill->status == SHOP_BILL_PLACED) {
-                // processing bill changes
+                // Processing bill changes.
                 if ($paydata['response_code'] == SHLCK_PAYMENT_ACCEPTED) {
-                    $afullbill->onlinetransactionid = $paydata['merchant_id'].'-'.$paydata['transmission_date'].'-'.$paydata['transaction_id'];
+                    $txid = $paydata['merchant_id'].'-'.$paydata['transmission_date'].'-'.$paydata['transaction_id'];
+                    $afullbill->onlinetransactionid = $txid;
                     $afullbill->status = SHOP_BILL_PENDING;
                     $afullbill->save(true);
 
@@ -404,7 +407,8 @@ class shop_paymode_sherlocks extends shop_paymode {
             if ($afullbill->status == SHOP_BILL_PENDING || $afullbill->status == SHOP_BILL_PLACED) {
 
                 if ($paydata['response_code'] == SHLCK_PAYMENT_ACCEPTED) {
-                    $afullbill->onlinetransactionid = $paydata['merchant_id'].'-'.$paydata['transmission_date'].'-'.$paydata['transaction_id'];
+                    $txid = $paydata['merchant_id'].'-'.$paydata['transmission_date'].'-'.$paydata['transaction_id'];
+                    $afullbill->onlinetransactionid = $txid;
                     $afullbill->status = SHOP_BILL_SOLDOUT;
                     $afullbill->save(true);
 
@@ -426,7 +430,8 @@ class shop_paymode_sherlocks extends shop_paymode {
 
                     include_once($CFG->dirroot.'/local/shop/front/produce.controller.php');
                     $nullblock = null;
-                    $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue, $nullblock, $afullbill, true, false);
+                    $controller = new \local_shop\front\production_controller($afullbill->theshop, $afullbill->thecatalogue,
+                            $nullblock, $afullbill, true, false);
                     $controller->process('produce');
                     die;
 
@@ -435,13 +440,13 @@ class shop_paymode_sherlocks extends shop_paymode {
                     $afullbill->save(true);
                     $error = "[$transid] sherlocks IPN Payment Rejected : ".$paydata['response_code'];
                     if (!empty($config->test)) {
-                       throw new moodle_exception($error);
+                        throw new moodle_exception($error);
                     }
                     shop_trace($error);
                     die;
                 } else {
                     $afullbill->status = SHOP_BILL_FAILED;
-                    $afullbill->save(true); // stateonly
+                    $afullbill->save(true); // Stateonly.
                     $error = "[$transid] sherlocks IPN failure : ".$paydata['response_code'];
                     if (!empty($config->test)) {
                         throw new moodle_exception($error);
@@ -569,9 +574,9 @@ class shop_paymode_sherlocks extends shop_paymode {
             $tmp = str_replace('<%%DEBUG%%>', $sherlocksdebug, $tmp);
         }
 
-        if ($PATHFILE = @fopen($pathfile, 'w')) {
-            fputs($PATHFILE, $tmp);
-            fclose($PATHFILE);
+        if ($pathfile = @fopen($pathfile, 'w')) {
+            fputs($pathfile, $tmp);
+            fclose($pathfile);
             echo $OUTPUT->notification('Pathfile generated');
         } else {
             $message = '<pre>Current operating system: '.$CFG->os."\n";
@@ -598,7 +603,10 @@ class shop_paymode_sherlocks extends shop_paymode {
             $pluginpath .= $os.$config->sherlocks_processor_type;
             return $pluginpath.'/param/pathfile';
         } else {
-            return str_replace('/', "\\", $CFG->dirroot).'\\local\\shop\\paymodes\\sherlocks\\sherlocks_617_PLUGIN_'.$os.$config->sherlocks_processor_type.'\\param\\pathfile';
+            $return = str_replace('/', "\\", $CFG->dirroot);
+            $return .= '\\local\\shop\\paymodes\\sherlocks\\sherlocks_617_PLUGIN_'.$os;
+            $return .= $config->sherlocks_processor_type.'\\param\\pathfile';
+            return $return;
         }
     }
 
@@ -612,7 +620,8 @@ class shop_paymode_sherlocks extends shop_paymode {
 
         $exeextension = ($os == 'linux') ? '' : '.exe';
         $relpath = ($os == 'linux') ? $config->sherlocks_library.'/' : '';
-        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_'.$os.$config->sherlocks_processor_type;
+        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_'.$os;
+        $pluginpath .= $config->sherlocks_processor_type;
         return $pluginpath.'/bin/'.$relpath.'request'.$exeextension;
     }
 
@@ -626,7 +635,8 @@ class shop_paymode_sherlocks extends shop_paymode {
 
         $exeextension = ($os == 'linux') ? '' : '.exe';
         $relpath = ($os == 'linux') ? $config->sherlocks_library.'/' : '';
-        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_'.$os.$config->sherlocks_processor_type;
+        $pluginpath = $CFG->dirroot.'/local/shop/paymodes/sherlocks/sherlocks_617_PLUGIN_'.$os;
+        $pluginpath .= $config->sherlocks_processor_type;
         return $pluginpath.'/bin/'.$relpath.'response'.$exeextension;
     }
 
@@ -677,9 +687,9 @@ class shop_paymode_sherlocks extends shop_paymode {
          * $path_bin = $this->get_response_bin($os);
          * Appel du binaire response
          */
-        $path_bin = $this->get_response_bin($os);
+        $pathbin = $this->get_response_bin($os);
         $message = escapeshellcmd($message);
-        $result = exec("$path_bin $pathfile $message");
+        $result = exec("$pathbin $pathfile $message");
         /*
          * Sortie de la fonction : !code!error!v1!v2!v3!...!v29
          * - code=0    : la fonction retourne les données de la transaction dans les variables v1, v2, ...
@@ -689,9 +699,9 @@ class shop_paymode_sherlocks extends shop_paymode {
          */
         $paymentresponse = explode ("!", $result);
 
-        // analyse du code retour.
+        // Analyse du code retour.
         if (!$paymentresponse || (($paymentresponse[1] === '' /* code */) && ($paymentresponse[2] == '' /* error */))) {
-            $sherlocksapierrorstr = get_string('errorcallingAPI', 'shoppaymodes_sherlocks', $path_bin);
+            $sherlocksapierrorstr = get_string('errorcallingAPI', 'shoppaymodes_sherlocks', $pathbin);
             echo "<br/><center>$sherlocksapierrorstr</center><br/>";
             return false;
         }

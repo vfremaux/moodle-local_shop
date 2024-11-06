@@ -36,7 +36,7 @@ use local_shop\BillItem;
 use coding_exception;
 use moodle_url;
 use StdClass;
-use shop_paymodes;
+use shop_paymode;
 
 /**
  * Front purchase controller : checkout step
@@ -94,7 +94,7 @@ class payment_controller extends front_controller_base {
      * @SuppressWarnings(PHPMD.ExitExpression)
      */
     public function process($cmd) {
-        global $DB, $USER, $OUTPUT, $CFG;
+        global $DB, $USER, $OUTPUT, $CFG, $SESSION;
 
         if (!$this->received) {
             throw new coding_exception('Data must be received in controller before operation. this is a programming error.');

@@ -110,6 +110,10 @@ class shop_controller extends front_controller_base {
                 $this->data->passcode = required_param('passcode', PARAM_TEXT);
                 break;
 
+            case 'cleardiscountcode':
+                $this->data->discountid = required_param('discountid', PARAM_INT);
+                break;
+
             case 'navigate':
                 break;
         }
@@ -312,6 +316,9 @@ class shop_controller extends front_controller_base {
             }
             $output = json_encode($output);
 
+        } else if ($cmd == 'cleardiscountcode') {
+            require_sesskey();
+            unset($SESSION->shoppingcart->discountcodes[$data->discountid]);
         } else if ($cmd == 'navigate') {
 
             $shoppingcart = &$SESSION->shoppingcart;
