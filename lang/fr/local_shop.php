@@ -441,6 +441,7 @@ $string['shippings'] = 'Règles tarifaires de livraison';
 $string['shipzone'] = 'Zone tarifaire de livraison';
 $string['shipzones'] = 'Zones de livraison';
 $string['shop'] = 'Accès à la boutique';
+$string['shopbase'] = 'Boutique';
 $string['shopsettings'] = 'Réglages globaux';
 $string['shopcaption'] = 'Nom de la boutique ';
 $string['shopdescription'] = 'Description de la boutique ';

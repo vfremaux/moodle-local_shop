@@ -2,6 +2,8 @@
 
 namespace Stripe;
 
+use Traversable;
+
 /**
  * Class Collection
  *
@@ -72,7 +74,7 @@ class Collection extends StripeObject implements \IteratorAggregate
      * @return \ArrayIterator An iterator that can be used to iterate
      *    across objects in the current page.
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->data);
     }

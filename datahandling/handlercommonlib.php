@@ -314,6 +314,7 @@ function shop_create_moodle_user($data, $participant, $supervisorrole) {
     $participant->confirmed = 1;
     $participant->timecreated = time();
     $participant->timemodified = time();
+    $participant->maildisplay = $CFG->defaultpreference_maildisplay;
     $participant->mnethostid = $CFG->mnet_localhost_id;
     if (!isset($participant->country)) {
         $participant->country = $CFG->country;

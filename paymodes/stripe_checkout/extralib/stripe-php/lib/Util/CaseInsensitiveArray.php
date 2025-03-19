@@ -23,7 +23,7 @@ class CaseInsensitiveArray implements ArrayAccess
         $this->container = array_map("strtolower", $initial_array);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $offset = static::maybeLowercase($offset);
         if (is_null($offset)) {
@@ -33,25 +33,25 @@ class CaseInsensitiveArray implements ArrayAccess
         }
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $offset = static::maybeLowercase($offset);
         return isset($this->container[$offset]);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $offset = static::maybeLowercase($offset);
         unset($this->container[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         $offset = static::maybeLowercase($offset);
         return isset($this->container[$offset]) ? $this->container[$offset] : null;
     }
 
-    private static function maybeLowercase($v)
+    private static function maybeLowercase($v): mixed
     {
         if (is_string($v)) {
             return strtolower($v);

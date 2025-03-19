@@ -35,6 +35,7 @@ if (isloggedin() && is_siteadmin()) {
 
 // Pre feed SESSION shoppingcart if required.
 $action = optional_param('what', '', PARAM_TEXT);
+
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/shop.controller.php');
     $controller = new \local_shop\front\shop_controller($theshop, $thecatalog, $theblock);

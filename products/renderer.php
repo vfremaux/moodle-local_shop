@@ -406,7 +406,7 @@ class shop_products_renderer extends local_shop_base_renderer {
         $template->price1 = sprintf("%.2f", round($bundle->price1, 2));
         $template->taxcode = $bundle->taxcode;
 
-        $template->bundleTTCPrice = sprintf("%.2f", round($bundle->bundleTTCPrice, 2));
+        $template->bundleTTCPrice = sprintf("%.2f", round($bundle->bundleTTCPrice ?? 0, 2));
         $template->status = get_string($bundle->status, 'local_shop');
         $template->maxdeliveryquant = $bundle->maxdeliveryquant;
         $template->sold = $bundle->sold;
@@ -619,8 +619,8 @@ class shop_products_renderer extends local_shop_base_renderer {
             $row[] = '<img class="thumb" src="'.$bundleelm->get_thumb_url().'" height="50">';
             $row[] = $bundleelm->code;
             $row[] = $bundleelm->name;
-            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->price1, 2)).'<br/>('.$bundleelm->taxcode.')</span>';
-            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->TTCprice, 2)).'</span>';
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->price1 ?? 0, 2)).'<br/>('.$bundleelm->taxcode.')</span>';
+            $row[] = '<span class="shop-shadow">'.sprintf("%.2f", round($bundleelm->TTCprice ?? 0, 2)).'</span>';
             $row[] = get_string($bundleelm->status, 'local_shop');
 
             $commands = '';

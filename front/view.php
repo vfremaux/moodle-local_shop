@@ -93,7 +93,8 @@ $PAGE->set_context($context);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('shop', 'local_shop'));
+$shopurl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'shopid' => $theshop->id]);
+$PAGE->navbar->add(get_string('shopbase', 'local_shop'), $shopurl);
 if (!empty($categoryid)) {
     $category = new Category($categoryid);
 } else if (!empty($categoryalias)) {

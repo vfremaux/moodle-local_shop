@@ -26,6 +26,7 @@ define(['jquery', 'core/log'], function($, log) {
             $('input[name="editextradata"]').bind('click', this.openeditmodal);
             $('input[name="editproductiondata"]').bind('click', this.openeditmodal);
             $('input[name="edithandlerparams"]').bind('click', this.openeditmodal);
+            log.debug("Local Shop AMD Editmetadata Initialized !");
         },
 
         /**

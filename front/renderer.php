@@ -436,7 +436,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         // Print catalog product line on the active category if tabbed.
         $currentcategory = $categoryid;
 
-        $c = 0;
+        $cc = 0;
         if (!empty($levelcategories)) {
             foreach ($levelcategories as $c) {
                 $cat = $categories[$c->id];
@@ -484,7 +484,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $categorytpl->hasproducts = false;
                     $categorytpl->noproductincategorynotification = get_string('noproductincategory', 'local_shop');
                 }
-                $c++;
+                $cc++;
 
                 $template->categories[] = $categorytpl;
             }

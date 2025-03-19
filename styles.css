@@ -68,6 +68,15 @@
     font-size: 0.90em;
 }
 
+@media all and (max-width: 560px) {
+    .shop-ordercell {
+        font-size: 130%;
+    }
+    .shop-ordercell * {
+        font-size: 100%;
+    }
+}
+
 .shop-finalcount,
 .shop-finalcount * {
     font-size: 1.1em;
@@ -676,11 +685,17 @@ h3.shop-front-partof {
 
 .shop-front-refblock {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 .shop-front-refblock > div {
     margin: 0 20px;
+}
+
+@media all and (max-width: 560px) {
+    .shop-front-refblock > div {
+        margin: 0;
+    }
 }
 
 .shop-order-bag {
@@ -768,6 +783,13 @@ h3.shop-front-partof {
     border-radius: 8px;
     margin: 10px;
     padding: 30px;
+}
+
+@media all and (max-width: 560px) {
+    .shop-category-description {
+        margin: 0;
+    	padding: 10px;
+    }
 }
 
 .shop-front-order * {

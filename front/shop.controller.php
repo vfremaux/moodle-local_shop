@@ -318,7 +318,9 @@ class shop_controller extends front_controller_base {
 
         } else if ($cmd == 'cleardiscountcode') {
             require_sesskey();
-            unset($SESSION->shoppingcart->discountcodes[$data->discountid]);
+
+            unset($SESSION->shoppingcart->discountcodes[$this->data->discountid]);
+
         } else if ($cmd == 'navigate') {
 
             $shoppingcart = &$SESSION->shoppingcart;

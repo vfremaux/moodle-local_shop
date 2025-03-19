@@ -58,7 +58,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             // Get all description toggles and bind them.
             $('.shop-description-toggle').bind('click', this.toggle_description);
             $('.local-shop-detail-delete').bind('click', this.clear_product);
-            $('.local-shop-order-detail').bind('change', this.update_product);
+            $('#order-detail', '.local-shop-order-detail').bind('change', this.update_product); // Delegate this event.
             $('.local-shop-password').bind('keypress', this.check_pass_code);
             $('.local-shop-email').bind('change', this.check_email);
             $('.local-shop-add-unit').bind('click', this.add_unit);
