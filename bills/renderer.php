@@ -465,7 +465,7 @@ class shop_bills_renderer extends local_shop_base_renderer {
         $template->transactionid = $bill->transactionid;
         $template->onlinetransactionid = $bill->onlinetransactionid;
 
-        $template->emissiondatestr = strftime('%c', $bill->emissiondate);
+        $template->emissiondatestr = core_date::strftime('%c', (int) $bill->emissiondate);
         $template->idnumber = $bill->idnumber;
 
         $untaxedamount = sprintf("%.2f", round($bill->untaxedamount, 2));

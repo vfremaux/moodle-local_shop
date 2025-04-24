@@ -37,7 +37,7 @@ $config = get_config('local_shop');
 // mandatory
 $parms['vads_action_mode'] = 'INTERACTIVE';
 $parms['vads_currency'] = $config->systempay_currency_code;
-$parms['vads_amount'] = floor($portlet->amount * 100);
+$parms['vads_amount'] = round($portlet->amount * 100);
 $parms['vads_ctx_mode'] = ($config->test) ? 'TEST' : 'PRODUCTION';
 $parms['vads_page_action'] = 'PAYMENT';
 $parms['vads_payment_config'] = 'SINGLE';

@@ -25,20 +25,20 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2024053103; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2025011400; // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112801; // Requires this Moodle version.
 $plugin->component = 'local_shop'; // Full name of the plugin (used for diagnostics).
-$plugin->release = '4.1.0 (Build 2024053103)';
+$plugin->release = '4.5.0 (Build 2025011400)';
 $plugin->maturity = MATURITY_STABLE;
 if (function_exists('local_shop_supports_feature') && local_shop_supports_feature() === 'pro') {
     $plugin->dependencies = ['auth_ticket' => '2012060400', 'local_vfcore' => 2024053100];
 } else {
     $plugin->dependencies = ['auth_ticket' => '2012060400'];
 }
-$plugin->supported = [401, 402];
+$plugin->supported = [401, 405];
 
 // Non moodle attributes.
-$plugin->codeincrement = '4.1.0024';
+$plugin->codeincrement = '4.5.0024';
 $plugin->privacy = 'dualrelease';
 $plugin->prolocations = [
     'datahandling/handlers/std_addtrainingcredits',

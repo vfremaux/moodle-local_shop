@@ -127,7 +127,7 @@ abstract class shop_paymode {
      * Provides global settings to add to shop settings when installed.
      * @param moodle_form $mform
      */
-    public function add_instance_config(moodle_form $mform) {
+    public function add_instance_config(MoodleQuickForm $mform) {
 
         $isenabledvar = "enable".$this->get_name();
 

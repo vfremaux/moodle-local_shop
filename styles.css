@@ -281,7 +281,11 @@ div.shop-bill_error {
     min-width: 80px;
     padding-left: 8px;
     text-align: right;
-    width: 80px;
+    width: 170px;
+}
+
+.shop-setcontrols {
+    min-width: 160px;
 }
 
 .shop-product-row td {

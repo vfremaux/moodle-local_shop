@@ -52,13 +52,13 @@ class search_bill_line implements Templatable {
 
         $params = ['view' => 'viewBill', 'id' => $bill->theshop->id, 'billid' => $bill->id];
         $template->billurl = new moodle_url('/local/shop/bills/view.php', $params);
-        $template->uniqueid = 'B-'.strftime('%Y%m%d', $bill->emissiondate).'-'.$bill->id;
+        $template->uniqueid = 'B-'.core_date::strftime('%Y%m%d', (int) $bill->emissiondate).'-'.$bill->id;
 
         $params = ['view' => 'viewCustomer', 'customer' => $bill->customer->id];
         $template->customerurl = new  moodle_url('/local/shop/customers/view.php', $params);
         $template->customername = $bill->customer->lastname.' '.$bill->customer->firstname;
 
-        $template->emissiondate = strftime('%c', $bill->emissiondate);
+        $template->emissiondate = core_date::strftime('%c', (int) $bill->emissiondate);
         $template->transid = $bill->transactionid;
 
         $template->status = $bill->status;

@@ -129,7 +129,7 @@ class Shop_Form extends moodleform {
             // Choosing valid paymodes for this shop instance.
             $mform->addElement('header', 'heading_paymodes', get_string('paymentmethods', 'local_shop'));
             $mform->addElement('html', get_string('carefullchoice', 'local_shop'));
-            $paymodes = shop_paymode::get_plugins($this);
+            $paymodes = shop_paymode::get_plugins($this->_customdata['shop']);
             foreach ($paymodes as $pm) {
                 if ($pm->enabled) {
                     $pm->add_instance_config($mform);

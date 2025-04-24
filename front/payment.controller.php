@@ -237,6 +237,7 @@ class payment_controller extends front_controller_base {
                 if (!empty($discounts)) {
                     foreach ($discounts as $d) {
                         if ($d->check_applicability($bill)) {
+                            shop_debug_trace("{$d->name} applies to bill", SHOP_TRACE_DEBUG);
                             $d->apply_to_bill($bill);
                         }
                     }
