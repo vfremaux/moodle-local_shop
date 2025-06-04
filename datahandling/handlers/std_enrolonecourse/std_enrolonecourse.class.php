@@ -282,7 +282,7 @@ class shop_handler_std_enrolonecourse extends shop_handler {
          * get separated from other learner teams.
          */
 
-        if (!$customerid = $data->customer->id) {
+        if (!$customerid = ($data->customer->id ?? 0)) {
             $customerid = $data->get_customerid();
         }
 

@@ -135,12 +135,14 @@ class catalog_controller {
 
             $catalog->descriptionformat = $catalog->description_editor['format'];
             $catalog->description = $catalog->description_editor['text'];
+            $catalog->salesconditionsformat = $catalog->salesconditions_editor['format'];
+            $catalog->salesconditions = $catalog->salesconditions_editor['text'];
             $catalog->billfooterformat = $catalog->billfooter_editor['format'];
             $catalog->billfooter = $catalog->billfooter_editor['text'];
 
             if (empty($catalog->catalogid)) {
                 // Creating new.
-                @$catalog->groupid += 0;
+                $catalog->groupid = $this->data->groupid ?? 0; // Ensure we have a value.
                 $catalog->id = $DB->insert_record('local_shop_catalog', $catalog);
                 if ($catalog->linked == 'master') {
                     // Set reference to ourself. We are the leader of a catalog group.
@@ -154,6 +156,7 @@ class catalog_controller {
             } else {
                 // Updating.
                 $catalog->id = $catalog->catalogid;
+
                 // We need to release all old slaves if this catalog changes from master to standalone.
                 if ($oldcatalog = $DB->get_record('local_shop_catalog', ['id' => $catalog->id])) {
                     if (($oldcatalog->id == $oldcatalog->groupid) && $catalog->linked != 'master') {
@@ -180,8 +183,11 @@ class catalog_controller {
                     // Deslave the catalog giving it its own groupid.
                     // TODO : check what happens to product clones in there.
                     $DB->set_field('local_shop_catalog', 'groupid', $catalog->id, ['id' => $catalog->id]);
+                    $catalog->groupid = $catalog->id; //Need it for text_editor stage.
+                } else if ($catalog->linked == 'free') {
+                    $DB->set_field('local_shop_catalog', 'groupid', 0, ['id' => $catalog->id]);
+                    $catalog->groupid = 0; //Need it for text_editor stage.
                 }
-
             }
 
             // Process text fields from editors.
@@ -193,10 +199,12 @@ class catalog_controller {
                 $catalog = file_postupdate_standard_editor($catalog, 'description', $this->mform->editoroptions,
                                 $context, 'local_shop', 'catalogdescription', $catalog->id);
 
-                $draftideditor = file_get_submitted_draft_itemid('billfooter_editor');
+                $draftideditor = file_get_submitted_draft_itemid('salesconditions_editor');
                 $catalog->salesconditions = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
-                                                                       'catalogbillfooter', $catalog->id, ['subdirs' => true],
+                                                                       'catalogsalesconditions', $catalog->id, ['subdirs' => true],
                                                                        $catalog->salesconditions);
+
+                $draftideditor = file_get_submitted_draft_itemid('billfooter_editor');
                 $catalog = file_postupdate_standard_editor($catalog, 'billfooter', $this->mform->editoroptions,
                                 $context, 'local_shop', 'catalogbillfooter', $catalog->id);
 

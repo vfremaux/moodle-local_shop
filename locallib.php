@@ -26,6 +26,10 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+if (isset($block)) {
+    $blocksave = $block;
+}
+
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
@@ -33,6 +37,11 @@ require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/backup/util/includes/restore_includes.php');
 require_once($CFG->libdir.'/filestorage/tgz_packer.php');
 require_once($CFG->dirroot.'/local/shop/compatlib.php');
+
+if (isset($blocksave)) {
+    // Something weird happenend in backup/util/inclides/restore_includes.php.
+    $block = $blocksave;
+}
 
 use local_shop\Catalog;
 use local_shop\Shop;
@@ -1150,10 +1159,10 @@ function local_shop_strftimefixed($format, $timestamp = null) {
         setlocale(LC_ALL, $CFG->lang);
 
         // This has been seen on some Win2012 server environments where the fr locale comes out in latin or Windows encding.
-        return mb_convert_encoding(strftime($format, $timestamp), 'UTF-8');
+        return mb_convert_encoding(core_date::strftime($format, (int) $timestamp), 'UTF-8');
     }
 
-    return strftime($format, $timestamp);
+    return core_date::strftime($format, (int) $timestamp);
 }
 
 /**
@@ -1190,6 +1199,9 @@ function shop_get_admin_navigation($theshop) {
         $label = get_string('editshopsettings', 'local_shop');
         $nav->add_node($nav::create($label, $shopsettingsurl, $nav::TYPE_CUSTOM, '', 'shops'));
     }
+
+    $billsurl = new moodle_url('/local/shop/index.php', ['id' => $theshop->id]);
+    $nav->add_node($nav::create(get_string('catalogs', 'local_shop'), $billsurl, $nav::TYPE_CUSTOM, '', 'catalogs'));
 
     $billsurl = new moodle_url('/local/shop/bills/view.php', ['view' => 'viewAllBills', 'id' => $theshop->id]);
     $nav->add_node($nav::create(get_string('bills', 'local_shop'), $billsurl, $nav::TYPE_CUSTOM, '', 'bills'));

@@ -197,7 +197,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                 // Only delete soft deleted products.
                 $pix = $this->output->pix_icon('t/delete', get_string('delete'), 'moodle');
                 $params = ['what' => 'delete',
-                           'set[]' => $productinstance->id,
+                           'productids[]' => $productinstance->id,
                            'sesskey' => sesskey()];
                            $params = array_merge($params, $viewparams);
                 $deleteurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);

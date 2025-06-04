@@ -38,4 +38,8 @@ class shophandlers extends base {
         return true;
     }
 
+    public function is_subplugin() {
+        return true;
+    }
+
 }

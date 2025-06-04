@@ -93,8 +93,8 @@ function bill_transition_pending_soldout($billorid) {
                 'MAIL' => $bill->customer->email,
                 'CITY' => $bill->customer->city,
                 'COUNTRY' => $bill->customer->country,
-                'ITEMS' => count($bill->itemcount),
-                'PAYMODE' => get_string($bill->paymode, 'local_shop'),
+                'ITEMS' => $bill->itemcount,
+                'PAYMODE' => get_string($bill->paymode, 'shoppaymodes_'.$bill->paymode),
                 'AMOUNT' => $bill->amount,
                 'TICKET' => $ticket,
             ];

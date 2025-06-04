@@ -97,8 +97,8 @@ if ($data = $mform->get_data()) {
     $data->catalog = $thecatalog;
 
     include_once($CFG->dirroot.'/local/shop/products/category/viewAllCategories.controller.php');
-    $processor = new \local_shop\backoffice\category_controller($thecatalog);
-    $processor->receive('edit', $data, $mform);
+    $processor = new \local_shop\backoffice\category_controller($thecatalog, $mform);
+    $processor->receive('edit', $data);
     $processor->process('edit');
 
     $params = ['catalogid' => $thecatalog->id, 'view' => 'viewAllCategories'];

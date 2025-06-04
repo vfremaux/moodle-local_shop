@@ -60,6 +60,15 @@ $string['REFUSED'] = 'Refused';
 $string['SOLDOUT'] = 'Payed out';
 $string['SUSPENDED'] = 'Suspended';
 $string['WORKING'] = 'On work (internal)';
+$string['FAILED'] = 'Failed';
+
+// Subplugins.
+
+$string['subplugintype_shoppaymodes'] = 'Shop payment interface';
+$string['subplugintype_shoppaymodes_plural'] = 'Shop payment interfaces';
+$string['subplugintype_shophandlers'] = 'Shop purchase handler';
+$string['subplugintype_shophandlers_plural'] = 'Shop purchase handlers';
+
 
 $string['abstract'] = 'Abstract';
 $string['addcustomeraccount'] = 'Add customer account';
@@ -431,6 +440,7 @@ $string['results'] = 'Results';
 $string['runningbills'] = 'Bills : running';
 $string['sales'] = 'Sales:';
 $string['salesconditions'] = 'Sales conditions:';
+$string['salesconditions_help'] = 'Sales conditions will be collected from every product and catalog into a single screen to agree at.';
 $string['salesmanagement'] = 'Sales management';
 $string['salesrole_desc'] = 'People who have such role can operate sales backoffice';
 $string['salesrolename'] = 'Sales manager';

@@ -68,6 +68,7 @@ class category_controller {
      */
     public function __construct(Catalog $thecatalog) {
         $this->thecatalog = $thecatalog;
+        $this->mform = $mform;
     }
 
     /**
@@ -77,9 +78,7 @@ class category_controller {
      * function should get them from request
      * @param moodle_form $mform the form where data comes from (for file handling)
      */
-    public function receive($cmd, $data = null, $mform = null) {
-
-        $this->mform = $mform;
+    public function receive($cmd, $data = null) {
 
         if (!empty($data)) {
             // Data is fed from outside.

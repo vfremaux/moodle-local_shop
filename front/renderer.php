@@ -897,7 +897,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             return $this->output->notification("no categories");
         }
 
-        $shoppingcart = $SESSION->shoppingcart;
+        $shoppingcart = $SESSION->shoppingcart ?? new StdClass;
         if (empty($shoppingcart)) {
             return '';
         }

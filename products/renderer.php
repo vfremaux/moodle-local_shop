@@ -276,7 +276,7 @@ class shop_products_renderer extends local_shop_base_renderer {
      * Prints an administration line for a product set
      * @param Set $set
      */
-    public function set_admin_line(Set $set) {
+    public function set_admin_line(CatalogItem $set) {
         global $OUTPUT;
 
         $this->check_context();

@@ -36,7 +36,7 @@ function shop_compile_mail_template($template, $infomap, $subplugin, $lang = '',
     global $CFG, $USER;
 
     if (empty($lang)) {
-        $lang = @$USER->lang;
+        $lang = $USER->lang ?? 'en';
     }
     if (empty($lang)) {
         $lang = $CFG->lang;

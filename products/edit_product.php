@@ -88,8 +88,8 @@ if ($mform->is_cancelled()) {
 }
 
 if ($data = $mform->get_data()) {
-    $controller = new \local_shop\backoffice\product_controller($thecatalog);
-    $controller->receive('edit', $data, $mform);
+    $controller = new \local_shop\backoffice\product_controller($thecatalog, $mform);
+    $controller->receive('edit', $data);
     $controller->process('edit');
     redirect($returnurl);
 }

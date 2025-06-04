@@ -55,10 +55,10 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if (!empty($id)) {
     $shop = new Shop($shopid);
-    $customdata = ['what' => 'edit'];
+    $customdata = ['what' => 'edit', 'shop' => $shop];
 } else {
     $shop = new Shop(null);
-    $customdata = ['what' => 'add'];
+    $customdata = ['what' => 'add', 'shop' => $shop];
 }
 
 $mform = new Shop_Form(new moodle_url('/local/shop/shop/edit_shop.php'), $customdata);

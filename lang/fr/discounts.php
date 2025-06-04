@@ -46,6 +46,12 @@ $string['discounttype'] = 'Algorithme';
 $string['discountruledata'] = 'Données spécifiques de l\'algorithme';
 $string['discountapplieson'] = 'Portée de la remise';
 $string['discountapplydata'] = 'Données spécifiques pour la portée';
+$string['ruledata_help'] = 'Données spécifiques :<br><ul>
+    <li>Code promotionnel : un simple token alphanumérique. ex : CODEPROMO000</li>
+    <li>Codes promotionnels multiples : une liste de triplets &lt;code&gt;|&lt;taux&gt;|&lt;tagpartenaire&gt;</li>
+    </ul>';
+$string['errorbaddiscounttokenformat'] = 'Erreur de format : La donnée devrait être un simple token alphanumérique, sans espaces ni tirets';
+$string['errorbaddiscountmulticodeformat'] = 'Erreur de format : La donnée une liste de triplets <code>|<tauxentier>|<codepartenaire>';
 $string['errordiscountnameexistsinshop'] = 'Erreur : Cet intitulé est déjà utilisé dans cette boutique.';
 $string['erroremptydiscountitemlist'] = 'Erreur : La portée est réduite mais aucune liste de produit n\'a été spécifiée.';
 $string['errordiscount:badratioformat'] = 'Erreur : le taux n\'est pas un nombre';

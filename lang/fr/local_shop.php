@@ -62,6 +62,14 @@ $string['SHIP_'] = 'Port dû&nbsp;';
 $string['SOLDOUT'] = 'Payée';
 $string['SUSPENDED'] = 'Suspendu';
 $string['WORKING'] = 'En établissement (interne)';
+$string['FAILED'] = 'Echec';
+
+// Subplugins.
+
+$string['subplugintype_shoppaymodes'] = 'Interface de paiement';
+$string['subplugintype_shoppaymodes_plural'] = 'Interfaces de paiement';
+$string['subplugintype_shophandlers'] = 'Gestionaire d\'achat';
+$string['subplugintype_shophandlers_plural'] = 'Gestionaires d\'achat';
 
 $string['a'] = 'Arg A';
 $string['abstract'] = 'Intitulé ';
@@ -386,6 +394,7 @@ $string['results'] = 'Résultats';
 $string['runningbills'] = 'Factures&nbsp;: En cours';
 $string['sales'] = 'Ventes';
 $string['salesconditions'] = 'Conditions de vente&nbsp;:&ensp;';
+$string['salesconditions_help'] = 'Les conditions de vente sont agrégées dans un écran d\'accord unique à valider par le client.';
 $string['salesmanagement'] = 'Administration des ventes';
 $string['salesrole_desc'] = 'Les personnes qui ont ce rôle peuvent contrôler les opérations de la boutique en ligne';
 $string['salesrolename'] = 'Commercial';

@@ -372,7 +372,7 @@ class Product extends ShopObject {
      * local_shop_billitem (bi prefix) (optional). this is an extended count fonction that operates on full JOIN.
      * @param array $filter
      */
-    public static function count_instances_on_context($filter) {
+    public static function count_instances_on_context($filter, $textfilter = '') {
         global $DB;
 
         $filterclause = '';
@@ -388,6 +388,23 @@ class Product extends ShopObject {
             if (!empty($filterstrs)) {
                 $filterclause = ' AND '.implode(' AND ', $filterstrs);
             }
+        }
+
+        // Add a LIKE based textfilter on product name, idnumber, identifier
+        if (!empty($textfilter)) {
+            $textfilters[] = $DB->sql_like('p.reference', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('p.productiondata', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('p.extradata', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('ci.shortname', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('ci.description', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('ci.name', '?');
+            $params[] = "%$textfilter%";
+            $filterclause = $filterclause.' AND ('.implode(' OR ', $textfilters).') ';
         }
 
         $sql = '
@@ -426,7 +443,7 @@ class Product extends ShopObject {
      * @param int $limitfrom4
      * @param int $limitnum
      */
-    public static function get_instances_on_context($filter, $order = '', $limitfrom = 0, $limitnum = '') {
+    public static function get_instances_on_context($filter, $textfilter = '', $order = '', $limitfrom = 0, $limitnum = '') {
         global $DB;
 
         $filterclause = '';
@@ -442,6 +459,23 @@ class Product extends ShopObject {
             if (!empty($filterstrs)) {
                 $filterclause = ' AND '.implode(' AND ', $filterstrs);
             }
+        }
+
+        // Add a LIKE based textfilter on product name, idnumber, identifier
+        if (!empty($textfilter)) {
+            $textfilters[] = $DB->sql_like('p.reference', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('p.productiondata', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('p.extradata', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('ci.shortname', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('ci.description', '?');
+            $params[] = "%$textfilter%";
+            $textfilters[] = $DB->sql_like('ci.name', '?');
+            $params[] = "%$textfilter%";
+            $filterclause = $filterclause.' AND ('.implode(' OR ', $textfilters).') ';
         }
 
         $orderclause = '';
