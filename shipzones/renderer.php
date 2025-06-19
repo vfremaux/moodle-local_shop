@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Renderer for shipzones management
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -29,12 +30,21 @@ require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
 use local_shop\CatalogShipping;
+use local_shop\CatalogShipzone;
 use local_shop\Tax;
 use local_shop\Shop;
 
+/**
+ * specialized renderer
+ */
 class shop_shipzones_renderer extends local_shop_base_renderer {
 
-    public function catalog_data($catalog) {
+    /**
+     * Prints catalog data
+     * @param Catalog $catalog
+     * @todo : turn into template
+     */
+    public function catalog_data(Catalog $catalog) {
 
         $str = '<div class="shop-table container-fluid">';
         $str .= '<div class="shop-row row-fluid">';
@@ -47,7 +57,7 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         $str .= '</div>';
         $str .= '<div class="shop-row row-fluid">';
         $str .= '<div class="shop-cell param">'.get_string('shops', 'local_shop').'</div>';
-        $shopcount = Shop::count(array('catalogid' => $catalog->id));
+        $shopcount = Shop::count(['catalogid' => $catalog->id]);
         $str .= '<div class="value">'.$shopcount.'</div>';
         $str .= '</div>';
 
@@ -56,7 +66,12 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         return $str;
     }
 
-    public function zone_data($shipzone) {
+    /**
+     * Prints zone data
+     * @param CatalogShipZone $shipzone
+     * @todo : turn into template
+     */
+    public function zone_data(CatalogShipZone $shipzone) {
 
         $str = '';
         $str .= '<div class="shop-table container-fluid">';
@@ -88,6 +103,10 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * Shipping list
+     * @param array $shippings
+     */
     public function shippings($shippings) {
         echo $OUTPUT;
 
@@ -99,20 +118,22 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         $cstr = get_string('c', 'local_shop');
 
         $table = new html_table();
-        $table->header = array('',
-                               "<b>$codestr</b>",
-                               "<b>$valuestr</b>",
-                               "<b>$formulastr</b>",
-                               "<b>$astr</b>",
-                               "<b>$bstr</b>",
-                               "<b>$cstr</b>",
-                               '');
+        $table->header = [
+            '',
+            "<b>$codestr</b>",
+            "<b>$valuestr</b>",
+            "<b>$formulastr</b>",
+            "<b>$astr</b>",
+            "<b>$bstr</b>",
+            "<b>$cstr</b>",
+            ''
+        ];
         $table->width = '100%';
-        $table->align = array('center', 'left', 'left', 'left', 'left', 'left', 'right');
+        $table->align = ['center', 'left', 'left', 'left', 'left', 'left', 'right'];
 
         foreach ($shippings as $shipping) {
 
-            $row = array();
+            $row = [];
             $row[] = '<input type="checkbox" name="shipid[]" value="'.$shipping->id.'" />';
             $row[] = $shipping->productcode;
             $row[] = $shipping->value;
@@ -121,11 +142,11 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
             $row[] = $shipping->b;
             $row[] = $shipping->c;
 
-            $params = array('what' => 'edit', 'shippingid' => $shipping->id, 'zoneid' => $zoneid);
+            $params = ['what' => 'edit', 'shippingid' => $shipping->id, 'zoneid' => $zoneid];
             $cmdurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', $params);
             $commands = '<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/edit', get_stirng('edit'), 'moodle').'</a>';
 
-            $params = array('what' => 'deleteshipping', 'shipid[]' => $shipping->id);
+            $params = ['what' => 'deleteshipping', 'shipid[]' => $shipping->id];
             $cmdurl = new moodle_url('/local/shop/shipzones/zoneindex.php', $params);
             $commands .= '&nbsp;<a href="'.$cmdurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
             $row[] = $commands;
@@ -136,6 +157,10 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         return html_writer::table($table);
     }
 
+    /**
+     * Print zones
+     * @param array $zones
+     */
     public function zones($zones) {
         global $OUTPUT;
 
@@ -146,52 +171,57 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         $usedentriesstr = print_string('usedentries', 'local_shop');
 
         $table = new html_table();
-        $table->header = array('',
-                               "<b>$codestr</b>",
-                               "<b>$namestr</b>",
-                               "<b>$billscopeamountstr</b>",
-                               "<b>$taxstr</b>",
-                               "<b>$usedentriesstr</b>",
-                               '');
+        $table->header = [
+            '',
+            "<b>$codestr</b>",
+            "<b>$namestr</b>",
+            "<b>$billscopeamountstr</b>",
+            "<b>$taxstr</b>",
+            "<b>$usedentriesstr</b>",
+            ''
+        ];
 
         foreach ($zones as $z) {
-            $row = array();
+            $row = [];
             $row[] = '<!-- input type="checkbox" name="zoneids[]" value="'.$z->id.'" / -->'; // Not yet!
             $row[] = $z->zonecode;
             $row[] = $z->description;
             $row[] = $z->billscopeamount;
             $tax = new Tax($z->taxid);
             $row[] = format_string($tax->title);
-            $row[] = CatalogShipping::count(array('zoneid' => $z->id));
+            $row[] = CatalogShipping::count(['zoneid' => $z->id]);
 
             if ($z->entries == 0) {
-                $params = array('what' => 'deletezone', 'zoneid' => $z->id);
+                $params = ['what' => 'deletezone', 'zoneid' => $z->id];
                 $indexurl = new moodle_url('/local/shop/shipzones/index.php', $params);
                 $commands = '<a href="'.$indexurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
 
                 $addshippingstr = get_string('newshipping', 'local_shop');
-                $params = array('zoneid' => $z->id);
+                $params = ['zoneid' => $z->id];
                 $addzoneurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', $params);
                 $commands .= '&nbsp;<a href="'.$addzoneurl.'">'.$addshippingstr.'</a>';
             } else {
                 $editzonestr = get_string('editshippingzone', 'local_shop');
-                $params = array('zoneid' => $z->id);
+                $params = ['zoneid' => $z->id];
                 $zoneindexurl = new moodle_url('/local/shop/shipzones/zoneindex.php', $params);
                 $commands = ' <a href="'.$zoneindexurl.'">'.$editzonestr.'</a>';
             }
 
-            $params = array('what' => 'update', 'item' => $z->id);
+            $params = ['what' => 'update', 'item' => $z->id];
             $editzoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', $params);
             $commands .= '&nbsp;<a href="'.$editzoneurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
             $row[] = $commands;
 
             $table->data[] = $row;
-
         }
 
         return html_writer::table($table);
     }
 
+    /**
+     * Prints mapping of zones to CatalogItem
+     * @param array $zones
+     */
     public function catalogitem_shipping_zones($zones) {
         $codestr = get_string('code', 'local_shop');
         $descriptionstr = get_string('description');
@@ -201,18 +231,20 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
         $applicabilitystr = get_string('applicability', 'local_shop');
 
         $table = new html_table();
-        $table->header = array('',
-                               "<b>$codestr</b>",
-                               "<b>$descriptionstr</b>",
-                               "<b>$scopeamountstr</b>",
-                               "<b>$taxstr</b>",
-                               "<b>$entriesstr</b>",
-                               "<b>$applicabilitystr</b>",
-                               '');
+        $table->header = [
+            '',
+            "<b>$codestr</b>",
+            "<b>$descriptionstr</b>",
+            "<b>$scopeamountstr</b>",
+            "<b>$taxstr</b>",
+            "<b>$entriesstr</b>",
+            "<b>$applicabilitystr</b>",
+            ''
+        ];
         $table->width = "100%";
-        $table->size = array('5%', '%10', '%30', '%10', '%20', '%5', '%5', '20%');
-        $table->align = array('center', 'left', 'left', 'left', 'left', 'center', 'center', 'right');
-        $table->data = array();
+        $table->size = ['5%', '%10', '%30', '%10', '%20', '%5', '%5', '20%'];
+        $table->align = ['center', 'left', 'left', 'left', 'left', 'center', 'center', 'right'];
+        $table->data = [];
         foreach ($zones as $z) {
             $row[] = '<input type="checkbox" name="zoneid[]" value="'.$z->id.'\" />';
             $row[] = $z->zonecode;
@@ -223,18 +255,18 @@ class shop_shipzones_renderer extends local_shop_base_renderer {
             $row[] = $z->applicability;
 
             if ($z->entries == 0) {
-                $params = array('what' => 'delete', 'zoneid[]' => $z->id);
+                $params = ['what' => 'delete', 'zoneid[]' => $z->id];
                 $indexurl = new moodle_url('/local/shop/shipzones/index.php', $params);
                 $commands = '<a href="'.$indexurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
                 $addzonestr = get_string('newshipping', 'local_shop');
-                $editurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', array('zoneid' => $z->id));
+                $editurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', ['zoneid' => $z->id]);
                 $command .= '&nbsp;<a href="'.$editurl.'">'.$addzonestr.'</a>';
             } else {
                 $editzonestr = get_string('editshippingzone', 'local_shop');
-                $indexurl = new moodle_url('/local/shop/shipzones/zoneindex.php', array('zoneid' => $z->id));
+                $indexurl = new moodle_url('/local/shop/shipzones/zoneindex.php', ['zoneid' => $z->id]);
                 $commands = '&nbsp;<a href="'.$indexurl.'">'.$editzonestr.'</a>';
             }
-            $params = array('what' => 'update', 'item' => $z->id);
+            $params = ['what' => 'update', 'item' => $z->id];
             $zoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', $params);
             $commands .= ' <a href="'.$zoneurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 

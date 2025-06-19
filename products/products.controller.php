@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Controller for catalog items management
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\backoffice;
@@ -28,21 +28,49 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 
-use \local_shop\CatalogItem;
-use \local_shop\Catalog;
+use StdClass;
+use coding_exception;
+use context_system;
+use context_user;
+use local_shop\CatalogItem;
+use local_shop\Catalog;
 
+/**
+ * MVC controller class.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.ExitExpression)
+ */
 class product_controller {
 
+    /** @var object Action data context */
     protected $data;
 
+    /** @var Catalog the product catalog */
     protected $thecatalog;
 
+    /** @var bool Marks data has been loaded for action. */
     protected $received = false;
 
-    protected $mform;
+    /** @var moodle_form  required when data comes from form and files have to be handled */
+    protected $mform = false;
 
-    public function __construct($thecatalog) {
+    /**
+     * Constructor
+     * @param Catalog $thecatalog
+     * @param moodle_form $mform the form where data comes from (for file handling)
+     */
+    public function __construct(Catalog $thecatalog, $mform = null) {
         $this->thecatalog = $thecatalog;
+        $this->mform = $mform;
     }
 
     /**
@@ -51,16 +79,15 @@ class product_controller {
      * @param array $data incoming parameters from form when directly available, otherwise the
      * function shoudl get them from request
      */
-    public function receive($cmd, $data = null, $mform = null) {
+    public function receive($cmd, $data = null) {
 
-        $this->mform = $mform;
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
             $this->data->categoryid = optional_param('categoryid', 0, PARAM_INT);
         }
 
@@ -118,7 +145,7 @@ class product_controller {
         global $DB, $USER, $CFG;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         switch ($cmd) {
@@ -166,7 +193,7 @@ class product_controller {
                     // We have items in the set. update relevant products.
                     if (!empty($this->data->productsinset) && is_array($this->data->productsinset)) {
                         foreach ($this->productsinset as $productid) {
-                            $record = new \StdClass;
+                            $record = new StdClass();
                             $record->id = $productid;
                             $record->setid = $this->data->id;
                             $DB->update_record('local_shop_catalogitem', $record);
@@ -187,7 +214,7 @@ class product_controller {
                     $DB->update_record('local_shop_catalogitem', $this->data);
                 }
 
-                $context = \context_system::instance();
+                $context = context_system::instance();
 
                 // Process text fields from editors.
                 if ($this->mform) {
@@ -195,23 +222,23 @@ class product_controller {
                     $draftideditor = file_get_submitted_draft_itemid('description_editor');
                     $this->data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop',
                                                                           'catalogitemdescription', $this->data->id,
-                                                                          array('subdirs' => true), $this->data->description);
+                                                                          ['subdirs' => true], $this->data->description);
                     $this->data = file_postupdate_standard_editor($this->data, 'description', $this->mform->editoroptions, $context, 'local_shop',
                                                             'catalogitemdescription', $this->data->id);
 
                     $draftideditor = file_get_submitted_draft_itemid('notes_editor');
                     $this->data->notes = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemnotes',
-                                                              $this->data->id, array('subdirs' => true), $this->data->notes);
+                                                              $this->data->id, ['subdirs' => true], $this->data->notes);
                     $this->data = file_postupdate_standard_editor($this->data, 'notes', $this->mform->editoroptions, $context, 'local_shop',
                                                             'catalogitemnotes', $this->data->id);
 
                     $draftideditor = file_get_submitted_draft_itemid('eula_editor');
                     $this->data->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemeula',
-                                                             $this->data->id, array('subdirs' => true), $this->data->eula);
+                                                             $this->data->id, ['subdirs' => true], $this->data->eula);
                     $this->data = file_postupdate_standard_editor($this->data, 'eula', $this->mform->editoroptions, $context, 'local_shop',
                                                             'catalogitemeula', $this->data->id);
 
-                    $usercontext = \context_user::instance($USER->id);
+                    $usercontext = context_user::instance($USER->id);
                     shop_products_process_files($this->data, $context, $usercontext);
 
                     // Post update record in DB.
@@ -326,7 +353,7 @@ class product_controller {
             case 'makecopy': {
                 // Get source item in master catalog.
                 $item = new CatalogItem($this->data->masteritemid);
-                $result = CatalogItem::get_instances(array('code' => $item->code, 'catalogid' => $this->thecatalog->id));
+                $result = CatalogItem::get_instances(['code' => $item->code, 'catalogid' => $this->thecatalog->id]);
                 if (empty($result)) {
                     $item->catalogid = $this->thecatalog->id; // Binding to local catalog.
                     $item->id = 0; // Ensure new record.
@@ -353,11 +380,14 @@ class product_controller {
         }
     }
 
+    /**
+     * Controller metadata
+     */
     public static function info() {
-        return array(
-            'delete' => array('items' => 'Array of numeric IDs'),
-            'deleteset' => array('setid' => 'Numeric ID'),
-            'edit' => array(
+        return [
+            'delete' => ['items' => 'Array of numeric IDs'],
+            'deleteset' => ['setid' => 'Numeric ID'],
+            'edit' => [
                 'code' => 'token as String',
                 'name' => 'String',
                 'description_editor' => 'Array of text|format|itemid',
@@ -389,17 +419,18 @@ class product_controller {
                 'enablehandler' => 'String, handler name',
                 'handlerparams' => 'param,value pairs string',
                 'quantaddressesusers' => '0 (no), 1 (one seat per trans), 2 (yes)',
-                'renewable' => 'Boolean as 0,2'
-            ),
-            'unlink' => array('itemid' => 'Numeric ID pointing a catalog item ID'),
-            'clone' => array('itemid' => 'Numeric ID pointing a catalog item ID'),
-            'makecopy' => array('itemid' => 'Numeric ID pointing a catalog item ID'),
-            'freecopy' => array('itemid' => 'Numeric ID pointing a catalog item ID'),
-            'search' => array(
+                'renewable' => 'Boolean as 0,2',
+            ],
+            'unlink' => ['itemid' => 'Numeric ID pointing a catalog item ID'],
+            'clone' => ['itemid' => 'Numeric ID pointing a catalog item ID'],
+            'makecopy' => ['itemid' => 'Numeric ID pointing a catalog item ID'],
+            'freecopy' => ['itemid' => 'Numeric ID pointing a catalog item ID'],
+            'search' => [
                 'by' => 'field name as  code, shortname or name',
                 'code' => 'String',
                 'name' => 'String',
-                'shortname' => 'String')
-        );
+                'shortname' => 'String',
+            ],
+        ];
     }
 }

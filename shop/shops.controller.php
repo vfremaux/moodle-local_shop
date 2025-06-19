@@ -18,9 +18,8 @@
  * Controller for managing shop instances.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\backoffice;
@@ -29,16 +28,31 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-use \local_shop\Shop;
+use local_shop\Shop;
+use coding_exception;
+use context_system;
+use StdClass;
 
+/**
+ * MVC controller
+ */
 class shop_controller {
 
+    /** @var object Action data context */
     protected $data;
 
+    /** @var bool Marks data has been loaded for action. */
     protected $received;
 
+    /** @var moodle_form  required when data comes from form and files have to be handled */
     protected $mform;
 
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
     public function receive($cmd, $data = null, $mform = null) {
         if (!empty($data)) {
             // Data is fed from outside.
@@ -47,7 +61,7 @@ class shop_controller {
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
         switch ($cmd) {
@@ -62,14 +76,18 @@ class shop_controller {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $DB;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         if ($cmd == 'delete') {
             $shop = new Shop($this->data->shopid);
@@ -100,13 +118,13 @@ class shop_controller {
                 // We do not have form when runing tests.
                 $draftideditor = file_get_submitted_draft_itemid('description_editor');
                 $shoprec->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'description',
-                                                                   $shoprec->id, array('subdirs' => true), $shoprec->description);
+                                                                   $shoprec->id, ['subdirs' => true], $shoprec->description);
                 $shoprec = file_postupdate_standard_editor($shoprec, 'description', $this->mform->editoroptions, $context, 'local_shop',
                                                            'description', $shoprec->id);
 
                 $draftideditor = file_get_submitted_draft_itemid('eula_editor');
                 $shoprec->eula = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'eula',
-                                                            $shoprec->id, array('subdirs' => true), $shoprec->eula);
+                                                            $shoprec->id, ['subdirs' => true], $shoprec->eula);
                 $shoprec = file_postupdate_standard_editor($shoprec, 'eula', $this->mform->editoroptions, $context,
                                                            'local_shop', 'eula', $shoprec->id);
 
@@ -116,27 +134,36 @@ class shop_controller {
         }
     }
 
+    /**
+     * Get meta information about controller.
+     */
     public static function info() {
-        return array('delete' => array('shopid' => 'ID of shop record'),
-                     'edit' => array('shopid' => 'ID of the shop when updates',
-                                     'name' => 'String',
-                                     'description_editor' => 'Array of text,format',
-                                     'catalogid' => 'ID of assigned catalog',
-                                     'navsteps' => 'String list of steps',
-                                     'allowtax' => 'Boolean',
-                                     'discountthreshold' => 'Number',
-                                     'discountrate' => 'Integer from 0 to 100',
-                                     'discountrate2' => 'Integer from 0 to 100',
-                                     'discountrate3' => 'Integer from 0 to 100',
-                                     'currency' => 'Currency code',
-                                     'defaultpaymode' => 'Plugin name as string',
-                                     'paymode<paymodename>' => 'Boolean, one per enabled paymode',
-                                     'forcedownloadleaflet' => 'Boolean',
-                                     'customerorganisationrequired' => 'Boolean',
-                                     'enduserorganisationrequired' => 'Boolean',
-                                     'endusermobilephonerequired' => 'Boolean',
-                                     'printtabbedcategories' => 'Boolean',
-                                     'defaultcustomersupportcourse' => 'Numeric ID of customer support course',
-                                     'eula_editor' => 'Array of text,format'));
+        return [
+            'delete' => [
+                'shopid' => 'ID of shop record',
+            ],
+            'edit' => [
+                'shopid' => 'ID of the shop when updates',
+                'name' => 'String',
+                'description_editor' => 'Array of text,format',
+                'catalogid' => 'ID of assigned catalog',
+                'navsteps' => 'String list of steps',
+                'allowtax' => 'Boolean',
+                'discountthreshold' => 'Number',
+                'discountrate' => 'Integer from 0 to 100',
+                'discountrate2' => 'Integer from 0 to 100',
+                'discountrate3' => 'Integer from 0 to 100',
+                'currency' => 'Currency code',
+                'defaultpaymode' => 'Plugin name as string',
+                'paymode<paymodename>' => 'Boolean, one per enabled paymode',
+                'forcedownloadleaflet' => 'Boolean',
+                'customerorganisationrequired' => 'Boolean',
+                'enduserorganisationrequired' => 'Boolean',
+                'endusermobilephonerequired' => 'Boolean',
+                'printtabbedcategories' => 'Boolean',
+                'defaultcustomersupportcourse' => 'Numeric ID of customer support course',
+                'eula_editor' => 'Array of text,format',
+            ],
+        ];
     }
 }

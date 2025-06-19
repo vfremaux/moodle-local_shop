@@ -18,14 +18,15 @@
  * A bill item is a single order line of a bill/order record.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
+
+use StdClass;
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Product.class.php');
@@ -35,10 +36,21 @@ require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
  * A Bill Item represents an order line with all the context that was there when
  * it was created. It stores a freezed image of the catalog item (may be even disconnected from
  * deleted catalogs) for reference to a stable price table.
- *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class BillItem extends ShopObject {
 
+    /**
+     * DB table (for ShopObject)
+     */
     protected static $table = 'local_shop_billitem';
 
     /**
@@ -76,8 +88,15 @@ class BillItem extends ShopObject {
      */
     public $actionparams;
 
+    /**
+     * Builds a bill item object
+     * @param mixed $idorrec
+     * @param bool $light
+     * @param array $internalrefs
+     * @param $ordering
+     * @param bool $nosave
+     */
     public function __construct($idorrec, $light = false, $internalrefs = [], $ordering = -1, $nosave = false) {
-        global $DB;
 
         if (array_key_exists('bill', $internalrefs)) {
             $this->bill = $internalrefs['bill'];
@@ -141,7 +160,7 @@ class BillItem extends ShopObject {
              * first creation of a record
              * itemcode is NOT a legacy record field, but comes from shopping front
              */
-            $this->record = new \StdClass;
+            $this->record = new StdClass();
             $this->record->type = $idorrec->type;
 
             if ($idorrec->type != 'BILLING') {
@@ -213,12 +232,12 @@ class BillItem extends ShopObject {
         }
     }
 
-	/**
-	 * List control. Moves a bill item in ordering.
-	 * @param $dir the ordering shift
-	 * @param $z the starting point.
-	 * @TODO seems a bit simplist. Review using treelib.
-	 */
+    /**
+     * List control. Moves a bill item in ordering.
+     * @param $dir the ordering shift
+     * @param $z the starting point.
+     * @TODO seems a bit simplist. Review using treelib.
+     */
     public function move($dir, $z) {
         global $DB;
 
@@ -234,13 +253,16 @@ class BillItem extends ShopObject {
         $DB->execute($sql, [$dir, $z, $this->id]);
     }
 
+    /**
+     * Get the associated Catalog Item
+     */
     public function get_catalog_item() {
         return $this->catalogitem;
     }
 
-	/**
-	 * Get the quantity indexed unit price.
-	 */
+    /**
+     * Get the quantity indexed unit price.
+     */
     public function get_price() {
         if (!empty($this->catalogitem)) {
             return $this->catalogitem->get_price($this->record->quantity);
@@ -270,10 +292,10 @@ class BillItem extends ShopObject {
             }
 
             if (!isset($taxcache)) {
-                $taxcache = array();
+                $taxcache = [];
             }
             if (!array_key_exists($taxid, $taxcache)) {
-                if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+                if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', ['id' => $taxid])) {
                     if (empty($taxcache[$taxid]->formula)) {
                         $taxcache[$taxid]->formula = '$ttc = $ht';
                     }
@@ -300,17 +322,23 @@ class BillItem extends ShopObject {
         return $taxed - $untaxed;
     }
 
-	/**
-	 * Get tax amount on order with quantity factor.
-	 */
+    /**
+     * Get tax amount on order with quantity factor.
+     */
     public function get_totaltax() {
         return $this->get_tax_amount() * $this->record->quantity;
     }
 
+    /**
+     * Get the taxed total amount to charge to customer.
+     */
     public function get_totaltaxed() {
         return $this->get_taxed_price($this->record->quantity) * $this->record->quantity;
     }
 
+    /**
+     * Get the customerid from the surrounding Bill context
+     */
     public function get_customerid() {
         if (empty($this->bill)) {
             // Rehydrates if necessary.
@@ -319,6 +347,9 @@ class BillItem extends ShopObject {
         return $this->bill->customerid;
     }
 
+    /**
+     * Save the bill item in DB
+     */
     public function save() {
         if (!empty($this->nosave)) {
             // This can occur when faking bundle parts.
@@ -331,9 +362,12 @@ class BillItem extends ShopObject {
         $this->id = $this->record->id;
     }
 
-    public function delete() {
+    /**
+     * Delete this BillItem instance
+     */
+    public function delete(): void {
         // Delete products currently attached to.
-        $products = Product::get_instances(array('currentbillitemid' => $this->id));
+        $products = Product::get_instances(['currentbillitemid' => $this->id]);
         if ($products) {
             foreach ($products as $p) {
                 $p->delete();
@@ -343,20 +377,45 @@ class BillItem extends ShopObject {
         parent::delete();
     }
 
+    /**
+     * Get last ordering in Bill context
+     * @param int $billid
+     */
     public static function last_ordering($billid) {
         global $DB;
 
-        return $DB->get_field('local_shop_billitem', 'MAX(ordering)', array('billid' => $billid));
+        return $DB->get_field('local_shop_billitem', 'MAX(ordering)', ['billid' => $billid]);
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '', $light = false, $internalrefs = []) {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * àparam int $limitnum
+     * @param bool $light
+     * @param array $internalrefs
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0,
+                $limitnum = '', $light = false, $internalrefs = []) {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light, $internalrefs);
     }
 
-    public static function get_instances_menu($filter = array(), $order = '', $chooseopt = 'choosedots') {
-        return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(billid, '-', ordering, '-', itemcode)", $chooseopt);
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     * @param string $chooseopt
+     */
+    public static function get_instances_menu($filter = [], $order = '', $chooseopt = 'choosedots') {
+        $fields = "CONCAT(billid, '-', ordering, '-', itemcode)";
+        return parent::_get_instances_menu(self::$table, $filter, $order, $fields, $chooseopt);
     }
 
+    /**
+     * Stringifier
+     */
     public function toString() {
         $printable = $this->record;
         return $printable;

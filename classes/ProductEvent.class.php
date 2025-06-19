@@ -18,9 +18,8 @@
  * A product has a lifecycle in which some events can occur.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,11 +29,29 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 
+/**
+ * A product event stores an event in the Product's lifecycle
+ *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class ProductEvent extends ShopObject {
 
+    /** @var DB table (for ShopObject) */
     protected static $table = 'local_shop_productevent';
 
-    // Build a full bill plus billitems.
+    /**
+     * Constructor
+     * @param mixed $idorrecord
+     * @param bool $light lightweight object (without categories) if true.
+     */
     public function __construct($idorrecord, $light = false) {
 
         parent::__construct($idorrecord, self::$table);
@@ -54,7 +71,15 @@ class ProductEvent extends ShopObject {
         }
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 }

@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_shop
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  * Displays per zone all registered shippings for products
+ *
+ * @package     local_shop
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require('../../../config.php');
@@ -64,7 +63,7 @@ if (!empty($action)) {
 $url = new moodle_url('/local/shop/shipzones/zoneindex.php');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$zonesurl = new moodle_url('/local/shop/shipzones/index.php', array('id' => $theshop->id));
+$zonesurl = new moodle_url('/local/shop/shipzones/index.php', ['id' => $theshop->id]);
 $PAGE->navbar->add(get_string('shipzones', 'local_shop'), $zonesurl);
 $PAGE->set_url($url);
 
@@ -84,14 +83,14 @@ echo $renderer->zone_data($zone);
 
 echo $OUTPUT->heading(get_string('shippings', 'local_shop'));
 
-if ($shippings = CatalogShipping::get_instances(array('zoneid' => $zoneid))) {
+if ($shippings = CatalogShipping::get_instances(['zoneid' => $zoneid])) {
     echo $renderer->shippings($shippings);
 } else {
     echo $OUTPUT->notification(get_string('noshippings', 'local_shop'));
 }
 
 $addshippingstr = get_string('addshipping', 'local_shop');
-$addshippingurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', array('what' => 'add', 'zoneid' => $zoneid));
+$addshippingurl = new moodle_url('/local/shop/shipzones/edit_shipping.php', ['what' => 'add', 'zoneid' => $zoneid]);
 echo '<div class="addlink"><a href="'.$addshippingurl.'">'.$addshippingstr.'</a></div>';
 
 echo '<br/><center>';

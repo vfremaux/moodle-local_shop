@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     shoppaymodes_test
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package     shoppaymodes_transfer
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Transfer ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat Transfer ne détient directement aucune donnée relative
+aux utilisateurs.';
 
 $string['enabletransfer'] = 'Réglement par virement bancaire';
 $string['enabletransfer2'] = 'Réglement par virement bancaire';
@@ -31,21 +34,26 @@ $string['transfer'] = 'Virement bancaire';
 $string['pluginname'] = 'Moyen de paiement Virement Bancaire';
 
 $string['pay_instructions_tpl'] = '
-Pour passer votre commande, il vous suffit d\'effectuer directement votre règlement par virement bancaire (<b>sauf swift</b>) sur le compte indiqué, et de valider le bon de commande ci-dessous. Votre commande sera exécutée dès notification de votre virement par notre banque.
+Pour passer votre commande, il vous suffit d\'effectuer directement votre règlement par virement bancaire (<b>sauf swift</b>) sur
+le compte indiqué, et de valider le bon de commande ci-dessous. Votre commande sera exécutée dès notification de votre virement
+par notre banque.
 ';
 
 $string['pay_instructions_invoice_tpl'] = '
-Pour passer votre commande, il vous suffit d\'effectuer directement votre règlement par virement bancaire (<b>sauf swift</b>) sur le compte indiqué, et de valider la facture proforma ci-dessus. Votre commande sera exécutée dès notification de votre virement par notre banque.
+Pour passer votre commande, il vous suffit d\'effectuer directement votre règlement par virement bancaire (<b>sauf swift</b>) sur
+le compte indiqué, et de valider la facture proforma ci-dessus. Votre commande sera exécutée dès notification de votre virement
+par notre banque.
 ';
 
 $string['pending_followup_text_tpl'] = '
 <p>Nous attendons réception de vore réglement pour activer votre achat. Vous recevrez un mail de confirmation dès ce moment.</p>
-<p>Si votre activation tarde à venir (le temps de notification de votre virement plus un temps de traitement de 24 à 48 heures), n\'hésitez
-pas à contacter notre service commercial.</p>
+<p>Si votre activation tarde à venir (le temps de notification de votre virement plus un temps de traitement de 24 à 48 heures),
+n\'hésitez pas à contacter notre service commercial.</p>
 ';
 
 $string['print_procedure_text_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées suivantes :<br>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées
+suivantes :<br>
 
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>
 
@@ -114,7 +122,8 @@ $string['print_procedure_text_tpl'] = '
 ';
 
 $string['print_procedure_text_invoice_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées suivantes :<br>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Effectuez auprès de votre banque votre virement aux coordonnées
+suivantes :<br>
 
 <p><b><%%SELLER%%></b> - <%%ADDRESS%%> - <%%ZIP%%> <%%CITY%%><br>
 
@@ -183,8 +192,7 @@ $string['print_procedure_text_invoice_tpl'] = '
 
 $string['success_followup_text_tpl'] = '
 <p>Votre paiement a été confirmé par le gestionnaire de votre compte. Nous avons procédé à la mise en oeuvre de vos produits.</p>
-<p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne trouvez pas de courriel dans votre boite de réception, 
-pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
-<p>Si vous éprouvez des difficultés d\'accès, n\'hésitez
-pas à contacter notre service commercial <%%SUPPORT%%>.</p>
+<p>Consultez votre boite de courriel, nous vous avons envoyé des informations sur votre achat. Si vous ne trouvez pas de courriel
+dans votre boite de réception, pensez à consulter votre boite de spam, et vos dossiers de "notifications".</p>
+<p>Si vous éprouvez des difficultés d\'accès, n\'hésitez pas à contacter notre service commercial <%%SUPPORT%%>.</p>
 ';

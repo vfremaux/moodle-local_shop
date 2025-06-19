@@ -16,9 +16,19 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -26,6 +36,8 @@ require_once($CFG->dirroot.'/auth/ticket/lib.php');
 require_once($CFG->dirroot.'/local/shop/lib.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/datahandling/handlercommonlib.php');
+
+use local_shop\Shop;
 
 if (!defined('PHP_ROUND_HALF_EVEN')) {
     define('PHP_ROUND_HALF_EVEN', 3);
@@ -35,7 +47,7 @@ if (!defined('PHP_ROUND_HALF_ODD')) {
 }
 
 /**
- * this function calculates an overall shipping additional line to be added to bill
+ * This function calculates an overall shipping additional line to be added to bill
  * regarding order elements and location of customer. It will use all rules defined
  * in shipping zones and shipping meta-information.
  *
@@ -101,24 +113,27 @@ function shop_resolve_zone_rule($country, $zipcode, $rule) {
 /**
  * Validates customer information from the session stored shoppingcart. checks if every data
  * is receivable.
- * @param object $theshop the current shop to get settings from.
+ * @param Shop $theshop the current shop to get settings from.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+
  */
-function shop_validate_customer($theshop) {
+function shop_validate_customer(Shop $theshop) {
     global $SESSION, $CFG, $USER;
 
     $shoppingcart = $SESSION->shoppingcart;
 
     if (!isset($shoppingcart->errors) || !is_object($shoppingcart->errors)) {
-        $shoppingcart->errors = new StdClass;
+        $shoppingcart->errors = new StdClass();
     }
-    $shoppingcart->errors->customerinfo = array();
+    $shoppingcart->errors->customerinfo = [];
 
     if ($shoppingcart->customerinfo['email'] == '') {
         $shoppingcart->errors->customerinfo['custommerinfo::email'] = '';
     }
 
     if ((!isloggedin() || isguestuser()) && shop_has_potential_account($shoppingcart->customerinfo['email'])) {
-        $params = array('view' => 'customer', 'id' => $theshop->id, 'what' => 'revalidate');
+        $params = ['view' => 'customer', 'id' => $theshop->id, 'what' => 'revalidate'];
         $SESSION->wantsurl = new moodle_url('/local/shop/front/view.php', $params);
         $a = new StdClass();
         $a->wwwroot = $CFG->wwwroot;
@@ -163,7 +178,7 @@ function shop_validate_customer($theshop) {
 function shop_has_potential_account($email) {
     global $DB;
 
-    if ($DB->record_exists('user', array('email' => $email, 'deleted' => 0))) {
+    if ($DB->record_exists('user', ['email' => $email, 'deleted' => 0])) {
         return true;
     }
 
@@ -172,7 +187,7 @@ function shop_has_potential_account($email) {
      * moodle account by a purchase.
      */
     $select = " email = ? AND hasaccount > 0 ";
-    $potentialcustomer = $DB->get_record_select('local_shop_customer', $select, array($email));
+    $potentialcustomer = $DB->get_record_select('local_shop_customer', $select, [$email]);
     if ($potentialcustomer) {
         return true;
     }
@@ -191,17 +206,17 @@ function shop_load_customerinfo($user) {
         return;
     }
 
-    $customerinfo = array(
+    $customerinfo = [
         'firstname' => $user->firstname,
         'lastname' => $user->lastname,
         'city' => $user->city,
         'country' => $user->country,
         'email' => $user->email,
         'organisation' => $user->institution,
-    );
+    ];
 
     $iscomplete = false;
-    if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $user->id))) {
+    if ($customer = $DB->get_record('local_shop_customer', ['hasaccount' => $user->id])) {
         $customerinfo['address'] = $customer->address;
         $customerinfo['zip'] = $customer->zip;
         $customerinfo['city'] = $customer->city; // Override moodle account
@@ -217,6 +232,8 @@ function shop_load_customerinfo($user) {
 
 /**
  * Validates invocing customer information
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function shop_validate_invoicing() {
     global $SESSION;
@@ -224,9 +241,9 @@ function shop_validate_invoicing() {
     $shoppingcart = $SESSION->shoppingcart;
 
     if (!isset($shoppingcart->errors)) {
-         $shoppingcart->errors = new StdClass;
+         $shoppingcart->errors = new StdClass();
     }
-    $shoppingcart->errors->invoiceinfo = array();
+    $shoppingcart->errors->invoiceinfo = [];
 
     if ($shoppingcart->invoiceinfo['organisation'] == '') {
         $shoppingcart->errors->invoiceinfo['invoiceinfo::organisation'] = '';
@@ -308,6 +325,8 @@ function shop_get_payment_plugin(&$shopinstance, $pluginname = null) {
  * @param arrayref &$handlerdata a complete parameter set for the product based on a billitem object.
  * @param string $fieldtoreturn 'starttime' or 'endtime'
  * @param objectref &$course a reference course
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
 
@@ -372,7 +391,7 @@ function shop_compute_enrol_time(&$handlerdata, $fieldtoreturn, $course) {
  * a 2 letters checksum completing a WWWW-XXXX-YYYY-ZZCC code.
  * @param object &$anitem a catalog item instance
  */
-function shop_generate_product_ref(&$anitem) {
+function shop_generate_product_ref($anitem) {
     global $DB;
 
     $transactionid = $anitem->transactionid;
@@ -388,7 +407,7 @@ function shop_generate_product_ref(&$anitem) {
     $productref .= '-'.core_text::substr($tmp, 8, 4).'-'.core_text::substr($tmp, 12, 4);
 
     // Continue hashing till we get a real new one.
-    while ($DB->record_exists('local_shop_product', array('reference' => $productref))) {
+    while ($DB->record_exists('local_shop_product', ['reference' => $productref])) {
         $productref = core_text::strtoupper(core_text::substr(base64_encode(md5($productref)), 0, 14));
         $productref .= shop_checksum($productref);
 
@@ -425,8 +444,8 @@ function shop_check_product_ref($productref) {
 
 function shop_checksum($productref) {
 
-    static $crcrange = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+    static $crcrange = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ];
 
     $crccount = count($crcrange);
 
@@ -451,10 +470,8 @@ function shop_checksum($productref) {
 function shop_get_orderbag($thecatalog) {
     global $SESSION;
 
-    $maxseats = 0;
-
     foreach ($SESSION->shoppingcart->order as $shortname => $quantity) {
-        $orderentry = new StdClass;
+        $orderentry = new StdClass();
         $orderentry->shortname = $shortname;
         $orderentry->catalogentry = $thecatalog->get_product_by_shortname($shortname);
 

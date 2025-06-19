@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +27,7 @@ require_once($CFG->dirroot.'/local/shop/front/lib.php');
 require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-use \local_shop\Bill;
+use local_shop\Bill;
 
 // Get all context information.
 
@@ -45,12 +45,12 @@ $transid = required_param('transid', PARAM_TEXT);
 try {
     $afullbill = Bill::get_by_transaction($transid);
 } catch (Exception $e) {
-    $params = array('view' => 'shop', 'shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id));
+    $params = ['view' => 'shop', 'shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id)];
     $viewurl = new moodle_url('/local/shop/front/view.php', $params);
     throw new moodle_exception(get_string('invalidbillid', 'local_shop', $viewurl));
 }
 
-$params = array('shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id), 'transid' => $transid);
+$params = ['shopid' => $theshop->id, 'blockid' => (0 + @$theblock->instance->id), 'transid' => $transid];
 $url = new moodle_url('/local/shop/front/order.popup.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());

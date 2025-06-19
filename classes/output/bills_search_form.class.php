@@ -24,34 +24,40 @@
  */
 namespace local_shop\output;
 
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+
 use StdClass;
+use Templatable;
+use renderer_base;
+use local_shop\Shop;
 
-class bills_search_form implements \Templatable {
+/**
+ * A form to search bills
+ */
+class bills_search_form implements Templatable {
 
-    /**
-     * Number of bills
-     */
+    /** @var Number of bills */
     protected $billcount;
 
-    /**
-     * current shop instance
-     */
+    /** @var current shop instance */
     protected $theshop;
 
     /**
      * Base constructor
-     * @param object $theshop 
+     * @param Shop $theshop
      * @param int $billcount
      */
-    public function __construct($theshop, $billcount) {
+    public function __construct(Shop $theshop, $billcount) {
         $this->billcount = $billcount;
         $this->theshop = $theshop;
     }
 
     /**
      * Exporter for template
+     * @param renderer_base $output unused
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function export_for_template(\renderer_base $output) {
+    public function export_for_template(renderer_base $output /* unused */) {
 
         $template = new StdClass();
         $template->shopid = $this->theshop->id;

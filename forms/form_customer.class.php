@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A form to edt customer accounts
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -30,8 +31,25 @@ require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 use local_shop\Shop;
 use local_shop\Catalog;
 
+/**
+ * A form to edt customer accounts
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class Customer_Form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $CFG, $OUTPUT;
 
@@ -87,7 +105,12 @@ class Customer_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    public function validation($data, $files = array()) {
+    /**
+     * Standard Validation
+     * @param StdClass $data
+     * @param array $files
+     */
+    public function validation($data, $files = []) {
         global $DB;
 
         $errors = parent::validation($data, $files);
@@ -98,7 +121,7 @@ class Customer_Form extends moodleform {
         }
 
         /**
-         * @TODO : Build a stronger mail format validation pattern.
+         * @todo : Build a stronger mail format validation pattern.
          */
         if (!preg_match('/.+@.+/', $data['email'])) {
             $errors['email'] = get_string('errornotanemail', 'local_shop');

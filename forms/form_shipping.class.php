@@ -16,17 +16,22 @@
 
 /**
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * A form to associate products to shipping zones.
+ */
 class ProductShipping_Form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT;
 
@@ -70,6 +75,10 @@ class ProductShipping_Form extends moodleform {
         $this->add_action_buttons(true);
     }
 
+    /**
+     * Quickform Freeze wrapper
+     * @param string $field
+     */
     public function freeze($field) {
         $mform = $this->_form;
         $mform->freeze($field);

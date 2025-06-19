@@ -33,6 +33,15 @@ require_once($CFG->dirroot.'/local/shop/locallib.php');
 
 /**
  * Defines some daily collected indicators
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class daily_shop_indicator extends zabbix_indicator {
 
@@ -60,7 +69,7 @@ class daily_shop_indicator extends zabbix_indicator {
      * @param string $submode to target an aquisition to an explicit submode, elsewhere 
      */
     public function acquire_submode($submode) {
-        global $DB;
+        global $DB, $CFG;
 
         if(!isset($this->value)) {
             $this->value = new Stdclass;

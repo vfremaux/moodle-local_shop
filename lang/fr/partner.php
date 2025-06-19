@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Lang for partners
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 $string['allbutpartners'] = 'Hors partenaires';
 $string['exportpartnerkey'] = 'Code Partenaire';
@@ -47,7 +54,7 @@ $string['managepartners_desc'] = 'Des partenaires peuvent importer des sessions 
 
 $string['moodleuser_help'] = 'Le compte moodle associé au partenaire. Ce compte sera utilisé pour envoyer des notifications au partenaire.';
 
-$string['referer_help'] = 'Lorsqu\'un partenaire envoie une requête de panier avec un pré-remplissage à partir d\'un site tiers, 
+$string['referer_help'] = 'Lorsqu\'un partenaire envoie une requête de panier avec un pré-remplissage à partir d\'un site tiers,
 la boutique vérifiera l\'origine de l\'appel si ce champ est rempli avec le rerferer (url d\'origine attendue). Cette sécurité n\'est
 pas absolue, mais contribue à minimiser les abus. Certains clients sont susceptibles de ne pas fournir ce champ, et la procédure d\'achat
 complète devra être menée par l\'acheteur. Si ce champ est fourni et que l\'origine de la transaction peut être vérifiée, il est possible

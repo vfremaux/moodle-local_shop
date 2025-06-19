@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Form for editing products
+ *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,12 +31,35 @@ require_once($CFG->dirroot.'/local/shop/forms/form_catalogitem.class.php');
 
 use local_shop\Tax;
 
+/**
+ * Form for edting catalog products.
+ *
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class Product_Form extends CatalogItem_Form {
 
+    /**
+     * Constructor
+     * @param string $action
+     * @param array $data
+     */
     public function __construct($action, $data) {
         parent::__construct($action, $data);
     }
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT, $DB;
 
@@ -47,7 +71,7 @@ class Product_Form extends CatalogItem_Form {
                 catalogid = ? AND
                 (isset = 1 OR isset = 2)
             ";
-            $params = array($this->_customdata['catalog']->id);
+            $params = [$this->_customdata['catalog']->id];
             $sets = $DB->get_records_select('local_shop_catalogitem', $select, $params, 'id, name');
         }
 
@@ -58,8 +82,15 @@ class Product_Form extends CatalogItem_Form {
         $mform->addElement('hidden', 'itemid');
         $mform->setType('itemid', PARAM_INT);
 
-        $attributesspecificdata = 'rows="4" style="width:80%" ';
-        $attributeshandlerparams = ['cols' => 50, 'rows' => 8, 'style' => "width:80%", 'data-format' => "url", 'data-edithandle' => 'id_edithandlerparams'];
+        $attrsspecificdata = 'rows="4" style="width:80%" ';
+        $params = [
+            'cols' => 50,
+            'rows' => 8,
+            'style' => "width:80%",
+            'data-format' => "url",
+            'data-edithandle' => 'id_edithandlerparams',
+        ];
+        $attrshandlerparams = $params;
 
         // Adding title and description.
         $variant = '';
@@ -93,7 +124,7 @@ class Product_Form extends CatalogItem_Form {
             }
             $mform->addElement('select', 'setid', get_string('set', 'local_shop'), $setopts);
         }
-        $group = array();
+        $group = [];
         $label = get_string('shownameinset', 'local_shop');
         $group[] = &$mform->createElement('advcheckbox', 'showsnameinset', '', $label);
         $mform->setDefault('showsnameinset', 1);
@@ -102,7 +133,7 @@ class Product_Form extends CatalogItem_Form {
         $group[] = &$mform->createElement('advcheckbox', 'showsdescriptioninset', '', $label);
         $mform->setDefault('showsdescriptioninset', 1);
 
-        $mform->addGroup($group, 'setvisibilityarray', '', array(' '), false);
+        $mform->addGroup($group, 'setvisibilityarray', '', [' '], false);
 
         $mform->addElement('header', 'h3', get_string('assets', 'local_shop'));
 
@@ -112,13 +143,13 @@ class Product_Form extends CatalogItem_Form {
 
         // This may need to be translated for localised catalogs.
         $label = get_string('requireddata', 'local_shop').':';
-        $mform->addElement('textarea', 'requireddata', $label, $attributesspecificdata);
+        $mform->addElement('textarea', 'requireddata', $label, $attrsspecificdata);
         $mform->setType('requireddata', PARAM_TEXT);
         $mform->addHelpButton('requireddata', 'requireddata', 'local_shop');
 
         // This may need to be translated for localised catalogs.
         $label = get_string('productiondata', 'local_shop').':';
-        $mform->addElement('textarea', 'productiondata', $label, $attributesspecificdata);
+        $mform->addElement('textarea', 'productiondata', $label, $attrsspecificdata);
         $mform->setType('productiondata', PARAM_TEXT);
         $mform->addHelpButton('productiondata', 'productiondata', 'local_shop');
         $mform->setAdvanced('productiondata');
@@ -133,7 +164,7 @@ class Product_Form extends CatalogItem_Form {
             $mform->setType('enablehandler', PARAM_TEXT);
 
             $group = [];
-            $group[] = & $mform->createElement('textarea', 'handlerparams', '', $attributeshandlerparams);
+            $group[] = & $mform->createElement('textarea', 'handlerparams', '', $attrshandlerparams);
             $mform->setType('handlerparams', PARAM_TEXT);
             $group[] = & $mform->createElement('button', 'edithandlerparams', get_string('edit', 'local_shop'));
             $mform->addGroup($group, 'grphandlerparams', get_string('handlerparams', 'local_shop'), '', false);
@@ -179,6 +210,10 @@ class Product_Form extends CatalogItem_Form {
         $mform->closeHeaderBefore('buttonar');
     }
 
+    /**
+     * Feed form with previous data
+     * @param array $defaults
+     */
     public function set_data($defaults) {
         $context = context_system::instance();
         $this->set_name_data($defaults, $context);
@@ -186,6 +221,11 @@ class Product_Form extends CatalogItem_Form {
         parent::set_data($defaults);
     }
 
+    /**
+     * Validates
+     * @param array $data
+     * @param array $files embedded files
+     */
     public function validation($data, $files = []) {
         return parent::validation($data, $files);
     }

@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for bills
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['addbill'] = 'Ajouter une facture';
 $string['addbillitem'] = 'Ajouter un élément de facture';
 $string['actualstate'] = 'Etat actuel';
@@ -53,6 +62,9 @@ $string['fullviewon'] = 'Vue complète';
 $string['fullviewoff'] = 'Vue simple';
 $string['flowcontrol'] = 'Workflow';
 $string['fromdate'] = 'Depuis le ';
+$string['fullbill'] = 'Facture';
+$string['items'] = 'Eléments';
+$string['itemlist'] = 'Eléments';
 $string['generateacode'] = 'Générer un code';
 $string['goto'] = 'Aller à l\'état';
 $string['lettering'] = 'Lettrage';

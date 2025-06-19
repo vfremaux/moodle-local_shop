@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,6 +32,7 @@ require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Shop;
 use local_shop\Catalog;
+use local_shop\Category;
 
 $PAGE->requires->jquery();
 $PAGE->requires->js('/local/shop/js/form_protection.js.php');
@@ -44,7 +44,7 @@ $PAGE->requires->css('/local/shop/css/bootstrap_3.4.1.css');
 
 $config = get_config('local_shop');
 
-$categoryid = optional_param('category', 0, PARAM_ALPHA);
+$categoryid = optional_param('category', 0, PARAM_ALPHANUM);
 $categoryalias = optional_param('categoryalias', '', PARAM_TEXT);
 
 // Get block information.
@@ -65,11 +65,13 @@ $required = $thecatalog->check_required_seats();
 $assigned = shop_check_assigned_seats($requiredroles);
 
 // $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
-$params = ['shopid' => $theshop->id,
-           'units' => $units,
-           'required' => $required,
-           'assigned' => $assigned];
-$PAGE->requires->js_call_amd('local_shop/front', 'init', array($params));
+$params = [
+    'shopid' => $theshop->id,
+    'units' => $units,
+    'required' => $required,
+    'assigned' => $assigned,
+];
+$PAGE->requires->js_call_amd('local_shop/front', 'init', [$params]);
 
 $view = optional_param('view', $theshop->get_starting_step(), PARAM_ALPHA);
 
@@ -88,16 +90,38 @@ if (!empty($categoryalias)) {
 $url = new moodle_url('/local/shop/front/view.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-$PAGE->set_pagelayout('admin');
+$PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
-$PAGE->navbar->add(get_string('shop', 'local_shop'));
+$shopurl = new moodle_url('/local/shop/front/view.php', ['view' => 'shop', 'shopid' => $theshop->id]);
+$PAGE->navbar->add(get_string('shopbase', 'local_shop'), $shopurl);
+if (!empty($categoryid)) {
+    $category = new Category($categoryid);
+} else if (!empty($categoryalias)) {
+    $category = Category::instance_by_seoalias($categoryalias);
+}
+if (isset($category)) {
+    $branch = $category->get_branch();
+    $branch = array_reverse($branch, false);
+    $lastid = array_pop($branch); // Remove last.
+    if (!empty($branch)) {
+        foreach ($branch as $nodeid) {
+            $nodecat = new Category($nodeid);
+            $params = ['view' => $view, 'category' => $nodeid];
+            $nodeurl = new moodle_url('/local/shop/front/view.php', $params);
+            $PAGE->navbar->add($nodecat->get_name(), $nodeurl);
+        }
+    }
+    $lastcat = new Category($lastid);
+    $PAGE->navbar->add($lastcat->get_name());
+}
+
 $PAGE->set_cacheable(false);
 
 // Add a forced shop_total block at right if necessary.
 
 if (!isloggedin()) {
-    $USER = $DB->get_record('user', array('username' => 'guest'));
+    $USER = $DB->get_record('user', ['username' => 'guest']);
 }
 
 if (empty($config->sellername)) {

@@ -16,20 +16,34 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;
 
-use \StdClass;
-use \moodle_url;
-use \core_text;
+use StdClass;
+use moodle_url;
+use core_text;
+use coding_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
+/**
+ * Shop entrance controller
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class shop_controller extends front_controller_base {
 
     /**
@@ -38,8 +52,10 @@ class shop_controller extends front_controller_base {
      *
      * Note : always ensure the productname is passed to lowercase to comply the
      * JS product shortname.
+     * @param string $cmd
+     * @param array $data
      */
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -94,17 +110,25 @@ class shop_controller extends front_controller_base {
                 $this->data->passcode = required_param('passcode', PARAM_TEXT);
                 break;
 
+            case 'cleardiscountcode':
+                $this->data->discountid = required_param('discountid', PARAM_INT);
+                break;
+
             case 'navigate':
                 break;
         }
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $SESSION, $CFG, $DB;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         $output = '';
@@ -113,7 +137,7 @@ class shop_controller extends front_controller_base {
 
             unset($SESSION->shoppingcart);
             $SESSION->shoppingcart = new StdClass;
-            $SESSION->shoppingcart->order = array();
+            $SESSION->shoppingcart->order = [];
             foreach (array_keys((array)$this->data) as $inputkey) {
                 if ($inputkey == 'shipping') {
                     continue;
@@ -145,11 +169,11 @@ class shop_controller extends front_controller_base {
                         continue;
                     }
                 }
-                if (in_array($inputkey, array('shopid', 'origin', 'partner', 'autodrive', 'blockid', 'category', 'view', 'what'))) {
+                if (in_array($inputkey, ['shopid', 'origin', 'partner', 'autodrive', 'blockid', 'category', 'view', 'what'])) {
                     continue;
                 }
 
-                if ($ci = $DB->get_record('local_shop_catalogitem', array('code' => $inputkey))) {
+                if ($ci = $DB->get_record('local_shop_catalogitem', ['code' => $inputkey])) {
                     // Only if registered product.
                     $SESSION->shoppingcart->order[$ci->shortname] = $this->data->$inputkey;  // Gives quantity to shortname.
                 }
@@ -157,7 +181,7 @@ class shop_controller extends front_controller_base {
             $category = optional_param('category', '', PARAM_INT);
             $shopid = required_param('shopid', PARAM_INT);
             $blockid = optional_param('blockid', 0, PARAM_INT);
-            $params = array('view' => 'shop', 'shopid' => $shopid, 'category' => $category, 'blockid' => $blockid);
+            $params = ['view' => 'shop', 'shopid' => $shopid, 'category' => $category, 'blockid' => $blockid];
 
             if ($this->data->autodrive) {
                 $params['what'] = 'navigate';
@@ -168,8 +192,8 @@ class shop_controller extends front_controller_base {
         } else if ($cmd == 'clearall') {
 
             unset($SESSION->shoppingcart);
-            $params = array('view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-            return new \moodle_url('/local/shop/front/view.php', $params);
+            $params = ['view' => 'shop', 'shopid' => $this->theshop->id, 'blockid' => ($this->theblock->id ?? 0)];
+            return new moodle_url('/local/shop/front/view.php', $params);
 
         } else if ($cmd == 'addunit') {
 
@@ -183,7 +207,8 @@ class shop_controller extends front_controller_base {
             } else {
                 $category = optional_param('category', '', PARAM_INT);
                 $shopid = required_param('shopid', PARAM_INT);
-                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+                $params = ['view' => 'shop', 'shopid' => $shopid, 'category' => $category];
+                redirect(new moodle_url('/local/shop/front/view.php', $params));
             }
 
         } else if ($cmd == 'setunits') {
@@ -202,8 +227,9 @@ class shop_controller extends front_controller_base {
                 $output = json_encode($output);
             } else {
                 $category = optional_param('category', '', PARAM_INT);
-                $shop = required_param('shopid', PARAM_INT);
-                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+                $shopid = required_param('shopid', PARAM_INT);
+                $params = ['view' => 'shop', 'shopid' => $shopid, 'category' => $category];
+                redirect(new moodle_url('/local/shop/front/view.php', $params));
             }
 
         } else if ($cmd == 'deleteunit') {
@@ -257,8 +283,9 @@ class shop_controller extends front_controller_base {
                 $output = json_encode($outputobj);
             } else {
                 $category = optional_param('category', '', PARAM_INT);
-                $shop = required_param('shopid', PARAM_INT);
-                redirect(new moodle_url('/local/shop/front/view.php?view=shop&shopid='.$shopid.'&category='.$category));
+                $shopid = required_param('shopid', PARAM_INT);
+                $params = ['view' => 'shop', 'shopid' => $shopid, 'category' => $category];
+                redirect(new moodle_url('/local/shop/front/view.php', $params));
             }
 
         } else if ($cmd == 'orderdetails') {
@@ -288,6 +315,11 @@ class shop_controller extends front_controller_base {
                 $output->status = 'product error';
             }
             $output = json_encode($output);
+
+        } else if ($cmd == 'cleardiscountcode') {
+            require_sesskey();
+
+            unset($SESSION->shoppingcart->discountcodes[$this->data->discountid]);
 
         } else if ($cmd == 'navigate') {
 
@@ -332,7 +364,8 @@ class shop_controller extends front_controller_base {
                     $shoppingcart->finaltaxestotal = $shoppingcart->taxestotal - $discountpreview->discounttax;
                     if (!empty($shoppingcart->taxes)) {
                         foreach ($shoppingcart->taxes as $tcode => $amountfoo) {
-                            if (array_key_exists($tcode, $shoppingcart->taxes) && array_key_exists($tcode, $discountpreview->discounttaxes)) {
+                            if (array_key_exists($tcode, $shoppingcart->taxes) &&
+                                    array_key_exists($tcode, $discountpreview->discounttaxes)) {
                                 $shoppingcart->finaltaxes[$tcode] = $shoppingcart->taxes[$tcode] - $discountpreview->discounttaxes[$tcode];
                             } else {
                                 $shoppingcart->finaltaxes[$tcode] = 0;
@@ -350,7 +383,7 @@ class shop_controller extends front_controller_base {
             assert($shoppingcart->finaltaxedtotal == $shoppingcart->finaluntaxedtotal + $shoppingcart->finaltaxestotal);
 
             $next = $this->theshop->get_next_step('shop');
-            $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
+            $params = ['view' => $next, 'shopid' => $this->theshop->id, 'blockid' => ($this->theblock->id ?? 0)];
 
             return new \moodle_url('/local/shop/front/view.php', $params);
         }

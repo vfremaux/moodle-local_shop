@@ -15,23 +15,50 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A form to edit catalog categories
+ *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * A form to edit categories
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class Category_Form extends moodleform {
 
+    /** @var array of options for file managers */
     public $editoroptions;
+
+    /** @var array of default attributes */
     protected $defaultattributes;
+
+    /** @var array of default attributes for short data fields */
     protected $attributesshort;
+
+    /** @var array of default attributes for long data fields */
     protected $attributeslong;
 
+    /**
+     * Constructor
+     * @param string $action
+     * @param array $data
+     */
     public function __construct($action, $data) {
         $this->defaultattributes = 'size="50" maxlength="200"';
         $this->attributesshort = 'size="24" maxlength="32"';
@@ -39,20 +66,25 @@ class Category_Form extends moodleform {
         parent::__construct($action, $data);
     }
 
+    /**
+     * Standard Definition
+     */
     public function definition() {
         global $COURSE, $OUTPUT;
 
-        $attributes = array('size' => 47,  'maxlength' => 200);
+        $attributes = ['size' => 47,  'maxlength' => 200];
 
         $context = context_system::instance();
 
         $maxfiles = 99;                // TODO: add some settings.
         $maxbytes = $COURSE->maxbytes; // TODO: add some settings.
-        $this->editoroptions = array('trusttext' => true,
-                                     'subdirs' => false,
-                                     'maxfiles' => $maxfiles,
-                                     'maxbytes' => $maxbytes,
-                                     'context' => $context);
+        $this->editoroptions = [
+            'trusttext' => true,
+            'subdirs' => false,
+            'maxfiles' => $maxfiles,
+            'maxbytes' => $maxbytes,
+            'context' => $context,
+        ];
 
         $mform =& $this->_form;
 
@@ -98,7 +130,7 @@ class Category_Form extends moodleform {
             $mform->addHelpButton('seodescription', 'seodescription', 'local_shop');
         }
 
-        $yesnooptions = array('0' => get_string('no'), '1' => get_string('yes'));
+        $yesnooptions = ['0' => get_string('no'), '1' => get_string('yes')];
         $mform->addElement('select', 'visible', get_string('visible'), $yesnooptions);
         $mform->setDefault('visible', 1);
 
@@ -109,12 +141,16 @@ class Category_Form extends moodleform {
         $this->add_action_buttons();
     }
 
+    /**
+     * Feed form with previous data
+     * @param StdClass $defaults
+     */
     public function set_data($defaults) {
 
         $context = context_system::instance();
 
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'categorydescription', @$defaults->categoryid);
+                                                 'categorydescription', $defaults->categoryid ?? null);
 
         parent::set_data($defaults);
     }

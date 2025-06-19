@@ -15,25 +15,44 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A class to export bills to Excel Sheet
+ *
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/export/exportlib.php');
 
+/**
+ * Excel exporter.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+
+ */
 class shop_export_excel extends shop_export {
 
-    protected $workbook = array();
+    /** @var array a woorkbook as an array of worksheets */
+    protected $workbook = [];
 
-    protected $worksheets = array();
+    /** @var array an array of worksheets */
+    protected $worksheets = [];
 
-    protected $xlsformats = array();
+    /** @var array formats used */
+    protected $xlsformats = [];
 
     /**
-     *
+     * Open export storage
      */
     public function open_export() {
         global $CFG;
@@ -44,7 +63,7 @@ class shop_export_excel extends shop_export {
 
         $this->workbook = new MoodleExcelWorkbook("-");
         if (!$this->workbook) {
-            die("Null workbook");
+            throw new moodle_exception("Null workbook");
         }
 
         // Sending HTTP headers.
@@ -77,10 +96,9 @@ class shop_export_excel extends shop_export {
     /**
      * a raster for xls printing of a report structure header
      * with all the relevant data about a user.
-     *
      */
     protected function print_header() {
-        global $OUTPUT;
+        global $OUTPUT, $CFG;
 
         $i = 0;
 
@@ -92,14 +110,13 @@ class shop_export_excel extends shop_export {
             if ($col['width'] == 0) {
                 continue;
             }
-            if (@$CFG->latinexcelexport) {
+            if (!empty($CFG->latinexcelexport)) {
                 $coltitle = mb_convert_encoding(get_string('export'.$col['name'], 'local_shop'), 'ISO-8859-1', 'UTF-8');
             } else {
                 $coltitle = get_string('export'.$col['name'], 'local_shop');
             }
 
-            $text = get_string('export'.$col['name'], 'local_shop');
-            $this->worksheets[0]->write_string(0, $i, $text, $this->xlsformats[$this->datadesc[0]['colheadingformat']]);
+            $this->worksheets[0]->write_string(0, $i, $coltitle, $this->xlsformats[$this->datadesc[0]['colheadingformat']]);
             $i++;
         }
     }
@@ -107,7 +124,6 @@ class shop_export_excel extends shop_export {
     /**
      * a raster for xls printing of a data table
      * with all the relevant data about a user.
-     *
      */
     protected function print_data() {
 
@@ -158,8 +174,7 @@ class shop_export_excel extends shop_export {
     }
 
     /**
-     *
-     *
+     * Renders data in export storage
      */
     public function render() {
         $this->print_header();
@@ -168,7 +183,6 @@ class shop_export_excel extends shop_export {
 
     /**
      * Terminates all operations
-     *
      */
     public function close_export() {
         $this->workbook->close();
@@ -178,7 +192,6 @@ class shop_export_excel extends shop_export {
      * sets up a set fo formats
      * @param object $workbook
      * @return array of usable formats keyed by a label
-     *
      */
     public function setup_xls_formats() {
 
@@ -186,7 +199,7 @@ class shop_export_excel extends shop_export {
             throw new moodle_exception(get_string('errorexcelcreation', 'local_shop'));
         }
 
-        $formats = array();
+        $formats = [];
 
         $formats['title'] = $this->workbook->add_format();
         $formats['title']->set_size(20);

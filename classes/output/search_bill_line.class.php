@@ -18,29 +18,47 @@ namespace local_shop\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-class search_bill_line implements \Templatable {
+use Templatable;
+use Stdclass;
+use renderer_base;
+use moodle_url;
 
+/**
+ * Result of a bill search
+ */
+class search_bill_line implements Templatable {
+
+    /** @var a bill that matches search */
     protected $bill;
 
-    public function __construct($bill) {
+    /**
+     * Constructor
+     * @param Bill $bill
+     */
+    public function __construct(Bill $bill) {
         $this->bill = $bill;
     }
 
-    public function export_for_template($output) {
+    /**
+     * Exporter for template
+     * @param renderer_base $output unused
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function export_for_template(renderer_base $output /* unused */) {
 
-        $template = new \StdClass();
+        $template = new StdClass();
 
         $bill = $this->bill;
 
-        $params = array('view' => 'viewBill', 'id' => $bill->theshop->id, 'billid' => $bill->id);
-        $template->billurl = new \moodle_url('/local/shop/bills/view.php', $params);
-        $template->uniqueid = 'B-'.strftime('%Y%m%d', $bill->emissiondate).'-'.$bill->id;
+        $params = ['view' => 'viewBill', 'id' => $bill->theshop->id, 'billid' => $bill->id];
+        $template->billurl = new moodle_url('/local/shop/bills/view.php', $params);
+        $template->uniqueid = 'B-'.core_date::strftime('%Y%m%d', (int) $bill->emissiondate).'-'.$bill->id;
 
-        $params = array('view' => 'viewCustomer', 'customer' => $bill->customer->id);
-        $template->customerurl = new  \moodle_url('/local/shop/customers/view.php', $params);
+        $params = ['view' => 'viewCustomer', 'customer' => $bill->customer->id];
+        $template->customerurl = new  moodle_url('/local/shop/customers/view.php', $params);
         $template->customername = $bill->customer->lastname.' '.$bill->customer->firstname;
 
-        $template->emissiondate = strftime('%c', $bill->emissiondate);
+        $template->emissiondate = core_date::strftime('%c', (int) $bill->emissiondate);
         $template->transid = $bill->transactionid;
 
         $template->status = $bill->status;

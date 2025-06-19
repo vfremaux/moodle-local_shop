@@ -28,54 +28,63 @@ namespace local_shop\backoffice;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
+use StdClass;
 use Exception;
 use local_shop\Bill;
+use local_shop\Shop;
+use local_shop\Catalog;
 use local_shop\BillItem;
 use moodle_exception;
 
+/**
+ * MVC Controller for bills management.
+ *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class bill_controller {
 
-    /**
-     * Action data
-     */
+    /** @var Action data */
     protected $data;
 
-    /**
-     * Marks data has been received
-     */
+    /** @var Marks data has been received */
     protected $received;
 
-    /**
-     * The current shop instance
-     */
+    /** @var The current shop instance */
     protected $theshop;
 
-    /**
-     * The current product catalog
-     */
+    /** @var The current product catalog */
     protected $thecatalog;
 
-    /**
-     * The current access block having been used. May be unknown.
-     */
+    /** @var The current access block having been used. May be unknown. */
     protected $theblock;
 
     /**
-     * May be unused.
-     * @TODO : clean it out
+     * @var May be unused.
+     * @todo : clean it out
      */
     protected $mform;
 
     /**
      * constructor
-     * @param objectref &$theshop
-     * @param objectref &$thecatalog
+     * @param Shop $theshop
+     * @param Catalog $thecatalog
      * @param object $theblock
      * @TODO : type the signature
      */
-    public function __construct(&$theshop, &$thecatalog, $theblock) {
+    public function __construct(Shop $theshop, Catalog $thecatalog, $theblock) {
         $this->theshop = $theshop;
         $this->thecatalog = $thecatalog;
         $this->theblock = $theblock;
@@ -87,14 +96,14 @@ class bill_controller {
      * @param array $data incoming parameters from form when directly available, otherwise the
      * function should get them from request
      */
-    public function receive($cmd, $data = array()) {
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
         switch ($cmd) {
@@ -290,6 +299,7 @@ class bill_controller {
         }
 
         // Relocates.
+        // todo : Add a SQL Transaction here ?
         if ($cmd == 'relocate') {
             /*
              * Unlocks constraint
@@ -305,7 +315,7 @@ class bill_controller {
 
             // Relocates.
             $relocated = $this->data->relocated;
-            $z = $thie->data->z;
+            $z = $this->data->z;
             $where = $this->data->where;
             if ($z > $where) {
                 $gap = $z - $where;
@@ -336,6 +346,7 @@ class bill_controller {
                 ";
                 $DB->execute($sql);
             }
+
             /*
              * Locks constraints back
              * remove this : cannot support concurrent operations
@@ -366,19 +377,23 @@ class bill_controller {
 
         // Registers accountance lettering **************************************.
         if ($cmd == 'reclettering') {
-            if ($billrec = $DB->get_record('local_shop_bill', ['idnumber' => $this->data->lettering])) {
-                if ($billrec->id != $this->data->billid) {
-                    $params = ['view' => 'viewBill', 'billid' => $billrec->id];
-                    $badbillurl = new \moodle_url('/local/shop/bills/view.php', $params);
+            $bill = new Bill($this->data->billid);
+
+            // check we have already this lettering.
+            if (!empty($this->data->lettering)) {
+                $select = " idnumber = :idnumber AND id <> :id ";
+                $params = [
+                    'idnumber' => $this->data->lettering,
+                    'id' => $this->data->billid,
+               ];
+                // Assume lettering should be unique among all shops.
+                if ($billrec = $DB->get_record_select('local_shop_bill', $select, $params)) {
                     $errorline = get_string('uniqueletteringfailure', 'local_shop', $badbillurl);
                     return '<div class="bill_error">'.$errorline.'</div>';
                 }
-                $bill = new Bill($billrec);
-            } else {
-                $bill = new Bill($this->data->billid);
             }
 
-            $bill->idnumber = $this->data->lettering;
+            $bill->record->idnumber = $this->data->lettering;
             $bill->save(true); // Light save.
         }
 
@@ -401,16 +416,17 @@ class bill_controller {
 
             if (!empty($billrec->billid)) {
                 $bill = new Bill($billrec->billid);
-                $bill->lastactiondate = $now;
+                $bill->lastactiondate = time();
             } else {
                 $bill = new Bill(null, false, $this->theshop, $this->thecatalog, $this->theblock);
             }
 
             if (empty($billrec->currency)) {
-                $billrec->currency = $theshop->defaultcurrency;
+                $billrec->currency = $this->theshop->defaultcurrency;
             }
 
-            $shipping = new \StdClass;
+            $shipping = new StdClass();
+            $config = get_config('local_shop');
             if (!empty($config->useshipping)) {
                 $shipping->value = 0;
                 // TODO : Call shipping calculation.
@@ -421,7 +437,7 @@ class bill_controller {
             // Creating a customer account for a user if missing.
             if ($billrec->useraccountid != 0) {
                 $user = $DB->get_record('user', ['id' => $billrec->useraccountid]);
-                if (!$potcustomers = $DB->get_records('local_shop_customer', ['hasaccount' => $user->id])) {
+                if (!$DB->get_records('local_shop_customer', ['hasaccount' => $user->id])) {
                     $customer = new Customer(null);
                     $customer->firstname = $user->firstname;
                     $customer->lastname = $user->lastname;

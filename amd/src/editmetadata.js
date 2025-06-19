@@ -1,7 +1,19 @@
-/*
- * Some form helpers to edit complex dynamic metadata arrays.
- */
-// jshint unused:false, undef:false
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+// jshint unused: true, undef:true
 
 define(['jquery', 'core/log'], function($, log) {
 
@@ -14,10 +26,13 @@ define(['jquery', 'core/log'], function($, log) {
             $('input[name="editextradata"]').bind('click', this.openeditmodal);
             $('input[name="editproductiondata"]').bind('click', this.openeditmodal);
             $('input[name="edithandlerparams"]').bind('click', this.openeditmodal);
+            log.debug("Local Shop AMD Editmetadata Initialized !");
         },
 
         /**
          * Parses the textarea content and extracts property:value pairs.
+         * @param {string[]} values
+         * @param {string} [format]
          */
         parsevalues: function(values, format) {
             var arr, part, parts, valuearr = [];
@@ -39,6 +54,8 @@ define(['jquery', 'core/log'], function($, log) {
 
         /**
          * Recombines property::value array into the text area content.
+         * @param {string[]} values
+         * @param {string} [format]
          */
         recombinevalues: function(values, format) {
             var val;
@@ -58,6 +75,7 @@ define(['jquery', 'core/log'], function($, log) {
 
         /**
          * Opens modal and build a local form from textarea value.
+         * @param {Object} e - the event
          */
         openeditmodal: function(e) {
 
@@ -147,6 +165,7 @@ define(['jquery', 'core/log'], function($, log) {
 
         /**
          * Closes without saving.
+         * @param {Object} e - the event
          */
         canceleditmodal: function(e) {
 
@@ -162,6 +181,7 @@ define(['jquery', 'core/log'], function($, log) {
 
         /**
          * Saves back metadata and closes helper modal.
+         * @param {Object} e - the event
          */
         closeeditmodal: function(e) {
 

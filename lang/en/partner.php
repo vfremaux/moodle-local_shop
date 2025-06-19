@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for partners
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 
 $string['allbutpartners'] = 'All but partners';
@@ -48,12 +56,13 @@ $string['managepartners_desc'] = 'Partners can import purchase sessions into the
 
 $string['moodleuser_help'] = 'Moodle user linked to the partner. This identity will be used to send notifications.';
 
-$string['referer_help'] = 'When the partner sends the shop a shopping cart pre-fill request from his own website, the shop will check the referer site identity, if this
-setting is set with the remote web site rerferer. This is not an absolute protection but contributes to lowering abuses. For 
-web clients that do NOT provide referer attribute, the complete purchase sequence will have to be played.';
+$string['referer_help'] = 'When the partner sends the shop a shopping cart pre-fill request from his own website, the
+shop will check the referer site identity, if this setting is set with the remote web site rerferer. This is not an absolute
+protection but contributes to lowering abuses. For web clients that do NOT provide referer attribute, the complete purchase
+sequence will have to be played.';
 
-$string['partnercustomerid_help'] = 'In some cases where partner may be charged in a shop operation, partners need to be assigned to a cusstomer account
-to which invoices will be routed.';
+$string['partnercustomerid_help'] = 'In some cases where partner may be charged in a shop operation, partners need to be
+assigned to a cusstomer account to which invoices will be routed.';
 
 $string['partnersecretkey_help'] = 'This key is confidential and is NOT used in any visible URL or display. It serves in some
-soecial operations such as remote product activation process.';
+special operations such as remote product activation process.';

@@ -16,14 +16,31 @@
 
 /**
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
+/**
+ * A dedicated renderer for product instances
+ *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class shop_instances_renderer {
 
+    /**
+     * Print admin line of a shop instance
+     * @param object $instance
+     * @todo : templatize
+     */
     public function instance_admin_line($instance) {
         global $OUTPUT;
 
@@ -57,7 +74,7 @@ class shop_instances_renderer {
             $str .= '</th>';
             $str .= '</tr>';
         } else {
-            $pricelines = array();
+            $pricelines = [];
             $prices = $instance->get_printable_prices();
             foreach ($prices as $key => $price) {
                 $pl = '<span class="shop-admin-pricerange">'.$key.' : </span>';
@@ -65,7 +82,7 @@ class shop_instances_renderer {
                 $pricelines[] = $pl;
             }
 
-            $taxedpricelines = array();
+            $taxedpricelines = [];
             $prices = $product->get_printable_prices(true);
             foreach ($prices as $key => $price) {
                 $pl = '<span class="shop-admin-pricerange">'.$key.' : </span>';
@@ -109,14 +126,14 @@ class shop_instances_renderer {
             $str .= '<td align="right" class="lastcol">';
 
             if (@$portlet->masterrecord == 0) {
-                $editurl = new moodle_url('/local/shop/instances/edit_instance.php', array('productid' => $product->id));
+                $editurl = new moodle_url('/local/shop/instances/edit_instance.php', ['productid' => $product->id]);
                 $str .= '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit')).'</a> ';
             }
 
             $deletestr = get_string('deleteproduct', 'local_shop');
-            $params = array('view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id);
+            $params = ['view' => 'viewAllProducts', 'what' => 'delete', 'itemid[]' => $product->id];
             $deleteurl = new moodle_url('/local/shop/instances/view.php', $params);
-            $str .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
+            $str .= '&nbsp;<a href="'.$deleteurl.'" alt="'.$deletestr.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete')).'</a>';
 
             $str .= '</td>';
             $str .= '</tr>';
@@ -124,6 +141,10 @@ class shop_instances_renderer {
         return $str;
     }
 
+    /**
+     * Print global commands
+     * @todo : templatize
+     */
     public function global_commands() {
         $str = '';
 

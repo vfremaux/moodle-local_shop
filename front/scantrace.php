@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,14 +26,15 @@
  * extracting and inspecting a transaton backtrace.
  * It is provided for problem or claim solving.
  *
- * TODO : relocate elsewhere but not in front.
+ * @todo : relocate elsewhere but not in front.
+ * @todo : templatize a bit more.
  */
 
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-use \local_shop\Shop;
+use local_shop\Shop;
 
 $transid = optional_param('transid', '', PARAM_TEXT);
 

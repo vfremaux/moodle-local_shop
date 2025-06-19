@@ -17,21 +17,41 @@
 namespace local_shop\output;
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
-class productinstances_search_form implements \Templatable {
+use renderer_base;
+use Templatable;
+use StdClass;
+use local_shop\Shop;
 
+/**
+ * Search form
+ */
+class productinstances_search_form implements Templatable {
+
+    /** @var counter */
     protected $unitcount;
 
+    /** @var the shop in context */
     protected $theshop;
 
-    public function __construct($theshop, $unitcount) {
+    /**
+     * Constructor
+     * @param Shop $theshop
+     * @param int $unitcount
+     */
+    public function __construct(Shop $theshop, $unitcount) {
         $this->unitcount = $unitcount;
         $this->theshop = $theshop;
     }
 
-    public function export_for_template(\renderer_base $output) {
+    /**
+     * Exporter for template
+     * @param renderer_base $output
+     */
+    public function export_for_template(renderer_base $output) {
 
-        $template = new \StdClass();
+        $template = new StdClass();
         $template->shopid = $this->theshop->id;
         $template->sesskey = sesskey();
  
@@ -44,4 +64,3 @@ class productinstances_search_form implements \Templatable {
         return $template;
     }
 }
-

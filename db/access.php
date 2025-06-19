@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Capabilities
+ *
  * @package   local_shop
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -29,8 +31,8 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => [
-            'manager' => CAP_ALLOW
-        ]
+            'manager' => CAP_ALLOW,
+        ],
     ],
 
     'local/shop:beassigned' => [
@@ -38,8 +40,8 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => [
-            'manager' => CAP_ALLOW
-        ]
+            'manager' => CAP_ALLOW,
+        ],
     ],
 
     /*
@@ -50,7 +52,7 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-        ]
+        ],
     ],
 
     /*
@@ -60,7 +62,7 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-        ]
+        ],
     ],
 
     /*
@@ -70,7 +72,7 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-        ]
+        ],
     ],
 
     /*
@@ -80,7 +82,7 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-        ]
+        ],
     ],
 
     /*
@@ -90,7 +92,7 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-        ]
+        ],
     ],
 
     /*
@@ -100,8 +102,8 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-            'user' => CAP_ALLOW
-        ]
+            'user' => CAP_ALLOW,
+        ],
     ],
 
     /*
@@ -111,8 +113,7 @@ $capabilities = [
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-            'manager' => CAP_ALLOW
-        ]
+            'manager' => CAP_ALLOW,
+        ],
     ],
-
 ];

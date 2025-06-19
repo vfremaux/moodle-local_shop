@@ -50,7 +50,7 @@ if (empty($bills)) {
 
     echo $OUTPUT->box(print_string('manybillsasresult', 'local_shop'));
 
-    echo $renderer->search_results($bills, $theshop);
+    echo $renderer->search_results($bills);
 }
 
 $billcount = $DB->count_records('local_shop_bill');

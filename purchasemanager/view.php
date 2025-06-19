@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -54,7 +53,7 @@ if (!preg_match('/viewAllProductInstances|search/', $view)) {
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/purchasemanager/view.php', array('view' => 'viewAllProductInstances', 'id' => $theshop->id));
+$url = new moodle_url('/local/shop/purchasemanager/view.php', ['view' => 'viewAllProductInstances', 'id' => $theshop->id]);
 $PAGE->set_url($url);
 
 $PAGE->set_context($context);

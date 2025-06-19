@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Shipzone index page
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * Display all defined zones within the catalog.
@@ -67,7 +68,7 @@ $mainrenderer = $PAGE->get_renderer('local_shop');
 
 echo $OUTPUT->header();
 
-if ($zones = CatalogShipZone::get_instances(array('catalogid' => $thecatalog->id))) {
+if ($zones = CatalogShipZone::get_instances(['catalogid' => $thecatalog->id])) {
 
     echo $mainrenderer->catalog_choice($url);
 
@@ -86,7 +87,7 @@ if ($zones = CatalogShipZone::get_instances(array('catalogid' => $thecatalog->id
 // Add instance link.
 
 $addshippingzonestr = get_string('addshippingzone', 'local_shop');
-$addzoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', array('what' => 'add'));
+$addzoneurl = new moodle_url('/local/shop/shipzones/edit_shippingzone.php', ['what' => 'add']);
 echo '<div class="addlink"><a href="'.$addzoneurl.'">'.$addshippingzonestr.'</a></div>';
 
 // Navigation return.

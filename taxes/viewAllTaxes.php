@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -39,7 +39,7 @@ $order = optional_param('order', 'country', PARAM_TEXT);
 $dir = optional_param('dir', 'ASC', PARAM_TEXT);
 $offset = optional_param('offset', 0, PARAM_INT);
 
-$url = new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes', 'order' => $order, 'dir' => $dir));
+$url = new moodle_url('/local/shop/taxes/view.php', ['view' => 'viewAllTaxes', 'order' => $order, 'dir' => $dir]);
 
 $taxescount = $DB->count_records_select('local_shop_tax', " UPPER(title) NOT LIKE 'test%' "); // Eliminate tests.
 
@@ -57,34 +57,38 @@ if (empty($taxes)) {
     $countproductsstr = get_string('countproducts', 'local_shop');
 
     $table = new html_table();
-    $table->head = array("<b>$namestr</b>",
-                         "<b>$countrystr</b>",
-                         "<b>$ratiostr</b>",
-                         "<b>$formulastr</b>",
-                         "<b>$countproductsstr</b>",
-                         '');
+    $table->head = [
+        "<b>$namestr</b>",
+        "<b>$countrystr</b>",
+        "<b>$ratiostr</b>",
+        "<b>$formulastr</b>",
+        "<b>$countproductsstr</b>",
+        '',
+    ];
     $table->width = '100%';
-    $table->align = array('left', 'left', 'center', 'left', 'center', 'right');
+    $table->align = ['left', 'left', 'center', 'left', 'center', 'right'];
     foreach ($taxes as $t) {
-        $row = array();
+        $row = [];
         $row[] = format_string($t->title);
         $row[] = $t->country;
         $row[] = $t->ratio;
         $row[] = $t->formula;
 
-        $pcount = 0 + CatalogItem::count(array('taxcode' => $t->id));
+        $pcount = 0 + CatalogItem::count(['taxcode' => $t->id]);
         $row[] = $pcount;
 
-        $params = array('taxid' => $t->id, 'what' => 'updatetax');
+        $params = ['taxid' => $t->id, 'what' => 'updatetax'];
         $editurl = new moodle_url('/local/shop/taxes/edit_tax.php', $params);
         $commands = '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 
         if ($pcount == 0) {
-            $params = array('view' => 'viewAllTaxes',
-                            'order' => $order,
-                            'dir' => $dir,
-                            'taxid' => $t->id,
-                            'what' => 'delete');
+            $params = [
+                'view' => 'viewAllTaxes',
+                'order' => $order,
+                'dir' => $dir,
+                'taxid' => $t->id,
+                'what' => 'delete',
+            ];
             $deleteurl = new moodle_url('/local/shop/taxes/view.php', $params);
             $commands .= '&nbsp;<a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
         }

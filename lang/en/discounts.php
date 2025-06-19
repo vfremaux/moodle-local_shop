@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for discounts
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['adddiscount'] = 'Add discount instance';
 $string['applieddiscounts'] = 'Discounts';
 $string['applyon'] = 'Scope';
@@ -36,6 +45,8 @@ $string['discounttype'] = 'Discount algorithm';
 $string['discountruledata'] = 'Specific data for the algorithm';
 $string['discountapplieson'] = 'Discount scope';
 $string['discountapplydata'] = 'Specific discount scope data';
+$string['errorbaddiscounttokenformat'] = 'Discount rule error : Data should be a single alphnumeric token, using letters and numbers';
+$string['errorbaddiscountmulticodeformat'] = 'Discount rule error: data should be a list of triplets <code>|<integerpercentratio>|<partnertag>';
 $string['errordiscountnameexistsinshop'] = 'Error: Name already used in this shop instance.';
 $string['erroremptydiscountitemlist'] = 'Error: discount scope is not full bill and item list is empty.';
 $string['errordiscount:badratioformat'] = 'Error: Ratio is not numeric';
@@ -45,6 +56,7 @@ $string['multipleratios'] = 'Multiple (see attributes)';
 $string['nodiscounts'] = 'No discount defined';
 $string['newdiscountinstance'] = 'New discount instance';
 $string['onitemlist'] = 'Selected item list';
+$string['itemlist'] = 'Item list';
 $string['onbill'] = 'Full order range';
 $string['ratio'] = 'Ratio';
 $string['enabled'] = 'Enabled';
@@ -56,6 +68,11 @@ $string['stopchainifnotapplies'] = 'Stop chains if not applies';
 $string['entercode'] = 'enter code here';
 $string['codeverified'] = 'Code has been verified and addresses an applicable discount';
 $string['codefailed'] = 'Code could not be verified as matching an applicable discount';
+
+$string['ruledata_help'] = 'Specific data :<br><ul>
+    <li>Single offer code : a single alphanumeric token. ex : VOUCHER000</li>
+    <li>Multiple offer codes : a list of triplets &lt;code&gt;|&lt;integerratio&gt;|&lt;partnertag&gt;</li>
+    </ul>';
 
 $string['ratio_help'] = 'Percentage of discount over the discount scope. In same cases (depending on algorithm choice and specific data), this rate has no effect and is delegated to more specific options of the choosen algorithm.';
 $string['applydata_help'] = '

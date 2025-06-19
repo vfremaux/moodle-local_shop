@@ -18,10 +18,12 @@
  * local_shop tests of purchase chain
  *
  * @package    local_shop
- * @category   test
- * @copyright  2013 Valery Fremaux
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_shop;
+
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
@@ -32,8 +34,8 @@ require_once($CFG->dirroot.'/local/shop/tests/generator/lib.php');
 require_once($CFG->dirroot.'/local/shop/catalogs/catalogs.controller.php');
 require_once($CFG->dirroot.'/local/shop/taxes/taxes.controller.php');
 
-use \local_shop\Catalog;
-use \local_shop\Shop;
+use local_shop\Catalog;
+use local_shop\Shop;
 
 // Get all front controllers.
 $controllerfiles = glob($CFG->dirroot.'/local/shop/front/*.controller.php');
@@ -44,13 +46,13 @@ foreach ($controllerfiles as $c) {
 /**
  *  tests class for local_shop.
  */
-class local_shop_backoffice_testcase extends advanced_testcase {
+class backoffice_test extends advanced_testcase {
 
     /**
      * Given an initialised shop with a TEST product, will run the entire
      * purchase controller chain using test payment method.
      * This test assumes we have a shop,purchasereqs,users,customer,order,payment,bill sequence
-     *
+     * @covers \local_shop\backoffice\shop_controller
      */
     public function test_backoffice() {
         global $DB, $SESSION;
@@ -62,11 +64,11 @@ class local_shop_backoffice_testcase extends advanced_testcase {
         // Setup moodle content environment.
 
         $category = $this->getDataGenerator()->create_category();
-        $params = array('name' => 'Test course', 'shortname' => 'TESTPROD', 'category' => $category->id);
+        $params = ['name' => 'Test course', 'shortname' => 'TESTPROD', 'category' => $category->id];
         $course = $this->getDataGenerator()->create_course($params);
 
         // Create customersupport default course.
-        $params = array('name' => 'Test Customer Support course', 'shortname' => 'CUSTOMERSUPPORT', 'category' => $category->id);
+        $params = ['name' => 'Test Customer Support course', 'shortname' => 'CUSTOMERSUPPORT', 'category' => $category->id];
         $customersupportcourse = $this->getDataGenerator()->create_course($params);
 
         // Setup the shop structure.
@@ -77,10 +79,13 @@ class local_shop_backoffice_testcase extends advanced_testcase {
 
         $shopcontroller = new \local_shop\backoffice\shop_controller();
 
-        $data = array(
+        $data = [
             'name' => 'Testshop',
-            'description_editor' => array('text' => 'Testing backoffice',
-                'format' => 1, 'itemid' => 0),
+            'description_editor' => [
+                'text' => 'Testing backoffice',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'currency' => 'EUR',
             'customerorganisationrequired' => 1,
             'enduserorganisationrequired' => 1,
@@ -93,13 +98,16 @@ class local_shop_backoffice_testcase extends advanced_testcase {
             'discountrate' => '10',
             'discountrate2' => '13',
             'discountrate3' => '15',
-            'eula_editor' => array('text' => 'General sales conditions',
-                'format' => 1, 'itemid' => 0),
+            'eula_editor' => [
+                'text' => 'General sales conditions',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'catalogid' => 0,
             'paymodes' => 'test',
             'defaultpaymode' => 'test',
-            'navsteps' => $config->defaultnavsteps
-        );
+            'navsteps' => $config->defaultnavsteps,
+        ];
 
         $shopcontroller->receive('edit', $data);
         $shopinstance = $shopcontroller->process('edit');
@@ -107,10 +115,13 @@ class local_shop_backoffice_testcase extends advanced_testcase {
         $this->assertTrue(!empty($shopinstance));
         $this->assertTrue($DB->count_records('local_shop') == 2);
 
-        $data = array(
+        $data = [
             'name' => 'Testshop2',
-            'description_editor' => array('text' => 'Testing backoffice 2',
-                'format' => 1, 'itemid' => 0),
+            'description_editor' => [
+                'text' => 'Testing backoffice 2',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'currency' => 'EUR',
             'customerorganisationrequired' => 1,
             'enduserorganisationrequired' => 1,
@@ -123,13 +134,16 @@ class local_shop_backoffice_testcase extends advanced_testcase {
             'discountrate' => '10',
             'discountrate2' => '13',
             'discountrate3' => '15',
-            'eula_editor' => array('text' => 'General sales conditions 2',
-                'format' => 1, 'itemid' => 0),
+            'eula_editor' => [
+                'text' => 'General sales conditions 2',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'catalogid' => 0,
             'paymodes' => 'test',
             'defaultpaymode' => 'test',
             'navsteps' => $config->defaultnavsteps
-        );
+        ];
 
         $shopcontroller->receive('edit', $data);
         $shopinstance = $shopcontroller->process('edit');
@@ -137,7 +151,7 @@ class local_shop_backoffice_testcase extends advanced_testcase {
         $this->assertTrue(!empty($shopinstance));
         $this->assertTrue($DB->count_records('local_shop') == 3);
 
-        $data = array('shopid' => $shopinstance->id);
+        $data = ['shopid' => $shopinstance->id];
 
         $shopcontroller->receive('delete', $data);
         $shopcontroller->process('delete');
@@ -149,17 +163,17 @@ class local_shop_backoffice_testcase extends advanced_testcase {
         $tax = $generator->create_tax();
         $taxcontroller = new \local_shop\backoffice\taxes_controller();
 
-        $data = array(
+        $data = [
             'country' => 'ES',
             'title' => 'IVA',
             'ratio' => '15',
-            'formula' => '$ttc = $ht * (1 + ($rt / 100))'
-        );
+            'formula' => '$ttc = $ht * (1 + ($rt / 100))',
+        ];
         $taxcontroller->receive('edit', $data);
         $tax = $taxcontroller->process('edit');
         $this->assertTrue($DB->count_records('local_shop_tax') == 2);
 
-        $data = array('taxid' => $tax->id);
+        $data = ['taxid' => $tax->id];
         $taxcontroller->receive('delete', $data);
         $tax = $taxcontroller->process('delete');
         $this->assertTrue($DB->count_records('local_shop_tax') == 1);
@@ -172,7 +186,7 @@ class local_shop_backoffice_testcase extends advanced_testcase {
 
     /**
      * Tries to test several combinations of catalogs.
-     *
+     * @covers \local_shop\backoffice\catalog_controller
      */
     public function test_catalogs() {
         global $DB, $SESSION;
@@ -188,57 +202,54 @@ class local_shop_backoffice_testcase extends advanced_testcase {
 
         $catalogcontroller = new \local_shop\backoffice\catalog_controller();
 
-        $data = array(
+        $data = [
             'name' => 'TestCatalog',
-            'description_editor' => array('text' => 'Catalog for tests',
-                'format' => 1, 'itemid' => 0),
-/*
-            'salesconditions_editor' => array('text' => 'Catalog sales conditions',
-                'format' => 1, 'itemid' => 0),
-*/
+            'description_editor' => [
+                'text' => 'Catalog for tests',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'groupid' => 0,
             'countryrestrictions' => 'FR,BE',
-            'linked' => 'free'
-        );
+            'linked' => 'free',
+        ];
 
         $catalogcontroller->receive('edit', $data);
         $catalog = $catalogcontroller->process('edit');
         $this->assertTrue(!empty($catalog));
         $this->assertTrue($DB->count_records('local_shop_catalog') == 1);
 
-        $data = array('catalogid' => $catalog->id);
+        $data = ['catalogid' => $catalog->id];
 
         $catalogcontroller->receive('deletecatalog', $data);
         $catalog = $catalogcontroller->process('deletecatalog');
         $this->assertTrue($DB->count_records('local_shop_catalog') == 0);
 
-        $data = array(
+        $data = [
             'name' => 'TestCatalog',
-            'description_editor' => array('text' => 'Catalog for tests',
-                'format' => 1, 'itemid' => 0),
-/*
-            'salesconditions_editor' => array('text' => 'Catalog sales conditions',
-                'format' => 1, 'itemid' => 0),
-*/
+            'description_editor' => [
+                'text' => 'Catalog for tests',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'countryrestrictions' => 'FR,BE',
-            'linked' => 'master'
-        );
+            'linked' => 'master',
+        ];
 
         $catalogcontroller->receive('edit', $data);
         $catalog = $catalogcontroller->process('edit');
 
-        $data = array(
+        $data = [
             'name' => 'TestCatalogS1',
-            'description_editor' => array('text' => 'Slave Catalog 1 for tests',
-                'format' => 1, 'itemid' => 0),
-/*
-            'salesconditions_editor' => array('text' => 'Slave Catalog 1 sales conditions',
-                'format' => 1, 'itemid' => 0),
-*/
+            'description_editor' => [
+                'text' => 'Slave Catalog 1 for tests',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'groupid' => $catalog->id,
             'countryrestrictions' => 'UK',
-            'linked' => 'slave'
-        );
+            'linked' => 'slave',
+        ];
 
         $catalogcontroller->receive('edit', $data);
         $catalog1 = $catalogcontroller->process('edit');
@@ -246,18 +257,17 @@ class local_shop_backoffice_testcase extends advanced_testcase {
         $this->assertTrue(!empty($catalog1));
         $this->assertTrue($DB->count_records('local_shop_catalog') == 2);
 
-        $data = array(
+        $data = [
             'name' => 'TestCatalogS2',
-            'description_editor' => array('text' => 'Slave Catalog 2 for tests',
-                'format' => 1, 'itemid' => 0),
-/*
-            'salesconditions_editor' => array('text' => 'Slave Catalog 2 sales conditions',
-                'format' => 1, 'itemid' => 0),
-*/
+            'description_editor' => [
+                'text' => 'Slave Catalog 2 for tests',
+                'format' => 1,
+                'itemid' => 0,
+            ],
             'groupid' => $catalog->id,
             'countryrestrictions' => 'US',
-            'linked' => 'slave'
-        );
+            'linked' => 'slave',
+        ];
 
         $catalogcontroller->receive('edit', $data);
         $catalog2 = $catalogcontroller->process('edit');

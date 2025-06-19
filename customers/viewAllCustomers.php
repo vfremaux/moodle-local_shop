@@ -18,9 +18,8 @@
  * List view of customers.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -49,7 +48,7 @@ if (!empty($action)) {
     $controller->process($action);
 }
 
-$params = array('view' => 'viewAllCustomers', 'sortorder' => $sortorder, 'dir' => $dir);
+$params = ['view' => 'viewAllCustomers', 'sortorder' => $sortorder, 'dir' => $dir];
 $url = new moodle_url('/local/shop/customers/view.php', $params);
 
 $config = get_config('local_shop');

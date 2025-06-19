@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    shoppaymodes_paypal
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Ipn library
+ *
+ * @package  shoppaymodes_paypal
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -28,6 +30,11 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
  * A lib to provide stuff to simulate IPN from the shop itself
  */
 
+/**
+ * Prints a link to test IPN
+ * @param string $transid
+ * @param int $shopid
+ */
 function paypal_print_test_ipn_link($transid, $shopid) {
 
     $config = get_config('local_shop');
@@ -62,14 +69,16 @@ function paypal_print_test_ipn_link($transid, $shopid) {
 
 /**
  * sends admin a notification
- *
+ * @param string $subject
+ * @param mixed $data
  */
 function shop_email_paypal_error_to_admin($subject, $data) {
     global $DB;
 
-    if ($salesrole = $DB->get_record('role', array('shortname' => 'sales'))) {
+    if ($salesrole = $DB->get_record('role', ['shortname' => 'sales'])) {
         $salesadmins = get_users_from_role_on_context($salesrole, context_system::instance());
     }
+    
     if (empty($salesadmins)) {
         $salesadmins[] = get_admin();
     }

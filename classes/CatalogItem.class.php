@@ -18,15 +18,17 @@
  * A catalogitem is an element of a catalog.
  *
  * @package     local_shop
- * @categroy    blocks
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop;
 
-use \StdClass;
+use StdClass;
 use moodle_exception;
+use core_text;
+use context_system;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,10 +36,22 @@ require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/extlib/extralib.php');
 
 /**
- * CatalogItem object is provided for direct Object Mapping of the _catalogitem database model
+ * CatalogItem object is provided for direct Object Mapping of the _catalogitem database model.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class CatalogItem extends ShopObject {
 
+    /**
+     * DB table (for ShopObject)
+     */
     protected static $table = 'local_shop_catalogitem';
 
     /**
@@ -50,14 +64,24 @@ class CatalogItem extends ShopObject {
      */
     public $elements;
 
-    // Fasten a 'by code' reference.
+    /**
+     * Fasten a 'by code' reference.
+     */
     public $elementsbycode;
 
-    // Tax object representing the associated tax.
+    /**
+     * Tax object representing the associated tax.
+     */
     protected $tax;
 
+    /**
+     * Cataog item availability.
+     */
     public $available;
 
+    /**
+     * Automation handler parameters.
+     */
     protected $handlerparams;
 
     /**
@@ -66,9 +90,14 @@ class CatalogItem extends ShopObject {
      */
     public $masterrecord = 1;
 
+    /**
+     * Constructor
+     * @param mixed $idorrecord
+     * @param bool $light
+     */
     public function __construct($idorrecord, $light = false) {
 
-        $this->elements = array();
+        $this->elements = [];
         parent::__construct($idorrecord, self::$table);
 
         $this->available = true;
@@ -251,13 +280,16 @@ class CatalogItem extends ShopObject {
 
         $items = [];
         foreach ($instancerecs as $instancerecid => $instance) {
-            $item = new \local_shop\CatalogItem($instancerecid);
+            $item = new CatalogItem($instancerecid);
             $items[$instance->code] = $item;
         }
 
         return $items;
     }
 
+    /**
+     * Serializes handler parameters.
+     */
     public function get_serialized_handlerparams() {
         return json_encode(@$this->handlerparams);
     }
@@ -275,9 +307,13 @@ class CatalogItem extends ShopObject {
         return $this->tax;
     }
 
+    /**
+     * Get a printable version of available price
+     * @param bool $taxes
+     */
     public function get_printable_prices($taxed = false) {
 
-        $prices = array();
+        $prices = [];
         $key = (!@$this->record->range1) ? '0-' : "0-{$this->record->range1}";
         if ($taxed) {
             $prices[$key] = sprintf('%.2f', $this->get_taxed_price(0, $this->record->taxcode));
@@ -326,11 +362,11 @@ class CatalogItem extends ShopObject {
         }
 
         if (!isset($taxcache)) {
-            $taxcache = array();
+            $taxcache = [];
         }
 
         if (!array_key_exists($taxid, $taxcache)) {
-            if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', array('id' => $taxid))) {
+            if ($taxcache[$taxid] = $DB->get_record('local_shop_tax', ['id' => $taxid])) {
                 if (empty($taxcache[$taxid]->formula)) {
                     $taxcache[$taxid]->formula = '$ttc = $ht';
                 }
@@ -341,7 +377,7 @@ class CatalogItem extends ShopObject {
 
         $in['ht'] = $this->get_price($q);
         $in['tr'] = $taxcache[$taxid]->ratio;
-        $result = evaluate(\core_text::strtolower($taxcache[$taxid]->formula).';', $in, 'ttc');
+        $result = evaluate(core_text::strtolower($taxcache[$taxid]->formula).';', $in, 'ttc');
         $this->tax = $result['ttc'] - $in['ht'];
         return $result['ttc'];
     }
@@ -356,7 +392,7 @@ class CatalogItem extends ShopObject {
         if (array_key_exists($code, $this->elements)) {
             return $this->elements[$code];
         } else {
-            throw Exception('nosuchelement');
+            throw new moodle_exception('nosuchelement');
         }
     }
 
@@ -374,13 +410,13 @@ class CatalogItem extends ShopObject {
     public function get_sales_unit_url() {
         global $OUTPUT;
 
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         $fs = get_file_storage();
-        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemunit', $this->id, $ignoredirs = true)) {
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemunit', $this->id, true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemunit', $this->id);
             $unitpix = array_pop($files);
-            $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
+            $url = moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
             $url = $OUTPUT->image_url(current_language().'/one_unit', 'local_shop');
@@ -390,18 +426,17 @@ class CatalogItem extends ShopObject {
 
     /**
      *
-     *
      */
     public function get_sales_ten_units_url() {
         global $OUTPUT;
 
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         $fs = get_file_storage();
-        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemtenunits', $this->id, $ignoredirs = true)) {
+        if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemtenunits', $this->id, true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemtenunits', $this->id);
             $unitpix = array_pop($files);
-            $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
+            $url = moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
             $url = $OUTPUT->image_url(current_language().'/ten_units', 'local_shop');
@@ -410,18 +445,18 @@ class CatalogItem extends ShopObject {
     }
 
     /**
-     *
+     * Get the url of the image
      *
      */
     public function get_image_url() {
 
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         $fs = get_file_storage();
         if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemimage', $this->id, /* ignoredirs */ true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemimage', $this->id);
             $unitpix = array_pop($files);
-            $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
+            $url = moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
             return $url;
         }
@@ -434,13 +469,13 @@ class CatalogItem extends ShopObject {
     public function get_thumb_url($nodefault = false) {
         global $OUTPUT;
 
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         $fs = get_file_storage();
         if (!$fs->is_area_empty($context->id, 'local_shop', 'catalogitemthumb', $this->id, /* ignoredirs */ true)) {
             $files = $fs->get_area_files($context->id, 'local_shop', 'catalogitemthumb', $this->id);
             $unitpix = array_pop($files);
-            $url = \moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
+            $url = moodle_url::make_pluginfile_url($unitpix->get_contextid(), $unitpix->get_component(), $unitpix->get_filearea(),
                                                     $unitpix->get_itemid(), $unitpix->get_filepath(), $unitpix->get_filename());
         } else {
             if ($nodefault) {
@@ -514,7 +549,7 @@ class CatalogItem extends ShopObject {
             }
         }
 
-        return array($handler, $methodname);
+        return [$handler, $methodname];
     }
 
     /**
@@ -523,7 +558,7 @@ class CatalogItem extends ShopObject {
      */
     public function extract_production_data() {
 
-        $info = new \StdClass();
+        $info = new StdClass();
 
         $productiondata = $this->productiondata;
 
@@ -588,7 +623,7 @@ class CatalogItem extends ShopObject {
                 ci.id = ?
         ";
 
-        return $DB->get_records($sql, array($this->id));
+        return $DB->get_records($sql, [$this->id]);
     }
 
     public function get_shipping_zones() {
@@ -611,7 +646,7 @@ class CatalogItem extends ShopObject {
                 csz.id
         ";
 
-        return $DB->get_records($sql, array($this->id));
+        return $DB->get_records($sql, [$this->id]);
     }
 
     public function unlink() {
@@ -631,7 +666,7 @@ class CatalogItem extends ShopObject {
     }
 
     public function has_leaflet() {
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         $fs = get_file_storage();
 
@@ -663,10 +698,12 @@ class CatalogItem extends ShopObject {
         return true;
     }
 
+    /**
+     * Forges an url for the leaflet document.
+     */
     public function get_leaflet_url() {
-        global $OUTPUT;
 
-        $context = \context_system::instance();
+        $context = context_system::instance();
 
         $url = null;
 
@@ -687,7 +724,7 @@ class CatalogItem extends ShopObject {
      * slave catalogs: master usecase is to internationalize or change of some commercial
      * values for a special country/region.
      * Variant should not alter the effective nature of the product, nor technical definition.
-     *
+     * @param CatalogItem $override
      * TODO : Check if still usefull
      */
     public function apply(CatalogItem $override) {
@@ -751,7 +788,7 @@ class CatalogItem extends ShopObject {
     /**
      * Deletes the catalogitem releasing elements as standard products.
      */
-    public function delete() {
+    public function delete(): void {
         $this->remove_content();
 
         parent::delete();
@@ -772,6 +809,10 @@ class CatalogItem extends ShopObject {
         parent::delete();
     }
 
+    /**
+     * clone a catalog item
+     * @param bool $inset
+     */
     public function clone_instance($inset = false) {
         global $DB;
 
@@ -816,8 +857,12 @@ class CatalogItem extends ShopObject {
         }
     }
 
-    public function export_to_ws($q, $withsubs) {
-        $export = new StdClass;
+    /**
+     * Export CatalogItem for WS
+     * @param int $q
+     */
+    public function export_to_ws($q) {
+        $export = new StdClass();
 
         $export->id = $this->record->id;
         $export->catalogid = $this->record->catalogid;
@@ -853,18 +898,41 @@ class CatalogItem extends ShopObject {
         return $export;
     }
 
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     */
     public static function count($filter) {
         return parent::_count(self::$table, $filter);
     }
 
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
     public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    /**
+     * Wrapper to ShopObject
+     * @param array $filter
+     * @param string $order
+     */
     public static function get_instances_menu($filter = [], $order = '') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(code, ' ', name)");
     }
 
+    /**
+     * Search in catalog items
+     * @param string $by
+     * @param string $arg
+     * @param array $searchscope array of catalog ids where to search in
+     */
     public static function search($by, $arg, $searchscope = null) {
         global $DB;
 
@@ -886,7 +954,7 @@ class CatalogItem extends ShopObject {
                 $error = true;
         }
 
-        $params = array();
+        $params = [];
         $scopeclause = '';
         if (!empty($searchscope)) {
             if (is_array()) {
@@ -903,7 +971,7 @@ class CatalogItem extends ShopObject {
             $whereclause = 'AND '.$whereclause;
         }
 
-        $results = array();
+        $results = [];
         if (!$error) {
             $sql = "
                SELECT
@@ -927,7 +995,6 @@ class CatalogItem extends ShopObject {
      * @param object $formdata data received from edition forms.
      */
     public static function compute_item_shortname(&$formdata) {
-        global $DB;
 
         $shortname = $formdata->code;
         $shortname = strtolower(str_replace(' ', '_', $shortname));

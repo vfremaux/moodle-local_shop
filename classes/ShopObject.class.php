@@ -18,36 +18,48 @@
  * the common base class for all shop objects.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop;
 
-defined('MOODLE_INTERNAL') || die();
+use StdClass;
+use moodle_exception;
 
 /**
  * A shop object is a generic object that has record in DB
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 class ShopObject {
 
+    /**
+     * DB storage table name
+     */
     protected static $table;
 
+    /** 
+     * Rehydrated record from DB.
+     */
     protected $record;
 
+    /**
+     * Constructor
+     * @param mixed $recordorid
+     * @param string $recordtable
+     */
     public function __construct($recordorid, $recordtable) {
         global $DB;
 
         self::$table = $recordtable;
 
         if (empty($recordorid)) {
-            $this->record = new \StdClass;
+            $this->record = new StdClass();
             $this->record->id = 0;
         } else if (is_numeric($recordorid)) {
-            $this->record = $DB->get_record(self::$table, array('id' => $recordorid));
+            $this->record = $DB->get_record(self::$table, ['id' => $recordorid]);
             if (!$this->record) {
-                throw new \Exception('Missing record exception in table '.self::$table." for ID $recordorid ");
+                throw new moodle_exception('Missing record exception in table '.self::$table." for ID $recordorid ");
             }
         } else {
             $this->record = $recordorid;
@@ -84,7 +96,7 @@ class ShopObject {
     public function __set($field, $value) {
 
         if (empty($this->record)) {
-            throw new \Exception("empty object");
+            throw new moodle_exception("empty object");
         }
 
         if (property_exists($this->record, $field)) {
@@ -100,6 +112,11 @@ class ShopObject {
         return true;
     }
 
+    /**
+     * Checks if an object instance exists in storage.
+     * @param int $id
+     * @param string $table
+     */
     public static function exists($id, $table = '') {
         global $DB;
 
@@ -113,7 +130,7 @@ class ShopObject {
             $table = 'local_shop_'.$table;
         }
 
-        return $DB->record_exists($table, array('id' => $id));
+        return $DB->record_exists($table, ['id' => $id]);
     }
 
     /**
@@ -132,19 +149,28 @@ class ShopObject {
         return $this->record->id;
     }
 
-    public function delete() {
+    /**
+     * Deletes the object in DB
+     */
+    public function delete(): void {
         global $DB;
 
         $class = get_called_class();
 
         // Finally delete record.
-        $DB->delete_records($class::$table, array('id' => $this->id));
+        $DB->delete_records($class::$table, ['id' => $this->id]);
     }
 
-    static protected function _count($table, $filter = array()) {
+    /**
+     * Counts records in a scope given by filter
+     * @param string $table
+     * @param array $filter
+     * @return int;
+     */
+    static protected function _count($table, $filter = []): int {
         global $DB;
 
-        return $DB->count_records($table, $filter);
+        return 0 + $DB->count_records($table, $filter);
     }
 
     /**
@@ -153,11 +179,11 @@ class ShopObject {
      * @param array $filter an array of specialized field filters
      * @return array of object instances keyed by primary id.
      */
-    static protected function _get_instances($table, $filter = array(), $order = '',
+    static protected function _get_instances($table, $filter = [], $order = '',
                                              $fields = '*', $limitfrom = 0, $limitnum = '', $light = false, $internalrefs = []) {
         global $DB;
 
-        $params = array();
+        $params = [];
         $sql = "SELECT ";
         $sql .= $fields;
         $sql .= " FROM {{$table}} ";
@@ -178,7 +204,7 @@ class ShopObject {
         }
 
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
-        $instances = array();
+        $instances = [];
         if ($records) {
             $class = get_called_class();
             foreach ($records as $rec) {
@@ -195,11 +221,11 @@ class ShopObject {
      * @param array $filter an array of specialized field filters
      * @return array of object instances keyed by primary id.
      */
-    static protected function _count_instances($table, $filter = array(),
+    static protected function _count_instances($table, $filter = [],
                                                $limitfrom = 0, $limitnum = '') {
         global $DB;
 
-        $params = array();
+        $params = [];
         $sql = "SELECT COUNT(*) FROM {{$table}} ";
         if (!empty($filter)) {
             $sql .= " WHERE ";
@@ -221,14 +247,15 @@ class ShopObject {
     /**
      * Sum calculable fields of object instances. If some filtering is needed, override
      * this method providing a filter as input.
-     * @param array $filter an array of specialized field filters
+     * @param string $table the storing table
      * @param string $field what field to sum on.
+     * @param array $filter an array of specialized field filters
      * @return a single scalar summed value.
      */
-    static protected function _sum($table, $field, $filter = array()) {
+    static protected function _sum($table, $field, $filter = []) {
         global $DB;
 
-        $params = array();
+        $params = [];
         $sql = "SELECT SUM({$field}) as summed FROM {{$table}} ";
         if (!empty($filter)) {
             $sql .= " WHERE ";
@@ -250,20 +277,24 @@ class ShopObject {
     /**
      * Get instances of the object. If some filtering is needed, override
      * this method providing a filter as input.
+     * @param string $table the storing table
      * @param array $filter an array of specialized field filters
+     * @param string $order
+     * @param string $namefield
+     * @param string $chooseopt
      * @return array of object instances keyed by primary id.
      */
-    static protected function _get_instances_menu($table, $filter = array(), $order = '', $namefield = 'name', $chooseopt = 'choosedots') {
+    static protected function _get_instances_menu($table, $filter = [], $order = '', $namefield = 'name', $chooseopt = 'choosedots') {
         global $DB;
 
         $menurecords = $DB->get_records_menu($table, $filter, $order, 'id,'.$namefield);
         if (empty($chooseopt)) {
-            $instancemenu = array();
+            $instancemenu = [];
         } else {
             if ($chooseopt == 'choosedots') {
-                $instancemenu = array(0 => get_string('choosedots'));
+                $instancemenu = [0 => get_string('choosedots')];
             } else {
-                $instancemenu = array(0 => get_string($chooseopt, 'local_shop'));
+                $instancemenu = [0 => get_string($chooseopt, 'local_shop')];
             }
         }
         if ($menurecords) {
@@ -302,6 +333,10 @@ class ShopObject {
         return $instances;
     }
 
+    /**
+     * Exports to YML format
+     * @param int $level the indent level
+     */
     protected function export($level = 0) {
 
         $indent = str_repeat('    ', $level);

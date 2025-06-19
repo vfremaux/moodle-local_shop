@@ -16,27 +16,49 @@
 
 namespace local_shop\output;
 
+defined('MOODLE_INTERNAL') || die();
 
-class front_invoice_header implements \Templatable {
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
+use Templatable;
+use renderer_base;
+use local_shop\Bill;
+use StdClass;
+use moodle_url;
+use context_system;
+
+/**
+ * the invoice header
+ */
+class front_invoice_header implements Templatable {
+
+    /** @var the bill */
     protected $bill;
 
-    public function __construct($bill) {
+    /**
+     * Constructor
+     * @param Bill $bill
+     */
+    public function __construct(Bill $bill) {
         $this->bill = $bill;
     }
 
-    public function export_for_template(\renderer_base $output) {
-        global $OUTPUT;
+    /**
+     * Exporter for template
+     * @param renderer_base $output
+     */
+    public function export_for_template(renderer_base $output) {
+        global $CFG;
 
         $config = get_config('local_shop');
 
         $afullbill = $this->bill;
 
-        $realized = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD);
+        $realized = [SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PARTIAL, SHOP_BILL_PREPROD];
 
-        $template = new \StdClass;
+        $template = new StdClass();
 
-        $subheaderstring = '';
+        $template->subheadingstr = '';
         if (!in_array($afullbill->status, $realized)) {
             $headerstring = get_string('ordersheet', 'local_shop');
             $template->subheadingstr = get_string('ordertempstatusadvice', 'local_shop');
@@ -52,19 +74,19 @@ class front_invoice_header implements \Templatable {
             $template->withlogo = true;
 
             if (!empty($config->sellerlogo)) {
-                $syscontext = \context_system::instance();
+                $syscontext = context_system::instance();
                 $component = 'local_shop';
                 $filearea = 'shoplogo';
                 $itemid = 0;
                 $filepath = $config->sellerlogo;
                 $path = "/$syscontext->id/$component/$filearea/$itemid".$filepath;
-                $template->logourl = \moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
+                $template->logourl = moodle_url::make_file_url($CFG->wwwroot.'/pluginfile.php', $path);
             } else {
-                $template->logourl = $OUTPUT->image_url('logo', 'theme');
+                $template->logourl = $output->image_url('logo', 'theme');
             }
         }
 
-        $template->headingstr = $OUTPUT->heading($headerstring, 1);
+        $template->headingstr = $output->heading($headerstring, 1);
         $template->headingstringstr = $headerstring; // Unformated version.
 
         $template->sellername = $config->sellername;
@@ -107,5 +129,4 @@ class front_invoice_header implements \Templatable {
 
         return $template;
     }
-
 }

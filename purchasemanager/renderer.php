@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -34,14 +33,30 @@ use local_shop\Product;
 use local_shop\BillItem;
 use local_shop\CatalogItem;
 
+/**
+ * Renderer for product instances backoffice.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.ExitExpression)
+ */
 class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Displays a single product instance admin line.
-     * @param Productref &$productinstance a full Product instance.
+     * @param array $productinstances a full Product instance.
      * @param array $viewparams contextual query params from the view.
+     * @param int $customerid
+     * @param int $shopowner
      */
-    public function productinstance_admin_form(&$productinstances, $viewparams = array(), $customerid, $shopowner) {
+    public function productinstance_admin_form($productinstances, $viewparams = [], $customerid = 0, $shopowner = 0) {
 
         $this->check_context();
 
@@ -108,7 +123,6 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             }
 
             $producttpl->pstart = date('Y/m/d H:i', $productinstance->startdate);
-            $now = time();
             $statusclass = $this->get_productinstance_running_status($productinstance, $totals);
             $producttpl->statusclass = $statusclass;
 
@@ -132,8 +146,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Given a product instance, returns the product status CSS class to apply.
+     * @param Product $productinstance
+     * @param array &$totals
      */
-    protected function get_productinstance_running_status($productinstance, &$totals) {
+    protected function get_productinstance_running_status(Product $productinstance, &$totals) {
 
             $now = time();
 
@@ -169,10 +185,10 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Builds the command set.
-     * @param object $productinstance
+     * @param Product $productinstance
      * @param array $viewparams
      */
-    protected function get_product_commands($productinstance, $viewparams) {
+    protected function get_product_commands(Product $productinstance, $viewparams) {
 
         $commands = '';
 
@@ -215,8 +231,9 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Extracts some extra metadata if config requires.
+     * @param Product $productinstance
      */
-    protected function process_extradata($productinstance) {
+    protected function process_extradata(Product $productinstance) {
         $config = get_config('local_shop');
 
         if (!empty($config->extradataonproductinstances)) {
@@ -246,7 +263,6 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
      * @param object $mainrenderer the shop main renderer for global functions
      */
     public function productinstances_options($mainrenderer) {
-        global $SESSION;
 
         $dir = optional_param('dir', 'ASC', PARAM_TEXT);
         $sortorder = optional_param('sortorder', 'id', PARAM_TEXT);
@@ -256,7 +272,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $quicksearchfilter = optional_param('quicksearchfilter', '*', PARAM_TEXT);
         $shopid = optional_param('shopid', 0, PARAM_INT);
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $params = [
             'view' => 'viewAllProductInstances',
@@ -288,7 +304,7 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         $url->remove_params('quicksearchfilter');
         $template->quicksearch = $this->quicksearch($quicksearchfilter, $url);
 
-        $params = array('view' => 'search');
+        $params = ['view' => 'search'];
         $template->searchurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
         return $this->output->render_from_template('local_shop/productinstances_options', $template);
@@ -296,6 +312,8 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Provides a selector for filtering context types
+     * @param string $current
+     * @param moodle_url|string $url
      */
     protected function contexttypes($current, $url) {
         global $DB;
@@ -323,10 +341,12 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Provides a simple text widget for filtering the screen by text
+     * @param string $current
+     * @param moodle_url|string $url
      */
     protected function quicksearch($current, $url) {
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->url = $url;
         $template->current = $current;
 
@@ -335,6 +355,8 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
 
     /**
      * Provides a selector for filtering product by state
+     * @param string $current
+     * @param moodle_url|string $url
      */
     protected function productstates($current, $url) {
 
@@ -355,7 +377,9 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
     }
 
     /**
-     *
+     * Search in products
+     * @param object $blockinstance
+     * @param int $unitcount
      */
     public function search_form($blockinstance, $unitcount) {
 
@@ -370,11 +394,15 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
         }
     }
 
-    public function search_results($results, $theshop) {
-        $template = new StdClass;
+    /**
+     * Results of search
+     * @param array $results
+     */
+    public function search_results($results) {
+        $template = new StdClass();
         $odd = 0;
         foreach ($results as $unit) {
-            $unittpl = new StdClass;
+            $unittpl = new StdClass();
             $product = Product::instance_by_reference($unit->reference, false);
             $unittpl->lineclass = ($odd) ? 'r0' : 'r1';
             $odd = ($odd + 1) % 2;
@@ -391,13 +419,13 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
                 'pending' => 0,
                 'running' => 0
             ];
-            $statusclass = $this->get_productinstance_running_status($productinstance, $totals);
-            $producttpl->statusclass = $statusclass;
+            $statusclass = $this->get_productinstance_running_status($product, $totals);
+            $unittpl->statusclass = $statusclass;
 
             $unittpl->contexttype = $product->contexttype;
 
             // Note : as internal record values are protected. We must pass them to a public object.
-            $unittpl->c = new StdClass;
+            $unittpl->c = new StdClass();
             $unittpl->c->url = $product->customer->url;
             $unittpl->c->firstname = $product->customer->firstname;
             $unittpl->c->lastname = $product->customer->lastname;
@@ -405,14 +433,14 @@ class shop_purchasemanager_renderer extends local_shop_base_renderer {
             $params = ['view' => 'showAllProductInstances', 'customerid' => $product->customer->id];
             $unittpl->c->unitsurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
-            $unittpl->ci = new StdClass;
+            $unittpl->ci = new StdClass();
             $unittpl->ci->url = $product->catalogitem->url;
             $unittpl->ci->name = format_string($product->catalogitem->name);
             $unittpl->ci->shortname = $product->catalogitem->shortname;
 
             $unittpl->hasbill = $product->hasbill;
             if ($unittpl->hasbill) {
-                $unittpl->b = new StdClass;
+                $unittpl->b = new StdClass();
                 $unittpl->b->url = $product->currentbillitem->bill->url;
                 $unittpl->b->id = $product->currentbillitem->bill->id;
             }

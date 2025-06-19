@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,6 +28,9 @@ class test_client {
 
     protected $t; // target.
 
+    /**
+     * Constructor
+     */
     public function __construct() {
 
         $this->t = new StdClass;
@@ -42,6 +44,10 @@ class test_client {
         $this->t->service = '/webservice/rest/server.php';
     }
 
+    /**
+     * Test WS get_shop()
+     * @param int $shopid
+     */
     public function test_get_shop($shopid = 0) {
 
         if (empty($this->t->wstoken)) {
@@ -49,16 +55,22 @@ class test_client {
             return;
         }
 
-        $params = array('wstoken' => $this->t->wstoken,
-                        'wsfunction' => 'local_shop_get_shop',
-                        'moodlewsrestformat' => 'json',
-                        'shopid' => $shopid);
+        $params = [
+            'wstoken' => $this->t->wstoken,
+            'wsfunction' => 'local_shop_get_shop',
+            'moodlewsrestformat' => 'json',
+            'shopid' => $shopid,
+        ];
 
         $serviceurl = $this->t->baseurl.$this->t->service;
 
         return $this->send($serviceurl, $params);
     }
 
+    /**
+     * Test WS get_catalog()
+     * @param int $catalogid
+     */
     public function test_get_catalog($catalogid = 0) {
 
         if (empty($this->t->wstoken)) {
@@ -66,16 +78,22 @@ class test_client {
             return;
         }
 
-        $params = array('wstoken' => $this->t->wstoken,
-                        'wsfunction' => 'local_shop_get_catalog',
-                        'moodlewsrestformat' => 'json',
-                        'catalogid' => $catalogid);
+        $params = [
+            'wstoken' => $this->t->wstoken,
+            'wsfunction' => 'local_shop_get_catalog',
+            'moodlewsrestformat' => 'json',
+            'catalogid' => $catalogid,
+        ];
 
         $serviceurl = $this->t->baseurl.$this->t->service;
 
         return $this->send($serviceurl, $params);
     }
 
+    /**
+     * Test WS get_catalog_category()
+     * @param int $ategoryid
+     */
     public function test_get_catalogcategory($categoryid = 0) {
 
         if (empty($this->t->wstoken)) {
@@ -83,16 +101,24 @@ class test_client {
             return;
         }
 
-        $params = array('wstoken' => $this->t->wstoken,
-                        'wsfunction' => 'local_shop_get_catalogcategory',
-                        'moodlewsrestformat' => 'json',
-                        'categoryid' => $categoryid);
+        $params = [
+            'wstoken' => $this->t->wstoken,
+            'wsfunction' => 'local_shop_get_catalogcategory',
+            'moodlewsrestformat' => 'json',
+            'categoryid' => $categoryid,
+        ];
 
         $serviceurl = $this->t->baseurl.$this->t->service;
 
         return $this->send($serviceurl, $params);
     }
 
+    /**
+     * Test WS get_catalogitem()
+     * @param string $itemidsource
+     * @param int $itemid catalog item id
+     * @param int $q quantity
+     */
     public function test_get_catalogitem($itemidsource = 'id', $itemid = 0, $q = 1) {
 
         if (empty($this->t->wstoken)) {
@@ -100,12 +126,14 @@ class test_client {
             return;
         }
 
-        $params = array('wstoken' => $this->t->wstoken,
-                        'wsfunction' => 'local_shop_get_catalogitem',
-                        'moodlewsrestformat' => 'json',
-                        'itemidsource' => $itemidsource,
-                        'itemid' => $itemid,
-                        'q' => $q);
+        $params = [
+            'wstoken' => $this->t->wstoken,
+            'wsfunction' => 'local_shop_get_catalogitem',
+            'moodlewsrestformat' => 'json',
+            'itemidsource' => $itemidsource,
+            'itemid' => $itemid,
+            'q' => $q,
+        ];
 
         $serviceurl = $this->t->baseurl.$this->t->service;
 
@@ -119,20 +147,27 @@ class test_client {
             return;
         }
 
-        $params = array('wstoken' => $this->t->wstoken,
-                        'wsfunction' => 'local_shop_get_catalogitems',
-                        'moodlewsrestformat' => 'json',
-                        'catalogid' => $catalogid,
-                        'categoryid' => $categoryid,
-                        'status' => $status,
-                        'type' => $type,
-                        'q' => $q);
+        $params = [
+            'wstoken' => $this->t->wstoken,
+            'wsfunction' => 'local_shop_get_catalogitems',
+            'moodlewsrestformat' => 'json',
+            'catalogid' => $catalogid,
+            'categoryid' => $categoryid,
+            'status' => $status,
+            'type' => $type,
+            'q' => $q,
+        ];
 
         $serviceurl = $this->t->baseurl.$this->t->service;
 
         return $this->send($serviceurl, $params);
     }
 
+    /**
+     * Send a testing call
+     * @param strint $serviceurl
+     * @param array $params
+     */
     protected function send($serviceurl, $params) {
         $ch = curl_init($serviceurl);
 
@@ -160,7 +195,7 @@ class test_client {
     }
 }
 
-// Effective test scénario
+// Effective test scenario
 
 $client = new test_client();
 
@@ -176,4 +211,3 @@ $client->test_get_catalogitems(1, 1, '*', '*', 1); // Get all category 1 product
 $client->test_get_catalogitems(1, 0, '*', 'AVAILABLE', 1); // Get item info by code.
 $client->test_get_catalogitems(1, 0, 'plain', '*', 1); // Get all standalone product info for 1 unit.
 $client->test_get_catalogitems(1, 1, 'plain', 'AVAILABLE', 1); // Get available standalone products info in category 1 for 1 unit.
-

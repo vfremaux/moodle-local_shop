@@ -16,22 +16,20 @@
 
 /**
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/form/group.php');
 
 // Register this new element in QuickForm.
-$quickformregister = array($CFG->dirroot.'/local/shop/forms/formelement_choosefile.php', 'HTML_QuickForm_group');
+$quickformregister = [$CFG->dirroot.'/local/shop/forms/formelement_choosefile.php', 'HTML_QuickForm_group'];
 $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['choosefile'] = $quickformregister;
 
 /**
  * Class for an element used to choose a file from the course files folder.
- *
  *
  * @author Valery Fremaux <valery.fremaux@gmail.com>
  * @access public
@@ -47,17 +45,19 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
      * title => string Text to be displayed as popup page title
      * options => string List of additional options for popup window
      */
-    public $_options = array('blockid' => null,
-                          'height' => 500,
-                          'width' => 750,
-                          'options' => 'none');
+    public $_options = [
+        'blockid' => null,
+        'height' => 500,
+        'width' => 750,
+        'options' => 'none',
+    ];
 
    /**
     * These complement separators, they are appended to the resultant HTML
     * @access   private
     * @var      array
     */
-    protected $_wrap = array('', '');
+    protected $_wrap = ['', ''];
 
    /**
     * Class constructor
@@ -68,7 +68,7 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
     * @param    array   Options to control the element's display
     * @param    mixed   Either a typical HTML attribute string or an associative array
     */
-    function __construct($elementName = null, $elementLabel = null, $options = array(), $attributes = null) {
+    function __construct($elementName = null, $elementLabel = null, $options = [], $attributes = null) {
         $this->HTML_QuickForm_element($elementName, $elementLabel, $attributes);
         $this->_appendName = true;
         $this->_type = 'choosefile';
@@ -86,12 +86,15 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
         }
     }
 
+    /**
+     * Create the form element
+     */
     function _createElements() {
         global $COURSE;
-        $this->_elements = array();
+        $this->_elements = [];
 
         if (!is_array($this->getAttributes()) || !array_key_exists('size', $this->getAttributes())) {
-            $this->updateAttributes(array('size' => 48));
+            $this->updateAttributes(['size' => 48]);
         }
 
         $this->_elements[0] =& MoodleQuickForm::createElement('text', 'value', '', $this->getAttributes());
@@ -106,18 +109,21 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
         }
 
         // First find out the text field id - this is a bit hacky, is there a better way?
-        $choose = 'id_'.str_replace(array('[', ']'), array('_', ''), $this->getElementName(0));
+        $choose = 'id_'.str_replace(array('[', ']'), ['_', ''], $this->getElementName(0));
         $url="/block/shop/file.php?id={$blockid}&choose=".$choose;
 
         if ($this->_options['options'] == 'none') {
-            $options = 'menubar=0,location=0,scrollbars,resizable,width='. $this->_options['width'] .',height='. $this->_options['height'];
-        }else{
+            $options = 'menubar=0,location=0,scrollbars,resizable,width=';
+            $options .= $this->_options['width'] .',height='. $this->_options['height'];
+        } else {
             $options = $this->_options['options'];
         }
         $fullscreen = 0;
 
-        $buttonattributes = array('title' => get_string('chooseafile', 'local_shop'),
-                  'onclick'=>"return openpopup('$url', '".$button->getName()."', '$options', $fullscreen);");
+        $buttonattributes = [
+            'title' => get_string('chooseafile', 'local_shop'),
+            'onclick'=> "return openpopup('$url', '".$button->getName()."', '$options', $fullscreen);",
+        ];
 
         $button->updateAttributes($buttonattributes);
     }
@@ -129,14 +135,12 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
      * @param bool $assoc
      * @return array
      */
-    function exportValue(&$submitValues, $assoc = false)
-    {
+    function exportValue(&$submitValues, $assoc = false) {
         $value = null;
         $valuearray = $this->_elements[0]->exportValue($submitValues[$this->getName()], true);
         $value[$this->getName()] = $valuearray['value'];
         return $value;
     }
-    // }}}
 
     /**
      * Called by HTML_QuickForm whenever form event is made on this element
@@ -148,12 +152,13 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
      * @access    public
      * @return    void
      */
-    function onQuickFormEvent($event, $arg, &$caller)
-    {
+    function onQuickFormEvent($event, $arg, &$caller) {
         switch ($event) {
             case 'updateValue':
-                // constant values override both default and submitted ones
-                // default values are overriden by submitted
+                /*
+                 * constant values override both default and submitted ones
+                 * default values are overriden by submitted
+                 */
                 $value = $this->_findValue($caller->_constantValues);
                 if (null === $value) {
                     $value = $this->_findValue($caller->_submitValues);
@@ -162,7 +167,7 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
                     }
                 }
                 if (!is_array($value)) {
-                   $value = array('value' => $value);
+                   $value = ['value' => $value];
                 }
                 if (null !== $value) {
                     $this->setValue($value);
@@ -171,6 +176,5 @@ class MoodleQuickForm_choosefile extends MoodleQuickForm_group {
                 break;
         }
         return parent::onQuickFormEvent($event, $arg, $caller);
-
     }
 }

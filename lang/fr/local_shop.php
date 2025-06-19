@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * General lang file
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot.'/local/shop/lib.php');
@@ -412,11 +421,16 @@ $string['seoalias'] = 'Alias pour le référencement';
 $string['seotitle'] = 'Titre pour le référencement';
 $string['seokeywords'] = 'Mots-clefs pour le référencement';
 $string['seodescription'] = 'Description pour le référencement';
-$string['seoalias_help'] = 'Un alias utilisé pour forger les "smarturls". Les smarturls peuvent utiliser les alias de catégories de produit et les alias de produits. On s\'attend à ce qu\'elles soient "lisibles" humainement';
-$string['seotitle_help'] = 'Un titre caché dans l\'en-tête HTML. Il s\'agit d\'un élément crucial pour le référencement. Les titres de produit sont insérés pour les pages liées au produit.
-Les titres de catégorie sont insérées dans les contextes de navigation sur une catégorie de produits. Par défaut le nom du produit sera utilisé, mais cela peut ne pas être optimal.';
-$string['seokeywords_help'] = 'Même si les mots-clefs sont connus comme étant une technique ignorée par la plupart des moteurs de recherche, il reste possible de qualifier l\'élément par des mots clefs.';
-$string['seodescription_help'] = 'Une descirption pour les moteurs de recherche. Elle ne dois pas excéder 255 caractères et présenter des mots-clefs significatifs dans son expression.';
+$string['seoalias_help'] = 'Un alias utilisé pour forger les "smarturls". Les smarturls peuvent utiliser les alias de catégories
+ de produit et les alias de produits. On s\'attend à ce qu\'elles soient "lisibles" humainement';
+$string['seotitle_help'] = 'Un titre caché dans l\'en-tête HTML. Il s\'agit d\'un élément crucial pour le référencement. Les
+ titres de produit sont insérés pour les pages liées au produit.
+Les titres de catégorie sont insérées dans les contextes de navigation sur une catégorie de produits. Par défaut le nom du produit
+ sera utilisé, mais cela peut ne pas être optimal.';
+$string['seokeywords_help'] = 'Même si les mots-clefs sont connus comme étant une technique ignorée par la plupart des moteurs de
+ recherche, il reste possible de qualifier l\'élément par des mots clefs.';
+$string['seodescription_help'] = 'Une descirption pour les moteurs de recherche. Elle ne dois pas excéder 255 caractères et
+ présenter des mots-clefs significatifs dans son expression.';
 $string['serviceproxykey'] = 'Clef du proxy de services';
 $string['set'] = 'Assemblage&nbsp;:&ensp;';
 $string['setid'] = 'Code assemblage ';
@@ -427,6 +441,7 @@ $string['shippings'] = 'Règles tarifaires de livraison';
 $string['shipzone'] = 'Zone tarifaire de livraison';
 $string['shipzones'] = 'Zones de livraison';
 $string['shop'] = 'Accès à la boutique';
+$string['shopbase'] = 'Boutique';
 $string['shopsettings'] = 'Réglages globaux';
 $string['shopcaption'] = 'Nom de la boutique ';
 $string['shopdescription'] = 'Description de la boutique ';
@@ -459,7 +474,8 @@ $string['taxname'] = 'Nom de la taxe&nbsp;:&ensp;';
 $string['taxratio'] = 'Ratio de la taxe :';
 $string['tendays'] = 'dix jours';
 $string['tenunitspix'] = 'Icone pour 10 unités de vente&nbsp;:&ensp;';
-$string['testmodeactive'] = 'Le service de vente de Moodle est en mode test. Nous n\'autorisons pas les paiements dans ce mode hormis les administrateurs pour une fonction de test.';
+$string['testmodeactive'] = 'Le service de vente de Moodle est en mode test. Nous n\'autorisons pas les paiements dans ce mode
+ hormis les administrateurs pour une fonction de test.';
 $string['testoverride'] = 'Suppression du verrou de test';
 $string['testuser'] = 'Tester l\'utilisateur';
 $string['threemonths'] = 'trois mois';
@@ -520,7 +536,8 @@ $string['privacy:metadata:shop_customer:zip'] = 'Le code postal du client';
 $string['privacy:metadata:shop_customer:city'] = 'La ville du client';
 $string['privacy:metadata:shop_customer:country'] = 'Le pays du client';
 $string['privacy:metadata:shop_customer:organisation'] = 'L\'organisation du client';
-$string['privacy:metadata:shop_customer:invoiceinfo'] = 'Si le client a demandé une adresse de facturation séparée, l\'adresse de facturation';
+$string['privacy:metadata:shop_customer:invoiceinfo'] = 'Si le client a demandé une adresse de facturation séparée,
+ l\'adresse de facturation';
 $string['privacy:metadata:shop_customer:timecreated'] = 'La date de création de l\'enregistrement client';
 $string['privacy:metadata:shop_customer'] = 'Information personnelle d\'un compte client ou d\'un pré-acheteur';
 
@@ -859,4 +876,4 @@ du produit.';
 $string['useslavecatalogs'] = 'Les catalogues maîtres esclaves permettent de créer des variantes locales de catalogues pour
 altérer la langue de présentation des produits ou les gammes de prix proposés.';
 
-include(__DIR__.'/pro_additional_strings.php');
+require(__DIR__.'/pro_additional_strings.php');

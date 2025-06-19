@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edit a product set
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/products/lib.php');
@@ -42,6 +42,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $setid = optional_param('itemid', '', PARAM_INT);
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
+$return = optional_param('return', 'back', PARAM_TEXT);
 
 // Security.
 $context = context_system::instance();
@@ -50,7 +51,8 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_set.php', array('setid' => $setid));
+$params = ['setid' => $setid, 'return' => $return];
+$url = new moodle_url('/local/shop/products/edit_set.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -59,14 +61,22 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 if ($setid) {
     $set = new CatalogItem($setid);
     $itemcatalog = $set->get_catalog();
-    $mform = new Set_Form($url, array('what' => 'edit', 'catalog' => $itemcatalog));
+    $mform = new Set_Form($url, ['what' => 'edit', 'catalog' => $itemcatalog, 'return' => $return]);
 } else {
     $itemcatalog = $thecatalog;
-    $mform = new Set_Form($url, array('what' => 'add', 'catalog' => $itemcatalog));
+    $mform = new Set_Form($url, ['what' => 'add', 'catalog' => $itemcatalog, 'return' => $return]);
+}
+
+if ($return == 'back') {
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/products/view.php', $params);
+} else {
+    $params = ['view' => 'shop', 'shopid' => $theshop->id, 'category' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/front/view.php', $params);
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/products/view.php', ['view' => 'viewAllProducts', 'categoryid' => $categoryid]));
+    redirect($returnurl);
 }
 
 if ($data = $mform->get_data()) {
@@ -89,7 +99,7 @@ if ($data = $mform->get_data()) {
         $data->id = $DB->insert_record('local_shop_catalogitem', $data);
 
         // We have items in the set. update relevant products.
-        $productsinset = optional_param('productsinset', array(), PARAM_INT);
+        $productsinset = optional_param('productsinset', [], PARAM_INT);
         if (is_array($productsinset)) {
             foreach ($productsinset as $productid) {
                 if ($productid != $data->id) {
@@ -117,7 +127,7 @@ if ($data = $mform->get_data()) {
 
         // If set code as changed, we'd better recompute a new shortname.
         if (empty($data->shortname) ||
-                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', array('id' => $data->id)))) {
+                ($data->code != $DB->get_field('local_shop_catalogitem', 'code', ['id' => $data->id]))) {
             $data->shortname = CatalogItem::compute_item_shortname($data);
         }
 
@@ -127,7 +137,7 @@ if ($data = $mform->get_data()) {
     // Process text fields from editors.
     $draftideditor = file_get_submitted_draft_itemid('description_editor');
     $data->description = file_save_draft_area_files($draftideditor, $context->id, 'local_shop', 'catalogitemdescription',
-                                                    $data->id, array('subdirs' => true), $data->description);
+                                                    $data->id, ['subdirs' => true], $data->description);
     $data = file_postupdate_standard_editor($data, 'description', $mform->editoroptions, $context, 'local_shop',
                                             'catalogitemdescription', $data->id);
     // Post update after processing text.
@@ -136,8 +146,7 @@ if ($data = $mform->get_data()) {
     $usercontext = context_user::instance($USER->id);
     shop_products_process_files($data, $context, $usercontext);
 
-    $params = ['view' => 'viewAllProducts', 'categoryid' => $categoryid];
-    redirect(new moodle_url('/local/shop/products/view.php', $params));
+    redirect($returnurl);
 }
 
 if ($setid) {

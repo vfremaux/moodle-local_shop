@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Form for editing shipping zones
+ *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -29,8 +30,14 @@ require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Tax;
 
+/**
+ * A form to edit Shipping zones
+ */
 class ShippingZone_Form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT;
 
@@ -62,7 +69,7 @@ class ShippingZone_Form extends moodleform {
 
         // Bill scope amount when bill applied.
         $taxes = Tax::get_instances();
-        $taxoptions = array();
+        $taxoptions = [];
         foreach ($taxes as $t) {
             $taxoptions[$t->id] = $t->title;
         }
@@ -73,10 +80,10 @@ class ShippingZone_Form extends moodleform {
         $mform->setType('applicability', PARAM_TEXT);
 
         // Adding submit and reset button.
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('submit', 'go_submit', get_string('submit'));
         $buttonarray[] = &$mform->createElement('cancel', 'go_cancel', get_string('cancel'));
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
     }
 }

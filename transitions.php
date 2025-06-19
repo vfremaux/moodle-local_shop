@@ -132,8 +132,8 @@ function bill_transition_pending_soldout($billorid) {
  * will trigger the SOLDOUT state and the production handlers.
  * @param mixed $billorid
  */
-function bill_transition_failed_soldout($billid) {
-    bill_transition_pending_soldout($billid);
+function bill_transition_failed_soldout($billorid) {
+    bill_transition_pending_soldout($billorid);
 }
 
 /*

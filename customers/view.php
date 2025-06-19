@@ -18,10 +18,9 @@
  * Master view for customer management
  *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
 require('../../../config.php');
@@ -49,7 +48,7 @@ if (!preg_match('/viewAllCustomers|viewCustomer/', $view) ||
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/customers/view.php', array('view' => $view));
+$url = new moodle_url('/local/shop/customers/view.php', ['view' => $view]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));

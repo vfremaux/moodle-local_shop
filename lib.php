@@ -25,13 +25,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/local/shop/compatlib.php');
 
 /**
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ */
+
+/**
  * This is part of the dual release distribution system.
  * Tells wether a feature is supported or not. Gives back the
  * implementation path where to fetch resources.
  * @param string $feature a feature key to be tested.
  */
 function local_shop_supports_feature($feature = null) {
-    global $CFG;
     static $supports;
 
     if (!during_initial_install()) {
@@ -102,13 +105,14 @@ function local_shop_has_leaflet($itemid) {
 
 /**
  * Standard pluginfile
- * @param object $course
- * @param int $cmid
+ * @param object $course unused in system context
+ * @param int $cmid unused in system context
  * @param object $context
  * @param string $filearea
  * @param array $args
  * @param bool $forcedownload
  * @param array $options
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $DB;
@@ -127,7 +131,7 @@ function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forc
     $itemid = (int)array_shift($args);
 
     if ($filearea != 'shoplogo') {
-        if (!$record = $DB->get_record($areas[$filearea], ['id' => $itemid])) {
+        if (!$DB->get_record($areas[$filearea], ['id' => $itemid])) {
             return false;
         }
     }
@@ -161,7 +165,8 @@ function local_shop_pluginfile($course, $cmid, $context, $filearea, $args, $forc
     }
 
     // Finally send the file.
-    send_stored_file($file, 0, 0, true, $options); // Download MUST be forced - security!
+    $forcedownload = true;
+    send_stored_file($file, 0, 0, $forcedownload, $options); // Download MUST be forced - security!
 }
 
 /**

@@ -35,4 +35,53 @@
     <version></version>
     <licenseversion></licenseversion>
   </library>
+  <library>
+    <location>paymodes/mercanet/mercanet_615_PLUGIN_linux32</location>
+    <name>Mercanet Integration L32bits</name>
+    <license></license>
+    <version>Linux 32 bits</version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>paymodes/mercanet/mercanet_615_PLUGIN_linux64</location>
+    <name>Mercanet Integration L64bits</name>
+    <license></license>
+    <version>Linux 32 bits</version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>paymodes/mercanet/mercanet_615_PLUGIN_win32</location>
+    <name>Mercanet Integration W32bits</name>
+    <license></license>
+    <version>Windows 32 bits</version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>paymodes/sherlocks/sherlocks_617_PLUGIN_linux32</location>
+    <name>Sherlocks Integration L32bits</name>
+    <license></license>
+    <version>Linux 32 bits</version>
+    <licenseversion>617</licenseversion>
+  </library>
+  <library>
+    <location>paymodes/sherlocks/sherlocks_617_PLUGIN_linux64</location>
+    <name>Sherlocks Integration L64bits</name>
+    <license></license>
+    <version>Linux 32 bits</version>
+    <licenseversion>617</licenseversion>
+  </library>
+  <library>
+    <location>paymodes/sherlocks/sherlocks_617_PLUGIN_win32</location>
+    <name>Sherlocks Integration W32bits</name>
+    <license></license>
+    <version>Windows 32 bits</version>
+    <licenseversion>617</licenseversion>
+  </library>
+  <library>
+    <location>paymodes/sherlocks/sherlocks_617_PLUGIN_win64</location>
+    <name>Sherlocks Integration W64bits</name>
+    <license></license>
+    <version>Windows 64 bits</version>
+    <licenseversion>617</licenseversion>
+  </library>
 </libraries>

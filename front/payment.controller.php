@@ -15,8 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Purchase front step controller
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -32,20 +33,45 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 
 use local_shop\Bill;
 use local_shop\BillItem;
+use coding_exception;
+use moodle_url;
+use StdClass;
+use shop_paymode;
 
+/**
+ * Front purchase controller : checkout step
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class payment_controller extends front_controller_base {
 
-    public function receive($cmd, $data = array()) {
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
+    public function receive($cmd, $data = []) {
+        global $SESSION;
+
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
             $this->received = true;
             return;
         } else {
-            $this->data = new \StdClass;
+            $this->data = new StdClass();
         }
 
-        $this->data->debug = optional_param('debug', @$SESSION->shoppingcart->debug, PARAM_BOOL);
+        $this->data->debug = optional_param('debug', $SESSION->shoppingcart->debug ?? false, PARAM_BOOL);
 
         switch ($cmd) {
             case 'place':
@@ -62,21 +88,26 @@ class payment_controller extends front_controller_base {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     */
     public function process($cmd) {
-        global $SESSION, $DB, $USER, $OUTPUT, $CFG;
+        global $DB, $USER, $OUTPUT, $CFG, $SESSION;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
-        $SESSION->shoppingcart->debug = @$this->data->debug;
+        $SESSION->shoppingcart->debug = $this->data->debug ?? false;
 
         if ($cmd == 'place') {
             shop_debug_trace('Payment controller: placing', SHOP_TRACE_DEBUG);
             // Convert all data in bill records.
             // Customer info.
             $customer = (object)$SESSION->shoppingcart->customerinfo;
-            $params = array('email' => $customer->email, 'lastname' => strtoupper($customer->lastname));
+            $params = ['email' => $customer->email, 'lastname' => strtoupper($customer->lastname)];
             if ($customerrec = $DB->get_record('local_shop_customer', $params)) {
                 // Customer should already be pre recorded so this is expected to be the mostly used case.
                 $DB->update_record('local_shop_customer', $customer);
@@ -98,11 +129,11 @@ class payment_controller extends front_controller_base {
             }
 
             // Invoice info.
-            if ($oldbillrec = $DB->get_record('local_shop_bill', array('transactionid' => $SESSION->shoppingcart->transid))) {
+            if ($oldbillrec = $DB->get_record('local_shop_bill', ['transactionid' => $SESSION->shoppingcart->transid])) {
 
                 if ($oldbillrec->status == SHOP_BILL_SOLDOUT || $oldbillrec->status == SHOP_BILL_COMPLETE) {
-                    $params = array('view' => 'invoice', 'transid' => $SESSION->shoppingcart->transid);
-                    $frontbillurl = new \moodle_url('/local/shop/front/view.php', $params);
+                    $params = ['view' => 'invoice', 'transid' => $SESSION->shoppingcart->transid];
+                    $frontbillurl = new moodle_url('/local/shop/front/view.php', $params);
                     redirect($frontbillurl);
                 }
 
@@ -163,7 +194,7 @@ class payment_controller extends front_controller_base {
                 billid = ? AND
                 ordering = (SELECT MAX(ordering) FROM {local_shop_billitem} WHERE billid = ?)
             ";
-            if ($maxordering = $DB->get_record_select('local_shop_billitem', $select, array($bill->id, $bill->id))) {
+            if ($maxordering = $DB->get_record_select('local_shop_billitem', $select, [$bill->id, $bill->id])) {
                 $ordering = $maxordering->ordering + 1;
             } else {
                 $ordering = 0;
@@ -171,17 +202,17 @@ class payment_controller extends front_controller_base {
 
             $totalitems = 0;
             foreach ($SESSION->shoppingcart->order as $shortname => $quant) {
-                $itemrec = new \StdClass();
+                $itemrec = new StdClass();
                 $itemrec->quantity = $quant;
                 $itemrec->itemcode = $shortname;
                 $itemrec->type = 'BILLING';
-                $itemrec->productiondata = new \StdClass;
+                $itemrec->productiondata = new StdClass();
                 // Be carefull that production data may aggregate more data from catalog.
                 $itemrec->productiondata->users = @$SESSION->shoppingcart->users[$shortname];
                 // For further reference to some origin shop parameters and defaults.
                 $itemrec->productiondata->id = $this->theshop->id;
                 // For further reference to some origin block parameters and defaults.
-                $itemrec->productiondata->blockid = 0 + @$this->theblock->id;
+                $itemrec->productiondata->blockid = $this->theblock->id ?? 0;
                 if (!empty($SESSION->shoppingcart->customerdata[$shortname])) {
                     $itemrec->customerdata = $SESSION->shoppingcart->customerdata[$shortname];
                 } else {
@@ -206,6 +237,7 @@ class payment_controller extends front_controller_base {
                 if (!empty($discounts)) {
                     foreach ($discounts as $d) {
                         if ($d->check_applicability($bill)) {
+                            shop_debug_trace("{$d->name} applies to bill", SHOP_TRACE_DEBUG);
                             $d->apply_to_bill($bill);
                         }
                     }
@@ -218,7 +250,7 @@ class payment_controller extends front_controller_base {
             $billid = $bill->save();
 
             // Confirm transaction ID. This should not be necessary.
-            $DB->set_field('local_shop_bill', 'transactionid', $bill->transactionid, array('id' => $billid));
+            $DB->set_field('local_shop_bill', 'transactionid', $bill->transactionid, ['id' => $billid]);
 
             shop_trace("[{$bill->transactionid}] ".'Order placed : '.$totalitems.' objects');
         }
@@ -227,11 +259,13 @@ class payment_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('payment');
-                $params = array('view' => $prev,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id,
-                                'back' => 1);
-                $url = new \moodle_url('/local/shop/front/view.php', $params);
+                $params = [
+                    'view' => $prev,
+                    'shopid' => $this->theshop->id,
+                    'blockid' => $this->theblock->id ?? 0,
+                    'back' => 1,
+                ];
+                $url = new moodle_url('/local/shop/front/view.php', $params);
                 if (empty($SESSION->shoppingcart->debug)) {
                     return $url;
                 } else {
@@ -244,15 +278,17 @@ class payment_controller extends front_controller_base {
                  */
 
                 $afullbill = Bill::get_by_transaction($SESSION->shoppingcart->transid);
-                $paymentplugin = \shop_paymode::get_instance($this->theshop, $afullbill->paymode);
+                $paymentplugin = shop_paymode::get_instance($this->theshop, $afullbill->paymode);
                 if ($paymentplugin->process($afullbill)) {
                     $next = $this->theshop->get_next_step('payment');
-                    $params = array('view' => $next,
-                                    'shopid' => $this->theshop->id,
-                                    'blockid' => 0 + @$this->theblock->id,
-                                    'what' => 'produce',
-                                    'transid' => $afullbill->transactionid);
-                    $url = new \moodle_url('/local/shop/front/view.php', $params);
+                    $params = [
+                        'view' => $next,
+                        'shopid' => $this->theshop->id,
+                        'blockid' => $this->theblock->id ?? 0,
+                        'what' => 'produce',
+                        'transid' => $afullbill->transactionid,
+                    ];
+                    $url = new moodle_url('/local/shop/front/view.php', $params);
                     if (empty($SESSION->shoppingcart->debug)) {
                         return $url;
                     } else {
@@ -263,11 +299,13 @@ class payment_controller extends front_controller_base {
                     }
                 } else {
                     $next = $this->theshop->get_next_step('payment');
-                    $params = array('view' => $next,
-                                    'shopid' => $this->theshop->id,
-                                    'blockid' => 0 + @$this->theblock->id,
-                                    'what' => 'confirm',
-                                    'transid' => $afullbill->transactionid);
+                    $params = [
+                        'view' => $next,
+                        'shopid' => $this->theshop->id,
+                        'blockid' => $this->theblock->id ?? 0,
+                        'what' => 'confirm',
+                        'transid' => $afullbill->transactionid,
+                    ];
                     $url = new \moodle_url('/local/shop/front/view.php', $params);
                     if (empty($SESSION->shoppingcart->debug)) {
                         return $url;

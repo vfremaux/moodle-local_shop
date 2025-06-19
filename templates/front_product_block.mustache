@@ -42,17 +42,19 @@
 
         {{^isbundlepart}}
             {{#showname}}
+            <div class="shop-product-block-name d-flex">
             {{^issetpart}}
             {{^smarturl}}
-            <h1>{{name}}</h1>
+            <h1>{{name}}</h1> {{#canedit}}{{{editlink}}}{{/canedit}}
             {{/smarturl}}
             {{#smarturl}}
-            <a href="{{{smarturl}}}" target="_blank"><h1>{{name}}</h1></a>
+            <a href="{{{smarturl}}}" target="_blank"><h1>{{name}}</h1></a> {{#canedit}}{{{editlink}}}{{/canedit}}
             {{/smarturl}}
             {{/issetpart}}
             {{#issetpart}}
-            <h2>{{name}}</h2>
+            <h2>{{name}}</h2> {{#canedit}}{{{editlink}}}{{/canedit}}
             {{/issetpart}}
+            </div>
             {{/showname}}
             {{#showdescription}}
             {{> local_shop/front_modal_product }}

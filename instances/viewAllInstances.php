@@ -16,8 +16,8 @@
 
 /**
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -45,11 +45,11 @@ if ($action != '') {
 }
 
 // Fetch all product instances for the current customer account.
-$instances = Product::get_instances(array('customerid' => $customer->id));
+$instances = Product::get_instances(['customerid' => $customer->id]);
 
 echo $out;
 
-$listurl = new moodle_url('/local/shop/instances/view.php', array('view' => 'viewAllInstances'));
+$listurl = new moodle_url('/local/shop/instances/view.php', ['view' => 'viewAllInstances']);
 echo $mainrenderer->customer_choice($customerid, $listurl);
 
 echo $OUTPUT->heading(get_string('customer', 'local_shop'), 1);

@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Scheduled tasks definitions
+ *
  * @package   local_shop
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   20217 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)

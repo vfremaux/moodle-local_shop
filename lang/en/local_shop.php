@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * General lang file
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot.'/local/shop/lib.php');
@@ -353,6 +362,8 @@ $string['noshops'] = 'No shops defined';
 $string['notes'] = 'Notes';
 $string['notowner'] = 'You are not owning this item';
 $string['notrace'] = 'No trace for this transaction';
+$string['trace'] = 'Merchant trace';
+$string['shopsettings'] = 'Global settings';
 $string['num'] = 'N°';
 $string['objectexception'] = 'Object exception : {$a}';
 $string['oneday'] = 'a day';
@@ -466,7 +477,7 @@ $string['serviceproxykey'] = 'Service proxy key';
 $string['set'] = 'Set:';
 $string['setid'] = 'Set ID';
 $string['settings'] = 'Settings';
-$string['shop'] = 'Shop';
+$string['shopbase'] = 'Shop';
 $string['shop'] = 'e-Shop';
 $string['shopcaption'] = 'Store caption';
 $string['shopdescription'] = 'Description de la boutique';
@@ -848,4 +859,4 @@ $string['JPYsymb'] = 'Yen (japan)';
 $string['TNDsymb'] = 'Dn (TU)';
 $string['MADsymb'] = 'Dn (MA)';
 
-include(__DIR__.'/pro_additional_strings.php');
+require(__DIR__.'/pro_additional_strings.php');

@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +38,7 @@ $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || empty($SESSION->shoppingcart->order)) {
-    redirect(new moodle_url('/local/shop/front/view.php', array('id' => $theshop->id, 'view' => 'shop')));
+    redirect(new moodle_url('/local/shop/front/view.php', ['id' => $theshop->id, 'view' => 'shop']));
 }
 
 $action = optional_param('what', '', PARAM_TEXT);
@@ -71,16 +71,9 @@ echo $renderer->progress('CUSTOMER');
 
 echo $renderer->admin_options();
 
-/*
-echo '<div id="shop-cart-summary" class="shop-summary" style="float:left; margin-right:20px">';
-echo $OUTPUT->heading(get_string('cartsummary', 'local_shop'));
-echo $renderer->cart_summary();
-echo '</div>';
-*/
-
 $template = new StdClass;
 
-$template->shopurl = new moodle_url('/local/shop/front/view.php', array('view' => 'customer', 'id' => $theshop->id));
+$template->shopurl = new moodle_url('/local/shop/front/view.php', ['view' => 'customer', 'id' => $theshop->id]);
 $template->canlogin = (!isloggedin() || isguestuser());
 $template->oldaccount = (isloggedin() && !isguestuser() && \local_shop\Customer::has_account());
 $template->shopid = $theshop->id;
@@ -105,7 +98,7 @@ if (!empty($SESSION->shoppingcart->errors->invoiceinfo)) {
 }
 $template->invoiceinfoform = $renderer->invoicing_info_form();
 
-$options = array();
+$options = [];
 $options['inform'] = true;
 
 $template->actionform = $renderer->action_form('customer', $options);

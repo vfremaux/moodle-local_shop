@@ -80,6 +80,7 @@ define(['jquery', 'core/log', 'core/config'], function($, log, cfg) {
 
         /**
          * Calculates a checksum on 2 chars.
+         * @param {string} keypayload
          */
         checksum: function(keypayload) {
 

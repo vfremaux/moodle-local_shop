@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines form to add a new project
+ * Defines form to add a new product in catalog
  *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -31,37 +30,67 @@ require_once($CFG->dirroot.'/local/shop/classes/Tax.class.php');
 
 use local_shop\Tax;
 
+/**
+ * an abstrace class for common cataogitems features to edit
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 abstract class CatalogItem_Form extends moodleform {
 
-    /*
-     * Attributes for several widgets.
-     */
+    /** @var array of options for file managers */
     public $editoroptions;
+
+    /** @var Attributes for several widgets. */
     protected $defaultattributes;
+
+    /** @var Attributes for several widgets with short content. */
     protected $attributesshort;
+
+    /** @var Attributes for several widgets with long content. */
     protected $attributeslong;
+
+    /** @var Attributes for filepickers. */
     protected $fpickerattributes;
 
+    /**
+     * Constructor
+     * @param string $action
+     * @param array $data
+     */
     public function __construct($action, $data) {
         global $COURSE;
 
         $maxfiles = 99;                // TODO: add some settings.
         $maxbytes = $COURSE->maxbytes; // TODO: add some settings.
         $context = context_system::instance();
-        $this->editoroptions = array('trusttext' => true,
-                                     'subdirs' => false,
-                                     'maxfiles' => $maxfiles,
-                                     'maxbytes' => $maxbytes,
-                                     'context' => $context);
+        $this->editoroptions = [
+            'trusttext' => true,
+            'subdirs' => false,
+            'maxfiles' => $maxfiles,
+            'maxbytes' => $maxbytes,
+            'context' => $context,
+        ];
 
         $this->defaultattributes = 'size="50" maxlength="200"';
         $this->attributesshort = 'size="24" maxlength="32"';
         $this->attributeslong = 'size="80" maxlength="255"';
-        $this->fpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
+        $this->fpickerattributes = ['maxbytes' => $COURSE->maxbytes, 'accepted_types' => ['.jpg', '.gif', '.png']];
         $this->attributesdescription = 'cols="50" rows="8"';
         parent::__construct($action, $data);
     }
 
+    /**
+     * Add all name elements
+     */
     protected function add_standard_name_elements() {
         global $DB;
 
@@ -117,9 +146,9 @@ abstract class CatalogItem_Form extends moodleform {
 
         if (!empty($config->multipleowners)) {
             $fields = 'hasaccount,firstname,lastname';
-            $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", array(), $fields);
+            $potentialowners = $DB->get_records_select('local_shop_customer', " hasaccount > 0 ", [], $fields);
 
-            $ownersmenu = array('' => get_string('sitelevel', 'local_shop'));
+            $ownersmenu = ['' => get_string('sitelevel', 'local_shop')];
             if ($potentialowners) {
                 foreach ($potentialowners as $accountid => $owner) {
                     $ownersmenu[$accountid] = $owner->lastname.' '.$owner->firstname;
@@ -138,87 +167,90 @@ abstract class CatalogItem_Form extends moodleform {
         $mform->setType('status', PARAM_TEXT);
     }
 
+    /**
+     * Add pricing elements
+     */
     protected function add_price_group() {
 
-        $attributesprice1 = array('size' => 7, 'maxlength' => 10, 'onchange' => 'updatetiprice(1)');
+        $attributesprice1 = ['size' => 7, 'maxlength' => 10, 'onchange' => 'updatetiprice(1)'];
 
         $mform = $this->_form;
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price1 = &$mform->createElement('text', 'price1', '', $attributesprice1);
-        $price1->updateAttributes(array('onchange' => 'updatetiprice(1)'));
+        $price1->updateAttributes(['onchange' => 'updatetiprice(1)']);
         $pricegroup[] = $price1;
         $mform->setType('price1', PARAM_NUMBER);
         $from1 = &$mform->createElement('text', 'from1', '');
-        $from1->updateAttributes(array('disabled' => 'disabled', 'value' => 0, 'size' => 7));
+        $from1->updateAttributes(['disabled' => 'disabled', 'value' => 0, 'size' => 7]);
         $mform->setType('from1', PARAM_INT);
         $pricegroup[] = $from1;
         $to1 = &$mform->createElement('text', 'range1', '', $attributesprice1);
-        $to1->updateAttributes(array('onchange' => 'checkprices(1)'));
+        $to1->updateAttributes(['onchange' => 'checkprices(1)']);
         $pricegroup[] = $to1;
         $mform->setType('range1', PARAM_INT);
         $ttc1 = &$mform->createElement('static', 'ti1', '', '<span id="id_price1ti">TTC : </span>');
         $pricegroup[] = $ttc1;
         $mform->addGroup($pricegroup, 'priceset1', get_string('unitprice1', 'local_shop'), ' ', false);
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price2 = &$mform->createElement('text', 'price2', '', $attributesprice1);
-        $price2->updateAttributes(array('onchange' => 'updatetiprice(2)'));
+        $price2->updateAttributes(['onchange' => 'updatetiprice(2)']);
         $pricegroup[] = $price2;
         $mform->setType('price2', PARAM_NUMBER);
         $from2 = $mform->createElement('text', 'from2', '');
         $mform->setType('from2', PARAM_INT);
-        $from2->updateAttributes(array('disabled' => 'disabled', 'size' => 7));
+        $from2->updateAttributes(['disabled' => 'disabled', 'size' => 7]);
         $pricegroup[] = $from2;
         $to2 = &$mform->createElement('text', 'range2', '', $attributesprice1);
-        $to2->updateAttributes(array('onchange' => 'checkprices(2)'));
+        $to2->updateAttributes(['onchange' => 'checkprices(2)']);
         $pricegroup[] = $to2;
         $mform->setType('range2', PARAM_INT);
         $ttc2 = &$mform->createElement('static', 'ti2', '', '<span id="id_price2ti">TTC : </span>');
         $pricegroup[] = $ttc2;
         $mform->addGroup($pricegroup, 'priceset2', get_string('unitprice2', 'local_shop'), ' ', false);
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price3 = &$mform->createElement('text', 'price3', '', $attributesprice1);
-        $price3->updateAttributes(array('onchange' => 'updatetiprice(3)'));
+        $price3->updateAttributes(['onchange' => 'updatetiprice(3)']);
         $pricegroup[] = $price3;
         $mform->setType('price3', PARAM_NUMBER);
         $from3 = &$mform->createElement('text', 'from3', '');
         $mform->setType('from3', PARAM_INT);
-        $from3->updateAttributes(array('disabled' => 'disabled', 'size' => 7));
+        $from3->updateAttributes(['disabled' => 'disabled', 'size' => 7]);
         $pricegroup[] = $from3;
         $to3 = &$mform->createElement('text', 'range3', '', $attributesprice1);
-        $to3->updateAttributes(array('onchange' => 'checkprices(3)'));
+        $to3->updateAttributes(['onchange' => 'checkprices(3)']);
         $pricegroup[] = $to3;
         $mform->setType('range3', PARAM_INT);
         $ttc3 = &$mform->createElement('static', 'ti3', '', '<span id="id_price3ti">TTC : </span>');
         $pricegroup[] = $ttc3;
         $mform->addGroup($pricegroup, 'priceset3', get_string('unitprice3', 'local_shop'), ' ', false);
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price4 = &$mform->createElement('text', 'price4', '', $attributesprice1);
-        $price4->updateAttributes(array('onchange' => 'updatetiprice(4)'));
+        $price4->updateAttributes(['onchange' => 'updatetiprice(4)']);
         $pricegroup[] = $price4;
         $mform->setType('price4', PARAM_NUMBER);
         $from4 = &$mform->createElement('text', 'from4', '');
         $mform->setType('from4', PARAM_INT);
-        $from4->updateAttributes(array('disabled' => 'disabled', 'size' => 7));
+        $from4->updateAttributes(['disabled' => 'disabled', 'size' => 7]);
         $pricegroup[] = $from4;
         $to4 = &$mform->createElement('text', 'range4', '', $attributesprice1);
-        $to4->updateAttributes(array('onchange' => 'checkprices(4)'));
+        $to4->updateAttributes(['onchange' => 'checkprices(4)']);
         $pricegroup[] = $to4;
         $mform->setType('range4', PARAM_INT);
         $ttc4 = &$mform->createElement('static', 'ti4', '', '<span id="id_price4ti">TTC : </span>');
         $pricegroup[] = $ttc4;
         $mform->addGroup($pricegroup, 'priceset4', get_string('unitprice4', 'local_shop'), ' ', false);
 
-        $pricegroup = array();
+        $pricegroup = [];
         $price5 = &$mform->createElement('text', 'price5', '', $attributesprice1);
-        $price5->updateAttributes(array('onchange' => 'updatetiprice(5)'));
+        $price5->updateAttributes(['onchange' => 'updatetiprice(5)']);
         $pricegroup[] = $price5;
         $mform->setType('price5', PARAM_NUMBER);
         $from5 = &$mform->createElement('text', 'from5', '');
-        $from5->updateAttributes(array('disabled' => 'disabled', 'size' => 7));
+        $from5->updateAttributes(['disabled' => 'disabled', 'size' => 7]);
         $mform->setType('from5', PARAM_INT);
         $pricegroup[] = $from5;
         $to5 = &$mform->createElement('static', 'range5', '', '');
@@ -229,19 +261,25 @@ abstract class CatalogItem_Form extends moodleform {
         $mform->addGroup($pricegroup, 'priceset5', get_string('unitprice5', 'local_shop'), ' ', false);
     }
 
+    /**
+     * Add Tax selector
+     */
     protected function add_tax_select() {
 
         $mform = $this->_form;
 
-        $taxcodeopts = Tax::get_instances_menu(array(), 'title');
+        $taxcodeopts = Tax::get_instances_menu([], 'title');
         $label = get_string('taxcode', 'local_shop');
-        $mform->addElement('select', 'taxcode', $label, $taxcodeopts, array('onchange' => 'updatetiprice(1)'));
+        $mform->addElement('select', 'taxcode', $label, $taxcodeopts, ['onchange' => 'updatetiprice(1)']);
         $mform->setDefault('taxcode', null);
         $mform->setType('taxcode', PARAM_INT);
         $mform->addHelpButton('taxcode', 'taxhelp', 'local_shop');
         $mform->addRule('taxcode', null, 'required');
     }
 
+    /**
+     * ADD sales conditions
+     */
     protected function add_sales_params() {
 
         $mform = $this->_form;
@@ -253,16 +291,17 @@ abstract class CatalogItem_Form extends moodleform {
             $mform->addElement('text', 'sold', get_string('sold', 'local_shop'), $this->attributesshort);
             $mform->setType('sold', PARAM_NUMBER);
 
-            $maxquantopts = array('0' => get_string('unlimited'),
-                                  '1' => '1',
-                                  '2' => '2',
-                                  '3' => '3',
-                                  '4' => '4',
-                                  '5' => '5',
-                                  '10' => '10',
-                                  '20' => '20',
-                                  '50' => '50'
-                                  );
+            $maxquantopts = [
+                '0' => get_string('unlimited'),
+                '1' => '1',
+                '2' => '2',
+                '3' => '3',
+                '4' => '4',
+                '5' => '5',
+                '10' => '10',
+                '20' => '20',
+                '50' => '50',
+            ];
             $label = get_string('maxdeliveryquant', 'local_shop');
             $mform->addElement('select', 'maxdeliveryquant', $label, $maxquantopts);
             $mform->setType('maxdeliveryquant', PARAM_INT);
@@ -276,6 +315,9 @@ abstract class CatalogItem_Form extends moodleform {
         }
     }
 
+    /**
+     * Add target market
+     */
     protected function add_target_market() {
 
         $mform = $this->_form;
@@ -284,61 +326,64 @@ abstract class CatalogItem_Form extends moodleform {
         $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedin', 'local_shop'), PROVIDING_LOGGEDIN_ONLY);
         $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('both', 'local_shop'), PROVIDING_BOTH);
         $radiogroup[] = &$mform->createElement('radio', 'onlyforloggedin', '', get_string('loggedout', 'local_shop'), PROVIDING_LOGGEDOUT_ONLY);
-        $mform->addGroup($radiogroup, 'loggedingroup', get_string('onlyfor', 'local_shop'), array(' '), false);
+        $mform->addGroup($radiogroup, 'loggedingroup', get_string('onlyfor', 'local_shop'), [' '], false);
         $mform->setDefault('onlyforloggedin', 0);
 
         $label = get_string('productpassword', 'local_shop').':';
-        $mform->addelement('text', 'password', $label, '', array('size' => 8, 'maxlength' => 8));
+        $mform->addelement('text', 'password', $label, '', ['size' => 8, 'maxlength' => 8]);
         $mform->setType('password', PARAM_TEXT);
     }
 
+    /**
+     * Add common documents
+     */
     protected function add_document_assets() {
         global $COURSE;
 
-        $imgfpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.jpg', '.gif', '.png'));
-        $docfpickerattributes = array('maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('.pdf'));
+        $imgfpickerattributes = ['maxbytes' => $COURSE->maxbytes, 'accepted_types' => ['.jpg', '.gif', '.png']];
+        $docfpickerattributes = ['maxbytes' => $COURSE->maxbytes, 'accepted_types' => ['.pdf']];
 
         $mform = $this->_form;
 
-        $group = array();
+        $group = [];
         $label = get_string('leaflet', 'local_shop');
         $group[0] = & $mform->createElement('filepicker', 'leaflet', $label, $docfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearleaflet', get_string('clear', 'local_shop'));
 
         $label = get_string('leaflet', 'local_shop');
-        $mform->addGroup($group, 'grleaflet', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $mform->addGroup($group, 'grleaflet', $label, [get_string('clear', 'local_shop').'&nbsp;:&nbsp;'], ' ', false);
 
-        $group = array();
+        $group = [];
         $label = get_string('image', 'local_shop');
         $group[0] = & $mform->createElement('filepicker', 'image', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearimage', get_string('clear', 'local_shop'));
 
         $label = get_string('image', 'local_shop');
-        $mform->addGroup($group, 'grimage', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $mform->addGroup($group, 'grimage', $label, [get_string('clear', 'local_shop').'&nbsp;:&nbsp;'], ' ', false);
 
-        $group = array();
+        $group = [];
         $label = get_string('thumbnail', 'local_shop');
         $group[0] = & $mform->createElement('filepicker', 'thumb', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearthumb', get_string('clear', 'local_shop'));
 
         $label = get_string('thumbnail', 'local_shop');
-        $mform->addGroup($group, 'grthumb', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $mform->addGroup($group, 'grthumb', $label, [get_string('clear', 'local_shop').'&nbsp;:&nbsp;'], ' ', false);
 
-        $group = array();
+        $group = [];
         $label = get_string('unitpix', 'local_shop');
         $group[0] = & $mform->createElement('filepicker', 'unit', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'clearunit', get_string('clear', 'local_shop'));
 
         $label = get_string('unitpix', 'local_shop');
-        $mform->addGroup($group, 'grunit', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $mform->addGroup($group, 'grunit', $label, [get_string('clear', 'local_shop').'&nbsp;:&nbsp;'], ' ', false);
 
-        $group = array();
+        $group = [];
         $label = get_string('tenunitspix', 'local_shop');
         $group[0] = & $mform->createElement('filepicker', 'tenunits', $label, $imgfpickerattributes);
         $group[1] = & $mform->createElement('checkbox', 'cleartenunits', get_string('clear', 'local_shop'));
 
         $label = get_string('tenunitspix', 'local_shop');
-        $mform->addGroup($group, 'grtenunits', $label, array(get_string('clear', 'local_shop').'&nbsp;:&nbsp;'), ' ', false);
+        $mform->addGroup($group, 'grtenunits', $label, [get_string('clear', 'local_shop').'&nbsp;:&nbsp;'], ' ', false);
 
         $label = get_string('eula', 'local_shop').':';
         $mform->addElement('editor', 'eula_editor', $label, null, $this->editoroptions);
@@ -351,54 +396,76 @@ abstract class CatalogItem_Form extends moodleform {
         $mform->addHelpButton('notes_editor', 'description', 'local_shop');
     }
 
-    protected function set_name_data(&$defaults, $context) {
-        $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemdescription', @$defaults->itemid);
+    /**
+     * Part of set data for name elements
+     * @param StdClass $defaults
+     * @param context $context
+     */
+    protected function set_name_data($defaults, $context) {
+        file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
+                                                 'catalogitemdescription', $defaults->itemid ?? null);
     }
 
-    protected function set_document_asset_data(&$defaults, $context) {
+    /**
+     * Part of set data for documents
+     * @param StdClass $defaults
+     * @param context $context
+     * @todo better factorize the options.
+     */
+    protected function set_document_asset_data($defaults, $context) {
         global $COURSE;
 
+        $fileoptions = ['subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1];
+
         $draftitemid = file_get_submitted_draft_itemid('grleaflet[leaflet]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', @$defaults->itemid,
-                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->grleaflet = array('leaflet' => $draftitemid);
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemleaflet', $defaults->itemid ?? null,
+                                $fileoptions);
+        $defaults->grleaflet = ['leaflet' => $draftitemid ];
 
         $draftitemid = file_get_submitted_draft_itemid('grimage[image]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', @$defaults->itemid,
-                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->grimage = array('image' => $draftitemid);
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemimage', $defaults->itemid ?? null,
+                                $fileoptions);
+        $defaults->grimage = ['image' => $draftitemid];
 
         $draftitemid = file_get_submitted_draft_itemid('grthumb[thumb]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', @$defaults->itemid,
-                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->grthumb = array('thumb' => $draftitemid);
-
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemthumb', $defaults->itemid ?? null,
+                                $fileoptions);
+        $defaults->grthumb = ['thumb' => $draftitemid];
         $draftitemid = file_get_submitted_draft_itemid('grunit[unit]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', @$defaults->itemid,
-                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->grunit = array('unit' => $draftitemid);
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemunit', $defaults->itemid ?? null,
+                                $fileoptions);
+        $defaults->grunit = ['unit' => $draftitemid];
 
         $draftitemid = file_get_submitted_draft_itemid('grtenunits[tenunits]');
-        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', @$defaults->itemid,
-                                array('subdirs' => 0, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1));
-        $defaults->grtenunits = array('tenunits' => $draftitemid);
+        file_prepare_draft_area($draftitemid, $context->id, 'local_shop', 'catalogitemtenunits', $defaults->itemid ?? null,
+                                $fileoptions);
+        $defaults->grtenunits = ['tenunits' => $draftitemid];
 
         $defaults = file_prepare_standard_editor($defaults, 'eula', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemeula', @$defaults->itemid);
+                                                 'catalogitemeula', $defaults->itemid ?? null);
 
         $defaults = file_prepare_standard_editor($defaults, 'notes', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogitemnotes', @$defaults->itemid);
+                                                 'catalogitemnotes', $defaults->itemid ?? null);
     }
 
+    /**
+     * Common feeder.
+     * @param array $defaults
+     */
     public function set_data($defaults) {
         parent::set_data($defaults);
     }
 
+    /**
+     * Is cancelled
+     */
     public function is_cancelled() {
         parent::is_cancelled();
     }
 
+    /**
+     * Add category selector element
+     */
     public function add_category() {
 
         $mform = $this->_form;
@@ -421,10 +488,19 @@ abstract class CatalogItem_Form extends moodleform {
         }
     }
 
+    /**
+     * Check if we are in a slave catalog (pro)
+     */
     protected function is_slave() {
         return $this->_customdata['catalog']->isslave;
     }
 
+    /**
+     * Standard validation
+     * @param array $data
+     * @param array $files attached files
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function validation($data, $files = []) {
         global $DB;
 

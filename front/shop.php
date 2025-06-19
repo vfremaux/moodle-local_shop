@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -35,6 +35,7 @@ if (isloggedin() && is_siteadmin()) {
 
 // Pre feed SESSION shoppingcart if required.
 $action = optional_param('what', '', PARAM_TEXT);
+
 if ($action) {
     include_once($CFG->dirroot.'/local/shop/front/shop.controller.php');
     $controller = new \local_shop\front\shop_controller($theshop, $thecatalog, $theblock);
@@ -75,7 +76,7 @@ if (empty($categoryid) && empty($categoryalias)) {
         $errormessage .= "Shop : {$theshop->id}<br/>";
         $errormessage .= "Catalog : {$thecatalog->id}<br/>";
     } else {
-        $params = array('view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id);
+        $params = ['view' => $view, 'category' => $firstcategory, 'shopid' => $theshop->id];
         redirect(new moodle_url('/local/shop/front/view.php', $params));
     }
 }

@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A form to edit taxes
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   (C) 2016 Valery Fremaux (http://www.mylearningfactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 defined('MOODLE_INTERNAL') || die();
@@ -26,8 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/local/shop/country.php');
 
+/**
+ * Tax definition form.
+ */
 class Tax_Form extends moodleform {
 
+    /**
+     * Standard definition.
+     */
     public function definition() {
         global $OUTPUT;
 
@@ -50,7 +57,7 @@ class Tax_Form extends moodleform {
         $mform->setType('ratio', PARAM_TEXT);
 
         $choices = get_string_manager()->get_list_of_countries();
-        $choices = array('' => get_string('selectacountry').'...') + $choices;
+        $choices = ['' => get_string('selectacountry').'...'] + $choices;
         $mform->addElement('select', 'country', get_string('taxcountry', 'local_shop'), $choices);
         $mform->setType('country', PARAM_TEXT);
 
@@ -64,7 +71,12 @@ class Tax_Form extends moodleform {
         $this->add_action_buttons();
     }
 
-    public function validation($data, $files = array()) {
+    /**
+     * Standard validation
+     * @param array $data
+     * @param array $files the embedded files
+     */
+    public function validation($data, $files = []) {
 
         $errors = parent::validation($data, $files);
 

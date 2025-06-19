@@ -15,11 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_techproject
- * @category mod
- * @author Valery Fremaux (France) (admin@www.ethnoinformatique.fr)
- * @date 2008/03/03
- * @version phase1
+ * An utility to manage the storage of a list in DB.
+ * @package local_shop
+ * @author Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @contributors LUU Tao Meng, So Gerard (parts of treelib.php), Guillaume Magnien, Olivier Petit
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
@@ -29,35 +27,41 @@ defined('MOODLE_INTERNAL') || die();
 
 use StdClass;
 
-// Library of list dedicated operations when stored in DB.
-
+/**
+ * Library of list dedicated operations when stored in DB.
+ * @suppressWarnings(PHPMD.ShortMethodName)
+ */
 class DBListUtils {
 
-    /**
-     * The table containing the list
-     */
+    /** @var The table containing the list */
     protected $table;
 
-    /**
-     * The ordering field
-     */
+    /** @var The ordering field */
     protected $field;
 
-    /**
-     * Context params to find the list in the table.
-     */
+    /** @var Context params to find the list in the table. */
     protected $params;
 
+    /**
+     * Constructor
+     * @param string $table the table storing list items
+     * @param string $field the ordering field  name
+     * @param array $params the filtering context to get instances of a single list
+     */
     public function __construct($table, $field, $params) {
         $this->table = $table;
         $this->field = $field;
         $this->params = $params;
     }
 
+    /**
+     * Pushes up an item in his own list context
+     * @param int $id;
+     */
     public function up($id) {
         global $DB;
 
-        $res = $DB->get_record($this->table, array('id' => $id));
+        $res = $DB->get_record($this->table, ['id' => $id]);
         if (!$res) {
             return;
         }
@@ -93,6 +97,10 @@ class DBListUtils {
         }
     }
 
+    /**
+     * Pulls down an item in his own list context
+     * @param int $id;
+     */
     public function down($id) {
         global $DB;
 
@@ -110,7 +118,7 @@ class DBListUtils {
 
         $selects[] = " $field = ? ";
 
-        $res = $DB->get_record($this->table, array('id' => $id));
+        $res = $DB->get_record($this->table, ['id' => $id]);
 
         if ($res->$field < $maxordering) {
             $newordering = $res->$field + 1;
@@ -131,7 +139,11 @@ class DBListUtils {
         }
     }
 
-    public function get_max_ordering() {
+    /** 
+     * Get the actual max ordering value
+     * @return int
+     */
+    public function get_max_ordering(): int {
         global $DB;
 
         $field = $this->field;
@@ -141,6 +153,8 @@ class DBListUtils {
 
     /**
      * Reorder the list in the context. Ensures linear holeless ordering.
+     * this is mostly a "repair" function.
+     * @param int $from
      */
     public function reorder($from = 1) {
         global $DB;
@@ -154,6 +168,12 @@ class DBListUtils {
         }
     }
 
+    /**
+     * Get Up front link for pushing up.
+     * @param int $id
+     * @param int $ordering
+     * @param miwed $baseurl
+     */
     public function get_up_cmd($id, $ordering, $baseurl) {
         global $OUTPUT;
 
@@ -166,6 +186,12 @@ class DBListUtils {
         }
     }
 
+    /**
+     * Get Up front link for pulling down.
+     * @param int $id
+     * @param int $ordering
+     * @param miwed $baseurl
+     */
     public function get_down_cmd($id, $ordering, $baseurl) {
         global $OUTPUT;
 

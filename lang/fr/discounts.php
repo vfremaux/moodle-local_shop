@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Lang for discounts
+ *
+ * @package   local_shop
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['adddiscount'] = 'Ajouter une remise';
 $string['applieddiscounts'] = 'Remises';
 $string['editdiscount'] = 'Modifier une remise';
@@ -37,6 +46,12 @@ $string['discounttype'] = 'Algorithme';
 $string['discountruledata'] = 'Données spécifiques de l\'algorithme';
 $string['discountapplieson'] = 'Portée de la remise';
 $string['discountapplydata'] = 'Données spécifiques pour la portée';
+$string['ruledata_help'] = 'Données spécifiques :<br><ul>
+    <li>Code promotionnel : un simple token alphanumérique. ex : CODEPROMO000</li>
+    <li>Codes promotionnels multiples : une liste de triplets &lt;code&gt;|&lt;taux&gt;|&lt;tagpartenaire&gt;</li>
+    </ul>';
+$string['errorbaddiscounttokenformat'] = 'Erreur de format : La donnée devrait être un simple token alphanumérique, sans espaces ni tirets';
+$string['errorbaddiscountmulticodeformat'] = 'Erreur de format : La donnée une liste de triplets <code>|<tauxentier>|<codepartenaire>';
 $string['errordiscountnameexistsinshop'] = 'Erreur : Cet intitulé est déjà utilisé dans cette boutique.';
 $string['erroremptydiscountitemlist'] = 'Erreur : La portée est réduite mais aucune liste de produit n\'a été spécifiée.';
 $string['errordiscount:badratioformat'] = 'Erreur : le taux n\'est pas un nombre';
@@ -45,6 +60,7 @@ $string['errordiscount:notenougharguments'] = 'Erreur : Pas assez d\'arguments s
 $string['nodiscounts'] = 'Pas de remise définie';
 $string['newdiscountinstance'] = 'Nouvelle instance de remise';
 $string['onitemlist'] = 'Une sélection du catalogue';
+$string['itemlist'] = 'Sélection du catalogue';
 $string['onbill'] = 'Toute la commande';
 $string['ratio'] = 'Taux';
 $string['enabled'] = 'Actif';
@@ -62,7 +78,7 @@ Une remise peut concerner la totalité du catalogue ou uniquement une sélection
 dans celui-ci. Sélectionnez les produits qui seront concernés par la remise.
 ';
 
-$string['ratio_help'] = 'Pourcentage de remise sur la portée. Selon certains choix d\'algorithmes et de données spécifiques, 
+$string['ratio_help'] = 'Pourcentage de remise sur la portée. Selon certains choix d\'algorithmes et de données spécifiques,
 ce taux peut ne pas avoir d\'effet direct et être supplanté par des décisions de l\'algorithme choisi.';
 
 $string['type_help'] = '

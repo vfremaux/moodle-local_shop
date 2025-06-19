@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -27,10 +27,27 @@ require_once($CFG->dirroot.'/local/shop/renderer.php');
 
 use local_shop\Category;
 use local_shop\Catalog;
+use local_shop\CatalogItem;
 use local_shop\Tax;
+use local_shop\Shop;
+use local_shop\Bill;
 
+/**
+ * Front shop renderer.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class shop_front_renderer extends local_shop_base_renderer {
 
+    /** @var context associated to the shop_access block */
     protected $context;
 
     const STATE_DONE = 0; // Those steps have been completed.
@@ -47,7 +64,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $str = '';
 
         // This converts configuration progress code to internal effective steps.
-        $radicals = array(
+        $radicals = [
             'CHOOSE' => 'shop',
             'CONFIGURE' => 'purchaserequ',
             'USERS' => 'users',
@@ -58,9 +75,9 @@ class shop_front_renderer extends local_shop_base_renderer {
             'PRODUCE' => 'produce',
             'BILL' => 'invoice',
             'INVOICE' => 'invoice',
-        );
+        ];
 
-        $stepicons = array(
+        $stepicons = [
             'shop' => 'CHOOSE',
             'purchaserequ' => 'CONFIGURE',
             'users' => 'USERS',
@@ -71,10 +88,10 @@ class shop_front_renderer extends local_shop_base_renderer {
             'produce' => 'PRODUCE',
             'invoice' => 'INVOICE',
             'bill' => 'INVOICE',
-        );
+        ];
 
         // This converts API inputs to internal effective steps.
-        $inputmapping = array(
+        $inputmapping = [
             'shop' => 'shop',
             'purchaserequ' => 'purchaserequ',
             'users' => 'users',
@@ -84,7 +101,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             'pending' => 'produce', // Production blocked for some reason (no payment).
             'produce' => 'produce',
             'invoice' => 'invoice',
-        );
+        ];
 
         $str .= '<div id="progress">';
         $str .= '<center>';
@@ -160,10 +177,12 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->currency = $this->theshop->get_currency('symbol');
 
         $template->amount = sprintf('%0.2f', round($amount, 2));
+        $template->taxes = sprintf('%0.2f', round($taxes, 2));
+        $template->untaxed = sprintf('%0.2f', round($untaxed, 2));
         $template->totalobjects = $totalobjects;
 
         if (local_shop_supports_feature('shop/discounts')) {
@@ -188,6 +207,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_order_total_summary', $template);
     }
 
+    /**
+     * Print a return button
+     * @param Shop $theshop
+     */
     public function shop_return_button($theshop) {
 
         $str = '';
@@ -206,11 +229,11 @@ class shop_front_renderer extends local_shop_base_renderer {
     public function customer_info(&$bill = null) {
         global $SESSION, $CFG;
 
-        $usedistinctinvoiceinfo = false;
+        $usedistinctinfo = false;
         if (empty($bill)) {
             if (!empty($SESSION->shoppingcart->usedistinctinvoiceinfo)) {
                 $ci = $SESSION->shoppingcart->invoiceinfo;
-                $usedistinctinvoiceinfo = true;
+                $usedistinctinfo = true;
             } else {
                 $ci = $SESSION->shoppingcart->customerinfo;
             }
@@ -222,7 +245,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                 $ci = (array)$bill->customer;
             } else {
                 $ci = (array)unserialize($bill->invoiceinfo);
-                $usedistinctinvoiceinfo = true;
+                $usedistinctinfo = true;
             }
             $transid = $bill->transactionid;
             $emissiondate = $bill->emissiondate;
@@ -234,7 +257,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->emissiondate = userdate($emissiondate);
         $template->organisation = @$ci['organisation'];
 
-        if ($usedistinctinvoiceinfo) {
+        if ($usedistinctinfo) {
             $template->usedistinctinvoiceinfo = true;
             $template->department = @$ci['department'];
         }
@@ -243,9 +266,9 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         if (local_shop_supports_feature('shop/partners')) {
             include_once($CFG->dirroot.'/local/shop/pro/classes/Partner.class.php');
-            if (!empty($SESSION->shoppingcart->partner)) {
-                $sessionpartner = $SESSION->shoppingcart->partner;
-                $partner = \local_shop\Partner::get_by_key($SESSION->shoppingcart->partner->partnerkey);
+            $sessionpartner = $SESSION->shoppingcart->partner ?? null;
+            if (!empty($sessionpartner)) {
+                $partner = \local_shop\Partner::get_by_key($sessionpartner->partnerkey);
                 $template->partnername = $partner->name;
                 $template->haspartner = true;
             }
@@ -256,7 +279,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template->email = @$ci['email'];
 
-        if ($usedistinctinvoiceinfo) {
+        if ($usedistinctinfo) {
             $template->vatcode = @$ci['vatcode'];
         }
 
@@ -264,12 +287,12 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     /**
-     *
-     *
+     * A form to confirm info given by customer.
+     * @param object $requireddata
      */
     public function local_confirmation_form($requireddata) {
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->disabled = (!empty($requireddata)) ? 'disabled="disabled"' : '';
         $template->formurl = new moodle_url('/local/shop/front/view.php');
 
@@ -277,24 +300,32 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     /**
-     * prints tabs for js activation of the category panel
+     * Prints tabs for js activation of the category panel
+     * @param array $categories
+     * @param string $selected currently selected category
+     * @param int $parent parent category id
+     * @param bool $isactive
+     * @param bool $isvisiblebranch is the branch of the category tree visible ?
+     * @param int $catlevel
      */
-    public function category_tabs(&$categories, $selected, $parent, $isactive, $isvisiblebranch, $catlevel) {
+    public function category_tabs($categories, $selected, $parent, $isactive, $isvisiblebranch, $catlevel) {
         global $CFG;
 
         $str = '';
 
-        $rows[0] = array();
+        $rows[0] = [];
         foreach ($categories as $cat) {
             if ($cat->visible) {
                 if (local_shop_supports_feature('products/smarturls')) {
                     include_once($CFG->dirroot.'/local/shop/pro/lib.php');
                     $categoryurl = get_smart_category_url($this->theshop->id, $cat, $this->theblock->id, true);
                 } else {
-                    $params = array('view' => 'shop',
-                                    'category' => $cat->id,
-                                    'shopid' => $this->theshop->id,
-                                    'blockid' => $this->theblock->id);
+                    $params = [
+                        'view' => 'shop',
+                        'category' => $cat->id,
+                        'shopid' => $this->theshop->id,
+                        'blockid' => $this->theblock->id,
+                    ];
                     $categoryurl = new moodle_url('/local/shop/front/view.php', $params);
                 }
                 $rows[0][] = new tabobject('catli'.$cat->id, $categoryurl, format_string($cat->name));
@@ -316,7 +347,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($isactive) {
             $str .= print_tabs($rows, $selected, '', '', true);
         } else {
-            $str .= print_tabs($rows, '', '', array($selected), true);
+            $str .= print_tabs($rows, '', '', [$selected], true);
         }
         $str .= '</div>';
 
@@ -325,11 +356,10 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * prints a full catalog on screen
-     * @param objectref $theblock the shop block instance
-     * @param array $catgories the full product line extracted from Catalog.
+     * @param array $categories the full product line extracted from Catalog.
      * Only visible categories are provided.
      */
-    public function catalog(&$categories) {
+    public function catalog($categories) {
         global $SESSION;
 
         $this->check_context();
@@ -344,14 +374,15 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->hascategories = true;
 
         // Make a comma list of all category ids.
-        $catidsarr = array();
+        $catidsarr = [];
         foreach ($categories as $cat) {
             $catidsarr[] = $cat->id;
         }
-        $catids = implode(',', $catidsarr);
 
-        $template->withtabs = (@$this->theshop->printtabbedcategories == 1);
-        $template->categorytabs = array();
+        // Be carefull of empty on magic getters.
+        $ptr = $this->theshop->printtabbedcategories;
+        $template->withtabs = !empty($ptr);
+        $template->categorytabs = [];
 
         if ($template->withtabs) {
             $categoryid = optional_param('category', null, PARAM_INT);
@@ -378,16 +409,16 @@ class shop_front_renderer extends local_shop_base_renderer {
             while ($catid = array_shift($branch)) {
                 $cat = new Category($catid);
                 if ($cat->visible) {
-                    $params = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid, 'visible' => 1);
+                    $params = ['catalogid' => $this->thecatalog->id, 'parentid' => $cat->parentid, 'visible' => 1];
                     $levelcategories = Category::get_instances($params, 'sortorder');
                     $iscurrent = $cat->id == $categoryid;
-                    $categorytabtpl = new StdClass;
+                    $categorytabtpl = new StdClass();
                     $categorytabtpl->category = $this->category_tabs($levelcategories, 'catli'.$cat->id, $cat->parentid, $iscurrent, true, $catlevel);
                     $template->categorytabs[] = $categorytabtpl;
 
                     // Print childs.
                     $catlevel++;
-                    $attrs = array('catalogid' => $this->thecatalog->id, 'parentid' => $cat->id);
+                    $attrs = ['catalogid' => $this->thecatalog->id, 'parentid' => $cat->id];
                     if ($subs = Category::get_instances($attrs, 'sortorder')) {
                         $categorytabtpl = new StdClass;
                         $categorytabtpl->category = $this->category_tabs($subs, null, $cat->id, false, $cat->id == $categoryid, $catlevel);
@@ -403,11 +434,9 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         // Print catalog product line on the active category if tabbed.
-        $catids = array_keys($categories);
-        // $currentcategory = optional_param('category', $catids[0], PARAM_INT);
         $currentcategory = $categoryid;
 
-        $c = 0;
+        $cc = 0;
         if (!empty($levelcategories)) {
             foreach ($levelcategories as $c) {
                 $cat = $categories[$c->id];
@@ -418,27 +447,27 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $firstcatid = $cat->id;
                 }
 
-                $categorytpl = new StdClass;
+                $categorytpl = new StdClass();
                 $categorytpl->id = $cat->id;
 
-                if (empty($withtabs)) {
+                if (empty($template->withtabs)) {
                     $cat->level = 1;
                     $categorytpl->heading = $this->output->heading($cat->name, $cat->level);
                 }
 
                 if (!empty($cat->description)) {
-                    $categorytpl->description = format_text($cat->description, FORMAT_MOODLE, array('para' => false));
+                    $categorytpl->description = format_text($cat->description, FORMAT_MOODLE, ['para' => false]);
                 }
 
                 if (!empty($cat->products)) {
                     $categorytpl->hasproducts = true;
                     foreach ($cat->products as $product) {
 
-                        $producttpl = new StdClass;
+                        $producttpl = new StdClass();
                         $product->check_availability();
                         $product->currency = $this->theshop->get_currency('symbol');
                         $product->salesunit = $product->get_sales_unit_url();
-                        $product->preset = 0 + @$SESSION->shoppingcart->order[$product->shortname];
+                        $product->preset = $SESSION->shoppingcart->order[$product->shortname] ?? '';
                         switch ($product->isset) {
                             case PRODUCT_SET:
                                 $producttpl->product = $this->product_set($product, false);
@@ -455,7 +484,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                     $categorytpl->hasproducts = false;
                     $categorytpl->noproductincategorynotification = get_string('noproductincategory', 'local_shop');
                 }
-                $c++;
+                $cc++;
 
                 $template->categories[] = $categorytpl;
             }
@@ -466,20 +495,20 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints a product block on front shop
-     * @param objectref &$product
+     * @param object $product
      * @param bool $astemplate if true, just returns the template object rather than the html output.
      */
-    public function product_block(&$product, $astemplate = false) {
-        global $CFG, $OUTPUT;
+    public function product_block($product, $astemplate = false) {
+        global $CFG;
 
         $config = get_config('local_shop');
 
         $this->check_context();
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $subelementclass = (!empty($product->ispart)) ? 'element' : 'product';
-        $subelementclass .= ($product->available) ? '' : ' shadowed';
+        $subelementclass .= ($product->available) ? '' : ' dimmed';
 
         $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
         $template->subelementclass = $subelementclass;
@@ -496,7 +525,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             if (local_shop_supports_feature('products/smarturls')) {
                 include_once($CFG->dirroot.'/local/shop/pro/lib.php');
                 if (!empty($config->usesmarturls)) {
-                    $template->smarturl = get_smart_product_url($product, $byalias = true, $fulltree = false);
+                    $template->smarturl = get_smart_product_url($product, true /* byalias */, false /* fulltree */);
                 }
             }
         }
@@ -509,7 +538,8 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->subelementclass = $subelementclass;
 
         // Get Handler guessed image
-        list($handler, $unusedmethod) = $product->get_handler_info('get_alternative_thumbnail_url', '');
+        $parms = $product->get_handler_info('get_alternative_thumbnail_url', '');
+        $handler = $parms[0];
         if (!empty($handler)) {
             $url = $handler->get_alternative_thumbnail_url($product);
             if (is_object($url)) {
@@ -537,6 +567,17 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
 
         $template->name = format_string($product->name);
+        $systemcontext = context_system::instance();
+        $template->canedit = has_capability('local/shop:salesadmin', $systemcontext);
+        $params = [
+            'shopid' => $this->theshop->id,
+            'itemid' => $product->id,
+            'categoryid' => $product->categoryid,
+            'return' => 'front',
+        ];
+        $editurl = new moodle_url('/local/shop/products/edit_product.php', $params);
+        $icon = $this->output->pix_icon('t/edit', get_string('edit'));
+        $template->editlink = '<a href="'.$editurl.'">'.$icon.'</a>';
         $template->shortname = $product->shortname;
         $template->puttcstr = get_string('puttc', 'local_shop');
 
@@ -554,7 +595,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         if ($product->description) {
             $product->description = file_rewrite_pluginfile_urls($product->description, 'pluginfile.php', $this->context->id, 'local_shop',
                                                'catalogitemdescription', $product->id);
-            $template->description = format_text($product->description, FORMAT_MOODLE, array('para' => false));
+            $template->description = format_text($product->description, FORMAT_MOODLE, ['para' => false]);
 
             $cutoff = $config->shortdescriptionthreshold;
             $template->shortdescription = $this->trim_chars($template->description, $cutoff);
@@ -627,16 +668,26 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints a product set on front shop
-     * @param objectref &$set
+     * @param object $set
      */
-    public function product_set(&$set, $astemplate = false) {
-        global $OUTPUT;
+    public function product_set($set, $astemplate = false) {
 
         $config = get_config('local_shop');
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->name = format_string($set->name);
+        $systemcontext = context_system::instance();
+        $template->canedit = has_capability('local/shop:salesadmin', $systemcontext);
+        $params = [
+            'shopid' => $this->theshop->id,
+            'itemid' => $set->id,
+            'categoryid' => $set->categoryid,
+            'return' => 'front',
+        ];
+        $editurl = new moodle_url('/local/shop/products/edit_set.php', $params);
+        $icon = $this->output->pix_icon('t/edit', get_string('edit'));
+        $template->editlink = '<a href="'.$editurl.'">'.$icon.'</a>';
         $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
 
         $template->hasdescription = false;
@@ -644,7 +695,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->isshortdescription = false;
         if ($set->description) {
             $template->hasdescription = true;
-            $template->description = format_text($set->description, FORMAT_MOODLE, array('para' => false));
+            $template->description = format_text($set->description, FORMAT_MOODLE, ['para' => false]);
 
             $cutoff = $config->shortdescriptionthreshold;
             $template->shortdescription = $this->trim_chars($template->description, $cutoff);
@@ -680,10 +731,11 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints a product bundle on front shop
-     * @param objectref &$set
+     * @param object $bundle
+     * @param bool $astemplate if true, exports data as a template rather than rendering it.
      */
-    public function product_bundle(&$bundle, $astemplate = false) {
-        global $CFG, $OUTPUT;
+    public function product_bundle($bundle, $astemplate = false) {
+        global $CFG;
 
         $config = get_config('local_shop');
 
@@ -696,7 +748,7 @@ class shop_front_renderer extends local_shop_base_renderer {
             include_once($CFG->dirroot.'/local/shop/pro/lib.php');
             $template->seoalias = $bundle->seoalias;
             if (!empty($config->usesmarturls)) {
-                $template->smarturl = get_smart_product_url($bundle, $byalias = true, $fulltree = false);
+                $template->smarturl = get_smart_product_url($bundle, true /* byalias */, false /* fulltree */);
             }
         }
         $template->pixcloseurl = ($this->output->image_url('close', 'local_shop'))->out();
@@ -710,13 +762,24 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->thumburl = ($bundle->get_thumb_url(false))->out();
 
         $template->name = format_string($bundle->name);
+        $systemcontext = context_system::instance();
+        $template->canedit = has_capability('local/shop:salesadmin', $systemcontext);
+        $params = [
+            'shopid' => $this->theshop->id,
+            'itemid' => $bundle->id,
+            'categoryid' => $bundle->categoryid,
+            'return' => 'front',
+        ];
+        $editurl = new moodle_url('/local/shop/products/edit_bundle.php', $params);
+        $icon = $this->output->pix_icon('t/edit', get_string('edit'));
+        $template->editlink = '<a href="'.$editurl.'">'.$icon.'</a>';
 
         if (empty($bundle->ispart)) {
             $template->hasdescription = false;
             $template->isshortdescription = false;
             if ($bundle->description) {
                 $template->hasdescription = true;
-                $template->description = format_text($bundle->description, FORMAT_MOODLE, array('para' => false));
+                $template->description = format_text($bundle->description, FORMAT_MOODLE, ['para' => false]);
 
                 $cutoff = $config->shortdescriptionthreshold;
                 $template->shortdescription = $this->trim_chars($template->description, $cutoff);
@@ -766,11 +829,17 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template->buystr = get_string('buy', 'local_shop');
         $template->maxdeliveryquant = $bundle->maxdeliveryquant;
-        $disabled = ($bundle->maxdeliveryquant && $bundle->maxdeliveryquant == $bundle->preset) ? 'disabled="disabled"' : '';
+        $template->preset = $bundle->preset;
+        if ((!empty($template->maxdeliveryquant) &&
+                ($template->maxdeliveryquant === $template->preset)) || !empty($bundle->password)) {
+             $disabled = 'disabled="disabled"';
+        } else {
+             $disabled = '';
+        }
+        $template->disabled = $disabled;
         if ($bundle->password) {
             $template->password = true;
             $template->needspasscodetobuystr = get_string('needspasscodetobuy', 'local_shop');
-            $template->disabled = 'disabled="disabled"';
         }
         $template->units = $this->units($bundle);
 
@@ -782,13 +851,14 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Refreshes dynamically unit list.
+     * @param CatalogItem $product
      */
-    public function units(&$product) {
-        global $SESSION, $CFG;
+    public function units(CatalogItem $product) {
+        global $SESSION;
 
         $this->check_context();
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->unitimageurl = $product->get_sales_unit_url();
         $template->shortname = $product->shortname;
@@ -797,16 +867,16 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
         $template->tenunitsimageurl = $product->get_sales_ten_units_url();
 
-        $q = @$SESSION->shoppingcart->order[$product->shortname];
+        $q = $SESSION->shoppingcart->order[$product->shortname] ?? 0;
         $packs = floor($q / 10);
         $units = $q % 10;
 
         for ($i = 0; $i < 0 + $packs; $i++) {
-            $template->packs[] = new StdClass;
+            $template->packs[] = new StdClass();
         }
 
         for ($j = 0; $j < 0 + $units; $j++) {
-            $template->units[] = new StdClass;
+            $template->units[] = new StdClass();
         }
 
         if (($i * 10 + $j) > 0) {
@@ -818,15 +888,20 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints order detail lines.
+     * @param array $categories
      */
-    public function order_detail(&$categories) {
+    public function order_detail($categories) {
         global $SESSION;
 
         if (empty($categories)) {
             return $this->output->notification("no categories");
         }
 
-        $shoppingcart = @$SESSION->shoppingcart;
+        $shoppingcart = $SESSION->shoppingcart ?? new StdClass;
+        if (empty($shoppingcart)) {
+            return '';
+        }
+
         $str = '';
 
         $str .= '<table width="100%" id="orderblock">';
@@ -846,7 +921,7 @@ class shop_front_renderer extends local_shop_base_renderer {
                         }
                     }
                 } else {
-                    $portlet = &$aproduct;
+                    $portlet = clone($aproduct);
                     $portlet->currency = $this->theshop->get_currency('symbol');
                     $hasshort = !empty($shoppingcart->order[$portlet->shortname]);
                     $portlet->preset = $hasshort ? $shoppingcart->order[$portlet->shortname] : 0;
@@ -863,13 +938,13 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints a single product line in order details summary.
+     * @param CatalogItem $product
      */
-    public function product_total_line(&$product) {
-        global $CFG;
+    public function product_total_line(CatalogItem $product) {
 
         $this->check_context();
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $view = optional_param('view', 'shop', PARAM_ALPHA);
         $template->isshopview = false;
@@ -915,7 +990,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $checked = (!empty($shoppingcart->usedistinctinvoiceinfo)) ? 'checked="checked"' : '';
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         if (isloggedin() && !isguestuser()) {
 
@@ -943,25 +1018,25 @@ class shop_front_renderer extends local_shop_base_renderer {
             // Signal mail was attempted to change in the loggedout form.
             if (!empty($shoppingcart->customerinfo['email']) && ($shoppingcart->customerinfo['email'] != $USER->email)) {
                 $template->notsamemail = true;
-                $template->givenmail = @$shoppingcart->customerinfo['email'];
+                $template->givenmail = $shoppingcart->customerinfo['email'] ?? '';
             }
 
             // Get potential ZIP code information from an eventual customer record.
-            if ($customer = $DB->get_record('local_shop_customer', array('hasaccount' => $USER->id, 'email' => $email))) {
+            if ($customer = $DB->get_record('local_shop_customer', ['hasaccount' => $USER->id, 'email' => $email])) {
                 $zip = $haszip ? $shoppingcart->customerinfo['zip'] : $customer->zip;
                 $organisation = $hasorg ? $shoppingcart->customerinfo['organisation'] : $customer->organisation;
                 $address = $hasaddress ? $shoppingcart->customerinfo['address'] : $customer->address;
             }
         } else {
             $template->mailislocked = false;
-            $lastname = @$shoppingcart->customerinfo['lastname'];
-            $firstname = @$shoppingcart->customerinfo['firstname'];
-            $organisation = @$shoppingcart->customerinfo['organisation'];
-            $country = @$shoppingcart->customerinfo['country'];
-            $address = @$shoppingcart->customerinfo['address'];
-            $city = @$shoppingcart->customerinfo['city'];
-            $zip = @$shoppingcart->customerinfo['zip'];
-            $email = @$shoppingcart->customerinfo['email'];
+            $lastname = $shoppingcart->customerinfo['lastname'] ?? '';
+            $firstname = $shoppingcart->customerinfo['firstname'] ?? '';
+            $organisation = $shoppingcart->customerinfo['organisation'] ?? '';
+            $country = $shoppingcart->customerinfo['country'] ?? '';
+            $address = $shoppingcart->customerinfo['address'] ?? '';
+            $city = $shoppingcart->customerinfo['city'] ?? '';
+            $zip = $shoppingcart->customerinfo['zip'] ?? '';
+            $email = $shoppingcart->customerinfo['email'] ?? '';
         }
 
         if (!empty($shoppingcart->errors->customerinfo)) {
@@ -981,7 +1056,7 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->zip = $zip;
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        $template->countryselect = html_writer::select($choices, 'customerinfo::country', $country, array('' => 'choosedots'));
+        $template->countryselect = html_writer::select($choices, 'customerinfo::country', $country, ['' => 'choosedots']);
         $template->email = $email;
 
         $str .= $this->output->render_from_template('local_shop/front_customer_form', $template);
@@ -993,7 +1068,6 @@ class shop_front_renderer extends local_shop_base_renderer {
                              name="usedistinctinvoiceinfo"
                             '.$checked.' />';
         $postoptions .= '<span class="tiny-text"> '.get_string('usedistinctinvoiceinfo', 'local_shop').'</span>';
-        // $str .= $this->output->heading($heading);
         $str .= $postoptions;
 
         return $str;
@@ -1001,8 +1075,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints the form for invoicing customer identity
-     * @param object $theblock
-     * @param object $thecatalog
      */
     public function invoicing_info_form() {
         global $SESSION;
@@ -1023,46 +1095,51 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $str .= '<br/><legend>'.get_string('invoiceinformation', 'local_shop').'</legend>';
 
-        $template = new StdClass;
-        $template->institution = @$shoppingcart->invoiceinfo['organisation'];
-        $template->department = @$shoppingcart->invoiceinfo['department'];
-        $template->lastname = @$shoppingcart->invoiceinfo['lastname'];
-        $template->firstname = @$shoppingcart->invoiceinfo['firstname'];
-        $template->email = @$shoppingcart->invoiceinfo['email'];
-        $template->address = @$shoppingcart->invoiceinfo['address'];
-        $template->zip = @$shoppingcart->invoiceinfo['zip'];
-        $template->city = @$shoppingcart->invoiceinfo['city'];
-        $template->country = @$shoppingcart->invoiceinfo['country'];
-        $template->vatcode = @$shoppingcart->invoiceinfo['vatcode'];
+        $template = new StdClass();
+        $template->institution = $shoppingcart->invoiceinfo['organisation'] ?? '';
+        $template->department = $shoppingcart->invoiceinfo['department'] ?? '';
+        $template->lastname = $shoppingcart->invoiceinfo['lastname'] ?? '';
+        $template->firstname = $shoppingcart->invoiceinfo['firstname'] ?? '';
+        $template->email = $shoppingcart->invoiceinfo['email'] ?? '';
+        $template->address = $shoppingcart->invoiceinfo['address'] ?? '';
+        $template->zip = $shoppingcart->invoiceinfo['zip'] ?? '';
+        $template->city = $shoppingcart->invoiceinfo['city'] ?? '';
+        $template->country = $shoppingcart->invoiceinfo['country'] ?? '';
+        $template->vatcode = $shoppingcart->invoiceinfo['vatcode'] ?? '';
 
         $choices = get_string_manager()->get_list_of_countries();
         $this->thecatalog->process_country_restrictions($choices);
-        $attrs = array();
-        $template->countryselect = html_writer::select($choices, 'invoiceinfo::country', $template->country, array('' => 'choosedots'), $attrs);
+        $attrs = [];
+        $params = ['' => 'choosedots'];
+        $template->countryselect = html_writer::select($choices, 'invoiceinfo::country', $template->country, $params, $attrs);
 
         $str .= $this->output->render_from_template('local_shop/front_invoice_form', $template);
 
         return $str;
     }
 
+    /**
+     * Prints a participant row
+     * @param object $participant
+     */
     public function participant_row($participant = null) {
-        global $CFG, $SESSION;
+        global $SESSION;
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         if ($participant) {
             $template->participant = true;
 
-            $template->lastname = @$participant->lastname;
-            $template->firstname = @$participant->firstname;
-            $template->email = @$participant->email;
-            $template->city = strtoupper(@$participant->city);
+            $template->lastname = $participant->lastname ?? '';
+            $template->firstname = $participant->firstname ?? '';
+            $template->email = $participant->email ?? '';
+            $template->city = strtoupper($participant->city ?? '');
             $template->endusermobilephonerequired = !empty($this->theshop->endusermobilephonerequired);
-            $template->phone2 = @$participant->phone2;
+            $template->phone2 = $participant->phone2 ?? '';
             $template->enduserorganisationrequired = !empty($this->theshop->enduserorganisationrequired);
-            $template->institution = strtoupper(@$participant->institution);
+            $template->institution = strtoupper($participant->institution ?? '');
 
-            if (@$participant->moodleid) {
+            if ($participant->moodleid ?? false) {
                 $template->hasaccount = true;
             } else {
                 $template->hasaccount = false;
@@ -1080,13 +1157,16 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_participant_row', $template);
     }
 
+    /**
+     * Prints a blanc participant (unset) row
+     */
     public function participant_blankrow() {
 
         $this->check_context();
 
         static $i = 0;
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->i = $i;
 
         $template->endusermobilephonerequired = $this->theshop->endusermobilephonerequired;
@@ -1097,16 +1177,20 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_participant_blankrow', $template);
     }
 
+    /**
+     * Add participant form
+     */
     public function add_participant() {
         global $SESSION;
 
-        $template = new Stdclass;
+        $template = new Stdclass();
 
         if (count($SESSION->shoppingcart->participants) >= $SESSION->shoppingcart->seats) {
             $template->newparticipantstyle = 'style="display:none"';
         }
 
-        $stringkey = (@$SESSION->shoppingcart->seats <= 1) ? 'participanthelper1' : 'participanthelper1plural';
+        $seats = $SESSION->shoppingcart->seats;
+        $stringkey = ($seats <= 1) ? 'participanthelper1' : 'participanthelper1plural';
         $template->helper = get_string($stringkey, 'local_shop', $SESSION->shoppingcart->seats);
         $template->seats = $SESSION->shoppingcart->seats;
 
@@ -1117,14 +1201,14 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints the form to input participant data.
-     * @param int $maxseats the number of purchased seats, depending on the content of the shopping cart.
+     * @param int $availableseats the number of purchased seats, depending on the content of the shopping cart.
      */
     public function new_participant_row($availableseats = 0) {
         global $SESSION;
 
         $this->check_context();
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->endusermobilephonerequired = $this->theshop->endusermobilephonerequired;
         $template->enduserorganisationrequired = $this->theshop->enduserorganisationrequired;
         $template->availableseats = $availableseats;
@@ -1137,11 +1221,13 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     /**
-     * prints a user selector for a product/role list from declared
+     * Prints a user selector for a product/role list from declared
      * participants removing already assigned people.
+     * @param string $role
+     * @param string $shortname
      */
     public function assignation_select($role, $shortname) {
-        global $SESSION, $CFG;
+        global $SESSION;
 
         $str = '';
 
@@ -1153,10 +1239,10 @@ class shop_front_renderer extends local_shop_base_renderer {
         if (!empty($shoppingcart->users[$shortname][$role])) {
             $rkeys = array_keys($shoppingcart->users[$shortname][$role]);
         } else {
-            $rkeys = array();
+            $rkeys = [];
         }
 
-        $options = array();
+        $options = [];
         if (!empty($shoppingcart->participants)) {
             foreach ($shoppingcart->participants as $email => $pt) {
                 if (!in_array($email, $rkeys)) {
@@ -1165,39 +1251,47 @@ class shop_front_renderer extends local_shop_base_renderer {
             }
         }
         $params = ['' => get_string('chooseparticipant', 'local_shop')];
-        $attrs = ['data-product' => $shortname,
-                  'data-role' => $role,
-                  'data-requiredroles' => implode(',', $this->thecatalog->check_required_roles()),
-                  'class' => 'local-shop-add-assign'];
+        $attrs = [
+            'data-product' => $shortname,
+            'data-role' => $role,
+            'data-requiredroles' => implode(',', $this->thecatalog->check_required_roles()),
+            'class' => 'local-shop-add-assign',
+        ];
         $str .= html_writer::select($options, 'addassign'.$role.'_'.$shortname, '', $params, $attrs);
 
         return $str;
     }
 
+    /**
+     * Role list
+     * @param string $role
+     * @param string $shortname
+     */
     public function role_list($role, $shortname) {
         global $SESSION;
 
         $this->check_context();
 
-        $template = new Stdclass;
+        $template = new Stdclass();
 
-        $roleassigns = @$SESSION->shoppingcart->users;
+        $roleassigns = $SESSION->shoppingcart->users ?? '';
 
         $template->productname = get_string(str_replace('_', '', $role), 'local_shop');  // Remove pseudo roles markers.
         $template->shortname = $shortname;
         if (!empty($roleassigns[$shortname][$role])) {
             foreach ($roleassigns[$shortname][$role] as $participant) {
-                $participanttpl = new StdClass;
-                $participanttpl->lastname = @$participant->lastname;
-                $participanttpl->firstname = @$participant->firstname;
+                $participanttpl = new StdClass();
+                $participanttpl->lastname = $participant->lastname ?? '';
+                $participanttpl->firstname = $participant->firstname ?? '';
                 $participanttpl->role = $role;
-                $participanttpl->email = @$participant->email;
+                $participanttpl->email = $participant->email ?? '';
                 $template->participants[] = $participanttpl;
             }
         }
 
         $template->canassign = false;
-        if (@$SESSION->shoppingcart->assigns[$shortname] < $SESSION->shoppingcart->order[$shortname]) {
+        $assigns = $SESSION->shoppingcart->assigns[$shortname];
+        if ($assigns < $SESSION->shoppingcart->order[$shortname]) {
             $template->canassign = true;
             $template->assignselect = $this->assignation_select($role, $shortname, true);
         }
@@ -1205,15 +1299,18 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_assignation_role_list', $template);
     }
 
+    /**
+     * 
+     */
     public function cart_summary() {
         global $SESSION;
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         if (!empty($SESSION->shoppingcart->order)) {
             foreach (array_keys($SESSION->shoppingcart->order) as $itemname) {
                 $product = $this->thecatalog->get_product_by_shortname($itemname);
-                $catalogitemtpl = new StdClass;
+                $catalogitemtpl = new StdClass();
                 $catalogitemtpl->name = format_string($product->name);
                 $catalogitemtpl->code = $product->code;
                 $catalogitemtpl->q = $SESSION->shoppingcart->order[$itemname];
@@ -1225,8 +1322,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_cart_summary', $template);
     }
 
+    /**
+     * Print admin options
+     */
     public function admin_options() {
-        global $SESSION, $OUTPUT;
+        global $SESSION;
 
         $this->check_context();
 
@@ -1236,24 +1336,30 @@ class shop_front_renderer extends local_shop_base_renderer {
 
             if (!empty($SESSION->shopseeall)) {
                 $template->modestr = get_string('disableallmode', 'local_shop');
-                $params = array('view' => 'shop',
-                                'seeall' => 0,
-                                'id' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id);
+                $params = [
+                    'view' => 'shop',
+                    'seeall' => 0,
+                    'id' => $this->theshop->id,
+                    'blockid' => ($this->theblock->id ?? 0),
+                ];
                 $template->shopurl = new moodle_url('/local/shop/front/view.php', $params);
             } else {
                 $template->modestr = get_string('enableallmode', 'local_shop');
-                $params = array('view' => 'shop',
-                                'seeall' => 1,
-                                'id' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id);
+                $params = [
+                    'view' => 'shop',
+                    'seeall' => 1,
+                    'id' => $this->theshop->id,
+                    'blockid' => ($this->theblock->id ?? 0),
+               ];
                 $template->shopurl = new moodle_url('/local/shop/front/view.php', $params);
             }
-            $params = array('view' => 'viewAllProducts',
-                            'catalogid' => $this->thecatalog->id,
-                            'blockid' => $this->theblock->id);
+            $params = [
+                'view' => 'viewAllProducts',
+                'catalogid' => $this->thecatalog->id,
+                'blockid' => ($this->theblock->id ?? 0),
+            ];
             $template->backofficeurl = new moodle_url('/local/shop/products/view.php', $params);
-            return $OUTPUT->render_from_template('local_shop/admin_options', $template);
+            return $this->output->render_from_template('local_shop/admin_options', $template);
         }
 
         return '';
@@ -1261,7 +1367,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints an order line
-     * @param objectref $thecatalog the whole catalog reference
      * @param string $shortname the product short code
      * @param int $q quantity
      * @param array $options
@@ -1291,7 +1396,8 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints an order line
-     * @param objectref $billitem the billitem
+     * @param object $billitem the billitem
+     * @param array $options
      */
     public function bill_line($billitem, $options = null) {
 
@@ -1304,15 +1410,18 @@ class shop_front_renderer extends local_shop_base_renderer {
         } catch (Exception $e) {
             throw new moodle_exception("Missing output class $outputclass");
         }
-
     }
 
-    public function order($bill) {
+    /**
+     * Prints the order content
+     * @param Bill $bill
+     */
+    public function order(Bill $bill) {
 
         $str = '<table cellspacing="5" class="generaltable" width="100%">';
         $str .= $this->order_line(null);
 
-        foreach ($bill->items as $biid => $bi) {
+        foreach ($bill->items as $bi) {
             if ($bi->type == 'BILLING') {
                 $str .= $this->order_line($bi->catalogitem->shortname, $bi->quantity);
             } else if ($bi->type == 'SHIPPING') {
@@ -1325,17 +1434,19 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     /**
-     * @param object $bill
+     * Prints order's total summators
+     *
+     * @param Bill $bill
+     * @param Shop $theshop
      */
-    public function full_order_totals($bill = null, $theshop = null) {
-        global $SESSION;
+    public function full_order_totals(Bill $bill = null, ?Shop $theshop = null) {
 
         $this->check_context();
 
         try {
             $outputclass = 'front_order_totals';
             shop_load_output_class($outputclass);
-            $tpldata = new \local_shop\output\front_order_totals(array($bill, $theshop, $this->context));
+            $tpldata = new \local_shop\output\front_order_totals([$bill, $theshop, $this->context]);
             $template = $tpldata->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_order_totals', $template);
         } catch (Exception $e) {
@@ -1344,16 +1455,18 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     /**
-     * @param object $bill
+     * Prints complete tax info, from a bill or a shoppingcart
+     *
+     * @param Bill $bill
+     * @param Shop $theshop
      */
-    public function full_order_taxes(&$bill = null, $theshop = null) {
+    public function full_order_taxes(?Bill $bill = null, ?Shop $theshop = null) {
         global $SESSION;
 
         $this->check_context();
 
         if (!empty($bill)) {
             $taxes = $bill->taxlines;
-            $finaltaxestotal = $bill->finaltaxestotal;
         } else {
             $taxes = $SESSION->shoppingcart->taxes;
         }
@@ -1374,7 +1487,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      *
      */
     public function payment_block() {
-        global $SESSION, $CFG, $OUTPUT, $USER;
+        global $SESSION, $CFG, $USER;
 
         $config = get_config('local_shop');
         $this->check_context();
@@ -1384,14 +1497,12 @@ class shop_front_renderer extends local_shop_base_renderer {
         $systemcontext = context_system::instance();
         $template = new StdClass;
 
-        $str = $this->output->heading(get_string('paymentmethod', 'local_shop'));
+        $template->heading = $this->output->heading(get_string('paymentmethod', 'local_shop'));
         // Checking  paymodes availability and creating radios.
         if ($SESSION->shoppingcart->finalshippedtaxedtotal > 0) {
             $paymodes = get_list_of_plugins('/local/shop/paymodes');
 
-            \local_shop\Shop::expand_paymodes($this->theshop);
-
-            $payinputs = '';
+            Shop::expand_paymodes($this->theshop);
 
             foreach ($paymodes as $var) {
 
@@ -1461,7 +1572,7 @@ class shop_front_renderer extends local_shop_base_renderer {
     }
 
     /**
-     *
+     * Short form of the order
      */
     public function order_short() {
         global $SESSION, $DB;
@@ -1470,14 +1581,14 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $this->check_context();
 
-        $template = new StdClass;
+        $template = new StdClass();
         $template->currency = $this->theshop->get_currency('symbol');
 
         $template->transid = $SESSION->shoppingcart->transid;
         $template->untaxedtotal = sprintf('%0.2f', round($shoppingcart->untaxedtotal, 2));
         if (!empty($shoppingcart->taxes)) {
             foreach ($shoppingcart->taxes as $taxcode => $taxsum) {
-                if ($tax = $DB->get_record('local_shop_tax', array('id' => $taxcode))) {
+                if ($tax = $DB->get_record('local_shop_tax', ['id' => $taxcode])) {
                     $taxtpl = new StdClass;
                     $taxtpl->taxsum = sprintf('%.2f', $taxsum);
                     $taxtpl->title = $tax->title;
@@ -1485,8 +1596,6 @@ class shop_front_renderer extends local_shop_base_renderer {
                 }
             }
         }
-
-        $reason = '';
 
         if (!empty($shoppingcart->shipping)) {
             $template->hasshipping = $shoppingcart->shipping;
@@ -1498,6 +1607,11 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $this->output->render_from_template('local_shop/front_order_short', $template);
     }
 
+    /**
+     * fieldset start. A generic renderer.
+     * @param string $legend
+     * @param string $class
+     */
     public function field_start($legend, $class) {
 
         $str = '';
@@ -1507,17 +1621,24 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $str;
     }
 
+    /**
+     * fieldset ending. A generic renderer.
+     */
     public function field_end() {
         return '</field></fieldset>';
     }
 
     /**
-     *
+     * Role assignation form
      * @see users.php
+     * @param object $catalogentry
+     * @param array $requiredroles
+     * @param string $shortname catalogitem shortname
+     * @param int $q
      */
-    public function seat_roles_assignation_form(&$catalogentry, &$requiredroles, $shortname, $q) {
+    public function seat_roles_assignation_form($catalogentry, $requiredroles, $shortname, $q) {
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->q = $q;
         $template->productname = $catalogentry->name;
@@ -1525,7 +1646,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template->colwidth = floor(100 / (2 + count($requiredroles)));
         foreach ($requiredroles as $role) {
-            $roletpl = new StdClass;
+            $roletpl = new StdClass();
             $roletpl->role = $role;
             $roletpl->rolelist = $this->role_list($role, $shortname, $q);
             $template->roles[] = $roletpl;
@@ -1550,18 +1671,18 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         $template = new StdClass;
         $template->actionurl = new moodle_url('/local/shop/front/view.php');
-        $template->isinform = @$options['inform'];
+        $template->isinform = $options['inform'] ?? false;
         $template->view = $view;
         $template->shopid = $this->theshop->id;
-        $template->blockid = (0 + @$this->theblock->id);
+        $template->blockid = (0 + $this->theblock->id ?? 0);
         $template->wantstransid = !empty($options['transid']);
-        $template->transid = @$options['transid'];
+        $template->transid = $options['transid'] ?? '';
         $template->sesskey = sesskey();
-        $template->hideback = @$options['hideback'];
-        $template->hidenext = @$options['hidenext'];
-        $template->overtext = @$options['overtext'];
-        $template->nextdisabled = @$options['nextdisabled'];
-        $template->nextstyle = @$options['nextstyle'];
+        $template->hideback = $options['hideback'] ?? false;
+        $template->hidenext = $options['hidenext'] ?? false;
+        $template->overtext = $options['overtext'] ?? false;
+        $template->nextdisabled = $options['nextdisabled'] ?? false;
+        $template->nextstyle = $options['nextstyle'] ?? false;
         $template->nextstr = get_string($options['nextstring'], 'local_shop');
 
         return $this->output->render_from_template('local_shop/front_action_form', $template);
@@ -1579,21 +1700,30 @@ class shop_front_renderer extends local_shop_base_renderer {
 
         // Samples for json programming.
         /*
-        $test = array(
-            array('field' => 'coursename',
-                  'label' => 'cours',
-                  'type' => 'textfield',
-                  'desc' => 'Nom du cours',
-                  'attrs' => array('size' => 80)),
-             array('field' => 'description',
-                   'label' => 'Description',
-                   'type' => 'textarea',
-                   'desc' => 'Descriotion courte'),
-             array('name' => 'template',
-                   'label' => 'Modele',
-                   'type' => 'select',
-                   'desc' => 'Modele de cours',
-                   'options' => array('MOD1' => 'Modele 1', 'MOD2' => 'Modele 2')));
+        $test = [
+            [
+                'field' => 'coursename',
+                'label' => 'cours',
+                'type' => 'textfield',
+                'desc' => 'Nom du cours',
+                'attrs' => ['size' => 80],
+             ],
+             [
+                'field' => 'description',
+                'label' => 'Description',
+                'type' => 'textarea',
+                'desc' => 'Description courte'),
+                [
+                    'name' => 'template',
+                    'label' => 'Modele',
+                    'type' => 'select',
+                    'desc' => 'Modele de cours',
+                    'options' => [
+                        'MOD1' => 'Modele 1',
+                        'MOD2' => 'Modele 2',
+                    ],
+                ],
+            ];
 
             echo json_encode($test);
         */
@@ -1604,13 +1734,13 @@ class shop_front_renderer extends local_shop_base_renderer {
             return;
         }
 
-        $template = new StdClass;
+        $template = new StdClass();
 
         $template->shopid = $this->theshop->id;
         $template->blockid = $this->theblock->id;
         foreach ($shoppingcart->order as $itemname => $itemcount) {
 
-            $ordertpl = new StdClass;
+            $ordertpl = new StdClass();
 
             $product = $this->thecatalog->get_product_by_shortname($itemname);
             $ordertpl->productname = format_string($product->name);
@@ -1667,7 +1797,7 @@ class shop_front_renderer extends local_shop_base_renderer {
 
                         case 'select':
                             $requtpl->isselect = true;
-                            $options = $requobj->options;
+                            $options = $requtpl->options;
                             if ($options) {
                                 foreach ($options as $optkey => $optvalue) {
                                     $opttpl = new StdClass;
@@ -1682,7 +1812,6 @@ class shop_front_renderer extends local_shop_base_renderer {
 
                         default:
                             $requtpl->iserror = true;
-                            $itemsignature = "{$itemname}|{$reqobj->field}|{$requtpl->type}";
                     }
 
                     $itemtpl->requirements[] = $requtpl;
@@ -1705,7 +1834,7 @@ class shop_front_renderer extends local_shop_base_renderer {
      * @param array $bill
      */
     public function check_and_print_eula_conditions() {
-        global $SESSION, $SITE;
+        global $SESSION;
 
         $eulastr = '';
 
@@ -1733,21 +1862,29 @@ class shop_front_renderer extends local_shop_base_renderer {
         return $eulastr;
     }
 
+    /**
+     * Button to Login form
+     */
     public function login_form() {
 
-        $template = new StdClass;
-        $params = array('view' => 'customer',
-                        'shopid' => $this->theshop->id,
-                        'blockid' => (0 + @$this->theblock->instance->id),
-                        'what' => 'login');
+        $template = new StdClass();
+        $params = [
+            'view' => 'customer',
+            'shopid' => $this->theshop->id,
+            'blockid' => ($this->theblock->instance->id ?? 0),
+            'what' => 'login',
+        ];
         $thisurl = new moodle_url('/local/shop/front/view.php', $params);
         $template->shopurl = $thisurl;
 
         return $this->output->render_from_template('local_shop/front_login_button', $template);
     }
 
+    /**
+     * Prints link to "my total order amount"
+     */
     public function my_total_link() {
-        $totalurl = new moodle_url('/local/shop/front/view.php', array('shopid' => $this->theshop->id));
+        $totalurl = new moodle_url('/local/shop/front/view.php', ['shopid' => $this->theshop->id]);
         $button = '<input type="button" value="'.get_string('mytotal', 'local_shop').'" />';
         $str = '<center><div id="shop-total-link"><a href="'.$totalurl.'#total">'.$button.'</a></div><center>';
         return $str;
@@ -1755,14 +1892,13 @@ class shop_front_renderer extends local_shop_base_renderer {
 
     /**
      * Prints the header on printable invoices and ordering documents.
+     * @param Bill $bill
      */
-    public function invoice_header(&$afullbill) {
-        global $CFG;
-
+    public function invoice_header(Bill $bill) {
         try {
             $outputclass = 'front_invoice_header';
             shop_load_output_class($outputclass);
-            $invoiceheader = new \local_shop\output\front_invoice_header($afullbill);
+            $invoiceheader = new \local_shop\output\front_invoice_header($bill);
             $template = $invoiceheader->export_for_template($this);
             return $this->output->render_from_template('local_shop/front_invoice_heading', $template);
         } catch (Exception $e) {
@@ -1770,36 +1906,43 @@ class shop_front_renderer extends local_shop_base_renderer {
         }
     }
 
+    /**
+     * Prints sales contact
+     */
     public function sales_contact() {
-        global $OUTPUT;
 
         $config = get_config('local_shop');
 
-        $template = new StdClass;
+        $template = new StdClass();
 
-        $template->heading = $OUTPUT->heading(get_string('customersupport', 'local_shop'), 2, '', 'shop-sales-support');
+        $template->heading = $this->output->heading(get_string('customersupport', 'local_shop'), 2, '', 'shop-sales-support');
         $template->sellermail = $config->sellermail;
 
         return $this->output->render_from_template('local_shop/front_sales_contact', $template);
     }
 
-    public function paymode($afullbill) {
-        global $OUTPUT;
+    /**
+     * Print paymode widget
+     * @param Bill $bill a full bill
+     */
+    public function paymode(Bill $bill) {
 
         try {
             $outputclass = 'front_paymode';
             shop_load_output_class($outputclass);
-            $invoiceheader = new \local_shop\output\front_paymode($afullbill);
+            $invoiceheader = new \local_shop\output\front_paymode($bill);
             $template = $invoiceheader->export_for_template($this);
-            return $OUTPUT->render_from_template('local_shop/front_paymode', $template);
+            return $this->output->render_from_template('local_shop/front_paymode', $template);
         } catch (Exception $e) {
             throw new moodle_exception("Missing output class $outputclass");
         }
     }
 
     /**
+     * Print a link to a printable Bill
      *
-     *
+     * @param int $billid
+     * @param string $transid
      */
     public function printable_bill_link($billid, $transid) {
         global $DB;
@@ -1811,17 +1954,17 @@ class shop_front_renderer extends local_shop_base_renderer {
         $template->billid = $billid;
         if (!empty($config->pdfenabled)) {
             $template->ispdf = true;
-            $template->actionurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', array('transid' => $transid));
+            $template->actionurl = new moodle_url('/local/shop/pro/pdf/pdfbill.php', ['transid' => $transid]);
             $template->iconurl = $this->output->image_url('f/pdf-64');
         } else {
             $template->islogin = true;
             $template->actionurl = new moodle_url('/local/shop/front/order.popup.php');
-            $billurl = new moodle_url('/local/shop/front/order.popup.php', array('billid' => $billid, 'transid' => $transid));
-            $customerid = $DB->get_field('local_shop_bill', 'customerid', array('id' => $billid));
-            if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', array('id' => $customerid))) {
-                $billuser = $DB->get_record('user', array('id' => $userid));
+            $billurl = new moodle_url('/local/shop/front/order.popup.php', ['billid' => $billid, 'transid' => $transid]);
+            $customerid = $DB->get_field('local_shop_bill', 'customerid', ['id' => $billid]);
+            if ($userid = $DB->get_field('local_shop_customer', 'hasaccount', ['id' => $customerid])) {
+                $billuser = $DB->get_record('user', ['id' => $userid]);
                 $ticket = ticket_generate($billuser, 'immediate access', $billurl);
-                $options = array('ticket' => $ticket);
+                $options = ['ticket' => $ticket];
                 $template->loginbutton = $this->output->single_button('/login/index.php' , get_string('printbill', 'local_shop'), 'post',  $options);
             }
         }

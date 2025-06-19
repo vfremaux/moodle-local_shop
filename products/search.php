@@ -18,7 +18,6 @@
  * Search view for product management
  *
  * @package    local_shop
- * @category   local
  * @author     Valery Fremaux <valery.fremaux@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
  * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com

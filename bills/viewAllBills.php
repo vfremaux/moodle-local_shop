@@ -87,7 +87,7 @@ if ($bills) {
         $billsbystate[$bill->status][$bill->id] = $bill;
     }
 } else {
-    $billsbystate = array();
+    $billsbystate = [];
 }
 
 echo $OUTPUT->heading_with_help(get_string('billing', 'local_shop'), 'billstates', 'local_shop');

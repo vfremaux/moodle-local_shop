@@ -28,25 +28,25 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
+use coding_exception;
 use local_shop\Shop;
 
+/**
+ * An MVC controller for reseting shop or parts of shops.
+ */
 class reset_controller {
 
-    /**
-     * Action data context
-     */
+    /** @var object Action data context */
     protected $data;
 
-    /**
-     * Marks data has been loaded for action.
-     */
+    /** @var bool Marks data has been loaded for action. */
     protected $received;
 
     /**
      * Receives all needed parameters from outside for each action case.
      * @param string $cmd the action keyword
      * @param array $data incoming parameters from form when directly available, otherwise the
-     * function shoudl get them from request
+     * function should get them from request
      */
     public function receive($cmd, $data = []) {
 
@@ -80,7 +80,7 @@ class reset_controller {
         global $OUTPUT, $DB, $CFG;
 
         if (!$this->received) {
-            throw new \coding_exception('Data must be received in controller before operation. this is a programming error.');
+            throw new coding_exception('Data must be received in controller before operation. this is a programming error.');
         }
 
         $out = '<code>';
@@ -88,7 +88,7 @@ class reset_controller {
         if (!empty($this->data->bills) || !empty($this->data->customers) || !empty($this->data->catalogs)) {
             $out .= "Deleting bill records...\n";
 
-            $params = array();
+            $params = [];
             if (!empty($this->data->shopid)) {
                 $params = ['shopid' => $this->data->shopid];
 
@@ -147,7 +147,7 @@ class reset_controller {
             if (!empty($this->data->shopid)) {
                 $theshop = new Shop($this->data->shopid);
                 $DB->delete_records('local_shop_catalogitem', ['catalogid' => $theshop->config->catalogid]);
-                $DB->delete_records('local_shop_catalog', array('id' => $this->theshop->config->catalogid));
+                $DB->delete_records('local_shop_catalog', ['id' => $this->theshop->config->catalogid]);
             } else {
                 $DB->delete_records('local_shop_catalogitem', []);
                 $DB->delete_records('local_shop_catalog', []);

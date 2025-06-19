@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   local_shop
- * @category  local
- * @subpackage shophandlers
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * Shop handler main class
+ *
+ * @package shophandlers_std_assignroleoncontext
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * STD_ASSIGN_ROLE_ON_CONTEXT is a standard shop product action handler that products as result a single
@@ -43,15 +44,39 @@ use local_shop\Product;
 use local_shop\ProductEvent;
 use local_shop\Shop;
 
+/**
+ * STD_ASSIGN_ROLE_ON_CONTEXT is a standard shop product action handler that products as result a single
+ * role assignation on a context.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class shop_handler_std_assignroleoncontext extends shop_handler {
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->name = 'std_assignroleoncontext'; // For unit test reporting.
         parent::__construct($label);
     }
 
-    // Pre pay information always comme from shopping session.
-    public function produce_prepay(&$data, &$errorstatus) {
+    /**
+     * What is happening on order time, before it has been actually paied out
+     * @param objectref &$data a bill item (real or simulated).
+     * @param boolref &$errorstatus an error status to report to caller.
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
+    public function produce_prepay($data, &$errorstatus) {
 
         // Get customersupportcourse designated by handler internal params.
 
@@ -74,7 +99,13 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         return $productionfeedback;
     }
 
-    // Post pay information can come from session or from production data stored in delayed bills.
+    /**
+     * What is happening after it has been actually paied out, interactively
+     * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
+     * @return an array of three textual feedbacks, for direct display to customer,
+     * summary messaging to the customer, and sales admin backtracking.
+     */
     public function produce_postpay(&$data) {
         global $DB, $USER, $SITE;
 
@@ -111,11 +142,11 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         } else if ($contextlevel == CONTEXT_COURSE) {
             $instancename = 'Block Instance '.$context->instanceid; // TODO : Clarify in future.
         } else if ($contextlevel == CONTEXT_COURSE) {
-            $instancename = $DB->get_field('course', 'shortname', array('id' => $context->instanceid));
+            $instancename = $DB->get_field('course', 'shortname', ['id' => $context->instanceid]);
         } else if ($contextlevel == CONTEXT_COURSECAT) {
-            $instancename = $DB->get_field('course_categories', 'name', array('id' => $context->instanceid));
+            $instancename = $DB->get_field('course_categories', 'name', ['id' => $context->instanceid]);
         } else if ($contextlevel == CONTEXT_USER) {
-            $instancename = $DB->get_field('user', 'username', array('id' => $context->instanceid));
+            $instancename = $DB->get_field('user', 'username', ['id' => $context->instanceid]);
         } else if ($contextlevel == CONTEXT_SYSTEM) {
             $instancename = $SITE->shortname;
         }
@@ -128,7 +159,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             return;
         }
 
-        $role = $DB->get_record('role', array('shortname' => $rolename));
+        $role = $DB->get_record('role', ['shortname' => $rolename]);
         if (!$role) {
             $message = "[{$data->transactionid}] STD_ASSIGN_ROLE_ON_CONTEXT PostPay :";
             $message .= " failed item {$data->id} no valid role ($rolename)";
@@ -138,9 +169,9 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
 
         if (!empty($data->required['foruser'])) {
             $idnumber = $data->required['foruser'];
-            if (!$user = $DB->get_record('user', array('idnumber' => $idnumber))) {
+            if (!$user = $DB->get_record('user', ['idnumber' => $idnumber])) {
                 // Second chance.
-                if (!$user = $DB->get_record('user', array('username' => $idnumber))) {
+                if (!$user = $DB->get_record('user', ['username' => $idnumber])) {
                     $fb = get_string('productiondata_failure_public', 'shophandlers_std_assignroleoncontext', 'Code : BAD_USER');
                     $productionfeedback->public = $fb;
                     $fb = get_string('productiondata_failure_private', 'shophandlers_std_assignroleoncontext', $idnumber);
@@ -150,8 +181,8 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
                     return $productionfeedback;
                 }
             }
-            $customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
-            $customeruser = $DB->get_record('user', array('id' => $customer->hasaccount));
+            $customer = $DB->get_record('local_shop_customer', ['id' => $data->get_customerid()]);
+            $customeruser = $DB->get_record('user', ['id' => $customer->hasaccount]);
         } else {
             if ($USER->id) {
                 $customeruser = $USER;
@@ -171,8 +202,6 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $endtime = shop_compute_enrol_time($data, 'endtime', $course);
 
         // Perform operations.
-
-        $now = time();
 
         try {
             $raid = role_assign($role->id, $user->id, $context->id);
@@ -200,7 +229,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $product->enddate = $endtime;
         $product->extradata = '';
         $product->reference = shop_generate_product_ref($data);
-        $extra = array('handler' => 'std_assignroleoncontext');
+        $extra = ['handler' => 'std_assignroleoncontext'];
         $product->productiondata = Product::compile_production_data($data->actionparams, $extra);
         $product->id = $DB->insert_record('local_shop_product', $product);
 
@@ -208,7 +237,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         $productevent = new ProductEvent(null);
         $productevent->productid = $product->id;
         $productevent->billitemid = $data->id;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->save();
 
         // Add user to customer support.
@@ -251,7 +280,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
         global $DB;
 
         if ($product->contexttype == 'roleassign') {
-            if ($ra = $DB->get_record('role_assignments', array('id' => $product->instanceid))) {
+            if ($ra = $DB->get_record('role_assignments', ['id' => $product->instanceid])) {
                 shop_trace('[] Deleting roleassignement on {$ra->contextid} for user {$ra->userid}');
                 role_unassign($ra->roleid, $ra->userid, $ra->contextid);
             }
@@ -259,8 +288,11 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
     }
 
     /**
-     * unit tests check input conditions from product setup without doing anything,
-     * collects input errors and warnings
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
      */
     public function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
@@ -280,7 +312,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $errors[$data->code][] = get_string('errormissingcontextlevel', 'shophandlers_std_assignroleoncontext');
         }
 
-        if (!in_array($data->actionparams['contextlevel'], array('course', 'module', 'category'))) {
+        if (!in_array($data->actionparams['contextlevel'], ['course', 'module', 'category'])) {
             $errors[$data->code][] = get_string('errorunsupportedcontextlevel', 'shophandlers_std_assignroleoncontext');
         }
 
@@ -288,7 +320,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $errors[$data->code][] = get_string('errormissingcontext', 'shophandlers_std_assignroleoncontext');
         }
 
-        $params = array('contextlevel' => $data->actionparams['contextlevel'], 'instance' => $data->actionparams['instance']);
+        $params = ['contextlevel' => $data->actionparams['contextlevel'], 'instance' => $data->actionparams['instance']];
         if (!$DB->get_record('context', $params)) {
             $errors[$data->code][] = get_string('errorcontext', 'shophandlers_std_assignroleoncontext');
         }
@@ -297,7 +329,7 @@ class shop_handler_std_assignroleoncontext extends shop_handler {
             $errors[$data->code][] = get_string('errormissingrole', 'shophandlers_std_assignroleoncontext');
         }
 
-        if (!$DB->get_record('role', array('shortname' => $data->actionparams['role']))) {
+        if (!$DB->get_record('role', ['shortname' => $data->actionparams['role']])) {
             $errors[$data->code][] = get_string('errorrole', 'shophandlers_std_assignroleoncontext', $data->actionparams['role']);
         }
     }

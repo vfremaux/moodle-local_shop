@@ -16,7 +16,6 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,8 +28,8 @@ require_once($CFG->dirroot.'/local/shop/forms/form_shop.class.php');
 require_once($CFG->dirroot."/local/shop/classes/Shop.class.php");
 require_once($CFG->dirroot."/local/shop/classes/Catalog.class.php");
 
-use \local_shop\Shop;
-use \local_shop\Catalog;
+use local_shop\Shop;
+use local_shop\Catalog;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -39,14 +38,14 @@ $config = get_config('local_shop');
 
 $id = optional_param('id', 0, PARAM_INT); // Shop current shop id.
 $shopid = optional_param('shopid', 0, PARAM_INT); // Shop current shop id.
-$url = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $id));
+$url = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $id]);
 
 // Security.
 
 require_login();
 require_capability('local/shop:salesadmin', $context);
 
-$shopid = $DB->get_field('local_shop', 'MIN(id)', array());
+$shopid = $DB->get_field('local_shop', 'MIN(id)', []);
 
 // Make page header and navigation.
 
@@ -56,10 +55,10 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if (!empty($id)) {
     $shop = new Shop($shopid);
-    $customdata = array('what' => 'edit');
+    $customdata = ['what' => 'edit', 'shop' => $shop];
 } else {
     $shop = new Shop(null);
-    $customdata = array('what' => 'add');
+    $customdata = ['what' => 'add', 'shop' => $shop];
 }
 
 $mform = new Shop_Form(new moodle_url('/local/shop/shop/edit_shop.php'), $customdata);

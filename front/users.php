@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ $PAGE->requires->js('/local/shop/front/js/front.js.php?id='.$theshop->id);
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->order)) {
-    $params = array('id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop');
+    $params = ['id' => $theshop->id, 'blockid' => $theblock->id, 'view' => 'shop'];
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 

@@ -18,16 +18,19 @@
  * Renderer for shop management.
  *
  * @package     local_shop
- * @categroy    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/local/shop/classes/Catalog.class.php');
+
 use local_shop\Catalog;
 
+/**
+ * specialized renderer for shop instances management.
+ */
 class shop_shop_renderer {
 
     /**
@@ -46,8 +49,8 @@ class shop_shop_renderer {
 
         $table = new html_table();
         $table->width = "98%";
-        $table->size = array();
-        $table->head = array($namestr, $descriptionstr, $currencystr, $catalogstr, $blocksstr, '');
+        $table->size = [];
+        $table->head = [$namestr, $descriptionstr, $currencystr, $catalogstr, $blocksstr, ''];
 
         foreach ($shops as $sh) {
             if ($sh->catalogid) {
@@ -59,26 +62,28 @@ class shop_shop_renderer {
             $blockcount = $sh->get_blocks();
 
             if (local_shop_supports_feature('shop/instances')) {
-                $editurl = new moodle_url('/local/shop/pro/shop/edit_shop.php', array('id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey()));
+                $editurl = new moodle_url('/local/shop/pro/shop/edit_shop.php', ['id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey()]);
             } else {
-                $editurl = new moodle_url('/local/shop/shop/edit_shop.php', array('id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey()));
+                $editurl = new moodle_url('/local/shop/shop/edit_shop.php', ['id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey()]);
             }
             $commands = '<a href="'.$editurl.'">'.$OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle').'</a>';
 
             if ($blockcount == 0 && local_shop_supports_feature('shop/instances')) {
-                $params = array('view' => 'viewAllShops', 'what' => 'delete', 'id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey());
+                $params = ['view' => 'viewAllShops', 'what' => 'delete', 'id' => $id, 'shopid' => $sh->id, 'sesskey' => sesskey()];
                 $deleteurl = new moodle_url('/local/shop/pro/shop/view.php', $params);
                 $commands .= ' <a href="'.$deleteurl.'">'.$OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle').'</a>';
             }
 
-            $shopurl = new moodle_url('/local/shop/front/view.php', array('shopid' => $sh->id));
+            $shopurl = new moodle_url('/local/shop/front/view.php', ['shopid' => $sh->id]);
             $shoplink = '<a href="'.$shopurl.'">'.format_string($sh->name).'</a>';
 
-            $table->data[] = array($shoplink,
-                                   format_text($sh->description, $sh->descriptionformat),
-                                   $sh->get_currency('symbol'), $catname,
-                                   $blockcount,
-                                   $commands);
+            $table->data[] = [
+                $shoplink,
+                format_text($sh->description, $sh->descriptionformat),
+                $sh->get_currency('symbol'), $catname,
+                $blockcount,
+                $commands,
+            ];
         }
 
         return html_writer::table($table);

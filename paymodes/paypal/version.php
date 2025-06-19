@@ -15,19 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    shoppaymodes_paypalold
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * Version details
+ *
+ * @package    shoppaymodes_paypal
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * Created on 22 sept. 2009
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
 $plugin = new stdclass;
 $plugin->version = 2013031900;
 $plugin->component = 'shoppaymodes_paypal';

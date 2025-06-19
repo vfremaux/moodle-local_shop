@@ -15,57 +15,86 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Base shop handler implementation
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
+use local_shop\Product;
+use local_shop\CatalogItem;
+
+/**
+ * Shop handler abstract class.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @SuppressWarnings(PHPMD.NumberOfChildren)
+ */
 abstract class shop_handler {
 
+    /** @var string */
     public $productlabel;
 
+    /**
+     * Constructor
+     * @param string $label
+     */
     public function __construct($label) {
         $this->productlabel = $label;
     }
 
+    /**
+     * Get the handler name
+     */
     public function get_name() {
         $name = str_replace('shop_handler_', '', get_class($this));
         return $name;
     }
 
+    /**
+     * Which users it can serve
+     */
     public function supports() {
         return PROVIDING_BOTH;
     }
 
     /**
      * What is happening on order time, before it has been actually paied out
-     * @param objectref &$data a bill item (real or simulated).
+     * @param StdClass $data a bill item (real or simulated).
      * @param boolref &$errorstatus an error status to report to caller.
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    public abstract function produce_prepay(&$data, &$errorstatus);
+    abstract public function produce_prepay($data, &$errorstatus);
 
     /**
      * What is happening after it has been actually paied out, interactively
      * or as result of a delayed sales administration action.
+     * @param objectref &$data a bill item (real or simulated).
      * @return an array of three textual feedbacks, for direct display to customer,
      * summary messaging to the customer, and sales admin backtracking.
      */
-    public abstract function produce_postpay(&$data);
+    abstract public function produce_postpay(&$data);
 
     /**
      * Check wether the product is available for a particular context, user.
      * Some product handlers may know if the current user has already purchased
      * this product and cannot purchase it twice, or is NOT in condition to purchase it.
-     * @param object $catalogitem a Catalog item object with all parameters thzt is using
+     * @param CatalogItem $catalogitem a Catalog item object with all parameters thzt is using
      * this handler.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @return boolean true or false
      */
-    public function is_available(&$catalogitem) {
+    public function is_available(CatalogItem $catalogitem) {
         return true;
     }
 
@@ -93,6 +122,7 @@ abstract class shop_handler {
      * @param string $value the value to validate
      * @param arrayref $errors, an error array to be field with all encountered errors. Keys of the
      * array are [catalogitem][fieldname][instanceix].
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @return false if not validated
      */
     public function validate_required_data($itemname, $field, $instance, $value, &$errors) {
@@ -100,42 +130,75 @@ abstract class shop_handler {
     }
 
     /**
+     * Shows product info
      * @param int $pid the product instance id
      * @param array $params production related info stored at purchase time
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function display_product_infos($pid, $pinfo) {
         // Do nothing.
         return;
     }
 
+    /**
+     * Shows product possible actions
+     * @param int $pid the product instance id
+     * @param array $params production related info stored at purchase time
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function display_product_actions($pid, $params) {
         // Do nothing.
         return;
     }
 
-    public function delete($product) {
+    /**
+     * Deletes the product instance
+     * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function delete(Product $product) {
         // Do nothing.
         return;
     }
 
-    public function soft_delete($product) {
+    /**
+     * Inhibits the product instance in a way it can be reactivated
+     * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function soft_delete(Product $product) {
         // Do nothing.
         return;
     }
 
-    public function soft_restore($product) {
+    /**
+     * Restores the product instance to its normal effect
+     * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function soft_restore(Product $product) {
         // Do nothing.
         return;
     }
 
     /**
      * what should happen when product instance record is updated.
+     * @param Product $product the product instance
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function update($product) {
+    public function update(Product $product) {
         // Do nothing.
         return;
     }
 
+    /**
+     * Tests a product handler
+     * @param object $data
+     * @param arrayref &$errors
+     * @param arrayref &$warnings
+     * @param arrayref &$messages
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     protected function unit_test($data, &$errors, &$warnings, &$messages) {
         global $DB;
 
@@ -149,11 +212,11 @@ abstract class shop_handler {
             $data->actionparams['customersupport'] = $data->defaultcustomersupportcourse;
         } else {
             if (is_numeric($data->actionparams['customersupport'])) {
-                if (!$course = $DB->get_record('course', array('id' => $data->actionparams['customersupport']))) {
+                if (!$DB->get_record('course', ['id' => $data->actionparams['customersupport']])) {
                     $errors[$data->code][] = get_string('errornocustomersupportcourse', 'local_shop');
                 }
             } else {
-                if (!$course = $DB->get_record('course', array('shortname' => $data->actionparams['customersupport']))) {
+                if (!$DB->get_record('course', ['shortname' => $data->actionparams['customersupport']])) {
                     $errors[$data->code][] = get_string('errornocustomersupportcourse', 'local_shop');
                 }
             }

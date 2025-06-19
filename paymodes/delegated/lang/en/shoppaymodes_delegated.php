@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     shoppaymodes_delegated
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package  shoppaymodes_delegated
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes Delegated does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Delegated does not directly store any personal data
+ about any user.';
 
 $string['enabledelegated'] = 'Delegated (offline) payment';
 $string['enabledelegated'] = 'Delegated (offline) payment';

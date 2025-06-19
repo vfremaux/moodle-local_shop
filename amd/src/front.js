@@ -1,7 +1,19 @@
-/*
- *
- */
-// jshint unused:false, undef:false
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+// jshint unused: true, undef:true
 
 define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, str) {
 
@@ -26,6 +38,10 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
         // 3 => str_replace("'", '\\\'', get_string('emptyorder', 'local_shop'))
         strings: [],
 
+        /**
+         * Initialization.
+         * @param {strings[]} params
+         */
         init: function(params) {
 
             var stringdefs = [
@@ -42,7 +58,7 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             // Get all description toggles and bind them.
             $('.shop-description-toggle').bind('click', this.toggle_description);
             $('.local-shop-detail-delete').bind('click', this.clear_product);
-            $('.local-shop-order-detail').bind('change', this.update_product);
+            $('#order-detail', '.local-shop-order-detail').bind('change', this.update_product); // Delegate this event.
             $('.local-shop-password').bind('keypress', this.check_pass_code);
             $('.local-shop-email').bind('change', this.check_email);
             $('.local-shop-add-unit').bind('click', this.add_unit);
@@ -64,6 +80,10 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             log.debug('AMD Local Shop Front initialized');
         },
 
+        /**
+         * Initialization of the eulas section
+         * @param {strings[]} params
+         */
         initeulas: function(params) {
             // Get all description toggles and bind them.
             $('#shop-eula-confirm').bind('click', this.accept_eulas);
@@ -253,9 +273,8 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             );
         },
 
-        /*
-         * @TODO id to remove
-         *
+        /**
+         * @param {Object} e - The event
          */
         add_unit: function(e) {
 
@@ -310,6 +329,9 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             $('#next-button').attr('title', shopfront.strings[2]);
         },
 
+        /**
+         * @param {Object} e - The event
+         */
         delete_unit: function(e) {
 
             e.stopPropagation();
@@ -360,6 +382,9 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             }
         },
 
+        /**
+         * @param {Object} e - The event
+         */
         clear_product: function(e) {
 
             e.stopPropagation();
@@ -403,6 +428,9 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             );
         },
 
+        /**
+         * @param {Object} e - The event
+         */
         update_product: function(e) {
 
             e.stopPropagation();
@@ -663,6 +691,9 @@ define(['jquery', 'core/log', 'core/config', 'core/str'], function($, log, cfg, 
             );
         },
 
+        /**
+         * @param {Object} e - The event
+         */
         check_pass_code: function(e) {
 
             var that = $(this);

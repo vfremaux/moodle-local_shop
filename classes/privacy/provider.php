@@ -15,30 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for mod_forum.
+ * Privacy Subsystem implementation for local shop.
  *
- * @package    mod_shop
- * @copyright  2018 Valery Fremaux <valery.fremaux@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_shop
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_shop\privacy;
 
-use \core_privacy\local\request\approved_contextlist;
-use \core_privacy\local\request\deletion_criteria;
-use \core_privacy\local\request\writer;
-use \core_privacy\local\request\helper as request_helper;
-use \core_privacy\local\metadata\collection;
-use \core_privacy\local\request\transform;
-use \context_system;
-
-defined('MOODLE_INTERNAL') || die();
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\deletion_criteria;
+use core_privacy\local\request\writer;
+use core_privacy\local\request\helper as request_helper;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\transform;
+use context_system;
 
 /**
  * Implementation of the privacy subsystem plugin provider for the forum activity module.
- *
- * @copyright  2018 Andrew Nicols <andrew@nicols.co.uk>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
     // This plugin has data.
@@ -50,8 +47,8 @@ class provider implements
     /**
      * Returns meta data about this system.
      *
-     * @param   collection     $items The initialised collection to add items to.
-     * @return  collection     A listing of user data stored through this system.
+     * @param collection $items The initialised collection to add items to.
+     * @return collection A listing of user data stored through this system.
      */
     public static function get_metadata(collection $items) : collection {
         // The 'customer' table stores customer info related to some moodle users.
@@ -158,12 +155,12 @@ class provider implements
      * Get the list of contexts that contain user information for the specified user.
      * All the user data are in systemlevel context. We pass the user's context to find him in exports.
      *
-     * @param   int         $userid     The user to search.
-     * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
+     * @param int $userid The user to search.
+     * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : \core_privacy\local\request\contextlist {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
 
-        $contextlist = new \core_privacy\local\request\contextlist();
+        $contextlist = new contextlist();
         $contextlist->add_system_context();
         $contextlist->add_user_context($userid);
 
@@ -173,7 +170,7 @@ class provider implements
     /**
      * Export all user data for the specified user, in the specified contexts.
      *
-     * @param   approved_contextlist    $contextlist    The approved contexts to export information for.
+     * @param approved_contextlist $contextlist The approved contexts to export information for.
      */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
@@ -214,29 +211,39 @@ class provider implements
         }
     }
 
+    /**
+     * Export all customer data for the specified user.
+     *
+     * @param object $user The user who has the customer account.
+     * @param object $recordobj The customer record.
+     */
     protected static function export_customer_account($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
         }
 
-        // Necessary format transforms
-        $recordobj->hasaccount = transform::user($recordobj->hasaccount);
+        // Necessary format transforms.
+        $recordobj->hasaccount = transform::user($user->id);
         $recordobj->timecreated = transform::datetime($recordobj->timecreated);
 
         // Data about the record.
         writer::with_context(context_system::instance())->export_data([$recordobj->id], (object) $recordobj);
     }
 
+    /**
+     * Export data from a user bill.
+     *
+     * @param object $user The user who has the customer account.
+     * @param object $recordobj The bill record.
+     */
     protected static function export_bill($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
         }
 
-        $recordobj->userid = transform::user($recordobj->userid);
+        $recordobj->userid = transform::user($user->id);
         $recordobj->emissiondate = transform::datetime($recordobj->emissiondate);
         $recordobj->lastactiondate = transform::datetime($recordobj->lastactiondate);
         $recordobj->assignedto = transform::user($recordobj->assignedto);
@@ -246,8 +253,13 @@ class provider implements
         writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
     }
 
+    /**
+     * Export data from a user bill item.
+     *
+     * @param object $user The user who has the customer account.
+     * @param object $recordobj The bill item record.
+     */
     protected static function export_bill_item($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
@@ -257,8 +269,13 @@ class provider implements
         writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
     }
 
+    /**
+     * Export a user owned product.
+     *
+     * @param object $user The user who has the customer account.
+     * @param object $recordobj The product record.
+     */
     protected static function export_product($user, $recordobj) {
-        global $DB;
 
         if (!$recordobj) {
             return;
@@ -273,9 +290,12 @@ class provider implements
         writer::with_context(context_system::instance())->export_data([$recordobj->id], (object)$recordobj);
     }
 
+    /**
+     * Exports a product event
+     * @param object $user
+     * @param object $recordobj a product zvent object
+     */
     protected static function export_product_event($user, $recordobj) {
-        global $DB;
-
         if (!$recordobj) {
             return;
         }
@@ -294,11 +314,10 @@ class provider implements
      *
      * "Les documents comptables et les pièces justificatives sont conservés pendant dix ans."
      *
-     * @param   context                 $context   The specific context to delete data for.
+     * @param context $context The specific context to delete data for.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
-        global $DB;
-
+        assert(true);
     }
 
     /**
@@ -309,9 +328,9 @@ class provider implements
      *
      * "Les documents comptables et les pièces justificatives sont conservés pendant dix ans."
      *
-     * @param   approved_contextlist    $contextlist    The approved contexts and user information to delete information for.
+     * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
-        global $DB;
+        assert(true);
     }
 }

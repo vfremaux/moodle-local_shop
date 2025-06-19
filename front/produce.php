@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -26,7 +26,7 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
-use \local_shop\Bill;
+use local_shop\Bill;
 
 // Resolving invoice identity and command.
 
@@ -43,7 +43,7 @@ try {
 if ((!isset($SESSION->shoppingcart) ||
         !isset($SESSION->shoppingcart->customerinfo)) &&
                 $action != 'navigate' && !empty($transid)) {
-    $params = array('id' => $theshop->id, 'blockid' => @$theblock->instance->id, 'view' => 'shop');
+    $params = ['id' => $theshop->id, 'blockid' => ($theblock->instance->id ?? 0), 'view' => 'shop'];
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
@@ -63,7 +63,7 @@ if ($action != '') {
     $result = $controller->process($action);
 }
 
-$supports = array();
+$supports = [];
 if ($config->sellermailsupport) {
     $supports[] = get_string('byemailat', 'local_shop').' '. $config->sellermailsupport;
 }
@@ -77,7 +77,7 @@ echo $out;
 
 echo $OUTPUT->heading(format_string($theshop->name), 2, 'shop-caption');
 
-$completestates = array(SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD);
+$completestates = [SHOP_BILL_SOLDOUT, SHOP_BILL_COMPLETE, SHOP_BILL_PREPROD];
 if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo '<center>';
     echo $renderer->progress('PRODUCE');
@@ -100,10 +100,10 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo $OUTPUT->box_start('shop-notification');
     echo $OUTPUT->box_start('shop-notification-message');
     echo $config->sellername.' ';
-    echo shop_compile_mail_template('post_billing_message', array(), '');
+    echo shop_compile_mail_template('post_billing_message', [], '');
     echo '<img id="prod-waiter" src="'.$OUTPUT->image_url('waitingforprod', 'local_shop').'" />';
     echo $OUTPUT->box_start('shop-message-hidden', 'shop-notification-message-followup');
-    echo shop_compile_mail_template('success_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$afullbill->paymode);
+    echo shop_compile_mail_template('success_followup_text', ['SUPPORT' => $supportstr], 'shoppaymodes_'.$afullbill->paymode);
     echo $OUTPUT->box_end();
     echo $OUTPUT->box_end();
     echo $OUTPUT->box_end();
@@ -132,9 +132,9 @@ if (in_array($afullbill->status, $completestates) || $return == -1) {
     echo $OUTPUT->box_start('shop-notification');
     echo $OUTPUT->box_start('shop-notification-message');
     echo $config->sellername.' ';
-    echo shop_compile_mail_template('post_billing_message', array(), '');
+    echo shop_compile_mail_template('post_billing_message', [], '');
     echo $OUTPUT->box_start('shop-message-hidden', 'shop-notification-message-followup');
-    echo shop_compile_mail_template('pending_followup_text', array('SUPPORT' => $supportstr), 'shoppaymodes_'.$afullbill->paymode);
+    echo shop_compile_mail_template('pending_followup_text', ['SUPPORT' => $supportstr], 'shoppaymodes_'.$afullbill->paymode);
     echo $OUTPUT->box_end();
     echo $OUTPUT->box_end();
 

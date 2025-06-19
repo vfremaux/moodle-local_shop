@@ -16,9 +16,8 @@
 
 /**
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -33,16 +32,28 @@ raise_memory_limit(MEMORY_HUGE);
 $action = optional_param('what', '', PARAM_ALPHA);
 $order = optional_param('order', 'code', PARAM_ALPHA);
 $dir = optional_param('dir', 'ASC', PARAM_ALPHA);
-$customerid = optional_param('customerid', 0, PARAM_INT);
-$contexttype = optional_param('contexttype', '', PARAM_TEXT);
-$shopid = optional_param('shopid', 0, PARAM_INT);
-$shopownerid = optional_param('shopowner', 0, PARAM_INT);
-$productstate = optional_param('productstate', '*', PARAM_TEXT);
-$producttext = optional_param('producttext', '', PARAM_TEXT);
+$search =new StdClass;
+$search->customerid = optional_param('customerid', $SESSION->productsearch->customerid ?? 0, PARAM_INT);
+$search->type = optional_param('contexttype', $SESSION->productsearch->type ?? '', PARAM_TEXT);
+$search->shopid = optional_param('shopid', $SESSION->productsearch->shopid ?? 0, PARAM_INT);
+$search->ownerid = optional_param('shopowner', $SESSION->productsearch->ownerid ?? 0, PARAM_INT);
+$search->state = optional_param('productstate', $SESSION->productsearch->state ?? '*', PARAM_TEXT);
+$search->text = optional_param('quicksearchfilter', $SESSION->productsearch->text ?? '', PARAM_TEXT);
 $page = optional_param('page', 0, PARAM_INT);
 $perpage = 50;
 
-$viewparams = array('view' => $view, 'customerid' => $customerid, 'order' => $order, 'dir' => $dir, 'shopowner' => $shopownerid, 'shopid' => $shopid);
+$viewparams = [
+    'view' => $view,
+    'customerid' => $search->customerid,
+    'order' => $order,
+    'dir' => $dir,
+    'shopowner' => $search->ownerid,
+    'productstate' => $search->state,
+    'quicksearchfilter' => $search->text,
+    'contexttype' => $search->type,
+    'shopid' => $search->shopid,
+];
+$viewurl = new moodle_url($url, $viewparams);
 
 $ownermenu = '';
 
@@ -51,7 +62,7 @@ if (!has_capability('local/shop:accessallowners', $context)) {
 } else {
     $shopowner = null;
     $shoprenderer = $PAGE->get_renderer('local_shop');
-    $ownermenu = $shoprenderer->print_owner_menu($url, $shopownerid);
+    $ownermenu = $shoprenderer->print_owner_menu($url, $search->shopownerid);
 }
 
 // Execute controller.
@@ -61,16 +72,16 @@ if ($action != '') {
     $controller = new \local_shop\backoffice\productinstances_controller();
     $controller->receive($action);
     $controller->process($action);
-    redirect(new moodle_url('/local/shop/purchasemanager/view.php', $viewparams));
+    redirect($viewurl);
 }
 
 // $select = " hasaccount > 0 ";
 $select = " 1 = 1 ";
 $join = '';
-$params = array();
-if ($shopownerid) {
+$params = [];
+if ($search->ownerid) {
     $select .= " AND co.userid = ? ";
-    $params[] = $shopownerid;
+    $params[] = $search->ownerid;
     $join = "
         LEFT JOIN
             {local_shop_customer_owner} co
@@ -80,24 +91,21 @@ if ($shopownerid) {
 }
 
 $filter = [];
-if (!empty($shopid)) {
-    $filter['s.id'] = $shopid;
+if (!empty($search->shopid)) {
+    $filter['s.id'] = $search->shopid;
 }
-if (!empty($customerid)) {
-    $filter['p.customerid'] = $customerid;
+if (!empty($search->customerid)) {
+    $filter['p.customerid'] = $search->customerid;
 }
-if (!empty($contexttype)) {
-    $filter['p.contexttype'] = $contexttype;
+if (!empty($search->type)) {
+    $filter['p.contexttype'] = $search->type;
 }
 
 $productinstancesnum = Product::count_instances_on_context($filter);
-$productinstances = Product::get_instances_on_context($filter, 'ci.shortname', $from, $perpage);
-Product::filter_by_state($productinstances, $productstate);
+$productinstances = Product::get_instances_on_context($filter, 'ci.shortname', $page * $perpage, $perpage);
+Product::filter_by_state($productinstances, $search->state);
 
 echo $out;
-
-$params = ['view' => 'viewAllProductInstances', 'customerid' => $customerid, 'shopowner' => $shopowner];
-$viewurl = new moodle_url('/local/shop/purchasemanager/view.php', $params);
 
 echo $OUTPUT->heading(get_string('productinstances', 'local_shop'));
 
@@ -106,18 +114,11 @@ echo $renderer->productinstances_options($mainrenderer);
 if (count(array_keys($productinstances)) == 0) {
     echo $OUTPUT->notification(get_string('noinstances', 'local_shop'));
 } else {
-    $pageurl = clone($url);
     $params = [
-        'quicksearchfilter' => optional_param('quicksearchfilter', '', PARAM_TEXT),
-        'productstate' => $productstate,
-        'customerid' => $customerid,
-        'shopowner' => $shopownerid,
         'dir' => $dir,
-        'contexttype' => $contexttype,
         'order' => $order,
-        'shop' => $shopid
     ];
-    $pageurl->params($params);
+    $pageurl = new moodle_url($viewurl, $params);
     echo $OUTPUT->paging_bar($productinstancesnum, $page, $perpage, $pageurl);
     echo $renderer->productinstance_admin_form($productinstances, $viewparams, $customerid, $shopowner);
     echo get_string('withselection', 'local_shop');

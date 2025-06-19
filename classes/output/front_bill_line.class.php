@@ -24,19 +24,24 @@
  */
 namespace local_shop\output;
 
-use Stdclass;
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
+
+use StdClass;
 use renderer_base;
+use Templatable;
+use local_shop\BillItem;
 
-class front_bill_line implements \Templatable {
+/**
+ * A line of a online bill (usually a billitem)
+ */
+class front_bill_line implements Templatable {
 
-    /**
-     * represented bill item
-     */
+    /** @var represented bill item */
     protected $billitem;
 
-    /**
-     * Rendering options
-     */
+    /** @var array of rendering options */
     protected $options;
 
     /**
@@ -44,16 +49,17 @@ class front_bill_line implements \Templatable {
      * @param object $billitem
      * @param array $options
      */
-    public function __construct($billitem, $options) {
+    public function __construct(BillItem $billitem, $options) {
         $this->billitem = $billitem;
         $this->options = $options;
     }
 
     /**
      * Exporter for template
-     * @param renderer_base $output
+     * @param renderer_base $output unused
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output /* unused */) {
         $template = new StdClass();
 
         $billitem = $this->billitem;

@@ -15,15 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing HTML block instances.
+ * Class representing a Customer
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace local_shop;
 
 defined('MOODLE_INTERNAL') || die();
@@ -33,12 +31,36 @@ use moodle_url;
 require_once($CFG->dirroot.'/local/shop/classes/ShopObject.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
 
+/**
+ * A customer has customer info and MAYor MAY not be linked to a moodle user.
+ * Generally, a customer having finalized a purchase will have an associated moodle account.
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class Customer extends ShopObject {
 
+    /**
+     * DB table (for ShopObject)
+     */
     public static $table = 'local_shop_customer';
 
+    /**
+     * Viewable url for this customer
+     */
     public $url;
 
+    /**
+     * Constructor
+     * @param mixed $idorrecord
+     * @param bool $light
+     */
     public function __construct($idorrecord, $light = false) {
         global $CFG;
 
@@ -53,7 +75,7 @@ class Customer extends ShopObject {
                 return;
             }
 
-            $this->bills = Bill::get_instances(array('customerid' => $this->id), 'status ASC');
+            $this->bills = Bill::get_instances(['customerid' => $this->id], 'status ASC');
         } else {
             // Initiate empty fields.
             $this->record->id = 0;
@@ -62,54 +84,67 @@ class Customer extends ShopObject {
             $this->record->address = '';
             $this->record->zip = '';
             $this->record->email = '';
-            $this->record->city = ''.@$CFG->city;
-            $this->record->country = ''.@$CFG->country;
+            $this->record->city = ''.$CFG->city ?? '';
+            $this->record->country = ''.$CFG->country ?? '';
             $this->record->organisation = '';
             $this->record->hasaccount = 0;
             $this->record->timecreated = time();
 
-            $this->bills = array();
+            $this->bills = [];
         }
     }
 
     /**
      * Builds a customer object for the given moodle account.
+     * @param int $userid
      */
     public static function instance_by_user($userid) {
         global $DB;
 
-        $params = array('hasaccount' => $userid);
+        $params = ['hasaccount' => $userid];
         if ($customerrec = $DB->get_record('local_shop_customer', $params)) {
             return new Customer($customerrec);
         }
         return null;
     }
 
+    /**
+     * Get customer's full printable name
+     */
     public function fullname() {
         return $this->lastname.' '.$this->firstname;
     }
 
     /**
-     * customers should not be deleted if having bills attached. Only
+     * Customers should not be deleted if having bills attached. Only
      * manually created customers might be deleted.
      */
-    public function delete() {
-        $instances = Bill::get_instances(array('userid' => $this->id));
+    public function delete(): void {
+        $instances = Bill::get_instances(['userid' => $this->id]);
         if (empty($instances)) {
             parent::delete();
         }
     }
 
-    public static function count($filter) {
-        return parent::_count(self::$table, $filter);
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     */
+    public static function count($filter, $order = 'lastname') {
+        return parent::_count(self::$table, $filter, $order);
     }
 
+    /**
+     * Get instances for backoffice administration.
+     * @param object $theshop
+     */
     public static function get_instances_for_admin($theshop) {
         global $DB;
 
         $config = get_config('local_shop');
 
-        $params = array();
+        $params = [];
         $shopclause = '';
         $catalogclause = '';
         if (!is_null($theshop)) {
@@ -154,7 +189,7 @@ class Customer extends ShopObject {
 
         $offset = optional_param('offset', 0, PARAM_INT);
         $customers = $DB->get_records_sql($sql, $params, $offset, $config->maxitemsperpage);
-        $customersarr = array();
+        $customersarr = [];
         foreach ($customers as $c) {
             $customersarr[$c->id] = new Customer($c);
         }
@@ -162,12 +197,18 @@ class Customer extends ShopObject {
         return $customersarr;
     }
 
-    public static function get_instances_by_shop($filter, $sortorder = 'c.lastname, c.firstname', $dir = "ASC", $limitfrom = 0, $limitnum = '') {
+    /**
+     * Get instances
+     * @param array $filter
+     * @param string $order
+     * @param string $dir 'ASC' por 'DESC'
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
+    public static function get_instances_by_shop($filter, $order = 'c.lastname, c.firstname', $dir = "ASC", $limitfrom = 0, $limitnum = '') {
         global $DB;
 
-        $config = get_config('local_shop');
-
-        $params = array();
+        $params = [];
         $shopclause = '';
         $catalogclause = '';
         $filterclause = '';
@@ -201,8 +242,8 @@ class Customer extends ShopObject {
             }
         }
 
-        if ($sortorder == 'name') {
-            $sortorder = 'c.lastname, c.firstname';
+        if ($order == 'name') {
+            $order = 'c.lastname, c.firstname';
         }
 
         $sql = "
@@ -230,11 +271,11 @@ class Customer extends ShopObject {
             GROUP BY
                c.id
             ORDER BY
-               $sortorder $dir
+               $order $dir
         ";
 
         $customers = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
-        $customersarr = array();
+        $customersarr = [];
         foreach ($customers as $c) {
             $customersarr[$c->id] = new Customer($c);
         }
@@ -242,12 +283,14 @@ class Customer extends ShopObject {
         return $customersarr;
     }
 
+    /**
+     * Counts instances
+     * @param array $filter
+     */
     public static function count_instances_by_shop($filter) {
         global $DB;
 
-        $config = get_config('local_shop');
-
-        $params = array();
+        $params = [];
         $shopclause = '';
         $catalogclause = '';
         $filterclause = '';
@@ -306,21 +349,43 @@ class Customer extends ShopObject {
         return $numrecords;
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '', $light = false) {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     * @param bool $light if true, retreives lightweight instances
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '', $light = false) {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum, $light);
     }
 
-    public static function count_instances($filter = array(), $limitfrom = 0, $limitnum = '') {
-        return parent::_count_instances(self::$table, $filter, $limitfrom, $limitnum);
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     */
+    public static function count_instances($filter = []) {
+        return parent::_count_instances(self::$table, $filter);
     }
 
-    public static function get_instances_menu($filter = array(), $order = 'lastname, firstname') {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     */
+    public static function get_instances_menu($filter = [], $order = 'lastname, firstname') {
         return parent::_get_instances_menu(self::$table, $filter, $order, "CONCAT(lastname, ' ', firstname)");
     }
 
+    /**
+     * Tells if the customer has a moodle account.
+     * @return bool
+     */
     public static function has_account() {
         global $USER, $DB;
 
-        return $DB->record_exists('local_shop_customer', array('hasaccount' => $USER->id));
+        return $DB->record_exists('local_shop_customer', ['hasaccount' => $USER->id]);
     }
 }

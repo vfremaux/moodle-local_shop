@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Subplugins définitions (legacy, now it's JSON)
+ *
  * @package   local_shop
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
@@ -24,5 +26,5 @@ defined('MOODLE_INTERNAL') || die();
 
 $subplugins = [
     'shoppaymodes'  => 'local/shop/paymodes',
-    'shophandlers'  => 'local/shop/datahandling/handlers'
+    'shophandlers'  => 'local/shop/datahandling/handlers',
 ];

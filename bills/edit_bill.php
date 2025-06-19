@@ -55,9 +55,9 @@ $PAGE->set_title(get_string('pluginname', 'local_shop'));
 $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($billid) {
-    $mform = new Bill_Form('', array('what' => 'edit'));
+    $mform = new Bill_Form('', ['what' => 'edit']);
 } else {
-    $mform = new Bill_Form('', array('what' => 'add'));
+    $mform = new Bill_Form('', ['what' => 'add']);
 }
 
 if ($mform->is_cancelled()) {

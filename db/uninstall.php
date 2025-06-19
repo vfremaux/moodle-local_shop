@@ -15,13 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Pre uninstall sequence
+ *
  * @package   local_shop
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Pre plugin uninstall
+ */
 function xmldb_local_shop_uninstall() {
     global $DB;
 
@@ -29,6 +33,7 @@ function xmldb_local_shop_uninstall() {
     $courseownerid   = $DB->get_field('role', 'id', ['shortname' => 'courseowner']);
     $coursecreatorid   = $DB->get_field('role', 'id', ['shortname' => 'coursecreator']);
     $categoryownerid   = $DB->get_field('role', 'id', ['shortname' => 'categoryowner']);
+
     // Remap all teacherowner assignments to editingteacher.
     $sql = "
         UPDATE

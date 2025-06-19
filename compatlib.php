@@ -24,17 +24,32 @@
  */
 namespace local_shop;
 
+/**
+ * A class to write some core calls according to version changes.
+ */
 class compat {
 
+    /**
+     * Get the course list
+     * @param StdClass $course
+     */
     public static function get_course_list($course) {
         return new \core_course_list_element($course);
     }
 
+    /**
+     * Get the course list
+     * @param string $pix
+     * @param string $component
+     */
     public static function pix_url($pix, $component) {
         global $OUTPUT;
         return $OUTPUT->image_url($pix, $component);
     }
 
+    /**
+     * Get name fields
+     */
     public static function get_name_fields_as_array() {
         global $CFG;
 
@@ -47,6 +62,9 @@ class compat {
         return $fields;
     }
 
+    /**
+     * Get name fields
+     */
     public static function get_fields_for_get_cap() {
         global $CFG;
 
@@ -60,6 +78,9 @@ class compat {
         return $fields;
     }
 
+    /**
+     * Get name fields
+     */
     public static function get_fields_for_user_recs() {
         global $CFG;
 

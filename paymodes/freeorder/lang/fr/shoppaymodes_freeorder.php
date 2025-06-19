@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Lang file
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat FreeOrder ne détient directement aucune donnée relative aux utilisateurs.';
+$string['privacy:metadata'] = 'Le composant Gestionaire d\'achat FreeOrder ne détient directement aucune
+ donnée relative aux utilisateurs.';
 
 $string['enablefreeorder'] = 'Commande gratuite';
 $string['enablefreeorder2'] = 'Commande gratuite';
@@ -31,7 +34,8 @@ $string['freeorder'] = 'Commande gratuite';
 $string['pluginname'] = 'Commande gratuite';
 
 $string['pending_followup_text_tpl'] = '
-<p>Une demande de produits d\'essais ne doit jamais être dans cet état. Si c\'est le cas, merci d\'informer les administrateurs du site de cette situation.</p>
+<p>Une demande de produits d\'essais ne doit jamais être dans cet état. Si c\'est le cas, merci d\'informer les administrateurs
+du site de cette situation.</p>
 ';
 
 $string['success_followup_text_tpl'] = '

@@ -15,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ *
+ * @package    shoppaymodes_check
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes Check does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Check does not directly store any personal data
+ about any user.';
 
 $string['pluginname'] = 'Bank check';
 $string['check'] = 'Check';
@@ -64,16 +67,19 @@ with your check. You\'ll get a confirmation mail advice when your products are r
 ';
 
 $string['pending_followup_text_tpl'] = '
-<p>We are awaiting your payment reception to activate your products. You will be notified by mail as soon as it has been processed.</p>
-<p>If your activation seems being late (your standard terrestrial mail delay plus 24 to 48 work hours), pleae contact our sales services <%%SUPPORT%%>.</p>
+<p>We are awaiting your payment reception to activate your products. You will be notified by mail as soon as it has been
+processed.</p><p>If your activation seems being late (your standard terrestrial mail delay plus 24 to 48 work hours),
+please contact our sales services <%%SUPPORT%%>.</p>
 ';
 
 $string['print_procedure_text_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="<%%BILL_URL%%>" target="_blank">the printable version of the document</a>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="<%%BILL_URL%%>" target="_blank">the printable
+version of the document</a>
 ';
 
 $string['print_procedure_text_invoice_tpl'] = '
-<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="<%%BILL_URL%%>" target="_blank">the paper version of the bill</a>
+<p><span class="procedureOrdering"><%%PROC_ORDER%%></span> Print <a href="<%%BILL_URL%%>" target="_blank">the paper
+version of the bill</a>
 ';
 
 $string['success_followup_text_tpl'] = '

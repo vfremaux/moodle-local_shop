@@ -15,15 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Paymode implemetation class
+ *
  * @package    shoppaymodes_delegated
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
+
+use local_shop\Shop;
+use local_shop\Bill;
 
 /**
  * A Delegated pay mode delegates payment to the shop administrator. Payment is done
@@ -34,33 +40,57 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
  */
 class shop_paymode_delegated extends shop_paymode {
 
-    public function __construct(&$shopblockinstance) {
-        parent::__construct('transfer', $shopblockinstance);
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct(?Shop $theshop) {
+        parent::__construct('transfer', $theshop);
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_payment_portlet(&$billdata) {
+    /**
+     * Prints a payment porlet in an order form.
+     */
+    public function print_payment_portlet() {
+        return;
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_invoice_info(&$billdata = null) {
+    /**
+     * Prints a payment porlet in an order form.
+     * @param Bill $billdata
+     */
+    public function print_invoice_info(?Bill $billdata = null) {
+        assert(true);
     }
 
+    /**
+     * Print when payment completed
+     */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array());
+        echo shop_compile_mail_template('bill_complete_text', []);
     }
 
-    // Processes a payment return.
+    /**
+     * Processes a payment return.
+     */
     public function process() {
         // Void.
+        assert(true);
     }
 
-    // Processes a payment asynchronoous confirmation.
+    /**
+     * Processes a payment asynchronoous confirmation.
+     */
     public function process_ipn() {
         // No IPN for offline payment.
+        assert(true);
     }
 
-    // Provides global settings to add to shop settings when installed.
-    public function settings(&$settings) {
+    /**
+     * Provides global settings to add to shop settings when installed.
+     * @param StdClass $settings
+     */
+    public function settings($settings) {
+        assert(true);
     }
 }

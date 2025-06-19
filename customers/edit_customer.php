@@ -18,10 +18,9 @@
  * Defines form to add a new customer
  *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 
 require('../../../config.php');
@@ -45,7 +44,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/customers/edit_customer.php', array('customerid' => $customerid));
+$url = new moodle_url('/local/shop/customers/edit_customer.php', ['customerid' => $customerid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -55,17 +54,17 @@ $PAGE->navbar->add(get_string('editcustomer', 'local_shop'));
 
 if ($customerid) {
     $customer = new Customer($customerid);
-    $mform = new Customer_Form('', array('what' => 'edit'));
+    $mform = new Customer_Form('', ['what' => 'edit']);
     $customer->record->customerid = $customerid;
     $mform->set_data($customer->record);
 } else {
     $customer = new Customer(null);
-    $mform = new Customer_Form('', array('what' => 'add'));
+    $mform = new Customer_Form('', ['what' => 'add']);
     $mform->set_data($customer);
 }
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers')));
+    redirect(new moodle_url('/local/shop/customers/view.php', ['view' => 'viewAllCustomers']));
 }
 
 if ($data = $mform->get_data()) {
@@ -75,7 +74,7 @@ if ($data = $mform->get_data()) {
     $controller->receive('edit', $data);
     $controller->process('edit');
 
-    redirect(new moodle_url('/local/shop/customers/view.php', array('view' => 'viewAllCustomers')));
+    redirect(new moodle_url('/local/shop/customers/view.php', ['view' => 'viewAllCustomers']));
 }
 
 echo $OUTPUT->header();

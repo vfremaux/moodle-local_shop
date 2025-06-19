@@ -35,8 +35,8 @@
 
          <center>
             <form name="eulaform" id="eula-form-validate">
-                <input type="checkbox" name="agreeeula" id="shop-agreeeula" value="1">
-                {{#str}}eulaagree, local_shop{{/str}}
+                <input type="checkbox" name="agreeeula" id="shop-agreeeula" value="1" aria-labelledby="agree-eulas">
+                <label id="agree-eulas">{{#str}}eulaagree, local_shop{{/str}}</label>
                 <br/>
                 <br/>
                 <input id="shop-eula-confirm" type="button" name="accept_btn" value="{{#str}}confirm, local_shop{{/str}}">

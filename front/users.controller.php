@@ -15,24 +15,44 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Purchase front step controller
+ * 
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop\front;
 
 defined('MOODLE_INTERNAL') || die();
 
+use StdClass;
+use moodle_url;
+
 require_once($CFG->dirroot.'/local/shop/front/front.controller.php');
 
+/**
+ * Front purchase controller : users info step
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class users_controller extends front_controller_base {
 
-    protected $data;
-
-    protected $received;
-
-    public function receive($cmd, $data = array()) {
+    /**
+     * Receives all needed parameters from outside for each action case.
+     * @param string $cmd the action keyword
+     * @param array $data incoming parameters from form when directly available, otherwise the
+     * function should get them from request
+     */
+    public function receive($cmd, $data = []) {
         if (!empty($data)) {
             // Data is fed from outside.
             $this->data = (object)$data;
@@ -72,6 +92,10 @@ class users_controller extends front_controller_base {
         $this->received = true;
     }
 
+    /**
+     * Processes the action
+     * @param string $cmd
+     */
     public function process($cmd) {
         global $SESSION, $DB, $OUTPUT;
 
@@ -84,24 +108,28 @@ class users_controller extends front_controller_base {
         if ($cmd == 'navigate') {
             if ($this->data->back) {
                 $prev = $this->theshop->get_prev_step('users');
-                $params = array('view' => $prev,
-                                'shopid' => $this->theshop->id,
-                                'blockid' => 0 + @$this->theblock->id,
-                                'back' => 1);
+                $params = [
+                    'view' => $prev,
+                    'shopid' => $this->theshop->id,
+                    'blockid' => ($this->theblock->id ?? 0),
+                    'back' => 1,
+                ];
                 return new \moodle_url('/local/shop/front/view.php', $params);
             } else {
                 $next = $this->theshop->get_next_step('users');
-                $params = array('view' => $next, 'shopid' => $this->theshop->id, 'blockid' => 0 + @$this->theblock->id);
-                return new \moodle_url('/local/shop/front/view.php', $params);
+                $params = ['view' => $next, 'shopid' => $this->theshop->id, 'blockid' => ($this->theblock->id ?? 0)];
+                return new moodle_url('/local/shop/front/view.php', $params);
             }
         } else if ($cmd == 'back') {
             // This can be decided into the user page.
             $next = $this->theshop->get_prev_step('users');
-            $params = array('view' => $next,
-                            'shopid' => $this->theshop->id,
-                            'blockid' => 0 + @$this->theblock->id,
-                            'back' => 1);
-            return new \moodle_url('/local/shop/front/view.php', $params);
+            $params = [
+                'view' => $next,
+                'shopid' => $this->theshop->id,
+                'blockid' => ($this->theblock->id ?? 0),
+                'back' => 1,
+            ];
+            return new moodle_url('/local/shop/front/view.php', $params);
 
         } else if ($cmd == 'addparticipant') {
 
@@ -113,8 +141,8 @@ class users_controller extends front_controller_base {
             } else {
 
                 if (!isset($SESSION->shoppingcart)) {
-                    $SESSION->shoppingcart = new \StdClass();
-                    $SESSION->shoppingcart->participants = array();
+                    $SESSION->shoppingcart = new StdClass();
+                    $SESSION->shoppingcart->participants = [];
                 }
 
                 if ($moodleuser = $DB->get_record('user', ['lastname' => $pt->lastname, 'email' => $pt->email])) {
@@ -143,7 +171,9 @@ class users_controller extends front_controller_base {
                     foreach ($SESSION->shoppingcart->order as $shortname => $fooq) {
                         if (isset($SESSION->shoppingcart->users[$shortname][$role][$ptid])) {
                             unset($SESSION->shoppingcart->users[$shortname][$role][$ptid]);
-                            @$SESSION->shoppingcart->assigns[$shortname]--;
+                            if (array_key_exists($shortname, $SESSION->shoppingcart->assigns)) {
+                                $SESSION->shoppingcart->assigns[$shortname]--;
+                            }
                         }
                     }
                 }
@@ -165,7 +195,7 @@ class users_controller extends front_controller_base {
                     $i++;
                 }
             }
-            for (; $i < (0 + @$SESSION->shoppingcart->seats); $i++) {
+            for (; $i < ($SESSION->shoppingcart->seats ?? 0); $i++) {
                 $output .= $this->renderer->participant_blankrow();
             }
         }
@@ -173,13 +203,17 @@ class users_controller extends front_controller_base {
         if ($cmd == 'addassign') {
 
             if (!isset($SESSION->shoppingcart->users)) {
-                $SESSION->shoppingcart->users = array();
+                $SESSION->shoppingcart->users = [];
             }
             $sn = $this->data->shortname;
             $r = $this->data->role;
             $pt = $this->data->ptid;
             $SESSION->shoppingcart->users[$sn][$r][$pt] = $SESSION->shoppingcart->participants[$pt];
-            @$SESSION->shoppingcart->assigns[$sn]++;
+            if (array_key_exists($sn, $SESSION->shoppingcart->assigns)) {
+                $SESSION->shoppingcart->assigns[$sn]++;
+            } else {
+                $SESSION->shoppingcart->assigns[$sn] = 1;
+            }
             $cmd = 'assignlistobj';
 
         } else if ($cmd == 'deleteassign') {
@@ -188,9 +222,11 @@ class users_controller extends front_controller_base {
             $r = $this->data->role;
             $pt = $this->data->ptid;
             unset($SESSION->shoppingcart->users[$sn][$r][$pt]);
-            @$SESSION->shoppingcart->assigns[$sn]--;
+            if (array_key_exists($sn, $SESSION->shoppingcart->assigns)) {
+                $SESSION->shoppingcart->assigns[$sn]--;
+            }
             // Secures in case of failure...
-            $SESSION->shoppingcart->assigns[$sn] = max(0, @$SESSION->shoppingcart->assigns[$sn]);
+            $SESSION->shoppingcart->assigns[$sn] = max(0, $SESSION->shoppingcart->assigns[$sn] ?? 0);
             $cmd = 'assignlistobj';
 
         } else if ($cmd == 'assignlist') {
@@ -204,7 +240,7 @@ class users_controller extends front_controller_base {
 
             $requiredroles = $this->thecatalog->check_required_roles();
 
-            $a = new \StdClass;
+            $a = new StdClass();
             $a->role = $this->data->role;
             foreach ($requiredroles as $role) {
                 $a->content[$role] = $this->renderer->role_list($role, $this->data->shortname);
@@ -216,7 +252,7 @@ class users_controller extends front_controller_base {
 
             $requiredroles = $this->thecatalog->check_required_roles();
 
-            $a = new \StdClass;
+            $a = new StdClass();
             foreach ($requiredroles as $role) {
                 foreach ($SESSION->shoppingcart->order as $shortname => $fooq) {
                     $a->content[$role][$shortname] = $this->renderer->role_list($role, $shortname);

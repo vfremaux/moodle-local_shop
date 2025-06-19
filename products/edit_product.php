@@ -15,12 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Edit a simple product
+ *
  * @package    local_shop
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require('../../../config.php');
 require_once($CFG->dirroot.'/local/shop/locallib.php');
 require_once($CFG->dirroot.'/local/shop/products/lib.php');
@@ -48,6 +49,7 @@ list($theshop, $thecatalog, $theblock) = shop_build_context();
 
 $itemid = optional_param('itemid', 0, PARAM_INT);
 $categoryid = optional_param('categoryid', 0, PARAM_INT);
+$return = optional_param('return', 'back', PARAM_TEXT);
 
 // Security.
 
@@ -58,7 +60,8 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/products/edit_product.php', ['itemid' => $itemid, 'categoryid' => $categoryid]);
+$params = ['itemid' => $itemid, 'categoryid' => $categoryid, 'return' => $return];
+$url = new moodle_url('/local/shop/products/edit_product.php', $params);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -66,24 +69,29 @@ $PAGE->set_heading(get_string('pluginname', 'local_shop'));
 
 if ($itemid) {
     $item = new CatalogItem($itemid);
-    $mform = new Product_Form($url, array('what' => 'edit', 'catalog' => $thecatalog));
+    $mform = new Product_Form($url, ['what' => 'edit', 'catalog' => $thecatalog]);
 } else {
     $item = new CatalogItem(null);
-    $mform = new Product_Form($url, array('what' => 'add', 'catalog' => $thecatalog));
+    $mform = new Product_Form($url, ['what' => 'add', 'catalog' => $thecatalog]);
+}
+
+if ($return == 'back') {
+    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/products/view.php', $params);
+} else {
+    $params = ['view' => 'shop', 'shopid' => $theshop->id, 'category' => $categoryid];
+    $returnurl = new moodle_url('/local/shop/front/view.php', $params);
 }
 
 if ($mform->is_cancelled()) {
-    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
-    redirect(new moodle_url('/local/shop/products/view.php', $params));
+    redirect($returnurl);
 }
 
 if ($data = $mform->get_data()) {
-    $controller = new \local_shop\backoffice\product_controller($thecatalog);
-    $controller->receive('edit', $data, $mform);
+    $controller = new \local_shop\backoffice\product_controller($thecatalog, $mform);
+    $controller->receive('edit', $data);
     $controller->process('edit');
-
-    $params = ['view' => 'viewAllProducts', 'catalogid' => $thecatalog->id, 'categoryid' => $categoryid];
-    redirect(new moodle_url('/local/shop/products/view.php', $params));
+    redirect($returnurl);
 }
 
 if ($itemid) {

@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ require_capability('local/shop:salesadmin', $context);
 
 // Make page header and navigation.
 
-$url = new moodle_url('/local/shop/taxes/edit_tax.php', array('taxid' => $taxid));
+$url = new moodle_url('/local/shop/taxes/edit_tax.php', ['taxid' => $taxid]);
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_shop'));
@@ -46,17 +46,17 @@ $PAGE->navbar->add(get_string('salesservice', 'local_shop'), new moodle_url('/lo
 $PAGE->navbar->add(get_string('taxes', 'local_shop'));
 
 if ($taxid) {
-    $tax = $DB->get_record('local_shop_tax', array('id' => $taxid));
-    $mform = new Tax_Form('', array('what' => 'edit'));
+    $tax = $DB->get_record('local_shop_tax', ['id' => $taxid]);
+    $mform = new Tax_Form('', ['what' => 'edit']);
     $tax->taxid = $taxid;
     unset($tax->id);
     $mform->set_data($tax);
 } else {
-    $mform = new Tax_Form('', array('what' => 'add'));
+    $mform = new Tax_Form('', ['what' => 'add']);
 }
 
 if ($mform->is_cancelled()) {
-     redirect(new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes')));
+     redirect(new moodle_url('/local/shop/taxes/view.php', ['view' => 'viewAllTaxes']));
 }
 if ($data = $mform->get_data()) {
 
@@ -65,7 +65,7 @@ if ($data = $mform->get_data()) {
     $controller->receive('edit', $data);
     $controller->process('edit');
 
-    redirect(new moodle_url('/local/shop/taxes/view.php', array('view' => 'viewAllTaxes')));
+    redirect(new moodle_url('/local/shop/taxes/view.php', ['view' => 'viewAllTaxes']));
 }
 
 echo $OUTPUT->header();

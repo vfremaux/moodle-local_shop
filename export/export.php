@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $datadesc = $extractor->get_data_description($params);
 $data = $extractor->get_data($params);
 
 $rendererclass = "shop_export_$format";
-$renderer = new $rendererclass($data, $datadesc, array('addtimestamp' => 1));
+$renderer = new $rendererclass($data, $datadesc, ['addtimestamp' => 1]);
 $renderer->open_export();
 $renderer->render();
 $renderer->close_export();

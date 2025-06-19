@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines form to add a new billitem
+ * Defines form to add a new bill
  *
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  *
  */
 defined('MOODLE_INTERNAL') || die();
@@ -32,9 +31,28 @@ require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
 use local_shop\Customer;
+use local_shop\compat;
 
+/**
+ * Defines form to add a new bill.
+ *
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class Bill_Form extends moodleform {
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT, $DB;
 
@@ -63,14 +81,14 @@ class Bill_Form extends moodleform {
         $customers = Customer::get_instances();
 
         // Getting the full name of customers.
-        $fullnamecustoselect = array();
+        $fullnamecustoselect = [];
         $fullnamecustoselect['0'] = get_string('choosecustomer', 'local_shop');
 
         foreach ($customers as $customer) {
             $fullnamecustoselect[$customer->id] = $customer->lastname.' '.$customer->firstname;
         }
 
-        $fields = \local_shop\compat::get_fields_for_user_recs();
+        $fields = compat::get_fields_for_user_recs();
         $fields = 'u.id,'.$fields;
 
         // Select user whithout customer account.
@@ -85,14 +103,14 @@ class Bill_Form extends moodleform {
         $users = $DB->get_records_sql($sqluser);
 
         // Getting the full names.
-        $fullnameuserselect = array();
+        $fullnameuserselect = [];
         $fullnameuserselect['0'] = get_string('chooseuser', 'local_shop');
         foreach ($users as $user) {
             $fullnameuserselect[$user->id] = fullname($user);
         }
 
         // Set default for user select.
-        $userarray = array();
+        $userarray = [];
         $label = get_string('customers', 'local_shop');
         $userarray[] = &$mform->createElement('select', 'userid', $label, $fullnamecustoselect, $attributesjscustomer);
         $label = get_string('users');
@@ -104,17 +122,17 @@ class Bill_Form extends moodleform {
         $mform->addElement('editor', 'abstract', get_string('abstract', 'local_shop').':');
         $mform->setType('abstract', PARAM_CLEANHTML);
 
-        $radioarray = array();
+        $radioarray = [];
         $radioarray[] = &$mform->createElement('radio', 'ignoretax', '', get_string('yes'), 0, $attributes);
         $radioarray[] = &$mform->createElement('radio', 'ignoretax', '', get_string('no'), 1, $attributes);
-        $mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'local_shop').':', array(' '), false);
+        $mform->addGroup($radioarray, 'radioar', get_string('allowtax', 'local_shop').':', [' '], false);
         $mform->addHelpButton('radioar', 'allowtax', 'local_shop');
 
         $context = context_system::instance();
 
-        $fields = \local_shop\compat::get_fields_for_get_cap();
+        $fields = compat::get_fields_for_get_cap();
         $billeditors = get_users_by_capability($context, 'block/shop:beassigned', $fields);
-        $editoropt = array();
+        $editoropt = [];
         if ($billeditors) {
             foreach ($billeditors as $billeditor) {
                 $editoropt[$billeditor->id] = fullname($billeditor);

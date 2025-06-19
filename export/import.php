@@ -16,8 +16,8 @@
 
 /**
  * @package   local_shop
- * @category  local
- * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -55,7 +55,7 @@ $parser = new $parserclass();
 $data = $parser->read_data($params);
 
 $injectorclass = "shop_import_$format";
-$injector = new $injectorclass($data, $datadesc, array('addtimestamp' => 1));
+$injector = new $injectorclass($data, $datadesc, ['addtimestamp' => 1]);
 
 $PAGE->set_url();
 

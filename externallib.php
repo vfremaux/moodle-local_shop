@@ -36,31 +36,33 @@ class local_shop_external extends external_api {
 
     /**
      * Validates all inpout params and change or remap values if required.
+     * @param array $requs
+     * @param array $params
      */
     protected function validate_shop_parameters($requs, $params) {
         global $DB;
 
-        $TYPES = array(
+        $types = [
             'plain' => SHOP_PRODUCT,
             'set' => SHOP_SET,
             'bundle' => SHOP_BUNDLE,
-        );
+        ];
 
         parent::validate_parameters($requs, $params);
 
         if (array_key_exists('shopid', $params)) {
-            $params = array('id' => $params['shopid']);
+            $params = ['id' => $params['shopid']];
             if (!$DB->record_exists('local_shop', $params)) {
                 throw new ParameterException("No such shop");
             }
         }
 
         if (array_key_exists('type', $params)) {
-            if (!in_array($params['type'], array('plain', 'set', 'bundle'))) {
+            if (!in_array($params['type'], ['plain', 'set', 'bundle'])) {
                 throw new ParameterException("Invalid product type");
             }
 
-            $parameter['type'] = $TYPES[$parameter['type']];
+            $parameter['type'] = $types[$parameter['type']];
         }
     }
 
@@ -89,7 +91,7 @@ class local_shop_external extends external_api {
         $desc = 'Id of the catalog';
         return new external_function_parameters(
             [
-                'catalogid' => new external_value(PARAM_INT, 'Catalog id'),
+                'catalogid' => new external_value(PARAM_INT, $desc),
             ]
         );
     }
@@ -103,7 +105,7 @@ class local_shop_external extends external_api {
         $desc = 'Id of the category';
         return new external_function_parameters(
             [
-                'categoryid' => new external_value(PARAM_INT, 'Category id'),
+                'categoryid' => new external_value(PARAM_INT, $desc),
             ]
         );
     }
@@ -117,7 +119,6 @@ class local_shop_external extends external_api {
         $desc1 = 'Source field of the catalog item';
         $desc2 = 'Id of the catalogitem, depending on required source ';
         $desc3 = 'Quantity required for pricing';
-        $desc4 = 'Output subrecords';
         return new external_function_parameters(
             [
                 'itemidsource' => new external_value(PARAM_ALPHA, $desc1),
@@ -138,7 +139,6 @@ class local_shop_external extends external_api {
         $desc3 = 'Status filter, such as AVAILABLE or "*" for any';
         $desc4 = 'Product type such as : plain, set or bundle or "*" for any';
         $desc5 = 'Quantity required for pricing';
-        $desc6 = 'Output subrecords';
         return new external_function_parameters(
             [
                 'catalogid' => new external_value(PARAM_INT, $desc1),
@@ -210,11 +210,10 @@ class local_shop_external extends external_api {
      * @param string $itemidsource the catalog item source field for id.
      * @param string $itemid the catalog item id.
      * @param string $q the required quantity for princing.
-     * @param string $withsubs if true, will complete the sub products if a set or a bundle.
      *
      * @return external_description
      */
-    public static function get_catalogitem($itemidsource, $itemid, $q /* , $withsubs */) {
+    public static function get_catalogitem($itemidsource, $itemid, $q) {
         global $CFG;
 
         if (local_shop_supports_feature('api/ws')) {
@@ -228,11 +227,15 @@ class local_shop_external extends external_api {
     /**
      * Get catalog info
      *
-     * @param string $cid the catalog id.
+     * @param int $catalogid the catalog id.
+     * @param int $categoryid the category id.
+     * @param string $status state of the items.
+     * @param string $type type of items.
+     * @param string $q quantity.
      *
      * @return external_description
      */
-    public static function get_catalogitems($catalogid, $categoryid, $status, $type, $q /* , $withsubs */) {
+    public static function get_catalogitems($catalogid, $categoryid, $status, $type, $q) {
         global $CFG;
 
         if (local_shop_supports_feature('api/ws')) {
@@ -365,4 +368,3 @@ class local_shop_external extends external_api {
         );
     }
 }
-

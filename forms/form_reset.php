@@ -16,26 +16,41 @@
 
 /**
  * @package    local_shop
- * @category   local
- * @reviewer   Valery Fremaux <valery.fremaux@gmail.com>
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
- * @copyright  (C) 1999 onwards Martin Dougiamas  http://dougiamas.com
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * A form for resetting parts of the shop
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class ResetForm extends moodleform {
 
-    // Define the form.
+    /**
+     * Standard definition
+     */
     public function definition () {
         global $DB;
 
         $mform =& $this->_form;
         // Accessibility: "Required" is bad legend text.
 
-        $shopoptions = array(0 => get_string('allshops', 'local_shop'));
-        $shops = $DB->get_records_menu('local_shop', array(), 'name', 'id,name');
+        $shopoptions = [0 => get_string('allshops', 'local_shop')];
+        $shops = $DB->get_records_menu('local_shop', [], 'name', 'id,name');
         if (!empty($shops)) {
             // Add identified shops.
             $shopoptions = array_merge($shopoptions, $shops);
@@ -52,7 +67,7 @@ class ResetForm extends moodleform {
 
         $group[] = $mform->createElement('checkbox', 'catalogsunlock', '', get_string('removesecurity', 'local_shop'));
         $group[] = $mform->createElement('checkbox', 'catalogs', get_string('resetcatalogs', 'local_shop'));
-        $mform->addGroup($group, 'catalogsgroup', get_string('resetcatalogs', 'local_shop'), array(' '), false);
+        $mform->addGroup($group, 'catalogsgroup', get_string('resetcatalogs', 'local_shop'), [' '], false);
         $mform->disabledIf('catalogs', 'catalogsunlock', 'notchecked');
 
         $mform->disabledIf('bills', 'customers', 'checked');

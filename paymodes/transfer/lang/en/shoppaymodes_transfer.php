@@ -15,14 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     shoppaymodes_test
- * @category    local
- * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * Lang file
+ * @package     shoppaymodes_transfer
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Privacy.
-$string['privacy:metadata'] = 'The local plugin Shoppaymodes Transfer does not directly store any personal data about any user.';
+$string['privacy:metadata'] = 'The local plugin Shoppaymodes Transfer does not directly store any personal data
+about any user.';
 
 $string['enabletransfer'] = 'Bank transfer payment';
 $string['enabletransfer2'] = 'Bank transfer payment';
@@ -31,7 +33,8 @@ $string['transfer'] = 'Bank transfer';
 $string['pluginname'] = 'Bank Wired Pay Mode';
 
 $string['pay_instructions_tpl'] = '
-To confirm your order, you have to pay via a bank transfer on the indicated account. Your order will be sent when we get a bank notification, confirming your transfer.
+To confirm your order, you have to pay via a bank transfer on the indicated account. Your order will be sent when we get a bank
+notification, confirming your transfer.
 ';
 
 $string['pay_instructions_invoice_tpl'] = '
@@ -39,8 +42,9 @@ You have paied using fund tranfer.
 ';
 
 $string['pending_followup_text_tpl'] = '
-<p>We are awaiting your payment reception to activate your products. You will be notified by mail as soon as it has been processed.</p>
-<p>If your activation seems being late (the fund transfer normal delay plus 24 to 48 work hours), pleae contact our sales services.</p>
+<p>We are awaiting your payment reception to activate your products. You will be notified by mail as soon as it has been
+processed.</p><p>If your activation seems being late (the fund transfer normal delay plus 24 to 48 work hours), please contact
+our sales services.</p>
 ';
 
 $string['print_procedure_text_tpl'] = '

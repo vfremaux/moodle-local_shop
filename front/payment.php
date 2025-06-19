@@ -18,9 +18,8 @@
  * Payment phase of the purchase process
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -29,7 +28,7 @@ require_once($CFG->dirroot.'/local/shop/mailtemplatelib.php');
 
 // In case session is lost, go to the public entrance of the shop.
 if (!isset($SESSION->shoppingcart) || !isset($SESSION->shoppingcart->customerinfo)) {
-    $params = array('id' => $theshop->id, 'blockid' => @$theblock->id, 'view' => 'shop');
+    $params = ['id' => $theshop->id, 'blockid' => @$theblock->id, 'view' => 'shop'];
     redirect(new moodle_url('/local/shop/front/view.php', $params));
 }
 
@@ -72,8 +71,10 @@ if (!empty($config->test) && empty($config->testoverride) &&
     echo $OUTPUT->notification(get_string('testmodeactive', 'local_shop'));
 } else {
     $renderer->field_start(get_string('procedure', 'local_shop'), 'shop-information-area');
-    shop_trace("[{$SESSION->shoppingcart->transid}] ".'Order placed : '.count($SESSION->shoppingcart->order).' product types for '.$SESSION->shoppingcart->finalshippedtaxedtotal);
-    echo $paymentplugin->print_payment_portlet($SESSION->shoppingcart);
+    $mess = "[{$SESSION->shoppingcart->transid}] ".'Order placed : ';
+    $mess .= count($SESSION->shoppingcart->order).' product types for '.$SESSION->shoppingcart->finalshippedtaxedtotal;
+    shop_trace($mess);
+    echo $paymentplugin->print_payment_portlet();
     $renderer->field_end();
 }
 

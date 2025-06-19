@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * View the detail of a single product
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -63,9 +64,5 @@ $out = $OUTPUT->header();
 echo $out;
 
 echo $OUTPUT->heading(get_string('catalogitem', 'local_shop'));
-
-// $params = array('view' => 'viewProductDetail', 'id' => $theshop->id, 'catalogid' => $thecatalog->id, 'itemid' => $itemid);
-// $viewurl = new moodle_url('/local/shop/products/view.php', $params);
-// echo $renderer->category_chooser($viewurl);
 
 echo $renderer->catalogitem_details($catalogitem);

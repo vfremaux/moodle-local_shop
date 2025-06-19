@@ -15,17 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Sending password test form
+ *
  * @package   local_shop
- * @category  local
  * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 
 class check_password_sending_form extends moodleform {
 
+    /**
+     * Form definition
+     */
     public function definition() {
         global $DB;
 
@@ -47,6 +53,9 @@ class check_password_sending_form extends moodleform {
  * @author Torleif Berger, Lorenzo Stanco
  * @link http://stackoverflow.com/a/15025877/995958
  * @license http://creativecommons.org/licenses/by/3.0/
+ * @param string $filepath
+ * @param int $lines
+ * @param bool $adaptive
  */
 function tailCustom($filepath, $lines = 1, $adaptive = true) {
 
@@ -106,5 +115,4 @@ function tailCustom($filepath, $lines = 1, $adaptive = true) {
     // Close file and return
     fclose($f);
     return trim($output);
-
 }

@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * A common, set of functions for hanlders.
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
  * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 define('NO_HANDLER', 0);
 define('EMPTY_HANDLER', '');
@@ -42,7 +42,7 @@ function shop_register_customer($data, &$errorstatus) {
     $productionfeedback->salesadmin = '';
 
     if (empty($data->bill->customer)) {
-        $data->bill->customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()));
+        $data->bill->customer = $DB->get_record('local_shop_customer', ['id' => $data->get_customerid()]);
     }
 
     if (isloggedin() && !isguestuser()) {
@@ -86,7 +86,7 @@ function shop_register_customer($data, &$errorstatus) {
         }
 
         if (empty($data->bill->customer->hasaccount)) {
-            // customer may have been created by a previous product in bill or in bundle.
+            // Customer may have been created by a previous product in bill or in bundle.
             if (!shop_create_customer_user($data, $data->bill->customer, $newuser)) {
                 $message = "[{$data->transactionid}] Prepay Commons Error :";
                 $message .= " User could not be created {$newuser->username}.";
@@ -118,32 +118,34 @@ function shop_register_customer($data, &$errorstatus) {
 /**
  * This enrols a customer user account into the designated customer support course as a student.
  * @param int $supportcoursename the Moodle shortname of the course used for customer support
- * @param object $customeruser a customer record
+ * @param object $customeruser a customer's moodle user record
  * @param string $transactionid the unique id of the transaction (for tracing puropse)
  */
 function shop_register_customer_support($supportcoursename, $customeruser, $transactionid) {
     global $DB;
 
-    $role = $DB->get_record('role', array('shortname' => 'student'));
+    $role = $DB->get_record('role', ['shortname' => 'student']);
 
     if (empty($role)) {
         throw new moodle_exception('Legacy Role student may have been deleted from this moodle. This should not happen.');
     }
 
-    $role2 = $DB->get_record('role', array('shortname' => 'customer'));
+    $role2 = $DB->get_record('role', ['shortname' => 'customer']);
 
     if (empty($role2)) {
-        throw new moodle_exception('Role customer may have been renamed from this moodle or may not have been installed properly. Try to reinstall the shop again.');
+        $mess = 'Role customer may have been renamed from this moodle or may not have been installed properly.';
+        $mess .= ' Try to reinstall the shop again.';
+        throw new moodle_exception($mess);
     }
 
     $now = time();
 
-    if (!$course = $DB->get_record('course', array('shortname' => $supportcoursename))) {
+    if (!$course = $DB->get_record('course', ['shortname' => $supportcoursename])) {
         shop_trace("[{$transactionid}] Production Process Error : Customer support course does not exist.");
         return false;
     }
 
-    $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+    $params = ['enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED];
     if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
         $enrol = reset($enrols);
         $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
@@ -164,7 +166,7 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
 }
 
 /**
- * This enrols a user account into the designated extra support courses as a student for the 
+ * This enrols a user account into the designated extra support courses as a student for the
  * product validity time range.
  * @param int $supportcoursename the Moodle shortname of the course used for extra support
  * @param object $customer a customer record
@@ -174,7 +176,7 @@ function shop_register_customer_support($supportcoursename, $customeruser, $tran
 function shop_register_extra_support($supportcoursename, $customeruser, $transactionid, $enrolendtime) {
     global $DB;
 
-    $role = $DB->get_record('role', array('shortname' => 'student'));
+    $role = $DB->get_record('role', ['shortname' => 'student']);
 
     if (empty($role)) {
         throw new moodle_exception('Legacy Role student may have been deleted from this moodle. This should not happen.');
@@ -182,12 +184,12 @@ function shop_register_extra_support($supportcoursename, $customeruser, $transac
 
     $now = time();
 
-    if (!$course = $DB->get_record('course', array('shortname' => $supportcoursename))) {
+    if (!$course = $DB->get_record('course', ['shortname' => $supportcoursename])) {
         shop_trace("[{$transactionid}] Production Process Error : Extra support course does not exist.");
         return false;
     }
 
-    $params = array('enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED);
+    $params = ['enrol' => 'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED];
     if ($enrols = $DB->get_records('enrol', $params, 'sortorder ASC')) {
         $enrol = reset($enrols);
         $enrolplugin = enrol_get_plugin('manual'); // The enrol object instance.
@@ -218,7 +220,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 
     // Create Moodle User but no assignation.
     $newuser = new StdClass();
-    $newuser->username = shop_generate_username($customer, true); // Unique username
+    $newuser->username = shop_generate_username($customer, true); // Unique username.
     $newuser->city = $customer->city;
     $newuser->country = (!empty($customer->country)) ? $customer->country : $CFG->country;
     $newuser->lang = (!empty($customer->lang)) ? $customer->lang : $CFG->lang;
@@ -232,7 +234,7 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $newuser->timemodified = time();
     $newuser->mnethostid = $CFG->mnet_localhost_id;
 
-    $params = array('lastname' => $newuser->lastname, 'email' => $newuser->email);
+    $params = ['lastname' => $newuser->lastname, 'email' => $newuser->email];
     if (!$olduser = $DB->get_record('user', $params)) {
         $newuser->id = $DB->insert_record('user', $newuser);
     } else {
@@ -251,22 +253,10 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
     $data->bill->customeruser = get_complete_user_data('username', $newuser->username);
 
     // Passwords will be created and sent out on cron.
-    /*
-    if (!$oldrec = $DB->get_record('user_preferences', array('userid' => $newuser->id, 'name' => 'create_password'))) {
-        $pref = new StdClass();
-        $pref->userid = $newuser->id;
-        $pref->name = 'create_password';
-        $pref->value = 1;
-        $DB->insert_record('user_preferences', $pref);
-    } else {
-        $oldrec->value = 1;
-        $DB->update_record('user_preferences', $oldrec);
-    }
-    */
 
     shop_set_and_send_password($data->bill->customeruser);
 
-    if (!$oldrec = $DB->get_record('user_preferences', array('userid' => $newuser->id, 'name' => 'auth_forcepasswordchange'))) {
+    if (!$oldrec = $DB->get_record('user_preferences', ['userid' => $newuser->id, 'name' => 'auth_forcepasswordchange'])) {
         $pref = new StdClass();
         $pref->userid = $newuser->id;
         $pref->name = 'auth_forcepasswordchange';
@@ -292,22 +282,25 @@ function shop_create_customer_user(&$data, &$customer, &$newuser) {
 }
 
 /**
+ * Create a user in moodle for the customer
+ *
  * @param $participant a minimal object with essential user information
  * @param object $data a full set of data from the order/bill
  * @param object $participant
+ * @param string $supervisorrole
  */
-function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
+function shop_create_moodle_user($data, $participant, $supervisorrole) {
     global $CFG, $DB;
 
-    if (!$customer = $DB->get_record('local_shop_customer', array('id' => $data->get_customerid()))) {
+    if (!$customer = $DB->get_record('local_shop_customer', ['id' => $data->get_customerid()])) {
         return false;
     }
-    if (!$DB->get_record('user', array('id' => $customer->hasaccount))) {
+    if (!$DB->get_record('user', ['id' => $customer->hasaccount])) {
         return false;
     }
 
     $customercontext = context_user::instance($customer->hasaccount);
-    $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+    $studentrole = $DB->get_record('role', ['shortname' => 'student']);
 
     $participant->username = shop_generate_username($participant, true); // Makes it unique.
 
@@ -321,6 +314,7 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
     $participant->confirmed = 1;
     $participant->timecreated = time();
     $participant->timemodified = time();
+    $participant->maildisplay = $CFG->defaultpreference_maildisplay;
     $participant->mnethostid = $CFG->mnet_localhost_id;
     if (!isset($participant->country)) {
         $participant->country = $CFG->country;
@@ -356,6 +350,7 @@ function shop_create_moodle_user(&$data, $participant, $supervisorrole) {
  * @param object $user a User record.
  * @param bool $nosend if true, the password will be generated and stored, but no mail goes out.
  * @param bool $testmode if true, the password is generated but not stored. With nosend, will just return a new password.
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 function shop_set_and_send_password($user, $testmode = false) {
     global $DB, $SITE, $CFG;
@@ -391,7 +386,9 @@ function shop_set_and_send_password($user, $testmode = false) {
     $message = str_replace('%SUPPORT%', $support, $message);
 
     if ($testmode) {
-        $message = str_replace('%TESTMODE%', "<p><b>This is a test message. Please do not care if you receive it, your password HAS NOT been changed.</b></p>\n", $message);
+        $repl = '<p><b>This is a test message. Please do not care if you receive it, ';
+        $repl .= "your password HAS NOT been changed.</b></p>\n";
+        $message = str_replace('%TESTMODE%', $repl, $message);
     } else {
         $message = str_replace('%TESTMODE%', '', $message);
     }
@@ -399,7 +396,7 @@ function shop_set_and_send_password($user, $testmode = false) {
     $rawmessage = strip_tags($message);
 
     // Send password to user.
-    $result = email_to_user($user, ''.@$config->sellermailsupport, $subject, $message, $rawmessage, '', '', false /* use trueadress */);
+    $result = email_to_user($user, ''.@$config->sellermailsupport, $subject, $message, $rawmessage, '', '', false /* trueadress */);
     if ($result) {
         $trace = $subject."\n\n".$message;
         shop_trace($trace, 'mail', $user);

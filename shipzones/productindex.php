@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_shop
- * @category    local
- * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
  * Diplays per product the programmed zone shippings
+ *
+ * @package     local_shop
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require('../../../config.php');
@@ -67,7 +66,7 @@ if ($allitemswithshipping = CatalogShipping::get_products_with_shipping($catalog
     foreach ($allitemswithshipping as $ci) {
         $itemoptions[$ci->id] = '['.$ci->shortname.'] '.$ci->name;
     }
-    echo html_writer::select($itemoptions, 'catalogitemid', $catalogitemid, array('' => CHOOSEDOTS));
+    echo html_writer::select($itemoptions, 'catalogitemid', $catalogitemid, ['' => CHOOSEDOTS]);
 } else {
     echo $OUTPUT->notification(get_string('noshippings', 'local_shop'));
 }

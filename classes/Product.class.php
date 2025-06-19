@@ -18,9 +18,8 @@
  * A product is the concrete realisation of a catalogitem.
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_shop;
@@ -33,39 +32,44 @@ require_once($CFG->dirroot.'/local/shop/classes/BillItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/CatalogItem.class.php');
 require_once($CFG->dirroot.'/local/shop/classes/Customer.class.php');
 
+/**
+ * A Product instanciates a CatalogItem when purchased by a Customer. It has a lifecycle.
+ * Product snapshots Catalog info state to preserve unmutability.
+ *
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class Product extends ShopObject {
 
+    /** @var DB table (for ShopObject) */
     protected static $table = 'local_shop_product';
 
-    /**
-     * A sub object representing the customer
-     */
+    /** @var A sub object representing the customer */
     public $customer;
 
-    /**
-     * A sub object representing the current bill item.
-     */
+    /** @var A sub object representing the current bill item. */
     public $currentbillitem;
 
-    /**
-     * A sub object representing the first bill item that has generated this product.
-     */
+    /** @var A sub object representing the first bill item that has generated this product. */
     public $initialbillitem;
 
-    /**
-     * A sub object representing the initial catalogitem of this product.
-     */
+    /** @var A sub object representing the initial catalogitem of this product. */
     public $catalogitem;
 
-    /**
-     * Boolean mark if there is an associated bill.
-     */
+    /** @var Boolean mark if there is an associated bill. */
     public $hasbill;
 
     /**
      * Build a full product instance.
      * @param mixed $idorrecord an integer product id or the full database record
-     * @param bool $light future use. Switch to light proxy object initialisation.
+     * @param bool $light if true, builds a lightweight object
      */
     public function __construct($idorrecord, $light = false) {
 
@@ -129,10 +133,15 @@ class Product extends ShopObject {
         }
     }
 
+    /**
+     * Get a product instance by unique reference
+     * @param string $reference
+     * @param bool $light
+     */
     public static function instance_by_reference($reference, $light = false) {
         global $DB;
 
-        if ($productrec = $DB->get_record('local_shop_product', array('reference' => $reference))) {
+        if ($productrec = $DB->get_record('local_shop_product', ['reference' => $reference])) {
             return new Product($productrec, $light);
         }
 
@@ -142,16 +151,17 @@ class Product extends ShopObject {
     /**
      * Full deletes the product instance with all product events
      */
-    public function delete() {
+    public function delete(): void {
         // Dismount product effect in Moodle using delete method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->delete($this);
         }
 
         // Delete all events linked to product.
-        $events = ProductEvent::get_instances(array('productid' => $this->id));
+        $events = ProductEvent::get_instances(['productid' => $this->id]);
         if ($events) {
             foreach ($events as $e) {
                 $e->delete();
@@ -170,7 +180,8 @@ class Product extends ShopObject {
         $this->save(true);
 
         // Dismount product effect in Moodle using soft_delete method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->soft_delete($this);
@@ -180,7 +191,7 @@ class Product extends ShopObject {
         $productevent = new ProductEvent(null);
         $productevent->productid = $this->id;
         $productevent->billitemid = $this->currentbillitemid;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->eventtype = 'delete';
         $productevent->save();
     }
@@ -193,7 +204,8 @@ class Product extends ShopObject {
         $this->save(true);
 
         // Restores product effect in Moodle using soft_restore method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->soft_restore($this);
@@ -203,7 +215,7 @@ class Product extends ShopObject {
         $productevent = new ProductEvent(null);
         $productevent->productid = $this->id;
         $productevent->billitemid = $this->currentbillitemid;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->eventtype = 'restore';
         $productevent->save();
     }
@@ -215,7 +227,8 @@ class Product extends ShopObject {
         $this->save(true);
 
         // Restores product effect in Moodle using soft_restore method of the attached product handler.
-        list($handler, $method) = $this->get_handler_info(null);
+        $parms = $this->get_handler_info(null);
+        $handler = $parms[0];
 
         if (!is_null($handler)) {
             $handler->update($this);
@@ -225,7 +238,7 @@ class Product extends ShopObject {
         $productevent = new ProductEvent(null);
         $productevent->productid = $this->id;
         $productevent->billitemid = $this->currentbillitemid;
-        $productevent->datecreated = $now = time();
+        $productevent->datecreated = time();
         $productevent->eventtype = 'update';
         $productevent->save();
     }
@@ -263,7 +276,7 @@ class Product extends ShopObject {
      */
     public static function compile_production_data($data1, $data2 = null, $data3 = null) {
 
-        $pairs = array();
+        $pairs = [];
         foreach ($data1 as $key => $value) {
             $pairs[] = "$key=".urlencode($value);
         }
@@ -321,21 +334,43 @@ class Product extends ShopObject {
         return [null, null];
     }
 
-    public static function count($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
-        return parent::_count_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param int $limitfrom
+     * @param int $limitnum
+     * @TODO : check usefulness of limitfrom limitnum here....
+     */
+    public static function count($filter = [], $limitfrom = 0, $limitnum = 0) {
+        return parent::_count_instances(self::$table, $filter, $limitfrom, $limitnum);
     }
 
-    public static function get_instances($filter = array(), $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
+    /**
+     * ShopObject wrapper
+     * @param array $filter
+     * @param string $order
+     * @param string $fields
+     * @param int $limitfrom
+     * @param int $limitnum
+     */
+    public static function get_instances($filter = [], $order = '', $fields = '*', $limitfrom = 0, $limitnum = '') {
         return parent::_get_instances(self::$table, $filter, $order, $fields, $limitfrom, $limitnum);
     }
 
+    /**
+     * ShopObject wrapper
+     * @param array $field
+     * @param string $values acceptable values of the field
+     * @param string $fields
+     */
     public static function get_instances_list($field, array $values, $order = '', $fields = '*') {
         return parent::_get_instances_list(self::$table, $field, $values, $order, $fields);
     }
 
     /**
-     * Counts available product instances, using filters on local_shop_catalogitem, local_shop_product, local_shop_billitem
-     * (optional).
+     * Counts available product instances, using filters on local_shop_catalogitem (ci prefix), local_shop_product (p prefix),
+     * local_shop_billitem (bi prefix) (optional). this is an extended count fonction that operates on full JOIN.
+     * @param array $filter
      */
     public static function count_instances_on_context($filter) {
         global $DB;
@@ -384,14 +419,18 @@ class Product extends ShopObject {
     }
 
     /**
-     * Get a filtered set of product instances, using filters on local_shop_cataolgitem, local_shop_product, local_shop_billitem
-     * (optional).
+     * Get a filtered set of product instances, using filters on local_shop_catalogitem (ci prefix),
+     * local_shop_product (p prefix), local_shop_billitem (bi prefix)
+     * @param array $filter
+     * @param string $order
+     * @param int $limitfrom4
+     * @param int $limitnum
      */
     public static function get_instances_on_context($filter, $order = '', $limitfrom = 0, $limitnum = '') {
         global $DB;
 
         $filterclause = '';
-        $params = array();
+        $params = [];
         if (!empty($filter)) {
             $filterstrs = [];
             foreach ($filter as $k => $v) {
@@ -435,14 +474,8 @@ class Product extends ShopObject {
         ';
 
         $records = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
-        /*
-        if (empty($records)) {
-            echo $sql.'<br>';
-            print_object($params);
-        }
-        */
 
-        $results = array();
+        $results = [];
         if (!empty($records)) {
             foreach ($records as $rid => $rec) {
                 $results[$rid] = new Product($rec);
@@ -452,6 +485,11 @@ class Product extends ShopObject {
         return $results;
     }
 
+    /**
+     * Filters an instance array by states
+     * @param arrayref &$instances
+     * @param string $state
+     */
     public static function filter_by_state(&$instances, $state) {
         if (empty($instances) || $state == '*') {
             return;
@@ -517,32 +555,32 @@ class Product extends ShopObject {
                         e.courseid = c.id AND
                         e.enrol = 'manual'
                 ";
-                if ($enrol = $DB->get_record_sql($sql, array($this->instanceid))) {
-                    $courseurl = new \moodle_url('/course/view.php', array('id' => $enrol->courseid));
-                    $link = \html_writer::tag('a', format_string($enrol->fullname), array('href' => $courseurl));
+                if ($enrol = $DB->get_record_sql($sql, [$this->instanceid])) {
+                    $courseurl = new \moodle_url('/course/view.php', ['id' => $enrol->courseid]);
+                    $link = \html_writer::tag('a', format_string($enrol->fullname), ['href' => $courseurl]);
                 }
                 break;
 
             case 'course':
-                if ($course = $DB->get_record('course', array('id' => $this->instanceid))) {
-                    $courseurl = new \moodle_url('/course/view.php', array('id' => $course->id));
-                    $link = \html_writer::tag('a', format_string($course->fullname), array('href' => $courseurl));
+                if ($course = $DB->get_record('course', ['id' => $this->instanceid])) {
+                    $courseurl = new \moodle_url('/course/view.php', ['id' => $course->id]);
+                    $link = \html_writer::tag('a', format_string($course->fullname), ['href' => $courseurl]);
                 }
                 break;
 
             case 'coursecat':
-                if ($coursecat = $DB->get_record('course_categories', array('id' => $this->instanceid))) {
-                    $coursecaturl = new \moodle_url('/course/management.php', array('categoryid' => $coursecat->id));
-                    $link = \html_writer::tag('a', format_string($coursecat->name), array('href' => $coursecaturl));
+                if ($coursecat = $DB->get_record('course_categories', ['id' => $this->instanceid])) {
+                    $coursecaturl = new \moodle_url('/course/management.php', ['categoryid' => $coursecat->id]);
+                    $link = \html_writer::tag('a', format_string($coursecat->name), ['href' => $coursecaturl]);
                 }
                 break;
 
             case 'attempt':
-                $cm = $DB->get_record('course_module', array('id' => $this->instanceid));
-                $module = $DB->get_record('module', array('id' => $cm->moduleid));
-                $activity = $DB->get_record($module->name, array('id' => $cm->instanceid));
-                $activityurl = new \moodle_url('/mod/'.$module->name.'/view.php', array('id' => $cm->id));
-                $link = \html_writer::tag('a', format_string($activity->name), array('href' => $activityurl));
+                $cm = $DB->get_record('course_module', ['id' => $this->instanceid]);
+                $module = $DB->get_record('module', ['id' => $cm->moduleid]);
+                $activity = $DB->get_record($module->name, ['id' => $cm->instanceid]);
+                $activityurl = new \moodle_url('/mod/'.$module->name.'/view.php', ['id' => $cm->id]);
+                $link = \html_writer::tag('a', format_string($activity->name), ['href' => $activityurl]);
         }
 
         return $link;

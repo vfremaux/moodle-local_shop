@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * View all categories of a catalog
+ *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (MyLearningFactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +39,7 @@ if ($action != '') {
     $controller->process($action);
 }
 
-$params = array('catalogid' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir);
+$params = ['catalogid' => $thecatalog->id, 'view' => 'viewAllCategories', 'order' => $order, 'dir' => $dir];
 $url = new moodle_url('/local/shop/products/category/view.php', $params);
 
 // Eliminate tests.
@@ -46,9 +47,9 @@ $select = "
     catalogid = ? AND
     UPPER(name) NOT LIKE 'test%'
 ";
-$categorycount = $DB->count_records_select('local_shop_catalogcategory', $select, array($thecatalog->id));
+$categorycount = $DB->count_records_select('local_shop_catalogcategory', $select, [$thecatalog->id]);
 
-$categories = Category::get_instances(array('catalogid' => $thecatalog->id, 'parentid' => 0), "$order $dir");
+$categories = Category::get_instances(['catalogid' => $thecatalog->id, 'parentid' => 0], "$order $dir");
 
 echo $OUTPUT->heading(get_string('category', 'local_shop'), 1);
 
@@ -61,8 +62,8 @@ if (empty($categories)) {
     echo $renderer->categories($categories, $order, $dir);
 }
 
-$editurl = new moodle_url('/local/shop/products/category/edit_category.php', array('catalogid' => $thecatalog->id));
-$params = array('shopid' => $theshop->id, 'catalogid' => $thecatalog->id, 'view' => 'viewAllProducts');
+$editurl = new moodle_url('/local/shop/products/category/edit_category.php', ['catalogid' => $thecatalog->id]);
+$params = ['shopid' => $theshop->id, 'catalogid' => $thecatalog->id, 'view' => 'viewAllProducts'];
 $catalogurl = new moodle_url('/local/shop/products/view.php', $params);
 echo '<div class="addlink"><a href="'.$editurl.'">'.$addcategorystr.'</a> -';
 echo ' <a href="'.$catalogurl.'">'.$backtocatalogstr.'</a></div>';

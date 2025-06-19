@@ -25,25 +25,33 @@
 namespace local_shop\output;
 
 use StdClass;
+use Templatable;
+use renderer_base;
 
-class bill_product_block implements \Templatable {
+/**
+ * An objecvt that represents product block data in bills
+ */
+class bill_product_block implements Templatable {
 
-    /**
-     * The product to render
-     */
+    /** @var The product to render */
     protected $product;
 
     /**
      * Base constructor
+     * @param Catalogitem $product
+     * @param object $theblock instance of shop_access block if known.
      */
-    public function __construct($product) {
+    public function __construct(CatalogItem $product, $theblock = null) {
         $this->product = $product;
+        $this->theblock = $theblock;
     }
 
     /**
      * Exporter for template.
+     * @param renderer_base $output unused
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function export_for_template($output) {
+    public function export_for_template(renderer_base $output /* unused */) {
 
         $template = new StdClass();
         $template->imageurl = $product->get_image_url();
@@ -58,7 +66,7 @@ class bill_product_block implements \Templatable {
         } else {
             $template->singleprice = false;
             foreach ($prices as $range => $price) {
-                $pricetpl = new \StdClass;
+                $pricetpl = new StdClass();
                 $pricetpl->range = $range;
                 $pricetpl->price = $price;
                 $template->prices[] = $pricetpl;
@@ -67,8 +75,8 @@ class bill_product_block implements \Templatable {
 
         $ismax = $product->maxdeliveryquant && $product->maxdeliveryquant == $product->preset;
         $template->disabled = ($ismax) ? 'disabled="disabled"' : '';
-        $template->blockid = 0 + @$this->theblock->instance->id;
-        $template->jshandler = 'ajax_add_unit('.$blockid.', \''.$product->shortname.'\')';
+        $template->blockid = $this->theblock->instance->id ?? 0;
+        $template->jshandler = 'ajax_add_unit('.$this->theblock->id.', \''.$product->shortname.'\')';
         $template->shortname = $product->shortname;
         $template->units = $this->units($product, true);
 

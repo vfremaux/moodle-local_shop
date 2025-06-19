@@ -15,88 +15,128 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Paymode implemetation class
+ *
  * @package    shoppaymodes_transfer
- * @category   local
- * @author     Valery Fremaux (valery.fremaux@gmail.com)
+ * @author      Valery Fremaux <valery.fremaux@gmail.com>
+ * @copyright   2017 Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/local/shop/paymodes/paymode.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Bill.class.php');
+require_once($CFG->dirroot.'/local/shop/classes/Shop.class.php');
 
+use local_shop\Shop;
+use local_shop\Bill;
+
+/**
+ * Pay by bank transfer. This is a non instant payment method that will
+ * need operator check before agreeing production.
+ */
 class shop_paymode_transfer extends shop_paymode {
 
-    public function __construct(&$shopblockinstance) {
-        parent::__construct('transfer', $shopblockinstance);
+    /**
+     * Constructor
+     * @param Shop $theshop
+     */
+    public function __construct(?Shop $theshop) {
+        parent::__construct('transfer', $theshop);
     }
 
-    // Prints a payment porlet in an order form.
-    public function print_payment_portlet(&$billdata) {
+    /**
+     * Prints a payment portlet in an order form.
+     */
+    public function print_payment_portlet() {
 
         $proc = 1;
 
         $config = get_config('local_shop');
 
-        echo '<p>' . shop_compile_mail_template('pay_instructions', array(), 'shoppaymodes_transfer');
-        $vars = array('SELLER' => $config->sellername,
-                      'ADDRESS' => $config->sellerbillingaddress,
-                      'ZIP' => $config->sellerbillingzip,
-                      'CITY' => $config->sellerbillingcity,
-                      'COUNTRY' => strtoupper($config->sellercountry),
-                      'BANKING' => $config->banking,
-                      'BANK_CODE' => $config->bankcode,
-                      'BANK_OFFICE' => $config->bankoffice,
-                      'BANK_ACCOUNT' => $config->bankaccount,
-                      'ACCOUNT_KEY' => $config->bankaccountkey,
-                      'IBAN' => $config->iban,
-                      'BIC' => $config->bic,
-                      'TVA_EUROPE' => $config->tvaeurope,
-                      'PROC_ORDER' => $proc++);
+        echo '<p>' . shop_compile_mail_template('pay_instructions', [], 'shoppaymodes_transfer');
+        $vars = [
+            'SELLER' => $config->sellername,
+            'ADDRESS' => $config->sellerbillingaddress,
+            'ZIP' => $config->sellerbillingzip,
+            'CITY' => $config->sellerbillingcity,
+            'COUNTRY' => strtoupper($config->sellercountry),
+            'BANKING' => $config->banking,
+            'BANK_CODE' => $config->bankcode,
+            'BANK_OFFICE' => $config->bankoffice,
+            'BANK_ACCOUNT' => $config->bankaccount,
+            'ACCOUNT_KEY' => $config->bankaccountkey,
+            'IBAN' => $config->iban,
+            'BIC' => $config->bic,
+            'TVA_EUROPE' => $config->tvaeurope,
+            'PROC_ORDER' => $proc++,
+        ];
         echo shop_compile_mail_template('print_procedure_text', $vars, 'shoppaymodes_transfer');
     }
 
-    // Prints a payment portlet in an order form.
-    public function print_invoice_info(&$billdata = null) {
+    /**
+     * Prints a payment portlet in an invoice.
+     * @param ?Bill $billdata
+     */
+    public function print_invoice_info(?Bill $billdata = null) {
 
         $proc = 1;
 
         $config = get_config('local_shop');
 
-        echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', array(), 'shoppaymodes_transfer');
+        echo '<p>'.shop_compile_mail_template('pay_instructions_invoice', [], 'shoppaymodes_transfer');
         // We are swapping fields to avoid code duplicate trigger.
-        $vars = array('SELLER' => $config->sellername,
-                      'ADDRESS' => $config->sellerbillingaddress,
-                      'CITY' => $config->sellerbillingcity,
-                      'ZIP' => $config->sellerbillingzip,
-                      'COUNTRY' => strtoupper($config->sellercountry),
-                      'BANKING' => $config->banking,
-                      'BANK_CODE' => $config->bankcode,
-                      'BANK_ACCOUNT' => $config->bankaccount,
-                      'BANK_OFFICE' => $config->bankoffice,
-                      'ACCOUNT_KEY' => $config->bankaccountkey,
-                      'BIC' => $config->bic,
-                      'IBAN' => $config->iban,
-                      'TVA_EUROPE' => $config->tvaeurope,
-                      'PROC_ORDER' => $proc++);
+        $vars = [
+            'SELLER' => $config->sellername,
+            'ADDRESS' => $config->sellerbillingaddress,
+            'CITY' => $config->sellerbillingcity,
+            'ZIP' => $config->sellerbillingzip,
+            'COUNTRY' => strtoupper($config->sellercountry),
+            'BANKING' => $config->banking,
+            'BANK_CODE' => $config->bankcode,
+            'BANK_ACCOUNT' => $config->bankaccount,
+            'BANK_OFFICE' => $config->bankoffice,
+            'ACCOUNT_KEY' => $config->bankaccountkey,
+            'BIC' => $config->bic,
+            'IBAN' => $config->iban,
+            'TVA_EUROPE' => $config->tvaeurope,
+            'PROC_ORDER' => $proc++,
+        ];
         echo shop_compile_mail_template('print_procedure_text_invoice', $vars, 'shoppaymodes_transfer');
     }
 
+    /**
+     * Print when payment is completed.
+     */
     public function print_complete() {
-        echo shop_compile_mail_template('bill_complete_text', array());
+        echo shop_compile_mail_template('bill_complete_text', []);
     }
 
-    // Processes a payment return.
+    /**
+     * In transfer mode, there is no immediate payment return.
+     * So it can be processed as payed immediately. Process action will need
+     * an operator action in the backoffice.
+     */
     public function process() {
         // Void.
+        assert(true);
     }
 
-    // Processes a payment asynchronoous confirmation.
+    /**
+     * Processes a payment asynchronoous confirmation.
+     * Not relevant for transfer payments.
+     */
     public function process_ipn() {
         // No IPN for offline payment.
+        assert(true);
     }
 
-    // Provides global settings to add to shop settings when installed.
-    public function settings(&$settings) {
+    /**
+     * Provides global settings to add to shop settings when installed.
+     * @param object $settings
+     */
+    public function settings($settings) {
+        return false;
     }
 }

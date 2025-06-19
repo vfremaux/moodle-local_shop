@@ -18,9 +18,8 @@
  * Defines form to add or edit a catalog
  *
  * @package     local_shop
- * @category    local
  * @author      Valery Fremaux <valery.fremaux@gmail.com>
- * @caopyright  (C) 2016 Valery Fremaux (http://www.mylearningfactory.com)
+ * @copyright   Valery Fremaux <valery.fremaux@gmail.com> (activeprolearn.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL
  */
 
@@ -30,10 +29,28 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * A form to edit catalog instances
+ * phpcs:disable moodle.Commenting.ValidTags.Invalid
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
 class Catalog_Form extends moodleform {
 
+    /** @var options for text editors */
     public $editoroptions;
 
+    /**
+     * Standard definition
+     */
     public function definition() {
         global $OUTPUT, $DB, $COURSE;
 
@@ -42,11 +59,13 @@ class Catalog_Form extends moodleform {
 
         $maxfiles = 99;                // TODO: add some setting.
         $maxbytes = $COURSE->maxbytes; // TODO: add some setting.
-        $this->editoroptions = array('trusttext' => true,
-                                     'subdirs' => false,
-                                     'maxfiles' => $maxfiles,
-                                     'maxbytes' => $maxbytes,
-                                     'context' => $context);
+        $this->editoroptions = [
+            'trusttext' => true,
+            'subdirs' => false,
+            'maxfiles' => $maxfiles,
+            'maxbytes' => $maxbytes,
+            'context' => $context,
+        ];
 
         $mform =& $this->_form;
 
@@ -74,11 +93,6 @@ class Catalog_Form extends moodleform {
         $mform->addHelpButton('description_editor', 'description', 'local_shop');
         $mform->addRule('description_editor', null, 'required');
 
-        /*
-        $label = get_string('salesconditions', 'local_shop');
-        $mform->addElement('editor', 'salesconditions_editor', $label, '', $this->editoroptions);
-        */
-
         $label = get_string('countrycodelist', 'local_shop');
         $mform->addElement('text', 'countryrestrictions', $label, $attributes);
         $mform->addHelpButton('countryrestrictions', 'countryrestrictions', 'local_shop');
@@ -90,7 +104,7 @@ class Catalog_Form extends moodleform {
         // Add catalog mode settings.
 
         if ($config->useslavecatalogs && local_shop_supports_feature('catalog/instances')) {
-            $linkedarray = array();
+            $linkedarray = [];
             $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('standalone', 'local_shop'), 'free');
 
             $sql = "
@@ -101,7 +115,7 @@ class Catalog_Form extends moodleform {
                WHERE
                  ci.id = ci.groupid
             ";
-            $mastercatalogoptions = array();
+            $mastercatalogoptions = [];
             if ($mastercatalogs = $DB->get_records_sql($sql)) {
                 foreach ($mastercatalogs as $acat) {
                     $mastercatalogoptions[$acat->id] = $acat->name;
@@ -113,7 +127,7 @@ class Catalog_Form extends moodleform {
                 $linkedarray[] = &$mform->createElement('radio', 'linked', '', get_string('slaveto', 'local_shop'), 'slave');
                 $linkedarray[] = &$mform->createElement('select', 'groupid', '', $mastercatalogoptions);
             }
-            $mform->addGroup($linkedarray, 'linkedarray', '', array(' '), false);
+            $mform->addGroup($linkedarray, 'linkedarray', '', [' '], false);
             $mform->setDefault('linked', 'free');
         } else {
             $mform->addElement('hidden', 'linked', 'free');
@@ -126,17 +140,16 @@ class Catalog_Form extends moodleform {
         $this->add_action_buttons();
     }
 
+    /**
+     * Feeds the form with existing data
+     * @param array $defaults
+     */
     public function set_data($defaults) {
 
         $context = context_system::instance();
 
         $defaults = file_prepare_standard_editor($defaults, 'description', $this->editoroptions, $context, 'local_shop',
                                                  'catalogdescription', $defaults->catalogid);
-
-        /*
-        $defaults = file_prepare_standard_editor($defaults, 'salesconditions', $this->editoroptions, $context, 'local_shop',
-                                                 'catalogsalesconditions', $defaults->catalogid);
-        */
 
         $defaults = file_prepare_standard_editor($defaults, 'billfooter', $this->editoroptions, $context, 'local_shop',
                                                  'catalogbillfooter', $defaults->catalogid);
